@@ -1,14 +1,14 @@
 set nocompatible
-filetype off                  
+filetype off
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'vim-airline/vim-airline'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-sensible'
-Plugin 'ajh17/vimcompletesme'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -16,8 +16,10 @@ filetype plugin indent on    " required
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
-set history=700
+set history=250
 
+" Remove trailing whitespace per save
+autocmd BufWritePre * %s/\s\+$//e
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -79,7 +81,6 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 cnoreabbrev W w
 cnoreabbrev Q q
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
