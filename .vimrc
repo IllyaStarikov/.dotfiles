@@ -83,6 +83,14 @@ cnoreabbrev W w
 cnoreabbrev Q q
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Key mappings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Because I type Wq literally all the time
+:command W w
+:command Q q
+:command Wq wq
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set statusline+=%#warningmsg#
@@ -96,16 +104,16 @@ let g:syntastic_check_on_wq = 0
 
 let g:syntastic_cpp_checkers = ['gcc']
 
-let g:airline_powerline_fonts = 1
-
 " Enable mouse support
 if has("mouse")
-  set mouse=a
+    set mouse=a
 endif
 
+" Airline Support
+set encoding=utf-8
+let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
 let g:airline_symbols.space = "\ua0"
-
 
