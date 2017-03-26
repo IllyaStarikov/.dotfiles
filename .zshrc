@@ -42,6 +42,11 @@ alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
 
+# Vim like quitting
+alias :q=exit
+alias :wq=exit
+
+
 ## get rid of command not found
 alias cd..="cd .."
 
