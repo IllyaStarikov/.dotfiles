@@ -105,3 +105,6 @@ bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
