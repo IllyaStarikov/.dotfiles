@@ -20,9 +20,6 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Change the command execution time
 HIST_STAMPS="mm/dd/yyyy"
 
-# Would you like to use another custom folder than $ZSH/custom?
-#ZSH_CUSTOM=/path/to/new-custom-folder
-
 # Whiddch plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
@@ -41,11 +38,6 @@ alias python="python3"
 alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
-
-# Vim like quitting
-alias :q=exit
-alias :wq=exit
-
 
 ## get rid of command not found
 alias cd..="cd .."
@@ -78,8 +70,6 @@ alias du='du -ch'
 
 
 echo 'bindkey "^X\\x7f" backward-kill-line' >> ~/.zshrc
-bindkey "^X\x7f" backward-kill-line
-bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line

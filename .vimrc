@@ -21,6 +21,9 @@ set history=250
 " Remove trailing whitespace per save
 autocmd BufWritePre * %s/\s\+$//e
 
+" Use system clipboard
+set clipboard=unnamed
+
 " Set to auto read when a file is changed from the outside
 set autoread
 
@@ -35,11 +38,20 @@ set expandtab
 set shiftwidth=4
 set softtabstop=4
 
+" Use tabas in makefiles though..
+autocmd FileType make set noexpandtab
+
 set smartindent
 set autoindent
 
 " Line numbers yo
 set nu
+
+" Highlight searches
+set hlsearch
+
+" Ignore case in searches
+set ignorecase
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -67,6 +79,19 @@ set encoding=utf8
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
+
+" Show the cursor's current line
+set number
+
+" Highlight the current line
+" Only highlights the active window, and only when vim is in focus
+set cursorline
+hi CursorLine term=bold cterm=bold guibg=Grey40
+augroup CursorLine
+  au!
+  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+  au WinLeave * setlocal nocursorline
+augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
