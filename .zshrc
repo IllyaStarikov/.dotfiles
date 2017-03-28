@@ -50,26 +50,59 @@ alias .....="cd ../../../../"
 alias .4="cd ../../../../"
 alias .5="cd ../../../../.."
 
-## do not delete / or prompt if deleting more than 3 files at a time
-alias rm='rm -I --preserve-root'
-
 ## get current public IP
 alias ip="curl icanhazip.com"
 
 ## list TODO/FIX lines from the current project
 alias todos="ack -n --nogroup '(TODO|FIX(ME)?):'"
 
-## confirmation
-alias mv='mv -i'
-alias cp='cp -i'
-alias ln='ln -i'
-
 ## disk stuff...
 alias df='df -H'
 alias du='du -ch'
 
+## because i have a habit of running git add -A
+git() {
+    if [[ $@ == "add -A" ]]; then
+        command git add -p
+    else
+        command git "$@"
+    fi
+}
 
 echo 'bindkey "^X\\x7f" backward-kill-line' >> ~/.zshrc
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
