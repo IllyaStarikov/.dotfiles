@@ -134,6 +134,8 @@ let g:syntastic_check_on_wq = 0
 
 let g:syntastic_cpp_checkers = ['gcc']
 
+
+
 " Enable mouse support
 if has("mouse")
     set mouse=a
@@ -147,3 +149,4 @@ if !exists('g:airline_symbols')
 endif
 let g:airline_symbols.space = "\ua0"
 
+set completeopt-=preview
