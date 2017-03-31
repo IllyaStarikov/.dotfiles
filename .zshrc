@@ -38,6 +38,7 @@ alias python="python3"
 alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
+alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 
 ## get rid of command not found
 alias cd..="cd .."
@@ -70,6 +71,39 @@ git() {
 }
 
 echo 'bindkey "^X\\x7f" backward-kill-line' >> ~/.zshrc
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
+bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
 bindkey "^X\x7f" backward-kill-line
