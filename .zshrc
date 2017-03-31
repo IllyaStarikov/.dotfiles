@@ -39,6 +39,7 @@ alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
+alias reset="source ~/.zshrc && reset"
 
 ## get rid of command not found
 alias cd..="cd .."
