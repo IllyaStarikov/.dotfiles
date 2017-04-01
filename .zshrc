@@ -41,6 +41,10 @@ alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
 
+## Because I need to get in the habit of not rming
+alias del="rmtrash"
+alias rm="echo Use 'del', or the full path i.e. '/bin/rm'"
+
 ## get rid of command not found
 alias cd..="cd .."
 
