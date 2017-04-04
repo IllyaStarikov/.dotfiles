@@ -40,6 +40,7 @@ alias diff="colordiff"
 alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
+alias ianvim="mvim -O -v -u ~/.ian-dotfiles/vimrc"
 
 ## Because I need to get in the habit of not rming
 alias del="rmtrash"
