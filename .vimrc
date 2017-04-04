@@ -80,6 +80,10 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
+" Use wilmenu
+set wildmenu
+set wildmode=longest:list,full
+
 " Show the cursor's current line
 set number
 
