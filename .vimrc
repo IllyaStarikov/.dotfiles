@@ -44,8 +44,9 @@ autocmd FileType make set noexpandtab
 set smartindent
 set autoindent
 
-" Line numbers yo
+" Relative line numbers yo
 set nu
+set relativenumber
 
 " Highlight searches
 set hlsearch
