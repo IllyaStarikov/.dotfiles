@@ -9,6 +9,7 @@ Plugin 'vim-syntastic/syntastic'
 Plugin 'vim-airline/vim-airline'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-sensible'
+Plugin 'ajh17/spacegray.vim'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -60,6 +61,7 @@ set ignorecase
 " Enable syntax highlighting
 syntax on
 set background=dark
+colorscheme spacegray
 
 set spell spelllang=en_us
 
