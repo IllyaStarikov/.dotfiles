@@ -33,6 +33,11 @@ if [[ $SSH_CONNECTION ]]; then
    export EDITOR='vim'
 fi
 
+BASE16_SCHEME="default"
+BASE16_BACKGROUND="dark"
+BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUND.sh"
+[[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
+
 # Aliases
 alias python="python3"
 alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
@@ -51,8 +56,8 @@ alias cd..="cd .."
 
 ## a quick way to get out of current directory
 alias ..="cd .."
-alias ...="cd ../../../"
-alias ....="cd ../../../../"
+alias ...="cd ../../"
+alias ....="cd ../../../"
 alias .....="cd ../../../../"
 alias .4="cd ../../../../"
 alias .5="cd ../../../../.."

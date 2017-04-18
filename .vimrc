@@ -60,8 +60,17 @@ set ignorecase
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax on
-set background=dark
+let g:spacegray_underline_search = 1
+
 colorscheme spacegray
+set termguicolors
+
+set t_Co=256
+
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+endif
+
 
 set spell spelllang=en_us
 
