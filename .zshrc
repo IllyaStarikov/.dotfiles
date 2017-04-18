@@ -25,7 +25,6 @@ HIST_STAMPS="mm/dd/yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git brew catimg gitfast git-extras osx pod python vi-mode)
-
 source $ZSH/oh-my-zsh.sh
 
 # If on SSH, just use vim
