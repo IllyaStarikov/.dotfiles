@@ -10,6 +10,9 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-sensible'
 Plugin 'ajh17/spacegray.vim'
+Plugin 'xuhdev/vim-latex-live-preview'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'vim-latex/vim-latex'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
@@ -70,7 +73,6 @@ set t_Co=256
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
 endif
-
 
 set spell spelllang=en_us
 
@@ -152,6 +154,24 @@ let g:syntastic_cpp_checkers = ['gcc']
 
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_python_flake8_args='--ignore=E501,E225'
+
+if !exists('g:ycm_semantic_triggers')
+    let g:ycm_semantic_triggers = {}
+endif
+let g:ycm_semantic_triggers.tex = [
+            \ 're!\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
+            \ 're!\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
+            \ 're!\\hyperref\[[^]]*',
+            \ 're!\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
+            \ 're!\\(include(only)?|input){[^}]*',
+            \ 're!\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
+            \ 're!\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
+            \ 're!\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
+            \ 're!\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
+            \ 're!\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
+            \ 're!\\[A-Za-z]*',
+            \ ]
+
 
 " Enable mouse support
 if has("mouse")
