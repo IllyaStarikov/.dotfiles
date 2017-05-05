@@ -45,6 +45,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 
 # Aliases
 alias python="python3"
+alias pip="python -m pip"
 alias vim="nvim -O -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
