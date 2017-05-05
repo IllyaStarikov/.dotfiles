@@ -6,7 +6,7 @@ All of my frequently used dotfiles, including:
 - [Z-Shell](https://github.com/robbyrussell/oh-my-zsh) config (zhsrc)
 - [iTerm](https://www.iterm2.com) profile (as JSON)
 
-Although I use MacVim (yes, I use `mvim`), the config should work fine for vanilla Vim. The package manager used is [Vundle](https://github.com/VundleVim/Vundle.vim); after installation run `PluginInstall`.
+Currently, I am using [neovim](https://neovim.io). My package manager of choice is [Plug](https://github.com/junegunn/vim-plug), so after installation, run `PlugInstall`. Although *all* the commands aren't portable, it should work fine.
 
 My zsh setup is managed by oh-my-zsh. Aliases are also in zshrc.
 
