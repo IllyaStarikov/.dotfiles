@@ -32,6 +32,12 @@ if [[ $SSH_CONNECTION ]]; then
    export EDITOR='vim'
 fi
 
+export python3="/usr/local/bin/python3"
+
+# If not on SSH, still use vim
+export VISUAL=nvim
+export EDITOR="$VISUAL"
+
 BASE16_SCHEME="default"
 BASE16_BACKGROUND="dark"
 BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUND.sh"
