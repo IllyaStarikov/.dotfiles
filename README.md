@@ -6,7 +6,7 @@ All of my frequently used dotfiles, including:
 - [Z-Shell](https://github.com/robbyrussell/oh-my-zsh) config (zhsrc)
 - [iTerm](https://www.iterm2.com) profile (as JSON)
 
-Currently, I am using [neovim](https://neovim.io). My package manager of choice is [Plug](https://github.com/junegunn/vim-plug), so after installation, run `PlugInstall`. Although *all* the commands aren't portable, it should work fine.
+Currently, I am using [neovim](https://neovim.io). My package manager of choice is [Plug](https://github.com/junegunn/vim-plug), so after installation, run `PlugInstall`. Although *all* the commands aren't portable, it should mostly work. The skeleton files are in a separate repository, you can find them [here](https://github.com/IllyaStarikov/skeleton-files).
 
 My zsh setup is managed by oh-my-zsh. Aliases are also in zshrc.
 
