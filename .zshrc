@@ -39,12 +39,12 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 
 # Aliases
 alias python="python3"
-alias vim="mvim -O -v -u ~/.dotfiles/.vimrc"
+alias vim="nvim -O -u ~/.dotfiles/.vimrc"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
-alias ianvim="mvim -O -v -u ~/.ian-dotfiles/vimrc"
+alias ianvim="nvim -O -v -u ~/.ian-dotfiles/vimrc"
 
 ## Because I need to get in the habit of not rming
 alias del="rmtrash"

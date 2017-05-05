@@ -82,6 +82,8 @@ set ignorecase
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax on
+
+set guicursor=
 let g:spacegray_underline_search = 1
 
 colorscheme spacegray
