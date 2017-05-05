@@ -1,20 +1,39 @@
 set nocompatible
 filetype off
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'vim-airline/vim-airline'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-sensible'
-Plugin 'ajh17/spacegray.vim'
-Plugin 'xuhdev/vim-latex-live-preview'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'vim-latex/vim-latex'
-call vundle#end()            " required
-filetype plugin indent on    " required
+set runtimepath+=$XDG_CONFIG_HOME/nvim/plugged/deoplete.nvim
+set completeopt+=noinsert,noselect
+set completeopt-=preview
+
+let g:python3_host_prog = '/usr/local/bin/python3'
+
+call plug#begin('~/.vim/plugged')
+Plug 'VundleVim/Vundle.vim'
+Plug 'vim-syntastic/syntastic'
+Plug 'vim-airline/vim-airline'
+Plug 'tpope/vim-fugitive'
+Plug 'ajh17/spacegray.vim'
+Plug 'xuhdev/vim-latex-live-preview'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'vim-latex/vim-latex'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'rip-rip/clang_complete'
+
+if has('python3')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#disable_auto_complete = 0
+
+    " deoplete tab-complete
+    inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+    Plug 'Rip-Rip/clang_complete'
+    let g:clang_library_path='/usr/lib/llvm-3.6/lib/'
+
+    Plug 'zchee/deoplete-jedi'
+end
+
+call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
