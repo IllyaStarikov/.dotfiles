@@ -81,7 +81,7 @@ set termguicolors
 set t_Co=256
 
 if filereadable(expand("~/.vimrc_background"))
-  let base16colorspace=256
+    let base16colorspace=256
 endif
 
 set spell spelllang=en_us
@@ -116,9 +116,9 @@ set number
 set cursorline
 hi CursorLine term=bold cterm=bold guibg=Grey40
 augroup CursorLine
-  au!
-  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-  au WinLeave * setlocal nocursorline
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au WinLeave * setlocal nocursorline
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -143,6 +143,12 @@ cnoreabbrev Q q
 :command Q q
 :command Wq wq
 
+" To stop yanking everytime I delete
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+vnoremap <leader>p "_dP
+
+" Because who needs arrow keys
 noremap <up> <C-w><up>
 noremap <down> <C-w><down>
 noremap <left> <C-w><left>
