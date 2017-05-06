@@ -1,11 +1,13 @@
 set nocompatible
 filetype off
 
-set runtimepath+=$XDG_CONFIG_HOME/nvim/plugged/deoplete.nvim
+set runtimepath+="~/.vim/plugged/deoplete.nvim"
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 
 let g:python3_host_prog = '/usr/local/bin/python3'
+
+filetype plugin on
 
 call plug#begin('~/.vim/plugged')
 Plug 'VundleVim/Vundle.vim'
@@ -13,26 +15,13 @@ Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'ajh17/spacegray.vim'
-Plug 'xuhdev/vim-latex-live-preview'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'vim-latex/vim-latex'
+Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
+Plug 'lervag/vimtex', { 'for': 'tex' }
+
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'rip-rip/clang_complete'
-
-if has('python3')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#disable_auto_complete = 0
-
-    " deoplete tab-complete
-    inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-
-    Plug 'Rip-Rip/clang_complete'
-    let g:clang_library_path='/usr/lib/llvm-3.6/lib/'
-
-    Plug 'zchee/deoplete-jedi'
-end
-
+Plug 'Rip-Rip/clang_complete', { 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
+Plug 'zchee/deoplete-jedi'
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -226,9 +215,28 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:livepreview_previewer = 'open -a Skim'
 
+set grepprg=grep\ -nH\ $*
+filetype indent on
+let g:vimtex_enabled = 1
+let g:vimtex_complete_close_braces = 1
+let g:vimtex_fold_comments = 1
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#enable_smart_case = 1
+let g:deoplete#disable_auto_complete = 0
+set completeopt+=noinsert
+set completeopt-=preview
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Autocomplete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-filetype plugin indent on
+inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+let g:clang_library_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib"
 
+let g:clang_complete_auto = 0
+let g:clang_auto_select = 0
+let g:clang_omnicppcomplete_compliance = 0
+let g:clang_make_default_keymappings = 0
 
+au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
