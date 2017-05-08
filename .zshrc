@@ -24,7 +24,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git brew catimg gitfast git-extras osx pod python vi-mode)
+plugins=(git brew catimg gitfast git-extras osx history-substring-search python vi-mode)
 source $ZSH/oh-my-zsh.sh
 
 # If on SSH, just use vim
@@ -91,6 +91,10 @@ git() {
 zstyle ':completion:*:manuals'    separate-sections true
 zstyle ':completion:*:manuals.*'  insert-sections   true
 zstyle ':completion:*:man:*'      menu yes select
+
+# Search Through History with arrow
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
 
 # map delete line (iTerm thing)
 bindkey "^X\x7f" backward-kill-line
