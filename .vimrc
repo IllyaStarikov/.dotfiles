@@ -17,6 +17,7 @@ Plug 'ajh17/spacegray.vim'
 Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'Shougo/neosnippet.vim'
+Plug 'IllyaStarikov/neosnippet-snippets'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Rip-Rip/clang_complete', { 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
@@ -228,17 +229,38 @@ let g:vimtex_enabled = 1
 let g:vimtex_complete_close_braces = 1
 let g:vimtex_fold_comments = 1
 
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#disable_auto_complete = 0
 set completeopt+=noinsert
 set completeopt-=preview
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Autocomplete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" deoplete stuff
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#enable_smart_case = 1
+let g:deoplete#disable_auto_complete = 0
+
+" neosnippet
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+            \ "\<Plug>(neosnippet_expand_or_jump)"
+            \: "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+    set conceallevel=2 concealcursor=i
+endif
+
+" Enable snipMate compatibility feature.
+let g:neosnippet#enable_snipmate_compatibility = 1
+let g:neosnippet#snippets_directory = '$HOME/vimfiles/bundle/vim-snippets/snippets, $HOME/snippets'
+
+" clang complete stuff
 let g:clang_library_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib"
 
 let g:clang_complete_auto = 0
