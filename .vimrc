@@ -10,28 +10,35 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 filetype plugin on
 
 call plug#begin('~/.vim/plugged')
-Plug 'VundleVim/Vundle.vim'
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'ajh17/spacegray.vim'
-Plug 'terryma/vim-multiple-cursors'
 Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
 Plug 'lervag/vimtex', { 'for': 'tex' }
+Plug 'Shougo/neosnippet.vim'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Rip-Rip/clang_complete', { 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
 Plug 'zchee/deoplete-jedi'
 call plug#end()
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
 set history=250
 
+augroup spaces
+  autocmd!
+
 " Remove trailing whitespace per save
-autocmd BufWritePre * %s/\s\+$//e
+    autocmd BufWritePre * %s/\s\+$//e
+
+" Use tabas in makefiles though..
+autocmd FileType make set noexpandtab
+
+augroup END
 
 " Use system clipboard
 set clipboard=unnamed
@@ -49,9 +56,6 @@ set tabstop=4
 set expandtab
 set shiftwidth=4
 set softtabstop=4
-
-" Use tabas in makefiles though..
-autocmd FileType make set noexpandtab
 
 set smartindent
 set autoindent
@@ -71,6 +75,11 @@ set ignorecase
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
 syntax on
+set re=1
+
+set nocursorcolumn
+set nocursorline
+syntax sync minlines=256
 
 set guicursor=
 let g:spacegray_underline_search = 1
@@ -110,16 +119,6 @@ set wildmode=longest:list,full
 
 " Show the cursor's current line
 set number
-
-" Highlight the current line
-" Only highlights the active window, and only when vim is in focus
-set cursorline
-hi CursorLine term=bold cterm=bold guibg=Grey40
-augroup CursorLine
-    au!
-    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    au WinLeave * setlocal nocursorline
-augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -195,12 +194,13 @@ if has("mouse")
 endif
 
 " Airline Support
-set encoding=utf-8
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
-let g:airline_symbols.space = "\ua0"
+let g:airline#extensions#whitespace#enabled = 0
+set lazyredraw
+let g:airline_symbols_ascii = 1
 
 set completeopt-=preview
 
@@ -209,6 +209,7 @@ set completeopt-=preview
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
     augroup templates
+        autocmd!
         autocmd BufNewFile main.* silent! execute '0r ~/.vim/skeleton-files/skeleton-main.'.expand("<afile>:e")
         autocmd BufNewFile *.* silent! execute '0r ~/.vim/skeleton-files/skeleton.'.expand("<afile>:e")
 
