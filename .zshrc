@@ -87,5 +87,10 @@ git() {
     fi
 }
 
+# Man autocomplete
+zstyle ':completion:*:manuals'    separate-sections true
+zstyle ':completion:*:manuals.*'  insert-sections   true
+zstyle ':completion:*:man:*'      menu yes select
+
 # map delete line (iTerm thing)
 bindkey "^X\x7f" backward-kill-line
