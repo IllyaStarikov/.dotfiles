@@ -1,14 +1,14 @@
 set nocompatible
 filetype off
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set runtimepath+="~/.vim/plugged/deoplete.nvim"
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 
-let g:python3_host_prog = '/usr/local/bin/python3'
-
 filetype plugin on
-
 call plug#begin('~/.vim/plugged')
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
@@ -24,7 +24,7 @@ Plug 'Rip-Rip/clang_complete', { 'do': 'nvim -c \"r! git ls-files autoload bin d
 Plug 'zchee/deoplete-jedi'
 call plug#end()
 
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
@@ -47,9 +47,6 @@ set clipboard=unnamed
 " Set to auto read when a file is changed from the outside
 set autoread
 
-" Fast saving
-nmap <leader>w :w!<cr>
-
 " Tab management
 set shiftwidth=4
 set tabstop=4
@@ -70,6 +67,9 @@ set hlsearch
 
 " Ignore case in searches
 set ignorecase
+
+" Python 3 host
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -134,25 +134,6 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 cnoreabbrev W w
 cnoreabbrev Q q
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Key mappings
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Because I type Wq literally all the time
-:command W w
-:command Q q
-:command Wq wq
-
-" To stop yanking everytime I delete
-nnoremap <leader>d "_d
-vnoremap <leader>d "_d
-vnoremap <leader>p "_dP
-
-" Because who needs arrow keys
-noremap <up> <C-w><up>
-noremap <down> <C-w><down>
-noremap <left> <C-w><left>
-noremap <right> <C-w><right>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
