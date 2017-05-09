@@ -269,3 +269,50 @@ let g:clang_omnicppcomplete_compliance = 0
 let g:clang_make_default_keymappings = 0
 
 au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Key mappings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Because I type Wq literally all the time
+:command W w
+:command Q q
+:command Wq wq
+
+" To stop yanking everytime I delete
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+vnoremap <leader>p "_dP
+
+" Because who needs arrow keys
+noremap <up> <C-w><up>
+noremap <down> <C-w><down>
+noremap <left> <C-w><left>
+noremap <right> <C-w><right>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Leader Key Shortcuts
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let mapleader = "\<Space>"
+
+" Fast saving
+nnoremap <Leader>w :w<CR>
+
+" Fast Closing
+nnoremap <Leader>q :q<CR>
+
+" fast opening
+nnoremap <Leader>o <C-P>
+
+" Fast opening and closing vim
+nnoremap <Leader>s <C-Z>
+
+" Fast visual mode
+nmap <Leader><Leader> V
+
+" Copy/past to system clipboard
+vmap <Leader>y "+y
+vmap <Leader>d "+d
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
