@@ -24,7 +24,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git brew catimg gitfast git-extras osx history-substring-search python vi-mode)
+plugins=(git brew catimg gitfast git-extras osx history-substring-search python vi-mode git-open)
 source $ZSH/oh-my-zsh.sh
 
 # If on SSH, just use vim
@@ -52,6 +52,7 @@ alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
 alias ianvim="nvim -O -v -u ~/.ian-dotfiles/vimrc"
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 ## Because I need to get in the habit of not rming
 alias del="rmtrash"
