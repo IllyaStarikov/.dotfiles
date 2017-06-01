@@ -293,6 +293,9 @@ nnoremap <Leader>w :w<CR>
 " Fast Closing
 nnoremap <Leader>q :q<CR>
 
+" Fast saving and closing
+noremap <Leader>x :x<CR>
+
 " fast opening
 nnoremap <Leader>o <C-P>
 
