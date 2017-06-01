@@ -130,6 +130,10 @@ set wildmode=longest:list,full
 " Show the cursor's current line
 set number
 
+" Go up and down properly on wrapped text
+nmap j gj
+nmap k gk
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
