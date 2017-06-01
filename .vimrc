@@ -138,6 +138,9 @@ set nobackup
 set nowb
 set noswapfile
 
+autocmd BufNewFile,BufRead *.tex set syntax=tex
+let g:tex_flavor = "latex"
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
