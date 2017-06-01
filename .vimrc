@@ -34,13 +34,13 @@ call plug#end()
 set history=250
 
 augroup spaces
-  autocmd!
+    autocmd!
 
-" Remove trailing whitespace per save
+    " Remove trailing whitespace per save
     autocmd BufWritePre * %s/\s\+$//e
 
-" Use tabas in makefiles though..
-autocmd FileType make set noexpandtab
+    " Use tabas in makefiles though..
+    autocmd FileType make set noexpandtab
 
 augroup END
 
@@ -87,12 +87,17 @@ set nocursorline
 syntax sync minlines=256
 
 set guicursor=
-let g:spacegray_underline_search = 1
 
-colorscheme spacegray
+let g:quantum_italics = 1
+let g:quantum_black = 1
+
+set background=dark
 set termguicolors
+colorscheme quantum
 
-set t_Co=256
+let g:airline_theme = 'quantum'
+
+"set t_Co=256
 
 if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
