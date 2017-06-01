@@ -13,7 +13,10 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
-Plug 'ajh17/spacegray.vim'
+Plug 'scrooloose/nerdcommenter'
+
+Plug 'tyrannicaltoucan/vim-quantum'
+
 Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'Shougo/neosnippet.vim'
@@ -57,6 +60,7 @@ set softtabstop=4
 
 set smartindent
 set autoindent
+set linebreak
 
 " Relative line numbers yo
 set nu
@@ -234,7 +238,7 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 
 " For snippet_complete marker.
 if has('conceal')
-    set conceallevel=2 concealcursor=i
+    set conceallevel=0 concealcursor=i
 endif
 
 " Enable snipMate compatibility feature.
