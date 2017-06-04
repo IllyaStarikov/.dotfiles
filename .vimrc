@@ -82,11 +82,15 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 syntax on
 set re=1
 
+" Cursor stuff
 set nocursorcolumn
 set nocursorline
-syntax sync minlines=256
 
-set guicursor=
+set cursorline!
+set guicursor=a:hor20-Cursor
+
+" Don't syntax highlight after the 128th column
+set synmaxcol=128
 
 let g:quantum_italics = 1
 let g:quantum_black = 1
