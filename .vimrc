@@ -148,7 +148,7 @@ set nowb
 set noswapfile
 
 autocmd BufNewFile,BufRead *.tex set syntax=tex
-let g:tex_flavor = "latex"
+let g:tex_flavor = "xelatex"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -224,6 +224,7 @@ endif
 " => LaTeX Stuff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:livepreview_previewer = 'open -a Skim'
+let g:Tex_CompileRule_pdf = 'xelatex --interaction=nonstopmode $*'
 
 set grepprg=grep\ -nH\ $*
 filetype indent on
