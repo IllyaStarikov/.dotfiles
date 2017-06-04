@@ -15,6 +15,9 @@ Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 
+Plug 'kien/ctrlp.vim'
+Plug 'scrooloose/nerdtree'
+
 Plug 'tyrannicaltoucan/vim-quantum'
 
 Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
