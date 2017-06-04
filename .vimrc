@@ -322,3 +322,6 @@ nmap <Leader><Leader> V
 nnoremap <leader>d ""d
 nnoremap <leader>D ""D
 vnoremap <leader>d ""d
+
+autocmd FileType python nnoremap <leader>r :exec '!python' shellescape(@%, 1)<cr>
+nnoremap <leader>R :!<Up><CR>
