@@ -284,16 +284,16 @@ au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
 :command Q q
 :command Wq wq
 
-" To stop yanking everytime I delete
-nnoremap <leader>d "_d
-vnoremap <leader>d "_d
-vnoremap <leader>p "_dP
-
 " Because who needs arrow keys
 noremap <up> <C-w><up>
 noremap <down> <C-w><down>
 noremap <left> <C-w><left>
 noremap <right> <C-w><right>
+
+nnoremap x "_x
+nnoremap d "_d
+nnoremap D "_D
+vnoremap d "_d
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Leader Key Shortcuts
@@ -318,10 +318,7 @@ nnoremap <Leader>s <C-Z>
 " Fast visual mode
 nmap <Leader><Leader> V
 
-" Copy/past to system clipboard
-vmap <Leader>y "+y
-vmap <Leader>d "+d
-nmap <Leader>p "+p
-nmap <Leader>P "+P
-vmap <Leader>p "+p
-vmap <Leader>P "+P
+" true vim deleting
+nnoremap <leader>d ""d
+nnoremap <leader>D ""D
+vnoremap <leader>d ""d
