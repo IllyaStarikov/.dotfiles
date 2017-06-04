@@ -13,7 +13,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
-Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-commentary'
 
 Plug 'tyrannicaltoucan/vim-quantum'
 
@@ -101,7 +101,8 @@ colorscheme quantum
 
 let g:airline_theme = 'quantum'
 
-"set t_Co=256
+" Nice colors
+set t_Co=256
 
 if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
