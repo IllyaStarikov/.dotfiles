@@ -325,5 +325,30 @@ nnoremap <leader>d ""d
 nnoremap <leader>D ""D
 vnoremap <leader>d ""d
 
-autocmd FileType python nnoremap <leader>r :exec '!python' shellescape(@%, 1)<cr>
-nnoremap <leader>R :!<Up><CR>
+" execute stuff
+function! MakeIfAvailable()
+    if filereadable("./makefile")
+        make
+    elseif (&filetype == "cpp")
+        execute("!clang++ -std=c++14" + bufname("%"))
+        execute("!./a.out")
+    elseif (&filetype == "c")
+        execute("!clang -std=c11" + bufname("%"))
+        execute("!./a.out")
+    elseif (&filetype == "tex")
+        execute("!xelatex" + bufname("%"))
+        execute("!open" + expand(%:r) + ".pdf")
+    endif
+endfunction
+
+augroup spaces
+    autocmd!
+    autocmd FileType c nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
+    autocmd FileType cpp nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
+    autocmd FileType tex nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
+    autocmd FileType python nnoremap <buffer><leader>r :exec '!python' shellescape(@%, 1)<cr>
+    autocmd FileType perl nnoremap <buffer><leader>r :exec '!perl' shellescape(@%, 1)<cr>
+    autocmd FileType sh nnoremap <buffer><leader>r :exec '!bash' shellescape(@%, 1)<cr>
+    autocmd FileType swift nnoremap <buffer><leader>r :exec '!swift' shellescape(@%, 1)<cr>
+    nnoremap <leader>R :!<Up><CR>
+augroup END
