@@ -162,29 +162,12 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
-let g:syntastic_cpp_checkers = ['gcc']
+let g:syntastic_cpp_checkers = ['clang']
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_python_flake8_args='--ignore=E501,E225'
-
-if !exists('g:ycm_semantic_triggers')
-    let g:ycm_semantic_triggers = {}
-endif
-let g:ycm_semantic_triggers.tex = [
-            \ 're!\\[A-Za-z]*cite[A-Za-z]*(\[[^]]*\]){0,2}{[^}]*',
-            \ 're!\\[A-Za-z]*ref({[^}]*|range{([^,{}]*(}{)?))',
-            \ 're!\\hyperref\[[^]]*',
-            \ 're!\\includegraphics\*?(\[[^]]*\]){0,2}{[^}]*',
-            \ 're!\\(include(only)?|input){[^}]*',
-            \ 're!\\\a*(gls|Gls|GLS)(pl)?\a*(\s*\[[^]]*\]){0,2}\s*\{[^}]*',
-            \ 're!\\includepdf(\s*\[[^]]*\])?\s*\{[^}]*',
-            \ 're!\\includestandalone(\s*\[[^]]*\])?\s*\{[^}]*',
-            \ 're!\\usepackage(\s*\[[^]]*\])?\s*\{[^}]*',
-            \ 're!\\documentclass(\s*\[[^]]*\])?\s*\{[^}]*',
-            \ 're!\\[A-Za-z]*',
-            \ ]
 
 
 " Enable mouse support
@@ -237,6 +220,7 @@ set completeopt-=preview
 " deoplete stuff
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+let g:deoplete#auto_complete_delay = 150
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_completion_start_length = 1
 let g:deoplete#enable_smart_case = 1
@@ -260,7 +244,7 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory = '$HOME/vimfiles/bundle/vim-snippets/snippets, $HOME/snippets'
 
 " clang complete stuff
-let g:clang_library_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib"
+let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
 
 let g:clang_complete_auto = 0
 let g:clang_auto_select = 0
@@ -294,22 +278,25 @@ vnoremap d "_d
 let mapleader = "\<Space>"
 
 " Fast saving
-nnoremap <Leader>w :w<CR>
+nnoremap <leader>w :w<CR>
 
 " Fast Closing
-nnoremap <Leader>q :q<CR>
+nnoremap <leader>q :q<CR>
 
 " Fast saving and closing
-noremap <Leader>x :x<CR>
+noremap <leader>x :x<CR>
 
 " fast opening
-nnoremap <Leader>o <C-P>
+nnoremap <leader>o <C-P>
 
 " Fast opening and closing vim
-nnoremap <Leader>s <C-Z>
+nnoremap <leader>s <C-Z>
 
 " Fast visual mode
-nmap <Leader><Leader> V
+nmap <leader><leader> V
+
+" Fast commenting (From tpope's commentary plugin)
+nmap <leader>c gc 
 
 " true vim deleting
 nnoremap <leader>d ""d
