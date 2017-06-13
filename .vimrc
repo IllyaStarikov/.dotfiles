@@ -136,8 +136,15 @@ set wildmode=longest:list,full
 set number
 
 " Go up and down properly on wrapped text
-nmap j gj
-nmap k gk
+nnoremap <Down> gj
+nnoremap <Up> gk
+vnoremap <Down> gj
+vnoremap <Up> gk
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
+
+" I actually like the curose in middle of the screen at the bottom
+noremap G Gzz
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
