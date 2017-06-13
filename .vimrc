@@ -9,25 +9,25 @@ set completeopt+=noinsert,noselect
 set completeopt-=preview
 
 filetype plugin on
+
 call plug#begin('~/.vim/plugged')
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
-Plug 'keith/swift.vim'
+Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug 'kien/ctrlp.vim'
 Plug 'scrooloose/nerdtree'
 
 Plug 'tyrannicaltoucan/vim-quantum'
 
-Plug 'rip-rip/clang_complete', { 'for': ['C', 'C++'] }
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'Shougo/neosnippet.vim'
 Plug 'IllyaStarikov/neosnippet-snippets'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Rip-Rip/clang_complete', { 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
-Plug 'zchee/deoplete-jedi'
+Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
+Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -44,7 +44,6 @@ augroup spaces
 
     " Use tabas in makefiles though..
     autocmd FileType make set noexpandtab
-
 augroup END
 
 " Use system clipboard
@@ -93,6 +92,7 @@ set cursorline!
 set guicursor=a:hor20-Cursor
 
 " Don't syntax highlight after the 128th column
+" Most for performance 
 set synmaxcol=128
 
 let g:quantum_italics = 1
@@ -112,9 +112,6 @@ if filereadable(expand("~/.vimrc_background"))
 endif
 
 set spell spelllang=en_us
-
-" Highlight search results
-set hlsearch
 
 " For regular expressions turn magic on
 set magic
@@ -152,12 +149,6 @@ set noswapfile
 
 autocmd BufNewFile,BufRead *.tex set syntax=tex
 let g:tex_flavor = "xelatex"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-cnoreabbrev W w
-cnoreabbrev Q q
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
