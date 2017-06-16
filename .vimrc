@@ -95,6 +95,12 @@ set guicursor=a:hor20-Cursor
 " Most for performance 
 set synmaxcol=128
 
+" except for LaTeX and markdown
+augroup syntaxmax 
+    autocmd!
+    autocmd FileType tex,latex,markdown set synmaxcol=2048
+augroup END
+
 let g:quantum_italics = 1
 let g:quantum_black = 1
 
