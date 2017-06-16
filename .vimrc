@@ -233,6 +233,12 @@ set completeopt-=preview
 " deoplete stuff
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+" To prevent enter from from not inserting newline
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+    return deoplete#close_popup() . "\<CR>"
+endfunction
+
 let g:deoplete#auto_complete_delay = 150
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_completion_start_length = 1
