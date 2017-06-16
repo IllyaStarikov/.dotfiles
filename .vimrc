@@ -280,6 +280,17 @@ au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
 :command Q q
 :command Wq wq
 
+" Because i use word wrap like a sane human
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+noremap  <buffer> <silent> 0 g0
+noremap  <buffer> <silent> $ g$
+
+nnoremap <Down> gj
+nnoremap <Up> gk
+vnoremap <Down> gj
+vnoremap <Up> gk
+
 " Because who needs arrow keys
 noremap <up> <C-w><up>
 noremap <down> <C-w><down>
