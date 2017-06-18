@@ -15,6 +15,8 @@ Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
+Plug 'tommcdo/vim-lion'
+Plug 'wellle/targets.vim'
 
 Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug 'kien/ctrlp.vim'
