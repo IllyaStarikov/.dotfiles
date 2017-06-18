@@ -15,9 +15,10 @@ Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
+
 Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug 'kien/ctrlp.vim'
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 Plug 'tyrannicaltoucan/vim-quantum'
 
@@ -332,6 +333,9 @@ nmap <leader>c gc
 nnoremap <leader>d ""d
 nnoremap <leader>D ""D
 vnoremap <leader>d ""d
+
+" nerdtree toggle
+noremap <silent> <leader>n :NERDTreeToggle<cr>
 
 " execute stuff
 function! MakeIfAvailable()
