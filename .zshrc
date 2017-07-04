@@ -1,8 +1,3 @@
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/Illya/.oh-my-zsh
-
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
@@ -26,17 +21,6 @@ HIST_STAMPS="mm/dd/yyyy"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git brew catimg gitfast git-extras osx history-substring-search python vi-mode git-open)
 source $ZSH/oh-my-zsh.sh
-
-# If on SSH, just use vim
-if [[ $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
-fi
-
-export python3="/usr/local/bin/python3"
-
-# If not on SSH, still use vim
-export VISUAL=nvim
-export EDITOR="$VISUAL"
 
 BASE16_SCHEME="default"
 BASE16_BACKGROUND="dark"
