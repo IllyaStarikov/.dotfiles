@@ -187,6 +187,7 @@ let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_python_flake8_args='--ignore=E501,E225'
 
+au filetype tex syntax region texZone start='\\begin{lstlisting}' end='\\end{lstlisting}'
 
 " Enable mouse support
 if has("mouse")
@@ -353,7 +354,6 @@ function! MakeIfAvailable()
         execute("!./a.out")
     elseif (&filetype == "tex")
         execute("!xelatex" + bufname("%"))
-        execute("!open" + expand(%:r) + ".pdf")
     endif
 endfunction
 
