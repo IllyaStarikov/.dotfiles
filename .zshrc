@@ -86,3 +86,4 @@ bindkey "^X\x7f" backward-kill-line
 
 
 source "/Users/Illya/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
+export PATH="/usr/local/opt/cython/bin:$PATH"
