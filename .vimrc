@@ -175,6 +175,11 @@ set noswapfile
 autocmd BufNewFile,BufRead *.tex set syntax=tex
 let g:tex_flavor = "xelatex"
 
+augroup filetype
+   au BufRead,BufNewFile *.flex,*.jflex    set filetype=jflex
+ augroup END
+ au Syntax jflex    so ~/.vim/syntax/jflex.vim
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
