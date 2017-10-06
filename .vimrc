@@ -42,11 +42,17 @@ call plug#end()
 " Sets how many lines of history VIM has to remember
 set history=250
 
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    %s/\t/    /e
+    %s/\s\+$//e
+    call winrestview(l:save)
+endfun
+
+
+autocmd BufWritePre * :call TrimWhitespace()
 augroup spaces
     autocmd!
-
-    " Remove trailing whitespace per save
-    autocmd BufWritePre * %s/\s\+$//e
 
     " Use tabas in makefiles though..
     autocmd FileType make set noexpandtab
