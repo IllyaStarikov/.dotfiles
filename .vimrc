@@ -16,6 +16,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
+Plug 'junegunn/vim-easy-align'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
@@ -369,7 +370,7 @@ augroup spaces
     autocmd FileType c nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
     autocmd FileType cpp nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
     autocmd FileType tex nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
-    autocmd FileType python nnoremap <buffer><leader>r :exec '!python' shellescape(@%, 1)<cr>
+    autocmd FileType python nnoremap <buffer><leader>r :exec '!python3' shellescape(@%, 1)<cr>
     autocmd FileType perl nnoremap <buffer><leader>r :exec '!perl' shellescape(@%, 1)<cr>
     autocmd FileType sh nnoremap <buffer><leader>r :exec '!bash' shellescape(@%, 1)<cr>
     autocmd FileType swift nnoremap <buffer><leader>r :exec '!swift' shellescape(@%, 1)<cr>
