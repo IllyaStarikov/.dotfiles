@@ -341,6 +341,13 @@ vnoremap <leader>d ""d
 
 " nerdtree toggle
 noremap <silent> <leader>n :NERDTreeToggle<cr>
+let g:NERDTreeWinPos = "right"
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
 
 " execute stuff
 function! MakeIfAvailable()
