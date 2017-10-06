@@ -199,8 +199,6 @@ let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_python_flake8_args='--ignore=E501,E225'
 
-au filetype tex syntax region texZone start='\\begin{lstlisting}' end='\\end{lstlisting}'
-
 " Enable mouse support
 if has("mouse")
     set mouse=a
