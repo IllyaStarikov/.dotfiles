@@ -307,9 +307,9 @@ endif
 " => Key mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Because I type Wq literally all the time
-:command W w
-:command Q q
-:command Wq wq
+:command! W w
+:command! Q q
+:command! Wq wq
 
 " Because i use word wrap like a sane human
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
