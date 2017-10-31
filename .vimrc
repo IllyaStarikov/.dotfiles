@@ -4,7 +4,6 @@ filetype off
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set runtimepath+="~/.vim/plugged/deoplete.nvim"
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 
@@ -28,12 +27,16 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'tyrannicaltoucan/vim-quantum'
 
 Plug 'lervag/vimtex', { 'for': 'tex' }
-Plug 'Shougo/neosnippet.vim'
-Plug 'IllyaStarikov/neosnippet-snippets'
 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
-Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
+if has('nvim')
+    set runtimepath+="~/.vim/plugged/deoplete.nvim"
+    Plug 'Shougo/neosnippet.vim'
+    Plug 'IllyaStarikov/neosnippet-snippets'
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
+    Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
+endif
+
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -104,11 +107,11 @@ set cursorline!
 set guicursor=a:hor20-Cursor
 
 " Don't syntax highlight after the 128th column
-" Most for performance 
+" Most for performance
 set synmaxcol=128
 
 " except for LaTeX and markdown
-augroup syntaxmax 
+augroup syntaxmax
     autocmd!
     autocmd FileType tex,latex,markdown set synmaxcol=2048
 augroup END
@@ -152,6 +155,11 @@ set wildmode=longest:list,full
 
 " Show the cursor's current line
 set number
+
+" if windows gvim, change font
+if has('win32')
+    set guifont=Space\ Mono\ for\ Powerline:h11
+endif
 
 " Go up and down properly on wrapped text
 nnoremap <Down> gj
@@ -199,7 +207,10 @@ let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_python_flake8_args='--ignore=E501,E225'
 
-au filetype tex syntax region texZone start='\\begin{lstlisting}' end='\\end{lstlisting}'
+" gVim yells at this
+if !has('win32')
+    au filetype tex syntax region texZone start='\\begin{lstlisting}' end='\\end{lstlisting}'
+endif
 
 " Enable mouse support
 if has("mouse")
@@ -249,46 +260,48 @@ set completeopt-=preview
 " => Autocomplete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " deoplete stuff
-inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+if has('nvim')
+    inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
-" To prevent enter from from not inserting newline
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function() abort
-    return deoplete#close_popup() . "\<CR>"
-endfunction
+    " To prevent enter from from not inserting newline
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function() abort
+        return deoplete#close_popup() . "\<CR>"
+    endfunction
 
-let g:deoplete#auto_complete_delay = 150
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#disable_auto_complete = 0
+    let g:deoplete#auto_complete_delay = 150
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#auto_completion_start_length = 1
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#disable_auto_complete = 0
 
-" neosnippet
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)"
-            \: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-            \ "\<Plug>(neosnippet_expand_or_jump)"
-            \: "\<TAB>"
+    " neosnippet
+    imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+                \ "\<Plug>(neosnippet_expand_or_jump)"
+                \: pumvisible() ? "\<C-n>" : "\<TAB>"
+    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+                \ "\<Plug>(neosnippet_expand_or_jump)"
+                \: "\<TAB>"
 
-" For snippet_complete marker.
-if has('conceal')
-    set conceallevel=0 concealcursor=i
+    " For snippet_complete marker.
+    if has('conceal')
+        set conceallevel=0 concealcursor=i
+    endif
+
+    " Enable snipMate compatibility feature.
+    let g:neosnippet#enable_snipmate_compatibility = 1
+    let g:neosnippet#snippets_directory = '$HOME/vimfiles/bundle/vim-snippets/snippets, $HOME/snippets'
+
+    " clang complete stuff
+    let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
+
+    let g:clang_complete_auto = 0
+    let g:clang_auto_select = 0
+    let g:clang_omnicppcomplete_compliance = 0
+    let g:clang_make_default_keymappings = 0
+
+    au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
 endif
-
-" Enable snipMate compatibility feature.
-let g:neosnippet#enable_snipmate_compatibility = 1
-let g:neosnippet#snippets_directory = '$HOME/vimfiles/bundle/vim-snippets/snippets, $HOME/snippets'
-
-" clang complete stuff
-let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
-
-let g:clang_complete_auto = 0
-let g:clang_auto_select = 0
-let g:clang_omnicppcomplete_compliance = 0
-let g:clang_make_default_keymappings = 0
-
-au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Key mappings
@@ -344,7 +357,7 @@ nnoremap <leader>s <C-Z>
 nmap <leader><leader> V
 
 " Fast commenting (From tpope's commentary plugin)
-nmap <leader>c gc 
+nmap <leader>c gc
 
 " true vim deleting
 nnoremap <leader>d ""d
