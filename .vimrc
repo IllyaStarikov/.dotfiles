@@ -35,6 +35,8 @@ if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
     Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
+elseif v:version >= 800
+    Plug 'maralla/completor.vim'
 endif
 
 call plug#end()
@@ -301,7 +303,14 @@ if has('nvim')
     let g:clang_make_default_keymappings = 0
 
     au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
+
+elseif v:version >= 800
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
 endif
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Key mappings
@@ -389,7 +398,7 @@ function! MakeIfAvailable()
     endif
 endfunction
 
-augroup spaces
+augroup run
     autocmd!
     autocmd FileType c nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
     autocmd FileType cpp nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
