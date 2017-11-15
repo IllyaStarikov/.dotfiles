@@ -10,7 +10,6 @@ set completeopt-=preview
 filetype plugin on
 
 call plug#begin('~/.vim/plugged')
-Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
@@ -35,8 +34,10 @@ if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
     Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
+    Plug 'vim-syntastic/syntastic'
 elseif v:version >= 800
     Plug 'maralla/completor.vim'
+    Plug 'w0rp/ale'
 endif
 
 call plug#end()
@@ -160,7 +161,8 @@ set number
 
 " if windows gvim, change font
 if has('win32')
-    set guifont=Space\ Mono\ for\ Powerline:h11
+    set guifont=Fira\ Mono\ for\ Powerline:h11
+
 endif
 
 " Go up and down properly on wrapped text
@@ -193,26 +195,28 @@ augroup filetype
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Syntastic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+if has('nvim')
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
 
-let g:syntastic_cpp_checkers = ['clang']
-let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
+    let g:syntastic_cpp_checkers = ['clang']
+    let g:syntastic_cpp_compiler = 'clang++'
+    let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
-let g:syntastic_python_checkers=['flake8']
-let g:syntastic_python_flake8_args='--ignore=E501,E225'
-
-" gVim yells at this
-if !has('win32')
-    au filetype tex syntax region texZone start='\\begin{lstlisting}' end='\\end{lstlisting}'
+    let g:syntastic_python_checkers=['flake8']
+    let g:syntastic_python_flake8_args='--ignore=E501,E225'
+elseif v:version >= 800
+    let g:ale_fixers = {
+    \   'python': ['flake8'],
+    \}
 endif
+
 
 " Enable mouse support
 if has("mouse")
