@@ -1,7 +1,16 @@
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+source "/Users/Illya/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
 ZSH_THEME="spaceship"
+SPACESHIP_VI_MODE_INSERT="[λ]"
+SPACESHIP_VI_MODE_NORMAL="[µ]"
+
+# Whiddch plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(vi-mode git brew history-substring-search python osx)
 
 # Enable command correction
 ENABLE_CORRECTION="true"
@@ -15,12 +24,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Change the command execution time
 HIST_STAMPS="mm/dd/yyyy"
 
-# Whiddch plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git brew catimg gitfast git-extras osx history-substring-search python vi-mode git-open)
 source $ZSH/oh-my-zsh.sh
+export ZSH=/home/Illya/.oh-my-zsh
 
 BASE16_SCHEME="default"
 BASE16_BACKGROUND="dark"
@@ -29,8 +34,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 
 # Aliases
 alias python="python3"
-alias pip="python -m pip"
-alias vim="nvim -O -u ~/.dotfiles/.vimrc"
+alias ipython="python3 -m IPython"
+alias pip="python3 -m pip"
+alias vim="vim -O"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
@@ -63,15 +69,6 @@ alias todos="ack -n --nogroup '(TODO|FIX(ME)?):'"
 alias df='df -H'
 alias du='du -ch'
 
-## because i have a habit of running git add -A
-git() {
-    if [[ $@ == "add -A" ]]; then
-        command git add -p
-    else
-        command git "$@"
-    fi
-}
-
 # Man autocomplete
 zstyle ':completion:*:manuals'    separate-sections true
 zstyle ':completion:*:manuals.*'  insert-sections   true
@@ -84,6 +81,5 @@ bindkey "^[[B" history-substring-search-down
 # map delete line (iTerm thing)
 bindkey "^X\x7f" backward-kill-line
 
-
-source "/Users/Illya/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
-export PATH="/usr/local/opt/cython/bin:$PATH"
+# For Syntax Highlighting
+source /Users/Illya/.zsh_custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
