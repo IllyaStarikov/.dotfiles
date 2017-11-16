@@ -26,16 +26,10 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'tyrannicaltoucan/vim-quantum'
 
 Plug 'lervag/vimtex', { 'for': 'tex' }
+Plug 'SirVer/ultisnips'
+Plug 'IllyaStarikov/vim-snippets'
 
-if has('nvim')
-    set runtimepath+="~/.vim/plugged/deoplete.nvim"
-    Plug 'Shougo/neosnippet.vim'
-    Plug 'IllyaStarikov/neosnippet-snippets'
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'rip-rip/clang_complete', { 'for': ['c', 'cpp'], 'do': 'nvim -c \"r! git ls-files autoload bin doc plugin\" -c \"$$,$$d _\" -c \"%MkVimball! $@ .\" -c \"q!\" && nvim &< -c \"so %\" -c \"q\"' }
-    Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
-    Plug 'vim-syntastic/syntastic'
-elseif v:version >= 800
+if v:version >= 800
     Plug 'maralla/completor.vim'
     Plug 'w0rp/ale'
 endif
@@ -48,6 +42,8 @@ call plug#end()
 " Sets how many lines of history VIM has to remember
 set history=250
 
+set backspace=indent,eol,start
+
 fun! TrimWhitespace()
     let l:save = winsaveview()
     %s/\t/    /e
@@ -55,6 +51,10 @@ fun! TrimWhitespace()
     call winrestview(l:save)
 endfun
 
+" Enable mouse support
+if has("mouse")
+    set mouse=a
+endif
 
 autocmd BufWritePre * :call TrimWhitespace()
 augroup spaces
@@ -63,9 +63,6 @@ augroup spaces
     " Use tabas in makefiles though..
     autocmd FileType make set noexpandtab
 augroup END
-
-" Use system clipboard
-set clipboard=unnamed
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -193,34 +190,17 @@ augroup filetype
  au Syntax jflex    so ~/.vim/syntax/jflex.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Syntastic
+" => Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has('nvim')
-    set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
-    set statusline+=%*
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
-    let g:syntastic_always_populate_loc_list = 1
-    let g:syntastic_auto_loc_list = 1
-    let g:syntastic_check_on_open = 1
-    let g:syntastic_check_on_wq = 0
-
-    let g:syntastic_cpp_checkers = ['clang']
-    let g:syntastic_cpp_compiler = 'clang++'
-    let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
-
-    let g:syntastic_python_checkers=['flake8']
-    let g:syntastic_python_flake8_args='--ignore=E501,E225'
-elseif v:version >= 800
-    let g:ale_fixers = {
-    \   'python': ['flake8'],
-    \}
-endif
-
-
-" Enable mouse support
-if has("mouse")
-    set mouse=a
+if v:version >= 800
+    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+    let g:ale_lint_delay = 200
 endif
 
 " Airline Support
@@ -231,8 +211,11 @@ endif
 let g:airline#extensions#whitespace#enabled = 0
 set lazyredraw
 let g:airline_symbols_ascii = 1
+let g:airline#extensions#ale#enabled = 1
+let g:airline_detect_spell = 0
 
 set completeopt-=preview
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Skelton Files
@@ -262,59 +245,6 @@ let g:vimtex_fold_comments = 1
 set completeopt+=noinsert
 set completeopt-=preview
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Autocomplete
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" deoplete stuff
-if has('nvim')
-    inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-
-    " To prevent enter from from not inserting newline
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function() abort
-        return deoplete#close_popup() . "\<CR>"
-    endfunction
-
-    let g:deoplete#auto_complete_delay = 150
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#auto_completion_start_length = 1
-    let g:deoplete#enable_smart_case = 1
-    let g:deoplete#disable_auto_complete = 0
-
-    " neosnippet
-    imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)"
-                \: pumvisible() ? "\<C-n>" : "\<TAB>"
-    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-                \ "\<Plug>(neosnippet_expand_or_jump)"
-                \: "\<TAB>"
-
-    " For snippet_complete marker.
-    if has('conceal')
-        set conceallevel=0 concealcursor=i
-    endif
-
-    " Enable snipMate compatibility feature.
-    let g:neosnippet#enable_snipmate_compatibility = 1
-    let g:neosnippet#snippets_directory = '$HOME/vimfiles/bundle/vim-snippets/snippets, $HOME/snippets'
-
-    " clang complete stuff
-    let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
-
-    let g:clang_complete_auto = 0
-    let g:clang_auto_select = 0
-    let g:clang_omnicppcomplete_compliance = 0
-    let g:clang_make_default_keymappings = 0
-
-    au FileType c,cpp,objc,objcpp setl omnifunc=clang_complete#ClangComplete
-
-elseif v:version >= 800
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
-endif
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Key mappings
@@ -340,11 +270,6 @@ noremap <up> <C-w><up>
 noremap <down> <C-w><down>
 noremap <left> <C-w><left>
 noremap <right> <C-w><right>
-
-nnoremap x "_x
-nnoremap d "_d
-nnoremap D "_D
-vnoremap d "_d
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Leader Key Shortcuts
