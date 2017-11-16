@@ -1,14 +1,13 @@
 set nocompatible
+set completeopt+=noinsert,noselect
+set completeopt-=preview
+
 filetype off
+filetype plugin on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set completeopt+=noinsert,noselect
-set completeopt-=preview
-
-filetype plugin on
-
 call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
@@ -60,7 +59,7 @@ autocmd BufWritePre * :call TrimWhitespace()
 augroup spaces
     autocmd!
 
-    " Use tabas in makefiles though..
+    " Use tabs in makefiles though..
     autocmd FileType make set noexpandtab
 augroup END
 
@@ -116,8 +115,8 @@ augroup syntaxmax
     autocmd FileType tex,latex,markdown set synmaxcol=2048
 augroup END
 
-let g:quantum_italics = 1
 let g:quantum_black = 1
+let g:quantum_italics = 1
 
 set background=dark
 set termguicolors
@@ -159,19 +158,7 @@ set number
 " if windows gvim, change font
 if has('win32')
     set guifont=Fira\ Mono\ for\ Powerline:h11
-
 endif
-
-" Go up and down properly on wrapped text
-nnoremap <Down> gj
-nnoremap <Up> gk
-vnoremap <Down> gj
-vnoremap <Up> gk
-inoremap <Down> <C-o>gj
-inoremap <Up> <C-o>gk
-
-" I actually like the curose in middle of the screen at the bottom
-noremap G Gzz
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -185,14 +172,14 @@ autocmd BufNewFile,BufRead *.tex set syntax=tex
 let g:tex_flavor = "xelatex"
 
 augroup filetype
-   au BufRead,BufNewFile *.flex,*.jflex    set filetype=jflex
- augroup END
- au Syntax jflex    so ~/.vim/syntax/jflex.vim
+    au BufRead,BufNewFile *.flex,*.jflex    set filetype=jflex
+augroup END
+au Syntax jflex    so ~/.vim/syntax/jflex.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsExpandTrigger="<s-tab>"
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
@@ -203,7 +190,9 @@ if v:version >= 800
     let g:ale_lint_delay = 200
 endif
 
-" Airline Support
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Airline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -213,9 +202,6 @@ set lazyredraw
 let g:airline_symbols_ascii = 1
 let g:airline#extensions#ale#enabled = 1
 let g:airline_detect_spell = 0
-
-set completeopt-=preview
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Skelton Files
@@ -242,9 +228,6 @@ let g:vimtex_enabled = 1
 let g:vimtex_complete_close_braces = 1
 let g:vimtex_fold_comments = 1
 
-set completeopt+=noinsert
-set completeopt-=preview
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Key mappings
@@ -254,16 +237,22 @@ set completeopt-=preview
 :command! Q q
 :command! Wq wq
 
+" Go up and down properly on wrapped text
+nnoremap <Down> gj
+nnoremap <Up> gk
+vnoremap <Down> gj
+vnoremap <Up> gk
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
+
+" I actually like the cursor in middle of the screen at the bottom
+noremap G Gzz
+
 " Because i use word wrap like a sane human
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 noremap  <buffer> <silent> 0 g0
 noremap  <buffer> <silent> $ g$
-
-nnoremap <Down> gj
-nnoremap <Up> gk
-vnoremap <Down> gj
-vnoremap <Up> gk
 
 " Because who needs arrow keys
 noremap <up> <C-w><up>
@@ -290,6 +279,9 @@ nnoremap <leader>o <C-P>
 
 " Fast opening and closing vim
 nnoremap <leader>s <C-Z>
+
+" Fast throwing into the void buffer
+nnoremap <leader>d "_d
 
 " Fast visual mode
 nmap <leader><leader> V
