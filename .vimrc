@@ -297,11 +297,6 @@ nmap <leader><leader> V
 " Fast commenting (From tpope's commentary plugin)
 nmap <leader>c gc
 
-" true vim deleting
-nnoremap <leader>d ""d
-nnoremap <leader>D ""D
-vnoremap <leader>d ""d
-
 " nerdtree toggle
 noremap <silent> <leader>n :NERDTreeToggle<cr>
 let g:NERDTreeWinPos = "right"
