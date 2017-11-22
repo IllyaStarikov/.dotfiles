@@ -5,12 +5,16 @@ source "/Users/Illya/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
 ZSH_THEME="spaceship"
 SPACESHIP_VI_MODE_INSERT="[λ]"
 SPACESHIP_VI_MODE_NORMAL="[µ]"
+SPACESHIP_BATTERY_SHOW=false
 
 # Whiddch plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(vi-mode git brew history-substring-search python osx)
+
+# Faster Vim Mode
+export KEYTIMEOUT=1
 
 # Enable command correction
 ENABLE_CORRECTION="true"
@@ -36,12 +40,10 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 alias python="python3"
 alias ipython="python3 -m IPython"
 alias pip="python3 -m pip"
-alias vim="vim -O"
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
-alias ianvim="nvim -O -v -u ~/.ian-dotfiles/vimrc"
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 ## Because I need to get in the habit of not rming
