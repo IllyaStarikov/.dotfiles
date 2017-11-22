@@ -41,6 +41,13 @@ call plug#end()
 " Sets how many lines of history VIM has to remember
 set history=250
 
+" Set 7 lines to the cursor - when moving vertically using j/k
+set so=7
+
+" Yank to system clipboard by default
+set clipboard=unnamed
+
+" Proper backspace
 set backspace=indent,eol,start
 
 fun! TrimWhitespace()
