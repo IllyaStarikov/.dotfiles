@@ -2,8 +2,8 @@ set nocompatible
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 
-filetype off
 filetype plugin on
+filetype indent on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins
@@ -179,15 +179,29 @@ au Syntax jflex    so ~/.vim/syntax/jflex.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:UltiSnipsExpandTrigger="<s-tab>"
+let g:UltiSnipsExpandTrigger = "<nop>"
+let g:ulti_expand_or_jump_res = 0
+
+function! ExpandSnippetOrCarriageReturn()
+    let snippet = UltiSnips#ExpandSnippetOrJump()
+    if g:ulti_expand_or_jump_res > 0
+        return snippet
+    else
+        return "\<CR>"
+    endif
+endfunction
+
+inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
+
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+set shortmess+=c
 
 if v:version >= 800
     inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
-    let g:ale_lint_delay = 200
+
+    let g:ale_lint_delay = 500
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -223,10 +237,11 @@ let g:livepreview_previewer = 'open -a Skim'
 let g:Tex_CompileRule_pdf = 'xelatex --interaction=nonstopmode $*'
 
 set grepprg=grep\ -nH\ $*
-filetype indent on
 let g:vimtex_enabled = 1
 let g:vimtex_complete_close_braces = 1
 let g:vimtex_fold_comments = 1
+
+let g:vimtex_disable_version_warning = 1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
