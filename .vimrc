@@ -208,6 +208,13 @@ if v:version >= 800
     inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
+    let g:ale_linters = {
+    \   'tex': ['chktex --nwarn 24'],
+    \}
+
+    let g:ale_echo_msg_error_str = 'E'
+    let g:ale_echo_msg_warning_str = 'W'
+    let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
     let g:ale_lint_delay = 500
 endif
 
@@ -249,7 +256,10 @@ let g:vimtex_complete_close_braces = 1
 let g:vimtex_fold_comments = 1
 
 let g:vimtex_disable_version_warning = 1
+let g:vimtex_compiler_latexmk = {'callback' : 0}
 
+autocmd BufNewFile,BufRead *.tex set syntax=tex
+let g:tex_flavor = "xelatex"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Key mappings
@@ -287,63 +297,49 @@ noremap <right> <C-w><right>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = "\<Space>"
 
-" Fast saving
 nnoremap <leader>w :w<CR>
-
-" Fast Closing
-nnoremap <leader>q :q<CR>
-
-" Fast saving and closing
+noremap <leader>q :q<CR>
 noremap <leader>x :x<CR>
-
-" fast opening
 nnoremap <leader>o <C-P>
-
-" Fast opening and closing vim
 nnoremap <leader>s <C-Z>
-
-" Fast throwing into the void buffer
 nnoremap <leader>d "_d
-
-" Fast visual mode
-nmap <leader><leader> V
-
-" Fast commenting (From tpope's commentary plugin)
+nmap <leader><leader> 0v$h
 nmap <leader>c gc
-
-" nerdtree toggle
 noremap <silent> <leader>n :NERDTreeToggle<cr>
-let g:NERDTreeWinPos = "right"
 
-" Start interactive EasyAlign in visual mode (e.g. vipga)
 xmap ga <Plug>(EasyAlign)
-
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-" execute stuff
-function! MakeIfAvailable()
-    if filereadable("./makefile")
-        make
-    elseif (&filetype == "cpp")
-        execute("!clang++ -std=c++14" + bufname("%"))
-        execute("!./a.out")
-    elseif (&filetype == "c")
-        execute("!clang -std=c11" + bufname("%"))
-        execute("!./a.out")
-    elseif (&filetype == "tex")
-        execute("!xelatex" + bufname("%"))
-    endif
-endfunction
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Background Code
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup run
     autocmd!
-    autocmd FileType c nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
-    autocmd FileType cpp nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
-    autocmd FileType tex nnoremap <buffer><leader>r :call MakeIfAvailable()<cr>
-    autocmd FileType python nnoremap <buffer><leader>r :exec '!python3' shellescape(@%, 1)<cr>
+    autocmd FileType tex nnoremap <buffer><leader>r :AsyncRun! latexmk<cr>
+    autocmd FileType c nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
+    autocmd FileType cpp nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
+    autocmd FileType python nnoremap <buffer><leader>r :AsyncRun! -raw=1 python %<cr>
     autocmd FileType perl nnoremap <buffer><leader>r :exec '!perl' shellescape(@%, 1)<cr>
     autocmd FileType sh nnoremap <buffer><leader>r :exec '!bash' shellescape(@%, 1)<cr>
     autocmd FileType swift nnoremap <buffer><leader>r :exec '!swift' shellescape(@%, 1)<cr>
     nnoremap <leader>R :!<Up><CR>
 augroup END
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Functions
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    %s/\t/    /e
+    %s/\s\+$//e
+    call winrestview(l:save)
+endfun
+
+function! ExpandSnippetOrCarriageReturn()
+    let snippet = UltiSnips#ExpandSnippetOrJump()
+    if g:ulti_expand_or_jump_res > 0
+        return snippet
+    else
+        return "\<CR>"
+    endif
+endfunction
