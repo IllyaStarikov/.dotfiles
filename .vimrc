@@ -14,6 +14,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
+Plug 'Yggdroot/indentLine'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
@@ -97,6 +98,11 @@ set ignorecase
 
 " Python 3 host
 let g:python3_host_prog = '/usr/local/bin/python3'
+
+set conceallevel=1
+
+let g:indentLine_concealcursor = ''
+let g:indentLine_conceallevel = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
