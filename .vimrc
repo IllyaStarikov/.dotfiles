@@ -38,165 +38,109 @@ call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Sets how many lines of history VIM has to remember
-set history=250
+set history=250                " Sets how many lines of history VIM has to remember
+set so=7                       " Set 7 lines to the cursor - when moving vertically using j/k
+set clipboard=unnamed          " Yank to system clipboard by default
+set backspace=indent,eol,start " Proper backspace
 
-" Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
+set autoread                   " Set to auto read when a file is changed from the outside
 
-" Yank to system clipboard by default
-set clipboard=unnamed
+set expandtab                  " tabs => spaces
+set shiftwidth=4
+set tabstop=4
+set softtabstop=4
 
-" Proper backspace
-set backspace=indent,eol,start
+set smartindent                " autoindent on newlines
+set autoindent                 " copy indentation from previous lines
+set linebreak                  " word wrap like a sane human being
 
-fun! TrimWhitespace()
-    let l:save = winsaveview()
-    %s/\t/    /e
-    %s/\s\+$//e
-    call winrestview(l:save)
-endfun
+set number                     " Show current line number
+set relativenumber             " Relative line numbers yo
+set hlsearch                   " Highlight searches
+
+set nobackup                   " Turn backup off
+set nowb
+set noswapfile
+
+augroup spaces
+    autocmd!
+    autocmd BufWritePre * :call TrimWhitespace()
+
+    " Use tabs in makefiles though..
+    autocmd FileType Makefile set noexpandtab
+augroup END
 
 " Enable mouse support
 if has("mouse")
     set mouse=a
 endif
 
-autocmd BufWritePre * :call TrimWhitespace()
-augroup spaces
-    autocmd!
+" This is needed for.. something
+let g:python3_host_prog = '/usr/local/bin/python3' " Python 3 host
 
-    " Use tabs in makefiles though..
-    autocmd FileType make set noexpandtab
-augroup END
-
-" Set to auto read when a file is changed from the outside
-set autoread
-
-" Tab management
-set shiftwidth=4
-set tabstop=4
-
-set expandtab
-set shiftwidth=4
-set softtabstop=4
-
-set smartindent
-set autoindent
-set linebreak
-
-" Relative line numbers yo
-set nu
-set relativenumber
-
-" Highlight searches
-set hlsearch
-
-" Ignore case in searches
-set ignorecase
-
-" Python 3 host
-let g:python3_host_prog = '/usr/local/bin/python3'
+" NerdTree Stuff
+let g:NERDTreeWinPos = "right"
+let NERDTreeMapOpenInTab = "<CR>"
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enable syntax highlighting
-syntax on
-set re=1
+syntax on                    " Syntax highlighting
+set spell spelllang=en_us    " set english as standard language
+set encoding=utf8            " Set utf8 as standard encoding
 
-" Cursor stuff
-set nocursorcolumn
-set nocursorline
+let g:quantum_black = 1      " These *have* to be above colorscheme
+let g:quantum_italics = 1
+let g:airline_theme = 'quantum'
+colorscheme quantum
 
-set cursorline!
-set guicursor=a:hor20-Cursor
+set nocursorcolumn           " Don't highlight column
+set nocursorline             " I need this for cursorline
+set cursorline!              " Turn on the cursorline
+set guicursor=a:hor20-Cursor " Set it to something reasonable
+set synmaxcol=128            " Don't syntax highlight after the 128th column
 
-" Don't syntax highlight after the 128th column
-" Most for performance
-set synmaxcol=128
+set magic                    " For regular expressions
 
-" except for LaTeX and markdown
+set background=dark          " Dark Background
+set termguicolors            " Nice colors
+set t_Co=256                 " 256 colors for terminal
+
+set ffs=unix,dos,mac         " Use Unix as the standard file type
+
+set wildmenu                 " Use wild-menu
+set wildmode=longest:list,full
+
+set noerrorbells             " no annoying error noises
+set novisualbell
+set t_vb=
+set tm=500
+
+" Syntax highlighting for latex/markdown as infinite
 augroup syntaxmax
     autocmd!
     autocmd FileType tex,latex,markdown set synmaxcol=2048
 augroup END
 
-let g:quantum_black = 1
-let g:quantum_italics = 1
-
-set background=dark
-set termguicolors
-colorscheme quantum
-
-let g:airline_theme = 'quantum'
-
-" Nice colors
-set t_Co=256
-
 if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
 endif
-
-set spell spelllang=en_us
-
-" For regular expressions turn magic on
-set magic
-
-" No annoying sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
-
-" Set utf8 as standard encoding and en_US as the standard language
-set encoding=utf8
-
-" Use Unix as the standard file type
-set ffs=unix,dos,mac
-
-" Use wilmenu
-set wildmenu
-set wildmode=longest:list,full
-
-" Show the cursor's current line
-set number
 
 " if windows gvim, change font
 if has('win32')
     set guifont=Fira\ Mono\ for\ Powerline:h11
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Turn backup off, since most stuff is in SVN, git et.c anyway...
-set nobackup
-set nowb
-set noswapfile
-
-autocmd BufNewFile,BufRead *.tex set syntax=tex
-let g:tex_flavor = "xelatex"
-
-augroup filetype
-    au BufRead,BufNewFile *.flex,*.jflex    set filetype=jflex
-augroup END
-au Syntax jflex    so ~/.vim/syntax/jflex.vim
+let NERDTreeMapOpenInTab='\r'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:completor_python_binary = '/usr/local/bin/python3'
+
 let g:UltiSnipsExpandTrigger = "<nop>"
 let g:ulti_expand_or_jump_res = 0
-
-function! ExpandSnippetOrCarriageReturn()
-    let snippet = UltiSnips#ExpandSnippetOrJump()
-    if g:ulti_expand_or_jump_res > 0
-        return snippet
-    else
-        return "\<CR>"
-    endif
-endfunction
 
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
@@ -276,9 +220,6 @@ vnoremap <Down> gj
 vnoremap <Up> gk
 inoremap <Down> <C-o>gj
 inoremap <Up> <C-o>gk
-
-" I actually like the cursor in middle of the screen at the bottom
-noremap G Gzz
 
 " Because i use word wrap like a sane human
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
