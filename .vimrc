@@ -254,16 +254,27 @@ nmap ga <Plug>(EasyAlign)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Background Code
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function RunCode(runCommand)
+    if filereadable("./makefile")
+        make
+    else
+        :execute 'AsyncRun ' a:runCommand
+    endif
+endfunction
+
 augroup run
     autocmd!
-    autocmd FileType tex nnoremap <buffer><leader>r :AsyncRun! latexmk<cr>
-    autocmd FileType c nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
-    autocmd FileType cpp nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
-    autocmd FileType python nnoremap <buffer><leader>r :AsyncRun! -raw=1 python %<cr>
-    autocmd FileType perl nnoremap <buffer><leader>r :exec '!perl' shellescape(@%, 1)<cr>
-    autocmd FileType sh nnoremap <buffer><leader>r :exec '!bash' shellescape(@%, 1)<cr>
-    autocmd FileType swift nnoremap <buffer><leader>r :exec '!swift' shellescape(@%, 1)<cr>
-    nnoremap <leader>R :!<Up><CR>
+    autocmd QuickFixCmdPost * botright copen 8
+
+    autocmd FileType python nnoremap <buffer><leader>r :call RunCode("python %")<cr>
+    autocmd FileType c      nnoremap <buffer><leader>r :call RunCode("clang *.c -o driver && ./driver")<cr>
+    autocmd FileType cpp    nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -o driver && ./driver")<cr>
+    autocmd FileType tex    nnoremap <buffer><leader>r :call call RunCode("latexmk")<cr>
+    autocmd FileType perl   nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
+    autocmd FileType sh     nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
+    autocmd FileType swift  nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
+
+    nnoremap <leader>R :AsyncRun<Up><CR>
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
