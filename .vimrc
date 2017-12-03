@@ -299,7 +299,7 @@ augroup run
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Functions
+" => 11. Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 fun! TrimWhitespace()
     let l:save = winsaveview()
