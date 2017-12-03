@@ -43,7 +43,7 @@ Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug 'kien/ctrlp.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-Plug 'tyrannicaltoucan/vim-quantum'
+Plug 'dracula/vim'
 
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'SirVer/ultisnips'
@@ -111,10 +111,9 @@ syntax on                    " Syntax highlighting
 set spell spelllang=en_us    " set english as standard language
 set encoding=utf8            " Set utf8 as standard encoding
 
-let g:quantum_black = 1      " These *have* to be above colorscheme
-let g:quantum_italics = 1
-let g:airline_theme = 'quantum'
-colorscheme quantum
+let g:airline_theme = 'dracula'
+let g:dracula_italics = 1
+colorscheme dracula
 
 set nocursorcolumn           " Don't highlight column
 set nocursorline             " I need this for cursorline
@@ -275,7 +274,7 @@ nmap ga <Plug>(EasyAlign)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 10. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function RunCode(runCommand)
+function! RunCode(runCommand)
     if filereadable("./makefile")
         make
     else
@@ -299,14 +298,14 @@ augroup run
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 11. Functions
+" => Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-fun! TrimWhitespace()
+function! TrimWhitespace()
     let l:save = winsaveview()
     %s/\t/    /e
     %s/\s\+$//e
     call winrestview(l:save)
-endfun
+endfunction
 
 function! ExpandSnippetOrCarriageReturn()
     let snippet = UltiSnips#ExpandSnippetOrJump()
