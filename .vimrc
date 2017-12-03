@@ -1,3 +1,24 @@
+"
+" .vimrc
+" .dotfiles
+"
+" Created by Illya Starikov on March 5th, 2017
+" Copyright 2017. Illya Starikov. All rights reserved.
+"
+
+" Table of Contents
+" 1  .................... Plugins
+" 2  .................... General
+" 3  .................... User Interface
+" 4  .................... Autocomplete/Snippets/Linting
+" 5  .................... Airline
+" 6  .................... Skeleton Files
+" 7  .................... LaTeX
+" 8  .................... Key Mappings
+" 9  .................... Leader Key
+" 10 .................... Code Runner
+" 11 .................... Functions
+
 set nocompatible
 set completeopt+=noinsert,noselect
 set completeopt-=preview
@@ -6,7 +27,7 @@ filetype plugin on
 filetype indent on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins
+" => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
@@ -36,7 +57,7 @@ endif
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General
+" => 2. General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set history=250                " Sets how many lines of history VIM has to remember
 set so=7                       " Set 7 lines to the cursor - when moving vertically using j/k
@@ -84,7 +105,7 @@ let NERDTreeMapOpenInTab = "<CR>"
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
+" => 3. User Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax on                    " Syntax highlighting
 set spell spelllang=en_us    " set english as standard language
@@ -135,7 +156,7 @@ endif
 let NERDTreeMapOpenInTab='\r'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Autocomplete/Snippets/Linting
+" => 4. Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:completor_python_binary = '/usr/local/bin/python3'
 
@@ -163,7 +184,7 @@ if v:version >= 800
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Airline
+" => 5. Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
@@ -176,7 +197,7 @@ let g:airline#extensions#ale#enabled = 1
 let g:airline_detect_spell = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Skelton Files
+" => 6. Skeleton Files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
     augroup templates
@@ -189,7 +210,7 @@ if has("autocmd")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LaTeX Stuff
+" => 7. LaTeX
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:livepreview_previewer = 'open -a Skim'
 let g:Tex_CompileRule_pdf = 'xelatex --interaction=nonstopmode $*'
@@ -206,7 +227,7 @@ autocmd BufNewFile,BufRead *.tex set syntax=tex
 let g:tex_flavor = "xelatex"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Key mappings
+" => 8. Key Mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Because I type Wq literally all the time
 :command! W w
@@ -234,7 +255,7 @@ noremap <left> <C-w><left>
 noremap <right> <C-w><right>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Leader Key Shortcuts
+" => 9. Leader Key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = "\<Space>"
 
@@ -252,7 +273,7 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Background Code
+" => 10. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function RunCode(runCommand)
     if filereadable("./makefile")
