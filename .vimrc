@@ -1,3 +1,24 @@
+"
+" .vimrc
+" .dotfiles
+"
+" Created by Illya Starikov on March 5th, 2017
+" Copyright 2017. Illya Starikov. All rights reserved.
+"
+
+" Table of Contents
+" 1  .................... Plugins
+" 2  .................... General
+" 3  .................... User Interface
+" 4  .................... Autocomplete/Snippets/Linting
+" 5  .................... Airline
+" 6  .................... Skeleton Files
+" 7  .................... LaTeX
+" 8  .................... Key Mappings
+" 9  .................... Leader Key
+" 10 .................... Code Runner
+" 11 .................... Functions
+
 set nocompatible
 set completeopt+=noinsert,noselect
 set completeopt-=preview
@@ -6,7 +27,7 @@ filetype plugin on
 filetype indent on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins
+" => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
@@ -23,7 +44,7 @@ Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug 'kien/ctrlp.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-Plug 'tyrannicaltoucan/vim-quantum'
+Plug 'dracula/vim'
 
 Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'SirVer/ultisnips'
@@ -37,7 +58,7 @@ endif
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General
+" => 2. General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set history=250                " Sets how many lines of history VIM has to remember
 set so=7                       " Set 7 lines to the cursor - when moving vertically using j/k
@@ -90,16 +111,15 @@ let g:indentLine_concealcursor = ''
 let g:indentLine_conceallevel = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
+" => 3. User Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax on                    " Syntax highlighting
 set spell spelllang=en_us    " set english as standard language
 set encoding=utf8            " Set utf8 as standard encoding
 
-let g:quantum_black = 1      " These *have* to be above colorscheme
-let g:quantum_italics = 1
-let g:airline_theme = 'quantum'
-colorscheme quantum
+let g:airline_theme = 'dracula'
+let g:dracula_italics = 1
+colorscheme dracula
 
 set nocursorcolumn           " Don't highlight column
 set nocursorline             " I need this for cursorline
@@ -141,7 +161,7 @@ endif
 let NERDTreeMapOpenInTab='\r'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Autocomplete/Snippets/Linting
+" => 4. Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:completor_python_binary = '/usr/local/bin/python3'
 
@@ -169,7 +189,7 @@ if v:version >= 800
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Airline
+" => 5. Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
@@ -182,7 +202,7 @@ let g:airline#extensions#ale#enabled = 1
 let g:airline_detect_spell = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Skelton Files
+" => 6. Skeleton Files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
     augroup templates
@@ -195,7 +215,7 @@ if has("autocmd")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LaTeX Stuff
+" => 7. LaTeX
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:livepreview_previewer = 'open -a Skim'
 let g:Tex_CompileRule_pdf = 'xelatex --interaction=nonstopmode $*'
@@ -212,7 +232,7 @@ autocmd BufNewFile,BufRead *.tex set syntax=tex
 let g:tex_flavor = "xelatex"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Key mappings
+" => 8. Key Mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Because I type Wq literally all the time
 :command! W w
@@ -240,7 +260,7 @@ noremap <left> <C-w><left>
 noremap <right> <C-w><right>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Leader Key Shortcuts
+" => 9. Leader Key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = "\<Space>"
 
@@ -258,29 +278,40 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Background Code
+" => 10. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! RunCode(runCommand)
+    if filereadable("./makefile")
+        make
+    else
+        :execute 'AsyncRun ' a:runCommand
+    endif
+endfunction
+
 augroup run
     autocmd!
-    autocmd FileType tex nnoremap <buffer><leader>r :AsyncRun! latexmk<cr>
-    autocmd FileType c nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
-    autocmd FileType cpp nnoremap <buffer><leader>r :RunBackgroundCommand make<cr>
-    autocmd FileType python nnoremap <buffer><leader>r :AsyncRun! -raw=1 python %<cr>
-    autocmd FileType perl nnoremap <buffer><leader>r :exec '!perl' shellescape(@%, 1)<cr>
-    autocmd FileType sh nnoremap <buffer><leader>r :exec '!bash' shellescape(@%, 1)<cr>
-    autocmd FileType swift nnoremap <buffer><leader>r :exec '!swift' shellescape(@%, 1)<cr>
-    nnoremap <leader>R :!<Up><CR>
+    autocmd QuickFixCmdPost * botright copen 8
+
+    autocmd FileType python nnoremap <buffer><leader>r :call RunCode("python %")<cr>
+    autocmd FileType c      nnoremap <buffer><leader>r :call RunCode("clang *.c -o driver && ./driver")<cr>
+    autocmd FileType cpp    nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -o driver && ./driver")<cr>
+    autocmd FileType tex    nnoremap <buffer><leader>r :call call RunCode("latexmk")<cr>
+    autocmd FileType perl   nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
+    autocmd FileType sh     nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
+    autocmd FileType swift  nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
+
+    nnoremap <leader>R :AsyncRun<Up><CR>
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-fun! TrimWhitespace()
+function! TrimWhitespace()
     let l:save = winsaveview()
     %s/\t/    /e
     %s/\s\+$//e
     call winrestview(l:save)
-endfun
+endfunction
 
 function! ExpandSnippetOrCarriageReturn()
     let snippet = UltiSnips#ExpandSnippetOrJump()
