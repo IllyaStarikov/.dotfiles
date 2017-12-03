@@ -51,6 +51,7 @@ Plug 'SirVer/ultisnips'
 Plug 'IllyaStarikov/vim-snippets'
 
 if v:version >= 800
+    Plug 'skywind3000/asyncrun.vim'
     Plug 'maralla/completor.vim'
     Plug 'w0rp/ale'
 endif
