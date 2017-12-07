@@ -13,11 +13,10 @@
 " 4  .................... Autocomplete/Snippets/Linting
 " 5  .................... Airline
 " 6  .................... Skeleton Files
-" 7  .................... LaTeX
-" 8  .................... Key Mappings
-" 9  .................... Leader Key
-" 10 .................... Code Runner
-" 11 .................... Functions
+" 7  .................... Key Mappings
+" 8  .................... Leader Key
+" 9  .................... Code Runner
+" 10 .................... Functions
 
 set nocompatible
 set completeopt+=noinsert,noselect
@@ -46,7 +45,6 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 Plug 'dracula/vim'
 
-Plug 'lervag/vimtex', { 'for': 'tex' }
 Plug 'SirVer/ultisnips'
 Plug 'IllyaStarikov/vim-snippets'
 
@@ -167,8 +165,6 @@ let NERDTreeMapOpenInTab='\r'
 let g:completor_python_binary = '/usr/local/bin/python3'
 
 let g:UltiSnipsExpandTrigger = "<nop>"
-let g:ulti_expand_or_jump_res = 0
-
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
@@ -180,8 +176,11 @@ if v:version >= 800
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
     let g:ale_linters = {
-    \   'tex': ['chktex --nwarn 24'],
+    \   'tex': ['chktex'],
     \}
+
+    let g:ale_vim_chktex_options = "--nwarn 24"
+    let g:ale_python_flake8_options = "--max-line-length=200"
 
     let g:ale_echo_msg_error_str = 'E'
     let g:ale_echo_msg_warning_str = 'W'
@@ -216,24 +215,7 @@ if has("autocmd")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 7. LaTeX
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:livepreview_previewer = 'open -a Skim'
-let g:Tex_CompileRule_pdf = 'xelatex --interaction=nonstopmode $*'
-
-set grepprg=grep\ -nH\ $*
-let g:vimtex_enabled = 1
-let g:vimtex_complete_close_braces = 1
-let g:vimtex_fold_comments = 1
-
-let g:vimtex_disable_version_warning = 1
-let g:vimtex_compiler_latexmk = {'callback' : 0}
-
-autocmd BufNewFile,BufRead *.tex set syntax=tex
-let g:tex_flavor = "xelatex"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 8. Key Mappings
+" => 7. Key Mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Because I type Wq literally all the time
 :command! W w
@@ -261,7 +243,7 @@ noremap <left> <C-w><left>
 noremap <right> <C-w><right>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 9. Leader Key
+" => 8. Leader Key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = "\<Space>"
 
@@ -279,11 +261,12 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 10. Code Runner
+" => 9. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! RunCode(runCommand)
+
     if filereadable("./makefile")
-        make
+        :execute 'AsyncRun make'
     else
         :execute 'AsyncRun ' a:runCommand
     endif
@@ -291,21 +274,24 @@ endfunction
 
 augroup run
     autocmd!
-    autocmd QuickFixCmdPost * botright copen 8
+    let windowopen = 1
+    autocmd FileType tex let windowopen = 0
+    autocmd QuickFixCmdPost * call asyncrun#quickfix_toggle(8, windowopen)
 
-    autocmd FileType python nnoremap <buffer><leader>r :call RunCode("python %")<cr>
-    autocmd FileType c      nnoremap <buffer><leader>r :call RunCode("clang *.c -o driver && ./driver")<cr>
-    autocmd FileType cpp    nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -o driver && ./driver")<cr>
-    autocmd FileType tex    nnoremap <buffer><leader>r :call call RunCode("latexmk")<cr>
-    autocmd FileType perl   nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
-    autocmd FileType sh     nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
-    autocmd FileType swift  nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
+    autocmd FileType python   nnoremap <buffer><leader>r :call RunCode("python3 %")<cr>
+    autocmd FileType c        nnoremap <buffer><leader>r :call RunCode("clang *.c -o driver && ./driver")<cr>
+    autocmd FileType cpp      nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -o driver && ./driver")<cr>
+    autocmd FileType tex      nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
+    autocmd FileType plaintex nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
+    autocmd FileType perl     nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
+    autocmd FileType sh       nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
+    autocmd FileType swift    nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
 
     nnoremap <leader>R :AsyncRun<Up><CR>
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Functions
+" => 10. Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! TrimWhitespace()
     let l:save = winsaveview()
