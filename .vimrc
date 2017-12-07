@@ -88,7 +88,7 @@ augroup spaces
     autocmd BufWritePre * :call TrimWhitespace()
 
     " Use tabs in makefiles though..
-    autocmd FileType Makefile set noexpandtab
+    autocmd FileType make set noexpandtab
 augroup END
 
 " Enable mouse support
@@ -104,21 +104,27 @@ let g:NERDTreeWinPos = "right"
 let NERDTreeMapOpenInTab = "<CR>"
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-set conceallevel=1
+set conceallevel=0
 
 let g:indentLine_concealcursor = ''
-let g:indentLine_conceallevel = 1
+let g:indentLine_conceallevel = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax on                    " Syntax highlighting
+syntax enable
 set spell spelllang=en_us    " set english as standard language
 set encoding=utf8            " Set utf8 as standard encoding
 
-let g:airline_theme = 'dracula'
-let g:dracula_italics = 1
+set t_Co=256                 " 256 colors for terminal
+set termguicolors
+set background=dark
+
 colorscheme dracula
+let g:airline_theme = 'dracula'
+hi SpellBad cterm=bold,underline
+let g:dracula_italics = 1
 
 set nocursorcolumn           " Don't highlight column
 set nocursorline             " I need this for cursorline
@@ -127,10 +133,6 @@ set guicursor=a:hor20-Cursor " Set it to something reasonable
 set synmaxcol=128            " Don't syntax highlight after the 128th column
 
 set magic                    " For regular expressions
-
-set background=dark          " Dark Background
-set termguicolors            " Nice colors
-set t_Co=256                 " 256 colors for terminal
 
 set ffs=unix,dos,mac         " Use Unix as the standard file type
 
@@ -148,9 +150,6 @@ augroup syntaxmax
     autocmd FileType tex,latex,markdown set synmaxcol=2048
 augroup END
 
-if filereadable(expand("~/.vimrc_background"))
-    let base16colorspace=256
-endif
 
 " if windows gvim, change font
 if has('win32')
