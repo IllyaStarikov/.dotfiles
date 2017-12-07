@@ -34,7 +34,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
-Plug 'Yggdroot/indentLine'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
@@ -104,10 +103,6 @@ let g:NERDTreeWinPos = "right"
 let NERDTreeMapOpenInTab = "<CR>"
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-set conceallevel=0
-
-let g:indentLine_concealcursor = ''
-let g:indentLine_conceallevel = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
@@ -157,6 +152,9 @@ if has('win32')
 endif
 
 let NERDTreeMapOpenInTab='\r'
+
+set list
+set listchars=tab:␉·,trail:␠,nbsp:⎵
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 4. Autocomplete/Snippets/Linting
