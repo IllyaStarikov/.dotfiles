@@ -277,14 +277,14 @@ augroup run
 
     autocmd FileType python   nnoremap <buffer><leader>r :call RunCode("python3 %")<cr>
     autocmd FileType c        nnoremap <buffer><leader>r :call RunCode("clang *.c -o driver && ./driver")<cr>
-    autocmd FileType cpp      nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -o driver && ./driver")<cr>
+    autocmd FileType cpp      nnoremap <buffer><leader>r :call RunCode("clang++ *.cpp -std=c++14 -o driver && ./driver")<cr>
     autocmd FileType tex      nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
     autocmd FileType plaintex nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
     autocmd FileType perl     nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
     autocmd FileType sh       nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
     autocmd FileType swift    nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
 
-    nnoremap <leader>R :AsyncRun<Up><CR>
+    nnoremap <leader>R :Async<Up><CR>
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
