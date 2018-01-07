@@ -244,12 +244,12 @@ noremap <right> <C-w><right>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let mapleader = "\<Space>"
 
-nnoremap <leader>w :w<CR>
-noremap <leader>q :q<CR>
-noremap <leader>x :x<CR>
-nnoremap <leader>o <C-P>
+nnoremap <leader>w :w<cr>
+noremap <leader>q :q<cr>
+noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
+nnoremap <leader>p :CtrlP<cr>
 nmap <leader><leader> 0v$h
 nmap <leader>c gc
 noremap <silent> <leader>n :NERDTreeToggle<cr>
@@ -305,3 +305,5 @@ function! ExpandSnippetOrCarriageReturn()
         return "\<CR>"
     endif
 endfunction
+
+
