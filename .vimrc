@@ -87,6 +87,7 @@ augroup spaces
     autocmd BufWritePre * :call TrimWhitespace()
 
     " Use tabs in makefiles though..
+    autocmd!
     autocmd FileType make set noexpandtab
 augroup END
 
@@ -261,8 +262,7 @@ nmap ga <Plug>(EasyAlign)
 " => 9. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! RunCode(runCommand)
-
-    if filereadable("./makefile")
+    if filereadable("makefile") || filereadable("Makefile")
         :execute 'AsyncRun make'
     else
         :execute 'AsyncRun ' a:runCommand
