@@ -155,7 +155,8 @@ endif
 let NERDTreeMapOpenInTab='\r'
 
 set list
-set listchars=tab:␉·,trail:␠,nbsp:⎵
+set showbreak=↪\ 
+set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 4. Autocomplete/Snippets/Linting
