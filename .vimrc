@@ -82,13 +82,12 @@ set nobackup                   " Turn backup off
 set nowb
 set noswapfile
 
-augroup spaces
+augroup makefiles
     autocmd!
-    autocmd BufWritePre * :call TrimWhitespace()
+    autocmd FileType make,makefile set noexpandtab
 
-    " Use tabs in makefiles though..
-    autocmd!
-    autocmd FileType make set noexpandtab
+    let blacklist = ['make', 'makefile']
+    autocmd BufWritePre * if index(blacklist, &ft) < 0 | :call TrimWhitespace()
 augroup END
 
 " Enable mouse support
