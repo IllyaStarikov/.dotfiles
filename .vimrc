@@ -272,7 +272,7 @@ endfunction
 augroup run
     autocmd!
     let windowopen = 1
-    autocmd FileType tex let windowopen = 0
+    autocmd FileType tex,plaintex let windowopen = 0
     autocmd QuickFixCmdPost * call asyncrun#quickfix_toggle(8, windowopen)
 
     autocmd FileType python   nnoremap <buffer><leader>r :call RunCode("python3 %")<cr>
