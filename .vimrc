@@ -82,6 +82,8 @@ set nobackup                   " Turn backup off
 set nowb
 set noswapfile
 
+let g:tex_flavor = "latex"
+
 augroup makefiles
     autocmd!
     autocmd FileType make,makefile set noexpandtab
@@ -140,9 +142,12 @@ set t_vb=
 set tm=500
 
 " Syntax highlighting for latex/markdown as infinite
-augroup syntaxmax
+augroup syntax
     autocmd!
     autocmd FileType tex,latex,markdown set synmaxcol=2048
+
+    autocmd!
+    autocmd BufNewFile,BufRead *.tex set syntax=tex
 augroup END
 
 
