@@ -37,13 +37,20 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 [[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
 
 # Aliases
+alias vim="vim -O"
+alias vi="vim -O"
 alias python="python3"
 alias ipython="python3 -m IPython"
 alias pip="python3 -m pip"
+
+alias haskell="ghci"
+alias haskellcc="ghc"
+
 alias diff="colordiff"
 alias grep="grep --color=auto -E"
-alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias reset="source ~/.zshrc && reset"
+
+alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 ## Because I need to get in the habit of not rming
@@ -82,6 +89,3 @@ bindkey "^[[B" history-substring-search-down
 
 # map delete line (iTerm thing)
 bindkey "^X\x7f" backward-kill-line
-
-# For Syntax Highlighting
-source /Users/Illya/.zsh_custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
