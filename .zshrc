@@ -1,7 +1,7 @@
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-source "/Users/Illya/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
+source "/Users/starboy/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
 ZSH_THEME="spaceship"
 SPACESHIP_VI_MODE_INSERT="[λ]"
 SPACESHIP_VI_MODE_NORMAL="[µ]"
@@ -28,8 +28,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Change the command execution time
 HIST_STAMPS="mm/dd/yyyy"
 
+export ZSH=/Users/starboy/.oh-my-zsh
 source $ZSH/oh-my-zsh.sh
-export ZSH=/home/Illya/.oh-my-zsh
 
 BASE16_SCHEME="default"
 BASE16_BACKGROUND="dark"
