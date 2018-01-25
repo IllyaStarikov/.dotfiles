@@ -65,7 +65,7 @@ alias .5="cd ../../../../.."
 alias ip="curl icanhazip.com"
 
 ## list TODO/FIX lines from the current project
-alias todos="ack -n --nogroup '(TODO|FIX(ME)?):'"
+alias todos="ack -n --nogroup '(TODO|FIX(ME)?|NOTE|HACK)'"
 
 ## disk stuff...
 alias df='df -H'
