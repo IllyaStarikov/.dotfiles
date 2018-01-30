@@ -51,6 +51,8 @@ if v:version >= 800
     Plug 'skywind3000/asyncrun.vim'
     Plug 'maralla/completor.vim'
     Plug 'w0rp/ale'
+
+    Plug 'Rip-Rip/clang_complete', { 'for': ['cpp'] }
 endif
 
 call plug#end()
@@ -146,7 +148,6 @@ augroup syntax
     autocmd!
     autocmd FileType tex,latex,markdown set synmaxcol=2048
 
-    autocmd!
     autocmd BufNewFile,BufRead *.tex set syntax=tex
 augroup END
 
@@ -178,9 +179,11 @@ if v:version >= 800
     inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
+    let g:clang_library_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/"
+
     let g:ale_linters = {
-    \   'tex': ['chktex'],
-    \}
+                \   'tex': ['chktex'],
+                \}
 
     let g:ale_vim_chktex_options = "--nwarn 24"
     let g:ale_python_flake8_options = "--max-line-length=200"
