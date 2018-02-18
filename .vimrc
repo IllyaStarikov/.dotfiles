@@ -179,14 +179,17 @@ if v:version >= 800
     inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-    let g:clang_library_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/"
-
     let g:ale_linters = {
                 \   'tex': ['chktex'],
+                \   'cpp': ['g++']
                 \}
 
     let g:ale_vim_chktex_options = "--nwarn 24"
     let g:ale_python_flake8_options = "--max-line-length=200"
+
+    let g:ale_cpp_gcc_executable = 'g++-7'
+    let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
+    let g:clang_library_path ='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib'
 
     let g:ale_echo_msg_error_str = 'E'
     let g:ale_echo_msg_warning_str = 'W'
