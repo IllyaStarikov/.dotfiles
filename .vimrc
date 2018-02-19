@@ -258,6 +258,7 @@ noremap <leader>q :q<cr>
 noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
+noremap <leader>m `
 nnoremap <leader>p :CtrlP<cr>
 nmap <leader><leader> 0v$h
 nmap <leader>c gc
@@ -313,5 +314,3 @@ function! ExpandSnippetOrCarriageReturn()
         return "\<CR>"
     endif
 endfunction
-
-
