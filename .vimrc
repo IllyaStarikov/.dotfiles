@@ -293,11 +293,6 @@ noremap <leader>c :bd<cr>
 noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
-nnoremap <leader>a <Plug>(EasyAlign)
-
-nmap <leader>c :bd<cr>
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>f :Files<cr>
 noremap <silent> <leader>n :NERDTreeToggle<cr>
 
 nmap <leader><leader> 0v$h
@@ -390,4 +385,3 @@ function! ExpandSnippetOrCarriageReturn()
         return "\<CR>"
     endif
 endfunction
-
