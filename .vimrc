@@ -16,7 +16,8 @@
 " 7  .................... Key Mappings
 " 8  .................... Leader Key
 " 9  .................... Code Runner
-" 10 .................... Functions
+" 10 .................... FZF
+" 11 .................... Functions
 
 set nocompatible
 set completeopt+=noinsert,noselect
@@ -34,26 +35,37 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
+Plug 'airblade/vim-gitgutter'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
 
-Plug 'keith/swift.vim', { 'for': ['Swift'] }
-Plug 'kien/ctrlp.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-Plug 'dracula/vim'
+
+Plug 'keith/swift.vim', { 'for': ['Swift'] }
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
+
+Plug 'joshdick/onedark.vim'
 
 Plug 'SirVer/ultisnips'
 Plug 'IllyaStarikov/vim-snippets'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'w0rp/ale'
 
-if v:version >= 800
-    Plug 'skywind3000/asyncrun.vim'
-    Plug 'maralla/completor.vim'
-    Plug 'w0rp/ale'
-
-    Plug 'Rip-Rip/clang_complete', { 'for': ['cpp'] }
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'zchee/deoplete-clang'
+else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
 endif
+
+Plug 'justinmk/vim-syntax-extra'
+
+let g:deoplete#enable_at_startup = 1
 
 call plug#end()
 
@@ -120,16 +132,14 @@ set t_Co=256                 " 256 colors for terminal
 set termguicolors
 set background=dark
 
-colorscheme dracula
-let g:airline_theme = 'dracula'
-hi SpellBad cterm=bold,underline
-let g:dracula_italics = 1
+colorscheme onedark
+let g:airline_theme = 'onedark'
+let g:onedark_terminal_italics = 1
 
-set nocursorcolumn           " Don't highlight column
-set nocursorline             " I need this for cursorline
 set cursorline!              " Turn on the cursorline
-set guicursor=a:hor20-Cursor " Set it to something reasonable
-set synmaxcol=128            " Don't syntax highlight after the 128th column
+set autochdir
+set guicursor=
+set synmaxcol=200            " Don't syntax highlight after the 128th column
 
 set magic                    " For regular expressions
 
@@ -155,6 +165,8 @@ augroup END
 " if windows gvim, change font
 if has('win32')
     set guifont=Fira\ Mono\ for\ Powerline:h11
+else
+    " set guifont=SF\ Mono\ Regular\ Nerd\ Font\ Complete:h14
 endif
 
 let NERDTreeMapOpenInTab='\r'
@@ -166,8 +178,6 @@ set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 4. Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:completor_python_binary = '/usr/local/bin/python3'
-
 let g:UltiSnipsExpandTrigger = "<nop>"
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
@@ -175,41 +185,52 @@ let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 set shortmess+=c
 
-if v:version >= 800
-    inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-    let g:ale_linters = {
-                \   'tex': ['chktex'],
-                \   'cpp': ['g++']
-                \}
+let g:ale_linters = {
+            \   'tex': ['chktex'],
+            \   'cpp': ['g++']
+            \}
 
-    let g:ale_vim_chktex_options = "--nwarn 24"
-    let g:ale_python_flake8_options = "--max-line-length=200"
+" let g:ale_sign_error = '‼️'
+" let g:ale_sign_warning = '❕'
 
-    let g:ale_cpp_gcc_executable = 'g++-7'
-    let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
-    let g:clang_library_path ='/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib'
+let g:ale_vim_chktex_options = "--nwarn 24"
+let g:ale_python_flake8_options = "--max-line-length=200"
 
-    let g:ale_echo_msg_error_str = 'E'
-    let g:ale_echo_msg_warning_str = 'W'
-    let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-    let g:ale_lint_delay = 500
-endif
+let g:ale_cpp_gcc_executable = 'g++-7'
+let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
+
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_lint_delay = 500
+
+let g:deoplete#sources#clang#libclang_path = '/usr/local/Cellar/llvm/5.0.1/lib/libclang.dylib'
+let g:deoplete#sources#clang#clang_header = '/usr/local/Cellar/llvm/5.0.1/lib/clang/5.0.1/include/'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline_powerline_fonts = 1
+
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
+
 let g:airline#extensions#whitespace#enabled = 0
+
+" lazy drawing
 set lazyredraw
+set ttyfast
+
 let g:airline_symbols_ascii = 1
 let g:airline#extensions#ale#enabled = 1
 let g:airline_detect_spell = 0
-
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline#extensions#tabline#tab_nr_type = 2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 6. Skeleton Files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -251,6 +272,16 @@ noremap <down> <C-w><down>
 noremap <left> <C-w><left>
 noremap <right> <C-w><right>
 
+" Buffers
+nnoremap <Tab> :bnext<cr>
+nnoremap <S-Tab> :bprevious<cr>
+
+" ALE Errors
+nmap <silent> [W <Plug>(ale_first)
+nmap <silent> [w <Plug>(ale_previous)
+nmap <silent> ]w <Plug>(ale_next)
+nmap <silent> ]W <Plug>(ale_last)
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 8. Leader Key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -258,16 +289,24 @@ let mapleader = "\<Space>"
 
 nnoremap <leader>w :w<cr>
 noremap <leader>q :q<cr>
+noremap <leader>c :bd<cr>
 noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
-nnoremap <leader>p :CtrlP<cr>
-nmap <leader><leader> 0v$h
-nmap <leader>c gc
+nnoremap <leader>a <Plug>(EasyAlign)
+
+nmap <leader>c :bd<cr>
+nnoremap <leader>b :Buffers<cr>
+nnoremap <leader>f :Files<cr>
 noremap <silent> <leader>n :NERDTreeToggle<cr>
 
-xmap ga <Plug>(EasyAlign)
+nmap <leader><leader> 0v$h
 nmap ga <Plug>(EasyAlign)
+
+if has("nvim")
+    nnoremap <leader>t :terminal<cr> " fast opening of terminal
+    tnoremap <Esc> <C-\><C-n> " fast entering normal mode in terminal
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 9. Code Runner
@@ -299,7 +338,42 @@ augroup run
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 10. Functions
+" => 10. FZF
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" This is the default extra key bindings
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" Default fzf layout
+" - down / up / left / right
+let g:fzf_layout = { 'down': '~40%' }
+
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" Enable per-command history.
+" CTRL-N and CTRL-P will be automatically bound to next-history and
+" previous-history instead of down and up. If you don't like the change,
+" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => 11. Functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! TrimWhitespace()
     let l:save = winsaveview()
@@ -316,5 +390,4 @@ function! ExpandSnippetOrCarriageReturn()
         return "\<CR>"
     endif
 endfunction
-
 
