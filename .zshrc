@@ -37,7 +37,6 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 [[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
 
 # Aliases
-alias ls="ls -thor" # calling on the power of the gods
 alias vim="vim -O"
 alias vi="vim -O"
 alias python="python3"
