@@ -42,7 +42,6 @@ Plug 'wellle/targets.vim'
 
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
-
 Plug 'keith/swift.vim', { 'for': ['Swift'] }
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
@@ -58,7 +57,6 @@ if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'zchee/deoplete-clang'
 else
-    Plug 'Shougo/deoplete.nvim'
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
 endif
@@ -193,8 +191,8 @@ let g:ale_linters = {
             \   'cpp': ['g++']
             \}
 
-" let g:ale_sign_error = '‼️'
-" let g:ale_sign_warning = '❕'
+let g:ale_sign_error = '‼️'
+let g:ale_sign_warning = '❕'
 
 let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
@@ -293,7 +291,10 @@ noremap <leader>c :bd<cr>
 noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
+
 noremap <silent> <leader>n :NERDTreeToggle<cr>
+noremap <leader>f :Files<cr>
+noremap <leader>b :Buffers<cr>
 
 nmap <leader><leader> 0v$h
 nmap ga <Plug>(EasyAlign)
