@@ -30,38 +30,35 @@ filetype indent on
 " => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
+Plug 'joshdick/onedark.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
 Plug 'airblade/vim-gitgutter'
+Plug 'justinmk/vim-syntax-extra'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
+Plug 'ludovicchabant/vim-gutentags'
 
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-
-Plug 'keith/swift.vim', { 'for': ['Swift'] }
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
-
-Plug 'joshdick/onedark.vim'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'zchee/deoplete-clang'
 
 Plug 'SirVer/ultisnips'
 Plug 'IllyaStarikov/vim-snippets'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'w0rp/ale'
 
-if has('nvim')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'zchee/deoplete-clang'
+if has('macunix')
+    Plug '/usr/local/opt/fzf'
+    Plug 'junegunn/fzf.vim'
 else
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
+    Plug '~/.fzf'
+    Plug 'junegunn/fzf.vim'
 endif
-
-Plug 'justinmk/vim-syntax-extra'
 
 let g:deoplete#enable_at_startup = 1
 
