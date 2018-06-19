@@ -206,8 +206,15 @@ let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_lint_delay = 500
 
-let g:deoplete#sources#clang#libclang_path = '/usr/local/Cellar/llvm/5.0.1/lib/libclang.dylib'
-let g:deoplete#sources#clang#clang_header = '/usr/local/Cellar/llvm/5.0.1/lib/clang/5.0.1/include/'
+if has('macunix')
+    let g:deoplete#sources#clang#libclang_path = '/usr/local/Cellar/llvm/5.0.1/lib/libclang.dylib'
+    let g:deoplete#sources#clang#clang_header = '/usr/local/Cellar/llvm/5.0.1/lib/clang/5.0.1/include/'
+else
+    let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.4/lib/libclang.so.1'
+    let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.4/include'
+endif
+
+let g:deoplete#enable_at_startup = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline
