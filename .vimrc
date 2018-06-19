@@ -106,8 +106,12 @@ if has("mouse")
     set mouse=a
 endif
 
-" This is needed for.. something
-let g:python3_host_prog = '/usr/local/bin/python3' " Python 3 host
+" For deoplete
+if has('macunix')
+    let g:python3_host_prog = '/usr/local/bin/python3'
+else
+    let g:python3_host_prog = '/usr/bin/python3'
+endif
 
 " NerdTree Stuff
 let g:NERDTreeWinPos = "right"
