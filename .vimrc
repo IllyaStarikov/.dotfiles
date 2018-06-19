@@ -60,7 +60,6 @@ else
     Plug 'junegunn/fzf.vim'
 endif
 
-let g:deoplete#enable_at_startup = 1
 
 call plug#end()
 
@@ -307,10 +306,8 @@ noremap <leader>b :Buffers<cr>
 nmap <leader><leader> 0v$h
 nmap ga <Plug>(EasyAlign)
 
-if has("nvim")
-    nnoremap <leader>t :terminal<cr> " fast opening of terminal
-    tnoremap <Esc> <C-\><C-n> " fast entering normal mode in terminal
-endif
+nnoremap <leader>t :terminal<cr> " fast opening of terminal
+tnoremap <Esc> <C-\><C-n> " fast entering normal mode in terminal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 9. Code Runner
