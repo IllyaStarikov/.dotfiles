@@ -26,6 +26,8 @@ set completeopt-=preview
 filetype plugin on
 filetype indent on
 
+let g:vimrc_type = 'personal' " options are: garmin / personal
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -48,9 +50,14 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'zchee/deoplete-clang'
 
 Plug 'SirVer/ultisnips'
-Plug 'IllyaStarikov/vim-snippets'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'w0rp/ale'
+
+if g:vimrc_type == 'garmin'
+    Plug '~/.vim/plugged/garmin-snippets'
+elseif g:vimrc_type == 'personal'
+    Plug 'IllyaStarikov/vim-snippets'
+endif
 
 if has('macunix')
     Plug '/usr/local/opt/fzf'
