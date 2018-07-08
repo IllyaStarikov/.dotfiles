@@ -40,14 +40,18 @@ Plug 'tpope/vim-surround'
 Plug 'junegunn/vim-easy-align'
 Plug 'airblade/vim-gitgutter'
 Plug 'justinmk/vim-syntax-extra'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
 Plug 'ludovicchabant/vim-gutentags'
 
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'zchee/deoplete-clang'
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'zchee/deoplete-clang'
+else
+    Plug 'maralla/completor.vim'
+endif
 
 Plug 'SirVer/ultisnips'
 Plug 'skywind3000/asyncrun.vim'
