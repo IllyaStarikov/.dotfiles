@@ -32,7 +32,7 @@ let g:vimrc_type = 'personal' " options are: garmin / personal
 " => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
-Plug 'joshdick/onedark.vim'
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
@@ -138,12 +138,12 @@ set spell spelllang=en_us    " set english as standard language
 set encoding=utf8            " Set utf8 as standard encoding
 
 set t_Co=256                 " 256 colors for terminal
-set termguicolors
+" set termguicolors
 set background=dark
 
-colorscheme onedark
-let g:airline_theme = 'onedark'
-let g:onedark_terminal_italics = 1
+colorscheme dracula
+let g:airline_theme = 'dracula'
+let g:dracula_italic = 1
 
 set cursorline!              " Turn on the cursorline
 set autochdir
