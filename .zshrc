@@ -1,17 +1,17 @@
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-source "/Users/starboy/.oh-my-zsh/custom/themes/spaceship.zsh-theme"
+# ZSH_THEME="spaceship"
 ZSH_THEME="spaceship"
 SPACESHIP_VI_MODE_INSERT="[λ]"
 SPACESHIP_VI_MODE_NORMAL="[µ]"
 SPACESHIP_BATTERY_SHOW=false
 
-# Whiddch plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(vi-mode git brew history-substring-search python osx)
+plugins=(vi-mode zsh-256color git brew history-substring-search python osx)
 
 # Faster Vim Mode
 export KEYTIMEOUT=1
@@ -37,8 +37,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 [[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
 
 # Aliases
-alias vim="vim -O"
-alias vi="vim -O"
+alias vim="nvim -O"
+alias vi="nvim -O"
+alias tmux="TERM=xterm-256color tmux"
 alias python="python3"
 alias ipython="python3 -m IPython"
 alias pip="python3 -m pip"
@@ -85,3 +86,9 @@ bindkey "^[[B" history-substring-search-down
 
 # map delete line (iTerm thing)
 bindkey "^X\x7f" backward-kill-line
+
+# Add colors to Terminal
+export CLICOLOR=1
+export LSCOLORS=GxFxCxDxBxegedabagaced
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
