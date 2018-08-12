@@ -53,10 +53,6 @@ alias reset="source ~/.zshrc && reset"
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
-## Because I need to get in the habit of not rming
-alias del="rmtrash"
-alias rm="echo Use 'del', or the full path i.e. '/bin/rm'"
-
 ## get rid of command not found
 alias cd..="cd .."
 
