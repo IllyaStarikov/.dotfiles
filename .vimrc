@@ -44,6 +44,8 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
+
+Plug 'majutsushi/tagbar'
 Plug 'ludovicchabant/vim-gutentags'
 
 if has('nvim')
@@ -310,11 +312,13 @@ noremap <leader>x :x<cr>
 nnoremap <leader>s <C-Z>
 nnoremap <leader>d "_d
 
+
 noremap <silent> <leader>n :NERDTreeToggle<cr>
 noremap <leader>f :Files<cr>
 noremap <leader>b :Buffers<cr>
-
+noremap <leader>T :Tagbar<cr>
 nmap <leader><leader> 0v$h
+
 nmap ga <Plug>(EasyAlign)
 
 nnoremap <leader>t :terminal<cr> " fast opening of terminal
