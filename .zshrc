@@ -28,7 +28,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Change the command execution time
 HIST_STAMPS="mm/dd/yyyy"
 
-export ZSH=/Users/starboy/.oh-my-zsh
+export ZSH=/home/starikov/.oh-my-zsh
+export ZSH_CUSTOM=/home/starikov/.oh-my-zsh/custom/
 source $ZSH/oh-my-zsh.sh
 
 BASE16_SCHEME="default"
@@ -48,7 +49,7 @@ alias haskell="ghci"
 alias haskellcc="ghc"
 
 alias diff="colordiff"
-alias grep="grep --color=auto -E"
+alias grep="grep --color=always -E"
 alias reset="source ~/.zshrc && reset"
 
 alias pandoc="pandoc --smart --normalize --wrap=none --listings"
@@ -90,5 +91,8 @@ bindkey "^X\x7f" backward-kill-line
 # Add colors to Terminal
 export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
+
+export EDITOR=nvim
+export VISUAL=nvim
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
