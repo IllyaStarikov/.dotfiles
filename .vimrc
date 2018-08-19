@@ -148,7 +148,6 @@ let g:airline_theme = 'dracula'
 let g:dracula_italic = 1
 
 set cursorline!              " Turn on the cursorline
-set autochdir
 set guicursor=
 set synmaxcol=200            " Don't syntax highlight after the 128th column
 
