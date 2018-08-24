@@ -47,6 +47,7 @@ Plug 'wellle/targets.vim'
 
 Plug 'majutsushi/tagbar'
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -139,11 +140,12 @@ syntax enable
 set spell spelllang=en_us    " set english as standard language
 set encoding=utf8            " Set utf8 as standard encoding
 
-set t_Co=256                 " 256 colors for terminal
-" set termguicolors
-set background=dark
+" set t_Co=256                 " 256 colors for terminal
+" set t_ut=
 
 colorscheme dracula
+set background=dark
+
 let g:airline_theme = 'dracula'
 let g:dracula_italic = 1
 
@@ -203,11 +205,12 @@ let g:ale_linters = {
             \   'cpp': ['g++']
             \}
 
-let g:ale_sign_error = '‼️'
-let g:ale_sign_warning = '❕'
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '>'
 
 let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
+let g:ale_python_pylint_options = "--max-line-length=200 --disable=W0141"
 
 let g:ale_cpp_gcc_executable = 'g++-7'
 let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
@@ -319,9 +322,11 @@ noremap <leader>T :Tagbar<cr>
 nmap <leader><leader> 0v$h
 
 nmap ga <Plug>(EasyAlign)
+nnoremap <Leader>p :let @+=expand('%:p')<CR>
 
 nnoremap <leader>t :terminal<cr> " fast opening of terminal
 tnoremap <Esc> <C-\><C-n> " fast entering normal mode in terminal
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 9. Code Runner
