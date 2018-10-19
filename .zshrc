@@ -40,6 +40,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 # Aliases
 alias vim="nvim -O"
 alias vi="nvim -O"
+alias ranger="source ranger"
 alias python="python3"
 alias ipython="python3 -m IPython"
 alias pip="python3 -m pip"
