@@ -284,7 +284,7 @@ bind C-a send-prefix
 set -g status-position top
 
 # Use 256 Colors
-set -g default-terminal "screen-256color"
+set -g default-terminal "tmux-256color"
 
 # User sane splits.. | and -
 bind | split-window -h
