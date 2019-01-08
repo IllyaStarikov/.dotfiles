@@ -124,6 +124,8 @@ endif
 " For deoplete
 if has('macunix')
     let g:python3_host_prog = '/usr/local/bin/python3'
+elseif has('win32')
+    " No idea why, but don't do anything here
 else
     let g:python3_host_prog = '/usr/bin/python3'
 endif
@@ -178,7 +180,9 @@ augroup END
 
 " if windows gvim, change font
 if has('win32')
-    set guifont=Fira\ Mono\ for\ Powerline:h11
+    sleep 100m
+    set guifont="SF Mono:h10"
+    call GuiFont("SF Mono:h10")
 else
     " set guifont=SF\ Mono\ Regular\ Nerd\ Font\ Complete:h14
 endif
@@ -212,7 +216,7 @@ let g:ale_sign_warning = '>'
 
 let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
-let g:ale_python_pylint_options = "--max-line-length=200 --disable=W0141"
+let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
 
 let g:ale_cpp_gcc_executable = 'g++-7'
 let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
