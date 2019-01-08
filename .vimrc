@@ -135,6 +135,13 @@ let g:NERDTreeWinPos = "right"
 let NERDTreeMapOpenInTab = "<CR>"
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+" Grep Stuff
+let grepper = {
+    \ 'grep': {
+    \     'grepprg': 'grep -R --exclude=\*.{o,exe,out,dll,obj} --exclude-dir=bin $* .'
+    \ }
+\ }
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
@@ -328,7 +335,7 @@ noremap <silent> <leader>n :NERDTreeToggle<cr>
 noremap <leader>f :Files<cr>
 noremap <leader>b :Buffers<cr>
 noremap <leader>T :Tagbar<cr>
-noremap <leader>g :Grepper
+noremap <leader>g :Grepper -tool grep<cr>
 nmap <leader><leader> v$h
 
 nmap ga <Plug>(EasyAlign)
