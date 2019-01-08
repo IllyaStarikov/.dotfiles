@@ -138,7 +138,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " Grep Stuff
 let grepper = {
     \ 'grep': {
-    \     'grepprg': 'grep -R --exclude=\*.{o,exe,out,dll,obj} --exclude-dir=bin $* .'
+    \     'grepprg': 'grep -Rn --color --exclude=\*.{o,exe,out,dll,obj} --exclude-dir=bin $*'
     \ }
 \ }
 
