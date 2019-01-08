@@ -37,10 +37,12 @@ Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
+Plug 'mhinz/vim-grepper' " because windows is a joke and expects me to find findstr
 Plug 'junegunn/vim-easy-align'
 Plug 'airblade/vim-gitgutter'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'Yggdroot/indentLine'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
@@ -318,7 +320,8 @@ noremap <silent> <leader>n :NERDTreeToggle<cr>
 noremap <leader>f :Files<cr>
 noremap <leader>b :Buffers<cr>
 noremap <leader>T :Tagbar<cr>
-nmap <leader><leader> 0v$h
+noremap <leader>g :Grepper
+nmap <leader><leader> v$h
 
 nmap ga <Plug>(EasyAlign)
 nnoremap <Leader>p :let @+=expand('%:p')<CR>
