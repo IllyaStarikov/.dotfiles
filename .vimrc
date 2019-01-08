@@ -308,6 +308,10 @@ nmap <silent> [w <Plug>(ale_previous)
 nmap <silent> ]w <Plug>(ale_next)
 nmap <silent> ]W <Plug>(ale_last)
 
+" Copy Filename
+nmap ,cs :let @+=expand("%")<CR>
+nmap ,cl :let @+=expand("%:p")<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 8. Leader Key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
