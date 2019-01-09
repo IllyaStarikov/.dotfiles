@@ -125,7 +125,7 @@ endif
 if has('macunix')
     let g:python3_host_prog = '/usr/local/bin/python3'
 elseif has('win32')
-    " No idea why, but don't do anything here
+    let g:python3_host_prog = 'C:\Python37\python3.exe'
 else
     let g:python3_host_prog = '/usr/bin/python3'
 endif
@@ -184,14 +184,23 @@ augroup syntax
     autocmd BufNewFile,BufRead *.tex set syntax=tex
 augroup END
 
-
-" if windows gvim, change font
+" bandaid fixes for Window's vim
 if has('win32')
+    " Set different font (Neovim)
     sleep 100m
-    set guifont="SF Mono:h10"
     call GuiFont("SF Mono:h10")
-else
-    " set guifont=SF\ Mono\ Regular\ Nerd\ Font\ Complete:h14
+
+    " Set different font (gVim)
+    set guifont="SF Mono:h10"
+
+    " For gVim, remove the scroll bars, menus, etc.
+    set guioptions-=m
+    set guioptions-=T
+    set guioptions-=L
+    set guioptions-=r
+
+    " Remove the ugly tabline at the top. Also, this messes with airline.
+    call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
 endif
 
 let NERDTreeMapOpenInTab='\r'
