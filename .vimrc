@@ -112,7 +112,7 @@ augroup makefiles
     autocmd!
     autocmd FileType make,makefile set noexpandtab
 
-    let blacklist = ['make', 'makefile']
+    let blacklist = ['make', 'makefile', 'snippets']
     autocmd BufWritePre * if index(blacklist, &ft) < 0 | :call TrimWhitespace()
 augroup END
 
