@@ -142,6 +142,21 @@ let grepper = {
     \ }
 \ }
 
+if g:vimrc_type == 'garmin'
+    " Thanks, Ryan
+
+    " This is more Garminish than the defaults, but still might be improved.
+    set cinoptions=f0,{1s,^-1s
+
+    " This should make the text for comment blocks
+    " start on the same column as the slash /
+    set cinoptions+=c0,C1
+
+    " This should have multi-line conditionals to start
+    " on the column after the (
+    set cinoptions+=(0,u0,w1
+endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
