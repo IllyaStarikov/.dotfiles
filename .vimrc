@@ -90,13 +90,14 @@ set backspace=indent,eol,start " Proper backspace
 set autoread                   " Set to auto read when a file is changed from the outside
 
 set expandtab                  " tabs => spaces
-set shiftwidth=4
-set tabstop=4
-set softtabstop=4
+set shiftwidth=4               " set number of spaces to 4
+set tabstop=4                  " if i has to use tabs, make it look like 4 spaces
+set softtabstop=4              " same as above idk
 
 set smartindent                " autoindent on newlines
 set autoindent                 " copy indentation from previous lines
 set linebreak                  " word wrap like a sane human being
+set conceallevel=0             " don't try to conceal things
 
 set number                     " Show current line number
 set relativenumber             " Relative line numbers yo
