@@ -131,6 +131,12 @@ else
     let g:python3_host_prog = '/usr/bin/python3'
 endif
 
+" Treat everything as C
+augroup projects
+    autocmd!
+    autocmd BufRead,BufNewFile *.h,*.c set filetype=c
+augroup END
+
 " NerdTree Stuff
 let g:NERDTreeWinPos = "right"
 let NERDTreeMapOpenInTab = "<CR>"
