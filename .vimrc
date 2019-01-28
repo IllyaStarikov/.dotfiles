@@ -53,7 +53,6 @@ Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'zchee/deoplete-clang'
 else
     Plug 'maralla/completor.vim'
 endif
@@ -248,11 +247,6 @@ set shortmess+=c
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-let g:ale_linters = {
-            \   'tex': ['chktex'],
-            \   'cpp': ['g++']
-            \}
-
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '>'
 
@@ -260,21 +254,10 @@ let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
 let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
 
-let g:ale_cpp_gcc_executable = 'g++-7'
-let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
-
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_lint_delay = 500
-
-if has('macunix')
-    let g:deoplete#sources#clang#libclang_path = '/usr/local/Cellar/llvm/5.0.1/lib/libclang.dylib'
-    let g:deoplete#sources#clang#clang_header = '/usr/local/Cellar/llvm/5.0.1/lib/clang/5.0.1/include/'
-else
-    let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.4/lib/libclang.so.1'
-    let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.4/include'
-endif
 
 let g:deoplete#enable_at_startup = 1
 
