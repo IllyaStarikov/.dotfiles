@@ -209,20 +209,24 @@ augroup END
 " bandaid fixes for Window's vim
 if has('win32')
     " Set different font (Neovim)
-    sleep 100m
-    call GuiFont("SF Mono:h10")
+    if has('nvim')
+        sleep 100m
+        call GuiFont("SF Mono:h10")
 
-    " Set different font (gVim)
-    set guifont="SF Mono:h10"
+        " Remove the ugly tabline at the top. Also, this messes with airline.
+        call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
 
-    " For gVim, remove the scroll bars, menus, etc.
-    set guioptions-=m
-    set guioptions-=T
-    set guioptions-=L
-    set guioptions-=r
+    else
 
-    " Remove the ugly tabline at the top. Also, this messes with airline.
-    call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
+        " Set different font (gVim)
+        set guifont="SF Mono:h10"
+
+        " For gVim, remove the scroll bars, menus, etc.
+        set guioptions-=m
+        set guioptions-=T
+        set guioptions-=L
+        set guioptions-=r
+    endif
 endif
 
 let NERDTreeMapOpenInTab='\r'
