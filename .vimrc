@@ -43,6 +43,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'Yggdroot/indentLine'
+Plug 'keith/swift.vim'
+Plug 'ryanoasis/vim-devicons'
 
 Plug 'tommcdo/vim-lion'
 Plug 'wellle/targets.vim'
@@ -164,7 +166,6 @@ endif
 syntax on                    " Syntax highlighting
 syntax enable
 set spell spelllang=en_us    " set english as standard language
-set encoding=utf8            " Set utf8 as standard encoding
 
 " set t_Co=256                 " 256 colors for terminal
 " set t_ut=
