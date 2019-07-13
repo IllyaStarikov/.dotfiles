@@ -55,7 +55,6 @@ Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'zchee/deoplete-clang'
 else
     Plug 'maralla/completor.vim'
 endif
@@ -92,13 +91,14 @@ set backspace=indent,eol,start " Proper backspace
 set autoread                   " Set to auto read when a file is changed from the outside
 
 set expandtab                  " tabs => spaces
-set shiftwidth=4
-set tabstop=4
-set softtabstop=4
+set shiftwidth=4               " set number of spaces to 4
+set tabstop=4                  " if i has to use tabs, make it look like 4 spaces
+set softtabstop=4              " same as above idk
 
 set smartindent                " autoindent on newlines
 set autoindent                 " copy indentation from previous lines
 set linebreak                  " word wrap like a sane human being
+set conceallevel=0             " don't try to conceal things
 
 set number                     " Show current line number
 set relativenumber             " Relative line numbers yo
@@ -131,6 +131,12 @@ elseif has('win32')
 else
     let g:python3_host_prog = '/usr/bin/python3'
 endif
+
+" Treat everything as C
+augroup projects
+    autocmd!
+    autocmd BufRead,BufNewFile *.h,*.c set filetype=c
+augroup END
 
 " NerdTree Stuff
 let g:NERDTreeWinPos = "right"
@@ -203,20 +209,24 @@ augroup END
 " bandaid fixes for Window's vim
 if has('win32')
     " Set different font (Neovim)
-    sleep 100m
-    call GuiFont("SF Mono:h10")
+    if has('nvim')
+        sleep 100m
+        call GuiFont("SF Mono:h10")
 
-    " Set different font (gVim)
-    set guifont="SF Mono:h10"
+        " Remove the ugly tabline at the top. Also, this messes with airline.
+        call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
 
-    " For gVim, remove the scroll bars, menus, etc.
-    set guioptions-=m
-    set guioptions-=T
-    set guioptions-=L
-    set guioptions-=r
+    else
 
-    " Remove the ugly tabline at the top. Also, this messes with airline.
-    call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
+        " Set different font (gVim)
+        set guifont="SF Mono:h10"
+
+        " For gVim, remove the scroll bars, menus, etc.
+        set guioptions-=m
+        set guioptions-=T
+        set guioptions-=L
+        set guioptions-=r
+    endif
 endif
 
 let NERDTreeMapOpenInTab='\r'
@@ -238,11 +248,6 @@ set shortmess+=c
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-let g:ale_linters = {
-            \   'tex': ['chktex'],
-            \   'cpp': ['g++']
-            \}
-
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '>'
 
@@ -250,21 +255,10 @@ let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
 let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
 
-let g:ale_cpp_gcc_executable = 'g++-7'
-let g:ale_cpp_gcc_options = '-std=c++17 -Wall -Wextra'
-
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 let g:ale_lint_delay = 500
-
-if has('macunix')
-    let g:deoplete#sources#clang#libclang_path = '/usr/local/Cellar/llvm/5.0.1/lib/libclang.dylib'
-    let g:deoplete#sources#clang#clang_header = '/usr/local/Cellar/llvm/5.0.1/lib/clang/5.0.1/include/'
-else
-    let g:deoplete#sources#clang#libclang_path = '/usr/lib/llvm-3.4/lib/libclang.so.1'
-    let g:deoplete#sources#clang#clang_header = '/usr/lib/llvm-3.4/include'
-endif
 
 let g:deoplete#enable_at_startup = 1
 
