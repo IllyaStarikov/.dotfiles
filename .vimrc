@@ -26,14 +26,16 @@ set completeopt-=preview
 filetype plugin on
 filetype indent on
 
-let g:vimrc_type = 'personal' " options are: garmin / personal
+let g:vimrc_type = 'garmin' " options are: garmin / personal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
 Plug 'dracula/vim', { 'as': 'dracula' }
+
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -127,7 +129,7 @@ endif
 if has('macunix')
     let g:python3_host_prog = '/usr/local/bin/python3'
 elseif has('win32')
-    let g:python3_host_prog = 'C:\Python37\python3.exe'
+    let g:python3_host_prog = 'C:\Program Files\Python37\python.exe'
 else
     let g:python3_host_prog = '/usr/bin/python3'
 endif
@@ -173,7 +175,7 @@ syntax on                    " Syntax highlighting
 syntax enable
 set spell spelllang=en_us    " set english as standard language
 
-" set t_Co=256                 " 256 colors for terminal
+set t_Co=256                 " 256 colors for terminal
 " set t_ut=
 
 colorscheme dracula
@@ -193,6 +195,8 @@ set ffs=unix,dos,mac         " Use Unix as the standard file type
 set wildmenu                 " Use wild-menu
 set wildmode=longest:list,full
 
+set hidden                   " Don't warn me about unsaved buffers
+
 set noerrorbells             " no annoying error noises
 set novisualbell
 set t_vb=
@@ -211,7 +215,12 @@ if has('win32')
     " Set different font (Neovim)
     if has('nvim')
         sleep 100m
-        call GuiFont("SF Mono:h10")
+
+        if has('macunix')
+            call GuiFont("SF Mono:h10")
+        elseif has('win32')
+            call GuiFont("DejaVu Sans Mono for Powerline:h10")
+        endif
 
         " Remove the ugly tabline at the top. Also, this messes with airline.
         call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
@@ -241,6 +250,8 @@ set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 let g:UltiSnipsExpandTrigger = "<nop>"
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
+let b:ale_linters = ['flake8']
+
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 set shortmess+=c
@@ -253,7 +264,7 @@ let g:ale_sign_warning = '>'
 
 let g:ale_vim_chktex_options = "--nwarn 24"
 let g:ale_python_flake8_options = "--max-line-length=200"
-let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
+" let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
 
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
