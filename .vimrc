@@ -46,6 +46,7 @@ Plug 'justinmk/vim-syntax-extra'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'Yggdroot/indentLine'
 Plug 'keith/swift.vim'
+Plug 'vim-pandoc/vim-pandoc-syntax'
 Plug 'ryanoasis/vim-devicons'
 
 Plug 'tommcdo/vim-lion'
@@ -205,7 +206,7 @@ set tm=500
 " Syntax highlighting for latex/markdown as infinite
 augroup syntax
     autocmd!
-    autocmd FileType tex,latex,markdown set synmaxcol=2048
+    autocmd FileType tex,latex,markdown,pandoc set synmaxcol=2048
 
     autocmd BufNewFile,BufRead *.tex set syntax=tex
 augroup END
@@ -276,12 +277,6 @@ let g:deoplete#enable_at_startup = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:airline_powerline_fonts = 1
-
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-
 let g:airline#extensions#whitespace#enabled = 0
 
 " lazy drawing
@@ -294,6 +289,7 @@ let g:airline_detect_spell = 0
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline#extensions#tabline#tab_nr_type = 2
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 6. Skeleton Files
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
