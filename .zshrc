@@ -52,7 +52,7 @@ alias diff="colordiff"
 alias grep="grep --color=always -E"
 alias reset="source ~/.zshrc && reset"
 
-alias pandoc="pandoc --smart --normalize --wrap=none --listings"
+alias pandoc="pandoc --wrap=none --listings"
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 ## get rid of command not found
