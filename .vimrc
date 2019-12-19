@@ -26,7 +26,7 @@ set completeopt-=preview
 filetype plugin on
 filetype indent on
 
-let g:vimrc_type = 'garmin' " options are: garmin / personal
+let g:vimrc_type = 'personal' " options are: garmin / personal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
@@ -102,6 +102,9 @@ set smartindent                " autoindent on newlines
 set autoindent                 " copy indentation from previous lines
 set linebreak                  " word wrap like a sane human being
 set conceallevel=0             " don't try to conceal things
+
+let g:indentLine_concealcursor = 'inc'
+let g:indentLine_conceallevel = 0
 
 set number                     " Show current line number
 set relativenumber             " Relative line numbers yo
@@ -216,26 +219,10 @@ if has('win32')
     " Set different font (Neovim)
     if has('nvim')
         sleep 100m
-
-        if has('macunix')
-            call GuiFont("SF Mono:h10")
-        elseif has('win32')
-            call GuiFont("DejaVu Sans Mono for Powerline:h10")
-        endif
+        call GuiFont("IBM Plex Mono:h12")
 
         " Remove the ugly tabline at the top. Also, this messes with airline.
         call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
-
-    else
-
-        " Set different font (gVim)
-        set guifont="SF Mono:h10"
-
-        " For gVim, remove the scroll bars, menus, etc.
-        set guioptions-=m
-        set guioptions-=T
-        set guioptions-=L
-        set guioptions-=r
     endif
 endif
 

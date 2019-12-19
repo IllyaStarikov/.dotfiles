@@ -11,7 +11,7 @@ SPACESHIP_BATTERY_SHOW=false
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(vi-mode zsh-256color git brew history-substring-search python osx)
+plugins=(vi-mode git brew history-substring-search python osx)
 
 # Faster Vim Mode
 export KEYTIMEOUT=1
@@ -28,8 +28,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Change the command execution time
 HIST_STAMPS="mm/dd/yyyy"
 
-export ZSH=/home/starikov/.oh-my-zsh
-export ZSH_CUSTOM=/home/starikov/.oh-my-zsh/custom/
+export ZSH=/Users/starikov/.oh-my-zsh
+export ZSH_CUSTOM=/Users/starikov/.oh-my-zsh/custom/
 source $ZSH/oh-my-zsh.sh
 
 BASE16_SCHEME="default"
@@ -95,6 +95,8 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 export EDITOR=nvim
 export VISUAL=nvim
 
-export TERM="xterm-256color-italic"
+export TERM=xterm
+
+source ~/.shortcuts
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
