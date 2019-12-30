@@ -54,7 +54,6 @@ Plug 'wellle/targets.vim'
 
 Plug 'majutsushi/tagbar'
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -86,37 +85,47 @@ call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 2. General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set history=250                " Sets how many lines of history VIM has to remember
-set so=7                       " Set 7 lines to the cursor - when moving vertically using j/k
-set clipboard=unnamed          " Yank to system clipboard by default
-set backspace=indent,eol,start " Proper backspace
+set history=250                                 " Sets how many lines of history VIM has to remember
+set so=7                                        " Set 7 lines to the cursor - when moving vertically using j/k
+set clipboard=unnamed                           " Yank to system clipboard by default
+set backspace=indent,eol,start                  " Proper backspace
 
-set autoread                   " Set to auto read when a file is changed from the outside
+set autoread                                    " Set to auto read when a file is changed from the outside
 
-set expandtab                  " tabs => spaces
-set shiftwidth=4               " set number of spaces to 4
-set tabstop=4                  " if i has to use tabs, make it look like 4 spaces
-set softtabstop=4              " same as above idk
+set virtualedit=all                             " freedom of movement
 
-set smartindent                " autoindent on newlines
-set autoindent                 " copy indentation from previous lines
-set linebreak                  " word wrap like a sane human being
-set conceallevel=0             " don't try to conceal things
+set expandtab                                   " tabs => spaces
+set shiftwidth=4                                " set number of spaces to 4
+set tabstop=4                                   " if i has to use tabs, make it look like 4 spaces
+set softtabstop=4                               " same as above idk
+set shiftwidth=4                                " when indenting with '>', use 4 spaces width
 
-let g:indentLine_concealcursor = 'inc'
-let g:indentLine_conceallevel = 0
+set smartindent                                 " autoindent on newlines
+set autoindent                                  " copy indentation from previous lines
+set linebreak                                   " word wrap like a sane human being
+set conceallevel=0                              " don't try to conceal things
 
-set number                     " Show current line number
-set relativenumber             " Relative line numbers yo
-set hlsearch                   " Highlight searches
+let g:indentLine_concealcursor = 'inc'          " Because indentLine for some reason wants to override the
+let g:indentLine_conceallevel = 0               " default concceallevel.
 
-set nobackup                   " Turn backup off
+set number                                      " Show current line number
+set relativenumber                              " Relative line numbers yo
+set hlsearch                                    " Highlight searches
+
+set nobackup                                    " Turn backup off
 set nowb
 set noswapfile
 
-let g:tex_flavor = "latex"
+if g:vimrc_type == 'google'                     " google overrides
+    set shiftwidth=2                            " set number of spaces to 2.. ugh
+    set tabstop=2
+    set softtabstop=2
+    set shiftwidth=2
+endif
 
-augroup makefiles
+let g:tex_flavor = "latex"                      " because the default is tex for some reason
+
+augroup makefiles                               " special rules for makefiles (like don't delete tabs/use tabs)
     autocmd!
     autocmd FileType make,makefile set noexpandtab
 
@@ -124,30 +133,26 @@ augroup makefiles
     autocmd BufWritePre * if index(blacklist, &ft) < 0 | :call TrimWhitespace()
 augroup END
 
-" Enable mouse support
-if has("mouse")
+if has("mouse")                                 " Enable mouse support
     set mouse=a
 endif
 
-" For deoplete
-if has('macunix') " macOS
-    let g:python3_host_prog = '/usr/local/bin/python3'
-else " Linux
-    let g:python3_host_prog = '/usr/bin/python3'
+if has('macunix')                               " For deoplete
+    let g:python3_host_prog = '/usr/local/bin/python3' " macOS
+else
+    let g:python3_host_prog = '/usr/bin/python3'       " Linux
 endif
 
-" Treat everything as C
-augroup projects
+augroup projects                                " Treat headers as C
     autocmd!
     autocmd BufRead,BufNewFile *.h,*.c set filetype=c
 augroup END
 
-" NerdTree Stuff
-let g:NERDTreeWinPos = "right"
-let NERDTreeMapOpenInTab = "<CR>"
+let g:NERDTreeWinPos = "right"                  " NerdTree Stuff
+let NERDTreeMapOpenInTab='\r'
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" Grep Stuff
+                                                " Grep defaults
 let grepper = {
     \ 'grep': {
     \     'grepprg': 'grep -Rn --color --exclude=\*.{o,exe,out,dll,obj} --exclude-dir=bin $*'
@@ -157,60 +162,44 @@ let grepper = {
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syntax on                    " Syntax highlighting
+syntax on                                       " Syntax highlighting
 syntax enable
-set spell spelllang=en_us    " set english as standard language
+set spell spelllang=en_us                       " set english as standard language
 
-set t_Co=256                 " 256 colors for terminal
+set t_Co=256                                    " 256 colors for terminal
 " set t_ut=
 
-colorscheme dracula
+colorscheme dracula                              " This will throw an error until :PlugInstall is ran
 set background=dark
-
 let g:airline_theme = 'dracula'
 let g:dracula_italic = 1
 
-set cursorline!              " Turn on the cursorline
+set cursorline!                                 " Turn on the cursorline
 set guicursor=
-set synmaxcol=200            " Don't syntax highlight after the 128th column
+set synmaxcol=200                               " Don't syntax highlight after the 200th column
 
-set magic                    " For regular expressions
+set magic                                       " For regular expressions
 
-set ffs=unix,dos,mac         " Use Unix as the standard file type
+set ffs=unix,dos,mac                            " Use Unix as the standard file type
 
-set wildmenu                 " Use wild-menu
+set wildmenu                                    " Use wild-menu
 set wildmode=longest:list,full
 
-set hidden                   " Don't warn me about unsaved buffers
+set hidden                                      " Don't warn me about unsaved buffers
 
-set noerrorbells             " no annoying error noises
-set novisualbell
+set noerrorbells                                " no annoying error noises
+set novisualbell                                " or error visuals
 set t_vb=
 set tm=500
 
-" Syntax highlighting for latex/markdown as infinite
-augroup syntax
+augroup syntax                                  " Syntax highlighting for latex/markdown as infinite
     autocmd!
     autocmd FileType tex,latex,markdown,pandoc set synmaxcol=2048
 
     autocmd BufNewFile,BufRead *.tex set syntax=tex
 augroup END
 
-" bandaid fixes for Window's vim
-if has('win32')
-    " Set different font (Neovim)
-    if has('nvim')
-        sleep 100m
-        call GuiFont("IBM Plex Mono:h12")
-
-        " Remove the ugly tabline at the top. Also, this messes with airline.
-        call rpcnotify(1, 'Gui', 'Option', 'Tabline', 0)
-    endif
-endif
-
-let NERDTreeMapOpenInTab='\r'
-
-set list
+set list                                        " Show spaces, line breaks, the like
 set showbreak=↪\
 set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 
@@ -220,7 +209,15 @@ set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 let g:UltiSnipsExpandTrigger = "<nop>"
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
-let b:ale_linters = ['flake8']
+if g:vimrc_type == 'google'                     " No linters for Google.. yet :)
+elseif g:vimrc_type == 'personal'
+    let g:ale_linters = {
+          \ 'python': ['flake8', 'pylint']
+          \ }
+
+    let g:ale_python_flake8_options = "--max-line-length=200"
+    let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
+endif
 
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
@@ -229,12 +226,8 @@ set shortmess+=c
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-let g:ale_sign_error = '>>'
-let g:ale_sign_warning = '>'
-
-let g:ale_vim_chktex_options = "--nwarn 24"
-let g:ale_python_flake8_options = "--max-line-length=200"
-" let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
+let g:ale_sign_error = '>>'                     " Cool >> for errors
+let g:ale_sign_warning = '>'                    " and > for warnings
 
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
@@ -288,7 +281,7 @@ vnoremap <Up> gk
 inoremap <Down> <C-o>gj
 inoremap <Up> <C-o>gk
 
-" Because i use word wrap like a sane human
+" Because I use word wrap
 nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
 nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
 noremap  <buffer> <silent> 0 g0
@@ -343,6 +336,7 @@ tnoremap <Esc> <C-\><C-n> " fast entering normal mode in terminal
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 9. Code Runner
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" I know this is garbage but this is my garbage.
 function! RunCode(runCommand)
     if filereadable("makefile") || filereadable("Makefile")
         :execute 'AsyncRun make'
