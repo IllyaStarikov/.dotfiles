@@ -26,7 +26,7 @@ set completeopt-=preview
 filetype plugin on
 filetype indent on
 
-let g:vimrc_type = 'personal' " options are: garmin / personal
+let g:vimrc_type = 'personal' " options are: google / personal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
@@ -66,20 +66,20 @@ Plug 'SirVer/ultisnips'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'w0rp/ale'
 
-if g:vimrc_type == 'garmin'
-    Plug '~/.vim/plugged/garmin-snippets'
+if g:vimrc_type == 'google'
+    Plug '~/.vim/plugged/google-snippets'
 elseif g:vimrc_type == 'personal'
     Plug 'IllyaStarikov/vim-snippets'
 endif
 
 if has('macunix')
+    " macOS
     Plug '/usr/local/opt/fzf'
-    Plug 'junegunn/fzf.vim'
 else
-    Plug '~/.fzf'
-    Plug 'junegunn/fzf.vim'
+    " linux. I have no idea why another install is required but here we are.
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 endif
-
+Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
@@ -130,11 +130,9 @@ if has("mouse")
 endif
 
 " For deoplete
-if has('macunix')
+if has('macunix') " macOS
     let g:python3_host_prog = '/usr/local/bin/python3'
-elseif has('win32')
-    let g:python3_host_prog = 'C:\Program Files\Python37\python.exe'
-else
+else " Linux
     let g:python3_host_prog = '/usr/bin/python3'
 endif
 
@@ -155,22 +153,6 @@ let grepper = {
     \     'grepprg': 'grep -Rn --color --exclude=\*.{o,exe,out,dll,obj} --exclude-dir=bin $*'
     \ }
 \ }
-
-if g:vimrc_type == 'garmin'
-    " Thanks, Ryan
-
-    " This is more Garminish than the defaults, but still might be improved.
-    set cinoptions=f0,{1s,^-1s
-
-    " This should make the text for comment blocks
-    " start on the same column as the slash /
-    set cinoptions+=c0,C1
-
-    " This should have multi-line conditionals to start
-    " on the column after the (
-    set cinoptions+=(0,u0,w1
-endif
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 3. User Interface
