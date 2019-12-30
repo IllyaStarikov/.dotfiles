@@ -98,5 +98,6 @@ export VISUAL=nvim
 export TERM=xterm
 
 source ~/.shortcuts
+source ~/.localrc
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
