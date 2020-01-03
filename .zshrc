@@ -49,7 +49,7 @@ alias haskell="ghci"
 alias haskellcc="ghc"
 
 alias diff="colordiff"
-alias grep="grep --color=always -E"
+alias grep="grep --color=always"
 alias reset="source ~/.zshrc && reset"
 
 alias pandoc="pandoc --wrap=none --listings"
