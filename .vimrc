@@ -5,6 +5,8 @@
 " Created by Illya Starikov on March 5th, 2017
 " Copyright 2017. Illya Starikov. All rights reserved.
 "
+" NOTE: This only works in Neovim, not Vim.
+"
 
 " Table of Contents
 " 1  .................... Plugins
@@ -18,67 +20,50 @@
 " 9  .................... Code Runner
 " 10 .................... FZF
 " 11 .................... Functions
+" 12 .................... Work-specific overrides
 
-set nocompatible
-set completeopt+=noinsert,noselect
-set completeopt-=preview
-
-filetype plugin on
-filetype indent on
-
-let g:vimrc_type = 'personal' " options are: google / personal
+let g:vimrc_type = 'work' " options are: work / personal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim/plugged')
-Plug 'dracula/vim', { 'as': 'dracula' }
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
-Plug 'mhinz/vim-grepper' " because windows is a joke and expects me to find findstr
-Plug 'junegunn/vim-easy-align'
-Plug 'airblade/vim-gitgutter'
-Plug 'justinmk/vim-syntax-extra'
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'Yggdroot/indentLine'
-Plug 'keith/swift.vim'
-Plug 'vim-pandoc/vim-pandoc-syntax'
-Plug 'ryanoasis/vim-devicons'
-
-Plug 'tommcdo/vim-lion'
-Plug 'wellle/targets.vim'
-
-Plug 'majutsushi/tagbar'
-Plug 'ludovicchabant/vim-gutentags'
-
-if has('nvim')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-    Plug 'maralla/completor.vim'
-endif
-
-Plug 'SirVer/ultisnips'
-Plug 'skywind3000/asyncrun.vim'
-Plug 'w0rp/ale'
-
-if g:vimrc_type == 'google'
-    Plug '~/.vim/plugged/google-snippets'
-elseif g:vimrc_type == 'personal'
-    Plug 'IllyaStarikov/vim-snippets'
-endif
-
-if has('macunix')
-    " macOS
+if has('macunix')                               " macOS
     Plug '/usr/local/opt/fzf'
-else
-    " linux. I have no idea why another install is required but here we are.
+else                                            " linux. I have no idea why another install
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 endif
-Plug 'junegunn/fzf.vim'
+
+Plug 'airblade/vim-gitgutter'                  " UI/UX For code
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'ryanoasis/vim-devicons'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'yggdroot/indentLine'
+                                                " Language specific code
+Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
+Plug 'justinmk/vim-syntax-extra'
+Plug 'keith/swift.vim', { 'for': 'swift' }
+Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': 'markdown' }
+
+Plug 'illyastarikov/vim-snippets'               " Write code
+Plug 'junegunn/vim-easy-align'
+Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'sirVer/ultisnips'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'tommcdo/vim-lion'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'w0rp/ale'
+Plug 'wellle/targets.vim'
+
+Plug 'junegunn/fzf.vim'                         " Explore Code
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'majutsushi/tagbar'
+Plug 'mhinz/vim-grepper'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 
 call plug#end()
 
@@ -92,7 +77,7 @@ set backspace=indent,eol,start                  " Proper backspace
 
 set autoread                                    " Set to auto read when a file is changed from the outside
 
-set virtualedit=all                             " freedom of movement
+set virtualedit=block                           " freedom of movement
 
 set expandtab                                   " tabs => spaces
 set shiftwidth=4                                " set number of spaces to 4
@@ -116,12 +101,10 @@ set nobackup                                    " Turn backup off
 set nowb
 set noswapfile
 
-if g:vimrc_type == 'google'                     " google overrides
-    set shiftwidth=2                            " set number of spaces to 2.. ugh
-    set tabstop=2
-    set softtabstop=2
-    set shiftwidth=2
-endif
+set completeopt+=noinsert,noselect
+set completeopt-=preview
+
+filetype plugin indent on                       " filetype specific indents and plugins
 
 let g:tex_flavor = "latex"                      " because the default is tex for some reason
 
@@ -167,9 +150,8 @@ syntax enable
 set spell spelllang=en_us                       " set english as standard language
 
 set t_Co=256                                    " 256 colors for terminal
-" set t_ut=
 
-colorscheme dracula                              " This will throw an error until :PlugInstall is ran
+colorscheme dracula                             " This will throw an error until :PlugInstall is ran
 set background=dark
 let g:airline_theme = 'dracula'
 let g:dracula_italic = 1
@@ -209,15 +191,12 @@ set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
 let g:UltiSnipsExpandTrigger = "<nop>"
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
-if g:vimrc_type == 'google'                     " No linters for Google.. yet :)
-elseif g:vimrc_type == 'personal'
-    let g:ale_linters = {
-          \ 'python': ['flake8', 'pylint']
-          \ }
+let g:ale_linters = {
+      \ 'python': ['flake8', 'pylint']
+      \ }
 
-    let g:ale_python_flake8_options = "--max-line-length=200"
-    let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
-endif
+let g:ale_python_flake8_options = "--max-line-length=200"
+let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
 
 let g:UltiSnipsJumpForwardTrigger = "<tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
@@ -236,13 +215,14 @@ let g:ale_lint_delay = 500
 
 let g:deoplete#enable_at_startup = 1
 
+let g:jedi#auto_vim_configuration = 0           " Don't remap keyboard shortcuts
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline#extensions#whitespace#enabled = 0
 
-" lazy drawing
-set lazyredraw
+set lazyredraw                                  " lazy drawing
 set ttyfast
 
 let g:airline_symbols_ascii = 1
@@ -476,3 +456,10 @@ function! s:Kwbd(kwbdStage)
 endfunction
 
 command! Kwbd call s:Kwbd(1)
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => 12. Work-specific overrides
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if vimrc_type == 'work'
+    source ~/.vimrc.work
+endif
