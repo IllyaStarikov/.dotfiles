@@ -83,15 +83,11 @@ set expandtab                                   " tabs => spaces
 set shiftwidth=4                                " set number of spaces to 4
 set tabstop=4                                   " if i has to use tabs, make it look like 4 spaces
 set softtabstop=4                               " same as above idk
-set shiftwidth=4                                " when indenting with '>', use 4 spaces width
 
 set smartindent                                 " autoindent on newlines
 set autoindent                                  " copy indentation from previous lines
 set linebreak                                   " word wrap like a sane human being
 set conceallevel=0                              " don't try to conceal things
-
-let g:indentLine_concealcursor = 'inc'          " Because indentLine for some reason wants to override the
-let g:indentLine_conceallevel = 0               " default concceallevel.
 
 set number                                      " Show current line number
 set relativenumber                              " Relative line numbers yo
@@ -99,14 +95,13 @@ set hlsearch                                    " Highlight searches
 
 set nobackup                                    " Turn backup off
 set nowb
-set noswapfile
-
-set completeopt+=noinsert,noselect
-set completeopt-=preview
-
-filetype plugin indent on                       " filetype specific indents and plugins
 
 let g:tex_flavor = "latex"                      " because the default is tex for some reason
+
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+                                                " Indent line
+let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
+let g:indentLine_conceallevel = 2
 
 augroup makefiles                               " special rules for makefiles (like don't delete tabs/use tabs)
     autocmd!
@@ -183,7 +178,7 @@ augroup END
 
 set list                                        " Show spaces, line breaks, the like
 set showbreak=↪\
-set listchars=tab:→\ ,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+set listchars=tab:│·,trail:·,extends:→,extends:⟩,precedes:⟨
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 4. Autocomplete/Snippets/Linting
