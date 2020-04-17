@@ -38,6 +38,7 @@ endif
 Plug 'airblade/vim-gitgutter'                  " UI/UX For code
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -64,6 +65,7 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-grepper'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'xuyuanp/nerdtree-git-plugin'
 
 call plug#end()
 
@@ -128,6 +130,7 @@ augroup END
 
 let g:NERDTreeWinPos = "right"                  " NerdTree Stuff
 let NERDTreeMapOpenInTab='\r'
+let g:NERDTreeGitStatusWithFlags = 1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
                                                 " Grep defaults
