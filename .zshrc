@@ -97,7 +97,8 @@ export VISUAL=nvim
 
 export TERM=xterm
 
-source ~/.shortcuts
-source ~/.localrc
+[ -d "~/.localrc" ]   && source ~/.localrc
+[ -d "~/.shortcuts" ] && source ~/.shortcuts
+[ -d "~/.programs/" ] && export PATH=$PATH:~/.programs/
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

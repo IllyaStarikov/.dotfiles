@@ -1,0 +1,1 @@
+$EDITOR $(mktemp $TMPDIR/$(uuidgen).$1)
