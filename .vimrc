@@ -47,9 +47,10 @@ Plug 'yggdroot/indentLine'
 Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
 Plug 'justinmk/vim-syntax-extra'
 Plug 'keith/swift.vim', { 'for': 'swift' }
-Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': 'markdown' }
+Plug 'vim-pandoc/vim-pandoc-syntax'
 
 Plug 'illyastarikov/vim-snippets'               " Write code
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'junegunn/vim-easy-align'
 Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'sirVer/ultisnips'
@@ -103,7 +104,7 @@ let g:tex_flavor = "latex"                      " because the default is tex for
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
                                                 " Indent line
 let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
-let g:indentLine_conceallevel = 2
+let g:indentLine_conceallevel = 0
 
 augroup makefiles                               " special rules for makefiles (like don't delete tabs/use tabs)
     autocmd!
@@ -177,6 +178,7 @@ augroup syntax                                  " Syntax highlighting for latex/
     autocmd FileType tex,latex,markdown,pandoc set synmaxcol=2048
 
     autocmd BufNewFile,BufRead *.tex set syntax=tex
+    autocmd BufNewFile,BufRead *.md set syntax=pandoc | set conceallevel=0
 augroup END
 
 set list                                        " Show spaces, line breaks, the like
@@ -337,6 +339,12 @@ augroup run
     autocmd FileType perl     nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
     autocmd FileType sh       nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
     autocmd FileType swift    nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
+
+    if has('macunix')
+      autocmd FileType markdown nnoremap <buffer><leader>r :call RunCode("pandoc % \| textutil -stdin -format html -convert rtf -stdout \| pbcopy")<cr>
+    else
+      autocmd FileType markdown nnoremap <buffer><leader>r :call RunCode("pandoc % \| xclip -t text/html -selection clipboard")<cr>
+    endif
 
     nnoremap <leader>R :Async<Up><CR>
 augroup END
