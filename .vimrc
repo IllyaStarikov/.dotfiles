@@ -222,7 +222,6 @@ let g:jedi#auto_vim_configuration = 0           " Don't remap keyboard shortcuts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline#extensions#whitespace#enabled = 0
 
-set lazyredraw                                  " lazy drawing
 set ttyfast
 
 let g:airline_symbols_ascii = 1
