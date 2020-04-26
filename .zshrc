@@ -11,7 +11,10 @@ SPACESHIP_BATTERY_SHOW=false
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(vi-mode git brew history-substring-search python osx)
+#
+# Note: zsh-syntax-highlighting must be installed first.
+# https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
+plugins=(vi-mode git brew history-substring-search python osx zsh-syntax-highlighting)
 
 # Faster Vim Mode
 export KEYTIMEOUT=1
