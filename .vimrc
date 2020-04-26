@@ -342,7 +342,7 @@ augroup run
     autocmd FileType swift    nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
 
     if has('macunix')
-      autocmd FileType markdown nnoremap <buffer><leader>r :call RunCode("pandoc % \| textutil -stdin -format html -convert rtf -stdout \| pbcopy")<cr>
+      autocmd FileType markdown nnoremap <buffer><leader>r :call RunCode("pandoc --standalone --from=markdown --to=rtf % \| pbcopy")<cr>
     else
       autocmd FileType markdown nnoremap <buffer><leader>r :call RunCode("pandoc % \| xclip -t text/html -selection clipboard")<cr>
     endif
