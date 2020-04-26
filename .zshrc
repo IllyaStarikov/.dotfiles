@@ -98,10 +98,10 @@ export LSCOLORS=GxFxCxDxBxegedabagaced
 export EDITOR=nvim
 export VISUAL=nvim
 
-export TERM=xterm
+export TERM=xterm-256color
 
-[ -d "~/.localrc" ]   && source ~/.localrc
-[ -d "~/.shortcuts" ] && source ~/.shortcuts
-[ -d "~/.programs/" ] && export PATH=$PATH:~/.programs/
+[ -d ~/.localrc ]   && source ~/.localrc
+[ -d ~/.shortcuts ] && source ~/.shortcuts
+[ -d ~/.programs ]  && export PATH=$PATH:~/.programs/
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.fzf.zsh ]   && source ~/.fzf.zsh
