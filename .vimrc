@@ -153,7 +153,10 @@ set t_Co=256                                    " 256 colors for terminal
 colorscheme dracula                             " This will throw an error until :PlugInstall is ran
 set background=dark
 let g:airline_theme = 'dracula'
+
 let g:dracula_italic = 1
+let g:dracula_bold = 1
+highlight Comment cterm=italic gui=italic
 
 set cursorline!                                 " Turn on the cursorline
 set guicursor=
