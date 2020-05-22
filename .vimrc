@@ -343,7 +343,7 @@ augroup run
     autocmd FileType tex      nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
     autocmd FileType plaintex nnoremap <buffer><leader>r :call RunCode("latexmk")<cr>
     autocmd FileType perl     nnoremap <buffer><leader>r :call RunCode("perl %")<cr>
-    autocmd FileType sh       nnoremap <buffer><leader>r :call RunCode("!bash %")<cr>
+    autocmd FileType sh       nnoremap <buffer><leader>r :call RunCode("bash %")<cr>
     autocmd FileType swift    nnoremap <buffer><leader>r :call RunCode("swift %") <cr>
 
     if has('macunix')
