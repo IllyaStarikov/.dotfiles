@@ -45,6 +45,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'yggdroot/indentLine'
                                                 " Language specific code
 Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
+Plug 'illyastarikov/skeleton-files'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'keith/swift.vim', { 'for': 'swift' }
 Plug 'vim-pandoc/vim-pandoc-syntax'
@@ -239,8 +240,8 @@ let g:airline#extensions#tabline#tab_nr_type = 2
 if has("autocmd")
     augroup templates
         autocmd!
-        autocmd BufNewFile main.* silent! execute '0r ~/.vim/skeleton-files/skeleton-main.'.expand("<afile>:e")
-        autocmd BufNewFile *.* silent! execute '0r ~/.vim/skeleton-files/skeleton.'.expand("<afile>:e")
+        autocmd BufNewFile main.* silent! execute '0r ~/.vim/plugged/skeleton-files/skeleton-main.'.expand("<afile>:e")
+        autocmd BufNewFile *.* silent! execute '0r ~/.vim/plugged/skeleton-files/skeleton.'.expand("<afile>:e")
 
         autocmd BufNewFile * %substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge
     augroup END
