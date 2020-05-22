@@ -107,12 +107,16 @@ let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
 let g:indentLine_conceallevel = 0
 
-augroup makefiles                               " special rules for makefiles (like don't delete tabs/use tabs)
+augroup normalize                               " special rules to process files
     autocmd!
     autocmd FileType make,makefile set noexpandtab
 
+    " If any file is in the blacklist, don't process these rules
+    " Then, on every save, process this
     let blacklist = ['make', 'makefile', 'snippets']
     autocmd BufWritePre * if index(blacklist, &ft) < 0 | :call TrimWhitespace()
+
+    autocmd BufWritePre *.md :call NormalizeMarkdown()
 augroup END
 
 if has("mouse")                                 " Enable mouse support
@@ -391,8 +395,17 @@ let g:fzf_history_dir = '~/.local/share/fzf-history'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! TrimWhitespace()
     let l:save = winsaveview()
-    %s/\t/    /e
-    %s/\s\+$//e
+    %s/\t/    /ge
+    %s/\s\+$//ge
+    call winrestview(l:save)
+endfunction
+
+function! NormalizeMarkdown()  " A bunch of regexes to make markdown happy
+    let l:save = winsaveview()
+    %s/’/'/ge
+    %s/“/"/ge
+    %s/“/"/ge
+    %s/”/"/ge
     call winrestview(l:save)
 endfunction
 
