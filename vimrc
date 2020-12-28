@@ -103,9 +103,9 @@ set nowb
 let g:tex_flavor = "latex"                      " because the default is tex for some reason
 
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
-                                                " Indent line
-let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
-let g:indentLine_conceallevel = 0
+"                                                 " Indent line
+" let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
+" let g:indentLine_conceallevel = 0
 
 augroup normalize                               " special rules to process files
     autocmd!
@@ -165,7 +165,7 @@ highlight Comment cterm=italic gui=italic
 
 set cursorline!                                 " Turn on the cursorline
 set guicursor=
-set synmaxcol=200                               " Don't syntax highlight after the 200th column
+" set synmaxcol=200                               " Don't syntax highlight after the 200th column
 
 set magic                                       " For regular expressions
 
