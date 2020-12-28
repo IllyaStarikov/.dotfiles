@@ -11,3 +11,5 @@ ln -s "/Users/starikov/.dotfiles/latexmkrc" "/Users/starikov/.latexmkrc"        
 
 ln -s "/Users/starikov/.dotfiles/shortcuts.sh" "/Users/starikov/.shortcuts"           #
 ln -s "/Users/starikov/.dotfiles/scripts" "/Users/starikov/.scripts"                  #
+
+ln -s "/Users/starikov/.dotfiles/tmux.conf" "/Users/starikov/.tmux.conf"              #
