@@ -1,0 +1,10 @@
+#!/bin/bash
+
+brew update
+brew upgrade
+brew upgrade --cask
+
+nvim -c "PlugUpgrade"
+nvim -c "PlugUpdate"
+
+omz update
