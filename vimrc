@@ -111,10 +111,10 @@ augroup normalize                               " special rules to process files
     autocmd!
     autocmd FileType make,makefile set noexpandtab
 
-    " If any file is in the blacklist, don't process these rules
+    " If any file is in the blocklist, don't process these rules
     " Then, on every save, process this
-    let blacklist = ['make', 'makefile', 'snippets']
-    autocmd BufWritePre * if index(blacklist, &ft) < 0 | :call TrimWhitespace()
+    let blocklist = ['make', 'makefile', 'snippets']
+    autocmd BufWritePre * if index(blocklist, &ft) < 0 | :call TrimWhitespace()
 
     autocmd BufWritePre *.md :call NormalizeMarkdown()
 augroup END
