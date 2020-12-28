@@ -41,8 +41,8 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 [[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
 
 # Aliases
-alias vim="nvim -O"
-alias vi="nvim -O"
+alias vim="nvim"
+alias vi="nvim"
 alias ranger="source ranger"
 
 alias haskell="ghci"
@@ -102,3 +102,12 @@ export TERM=xterm-256color
 [ -d ~/.programs ]  && export PATH=$PATH:~/.programs/
 
 [ -f ~/.fzf.zsh ]   && source ~/.fzf.zsh
+
+# Add pyenv to path
+eval "$(pyenv init -)"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/completion.zsh.inc'; fi
