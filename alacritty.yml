@@ -102,6 +102,7 @@ font:
 
 # => 5. Windowing
 window:
+    dynamic_title: true
     padding:
         x: 3
         y: 3
@@ -123,7 +124,7 @@ selection:
 
 
 # => 7. Visual Bell (Disable)
-visual_bell:
+bell:
   animation: EaseOutExpo
   color: '0xffffff'
   duration: 0
@@ -139,5 +140,4 @@ scrolling:
 draw_bold_text_with_bright_colors: true
 background_opacity: .99
 cursor_style: Block
-dynamic_title: true
 live_config_reload: true
