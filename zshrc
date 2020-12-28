@@ -99,7 +99,7 @@ export TERM=xterm-256color
 
 [ -d ~/.localrc ]   && source ~/.localrc
 [ -d ~/.shortcuts ] && source ~/.shortcuts
-[ -d ~/.programs ]  && export PATH=$PATH:~/.programs/
+[ -d ~/.scripts ]   && export PATH=$PATH:~/.scripts/
 
 [ -f ~/.fzf.zsh ]   && source ~/.fzf.zsh
 
