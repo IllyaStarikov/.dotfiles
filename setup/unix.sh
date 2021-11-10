@@ -25,12 +25,14 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 
 # Pip Packages
 python3 -m pip install neovim
-python3 -m pip install ipython
 
 # Global Git Ignore
 git config --global core.excludesfile '~/.gitignore'
 
 # Fonts
 git clone https://github.com/ryanoasis/nerd-fonts.git fonts
-source fonts/install.sh IBMPlexMono
+fonts/install.sh
 rm -rf fonts
+
+# Tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
