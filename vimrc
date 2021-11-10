@@ -21,8 +21,9 @@
 " 10 .................... FZF
 " 11 .................... Functions
 " 12 .................... Work-specific overrides
+" 13 .................... LSP
 
-let g:vimrc_type = 'work' " options are: work / personal
+let g:vimrc_type = 'personal' " options are: work / personal
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 1. Plugins
@@ -40,12 +41,12 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'yggdroot/indentLine'
                                                 " Language specific code
-Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' }
 Plug 'illyastarikov/skeleton-files'
+Plug 'hrsh7th/nvim-compe'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'keith/swift.vim', { 'for': 'swift' }
+Plug 'neovim/nvim-lspconfig'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 
 Plug 'illyastarikov/vim-snippets'               " Write code
@@ -91,6 +92,10 @@ set autoindent                                  " copy indentation from previous
 set linebreak                                   " word wrap like a sane human being
 set conceallevel=0                              " don't try to conceal things
 
+set list
+set showbreak=↪\
+set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+
 set number                                      " Show current line number
 set relativenumber                              " Relative line numbers yo
 set hlsearch                                    " Highlight searches
@@ -99,11 +104,6 @@ set nobackup                                    " Turn backup off
 set nowb
 
 let g:tex_flavor = "latex"                      " because the default is tex for some reason
-
-let g:indentLine_char_list = ['|', '¦', '┆', '┊']
-"                                                 " Indent line
-" let g:indentLine_concealcursor = 'inc'          " Don't override conceal levels
-" let g:indentLine_conceallevel = 0
 
 augroup normalize                               " special rules to process files
     autocmd!
@@ -122,7 +122,7 @@ if has("mouse")                                 " Enable mouse support
 endif
 
 if has('macunix')                               " For deoplete
-    let g:python3_host_prog = '/usr/local/bin/python3' " macOS
+    let g:python3_host_prog = '/usr/bin/python3' " macOS
 else
     let g:python3_host_prog = '/usr/bin/python3'       " Linux
 endif
@@ -220,7 +220,7 @@ let g:ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
 
 let g:deoplete#enable_at_startup = 1
 
-let g:jedi#auto_vim_configuration = 0           " Don't remap keyboard shortcuts
+autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync(nil, 100)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline
@@ -290,6 +290,16 @@ nmap <silent> ]W <Plug>(ale_last)
 " Copy Filename
 nmap ,cs :let @+=expand("%")<CR>
 nmap ,cl :let @+=expand("%:p")<CR>
+
+" LSP
+nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 8. Leader Key
@@ -482,3 +492,15 @@ command! Kwbd call s:Kwbd(1)
 if vimrc_type == 'work'
     source ~/.vimrc.work
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => 13. LSP
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require("lspconfig").pyright.setup{}
+EOF
+
+set completeopt-=preview
+
+" use omni completion provided by lsp
+autocmd Filetype python setlocal omnifunc=v:lua.vim.lsp.omnifunc
