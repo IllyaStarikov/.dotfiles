@@ -1,0 +1,5 @@
+- Install [alacritty]()
+- Install [iStat](https://bjango.com/mac/istatmenus/)
+- Review MacApp store
+- Download [Logitech software](https://www.logitech.com/en-us/software/options.html)
+- Download [Bartender](https://www.macbartender.com/)

@@ -1,3 +1,5 @@
+eval $(/opt/homebrew/bin/brew shellenv)
+
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
@@ -14,7 +16,7 @@ SPACESHIP_BATTERY_SHOW=false
 #
 # Note: zsh-syntax-highlighting must be installed first.
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
-plugins=(vi-mode git brew history-substring-search python osx zsh-syntax-highlighting)
+plugins=(vi-mode git brew history-substring-search python macos zsh-syntax-highlighting)
 
 # Faster Vim Mode
 export KEYTIMEOUT=1
@@ -104,6 +106,9 @@ export TERM=xterm-256color
 [ -f ~/.fzf.zsh ]   && source ~/.fzf.zsh
 
 # Add pyenv to path
+export PATH=$PATH:~/.scripts/
+
+eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -111,3 +116,8 @@ if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starik
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/completion.zsh.inc'; fi
+
+alias ctepip="python ~/ctepip/cte_pip.py"
+
+
+alias ibrew='arch -x86_64 /usr/local/bin/brew'
