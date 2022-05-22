@@ -31,7 +31,9 @@ let g:vimrc_type = 'personal' " options are: work / personal
 call plug#begin('~/.vim/plugged')
 
 if has('macunix')                               " macOS
+    " Plug '/usr/local/opt/fzf'
     Plug 'junegunn/fzf'
+    Plug 'junegunn/fzf.vim'
 else                                            " linux. I have no idea why another install
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 endif
@@ -49,8 +51,8 @@ Plug 'keith/swift.vim', { 'for': 'swift' }
 Plug 'neovim/nvim-lspconfig'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 
-Plug 'illyastarikov/vim-snippets'               " Write code
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+Plug 'illyastarikov/vim-snippets'               " Write code
 Plug 'junegunn/vim-easy-align'
 Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'sirVer/ultisnips'
@@ -58,11 +60,12 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
-Plug 'w0rp/ale'
 Plug 'wellle/targets.vim'
 
+Plug 'dense-analysis/ale'
+" Plug 'pappasam/jedi-language-server'
+
 Plug 'junegunn/fzf.vim'                         " Explore Code
-Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-grepper'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
@@ -121,22 +124,45 @@ if has("mouse")                                 " Enable mouse support
     set mouse=a
 endif
 
-if has('macunix')                               " For deoplete
-    let g:python3_host_prog = '/usr/bin/python3' " macOS
-else
-    let g:python3_host_prog = '/usr/bin/python3'       " Linux
-endif
+" if has('macunix')                               " For deoplete
+"     let g:python3_host_prog = '/Users/starikov/.pyenv/shims/python' " macOS
+" else
+let g:python3_host_prog = '/usr/bin/python3'       " Linux
+" endif
 
 augroup projects                                " Treat headers as C
     autocmd!
     autocmd BufRead,BufNewFile *.h,*.c set filetype=c
 augroup END
 
+augroup nerdtreehelp
+  au VimEnter *  NERDTree
+  autocmd VimEnter * wincmd p
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+augroup END
+
 let g:NERDTreeWinPos = "right"                  " NerdTree Stuff
 let NERDTreeMapOpenInTab='\r'
 let g:NERDTreeGitStatusWithFlags = 1
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+let g:ale_completion_enabled=1
+let g:ale_python_pyls_executable = "pylsp"
+
+" let g:ale_python_pyls_config = {
+" \   'pylsp': {
+" \     'plugins': {
+" \       'pycodestyle': {
+" \         'enabled': v:false,
+" \       },
+" \       'pyflakes': {
+" \         'enabled': v:false,
+" \       },
+" \       'pydocstyle': {
+" \         'enabled': v:true,
+" \       },
+" \     },
+" \   },
+" \}
                                                 " Grep defaults
 let grepper = {
     \ 'grep': {
@@ -197,9 +223,9 @@ set listchars=tab:│·,trail:·,extends:→,extends:⟩,precedes:⟨
 let g:UltiSnipsExpandTrigger = "<nop>"
 inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
 
-let g:ale_linters = {
-      \ 'python': ['flake8', 'pylint']
-      \ }
+" let g:ale_linters = {
+"       \ 'python': ['flake8', 'pylint']
+"       \ }
 
 let g:ale_python_flake8_options = "--max-line-length=200"
 let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
@@ -286,6 +312,10 @@ nmap <silent> [W <Plug>(ale_first)
 nmap <silent> [w <Plug>(ale_previous)
 nmap <silent> ]w <Plug>(ale_next)
 nmap <silent> ]W <Plug>(ale_last)
+
+nmap <C-]> :ALEGoToDefinition<CR>
+nmap <C-\> :ALEFindReferences<CR>
+nmap <C-[> :ALEHover<CR>
 
 " Copy Filename
 nmap ,cs :let @+=expand("%")<CR>

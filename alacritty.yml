@@ -81,11 +81,10 @@ colors:
 
 # => 4. Fonts
 font:
-    size: 12.0
+    size: 17.0
     offset:
         x: 0
         y: 0
-    use_thin_strokes: true
 
     normal:
         family: BlexMono Nerd Font Mono
@@ -102,6 +101,8 @@ font:
 
 # => 5. Windowing
 window:
+    opacity: .95
+
     dynamic_title: true
     padding:
         x: 3
@@ -138,6 +139,5 @@ scrolling:
 
 # => 9. Miscellaneous
 draw_bold_text_with_bright_colors: true
-background_opacity: .99
 cursor_style: Block
 live_config_reload: true
