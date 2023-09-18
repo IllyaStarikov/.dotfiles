@@ -246,7 +246,7 @@ let g:ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
 
 let g:deoplete#enable_at_startup = 1
 
-autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync(nil, 100)
+" autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync(nil, 100)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 5. Airline

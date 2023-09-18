@@ -117,7 +117,4 @@ if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starik
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/completion.zsh.inc'; fi
 
-alias ctepip="python ~/ctepip/cte_pip.py"
-
-
-alias ibrew='arch -x86_64 /usr/local/bin/brew'
+alias ibrew='arch -x86_64 /opt/homebrew/bin/brew'
