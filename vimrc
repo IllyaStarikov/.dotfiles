@@ -31,7 +31,7 @@ let g:vimrc_type = 'personal' " options are: work / personal
 call plug#begin('~/.vim/plugged')
 
 if has('macunix')                               " macOS
-    Plug '/usr/local/opt/fzf'
+    Plug 'junegunn/fzf'
 else                                            " linux. I have no idea why another install
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 endif
