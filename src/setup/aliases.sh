@@ -1,15 +1,29 @@
-ln -s "/Users/starikov/.dotfiles/vimrc" "/Users/starikov/.vimrc"                      # Vim
-ln -s "/Users/starikov/.dotfiles/vimrc" "/Users/starikov/.config/nvim/init.vim"       #
+# Create symlinks for all the relevant files
 
-ln -s "/Users/starikov/.dotfiles/zshrc" "/Users/starikov/.zshrc"                      # ZSH
-ln -s "/Users/starikov/.dotfiles/zshenv" "/Users/starikov/.zshenv"                    #
+# -s | `symbolic` (soft) link
+# -f | `force` the symlink if it already exists
 
-ln -s "/Users/starikov/.dotfiles/alacritty.yml" "/Users/starikov/.config/alacritty/"  # Terminal
+# Vim
+ln -sf "$HOME/.dotfiles/src/vimrc" "$HOME/.vimrc"
+ln -sf "$HOME/.dotfiles/src/vimrc" "$HOME/.config/nvim/init.vim"
 
-ln -s "/Users/starikov/.dotfiles/gitignore" "/Users/starikov/.gitignore"              # Misc
-ln -s "/Users/starikov/.dotfiles/latexmkrc" "/Users/starikov/.latexmkrc"              #
+# ZSH
+ln -sf "$HOME/.dotfiles/src/zshrc" "$HOME/.zshrc"
+ln -sf "$HOME/.dotfiles/src/zshenv" "$HOME/.zshenv"
 
-ln -s "/Users/starikov/.dotfiles/shortcuts.sh" "/Users/starikov/.shortcuts"           #
-ln -s "/Users/starikov/.dotfiles/scripts" "/Users/starikov/.scripts"                  #
+# Terminal
+ln -sf "$HOME/.dotfiles/src/alacritty.yml" "$HOME/.config/alacritty/"  
 
-ln -s "/Users/starikov/.dotfiles/tmux.conf" "/Users/starikov/.tmux.conf"              #
+# Gitignore
+ln -sf "$HOME/.dotfiles/src/gitignore" "$HOME/.gitignore"              
+
+# LaTeX
+ln -sf "$HOME/.dotfiles/src/latexmkrc" "$HOME/.latexmkrc"
+
+# TMUX
+ln -sf "$HOME/.dotfiles/src/tmux.conf" "$HOME/.tmux.conf"
+
+# Custom Aliases
+ln -sf "$HOME/.dotfiles/src/shortcuts.sh" "$HOME/.shortcuts"
+ln -sf "$HOME/.dotfiles/src/scripts" "$HOME/.scripts"
+
