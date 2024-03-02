@@ -1,6 +1,6 @@
 # .dotfiles
 
-![](assets/setup.png)
+![](template/setup.png)
 
 My personal collections of dotfiles.
 
