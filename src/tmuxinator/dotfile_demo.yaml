@@ -1,0 +1,15 @@
+# ~/.tmuxinator/dotfile_demo.yml
+
+name: dotfiles
+root: ~/.dotfiles
+
+windows:
+  - editor:
+      layout: main-vertical
+      panes:
+        - vim ~/.dotfiles/src/vimrc
+        - neofetch
+        - htop
+        -
+  - server: echo server
+  - logs: echo logs
