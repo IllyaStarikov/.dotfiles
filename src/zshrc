@@ -46,6 +46,8 @@ BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUN
 alias vim="nvim"
 alias vi="nvim"
 alias ranger="source ranger"
+alias tx="tmuxinator"
+alias txs="tmuxinator start"
 
 alias haskell="ghci"
 alias haskellcc="ghc"
