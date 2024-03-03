@@ -1,6 +1,6 @@
-# .dotfiles
+# [.dotfiles](https://dotfiles.starikov.io)
 
-**🟩 I use Vim.**
+**🟢 I use Vim.**
 
 ![](template/dotfiles.png)
 
