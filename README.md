@@ -1,5 +1,7 @@
 # [.dotfiles](https://dotfiles.starikov.io)
 
+<script src="https://dotfiles.starikov.io/template/analytics.js"></script>
+
 **🟢 I use Vim.**
 
 ![](template/dotfiles.png)
