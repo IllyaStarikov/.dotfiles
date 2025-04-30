@@ -114,7 +114,7 @@ augroup normalize                               " special rules to process files
 
     " If any file is in the blocklist, don't process these rules
     " Then, on every save, process this
-    let blocklist = ['make', 'makefile', 'snippets']
+    let blocklist = ['make', 'makefile', 'snippets', 'sh']
     autocmd BufWritePre * if index(blocklist, &ft) < 0 | :call TrimWhitespace()
 
     autocmd BufWritePre *.md :call NormalizeMarkdown()
