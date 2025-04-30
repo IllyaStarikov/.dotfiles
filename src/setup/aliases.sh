@@ -12,7 +12,7 @@ ln -sf "$HOME/.dotfiles/src/zshrc" "$HOME/.zshrc"
 ln -sf "$HOME/.dotfiles/src/zshenv" "$HOME/.zshenv"
 
 # Terminal
-ln -sf "$HOME/.dotfiles/src/alacritty.yml" "$HOME/.config/alacritty/"
+ln -sf "$HOME/.dotfiles/src/alacritty.toml" "$HOME/.config/alacritty/"
 
 # Gitignore
 ln -sf "$HOME/.dotfiles/src/gitignore" "$HOME/.gitignore"
