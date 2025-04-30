@@ -49,6 +49,8 @@ alias ranger="source ranger"
 alias tx="tmuxinator"
 alias txs="tmuxinator start"
 
+alias ls="eza"
+
 alias haskell="ghci"
 alias haskellcc="ghc"
 
@@ -110,6 +112,9 @@ export TERM=xterm-256color
 # Add pyenv to path
 export PATH=$PATH:~/.scripts/
 
+alias brew='arch -arm64 /opt/homebrew/bin/brew'
+alias pyenv='arch -arm64 pyenv'
+
 eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 
@@ -118,5 +123,3 @@ if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starik
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/completion.zsh.inc'; fi
-
-alias ibrew='arch -x86_64 /opt/homebrew/bin/brew'
