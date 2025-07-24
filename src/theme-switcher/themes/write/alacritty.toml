@@ -1,0 +1,38 @@
+[font]
+size = 18
+
+[font.bold]
+family = "Menlo"
+style = "Bold"
+
+[font.normal]
+family = "Menlo"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 0
+
+[colors.primary]
+background = '#e8e9ec'
+foreground = '#33374c'
+
+[colors.normal]
+black   = '#dcdfe7'
+red     = '#cc517a'
+green   = '#66800b'
+yellow  = '#aa7243'
+blue    = '#2d539e'
+magenta = '#834d7a'
+cyan    = '#237381'
+white   = '#33374c'
+
+[colors.bright]
+black   = '#83879e'
+red     = '#cc517a'
+green   = '#66800b'
+yellow  = '#aa7243'
+blue    = '#2d539e'
+magenta = '#834d7a'
+cyan    = '#237381'
+white   = '#262a3f'
