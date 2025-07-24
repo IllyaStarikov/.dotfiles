@@ -1,0 +1,20 @@
+# ~/.tmuxinator/dotfile_demo.yml
+
+name: project
+root: ~/Documents/Development/academia
+
+windows:
+  - ai: claude
+  - editor:
+      layout: main-vertical
+      panes:
+        - vim
+
+  - terminal: echo logs
+  - stats:
+  - editor:
+      layout: main-vertical
+      panes:
+        - htop
+        -
+  - ssh: ssh root@24.199.100.99
