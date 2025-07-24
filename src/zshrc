@@ -37,10 +37,10 @@ export ZSH=/Users/starikov/.oh-my-zsh
 export ZSH_CUSTOM=/Users/starikov/.oh-my-zsh/custom/
 source $ZSH/oh-my-zsh.sh
 
-BASE16_SCHEME="default"
-BASE16_BACKGROUND="dark"
-BASE16_SHELL="$HOME/.config/base16-shell/base16-$BASE16_SCHEME.$BASE16_BACKGROUND.sh"
-[[ -s $BASE16_SHELL ]] && . $BASE16_SHELL
+# Load current theme and update if needed
+if [ -f ~/.config/theme-switcher/current-theme.sh ]; then
+  source ~/.config/theme-switcher/current-theme.sh
+fi
 
 # Aliases
 alias vim="nvim"
@@ -60,6 +60,8 @@ alias reset="source ~/.zshrc && reset"
 
 alias pandoc="pandoc --wrap=none --listings"
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh"
+alias install-auto-theme="~/.dotfiles/src/theme-switcher/install-auto-theme.sh"
 
 ## get rid of command not found
 alias cd..="cd .."

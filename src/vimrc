@@ -40,6 +40,8 @@ endif
 
 Plug 'airblade/vim-gitgutter'                  " UI/UX For code
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'cocopon/iceberg.vim'
+Plug 'projekt0n/github-nvim-theme'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -181,9 +183,85 @@ set spell spelllang=en_us                       " set english as standard langua
 
 set t_Co=256                                    " 256 colors for terminal
 
-colorscheme dracula                             " This will throw an error until :PlugInstall is ran
-set background=dark
-let g:airline_theme = 'dracula'
+" Theme switching based on macOS appearance
+if filereadable(expand("~/.config/theme-switcher/current-theme.sh"))
+  let s:theme = substitute(system("source ~/.config/theme-switcher/current-theme.sh && echo $MACOS_THEME"), '\n', '', 'g')
+  let s:variant = substitute(system("source ~/.config/theme-switcher/current-theme.sh && echo $MACOS_VARIANT"), '\n', '', 'g')
+  let s:background = substitute(system("source ~/.config/theme-switcher/current-theme.sh && echo $MACOS_BACKGROUND"), '\n', '', 'g')
+
+  if s:background == "dark"
+    set background=dark
+  else
+    set background=light
+  endif
+
+  if s:theme == "default"
+    if s:variant == "dark"
+      colorscheme iceberg
+      let g:airline_theme = 'dracula'
+    else
+      colorscheme iceberg
+      let g:airline_theme = 'iceberg'
+    endif
+  elseif s:theme == "tron"
+    if s:variant == "dark"
+      colorscheme iceberg
+      let g:airline_theme = 'iceberg'
+    else
+      colorscheme iceberg
+      let g:airline_theme = 'iceberg'
+    endif
+  elseif s:theme == "write"
+    if s:variant == "dark"
+      colorscheme iceberg
+      let g:airline_theme = 'iceberg'
+    else
+      colorscheme iceberg
+      let g:airline_theme = 'iceberg'
+    endif
+  elseif s:theme == "github_light"
+    colorscheme iceberg
+    let g:airline_theme = 'sol'
+  elseif s:theme == "github_light_default"
+    colorscheme iceberg
+    let g:airline_theme = 'sol'
+  elseif s:theme == "github_light_high_contrast"
+    colorscheme iceberg
+    let g:airline_theme = 'sol'
+  elseif s:theme == "github_light_colorblind"
+    colorscheme iceberg
+    let g:airline_theme = 'sol'
+  elseif s:theme == "github_light_tritanopia"
+    colorscheme iceberg
+    let g:airline_theme = 'sol'
+  elseif s:theme == "github_dark"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  elseif s:theme == "github_dark_default"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  elseif s:theme == "github_dark_dimmed"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  elseif s:theme == "github_dark_high_contrast"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  elseif s:theme == "github_dark_colorblind"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  elseif s:theme == "github_dark_tritanopia"
+    colorscheme iceberg
+    let g:airline_theme = 'base16_grayscale'
+  else
+    colorscheme iceberg
+    let g:airline_theme = 'iceberg'
+  endif
+else
+  " Default to dark theme
+  set background=dark
+  colorscheme iceberg
+  let g:airline_theme = 'dracula'
+endif
 
 let g:dracula_italic = 1
 let g:dracula_bold = 1
@@ -213,6 +291,42 @@ augroup syntax                                  " Syntax highlighting for latex/
 
     autocmd BufNewFile,BufRead *.tex set syntax=tex
     autocmd BufNewFile,BufRead *.md set syntax=pandoc | set conceallevel=0
+augroup END
+
+augroup markdown_writing                        " Special configuration for markdown files
+    autocmd!
+    autocmd FileType markdown,pandoc setlocal wrap                " Enable word wrap
+    autocmd FileType markdown,pandoc setlocal linebreak           " Break lines at word boundaries
+    autocmd FileType markdown,pandoc setlocal nolist              " Hide special characters for cleaner view
+    autocmd FileType markdown,pandoc setlocal textwidth=0         " No hard line breaks
+    autocmd FileType markdown,pandoc setlocal wrapmargin=0        " No wrap margin
+    autocmd FileType markdown,pandoc setlocal formatoptions-=t    " Don't auto-wrap text
+    autocmd FileType markdown,pandoc setlocal formatoptions+=l    " Don't break long lines in insert mode
+    autocmd FileType markdown,pandoc setlocal display+=lastline   " Show partial wrapped lines
+    autocmd FileType markdown,pandoc setlocal breakindent         " Indent wrapped lines
+    autocmd FileType markdown,pandoc setlocal breakindentopt=shift:2,min:40
+    
+    " Font settings for GUI vim (like MacVim or gvim)
+    if has("gui_running")
+        autocmd FileType markdown,pandoc setlocal guifont=Verdana:h14
+    endif
+    
+    " Make the environment more comfortable for writing
+    autocmd FileType markdown,pandoc setlocal spell                " Enable spell check
+    autocmd FileType markdown,pandoc setlocal nonumber            " Hide line numbers
+    autocmd FileType markdown,pandoc setlocal norelativenumber    " Hide relative line numbers
+    autocmd FileType markdown,pandoc setlocal colorcolumn=        " Remove color column
+    autocmd FileType markdown,pandoc setlocal signcolumn=no       " Hide sign column
+    
+    " Improved navigation for wrapped lines
+    autocmd FileType markdown,pandoc nnoremap <buffer> j gj
+    autocmd FileType markdown,pandoc nnoremap <buffer> k gk
+    autocmd FileType markdown,pandoc nnoremap <buffer> 0 g0
+    autocmd FileType markdown,pandoc nnoremap <buffer> $ g$
+    autocmd FileType markdown,pandoc vnoremap <buffer> j gj
+    autocmd FileType markdown,pandoc vnoremap <buffer> k gk
+    autocmd FileType markdown,pandoc vnoremap <buffer> 0 g0
+    autocmd FileType markdown,pandoc vnoremap <buffer> $ g$
 augroup END
 
 set list                                        " Show spaces, line breaks, the like

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(touch:*)",
+      "Bash(/Users/starikov/.config/theme-switcher/switch-theme.sh:*)",
+      "Bash(launchctl load:*)",
+      "Bash(cp:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(~/.config/theme-switcher/switch-theme.sh:*)"
+    ],
+    "deny": []
+  }
+}

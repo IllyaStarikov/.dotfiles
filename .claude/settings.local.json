@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp:*)",
+      "Bash(pkill:*)",
+      "Bash(find:*)",
+      "Bash(chmod:*)",
+      "Bash(/Users/starikov/.dotfiles/src/theme-switcher/switch-theme.sh:*)",
+      "Bash(tmux source-file:*)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(defaults read:*)",
+      "Bash(bash:*)",
+      "Bash(tmux show-options:*)",
+      "Bash(tmux refresh-client:*)",
+      "Bash(tree:*)",
+      "Bash(echo:*)",
+      "Bash(nvim:*)",
+      "Bash(./src/theme-switcher/switch-theme.sh:*)",
+      "Bash(export TEMP_DARK=\"Dark\")",
+      "Bash(grep:*)",
+      "Bash(true)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(cat:*)",
+      "Bash(/Users/starikov/.dotfiles/extract-github-colors.sh:*)",
+      "Bash(tmux:*)",
+      "Bash(~/dotfiles/src/theme-switcher/switch-theme.sh:*)",
+      "Bash(~/.dotfiles/src/theme-switcher/switch-theme.sh:*)",
+      "Bash(timeout 5 nvim:*)"
+    ],
+    "deny": []
+  }
+}
