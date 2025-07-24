@@ -86,9 +86,11 @@ set autoread                                    " Set to auto read when a file i
 set virtualedit=block                           " freedom of movement
 
 set expandtab                                   " tabs => spaces
-set shiftwidth=4                                " set number of spaces to 4
-set tabstop=4                                   " if i has to use tabs, make it look like 4 spaces
-set softtabstop=4                               " same as above idk
+set shiftwidth=2                                " set number of spaces to 4
+set tabstop=2                                   " if i has to use tabs, make it look like 4 spaces
+set softtabstop=2                               " same as above idk
+
+autocmd FileType python setlocal shiftwidth=2 tabstop=2 softtabstop=2
 
 set smartindent                                 " autoindent on newlines
 set autoindent                                  " copy indentation from previous lines
