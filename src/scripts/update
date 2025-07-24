@@ -3,8 +3,13 @@
 brew update
 brew upgrade
 brew upgrade --cask
+brew cleanup
 
 nvim -c "PlugUpgrade"
 nvim -c "PlugUpdate"
 
 omz update
+
+npm update -g
+
+xcode-select --install
