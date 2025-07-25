@@ -118,6 +118,47 @@ hi DiagnosticSignError ctermbg=235 ctermfg=203 guibg=#1e2132 guifg=#e27878
 hi DiagnosticFloatingHint ctermbg=236 ctermfg=251 guibg=#3d425b guifg=#c6c8d1
 hi icebergALAccentRed ctermfg=203 guifg=#e27878
 
+" Markview-specific highlight groups for proper symbol rendering
+hi MarkviewTaskUnchecked guifg=#e27878 ctermfg=203
+hi MarkviewTaskChecked guifg=#b4be82 ctermfg=150
+hi MarkviewTaskPending guifg=#e2a478 ctermfg=216
+hi MarkviewListItemMinus guifg=#e2a478 ctermfg=216
+hi MarkviewListItemStar guifg=#89b8c2 ctermfg=109
+hi MarkviewListItemPlus guifg=#b4be82 ctermfg=150
+hi MarkviewLink guifg=#84a0c6 ctermfg=110 gui=underline cterm=underline
+hi MarkviewImage guifg=#89b8c2 ctermfg=109
+hi MarkviewCode guifg=#84a0c6 guibg=#1e2132 ctermfg=110 ctermbg=235
+hi MarkviewInlineCode guifg=#84a0c6 guibg=#1e2132 ctermfg=110 ctermbg=235
+hi MarkviewCodeInfo guifg=#e2a478 guibg=#1e2132 ctermfg=216 ctermbg=235
+hi MarkviewCodeBorder guifg=#444b71 ctermfg=239
+hi MarkviewHeading1 guifg=#a093c7 ctermfg=140 gui=bold cterm=bold
+hi MarkviewHeading2 guifg=#e27878 ctermfg=203 gui=bold cterm=bold
+hi MarkviewHeading3 guifg=#89b8c2 ctermfg=109 gui=bold cterm=bold
+hi MarkviewHeading4 guifg=#b4be82 ctermfg=150 gui=bold cterm=bold
+hi MarkviewHeading5 guifg=#e2a478 ctermfg=216 gui=bold cterm=bold
+hi MarkviewHeading6 guifg=#84a0c6 ctermfg=110 gui=bold cterm=bold
+hi MarkviewHeading1Sign guifg=#a093c7 ctermfg=140
+hi MarkviewHeading2Sign guifg=#e27878 ctermfg=203
+hi MarkviewBlockQuoteDefault guifg=#89b8c2 ctermfg=109 gui=italic cterm=italic
+hi MarkviewBlockQuoteNote guifg=#84a0c6 ctermfg=110
+hi MarkviewBlockQuoteOk guifg=#b4be82 ctermfg=150
+hi MarkviewBlockQuoteWarn guifg=#e2a478 ctermfg=216
+hi MarkviewBlockQuoteError guifg=#e27878 ctermfg=203
+hi MarkviewBlockQuoteSpecial guifg=#a093c7 ctermfg=140
+hi MarkviewRule guifg=#444b71 ctermfg=239
+hi MarkviewTable guifg=#c6c8d1 ctermfg=252
+hi MarkviewTableBorder guifg=#444b71 ctermfg=239
+hi MarkviewCheckboxChecked guifg=#b4be82 ctermfg=150
+hi MarkviewCheckboxUnchecked guifg=#e27878 ctermfg=203
+hi MarkviewCheckboxProgress guifg=#e2a478 ctermfg=216
+hi MarkviewCheckboxImportant guifg=#a093c7 ctermfg=140
+hi MarkviewEmail guifg=#84a0c6 ctermfg=110
+hi MarkviewBold guifg=#c6c8d1 ctermfg=252 gui=bold cterm=bold
+hi MarkviewItalic guifg=#c6c8d1 ctermfg=252 gui=italic cterm=italic
+hi MarkviewStrikethrough guifg=#6b7089 ctermfg=242 gui=strikethrough cterm=strikethrough
+hi MarkviewDiffAdd guifg=#b4be82 ctermfg=150
+hi MarkviewDiffDelete guifg=#e27878 ctermfg=203
+
 if has('nvim')
   let g:terminal_color_0 = '#1e2132'
   let g:terminal_color_1 = '#e27878'

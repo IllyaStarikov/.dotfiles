@@ -8,6 +8,7 @@ local opts = { noremap = true, silent = true }
 
 -- Set leader key
 vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 -- Commands for common typos
 vim.api.nvim_create_user_command("W", "w", {})
@@ -78,3 +79,30 @@ map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", opts)
 -- Terminal
 map("n", "<leader>t", ":terminal<cr>", opts)
 map("t", "<Esc>", "<C-\\><C-n>", opts)
+
+-- Modern improvements
+-- Better search experience
+map("n", "<Esc>", ":nohlsearch<CR>", opts)
+
+-- Move lines up/down
+map("v", "J", ":m '>+1<CR>gv=gv", opts)
+map("v", "K", ":m '<-2<CR>gv=gv", opts)
+
+-- Better indenting in visual mode
+map("v", "<", "<gv", opts)
+map("v", ">", ">gv", opts)
+
+-- Paste without yanking in visual mode
+map("v", "p", '"_dP', opts)
+
+-- Center cursor on jumps
+map("n", "<C-d>", "<C-d>zz", opts)
+map("n", "<C-u>", "<C-u>zz", opts)
+map("n", "n", "nzzzv", opts)
+map("n", "N", "Nzzzv", opts)
+
+-- Quick save all
+map("n", "<leader>W", ":wa<cr>", opts)
+
+-- Close all but current buffer
+map("n", "<leader>o", ":%bd|e#<cr>", opts)
