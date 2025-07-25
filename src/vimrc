@@ -47,17 +47,29 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
                                                 " Language specific code
 Plug 'illyastarikov/skeleton-files'
-Plug 'hrsh7th/nvim-compe'
 Plug 'justinmk/vim-syntax-extra'
 Plug 'keith/swift.vim', { 'for': 'swift' }
-Plug 'neovim/nvim-lspconfig'
+
+" LSP and completion plugins
+Plug 'neovim/nvim-lspconfig'                    " Core LSP configurations for Neovim
+Plug 'williamboman/mason.nvim'                  " LSP/DAP installer UI
+Plug 'williamboman/mason-lspconfig.nvim'        " Bridge Mason with lspconfig
+
+" Autocompletion plugins (nvim-cmp and sources)
+Plug 'hrsh7th/nvim-cmp'                         " Completion engine plugin
+Plug 'hrsh7th/cmp-nvim-lsp'                     " LSP source for nvim-cmp
+Plug 'hrsh7th/cmp-buffer'                       " Buffer word completion source
+Plug 'hrsh7th/cmp-path'                         " File path completion source
+Plug 'L3MON4D3/LuaSnip'                         " Snippet engine
+Plug 'saadparwaiz1/cmp_luasnip'                 " Snippet completions source
+Plug 'rafamadriz/friendly-snippets'             " Ready-made snippets
+Plug 'onsails/lspkind-nvim'                     " Icons for completion menu
+
 Plug 'vim-pandoc/vim-pandoc-syntax'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'illyastarikov/vim-snippets'               " Write code
 Plug 'junegunn/vim-easy-align'
-Plug 'shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'sirVer/ultisnips'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'tommcdo/vim-lion'
 Plug 'tpope/vim-commentary'
@@ -336,22 +348,10 @@ set listchars=tab:│·,trail:·,extends:→,extends:⟩,precedes:⟨
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 4. Autocomplete/Snippets/Linting
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:UltiSnipsExpandTrigger = "<nop>"
-inoremap <expr> <CR> pumvisible() ? "<C-R>=ExpandSnippetOrCarriageReturn()<CR>" : "\<CR>"
-
-" let g:ale_linters = {
-"       \ 'python': ['flake8', 'pylint']
-"       \ }
-
 let g:ale_python_flake8_options = "--max-line-length=200"
 let g:ale_python_pylint_options = "--max-line-length=200 --errors-only"
-
-let g:UltiSnipsJumpForwardTrigger = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 set shortmess+=c
 
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 let g:ale_sign_error = '>>'                     " Cool >> for errors
 let g:ale_sign_warning = '>'                    " and > for warnings
@@ -359,8 +359,6 @@ let g:ale_sign_warning = '>'                    " and > for warnings
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
-
-let g:deoplete#enable_at_startup = 1
 
 " autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync(nil, 100)
 
@@ -436,16 +434,6 @@ nmap <C-[> :ALEHover<CR>
 " Copy Filename
 nmap ,cs :let @+=expand("%")<CR>
 nmap ,cl :let @+=expand("%:p")<CR>
-
-" LSP
-nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> gD <cmd>lua vim.lsp.buf.declaration()<CR>
-nnoremap <silent> gr <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> gi <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <silent> K <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> <C-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
-nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 8. Leader Key
@@ -563,14 +551,6 @@ function! NormalizeMarkdown()  " A bunch of regexes to make markdown happy
     call winrestview(l:save)
 endfunction
 
-function! ExpandSnippetOrCarriageReturn()
-    let snippet = UltiSnips#ExpandSnippetOrJump()
-    if g:ulti_expand_or_jump_res > 0
-        return snippet
-    else
-        return "\<CR>"
-    endif
-endfunction
 
 "delete the buffer; keep windows; create a scratch buffer if no buffers left
 function! s:Kwbd(kwbdStage)
@@ -640,13 +620,108 @@ if vimrc_type == 'work'
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => 13. LSP
+" => 13. LSP and Autocompletion Setup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 lua << EOF
-require("lspconfig").pyright.setup{}
+-- 1. Setup Mason (servers already installed via Homebrew)
+require("mason").setup()
+require("mason-lspconfig").setup({
+    -- ensure_installed = { "pyright", "clangd", "marksman", "texlab", "lua_ls" }
+    -- ^ commented out since servers are installed via Homebrew
+})
+
+-- 2. nvim-cmp setup for autocompletion
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()  -- load friendly-snippets
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)  -- expand snippet
+    end,
+  },
+  mapping = {
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),         -- Enter to confirm selection
+    ["<C-Space>"] = cmp.mapping.complete(),                    -- Ctrl+Space to manually trigger completion
+    ["<Tab>"] = cmp.mapping(function(fallback)                 -- Tab to next item or snippet jump
+        if cmp.visible() then cmp.select_next_item()
+        elseif luasnip.expand_or_jumpable() then luasnip.expand_or_jump()
+        else fallback() end
+      end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)               -- Shift-Tab to previous item or snippet jump back
+        if cmp.visible() then cmp.select_prev_item()
+        elseif luasnip.jumpable(-1) then luasnip.jump(-1)
+        else fallback() end
+      end, { "i", "s" }),
+  },
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },   -- LSP completions
+    { name = "luasnip" },    -- Snippet completions
+    { name = "buffer" },
+    { name = "path" }
+  }),
+  formatting = {
+    format = require("lspkind").cmp_format({ mode = "symbol_text", maxwidth = 50 })
+    -- ^ lspkind to show icons in completion menu
+  }
+})
+
+-- 3. LSP server configurations
+local lspconfig = require("lspconfig")
+
+-- Capabilities for nvim-cmp integration
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- Optional: on_attach function to bind keys after LSP attaches to buffer
+local on_attach = function(client, bufnr)
+  local buf = vim.lsp.buf    -- alias for convenience
+  local map = function(mode, lhs, rhs, desc)
+    if desc then desc = "[LSP] " .. desc end
+    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent=true, noremap=true, desc = desc })
+  end
+  -- Keybindings for LSP features:
+  map("n", "gd", buf.definition, "Go to definition")
+  map("n", "gD", buf.declaration, "Go to declaration")
+  map("n", "gi", buf.implementation, "Go to implementation")
+  map("n", "gr", buf.references, "Find references")
+  map("n", "K", buf.hover, "Hover documentation")
+  map("n", "<F2>", buf.rename, "Rename symbol")
+  map("n", "<F4>", buf.code_action, "Code actions")
+  map("n", "gl", vim.diagnostic.open_float, "Show diagnostics")    -- Show diagnostics in floating window
+  map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
+  map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+end
+
+-- Enable each language server:
+lspconfig.pyright.setup{
+    capabilities = capabilities,
+    on_attach = on_attach
+}
+lspconfig.clangd.setup{
+    capabilities = capabilities,
+    on_attach = on_attach
+}
+lspconfig.marksman.setup{
+    capabilities = capabilities,
+    on_attach = on_attach
+}
+lspconfig.texlab.setup{
+    capabilities = capabilities,
+    on_attach = on_attach
+}
+lspconfig.lua_ls.setup{
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {  -- example of how to configure a server (here, Lua LS)
+      Lua = {
+        diagnostics = { globals = {"vim"} },  -- recognize `vim` global
+        workspace = { library = vim.api.nvim_list_runtime_paths() }
+      }
+    }
+}
 EOF
 
 set completeopt-=preview
 
-" use omni completion provided by lsp
-autocmd Filetype python setlocal omnifunc=v:lua.vim.lsp.omnifunc
+" Note: omni completion is now handled by nvim-cmp with LSP source
