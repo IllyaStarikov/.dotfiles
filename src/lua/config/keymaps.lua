@@ -106,3 +106,91 @@ map("n", "<leader>W", ":wa<cr>", opts)
 
 -- Close all but current buffer
 map("n", "<leader>o", ":%bd|e#<cr>", opts)
+
+-- CodeCompanion AI Assistant
+-- Chat and interaction
+map("n", "<leader>cc", "<cmd>CodeCompanionChat<cr>", { desc = "CodeCompanion Chat" })
+map("v", "<leader>cc", "<cmd>CodeCompanionChat<cr>", { desc = "CodeCompanion Chat with selection" })
+map("n", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { desc = "CodeCompanion Action Palette" })
+map("v", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { desc = "CodeCompanion Action Palette" })
+
+-- Inline assistance
+map("n", "<leader>ci", "<cmd>CodeCompanionInline<cr>", { desc = "CodeCompanion Inline" })
+map("v", "<leader>ci", "<cmd>CodeCompanionInline<cr>", { desc = "CodeCompanion Inline with selection" })
+
+-- Quick code actions (visual mode)
+map("v", "<leader>cr", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Code Review", "n", false)
+  end, 100)
+end, { desc = "Code Review" })
+
+map("v", "<leader>co", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Optimize Code", "n", false)
+  end, 100)
+end, { desc = "Optimize Code" })
+
+map("v", "<leader>cm", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Add Comments", "n", false)
+  end, 100)
+end, { desc = "Add Comments" })
+
+map("v", "<leader>ct", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Generate Tests", "n", false)
+  end, 100)
+end, { desc = "Generate Tests" })
+
+map("v", "<leader>ce", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Explain Code", "n", false)
+  end, 100)
+end, { desc = "Explain Code" })
+
+map("v", "<leader>cf", function()
+  vim.cmd("CodeCompanionActions")
+  vim.defer_fn(function()
+    vim.api.nvim_feedkeys("Fix Bug", "n", false)
+  end, 100)
+end, { desc = "Fix Bug" })
+
+-- Chat management
+map("n", "<leader>cl", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Toggle CodeCompanion Chat" })
+map("n", "<leader>cs", "<cmd>CodeCompanionChat Stop<cr>", { desc = "Stop CodeCompanion" })
+map("n", "<leader>cn", "<cmd>CodeCompanionChat New<cr>", { desc = "New CodeCompanion Chat" })
+
+-- Toggle between different adapters (requires custom function)
+map("n", "<leader>cal", function()
+  require("codecompanion").setup({
+    strategies = { chat = { adapter = "ollama" } }
+  })
+  print("Switched to Local Ollama")
+end, { desc = "Switch to Ollama" })
+
+map("n", "<leader>caa", function()
+  require("codecompanion").setup({
+    strategies = { chat = { adapter = "anthropic" } }
+  })
+  print("Switched to Anthropic Claude")
+end, { desc = "Switch to Anthropic" })
+
+map("n", "<leader>cao", function()
+  require("codecompanion").setup({
+    strategies = { chat = { adapter = "openai" } }
+  })
+  print("Switched to OpenAI")
+end, { desc = "Switch to OpenAI" })
+
+map("n", "<leader>cac", function()
+  require("codecompanion").setup({
+    strategies = { chat = { adapter = "copilot" } }
+  })
+  print("Switched to Copilot")
+end, { desc = "Switch to Copilot" })
