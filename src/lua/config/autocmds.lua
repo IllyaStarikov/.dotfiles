@@ -27,6 +27,112 @@ end
 vim.api.nvim_create_user_command("TrimWhitespace", trim_whitespace, {})
 vim.api.nvim_create_user_command("NormalizeMarkdown", normalize_markdown, {})
 
+-- Markdown syntax highlighting enhancement
+local markdown_group = augroup("MarkdownEnhancements", { clear = true })
+
+autocmd("FileType", {
+  group = markdown_group,
+  pattern = { "markdown", "md" },
+  callback = function()
+    -- Enable treesitter highlighting for embedded code blocks
+    vim.opt_local.conceallevel = 2
+    vim.opt_local.concealcursor = "nc"
+    
+    -- Set up syntax highlighting for code blocks with enhanced visual borders
+    vim.cmd([[
+      " Define custom highlight groups for code block borders
+      highlight CodeBlockBorder guifg=#30363d gui=bold
+      highlight CodeBlockBackground guibg=#161b22
+      highlight CodeBlockLang guifg=#ffa657 gui=bold,italic guibg=#161b22
+      
+      " Python syntax
+      syntax include @pythonSyntax syntax/python.vim
+      syntax region markdownPythonCode start="```python" end="```" contains=@pythonSyntax keepend
+      
+      " JavaScript syntax
+      syntax include @javascriptSyntax syntax/javascript.vim
+      syntax region markdownJavaScriptCode start="```javascript" end="```" contains=@javascriptSyntax keepend
+      syntax region markdownJavaScriptCode start="```js" end="```" contains=@javascriptSyntax keepend
+      
+      " Bash syntax
+      syntax include @bashSyntax syntax/bash.vim
+      syntax region markdownBashCode start="```bash" end="```" contains=@bashSyntax keepend
+      syntax region markdownBashCode start="```sh" end="```" contains=@bashSyntax keepend
+      
+      " Lua syntax
+      syntax include @luaSyntax syntax/lua.vim
+      syntax region markdownLuaCode start="```lua" end="```" contains=@luaSyntax keepend
+      
+      " Vim syntax
+      syntax include @vimSyntax syntax/vim.vim
+      syntax region markdownVimCode start="```vim" end="```" contains=@vimSyntax keepend
+      
+      " JSON syntax
+      syntax include @jsonSyntax syntax/json.vim
+      syntax region markdownJsonCode start="```json" end="```" contains=@jsonSyntax keepend
+      
+      " YAML syntax
+      syntax include @yamlSyntax syntax/yaml.vim
+      syntax region markdownYamlCode start="```yaml" end="```" contains=@yamlSyntax keepend
+      
+      " HTML syntax
+      syntax include @htmlSyntax syntax/html.vim
+      syntax region markdownHtmlCode start="```html" end="```" contains=@htmlSyntax keepend
+      
+      " CSS syntax
+      syntax include @cssSyntax syntax/css.vim
+      syntax region markdownCssCode start="```css" end="```" contains=@cssSyntax keepend
+      
+      " Rust syntax
+      syntax include @rustSyntax syntax/rust.vim
+      syntax region markdownRustCode start="```rust" end="```" contains=@rustSyntax keepend
+      
+      " Go syntax
+      syntax include @goSyntax syntax/go.vim
+      syntax region markdownGoCode start="```go" end="```" contains=@goSyntax keepend
+      
+      " TypeScript syntax
+      syntax include @typescriptSyntax syntax/typescript.vim
+      syntax region markdownTypeScriptCode start="```typescript" end="```" contains=@typescriptSyntax keepend
+      syntax region markdownTypeScriptCode start="```ts" end="```" contains=@typescriptSyntax keepend
+      
+      " Enhanced code block delimiters with box drawing
+      syntax match markdownCodeBlockDelimiter /^```.*$/ contains=markdownCodeBlockLang
+      syntax match markdownCodeBlockLang /```\zs\w\+/ contained
+      highlight markdownCodeBlockDelimiter guifg=#48cae4 gui=bold
+      highlight markdownCodeBlockLang guifg=#ffa657 gui=bold,italic guibg=#161b22
+    ]])
+    
+    -- Add signs for code block borders (visual left border)
+    vim.fn.sign_define("CodeBlockBorder", { text = "│", texthl = "CodeBlockBorder" })
+    
+    -- Function to add visual borders to code blocks
+    local function add_code_block_borders()
+      local bufnr = vim.api.nvim_get_current_buf()
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+      local in_code_block = false
+      
+      for i, line in ipairs(lines) do
+        if line:match("^```") then
+          in_code_block = not in_code_block
+        elseif in_code_block then
+          -- Add sign for visual left border
+          vim.fn.sign_place(0, "CodeBlockBorderGroup", "CodeBlockBorder", bufnr, { lnum = i })
+        end
+      end
+    end
+    
+    -- Apply borders on buffer changes
+    vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "InsertLeave" }, {
+      buffer = vim.api.nvim_get_current_buf(),
+      callback = add_code_block_borders
+    })
+    
+    -- Initial border application
+    add_code_block_borders()
+  end
+})
+
 -- Normalize group - file processing rules
 local normalize_group = augroup("normalize", { clear = true })
 
