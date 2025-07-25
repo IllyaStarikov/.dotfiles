@@ -67,6 +67,24 @@ require("lazy").setup({
   { "rafamadriz/friendly-snippets" },
   { "onsails/lspkind-nvim" },
 
+  -- AI Code Companion
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+      "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
+      {
+        "stevearc/dressing.nvim", -- Optional: Improves `vim.ui.select`
+        opts = {},
+      },
+    },
+    config = function()
+      require('config.codecompanion').setup()
+    end
+  },
+
   -- Writing and editing
   {
     "iamcco/markdown-preview.nvim",
