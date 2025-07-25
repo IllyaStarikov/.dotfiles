@@ -1,6 +1,11 @@
 #!/bin/bash
+set -eo pipefail  # Exit on error, pipe failures (removed -u for array handling)
 
 show_help() {
+    # Default theme mapping
+    local DEFAULT_LIGHT_THEME="iceberg_light"
+    local DEFAULT_DARK_THEME="dracula"
+    
     echo "Theme Switcher - dotfiles theme management"
     echo "========================================="
     echo ""
@@ -10,9 +15,10 @@ show_help() {
     echo ""
     echo "EXAMPLES:"
     echo "  theme                # Auto-detect based on macOS appearance"
-    echo "  theme write          # Switch to write theme (light mode)"
-    echo "  theme write_dark     # Switch to write theme (dark mode)"
-    echo "  theme write_light    # Same as 'theme write' (alias)"
+    echo "  theme default        # Same as auto-detect"
+    echo "  theme iceberg_light  # Switch to Iceberg light theme"
+    echo "  theme iceberg_dark   # Switch to Iceberg dark theme"
+    echo "  theme dracula        # Switch to Dracula theme"
     echo ""
     echo "AVAILABLE THEMES:"
     
@@ -31,8 +37,11 @@ show_help() {
                 if [[ "$theme_name" == github_* ]]; then
                     github_themes+=("$theme_name")
                 else
-                    # Regular theme families
-                    local family_name="${theme_name%_dark}"
+                    # Extract theme family from name
+                    local family_name="${theme_name%_light}"
+                    family_name="${family_name%_dark}"
+                    
+                    # Add to families if not already present
                     if [[ ! " ${theme_families[@]} " =~ " ${family_name} " ]]; then
                         theme_families+=("$family_name")
                     fi
@@ -51,17 +60,20 @@ show_help() {
         # Display regular theme families
         for family in "${theme_families[@]}"; do
             echo ""
-            echo "${family} family:"
+            echo "${family} theme:"
             
-            # Check if base theme exists (light mode)
-            if [ -d "$themes_dir/$family" ]; then
-                printf "  theme %-25s # Light mode\n" "$family"
-                printf "  theme %-25s # Light mode (alias)\n" "${family}_light"
+            # Check for light/dark variants with new naming
+            if [ -d "$themes_dir/${family}_light" ]; then
+                printf "  theme %-25s # Light mode\n" "${family}_light"
             fi
             
-            # Check if dark variant exists
             if [ -d "$themes_dir/${family}_dark" ]; then
                 printf "  theme %-25s # Dark mode\n" "${family}_dark"
+            fi
+            
+            # Check if standalone theme exists
+            if [ -d "$themes_dir/$family" ] && [ ! -d "$themes_dir/${family}_light" ] && [ ! -d "$themes_dir/${family}_dark" ]; then
+                printf "  theme %-25s\n" "$family"
             fi
         done
         
@@ -81,14 +93,21 @@ show_help() {
     fi
     
     echo ""
+    echo "DEFAULT THEMES:"
+    echo "  • theme / theme default → Automatically selects:"
+    echo "    - Light mode: $DEFAULT_LIGHT_THEME"
+    echo "    - Dark mode: $DEFAULT_DARK_THEME"
+    echo ""
     echo "THEME NAMING CONVENTION:"
-    echo "  • Base theme name = light mode (e.g., write, tron, default)"
-    echo "  • Dark variant = base + _dark suffix (e.g., write_dark, tron_dark)"
-    echo "  • Light alias = base + _light works same as base (e.g., write_light = write)"
+    echo "  • Light themes end with _light (e.g., iceberg_light)"
+    echo "  • Dark themes end with _dark (e.g., iceberg_dark)"
+    echo "  • Standalone themes have no suffix (e.g., dracula)"
     echo ""
     echo "AUTOMATIC DETECTION:"
-    echo "  When no theme is specified, automatically uses 'default' or 'default_dark'"
-    echo "  based on macOS system appearance (Light/Dark mode)."
+    echo "  When no theme is specified or 'default' is used, automatically selects:"
+    echo "  • Light mode: $DEFAULT_LIGHT_THEME"
+    echo "  • Dark mode: $DEFAULT_DARK_THEME"
+    echo "  based on macOS system appearance."
     echo ""
 }
 
@@ -109,30 +128,44 @@ parse_theme_name() {
         return
     fi
     
-    # Handle aliases: write_light -> write, default_light -> default
+    # Handle new naming convention with actual theme names
     if [[ "$input_theme" == *"_light" ]]; then
-        input_theme="${input_theme%_light}"
-    fi
-    
-    # Check if theme ends with _dark
-    if [[ "$input_theme" == *"_dark" ]]; then
-        BASE_THEME="${input_theme%_dark}"
+        BASE_THEME="$input_theme"
+        VARIANT="light"
+    elif [[ "$input_theme" == *"_dark" ]]; then
+        BASE_THEME="$input_theme"
         VARIANT="dark"
     else
+        # Single theme name - treat as light variant
         BASE_THEME="$input_theme"
         VARIANT="light"
     fi
 }
+
+# Default theme mapping
+# Currently: light = iceberg_light, dark = dracula
+DEFAULT_LIGHT_THEME="iceberg_light"
+DEFAULT_DARK_THEME="dracula"
 
 # Determine theme and variant
 if [ -z "$1" ]; then
     # Auto-detect based on system appearance
     APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
     if [[ "$APPEARANCE" == "Dark" ]]; then
-        BASE_THEME="default"
+        BASE_THEME="$DEFAULT_DARK_THEME"
         VARIANT="dark"
     else
-        BASE_THEME="default"
+        BASE_THEME="$DEFAULT_LIGHT_THEME"
+        VARIANT="light"
+    fi
+elif [[ "$1" == "default" ]]; then
+    # Handle 'default' specially - use system appearance
+    APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+    if [[ "$APPEARANCE" == "Dark" ]]; then
+        BASE_THEME="$DEFAULT_DARK_THEME"
+        VARIANT="dark"
+    else
+        BASE_THEME="$DEFAULT_LIGHT_THEME"
         VARIANT="light"
     fi
 else
@@ -149,14 +182,7 @@ elif [[ "$BASE_THEME" == github_dark* ]]; then
 fi
 
 # Construct full theme name for directory lookup
-if [[ "$BASE_THEME" == github_* ]]; then
-    # GitHub themes are standalone - use the full name as-is
-    FULL_THEME_NAME="$BASE_THEME"
-elif [[ "$VARIANT" == "dark" ]]; then
-    FULL_THEME_NAME="${BASE_THEME}_dark"
-else
-    FULL_THEME_NAME="$BASE_THEME"
-fi
+FULL_THEME_NAME="$BASE_THEME"
 
 # Create config directory if it doesn't exist
 CONFIG_DIR="$HOME/.config/theme-switcher"
@@ -183,8 +209,10 @@ EOF
 # Theme directory
 THEME_DIR="$HOME/.dotfiles/src/theme-switcher/themes/$FULL_THEME_NAME"
 
-if [ ! -d "$THEME_DIR" ]; then
-    echo "Theme '$FULL_THEME_NAME' not found."
+if [[ ! -d "$THEME_DIR" ]]; then
+    echo "❌ Error: Theme '$FULL_THEME_NAME' not found at $THEME_DIR"
+    echo "Available themes:"
+    ls -1 "$HOME/.dotfiles/src/theme-switcher/themes/" | head -5
     exit 1
 fi
 
