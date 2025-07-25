@@ -1,0 +1,15 @@
+# Generated Vim spell files
+*.spl
+
+# Neovim plugin lock files
+lazy-lock.json
+src/lazy-lock.json
+
+# Runtime generated files
+.netrwhist
+Session.vim
+
+# Claude Code configuration
+.claude/
+CLAUDE.md
+

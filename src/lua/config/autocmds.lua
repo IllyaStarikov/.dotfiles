@@ -122,11 +122,15 @@ autocmd("FileType", {
       end
     end
     
-    -- Apply borders on buffer changes
-    vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "InsertLeave" }, {
-      buffer = vim.api.nvim_get_current_buf(),
-      callback = add_code_block_borders
-    })
+    -- Apply borders on buffer changes (with error handling)
+    local success, _ = pcall(function()
+      vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "InsertLeave" }, {
+        buffer = vim.api.nvim_get_current_buf(),
+        callback = function()
+          pcall(add_code_block_borders)
+        end
+      })
+    end)
     
     -- Initial border application
     add_code_block_borders()
@@ -181,24 +185,17 @@ autocmd("FileType", {
 -- NERDTree group
 local nerdtree_group = augroup("nerdtreehelp", { clear = true })
 
-autocmd("VimEnter", {
-  group = nerdtree_group,
-  pattern = "*",
-  command = "NERDTree"
-})
-
-autocmd("VimEnter", {
-  group = nerdtree_group,
-  pattern = "*",
-  command = "wincmd p"
-})
 
 autocmd("BufEnter", {
   group = nerdtree_group,
   pattern = "*",
   callback = function()
-    if vim.fn.winnr("$") == 1 and vim.b.NERDTree ~= nil and vim.b.NERDTree.isTabTree() then
-      vim.cmd("q")
+    -- Close NERDTree if it's the last window and is a tab tree
+    if vim.fn.winnr("$") == 1 and vim.fn.exists("b:NERDTree") == 1 then
+      local nerdtree = vim.b.NERDTree
+      if nerdtree and type(nerdtree) == "table" and nerdtree.isTabTree and nerdtree:isTabTree() then
+        vim.cmd("q")
+      end
     end
   end
 })
