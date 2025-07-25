@@ -24,23 +24,19 @@ local function setup_theme()
     end
     
     -- Apply colorscheme and airline theme based on current theme
-    if theme == "default" then
-      if variant == "dark" then
-        vim.cmd("colorscheme dracula")
-        vim.g.airline_theme = 'dracula'
-      else
-        vim.cmd("colorscheme iceberg")
-        vim.g.airline_theme = 'iceberg'
-      end
+    if theme == "dracula" then
+      vim.cmd("colorscheme dracula")
+      vim.g.airline_theme = 'dracula'
+      vim.opt.background = "dark"
+    elseif theme == "iceberg_light" then
+      vim.cmd("colorscheme iceberg")
+      vim.g.airline_theme = 'iceberg'
+      vim.opt.background = "light"
+    elseif theme == "iceberg_dark" then
+      vim.cmd("colorscheme iceberg")
+      vim.g.airline_theme = 'iceberg'
+      vim.opt.background = "dark"
     elseif theme == "tron" then
-      if variant == "dark" then
-        vim.cmd("colorscheme iceberg")
-        vim.g.airline_theme = 'iceberg'
-      else
-        vim.cmd("colorscheme iceberg")
-        vim.g.airline_theme = 'iceberg'
-      end
-    elseif theme == "write" then
       if variant == "dark" then
         vim.cmd("colorscheme iceberg")
         vim.g.airline_theme = 'iceberg'

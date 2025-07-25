@@ -92,33 +92,16 @@ local function setup_lsp()
     map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
   end
 
-  -- Enable each language server:
-  lspconfig.pyright.setup{
-      capabilities = capabilities,
-      on_attach = on_attach
-  }
-  
-  lspconfig.clangd.setup{
-      capabilities = capabilities,
-      on_attach = on_attach
-  }
-  
-  lspconfig.marksman.setup{
-      capabilities = capabilities,
-      on_attach = on_attach
-  }
-  
-  lspconfig.texlab.setup{
-      capabilities = capabilities,
-      on_attach = on_attach
-  }
-  
-  lspconfig.lua_ls.setup{
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = {  -- example of how to configure a server (here, Lua LS)
+  -- Enable language servers only if they exist
+  local servers = {
+    pyright = {},
+    clangd = {},
+    marksman = {},
+    texlab = {},
+    lua_ls = {
+      settings = {
         Lua = {
-          diagnostics = { globals = {"vim"} },  -- recognize `vim` global
+          diagnostics = { globals = {"vim"} },
           workspace = { 
             library = vim.api.nvim_list_runtime_paths(),
             checkThirdParty = false
@@ -126,7 +109,16 @@ local function setup_lsp()
           telemetry = { enable = false }
         }
       }
+    }
   }
+  
+  for server, config in pairs(servers) do
+    if vim.fn.executable(server) == 1 or server == "lua_ls" then
+      config.capabilities = capabilities
+      config.on_attach = on_attach
+      lspconfig[server].setup(config)
+    end
+  end
 end
 
 -- Custom Kwbd function (migrated from vimscript)

@@ -1,4 +1,34 @@
+# macOS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor artifacts
 tags
 tags.temp
 tags.lock
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+node_modules/
+.npm
+.pnpm-store/
+dist/
+build/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.iml

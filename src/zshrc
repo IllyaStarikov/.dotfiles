@@ -1,4 +1,7 @@
-eval $(/opt/homebrew/bin/brew shellenv)
+# Performance: Only eval brew if not already in PATH
+if [[ ! "$PATH" == */opt/homebrew/bin* ]]; then
+  eval $(/opt/homebrew/bin/brew shellenv)
+fi
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -16,7 +19,18 @@ SPACESHIP_BATTERY_SHOW=false
 #
 # Note: zsh-syntax-highlighting must be installed first.
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
-plugins=(vi-mode git brew history-substring-search python macos zsh-syntax-highlighting)
+# Optimized plugin loading order (syntax highlighting last for performance)
+plugins=(
+  vi-mode
+  git
+  brew
+  history-substring-search
+  python
+  macos
+  colored-man-pages
+  command-not-found
+  zsh-syntax-highlighting
+)
 
 # Faster Vim Mode
 export KEYTIMEOUT=1
@@ -49,7 +63,11 @@ alias ranger="source ranger"
 alias tx="tmuxinator"
 alias txs="tmuxinator start"
 
-alias ls="eza"
+# Modern ls replacement with better defaults
+alias ls="eza --group-directories-first"
+alias ll="eza -l --group-directories-first --time-style=relative"
+alias la="eza -la --group-directories-first --time-style=relative"
+alias tree="eza --tree"
 
 alias haskell="ghci"
 alias haskellcc="ghc"
@@ -78,7 +96,10 @@ alias .5="cd ../../../../.."
 alias ip="curl icanhazip.com"
 
 ## list TODO/FIX lines from the current project
-alias todos="ack -n --nogroup '(TODO|FIX(ME)?|NOTE|HACK)'"
+# Modern ripgrep-based search (faster than ack)
+alias todos="rg -n --no-heading '(TODO|FIX(ME)?|NOTE|HACK)'"
+alias find-file="fd"
+alias find-content="rg"
 
 ## disk stuff...
 alias df='df -H'
