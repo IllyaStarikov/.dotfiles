@@ -2,11 +2,11 @@
 size = 18
 
 [font.bold]
-family = "Menlo"
+family = "MesloLGL Nerd Font"
 style = "Bold"
 
 [font.normal]
-family = "Menlo"
+family = "MesloLGL Nerd Font"
 style = "Regular"
 
 [font.offset]
