@@ -89,8 +89,31 @@ local function setup_theme()
     vim.g.airline_theme = 'dracula'
   end
   
-  -- Apply italic comments
-  vim.cmd("highlight Comment cterm=italic gui=italic")
+  -- Apply better comment colors and italic style
+  vim.schedule(function()
+    local current_bg = vim.opt.background:get()
+    
+    if current_bg == "dark" then
+      -- Dark background - use lighter comment colors
+      vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
+      vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
+    else
+      -- Light background - use darker, more readable comment colors  
+      vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
+      vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
+    end
+    
+    -- Also fix other potentially problematic syntax groups
+    if current_bg == "light" then
+      -- Make sure other syntax elements are readable on light backgrounds
+      vim.cmd("highlight String guifg=#032F62 ctermfg=28")
+      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26") 
+      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")
+      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")
+      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")
+      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")
+    end
+  end)
 end
 
 -- Setup theme on startup
@@ -101,4 +124,25 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = vim.fn.expand("~/.config/theme-switcher/current-theme.sh"),
   callback = setup_theme,
   group = vim.api.nvim_create_augroup("ThemeReload", { clear = true })
+})
+
+-- Create user commands for theme management
+vim.api.nvim_create_user_command("ReloadTheme", setup_theme, {
+  desc = "Reload the current theme and fix comment colors"
+})
+
+vim.api.nvim_create_user_command("FixComments", function()
+  local current_bg = vim.opt.background:get()
+  
+  if current_bg == "dark" then
+    vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
+    print("Applied dark theme comment colors")
+  else
+    vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
+    print("Applied light theme comment colors")
+  end
+end, {
+  desc = "Fix comment colors for current background"
 })
