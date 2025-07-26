@@ -42,6 +42,27 @@ require("lazy").setup({
   { "tpope/vim-fugitive" },
   { "vim-airline/vim-airline" },
   { "vim-airline/vim-airline-themes" },
+  
+  -- Menu system for Neovim
+  { "nvzone/volt", lazy = true },
+  { 
+    "nvzone/menu", 
+    lazy = true,
+    dependencies = { "nvzone/volt" },
+    config = function()
+      require('config.menu').setup()
+    end,
+    keys = {
+      { "<C-t>", desc = "Open Smart Menu" },
+      { "<leader>m", desc = "Open Menu" },
+      { "<leader>M", desc = "Open Context Menu" },
+      { "<leader>mf", desc = "File Menu" },
+      { "<leader>mg", desc = "Git Menu" },
+      { "<leader>mc", desc = "Code Menu" },
+      { "<leader>ma", desc = "AI Assistant Menu" },
+      { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
+    }
+  },
 
   -- Language specific
   { "illyastarikov/skeleton-files" },
