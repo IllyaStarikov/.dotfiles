@@ -137,9 +137,7 @@ export TERM=xterm-256color
 # Add pyenv to path
 export PATH=$PATH:~/.scripts/
 
-alias brew='arch -arm64 /opt/homebrew/bin/brew'
-alias pyenv='arch -arm64 pyenv'
-
+# Initialize pyenv before creating aliases to avoid conflicts
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -147,6 +145,10 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
 fi
+
+# Architecture-specific aliases (after pyenv initialization)
+alias brew='arch -arm64 /opt/homebrew/bin/brew'
+alias pyenv='arch -arm64 pyenv'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/path.zsh.inc'; fi
