@@ -19,6 +19,10 @@ mv ~/.zshrc ~/.zshrc.pre-oh-my-zsh
 git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 
+## ZSH Syntax Highlighting & Auto-suggestions
+brew install zsh-syntax-highlighting
+brew install zsh-autosuggestions
+
 # Vim
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -36,6 +40,17 @@ brew install fzf
 brew install tmux
 brew install tmuxinator
 
+# Modern CLI tools
+brew install eza        # Modern ls replacement
+brew install bat        # Better cat with syntax highlighting
+brew install ripgrep    # Better grep
+brew install fd         # Better find
+brew install htop       # Better top
+brew install procs      # Modern ps
+brew install git-delta  # Better git diff
+brew install zoxide     # Smarter cd
+brew install starship   # Consider as alternative to spaceship prompt
+
 # Pip Packages
 python3 -m pip install neovim
 python3 -m pip install ipython
@@ -43,8 +58,11 @@ python3 -m pip install ipython
 # Global Git Ignore
 git config --global core.excludesfile '~/.gitignore'
 
-# Fonts
-git clone https://github.com/ryanoasis/nerd-fonts.git fonts
-source fonts/install.sh IBMPlexMono
-rm -rf fonts
+# Fonts - Install JetBrainsMono Nerd Font as default
+brew tap homebrew/cask-fonts
+brew install --cask font-jetbrains-mono-nerd-font
+brew install --cask font-symbols-only-nerd-font  # For additional glyph coverage
+
+# Also install powerline fonts for compatibility
+brew install --cask font-meslo-lg-nerd-font  # Fallback option
 

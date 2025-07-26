@@ -27,6 +27,7 @@ About my setup.
 - **Shell** [zsh](https://www.zsh.org/) + [Oh My Zsh](https://ohmyz.sh/)
 - **Terminal** [alacritty](https://github.com/alacritty/alacritty)
 - **Editor** [Neovim](https://neovim.io/)
+- **Font** [JetBrainsMono Nerd Font](https://www.jetbrains.com/lp/mono/)
 - **LaTeX** [MiKTeX](https://miktex.org)
 - **[tmux](https://github.com/tmux/tmux/wiki)** + [Tmuxinator](https://github.com/tmuxinator/tmuxinator)
     - *Package Manager* [TPM](https://github.com/tmux-plugins/tpm)
