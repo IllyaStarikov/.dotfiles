@@ -46,8 +46,18 @@ require("lazy").setup({
     },
   },
 
-  -- Modern QoL collection - replaces many individual plugins
+  -- snacks.nvim - Modern QoL suite for Neovim
   {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    config = function()
+      require('config.snacks').setup()
+    end,
+  },
+  
+  -- Legacy configuration (will be replaced by config.snacks)
+  --[[ {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
@@ -586,8 +596,7 @@ require("lazy").setup({
       easing = "outQuart",      -- Smooth but fast
       fps = 60,                 -- Smooth 60fps
     },
-  }
-  },
+  } --]]
 
   -- UI/UX plugins
   { "airblade/vim-gitgutter" },
@@ -668,7 +677,23 @@ require("lazy").setup({
       "rcarriga/nvim-notify",
     },
     config = function()
-      require('config.snacks').setup()
+      -- Use noice default configuration since snacks is temporarily disabled
+      require('noice').setup({
+        lsp = {
+          override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
+          },
+        },
+        presets = {
+          bottom_search = true,
+          command_palette = true,
+          long_message_to_split = true,
+          inc_rename = false,
+          lsp_doc_border = false,
+        },
+      })
     end,
   },
   
