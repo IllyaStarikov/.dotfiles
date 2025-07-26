@@ -254,7 +254,7 @@ function M.setup()
 
     -- 🎬 SCROLL: Ultra-smooth, performance-optimized scrolling
     scroll = {
-      enabled = true,
+      enabled = false,
       -- Aggressive performance tuning
       animate = {
         duration = { step = 8, total = 120 },  -- Faster than default
