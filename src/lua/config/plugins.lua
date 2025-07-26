@@ -300,34 +300,9 @@ require("lazy").setup({
       },
     },
 
-    -- 🎬 SCROLL: Ultra-smooth, performance-optimized scrolling
+    -- 🎬 SCROLL: Disabled for maximum performance
     scroll = {
       enabled = false,
-      -- Aggressive performance tuning
-      animate = {
-        duration = { step = 8, total = 120 },  -- Faster than default
-        easing = "outQuart",                   -- Smooth but snappy
-      },
-      -- Even faster for repeated scrolling
-      animate_repeat = {
-        delay = 50,                           -- Quick repeat detection
-        duration = { step = 4, total = 60 }, -- Lightning fast repeats
-        easing = "linear",
-      },
-      -- Smart buffer filtering for performance
-      filter = function(buf)
-        local bt = vim.bo[buf].buftype
-        local ft = vim.bo[buf].filetype
-        -- Skip heavy buffer types
-        return vim.g.snacks_scroll ~= false
-          and vim.b[buf].snacks_scroll ~= false
-          and bt ~= "terminal"
-          and bt ~= "quickfix"
-          and bt ~= "prompt"
-          and ft ~= "lazy"
-          and ft ~= "mason"
-          and vim.api.nvim_buf_line_count(buf) < 10000  -- Skip huge files
-      end,
     },
 
     -- 🎨 STATUSCOLUMN: Lightning-fast, minimal status column
@@ -668,34 +643,6 @@ require("lazy").setup({
     },
   },
 
-  -- Noice for a better UI experience
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
-    },
-    config = function()
-      -- Use noice default configuration since snacks is temporarily disabled
-      require('noice').setup({
-        lsp = {
-          override = {
-            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-            ["vim.lsp.util.stylize_markdown"] = true,
-            ["cmp.entry.get_documentation"] = true,
-          },
-        },
-        presets = {
-          bottom_search = true,
-          command_palette = true,
-          long_message_to_split = true,
-          inc_rename = false,
-          lsp_doc_border = false,
-        },
-      })
-    end,
-  },
   
   -- nvzone plugins ecosystem
   { "nvzone/volt", lazy = true },
