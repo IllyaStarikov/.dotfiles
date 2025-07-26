@@ -18,14 +18,12 @@ function M.setup()
         -- Key mappings configuration
         keymap = { preset = "default" },
         
-        -- Fuzzy matching configuration (use prebuilt binary or fallback to Lua)
+        -- Fuzzy matching configuration (use pure Lua implementation)
         fuzzy = {
-            -- Use pure Lua implementation to avoid Rust build issues
-            use_lua = true,
+            -- Always use the Lua implementation to avoid Rust nightly requirement
+            implementation = 'lua',
             prebuilt_binaries = {
-                download = false, -- Disable download attempts
-                force_version = nil,
-                ignore_version_mismatch = true,
+                download = false, -- No need to download when using Lua
             }
         },
         
