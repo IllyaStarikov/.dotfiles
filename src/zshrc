@@ -44,7 +44,7 @@ SPACESHIP_PROMPT_ORDER=(
   git           # Git section (git_branch + git_status)
   package       # Package version
   node          # Node.js section
-  python        # Python section
+  # python        # Python section (disabled to prevent errors)
   exec_time     # Execution time
   line_sep      # Line break
   vi_mode       # Vi-mode indicator
@@ -54,15 +54,11 @@ SPACESHIP_PROMPT_ORDER=(
 )
 
 # Python configuration for Spaceship
-SPACESHIP_PYTHON_SHOW=true
+SPACESHIP_PYTHON_SHOW=false  # Disable by default to prevent errors
 SPACESHIP_PYTHON_PREFIX="via "
 SPACESHIP_PYTHON_SUFFIX=" "
 SPACESHIP_PYTHON_SYMBOL="🐍 "
 SPACESHIP_PYTHON_COLOR="yellow"
-# Only show Python section if python is available
-if ! command -v python &> /dev/null && ! command -v python3 &> /dev/null; then
-  SPACESHIP_PYTHON_SHOW=false
-fi
 
 # Vi-mode indicators
 SPACESHIP_VI_MODE_INSERT="[λ]"
@@ -336,6 +332,10 @@ export PATH="$HOME/.local/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
   eval "$(pyenv virtualenv-init -)"
+  # Enable Python in Spaceship prompt after pyenv is loaded
+  if command -v python &>/dev/null || command -v python3 &>/dev/null; then
+    SPACESHIP_PYTHON_SHOW=true
+  fi
 fi
 
 # ┌─ NODE.JS ENVIRONMENT ─┐
