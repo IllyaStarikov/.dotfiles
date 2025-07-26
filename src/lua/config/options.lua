@@ -112,6 +112,9 @@ opt.redrawtime = 1500                -- Time in milliseconds for redrawing
 opt.ttimeout = true                  -- Time out on terminal codes
 opt.ttimeoutlen = 0                  -- Instant key sequence timeout
 
+-- Mouse scrolling optimization
+opt.mousescroll = "ver:3,hor:6"      -- Faster mouse scroll speed
+
 -- Python host (for legacy plugins)
 local python3_path = vim.fn.exepath('python3')
 if python3_path ~= '' then

@@ -115,11 +115,11 @@ map("v", ">", ">gv", opts)
 -- Paste without yanking in visual mode
 map("v", "p", '"_dP', opts)
 
--- Center cursor on jumps
-map("n", "<C-d>", "<C-d>zz", opts)
-map("n", "<C-u>", "<C-u>zz", opts)
-map("n", "n", "nzzzv", opts)
-map("n", "N", "Nzzzv", opts)
+-- Better jumps without centering (for performance)
+map("n", "<C-d>", "<C-d>", opts)
+map("n", "<C-u>", "<C-u>", opts)
+map("n", "n", "nzv", opts)
+map("n", "N", "Nzv", opts)
 
 -- Quick save all
 map("n", "<leader>W", ":wa<cr>", opts)
