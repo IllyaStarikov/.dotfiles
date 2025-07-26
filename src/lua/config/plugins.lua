@@ -87,15 +87,22 @@ require("lazy").setup({
   },
   { "williamboman/mason-lspconfig.nvim" },
 
-  -- Autocompletion plugins (nvim-cmp ecosystem)
-  { "hrsh7th/nvim-cmp" },
-  { "hrsh7th/cmp-nvim-lsp" },
-  { "hrsh7th/cmp-buffer" },
-  { "hrsh7th/cmp-path" },
-  { "L3MON4D3/LuaSnip" },
-  { "saadparwaiz1/cmp_luasnip" },
-  { "rafamadriz/friendly-snippets" },
-  { "onsails/lspkind-nvim" },
+  -- Modern high-performance completion
+  {
+    "saghen/blink.cmp",
+    lazy = false, -- lazy loading handled internally
+    dependencies = { 
+      "rafamadriz/friendly-snippets",
+      "L3MON4D3/LuaSnip", -- Snippet engine
+      -- Optional: add icon support
+      { "saghen/blink.compat", opts = {} }
+    },
+    version = "v0.*",
+    build = "cargo build --release",
+    config = function()
+      require('config.blink').setup()
+    end,
+  },
 
   -- AI Code Companion
   {
@@ -103,7 +110,7 @@ require("lazy").setup({
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+      "saghen/blink.cmp", -- Modern completion for slash commands and variables
       "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
       {
         "stevearc/dressing.nvim", -- Optional: Improves `vim.ui.select`
@@ -201,8 +208,8 @@ g.NERDTreeWinPos = "right"
 g.NERDTreeMapOpenInTab = '\r'
 g.NERDTreeGitStatusWithFlags = 1
 
--- ALE
-g.ale_completion_enabled = 1
+-- ALE (disable completion since we use blink.cmp)
+g.ale_completion_enabled = 0
 g.ale_python_pyls_executable = "pylsp"
 g.ale_python_flake8_options = "--max-line-length=200"
 g.ale_python_pylint_options = "--max-line-length=200 --errors-only"
