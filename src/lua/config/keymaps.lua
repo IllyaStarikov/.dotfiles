@@ -80,6 +80,16 @@ map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", opts)
 map("n", "<leader>t", ":terminal<cr>", opts)
 map("t", "<Esc>", "<C-\\><C-n>", opts)
 
+-- Menu system (comprehensive configuration in config/menu.lua)
+-- <C-t>        - Smart context-aware menu
+-- <leader>m    - Open main menu
+-- <leader>M    - Open context menu
+-- <leader>mf   - Quick file operations menu
+-- <leader>mg   - Git operations menu  
+-- <leader>mc   - Code/LSP operations menu
+-- <leader>ma   - AI Assistant menu
+-- <RightMouse> - Context menu at mouse position
+
 -- Modern improvements
 -- Better search experience
 map("n", "<Esc>", ":nohlsearch<CR>", opts)
