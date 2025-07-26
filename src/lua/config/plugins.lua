@@ -64,6 +64,19 @@ require("lazy").setup({
   { "tpope/vim-fugitive" },
   { "vim-airline/vim-airline" },
   { "vim-airline/vim-airline-themes" },
+
+  -- Noice for a better UI experience
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    },
+    config = function()
+      require('config.noice').setup()
+    end,
+  },
   
   -- nvzone plugins ecosystem
   { "nvzone/volt", lazy = true },
