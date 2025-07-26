@@ -28,6 +28,11 @@ opt.autoindent = true                -- copy indentation from previous lines
 
 -- Display
 opt.linebreak = true                 -- word wrap like a sane human being
+
+-- GUI font settings (for Neovide, VimR, etc.)
+if vim.fn.has("gui_running") == 1 or vim.g.neovide then
+  opt.guifont = "JetBrainsMono Nerd Font:h18"  -- Match Alacritty font size
+end
 opt.conceallevel = 0                 -- don't try to conceal things (except for markdown)
 opt.list = true
 opt.showbreak = "↪\\"

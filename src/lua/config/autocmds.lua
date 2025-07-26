@@ -252,7 +252,7 @@ autocmd("FileType", {
     
     -- Font settings for GUI vim
     if vim.fn.has("gui_running") == 1 then
-      vim.cmd("setlocal guifont=Verdana:h14")
+      vim.cmd("setlocal guifont=JetBrainsMono\\ Nerd\\ Font:h14")
     end
     
     -- Improved navigation for wrapped lines
