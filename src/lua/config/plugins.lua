@@ -70,6 +70,7 @@ require("lazy").setup({
       { "<leader>mg", desc = "Git Menu" },
       { "<leader>mc", desc = "Code Menu" },
       { "<leader>ma", desc = "AI Assistant Menu" },
+      { "<leader>md", desc = "Debug Menu" },
       { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
     }
   },
@@ -100,6 +101,39 @@ require("lazy").setup({
     dependencies = {
       -- Optional: Add LaTeX snippets support
       "L3MON4D3/LuaSnip",
+    },
+  },
+
+  -- Debug Adapter Protocol (DAP) support
+  {
+    "mfussenegger/nvim-dap",
+    lazy = true,
+    dependencies = {
+      -- DAP UI for better debugging experience
+      {
+        "rcarriga/nvim-dap-ui",
+        dependencies = {
+          "nvim-neotest/nvim-nio"  -- Required for dap-ui
+        },
+      },
+      -- Virtual text support for debugging
+      "theHamsta/nvim-dap-virtual-text",
+      -- Language-specific DAP adapters
+      "jay-babu/mason-nvim-dap.nvim",  -- Auto-install debug adapters
+    },
+    config = function()
+      require('config.dap').setup()
+    end,
+    keys = {
+      { "<leader>db", desc = "Toggle Breakpoint" },
+      { "<leader>dc", desc = "Continue" },
+      { "<leader>ds", desc = "Step Over" },
+      { "<leader>di", desc = "Step Into" },
+      { "<leader>do", desc = "Step Out" },
+      { "<leader>dr", desc = "Restart" },
+      { "<leader>dt", desc = "Terminate" },
+      { "<leader>du", desc = "Toggle DAP UI" },
+      { "<leader>de", desc = "Evaluate Expression" },
     },
   },
 
