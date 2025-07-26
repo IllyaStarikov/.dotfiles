@@ -28,7 +28,6 @@ opt.autoread = true                  -- Set to auto read when a file is changed 
 opt.virtualedit = "block"            -- freedom of movement
 opt.updatetime = 300                 -- Faster completion (4s -> 300ms)
 opt.timeoutlen = 500                 -- Faster which-key trigger
-opt.ttimeoutlen = 0                  -- Instant key sequence timeout for immediate response
 
 -- Indentation
 opt.expandtab = true                 -- tabs => spaces
@@ -106,6 +105,12 @@ opt.shortmess:append("c")
 opt.ttyfast = true
 opt.lazyredraw = true                -- Don't redraw while executing macros
 -- opt.synmaxcol = 240               -- Disabled: causes scrolling issues
+
+-- Additional performance optimizations
+opt.updatecount = 100                -- Write swap file after 100 characters
+opt.redrawtime = 1500                -- Time in milliseconds for redrawing
+opt.ttimeout = true                  -- Time out on terminal codes
+opt.ttimeoutlen = 0                  -- Instant key sequence timeout
 
 -- Python host (for legacy plugins)
 local python3_path = vim.fn.exepath('python3')
