@@ -1,9 +1,9 @@
 --
 -- config/lsp.lua
--- LSP and completion configuration (migrated from vimscript)
+-- LSP configuration with blink.cmp integration
 --
 
--- LSP and Autocompletion Setup
+-- LSP Setup with blink.cmp
 local function setup_lsp()
   -- 1. Setup Mason (servers already installed via Homebrew)
   require("mason").setup()
@@ -12,59 +12,17 @@ local function setup_lsp()
     -- ^ commented out since servers are installed via Homebrew
   })
 
-  -- 2. nvim-cmp setup for autocompletion
-  local cmp = require("cmp")
-  local luasnip = require("luasnip")
-  require("luasnip.loaders.from_vscode").lazy_load()  -- load friendly-snippets
-
-  cmp.setup({
-    snippet = {
-      expand = function(args)
-        luasnip.lsp_expand(args.body)  -- expand snippet
-      end,
-    },
-    mapping = {
-      ["<CR>"] = cmp.mapping.confirm({ select = true }),         -- Enter to confirm selection
-      ["<C-Space>"] = cmp.mapping.complete(),                    -- Ctrl+Space to manually trigger completion
-      ["<Tab>"] = cmp.mapping(function(fallback)                 -- Tab to next item or snippet jump
-          if cmp.visible() then 
-            cmp.select_next_item()
-          elseif luasnip.expand_or_jumpable() then 
-            luasnip.expand_or_jump()
-          else 
-            fallback() 
-          end
-        end, { "i", "s" }),
-      ["<S-Tab>"] = cmp.mapping(function(fallback)               -- Shift-Tab to previous item or snippet jump back
-          if cmp.visible() then 
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then 
-            luasnip.jump(-1)
-          else 
-            fallback() 
-          end
-        end, { "i", "s" }),
-    },
-    sources = cmp.config.sources({
-      { name = "nvim_lsp" },   -- LSP completions
-      { name = "luasnip" },    -- Snippet completions
-      { name = "buffer" },
-      { name = "path" }
-    }),
-    formatting = {
-      format = require("lspkind").cmp_format({ 
-        mode = "symbol_text", 
-        maxwidth = 50 
-      })
-      -- ^ lspkind to show icons in completion menu
-    }
-  })
-
-  -- 3. LSP server configurations
+  -- 2. LSP server configurations
   local lspconfig = require("lspconfig")
 
-  -- Capabilities for nvim-cmp integration
-  local capabilities = require("cmp_nvim_lsp").default_capabilities()
+  -- Capabilities for blink.cmp integration
+  local blink_ok, blink = pcall(require, "blink.cmp")
+  local capabilities
+  if blink_ok then
+    capabilities = blink.get_lsp_capabilities()
+  else
+    capabilities = vim.lsp.protocol.make_client_capabilities()
+  end
 
   -- Optional: on_attach function to bind keys after LSP attaches to buffer
   local on_attach = function(client, bufnr)
