@@ -31,6 +31,40 @@ local function get_header_guard()
 end
 
 return {
+  -- Complete C file skeleton
+  s("skeleton", {
+    t({"//"}),
+    t({"//  "}), f(get_filename, {}),
+    t({"//  "}), f(get_project_name, {}),
+    t({"//"}),
+    t({"//  Created by Illya Starikov on "}), f(get_date, {}), t({"."}),
+    t({"//  Copyright "}), f(get_year, {}), t({". Illya Starikov. All rights reserved."}),
+    t({"//"}),
+    t({""}),
+    t({"#include <stdio.h>"}),
+    t({"#include <stdlib.h>"}),
+    t({"#include <string.h>"}),
+    t({"#include <stdbool.h>"}),
+    t({""}),
+    i(1, "// Function prototypes"),
+    t({""}),
+    t({"/**"}),
+    t({" * Main function - entry point of the program"}),
+    t({" *"}),
+    t({" * @param argc Number of command line arguments"}),
+    t({" * @param argv Array of command line argument strings"}),
+    t({" * @return EXIT_SUCCESS on success, EXIT_FAILURE on error"}),
+    t({" */"}),
+    t({"int main(int argc, char *argv[]) {"}),
+    t({"    "}), i(2, "// Program logic here"),
+    t({"    printf(\"Hello, World!\\n\");"),
+    t({"    "}),
+    t({"    return EXIT_SUCCESS;"}),
+    t({"}"}),
+    t({""}),
+    i(0)
+  }),
+
   -- File header snippet
   s("header", {
     t({"//"}),

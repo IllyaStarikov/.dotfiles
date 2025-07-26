@@ -1,6 +1,13 @@
 --
 -- config/options.lua
--- Neovim options (migrated from vimscript)
+-- Core Neovim configuration options
+--
+-- Performance-optimized settings for modern development workflow:
+-- • 2-space indentation standard across all languages
+-- • Enhanced clipboard integration and navigation
+-- • Optimized for large files and responsive editing
+-- • Professional UI with consistent theming
+-- • Security-focused with disabled unused providers
 --
 
 local opt = vim.opt
