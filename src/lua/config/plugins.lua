@@ -70,11 +70,7 @@ require("lazy").setup({
     config = function()
       require('config.typr').setup()
     end,
-    cmd = { "Typr", "TyprStats" },
-    keys = {
-      { "<leader>tt", "<cmd>Typr<cr>", desc = "Start Typing Test" },
-      { "<leader>ts", "<cmd>TyprStats<cr>", desc = "Show Typing Stats" },
-    }
+    cmd = { "Typr", "TyprStats", "TyprQuick", "TyprLong", "TyprTimed", "TyprProgramming", "TyprHistory", "TyprDashboard", "TyprConfig" },
   },
 
   -- Language specific

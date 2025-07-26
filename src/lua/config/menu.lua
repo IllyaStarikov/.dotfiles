@@ -75,8 +75,8 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "⌨️  Typing Test", cmd = "Typr", rtxt = "tt", hl = "ExYellow" },
-        { name = "  Typing Stats", cmd = "TyprStats", rtxt = "ts", hl = "ExYellow" },
+        { name = "⌨️  Typing Test", cmd = "Typr", rtxt = "T", hl = "ExYellow" },
+        { name = "  Typing Stats", cmd = "TyprStats", rtxt = "St", hl = "ExYellow" },
         
         { name = "separator" },
         
@@ -165,10 +165,6 @@ function M.setup_keymaps()
     vim.keymap.set("n", "<leader>ma", function()
         M.open_ai_menu()
     end, vim.tbl_extend("force", opts, { desc = "AI Assistant Menu" }))
-    
-    vim.keymap.set("n", "<leader>mt", function()
-        M.open_typing_menu()
-    end, vim.tbl_extend("force", opts, { desc = "Typing Practice Menu" }))
 end
 
 -- Smart menu opening based on context
@@ -399,20 +395,20 @@ function M.open_typing_menu()
     
     -- Create typing-specific menu
     local typing_menu = {
-        { name = "⌨️  Quick Test (25 words)", cmd = "TyprQuick", rtxt = "ty" },
-        { name = "⌨️  Long Test (100 words)", cmd = "TyprLong", rtxt = "tl" },
-        { name = "⌨️  Programming Test", cmd = "TyprProgramming", rtxt = "tp" },
-        { name = "⌨️  Timed Test (60s)", cmd = "TyprTimed 60", rtxt = "T" },
+        { name = "⌨️  Quick Test (25 words)", cmd = "TyprQuick", rtxt = "q" },
+        { name = "⌨️  Long Test (100 words)", cmd = "TyprLong", rtxt = "l" },
+        { name = "⌨️  Programming Test", cmd = "TyprProgramming", rtxt = "p" },
+        { name = "⌨️  Timed Test (60s)", cmd = "TyprTimed 60", rtxt = "t" },
         
         { name = "separator" },
         
-        { name = "  Dashboard", cmd = "TyprDashboard", rtxt = "td" },
-        { name = "  Statistics", cmd = "TyprStats", rtxt = "ts" },
-        { name = "  History", cmd = "TyprHistory", rtxt = "th" },
+        { name = "  Dashboard", cmd = "TyprDashboard", rtxt = "d" },
+        { name = "  Statistics", cmd = "TyprStats", rtxt = "s" },
+        { name = "  History", cmd = "TyprHistory", rtxt = "h" },
         
         { name = "separator" },
         
-        { name = "  Configure", cmd = "TyprConfig", rtxt = "tc" },
+        { name = "  Configure", cmd = "TyprConfig", rtxt = "c" },
     }
     
     local success, err = pcall(menu.open, typing_menu, { 
