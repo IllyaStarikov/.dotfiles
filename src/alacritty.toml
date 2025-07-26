@@ -35,11 +35,7 @@ action = "Paste"
 key = "V"
 mods = "Command"
 
-# Advanced text selection
-[[keyboard.bindings]]
-action = "SelectAll"
-key = "A"
-mods = "Command"
+# Advanced text selection - Command+A is handled by default
 
 # Window management
 [[keyboard.bindings]]
@@ -79,16 +75,8 @@ action = "SearchBackward"
 key = "B"
 mods = "Command|Shift"
 
-# Tab management (if using tabbed mode)
-[[keyboard.bindings]]
-action = "CreateNewTab"
-key = "T"
-mods = "Command"
-
-[[keyboard.bindings]]
-action = "CloseTab"
-key = "W"
-mods = "Command"
+# Tab management - Alacritty doesn't support tabs natively
+# Use tmux or a window manager for tab functionality
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🎵 AUDIO & VISUAL FEEDBACK
@@ -132,7 +120,7 @@ COLORTERM = "truecolor"
 [scrolling]
 history = 100000     # Massive history for development work
 multiplier = 3       # Faster scrolling
-auto_scroll = true   # Follow output automatically
+# auto_scroll = true   # Removed - not a valid config option in current version
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📝 TEXT SELECTION & CLIPBOARD
@@ -227,6 +215,6 @@ render_timer = false
 persistent_logging = false
 log_level = "Warn"
 print_events = false
-ref_test = false
+# ref_test = false  # Removed - not a valid config option
 
 [keyboard]
