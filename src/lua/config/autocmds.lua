@@ -1,12 +1,23 @@
 --
 -- config/autocmds.lua
--- Autocommands (migrated from vimscript)
+-- Autocommands and skeleton file system for Neovim
+--
+-- This module provides:
+-- • Automated file processing (whitespace, markdown normalization)
+-- • Enhanced markdown syntax highlighting with embedded code blocks
+-- • Python indentation enforcement (2-space)
+-- • Comprehensive skeleton file templates for new files
+-- • LaTeX and code runner integrations
 --
 
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
--- Helper functions (migrated from vimscript functions)
+-- =============================================================================
+-- HELPER FUNCTIONS
+-- =============================================================================
+
+-- Text processing utilities
 local function trim_whitespace()
   local save = vim.fn.winsaveview()
   vim.cmd([[%s/\t/    /ge]])
@@ -23,11 +34,19 @@ local function normalize_markdown()
   vim.fn.winrestview(save)
 end
 
--- Create user commands for functions
-vim.api.nvim_create_user_command("TrimWhitespace", trim_whitespace, {})
-vim.api.nvim_create_user_command("NormalizeMarkdown", normalize_markdown, {})
+-- Export helper functions as user commands
+vim.api.nvim_create_user_command("TrimWhitespace", trim_whitespace, {
+  desc = "Remove trailing whitespace and convert tabs to spaces"
+})
+vim.api.nvim_create_user_command("NormalizeMarkdown", normalize_markdown, {
+  desc = "Normalize smart quotes and typography in markdown files"
+})
 
--- Markdown syntax highlighting enhancement
+-- =============================================================================
+-- MARKDOWN ENHANCEMENTS
+-- =============================================================================
+
+-- Advanced syntax highlighting for markdown with embedded code blocks
 local markdown_group = augroup("MarkdownEnhancements", { clear = true })
 
 autocmd("FileType", {
@@ -137,7 +156,11 @@ autocmd("FileType", {
   end
 })
 
--- Normalize group - file processing rules
+-- =============================================================================
+-- FILE PROCESSING AUTOMATION
+-- =============================================================================
+
+-- Automated file normalization and cleanup
 local normalize_group = augroup("normalize", { clear = true })
 
 autocmd("FileType", {
@@ -167,7 +190,11 @@ autocmd("BufWritePre", {
   callback = normalize_markdown
 })
 
--- Projects group - treat headers as C
+-- =============================================================================
+-- PROJECT-SPECIFIC SETTINGS
+-- =============================================================================
+
+-- File type associations and project conventions
 local projects_group = augroup("projects", { clear = true })
 
 autocmd({ "BufRead", "BufNewFile" }, {
@@ -176,7 +203,12 @@ autocmd({ "BufRead", "BufNewFile" }, {
   command = "set filetype=c"
 })
 
--- Python specific settings - enforce 2-space indentation
+-- =============================================================================
+-- PYTHON INDENTATION ENFORCEMENT
+-- =============================================================================
+
+-- Comprehensive Python indentation management (2-space standard)
+-- Multiple autocmds ensure persistence across saves and formatter runs
 local python_group = augroup("python_indent", { clear = true })
 
 autocmd("FileType", {
@@ -232,7 +264,11 @@ autocmd({"BufWritePre", "BufWritePost"}, {
   end
 })
 
--- NERDTree group
+-- =============================================================================
+-- NERDTREE INTEGRATION
+-- =============================================================================
+
+-- Legacy NERDTree support (automatically close when last window)
 local nerdtree_group = augroup("nerdtreehelp", { clear = true })
 
 
@@ -250,7 +286,11 @@ autocmd("BufEnter", {
   end
 })
 
--- Syntax group - special highlighting for large files
+-- =============================================================================
+-- SYNTAX OPTIMIZATIONS
+-- =============================================================================
+
+-- Performance optimizations for large files and special syntax handling
 local syntax_group = augroup("syntax", { clear = true })
 
 autocmd("FileType", {
@@ -271,7 +311,11 @@ autocmd({ "BufNewFile", "BufRead" }, {
   command = "set syntax=pandoc | set conceallevel=0"
 })
 
--- Markdown writing group - special configuration for markdown files
+-- =============================================================================
+-- MARKDOWN WRITING ENVIRONMENT
+-- =============================================================================
+
+-- Professional markdown writing configuration with optimized display settings
 local markdown_group = augroup("markdown_writing", { clear = true })
 
 local markdown_settings = {
@@ -318,7 +362,11 @@ autocmd("FileType", {
   end
 })
 
--- Code runner group
+-- =============================================================================
+-- CODE EXECUTION SYSTEM
+-- =============================================================================
+
+-- Language-specific code execution with AsyncRun integration
 local run_group = augroup("run", { clear = true })
 
 -- RunCode function
@@ -403,7 +451,18 @@ autocmd("FileType", {
   end
 })
 
--- Skeleton files group - modern LuaSnip based auto-insertion
+-- =============================================================================
+-- SKELETON FILE SYSTEM
+-- =============================================================================
+
+-- Comprehensive skeleton template system for automatic file initialization
+-- Supports Python, Shell, HTML, JavaScript, C, Java, LaTeX, Markdown, React
+-- Features:
+-- • Professional headers with author, date, and license information
+-- • Language-specific imports and structure (e.g., if __name__ == '__main__')
+-- • 2-space indentation standard across all templates
+-- • Integration with Snacks.nvim for immediate indentation guides
+-- • Cursor positioning at first TODO or editable content
 local skeleton_group = augroup("skeleton_files", { clear = true })
 
 -- Helper function to get skeleton content directly
