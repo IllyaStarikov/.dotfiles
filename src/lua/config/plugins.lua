@@ -83,6 +83,7 @@ require("lazy").setup({
       { "<leader>mc", desc = "Code Menu" },
       { "<leader>ma", desc = "AI Assistant Menu" },
       { "<leader>md", desc = "Debug Menu" },
+      { "<leader>mF", desc = "File Management Menu" },
       { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
     }
   },
@@ -243,7 +244,19 @@ require("lazy").setup({
   -- Linting
   { "dense-analysis/ale" },
 
-  -- Exploration
+  -- File Management and Exploration
+  {
+    "stevearc/oil.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require('config.oil').setup()
+    end,
+    keys = {
+      { "<leader>o", function() require('oil').open() end, desc = "Open Oil File Manager" },
+      { "<leader>O", function() require('oil').open_float() end, desc = "Open Oil in Float" },
+      { "-", function() require('oil').open() end, desc = "Open Oil File Manager" },
+    },
+  },
   { "majutsushi/tagbar" },
   { "mhinz/vim-grepper" },
   {

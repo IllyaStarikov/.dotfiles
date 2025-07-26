@@ -46,6 +46,8 @@ function M.setup_custom_menus()
         { name = "🔭 Find File", cmd = "lua require('telescope.builtin').find_files()", rtxt = "f" },
         { name = "🔭 Recent Files", cmd = "lua require('telescope.builtin').oldfiles()", rtxt = "r" },
         { name = "🔭 Find in Files", cmd = "lua require('telescope.builtin').live_grep()", rtxt = "g" },
+        { name = "🛢️ Oil File Manager", cmd = "lua require('oil').open()", rtxt = "o" },
+        { name = "🛢️ Oil Float", cmd = "lua require('oil').open_float()", rtxt = "O" },
         { name = "🍿 File Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
@@ -217,6 +219,10 @@ function M.setup_keymaps()
     vim.keymap.set("n", "<leader>md", function()
         M.open_debug_menu()
     end, vim.tbl_extend("force", opts, { desc = "Debug Menu" }))
+    
+    vim.keymap.set("n", "<leader>mF", function()
+        M.open_file_management_menu()
+    end, vim.tbl_extend("force", opts, { desc = "File Management Menu" }))
 end
 
 -- Smart menu opening based on context
@@ -489,6 +495,49 @@ function M.open_debug_menu()
     })
     if not success then
         vim.notify("Failed to open debug menu: " .. tostring(err), vim.log.levels.ERROR)
+    end
+end
+
+function M.open_file_management_menu()
+    local menu = require("menu")
+    local menu_utils_ok, menu_utils = pcall(require, 'menu.utils')
+    if menu_utils_ok and menu_utils.delete_old_menus then
+        pcall(menu_utils.delete_old_menus)
+    end
+    
+    -- Create comprehensive file management menu
+    local file_menu = {
+        { name = "📁 Open Oil File Manager", cmd = "lua require('oil').open()", rtxt = "o" },
+        { name = "🪟 Open Oil Float", cmd = "lua require('oil').open_float()", rtxt = "O" },
+        { name = "🌳 Toggle NERDTree", cmd = "NERDTreeToggle", rtxt = "n" },
+        { name = "🍿 Snacks Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
+        
+        { name = "separator" },
+        
+        { name = "🔭 Find Files", cmd = "lua require('telescope.builtin').find_files()", rtxt = "f" },
+        { name = "🔭 Recent Files", cmd = "lua require('telescope.builtin').oldfiles()", rtxt = "r" },
+        { name = "🔭 Live Grep", cmd = "lua require('telescope.builtin').live_grep()", rtxt = "g" },
+        { name = "🔭 Buffers", cmd = "lua require('telescope.builtin').buffers()", rtxt = "b" },
+        
+        { name = "separator" },
+        
+        { name = "📄 New File", cmd = "enew", rtxt = "N" },
+        { name = "💾 Save File", cmd = "w", rtxt = "s" },
+        { name = "💾 Save All", cmd = "wa", rtxt = "a" },
+        { name = "❌ Close Buffer", cmd = "lua Snacks.bufdelete()", rtxt = "c" },
+        
+        { name = "separator" },
+        
+        { name = "📋 Copy File Path", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:p'))", rtxt = "p" },
+        { name = "📋 Copy File Name", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:t'))", rtxt = "t" },
+        { name = "📂 Open File Directory", cmd = "lua require('oil').open(vim.fn.expand('%:p:h'))", rtxt = "d" },
+    }
+    
+    local success, err = pcall(menu.open, file_menu, { 
+        border = true,
+    })
+    if not success then
+        vim.notify("Failed to open file management menu: " .. tostring(err), vim.log.levels.ERROR)
     end
 end
 
