@@ -1,8 +1,21 @@
 --
 -- config/theme.lua
--- Theme switching based on macOS appearance (migrated from vimscript)
+-- Dynamic theme system with macOS integration
+--
+-- Features:
+-- • Automatic theme switching based on macOS Dark/Light mode
+-- • Support for multiple colorschemes (Dracula, Iceberg, GitHub themes)
+-- • Intelligent comment color adaptation for readability
+-- • Real-time theme reloading when system appearance changes
+-- • Fallback handling for missing theme configurations
 --
 
+-- =============================================================================
+-- THEME CONFIGURATION FUNCTION
+-- =============================================================================
+
+--- Main theme setup function that reads macOS appearance and applies appropriate themes
+--- @return nil
 local function setup_theme()
   local config_file = vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
   
@@ -89,34 +102,38 @@ local function setup_theme()
     vim.g.airline_theme = 'dracula'
   end
   
-  -- Apply better comment colors and italic style
+  -- Apply intelligent syntax highlighting optimizations
   vim.schedule(function()
     local current_bg = vim.opt.background:get()
     
+    -- Smart comment colors based on background
     if current_bg == "dark" then
-      -- Dark background - use lighter comment colors
+      -- Dark background: lighter, more visible comment colors
       vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
       vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
     else
-      -- Light background - use darker, more readable comment colors  
+      -- Light background: darker, high-contrast comment colors  
       vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
       vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
     end
     
-    -- Also fix other potentially problematic syntax groups
+    -- Light theme syntax optimizations for better readability
     if current_bg == "light" then
-      -- Make sure other syntax elements are readable on light backgrounds
-      vim.cmd("highlight String guifg=#032F62 ctermfg=28")
-      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26") 
-      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")
-      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")
-      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")
-      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")
+      vim.cmd("highlight String guifg=#032F62 ctermfg=28")     -- Dark blue strings
+      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26")     -- Blue numbers
+      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")   -- Blue constants
+      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")   -- Purple preprocessor
+      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")       -- Blue types
+      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")   -- Orange special chars
     end
   end)
 end
 
--- Setup theme on startup
+-- =============================================================================
+-- INITIALIZATION AND AUTO-RELOAD
+-- =============================================================================
+
+-- Apply theme configuration on startup
 setup_theme()
 
 -- Auto-reload theme when the config file changes
@@ -126,7 +143,11 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   group = vim.api.nvim_create_augroup("ThemeReload", { clear = true })
 })
 
--- Create user commands for theme management
+-- =============================================================================
+-- USER COMMANDS
+-- =============================================================================
+
+-- Convenient commands for manual theme management
 vim.api.nvim_create_user_command("ReloadTheme", setup_theme, {
   desc = "Reload the current theme and fix comment colors"
 })
