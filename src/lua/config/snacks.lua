@@ -40,7 +40,7 @@ function M.setup()
 
     -- Enable only safe modules that don't use picker
     indent = { enabled = true },
-    scroll = { enabled = true },
+    scroll = { enabled = false },  -- Disabled for instant scrolling
     notifier = { enabled = true },
     words = { enabled = true },
     terminal = { enabled = true },
