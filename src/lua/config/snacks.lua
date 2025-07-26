@@ -221,19 +221,21 @@ function M.setup()
           },
         },
         
-        -- Recent files optimized for speed
+        -- Recent files using vim's built-in oldfiles
         function()
-          local recent = vim.fn.getlines(vim.fn.expand("~/.config/nvim/.cache/recent_files"), 0, 10)
           local items = {}
-          for _, file in ipairs(recent) do
+          local count = 0
+          for _, file in ipairs(vim.v.oldfiles or {}) do
+            -- Limit to 8 files and only show readable files
+            if count >= 8 then break end
             if vim.fn.filereadable(file) == 1 then
               table.insert(items, {
                 icon = " ",
-                key = tostring(#items + 1),
+                key = tostring(count + 1),
                 desc = vim.fn.fnamemodify(file, ":t"),
-                action = "edit " .. file,
+                action = "edit " .. vim.fn.fnameescape(file),
               })
-              if #items >= 8 then break end
+              count = count + 1
             end
           end
           return {

@@ -43,6 +43,12 @@ function M.setup()
             default = { "lsp", "path", "snippets", "buffer" },
         },
         
+        -- Disable completion in certain filetypes
+        enabled = function()
+            local disabled_filetypes = { "TelescopePrompt", "oil", "alpha", "dashboard" }
+            return not vim.tbl_contains(disabled_filetypes, vim.bo.filetype)
+        end,
+        
         -- Snippet configuration
         snippets = {
             expand = function(snippet)
@@ -182,14 +188,7 @@ end
 function M.setup_autocommands()
     local blink_group = vim.api.nvim_create_augroup("BlinkCmpEnhancements", { clear = true })
     
-    -- Disable completion in certain contexts
-    vim.api.nvim_create_autocmd("FileType", {
-        group = blink_group,
-        pattern = { "TelescopePrompt", "oil", "alpha", "dashboard" },
-        callback = function()
-            require("blink.cmp").setup_buffer({ enabled = false })
-        end,
-    })
+    -- Completion is now disabled for specific filetypes in main setup via enabled() function
     
     -- Enhanced completion for specific filetypes
     vim.api.nvim_create_autocmd("FileType", {
