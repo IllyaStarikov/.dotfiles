@@ -14,24 +14,14 @@ function M.setup()
       size = 1024 * 1024, -- 1MB threshold
     },
 
-    -- 🎯 PICKER: Fixed configuration using proper snacks API
+    -- 🎯 PICKER: Completely disabled to prevent format field conflicts
     picker = {
-      enabled = true,
-      -- No custom format configurations - use defaults to avoid conflicts
-      win = {
-        style = "minimal",
-        border = "rounded",
-        title_pos = "center",
-      },
-      -- Use default layouts and sources without custom formatting
-      layout = {
-        preset = "ivy",  -- Use ivy preset instead of custom layout
-      },
+      enabled = false,  -- DISABLE: Causes persistent format field errors
     },
 
-    -- 🎯 DASHBOARD: Working dashboard with telescope fallbacks
+    -- 🎯 DASHBOARD: Temporarily disabled (may trigger picker internally)
     dashboard = {
-      enabled = true,
+      enabled = false,  -- DISABLE: May internally trigger problematic picker
       width = 60,
       sections = {
         { section = "header" },

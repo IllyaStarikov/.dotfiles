@@ -254,7 +254,7 @@ require("lazy").setup({
             { icon = " ", key = "s", desc = "Restore Session", action = ":SessionRestore" },
             { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
             { icon = " ", key = "c", desc = "Config", action = function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end },
-            { icon = " ", key = ".", desc = "Browse Files", action = function() Snacks.explorer() end },
+            { icon = " ", key = ".", desc = "Browse Files", action = ":Oil" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
         },
