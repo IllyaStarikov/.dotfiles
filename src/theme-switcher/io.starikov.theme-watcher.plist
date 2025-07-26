@@ -6,15 +6,17 @@
     <string>io.starikov.theme-watcher</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/starikov/.dotfiles/src/theme-switcher/auto-theme-watcher.sh</string>
+        <string>/usr/bin/env</string>
+        <string>bash</string>
+        <string>~/.dotfiles/src/theme-switcher/auto-theme-watcher.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/Users/starikov/.config/theme-switcher/watcher.log</string>
+    <string>/tmp/theme-watcher.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/starikov/.config/theme-switcher/watcher.error.log</string>
+    <string>/tmp/theme-watcher.error.log</string>
 </dict>
 </plist>
