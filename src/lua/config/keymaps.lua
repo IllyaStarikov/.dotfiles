@@ -62,7 +62,11 @@ map("n", "<leader>x", ":x<cr>", opts)
 map("n", "<leader>s", "<C-Z>", opts)
 map("n", "<leader>d", '"_d', opts)
 
+-- File Management
 map("n", "<leader>n", ":NERDTreeToggle<cr>", opts)
+map("n", "<leader>o", function() require('oil').open() end, { desc = "Open Oil File Manager" })
+map("n", "<leader>O", function() require('oil').open_float() end, { desc = "Open Oil in Float" })
+map("n", "-", function() require('oil').open() end, { desc = "Open Oil File Manager" })
 -- Telescope fuzzy finding (modern replacement for FZF)
 map("n", "<C-p>", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
 map("n", "<leader>F", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })  -- Telescope
