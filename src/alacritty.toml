@@ -135,12 +135,15 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [window]
-decorations = "buttonless"  # Clean, minimal appearance
+decorations = "full"        # Required for macOS tabs to work
 dynamic_title = true
 opacity = 0.95              # Subtle transparency
 startup_mode = "Windowed"
 resize_increments = true    # Resize by character grid
 option_as_alt = "Both"      # Proper Alt key behavior on macOS
+
+# macOS specific window options
+decorations_theme_variant = "None"  # Follow system theme
 
 [window.dimensions]
 columns = 120
