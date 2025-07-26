@@ -158,34 +158,8 @@ end
 
 -- Setup additional keymaps for enhanced functionality
 function M.setup_keymaps()
-    local opts = { noremap = true, silent = true }
-    
-    -- Quick typing test launchers
-    vim.keymap.set("n", "<leader>ty", function()
-        M.quick_test()
-    end, vim.tbl_extend("force", opts, { desc = "Quick Typing Test" }))
-    
-    vim.keymap.set("n", "<leader>tl", function()
-        M.long_test()
-    end, vim.tbl_extend("force", opts, { desc = "Long Typing Test" }))
-    
-    vim.keymap.set("n", "<leader>tp", function()
-        M.programming_test()
-    end, vim.tbl_extend("force", opts, { desc = "Programming Typing Test" }))
-    
-    -- Statistics and history
-    vim.keymap.set("n", "<leader>th", function()
-        M.show_history()
-    end, vim.tbl_extend("force", opts, { desc = "Show Typing History" }))
-    
-    vim.keymap.set("n", "<leader>td", function()
-        M.show_dashboard()
-    end, vim.tbl_extend("force", opts, { desc = "Show Typing Dashboard" }))
-    
-    -- Settings and configuration
-    vim.keymap.set("n", "<leader>tc", function()
-        M.configure_test()
-    end, vim.tbl_extend("force", opts, { desc = "Configure Typing Test" }))
+    -- No leader key mappings - access via commands and menu only
+    -- This keeps the leader key namespace clean while maintaining full functionality
 end
 
 -- Enhanced commands for different typing test modes
