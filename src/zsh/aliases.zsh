@@ -278,10 +278,10 @@ alias chuck='curl -s https://api.chucknorris.io/jokes/random | jq -r .value'
 # 🎯 POWER USER SHORTCUTS
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Quick server
-alias serve="python3 -m http.server"
-alias serve8000="python3 -m http.server 8000"
-alias serve3000="python3 -m http.server 3000"
+# Quick server - using function in zshrc instead of aliases
+# The serve() function in zshrc is more flexible and handles missing python
+alias serve8000="serve 8000"
+alias serve3000="serve 3000"
 
 # Copy utilities (macOS)
 alias copy="pbcopy"
