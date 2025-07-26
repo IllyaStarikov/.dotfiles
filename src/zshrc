@@ -1,97 +1,319 @@
+# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+# 🚀 ZSH CONFIGURATION - Production-Ready Shell Environment
+# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+# High-performance Zsh setup optimized for development workflows
+# Features: Fast startup, intelligent completions, modern tooling integration
+# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ⚡ PERFORMANCE OPTIMIZATIONS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Skip global compinit for faster startup (Oh My Zsh will handle it)
+setopt COMPLETE_IN_WORD
+setopt AUTO_MENU
+setopt AUTO_PARAM_SLASH
+setopt AUTO_LIST
+
 # Performance: Only eval brew if not already in PATH
 if [[ ! "$PATH" == */opt/homebrew/bin* ]]; then
   eval $(/opt/homebrew/bin/brew shellenv)
 fi
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-# ZSH_THEME="spaceship"
-ZSH_THEME="spaceship"
-SPACESHIP_VI_MODE_INSERT="[λ]"
-SPACESHIP_VI_MODE_NORMAL="[µ]"
-SPACESHIP_BATTERY_SHOW=false
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎨 THEME CONFIGURATION
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-#
-# Optimized plugin loading order for performance
-plugins=(
-  vi-mode
-  git
-  brew
-  history-substring-search
-  python
-  macos
-  colored-man-pages
-  command-not-found
+# Spaceship theme with optimized settings
+ZSH_THEME="spaceship"
+
+# Spaceship prompt customization for better performance and aesthetics
+SPACESHIP_PROMPT_ORDER=(
+  time          # Time stamps section
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  package       # Package version
+  node          # Node.js section
+  python        # Python section
+  exec_time     # Execution time
+  line_sep      # Line break
+  vi_mode       # Vi-mode indicator
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
 )
 
-# Faster Vim Mode
+# Vi-mode indicators
+SPACESHIP_VI_MODE_INSERT="[λ]"
+SPACESHIP_VI_MODE_NORMAL="[µ]"
+SPACESHIP_VI_MODE_SHOW=true
+
+# Performance optimizations
+SPACESHIP_BATTERY_SHOW=false
+SPACESHIP_TIME_SHOW=true
+SPACESHIP_TIME_COLOR=242
+SPACESHIP_USER_SHOW=needed
+SPACESHIP_HOST_SHOW=false
+SPACESHIP_HOST_SHOW_FULL=false
+SPACESHIP_DIR_TRUNC=3
+SPACESHIP_DIR_TRUNC_REPO=false
+
+# Git optimizations
+SPACESHIP_GIT_STATUS_SHOW=true
+SPACESHIP_GIT_STATUS_UNTRACKED="?"
+SPACESHIP_GIT_STATUS_ADDED="+"
+SPACESHIP_GIT_STATUS_MODIFIED="!"
+SPACESHIP_GIT_STATUS_RENAMED="»"
+SPACESHIP_GIT_STATUS_DELETED="✘"
+SPACESHIP_GIT_STATUS_STASHED="$"
+SPACESHIP_GIT_STATUS_UNMERGED="="
+SPACESHIP_GIT_STATUS_AHEAD="⇡"
+SPACESHIP_GIT_STATUS_BEHIND="⇣"
+SPACESHIP_GIT_STATUS_DIVERGED="⇕"
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔌 PLUGIN ECOSYSTEM - Carefully Selected for Performance
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Essential plugins in optimized loading order
+# Each plugin is chosen for maximum utility with minimal startup impact
+plugins=(
+  # Core functionality
+  vi-mode                    # Vim keybindings in command line
+  git                        # Git aliases and functions
+  brew                       # Homebrew completions
+  
+  # Enhanced navigation and search
+  history-substring-search   # Search through history with up/down arrows
+  z                         # Smart directory jumping
+  
+  # Development tools
+  python                    # Python environment helpers
+  node                      # Node.js utilities
+  docker                    # Docker completions
+  
+  # macOS integration
+  macos                     # macOS-specific aliases and functions
+  
+  # Quality of life improvements
+  colored-man-pages         # Colorized manual pages
+  command-not-found         # Suggest package installation for missing commands
+  extract                   # Universal archive extraction
+  copypath                  # Copy current directory path
+  copyfile                  # Copy file contents to clipboard
+)
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ⚙️ SHELL BEHAVIOR CONFIGURATION
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Lightning-fast vi mode transitions
 export KEYTIMEOUT=1
 
-# Enable command correction
+# Intelligent command correction
 ENABLE_CORRECTION="true"
+setopt CORRECT                    # Correct commands
+setopt CORRECT_ALL               # Correct all arguments
 
-# Display red dots whilst waiting for completion.
+# Enhanced completion experience
 COMPLETION_WAITING_DOTS="true"
+setopt COMPLETE_ALIASES          # Complete command aliases
+setopt LIST_PACKED               # Compact completion lists
+setopt AUTO_PARAM_KEYS           # Intelligent parameter completion
 
-# Disable marking untracked files under VCS as dirty.
+# Git performance optimization
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# Change the command execution time
+# History configuration with timestamps
 HIST_STAMPS="mm/dd/yyyy"
+setopt EXTENDED_HISTORY          # Record timestamp of command
+setopt HIST_EXPIRE_DUPS_FIRST    # Delete duplicates first when trimming history
+setopt HIST_IGNORE_DUPS          # Ignore duplicate commands
+setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate
+setopt HIST_FIND_NO_DUPS         # Do not display duplicates during search
+setopt HIST_IGNORE_SPACE         # Ignore commands that start with space
+setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry
+setopt HIST_VERIFY               # Show command with history expansion to user before running it
+
+# Advanced shell options for power users
+setopt AUTO_CD                   # Change directory without cd command
+setopt AUTO_PUSHD                # Push directories onto stack automatically
+setopt PUSHD_IGNORE_DUPS         # Don't push duplicate directories
+setopt GLOB_DOTS                 # Include dotfiles in glob matches
+setopt NUMERIC_GLOB_SORT         # Sort numerically when possible
+setopt RC_EXPAND_PARAM           # Expand parameters in array format
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🏠 OH-MY-ZSH INITIALIZATION
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export ZSH=/Users/starikov/.oh-my-zsh
 export ZSH_CUSTOM=/Users/starikov/.oh-my-zsh/custom/
+
+# Initialize Oh My Zsh
 source $ZSH/oh-my-zsh.sh
 
-# Load zsh-syntax-highlighting from Homebrew (must be after oh-my-zsh)
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🌈 SYNTAX HIGHLIGHTING & THEME INTEGRATION
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Enhanced syntax highlighting (must be loaded after oh-my-zsh)
 if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
   source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  
+  # Customize highlighting colors
+  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+  ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
+  ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
+  ZSH_HIGHLIGHT_STYLES[builtin]='fg=yellow,bold'
+  ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
+  ZSH_HIGHLIGHT_STYLES[path]='fg=cyan'
+  ZSH_HIGHLIGHT_STYLES[globbing]='fg=red'
 fi
 
-# Load current theme and update if needed
+# Auto-suggestions for command completion
+if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=241'
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+fi
+
+# Load current theme configuration
 if [ -f ~/.config/theme-switcher/current-theme.sh ]; then
   source ~/.config/theme-switcher/current-theme.sh
 fi
 
-# Aliases
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔗 ALIASES & CUSTOM FUNCTIONS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Load custom aliases
 source "${0:h}/zsh/aliases.zsh"
 
-# Man autocomplete
-zstyle ':completion:*:manuals'    separate-sections true
-zstyle ':completion:*:manuals.*'  insert-sections   true
-zstyle ':completion:*:man:*'      menu yes select
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎯 ADVANCED COMPLETION SYSTEM
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Search Through History with arrow
+# Completion styling and behavior
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose true
+zstyle ':completion:*' use-cache true
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# Enhanced directory completion
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*' special-dirs true
+
+# Process completion enhancement
+zstyle ':completion:*:processes' command 'ps -au$USER'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
+
+# Man page completion with sections
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.*' insert-sections true
+zstyle ':completion:*:man:*' menu yes select
+
+# SSH completion from known hosts
+zstyle ':completion:*:ssh:*' hosts off
+zstyle ':completion:*:scp:*' hosts off
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Colorful completion
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ⌨️ ENHANCED KEYBINDINGS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Smart history search with arrow keys
 bindkey "^[[A" history-substring-search-up
 bindkey "^[[B" history-substring-search-down
+bindkey "^P" history-substring-search-up
+bindkey "^N" history-substring-search-down
 
-# map delete line (iTerm thing)
-bindkey "^X\x7f" backward-kill-line
+# Enhanced line editing
+bindkey "^X\x7f" backward-kill-line        # Delete line (iTerm compatible)
+bindkey "^A" beginning-of-line             # Ctrl+A: beginning of line
+bindkey "^E" end-of-line                   # Ctrl+E: end of line
+bindkey "^K" kill-line                     # Ctrl+K: kill to end of line
+bindkey "^U" backward-kill-line            # Ctrl+U: kill to beginning of line
+bindkey "^W" backward-kill-word            # Ctrl+W: kill word backwards
+bindkey "^R" history-incremental-search-backward  # Ctrl+R: reverse search
 
-# Add colors to Terminal
+# Word movement (Alt+arrow keys)
+bindkey "^[[1;3C" forward-word             # Alt+Right: forward word
+bindkey "^[[1;3D" backward-word            # Alt+Left: backward word
+
+# Modern terminal compatibility
+bindkey "^[[H" beginning-of-line           # Home key
+bindkey "^[[F" end-of-line                 # End key
+bindkey "^[[3~" delete-char                # Delete key
+
+# Vi-mode improvements
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🌈 ENVIRONMENT VARIABLES & COLORS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Enhanced terminal colors
 export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
+export LS_COLORS='di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
 
+# Modern editor configuration
 export EDITOR=nvim
 export VISUAL=nvim
+export PAGER=less
+export MANPAGER='nvim +Man!'
 
+# Terminal capabilities
 export TERM=xterm-256color
+export COLORTERM=truecolor
 
-[ -d ~/.localrc ]   && source ~/.localrc
+# Language and locale
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Less configuration for better paging
+export LESS='-R -S -M -I -x4'
+export LESSHISTFILE=-
+
+# FZF configuration for enhanced fuzzy finding
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview="bat --color=always --style=header,grid --line-range :300 {}" --preview-window=right:50%:wrap'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+
+# Ripgrep configuration
+export RIPGREP_CONFIG_PATH=~/.ripgreprc
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📁 PATH MANAGEMENT & TOOL INITIALIZATION
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Custom scripts and local configurations
+[ -d ~/.localrc ] && source ~/.localrc
 [ -d ~/.shortcuts ] && source ~/.shortcuts
-[ -d ~/.scripts ]   && export PATH=$PATH:~/.scripts/
+[ -d ~/.scripts ] && export PATH="$HOME/.scripts:$PATH"
 
-[ -f ~/.fzf.zsh ]   && source ~/.fzf.zsh
+# Modern development tools path management
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
-# Add pyenv to path
-export PATH=$PATH:~/.scripts/
+# FZF integration for enhanced file searching
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Initialize pyenv before creating aliases to avoid conflicts
+# ┌─ PYTHON ENVIRONMENT MANAGEMENT ─┐
+# Pyenv initialization (optimized loading)
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -100,12 +322,143 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 
-# Architecture-specific aliases (after pyenv initialization)
+# ┌─ NODE.JS ENVIRONMENT ─┐
+# NVM initialization (lazy loading for performance)
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  # Lazy load NVM to improve shell startup time
+  alias nvm='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && nvm'
+  alias node='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && node'
+  alias npm='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && npm'
+  alias npx='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && npx'
+fi
+
+# ┌─ RUST ENVIRONMENT ─┐
+# Cargo path for Rust tools
+[ -f ~/.cargo/env ] && source ~/.cargo/env
+
+# ┌─ GO ENVIRONMENT ─┐
+# Go workspace configuration
+export GOPATH="$HOME/go"
+export PATH="$GOPATH/bin:$PATH"
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🏗️ ARCHITECTURE-SPECIFIC OPTIMIZATIONS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Apple Silicon optimizations
 alias brew='arch -arm64 /opt/homebrew/bin/brew'
 alias pyenv='arch -arm64 pyenv'
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/path.zsh.inc'; fi
+# Intel compatibility when needed
+alias ibrew='arch -x86_64 /usr/local/bin/brew'
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/starikov/google-cloud-sdk/completion.zsh.inc'; fi
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔧 CUSTOM FUNCTIONS & UTILITIES
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Smart mkdir and cd
+mkdir_cd() {
+    mkdir -p "$1" && cd "$1"
+}
+alias mkcd=mkdir_cd
+
+# Enhanced file finding
+ff() {
+    fd "$1" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {}'
+}
+
+# Smart grep with ripgrep
+grep_smart() {
+    if command -v rg >/dev/null 2>&1; then
+        rg --color=always --line-number --no-heading --smart-case "$@" | fzf --ansi
+    else
+        grep -r --color=always "$@" .
+    fi
+}
+alias search=grep_smart
+
+# Git utilities
+git_clean_branches() {
+    git branch --merged | grep -v "\*\|master\|main\|develop" | xargs -n 1 git branch -d
+}
+
+# Quick project navigation
+project() {
+    cd ~/Projects/"$1" 2>/dev/null || cd ~/projects/"$1" 2>/dev/null || echo "Project $1 not found"
+}
+
+# System information
+sysinfo() {
+    echo "System Information:"
+    echo "=================="
+    echo "OS: $(sw_vers -productName) $(sw_vers -productVersion)"
+    echo "Architecture: $(uname -m)"
+    echo "Uptime: $(uptime | awk '{print $3,$4}' | sed 's/,//')"
+    echo "Shell: $SHELL"
+    echo "Terminal: $TERM_PROGRAM"
+}
+
+# Network utilities
+myip() {
+    echo "Internal IP: $(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo 'N/A')"
+    echo "External IP: $(curl -s ipinfo.io/ip 2>/dev/null || echo 'N/A')"
+}
+
+# Quick development server
+serve() {
+    local port=${1:-8000}
+    echo "Starting server on http://localhost:$port"
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -m http.server "$port" 2>/dev/null
+    elif command -v python >/dev/null 2>&1; then
+        python -m SimpleHTTPServer "$port" 2>/dev/null
+    else
+        echo "Python not found"
+    fi
+}
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ☁️ CLOUD & EXTERNAL TOOL INTEGRATIONS
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Google Cloud SDK integration
+if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then
+    source '/Users/starikov/google-cloud-sdk/path.zsh.inc'
+fi
+
+if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then
+    source '/Users/starikov/google-cloud-sdk/completion.zsh.inc'
+fi
+
+# Docker completion (if installed)
+if command -v docker >/dev/null 2>&1; then
+    if [ -f ~/.docker/completion/zsh/_docker ]; then
+        source ~/.docker/completion/zsh/_docker
+    fi
+fi
+
+# Kubernetes completion (if installed)
+if command -v kubectl >/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+    alias k=kubectl
+    complete -F __start_kubectl k
+fi
+
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎯 FINAL OPTIMIZATIONS & CLEANUP
+# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# History optimization
+HISTSIZE=50000
+SAVEHIST=50000
+HISTFILE=~/.zsh_history
+
+# Deduplicate PATH
+typeset -U PATH
+
+# Load any additional local configurations
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+# Performance profiling (uncomment for debugging startup time)
+# zprof

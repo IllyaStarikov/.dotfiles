@@ -78,7 +78,7 @@ return {
     t({" * "}), i(1, "Structure description"),
     t({" */"}),
     t({"typedef struct "}), i(2, "struct_name"), t({" {"}),
-    t({"    "}), i(3, "int field;"), t({"  /**< "}), i(4, "Field description"), t({" */"},
+    t({"    "}), i(3, "int field;"), t({"  /**< "}), i(4, "Field description"), t({" */"}),
     t({"} "}), f(function(args) return args[1][1] end, {2}), t({"_t;"}),
     t({""}),
     i(0)
