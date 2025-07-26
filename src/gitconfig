@@ -1,0 +1,274 @@
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+# 🚀 GIT CONFIGURATION - Production-Ready Version Control Setup
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+# Optimized for professional development workflows with modern Git features
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+[user]
+    name = Illya Starikov
+    email = illya@starikov.io
+    # Uncomment and configure for work environments
+    # useConfigOnly = true
+
+[core]
+    editor = nvim
+    pager = less -FRX
+    autocrlf = input
+    safecrlf = true
+    excludesfile = ~/.dotfiles/src/gitignore
+    attributesfile = ~/.gitattributes
+    precomposeUnicode = true
+    untrackedCache = true
+    fsmonitor = true
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    default = simple
+    followTags = true
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+    prunetags = true
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[merge]
+    tool = nvimdiff
+    conflictstyle = diff3
+    ff = false
+
+[mergetool]
+    prompt = false
+    keepBackup = false
+
+[mergetool "nvimdiff"]
+    cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[diff]
+    tool = nvimdiff
+    algorithm = patience
+    compactionHeuristic = true
+    colorMoved = default
+
+[difftool]
+    prompt = false
+
+[difftool "nvimdiff"]
+    cmd = nvim -d $LOCAL $REMOTE
+
+[status]
+    showUntrackedFiles = all
+    submoduleSummary = true
+
+[commit]
+    verbose = true
+    template = ~/.gitmessage
+
+[log]
+    decorate = short
+    abbrevCommit = true
+
+[branch]
+    autosetupmerge = always
+    autosetuprebase = always
+
+[rerere]
+    enabled = true
+    autoupdate = true
+
+[help]
+    autocorrect = 1
+
+[web]
+    browser = open
+
+[browser "open"]
+    cmd = open
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎨 COLOR CONFIGURATION
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    interactive = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = cyan
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔧 ALIASES - Power User Git Shortcuts
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+[alias]
+    # Basic shortcuts
+    st = status
+    ci = commit
+    co = checkout
+    br = branch
+    cp = cherry-pick
+    df = diff
+    dc = diff --cached
+    
+    # Advanced operations
+    unstage = reset HEAD --
+    uncommit = reset --soft HEAD~1
+    recommit = commit --amend --no-edit
+    
+    # Branch management
+    brd = branch -D
+    brm = branch -m
+    brc = checkout -b
+    
+    # Stash operations
+    stash-unapply = !git stash show -p | git apply -R
+    stash-rename = !sh -c 'rev=$(git rev-parse $1) && git stash drop $1 || exit 1 && git diff-tree -p $rev | git apply -R && git stash && git apply --index'
+    
+    # Log aliases
+    l = log --oneline --graph --decorate
+    ll = log --oneline --graph --decorate --all
+    lp = log --pretty=format:'%C(yellow)%h%C(reset) %C(blue)%an%C(reset) %C(cyan)%cr%C(reset) %s %C(green)%d%C(reset)'
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+    
+    # Search and find
+    grep = grep -Ii
+    f = "!git ls-files | grep -i"
+    
+    # Workflow helpers
+    wip = !git add -A && git commit -m 'WIP: work in progress'
+    unwip = !git log -n 1 | grep -q -c WIP && git reset HEAD~1
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+    assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+    
+    # Cleanup and maintenance
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+    prune-all = !git remote | xargs -n 1 git remote prune
+    aliases = config --get-regexp alias
+    
+    # Advanced diff
+    word-diff = diff --word-diff
+    char-diff = diff --word-diff-regex=.
+    
+    # Submodule helpers
+    subi = submodule update --init --recursive
+    subu = submodule update --recursive --remote
+    
+    # Archive
+    archive-branch = !sh -c 'git tag archive/$1 $1 && git branch -D $1' -
+    
+    # Stats and info
+    who = shortlog -sne
+    activity = for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short) %(committerdate:relative) %(committername)'
+    standup = log --since='yesterday' --oneline --author=$(git config user.email)
+    
+    # Interactive rebase helpers
+    ri = rebase -i
+    rc = rebase --continue
+    ra = rebase --abort
+    
+    # Quick commit types
+    feat = "!f() { git commit -m \"feat: $*\"; }; f"
+    fix = "!f() { git commit -m \"fix: $*\"; }; f"
+    docs = "!f() { git commit -m \"docs: $*\"; }; f"
+    style = "!f() { git commit -m \"style: $*\"; }; f"
+    refactor = "!f() { git commit -m \"refactor: $*\"; }; f"
+    test = "!f() { git commit -m \"test: $*\"; }; f"
+    chore = "!f() { git commit -m \"chore: $*\"; }; f"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔒 SECURITY & SIGNING
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+[commit]
+    # Uncomment to enable GPG signing
+    # gpgsign = true
+
+[gpg]
+    # program = gpg
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🌐 REMOTE REPOSITORIES
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🚀 PERFORMANCE OPTIMIZATIONS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+[gc]
+    auto = 1000
+
+[pack]
+    threads = 0
+    deltaCacheSize = 2g
+    packSizeLimit = 2g
+    windowMemory = 2g
+
+[index]
+    version = 4
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔀 DELTA DIFF VIEWER (if installed)
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Uncomment these sections if you have delta installed via brew install git-delta
+
+# [core]
+#     pager = delta
+
+# [interactive]
+#     diffFilter = delta --color-only
+
+# [delta]
+#     navigate = true
+#     light = false
+#     side-by-side = true
+#     line-numbers = true
+#     syntax-theme = Dracula
+
+# [merge]
+#     conflictstyle = diff3
+
+# [diff]
+#     colorMoved = default
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📱 PLATFORM-SPECIFIC CONFIGURATIONS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# macOS specific
+[credential "https://github.com"]
+    helper = 
+    helper = !/opt/homebrew/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+    helper = 
+    helper = !/opt/homebrew/bin/gh auth git-credential

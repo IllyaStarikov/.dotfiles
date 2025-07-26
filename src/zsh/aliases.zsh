@@ -1,31 +1,150 @@
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+# 🚀 ZSH ALIASES - Production-Ready Shell Shortcuts
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+# Carefully curated aliases for maximum productivity and modern tooling integration
+# ════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📝 EDITOR ALIASES
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
 alias vim="nvim"
 alias vi="nvim"
-alias ranger="source ranger"
+alias v="nvim"
+alias code="code ."
+alias edit="nvim"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📁 FILE MANAGEMENT - Modern ls with eza
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Enhanced eza-based file listing
+alias ls="eza --group-directories-first --icons"
+alias ll="eza -l --group-directories-first --time-style=relative --icons --git"
+alias la="eza -la --group-directories-first --time-style=relative --icons --git"
+alias lt="eza --tree --level=2 --icons"
+alias tree="eza --tree --icons"
+alias l1="eza --tree --level=1 --icons"
+alias l2="eza --tree --level=2 --icons"
+alias l3="eza --tree --level=3 --icons"
+
+# Size-aware listings
+alias lh="eza -lah --group-directories-first --time-style=relative --icons --git"  # Human readable
+alias lS="eza -laS --group-directories-first --time-style=relative --icons --git"  # Sort by size
+alias lt_size="eza --tree --level=2 --icons -s size"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔧 TMUX & SESSION MANAGEMENT
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
 alias tx="tmuxinator"
 alias txs="tmuxinator start"
+alias txl="tmuxinator list"
+alias txe="tmuxinator edit"
+alias txn="tmuxinator new"
+alias ranger="source ranger"
 
-# Modern ls replacement with better defaults
-alias ls="eza --group-directories-first"
-alias ll="eza -l --group-directories-first --time-style=relative"
-alias la="eza -la --group-directories-first --time-style=relative"
-alias tree="eza --tree"
+# Tmux shortcuts
+alias tm="tmux"
+alias tma="tmux attach"
+alias tmn="tmux new-session"
+alias tml="tmux list-sessions"
+alias tmk="tmux kill-session"
 
-alias haskell="ghci"
-alias haskellcc="ghc"
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🌐 GIT WORKFLOW ENHANCEMENT
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-alias diff="colordiff"
-alias grep="grep --color=always"
-alias reset="source ~/.zshrc && reset"
-
-alias pandoc="pandoc --wrap=none --listings"
+# Beautiful git log
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh"
-alias install-auto-theme="~/.dotfiles/src/theme-switcher/install-auto-theme.sh"
+alias gll="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
+alias glo="git log --oneline --graph --decorate --all"
 
-## get rid of command not found
+# Git shortcuts
+alias g="git"
+alias ga="git add"
+alias gaa="git add --all"
+alias gc="git commit"
+alias gcm="git commit -m"
+alias gca="git commit --amend"
+alias gco="git checkout"
+alias gcb="git checkout -b"
+alias gd="git diff"
+alias gdc="git diff --cached"
+alias gf="git fetch"
+alias gp="git push"
+alias gpl="git pull"
+alias gs="git status"
+alias gst="git stash"
+alias gstp="git stash pop"
+alias gb="git branch"
+alias gba="git branch -a"
+alias gm="git merge"
+alias gr="git rebase"
+alias gri="git rebase -i"
+alias greset="git reset --hard HEAD"
+alias gclean="git clean -fd"
+
+# Advanced git workflows
+alias gwip="git add -A && git commit -m 'WIP: work in progress'"
+alias gunwip="git log -n 1 | grep -q -c 'WIP' && git reset HEAD~1"
+alias gundo="git reset --soft HEAD~1"
+alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 git branch -d"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔍 SEARCH & FIND UTILITIES
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Modern search tools
+alias find-file="fd"
+alias find-content="rg"
+alias grep="rg"
+alias search="rg -i --pretty --context=3"
+
+# Project-specific searches
+alias todos="rg -n --no-heading '(TODO|FIX(ME)?|NOTE|HACK|XXX)'"
+alias fixmes="rg -n --no-heading '(FIXME|FIX)'"
+alias notes="rg -n --no-heading '(NOTE|NOTES)'"
+
+# File type specific searches
+alias pygrep="rg --type py"
+alias jsgrep="rg --type js"
+alias tsgrep="rg --type ts"
+alias cssgrep="rg --type css"
+alias htmlgrep="rg --type html"
+alias mdgrep="rg --type md"
+alias luagrep="rg --type lua"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🌈 ENHANCED SYSTEM UTILITIES
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Colorful and enhanced utilities
+alias diff="colordiff"
+alias less="less -R"
+alias cat="bat --style=header,grid,numbers"
+alias c="bat --style=header,grid,numbers"
+alias preview="bat --style=header,grid,numbers --color=always"
+
+# System information
+alias df='df -H'
+alias du='du -ch'
+alias free='vm_stat'
+alias top='htop'
+alias ps='procs'
+
+# Network utilities
+alias ip="curl -s icanhazip.com"
+alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
+alias ips="ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📂 NAVIGATION SHORTCUTS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Directory navigation
 alias cd..="cd .."
-
-## a quick way to get out of current directory
 alias ..="cd .."
 alias ...="cd ../../"
 alias ....="cd ../../../"
@@ -33,15 +152,149 @@ alias .....="cd ../../../../"
 alias .4="cd ../../../../"
 alias .5="cd ../../../../.."
 
-## get current public IP
-alias ip="curl icanhazip.com"
+# Quick directory access
+alias home="cd ~"
+alias desktop="cd ~/Desktop"
+alias downloads="cd ~/Downloads"
+alias documents="cd ~/Documents"
+alias projects="cd ~/Projects"
+alias dotfiles="cd ~/.dotfiles"
 
-## list TODO/FIX lines from the current project
-# Modern ripgrep-based search (faster than ack)
-alias todos="rg -n --no-heading '(TODO|FIX(ME)?|NOTE|HACK)'"
-alias find-file="fd"
-alias find-content="rg"
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎨 THEME & APPEARANCE
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-## disk stuff...
-alias df='df -H'
-alias du='du -ch'
+alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh"
+alias install-auto-theme="~/.dotfiles/src/theme-switcher/install-auto-theme.sh"
+alias dark="theme dark"
+alias light="theme light"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🛠️ DEVELOPMENT TOOLS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Programming language shortcuts
+alias haskell="ghci"
+alias haskellcc="ghc"
+alias py="python3"
+alias py2="python2"
+alias pip="pip3"
+alias node="node"
+alias npm="npm"
+alias yarn="yarn"
+
+# Docker shortcuts
+alias d="docker"
+alias dc="docker-compose"
+alias dps="docker ps"
+alias di="docker images"
+alias dex="docker exec -it"
+alias dlog="docker logs"
+alias dstop="docker stop \$(docker ps -q)"
+alias dclean="docker system prune -af"
+
+# Kubernetes shortcuts
+alias k="kubectl"
+alias kgp="kubectl get pods"
+alias kgs="kubectl get services"
+alias kgd="kubectl get deployments"
+alias kdesc="kubectl describe"
+alias klogs="kubectl logs"
+alias kexec="kubectl exec -it"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📄 DOCUMENT PROCESSING
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+alias pandoc="pandoc --wrap=none --listings"
+alias md2pdf="pandoc --pdf-engine=xelatex -o"
+alias md2html="pandoc -t html5 -o"
+alias md2docx="pandoc -o"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🧹 CLEANUP & MAINTENANCE
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+alias cleanup="find . -type f -name '*.DS_Store' -delete && find . -type f -name '*.pyc' -delete"
+alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes && sudo rm -rfv ~/.Trash && sudo rm -rfv /private/var/log/asl/*.asl"
+alias reset="source ~/.zshrc && clear"
+alias reload="source ~/.zshrc"
+alias reloadzsh="source ~/.zshrc"
+
+# System maintenance
+alias update="brew update && brew upgrade && brew cleanup"
+alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📊 MONITORING & DIAGNOSTICS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Process monitoring
+alias psg="ps aux | grep"
+alias cpu='top -o cpu'
+alias mem='top -o mem'
+
+# Disk usage
+alias disk='du -h --max-depth=1 | sort -hr'
+alias biggest='du -h --max-depth=1 | sort -hr | head -20'
+
+# Port monitoring
+alias ports='netstat -tulanp'
+alias listening='lsof -i -P | grep LISTEN'
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🚀 PRODUCTIVITY SHORTCUTS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Quick edits
+alias zshconfig="nvim ~/.zshrc"
+alias zshreload="source ~/.zshrc"
+alias vimconfig="nvim ~/.config/nvim/init.lua"
+alias tmuxconfig="nvim ~/.tmux.conf"
+alias gitconfig="nvim ~/.gitconfig"
+alias sshconfig="nvim ~/.ssh/config"
+
+# Time savers
+alias h="history"
+alias j="jobs"
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+
+# Fun utilities
+alias weather='curl wttr.in'
+alias moon='curl wttr.in/Moon'
+alias crypto='curl rate.sx'
+alias chuck='curl -s https://api.chucknorris.io/jokes/random | jq -r .value'
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🎯 POWER USER SHORTCUTS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Quick server
+alias serve="python3 -m http.server"
+alias serve8000="python3 -m http.server 8000"
+alias serve3000="python3 -m http.server 3000"
+
+# Copy utilities (macOS)
+alias copy="pbcopy"
+alias paste="pbpaste"
+alias copyfile="pbcopy <"
+
+# URL encoding/decoding
+alias urlencode='python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))"'
+alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'
+
+# Base64 encoding/decoding
+alias b64encode='base64'
+alias b64decode='base64 -D'
+
+# JSON formatting
+alias json='python3 -m json.tool'
+alias jsonpp='python3 -m json.tool'
+
+# Hash utilities
+alias md5sum='md5'
+alias sha1sum='shasum -a 1'
+alias sha256sum='shasum -a 256'
