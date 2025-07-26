@@ -34,6 +34,16 @@ require("lazy").setup({
   },
   { "junegunn/fzf.vim" },
 
+  -- Modern QoL collection - replaces many individual plugins
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    config = function()
+      require('config.snacks').setup()
+    end,
+  },
+
   -- UI/UX plugins
   { "airblade/vim-gitgutter" },
   { "dracula/vim", name = "dracula" },

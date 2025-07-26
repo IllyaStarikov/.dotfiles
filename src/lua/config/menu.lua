@@ -43,10 +43,10 @@ function M.setup_custom_menus()
     
     -- Define menu structure compatible with nvzone/menu (array format)
     local default_menu = {
-        { name = "󰈞  Find File", cmd = "Files", rtxt = "f" },
-        { name = "  Recent Files", cmd = "History", rtxt = "r" },
-        { name = "󰱼  Find in Files", cmd = "Grepper -tool grep", rtxt = "g" },
-        { name = "  File Browser", cmd = "NERDTreeToggle", rtxt = "n" },
+        { name = "🍿 Find File", cmd = "lua Snacks.picker.files()", rtxt = "f" },
+        { name = "🍿 Recent Files", cmd = "lua Snacks.picker.recent()", rtxt = "r" },
+        { name = "🍿 Find in Files", cmd = "lua Snacks.picker.grep()", rtxt = "g" },
+        { name = "🍿 File Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
         
@@ -56,7 +56,7 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "  Buffer List", cmd = "Buffers", rtxt = "b" },
+        { name = "🍿 Buffer List", cmd = "lua Snacks.picker.buffers()", rtxt = "b" },
         { name = "  Next Buffer", cmd = "bnext", rtxt = "N" },
         { name = "  Previous Buffer", cmd = "bprevious", rtxt = "P" },
         { name = "  Close Buffer", cmd = "Kwbd", rtxt = "c" },
@@ -75,6 +75,14 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
+        { name = "🍿 Dashboard", cmd = "lua Snacks.dashboard()", rtxt = "D", hl = "ExCyan" },
+        { name = "🍿 Scratch Buffer", cmd = "lua Snacks.scratch()", rtxt = ".", hl = "ExCyan" },
+        { name = "🍿 Explorer", cmd = "lua Snacks.explorer()", rtxt = "E", hl = "ExCyan" },
+        { name = "🍿 Zen Mode", cmd = "lua Snacks.zen()", rtxt = "Z", hl = "ExCyan" },
+        { name = "🍿 LazyGit", cmd = "lua Snacks.lazygit()", rtxt = "G", hl = "ExCyan" },
+        
+        { name = "separator" },
+        
         { name = "⌨️  Typing Test", cmd = "Typr", rtxt = "T", hl = "ExYellow" },
         { name = "  Typing Stats", cmd = "TyprStats", rtxt = "St", hl = "ExYellow" },
         
@@ -85,7 +93,7 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "  Terminal", cmd = "terminal", rtxt = "t" },
+        { name = "🍿 Terminal", cmd = "lua Snacks.terminal()", rtxt = "t" },
         { name = "  Plugin Manager", cmd = "Lazy", rtxt = "l" },
         { name = "  Mason (LSP)", cmd = "Mason", rtxt = "m" },
     }
@@ -109,7 +117,7 @@ function M.setup_custom_menus()
     local terminal_menu = {
         { name = "  Exit Terminal Mode", cmd = "stopinsert", rtxt = "e" },
         { name = "  Close Terminal", cmd = "close", rtxt = "c" },
-        { name = "  New Terminal", cmd = "terminal", rtxt = "n" },
+        { name = "  New Terminal", cmd = "lua Snacks.terminal()", rtxt = "n" },
         { name = "  Clear Screen", cmd = "normal i<C-l>", rtxt = "l" },
     }
     
@@ -514,24 +522,24 @@ function M.get_project_specific_menu()
     
     -- Check for specific project types and add relevant menu items
     if vim.fn.filereadable(cwd .. "/package.json") == 1 then
-        table.insert(project_menu, { name = "📦 npm install", cmd = "terminal npm install", rtxt = "i" })
-        table.insert(project_menu, { name = "📦 npm start", cmd = "terminal npm start", rtxt = "s" })
-        table.insert(project_menu, { name = "📦 npm test", cmd = "terminal npm test", rtxt = "t" })
-        table.insert(project_menu, { name = "📦 npm build", cmd = "terminal npm run build", rtxt = "b" })
+        table.insert(project_menu, { name = "📦 npm install", cmd = "lua Snacks.terminal('npm install')", rtxt = "i" })
+        table.insert(project_menu, { name = "📦 npm start", cmd = "lua Snacks.terminal('npm start')", rtxt = "s" })
+        table.insert(project_menu, { name = "📦 npm test", cmd = "lua Snacks.terminal('npm test')", rtxt = "t" })
+        table.insert(project_menu, { name = "📦 npm build", cmd = "lua Snacks.terminal('npm run build')", rtxt = "b" })
     end
     
     if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
-        table.insert(project_menu, { name = "🦀 cargo build", cmd = "terminal cargo build", rtxt = "B" })
-        table.insert(project_menu, { name = "🦀 cargo run", cmd = "terminal cargo run", rtxt = "R" })
-        table.insert(project_menu, { name = "🦀 cargo test", cmd = "terminal cargo test", rtxt = "T" })
-        table.insert(project_menu, { name = "🦀 cargo check", cmd = "terminal cargo check", rtxt = "C" })
+        table.insert(project_menu, { name = "🦀 cargo build", cmd = "lua Snacks.terminal('cargo build')", rtxt = "B" })
+        table.insert(project_menu, { name = "🦀 cargo run", cmd = "lua Snacks.terminal('cargo run')", rtxt = "R" })
+        table.insert(project_menu, { name = "🦀 cargo test", cmd = "lua Snacks.terminal('cargo test')", rtxt = "T" })
+        table.insert(project_menu, { name = "🦀 cargo check", cmd = "lua Snacks.terminal('cargo check')", rtxt = "C" })
     end
     
     if vim.fn.filereadable(cwd .. "/requirements.txt") == 1 or vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
-        table.insert(project_menu, { name = "🐍 pip install", cmd = "terminal pip install -r requirements.txt", rtxt = "I" })
-        table.insert(project_menu, { name = "🐍 pytest", cmd = "terminal python -m pytest", rtxt = "p" })
-        table.insert(project_menu, { name = "🐍 run main", cmd = "terminal python main.py", rtxt = "M" })
-        table.insert(project_menu, { name = "🐍 pip freeze", cmd = "terminal pip freeze", rtxt = "F" })
+        table.insert(project_menu, { name = "🐍 pip install", cmd = "lua Snacks.terminal('pip install -r requirements.txt')", rtxt = "I" })
+        table.insert(project_menu, { name = "🐍 pytest", cmd = "lua Snacks.terminal('python -m pytest')", rtxt = "p" })
+        table.insert(project_menu, { name = "🐍 run main", cmd = "lua Snacks.terminal('python main.py')", rtxt = "M" })
+        table.insert(project_menu, { name = "🐍 pip freeze", cmd = "lua Snacks.terminal('pip freeze')", rtxt = "F" })
     end
     
     return project_menu
