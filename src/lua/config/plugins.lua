@@ -668,7 +668,7 @@ require("lazy").setup({
       "rcarriga/nvim-notify",
     },
     config = function()
-      require('config.noice').setup()
+      require('config.snacks').setup()
     end,
   },
   
