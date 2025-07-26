@@ -1,15 +1,79 @@
 #!/bin/bash
 
-brew update
-brew upgrade
-brew upgrade --cask
-brew cleanup
+echo "Starting system update process..."
 
-nvim -c "PlugUpgrade"
-nvim -c "PlugUpdate"
+# macOS System Updates
+echo "Checking for macOS system updates..."
+sudo softwareupdate -ia --restart --agree-to-license || echo "No macOS system updates or failed to install."
 
-omz update
+# Mac App Store Updates (requires 'mas' CLI tool)
+if command -v mas &> /dev/null; then
+    echo "Updating Mac App Store applications..."
+    mas upgrade || echo "No Mac App Store updates or failed to install."
+else
+    echo "Skipping Mac App Store updates: 'mas' CLI tool not found. Install with 'brew install mas' if desired."
+fi
 
-npm update -g
+# Homebrew Updates
+echo "Updating Homebrew packages..."
+brew update && brew upgrade && brew upgrade --cask && brew cleanup || echo "Homebrew update failed."
 
-xcode-select --install
+# Neovim Plugin Updates (Vim-Plug)
+echo "Updating Neovim plugins..."
+nvim -c "PlugUpgrade" -c "PlugUpdate" -c "qa!" || echo "Neovim plugin update failed."
+
+# Oh My Zsh Updates
+echo "Updating Oh My Zsh..."
+omz update || echo "Oh My Zsh update failed."
+
+# Node.js Global Package Updates (npm)
+if command -v npm &> /dev/null; then
+    echo "Updating global npm packages..."
+    npm update -g || echo "npm global package update failed."
+fi
+
+# Node.js Global Package Updates (yarn)
+if command -v yarn &> /dev/null; then
+    echo "Updating global Yarn packages..."
+    yarn global upgrade || echo "Yarn global package update failed."
+fi
+
+# Node.js Global Package Updates (pnpm)
+if command -v pnpm &> /dev/null; then
+    echo "Updating global pnpm packages..."
+    pnpm update -g || echo "pnpm global package update failed."
+fi
+
+# Python Package Updates (pip3)
+if command -v pip3 &> /dev/null; then
+    echo "Updating Python packages (pip3)..."
+    pip3 install --upgrade pip setuptools wheel || echo "Failed to upgrade pip components."
+    pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U || echo "Python package update failed."
+fi
+
+# RubyGems Updates (gem)
+if command -v gem &> /dev/null; then
+    echo "Updating RubyGems..."
+    gem update --system && gem update || echo "RubyGems update failed."
+fi
+
+# Rust Toolchain and Cargo Package Updates
+if command -v rustup &> /dev/null; then
+    echo "Updating Rust toolchain..."
+    rustup update || echo "Rust toolchain update failed."
+fi
+if command -v cargo &> /dev/null; then
+    echo "Updating global Cargo packages..."
+    # This command attempts to update all globally installed cargo packages.
+    # It lists them, extracts names, and tries to install them again with --force.
+    # This is a common way to update them as cargo doesn't have a direct 'update all' for installed binaries.
+    cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install --force || echo "Cargo global package update failed."
+fi
+
+# TeX Live Manager Updates (tlmgr)
+if command -v tlmgr &> /dev/null; then
+    echo "Updating TeX Live packages (tlmgr)..."
+    sudo tlmgr update --all || echo "TeX Live update failed."
+fi
+
+echo "System update process completed."
