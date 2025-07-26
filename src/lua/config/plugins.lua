@@ -19,20 +19,32 @@ vim.opt.runtimepath:prepend(lazypath)
 
 -- Plugin specifications
 require("lazy").setup({
-  -- FZF fuzzy finder
+  -- Telescope fuzzy finder
   {
-    "junegunn/fzf",
-    build = function()
-      if vim.fn.has("macunix") == 1 then
-        -- macOS - use system fzf
-        return
-      else
-        -- Linux
-        vim.fn.system("./install --all")
-      end
-    end
+    "nvim-telescope/telescope.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
+        cond = function()
+          return vim.fn.executable("make") == 1
+        end,
+      },
+    },
+    config = function()
+      require('config.telescope').setup()
+    end,
+    keys = {
+      { "<C-p>", function() require('telescope.builtin').find_files() end, desc = "Find Files" },
+      { "<leader>ff", function() require('telescope.builtin').find_files() end, desc = "Find Files" },
+      { "<leader>fg", function() require('telescope.builtin').live_grep() end, desc = "Live Grep" },
+      { "<leader>fb", function() require('telescope.builtin').buffers() end, desc = "Buffers" },
+      { "<leader>fh", function() require('telescope.builtin').help_tags() end, desc = "Help Tags" },
+      { "<leader>fr", function() require('telescope.builtin').oldfiles() end, desc = "Recent Files" },
+      { "<leader>fc", function() require('telescope.builtin').commands() end, desc = "Commands" },
+    },
   },
-  { "junegunn/fzf.vim" },
 
   -- Modern QoL collection - replaces many individual plugins
   {
@@ -295,32 +307,7 @@ g.grepper = {
   }
 }
 
--- FZF
-g.fzf_action = {
-  ['ctrl-t'] = 'tab split',
-  ['ctrl-x'] = 'split',
-  ['ctrl-v'] = 'vsplit'
-}
-
-g.fzf_layout = { down = '~40%' }
-
-g.fzf_colors = {
-  fg = {'fg', 'Normal'},
-  bg = {'bg', 'Normal'},
-  hl = {'fg', 'Comment'},
-  ['fg+'] = {'fg', 'CursorLine', 'CursorColumn', 'Normal'},
-  ['bg+'] = {'bg', 'CursorLine', 'CursorColumn'},
-  ['hl+'] = {'fg', 'Statement'},
-  info = {'fg', 'PreProc'},
-  border = {'fg', 'Ignore'},
-  prompt = {'fg', 'Conditional'},
-  pointer = {'fg', 'Exception'},
-  marker = {'fg', 'Keyword'},
-  spinner = {'fg', 'Label'},
-  header = {'fg', 'Comment'}
-}
-
-g.fzf_history_dir = '~/.local/share/fzf-history'
+-- Telescope is now configured in config/telescope.lua
 
 -- Dracula theme settings
 g.dracula_italic = 1

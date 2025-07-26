@@ -43,9 +43,9 @@ function M.setup_custom_menus()
     
     -- Define menu structure compatible with nvzone/menu (array format)
     local default_menu = {
-        { name = "🍿 Find File", cmd = "lua Snacks.picker.files()", rtxt = "f" },
-        { name = "🍿 Recent Files", cmd = "lua Snacks.picker.recent()", rtxt = "r" },
-        { name = "🍿 Find in Files", cmd = "lua Snacks.picker.grep()", rtxt = "g" },
+        { name = "🔭 Find File", cmd = "lua require('telescope.builtin').find_files()", rtxt = "f" },
+        { name = "🔭 Recent Files", cmd = "lua require('telescope.builtin').oldfiles()", rtxt = "r" },
+        { name = "🔭 Find in Files", cmd = "lua require('telescope.builtin').live_grep()", rtxt = "g" },
         { name = "🍿 File Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
@@ -56,7 +56,7 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "🍿 Buffer List", cmd = "lua Snacks.picker.buffers()", rtxt = "b" },
+        { name = "🔭 Buffer List", cmd = "lua require('telescope.builtin').buffers()", rtxt = "b" },
         { name = "  Next Buffer", cmd = "bnext", rtxt = "N" },
         { name = "  Previous Buffer", cmd = "bprevious", rtxt = "P" },
         { name = "  Close Buffer", cmd = "Kwbd", rtxt = "c" },
@@ -598,18 +598,12 @@ end
 
 -- Integration with existing plugins
 function M.integrate_with_telescope()
-    -- If Telescope is available, enhance menu with Telescope commands
+    -- Telescope is already integrated in the menu definitions above
+    -- This function is maintained for compatibility but telescope commands
+    -- are now directly embedded in the menu structure
     local telescope_ok, _ = pcall(require, "telescope")
-    if telescope_ok and M.menus and M.menus.default then
-        -- Replace existing find commands with Telescope versions
-        M.menus.default["🔭 Find Files"] = { "Telescope find_files", "f" }
-        M.menus.default["🔭 Live Grep"] = { "Telescope live_grep", "g" }
-        M.menus.default["🔭 Buffers"] = { "Telescope buffers", "b" }
-        M.menus.default["🔭 Help Tags"] = { "Telescope help_tags", "h" }
-        M.menus.default["🔭 Git Files"] = { "Telescope git_files", "G" }
-        M.menus.default["🔭 Commands"] = { "Telescope commands", "c" }
-        M.menus.default["🔭 Recent Files"] = { "Telescope oldfiles", "r" }
-        M.menus.default["🔭 Symbols"] = { "Telescope lsp_document_symbols", "S" }
+    if telescope_ok then
+        vim.notify("Telescope integration active in menu system", vim.log.levels.DEBUG)
     end
 end
 
@@ -624,6 +618,7 @@ function M.get_project_specific_menu()
         table.insert(project_menu, { name = "📦 npm start", cmd = "lua Snacks.terminal('npm start')", rtxt = "s" })
         table.insert(project_menu, { name = "📦 npm test", cmd = "lua Snacks.terminal('npm test')", rtxt = "t" })
         table.insert(project_menu, { name = "📦 npm build", cmd = "lua Snacks.terminal('npm run build')", rtxt = "b" })
+        table.insert(project_menu, { name = "🔭 Find JS/TS", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.{js,ts,jsx,tsx}'}})", rtxt = "j" })
     end
     
     if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
@@ -631,6 +626,7 @@ function M.get_project_specific_menu()
         table.insert(project_menu, { name = "🦀 cargo run", cmd = "lua Snacks.terminal('cargo run')", rtxt = "R" })
         table.insert(project_menu, { name = "🦀 cargo test", cmd = "lua Snacks.terminal('cargo test')", rtxt = "T" })
         table.insert(project_menu, { name = "🦀 cargo check", cmd = "lua Snacks.terminal('cargo check')", rtxt = "C" })
+        table.insert(project_menu, { name = "🔭 Find Rust", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.rs'}})", rtxt = "r" })
     end
     
     if vim.fn.filereadable(cwd .. "/requirements.txt") == 1 or vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
@@ -638,6 +634,7 @@ function M.get_project_specific_menu()
         table.insert(project_menu, { name = "🐍 pytest", cmd = "lua Snacks.terminal('python -m pytest')", rtxt = "p" })
         table.insert(project_menu, { name = "🐍 run main", cmd = "lua Snacks.terminal('python main.py')", rtxt = "M" })
         table.insert(project_menu, { name = "🐍 pip freeze", cmd = "lua Snacks.terminal('pip freeze')", rtxt = "F" })
+        table.insert(project_menu, { name = "🔭 Find Python", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.py'}})", rtxt = "y" })
     end
     
     return project_menu
