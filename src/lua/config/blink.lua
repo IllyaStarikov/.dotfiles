@@ -16,7 +16,13 @@ function M.setup()
     
     blink.setup({
         -- Key mappings configuration
-        keymap = { preset = "default" },
+        keymap = { 
+            preset = "default",
+            -- Faster acceptance
+            ["<CR>"] = { "accept", "fallback" },
+            ["<Tab>"] = { "select_next", "fallback" },
+            ["<S-Tab>"] = { "select_prev", "fallback" },
+        },
         
         -- Fuzzy matching configuration (use pure Lua implementation)
         fuzzy = {
@@ -27,20 +33,58 @@ function M.setup()
             }
         },
         
+        
         -- Basic completion configuration
         completion = {
             menu = {
                 border = "rounded",
+                draw = {
+                    -- Faster rendering
+                    columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
+                },
             },
             documentation = {
-                auto_show = true,
-                auto_show_delay_ms = 200,
-            }
+                auto_show = false,  -- Don't auto-show docs (major performance improvement)
+                auto_show_delay_ms = 0,
+            },
+            -- Trigger configuration for faster response
+            trigger = {
+                show_on_insert_on_trigger_character = true,
+                show_on_x_blocked_trigger_characters = { "'", '"', "(", "{" },
+            },
+            accept = {
+                resolve_timeout_ms = 50,  -- Faster resolve timeout (default 100)
+            },
         },
         
-        -- Source configuration
+        -- Source configuration with priorities
         sources = {
-            default = { "lsp", "path", "snippets", "buffer" },
+            default = { "lsp", "path", "buffer" },  -- Remove snippets from default to speed up
+            providers = {
+                lsp = {
+                    score_offset = 100,  -- Prioritize LSP
+                    timeout_ms = 500,    -- Faster timeout for LSP
+                },
+                path = {
+                    score_offset = 0,
+                    opts = {
+                        trailing_slash = false,
+                        label_trailing_slash = false,
+                        get_cwd = vim.fn.getcwd,
+                        show_hidden_files_by_default = false,
+                    },
+                },
+                buffer = {
+                    score_offset = -100,  -- Lower priority
+                    max_items = 5,        -- Limit buffer suggestions
+                    opts = {
+                        get_bufnrs = function()
+                            -- Only current buffer for speed
+                            return { vim.api.nvim_get_current_buf() }
+                        end,
+                    },
+                },
+            },
         },
         
         -- Disable completion in certain filetypes
