@@ -13,6 +13,7 @@ function M.setup()
     -- Core configuration
     experimental = {
       file_open_command = "open", -- macOS
+      check_rtp = false, -- Disable runtime path check since we've fixed load order
     },
     
     preview = {
