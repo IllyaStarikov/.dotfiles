@@ -75,6 +75,11 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
+        { name = "⌨️  Typing Test", cmd = "Typr", rtxt = "tt", hl = "ExYellow" },
+        { name = "  Typing Stats", cmd = "TyprStats", rtxt = "ts", hl = "ExYellow" },
+        
+        { name = "separator" },
+        
         { name = "  Git Status", cmd = "Git", rtxt = "S", hl = "ExGreen" },
         { name = "  Git Blame", cmd = "Git blame", rtxt = "B", hl = "ExGreen" },
         
@@ -160,6 +165,10 @@ function M.setup_keymaps()
     vim.keymap.set("n", "<leader>ma", function()
         M.open_ai_menu()
     end, vim.tbl_extend("force", opts, { desc = "AI Assistant Menu" }))
+    
+    vim.keymap.set("n", "<leader>mt", function()
+        M.open_typing_menu()
+    end, vim.tbl_extend("force", opts, { desc = "Typing Practice Menu" }))
 end
 
 -- Smart menu opening based on context
@@ -378,6 +387,39 @@ function M.open_ai_menu()
         end
     else
         vim.notify("AI Assistant menu not found", vim.log.levels.WARN)
+    end
+end
+
+function M.open_typing_menu()
+    local menu = require("menu")
+    local menu_utils_ok, menu_utils = pcall(require, 'menu.utils')
+    if menu_utils_ok and menu_utils.delete_old_menus then
+        pcall(menu_utils.delete_old_menus)
+    end
+    
+    -- Create typing-specific menu
+    local typing_menu = {
+        { name = "⌨️  Quick Test (25 words)", cmd = "TyprQuick", rtxt = "ty" },
+        { name = "⌨️  Long Test (100 words)", cmd = "TyprLong", rtxt = "tl" },
+        { name = "⌨️  Programming Test", cmd = "TyprProgramming", rtxt = "tp" },
+        { name = "⌨️  Timed Test (60s)", cmd = "TyprTimed 60", rtxt = "T" },
+        
+        { name = "separator" },
+        
+        { name = "  Dashboard", cmd = "TyprDashboard", rtxt = "td" },
+        { name = "  Statistics", cmd = "TyprStats", rtxt = "ts" },
+        { name = "  History", cmd = "TyprHistory", rtxt = "th" },
+        
+        { name = "separator" },
+        
+        { name = "  Configure", cmd = "TyprConfig", rtxt = "tc" },
+    }
+    
+    local success, err = pcall(menu.open, typing_menu, { 
+        border = true,
+    })
+    if not success then
+        vim.notify("Failed to open typing menu: " .. tostring(err), vim.log.levels.ERROR)
     end
 end
 

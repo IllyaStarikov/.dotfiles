@@ -76,8 +76,8 @@ map("x", "ga", "<Plug>(EasyAlign)", {})
 -- Copy full path
 map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", opts)
 
--- Terminal
-map("n", "<leader>t", ":terminal<cr>", opts)
+-- Terminal (moved to avoid conflict with typing practice)
+map("n", "<leader>T", ":terminal<cr>", opts)
 map("t", "<Esc>", "<C-\\><C-n>", opts)
 
 -- Menu system (comprehensive configuration in config/menu.lua)
@@ -88,7 +88,18 @@ map("t", "<Esc>", "<C-\\><C-n>", opts)
 -- <leader>mg   - Git operations menu  
 -- <leader>mc   - Code/LSP operations menu
 -- <leader>ma   - AI Assistant menu
+-- <leader>mt   - Typing practice menu
 -- <RightMouse> - Context menu at mouse position
+
+-- Typing practice (comprehensive configuration in config/typr.lua)
+-- <leader>tt   - Start typing test
+-- <leader>ts   - Show typing stats
+-- <leader>ty   - Quick typing test (25 words)
+-- <leader>tl   - Long typing test (100 words)
+-- <leader>tp   - Programming typing test (with symbols/numbers)
+-- <leader>th   - Show typing history
+-- <leader>td   - Show typing dashboard
+-- <leader>tc   - Configure typing test
 
 -- Modern improvements
 -- Better search experience
