@@ -335,3 +335,126 @@ map("v", "<leader>ff", function()
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
   Snacks.picker.files({ search = table.concat(selection, "") })
 end, { desc = "Find Files with Selection" })
+
+-- 📝 VIMTEX: LaTeX Power User Keybindings (Buffer-local for .tex files)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "tex", "latex", "plaintex" },
+  callback = function()
+    local buf_opts = { buffer = true, silent = true }
+    
+    -- 🚀 COMPILATION
+    map("n", "<leader>ll", "<cmd>VimtexCompile<cr>", vim.tbl_extend("force", buf_opts, { desc = "Toggle Compilation" }))
+    map("n", "<leader>lc", "<cmd>VimtexCompileSelected<cr>", vim.tbl_extend("force", buf_opts, { desc = "Compile Selection" }))
+    map("n", "<leader>ls", "<cmd>VimtexStop<cr>", vim.tbl_extend("force", buf_opts, { desc = "Stop Compilation" }))
+    map("n", "<leader>lS", "<cmd>VimtexStopAll<cr>", vim.tbl_extend("force", buf_opts, { desc = "Stop All Compilation" }))
+    
+    -- 📖 VIEWING
+    map("n", "<leader>lv", "<cmd>VimtexView<cr>", vim.tbl_extend("force", buf_opts, { desc = "View PDF" }))
+    map("n", "<leader>lr", "<cmd>VimtexReverse<cr>", vim.tbl_extend("force", buf_opts, { desc = "Reverse Search" }))
+    
+    -- 🧹 CLEANING
+    map("n", "<leader>lk", "<cmd>VimtexClean<cr>", vim.tbl_extend("force", buf_opts, { desc = "Clean Auxiliary Files" }))
+    map("n", "<leader>lK", "<cmd>VimtexClean!<cr>", vim.tbl_extend("force", buf_opts, { desc = "Clean All Files" }))
+    
+    -- 📋 TABLE OF CONTENTS & NAVIGATION
+    map("n", "<leader>lt", "<cmd>VimtexTocToggle<cr>", vim.tbl_extend("force", buf_opts, { desc = "Toggle TOC" }))
+    map("n", "<leader>lT", "<cmd>VimtexTocOpen<cr>", vim.tbl_extend("force", buf_opts, { desc = "Open TOC" }))
+    
+    -- 🔍 INFORMATION & STATUS
+    map("n", "<leader>li", "<cmd>VimtexInfo<cr>", vim.tbl_extend("force", buf_opts, { desc = "VimTeX Info" }))
+    map("n", "<leader>lI", "<cmd>VimtexInfoFull<cr>", vim.tbl_extend("force", buf_opts, { desc = "VimTeX Full Info" }))
+    map("n", "<leader>lq", "<cmd>VimtexLog<cr>", vim.tbl_extend("force", buf_opts, { desc = "Show Log" }))
+    
+    -- 🎯 CONTEXT COMMANDS
+    map("n", "<leader>lm", "<cmd>VimtexContextMenu<cr>", vim.tbl_extend("force", buf_opts, { desc = "Context Menu" }))
+    map("n", "<leader>le", "<cmd>VimtexErrors<cr>", vim.tbl_extend("force", buf_opts, { desc = "Show Errors" }))
+    
+    -- 🔄 RELOAD & REFRESH
+    map("n", "<leader>lR", "<cmd>VimtexReload<cr>", vim.tbl_extend("force", buf_opts, { desc = "Reload VimTeX" }))
+    
+    -- 📝 TEXT OBJECTS (Enhanced navigation)
+    -- Environments
+    map("n", "]]", "<cmd>VimtexSectionNext<cr>", vim.tbl_extend("force", buf_opts, { desc = "Next Section" }))
+    map("n", "[[", "<cmd>VimtexSectionPrev<cr>", vim.tbl_extend("force", buf_opts, { desc = "Previous Section" }))
+    map("n", "][", "<cmd>VimtexSectionNextEnd<cr>", vim.tbl_extend("force", buf_opts, { desc = "Next Section End" }))
+    map("n", "[]", "<cmd>VimtexSectionPrevEnd<cr>", vim.tbl_extend("force", buf_opts, { desc = "Previous Section End" }))
+    
+    -- 🎨 FORMATTING & EDITING
+    -- Surround with common LaTeX commands
+    map("v", "<leader>lb", "c\\textbf{<C-r>\"}<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Bold" }))
+    map("v", "<leader>li", "c\\textit{<C-r>\"}<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Italic" }))
+    map("v", "<leader>lu", "c\\underline{<C-r>\"}<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Underline" }))
+    map("v", "<leader>lf", "c\\texttt{<C-r>\"}<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Monospace" }))
+    map("v", "<leader>le", "c\\emph{<C-r>\"}<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Emphasize" }))
+    
+    -- Math mode shortcuts
+    map("v", "<leader>lM", "c\\[<CR><C-r>\"<CR>\\]<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Display Math" }))
+    map("v", "<leader>l$", "c$<C-r>\"$<Esc>", vim.tbl_extend("force", buf_opts, { desc = "Inline Math" }))
+    
+    -- 🏗️ STRUCTURE COMMANDS
+    map("n", "<leader>lsc", "i\\chapter{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Chapter" }))
+    map("n", "<leader>lss", "i\\section{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Section" }))
+    map("n", "<leader>lsS", "i\\subsection{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Subsection" }))
+    map("n", "<leader>lsp", "i\\subsubsection{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Subsubsection" }))
+    
+    -- 📚 REFERENCES & CITATIONS
+    map("n", "<leader>lrl", "i\\label{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Label" }))
+    map("n", "<leader>lrr", "i\\ref{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Reference" }))
+    map("n", "<leader>lrc", "i\\cite{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Citation" }))
+    map("n", "<leader>lrp", "i\\pageref{}<Left>", vim.tbl_extend("force", buf_opts, { desc = "Insert Page Reference" }))
+    
+    -- 🖼️ FIGURES & TABLES
+    map("n", "<leader>lff", function()
+      vim.api.nvim_put({
+        "\\begin{figure}[htbp]",
+        "    \\centering",
+        "    \\includegraphics[width=0.8\\textwidth]{filename}",
+        "    \\caption{Caption}",
+        "    \\label{fig:label}",
+        "\\end{figure}"
+      }, "l", true, true)
+    end, vim.tbl_extend("force", buf_opts, { desc = "Insert Figure" }))
+    
+    map("n", "<leader>lft", function()
+      vim.api.nvim_put({
+        "\\begin{table}[htbp]",
+        "    \\centering",
+        "    \\begin{tabular}{|c|c|}",
+        "        \\hline",
+        "        Header1 & Header2 \\\\",
+        "        \\hline",
+        "        Data1 & Data2 \\\\",
+        "        \\hline",
+        "    \\end{tabular}",
+        "    \\caption{Caption}",
+        "    \\label{tab:label}",
+        "\\end{table}"
+      }, "l", true, true)
+    end, vim.tbl_extend("force", buf_opts, { desc = "Insert Table" }))
+    
+    -- ⚡ QUICK ENVIRONMENTS
+    map("n", "<leader>lei", "i\\begin{itemize}<CR>\\item <CR>\\end{itemize}<Esc>k$a", vim.tbl_extend("force", buf_opts, { desc = "Itemize Environment" }))
+    map("n", "<leader>len", "i\\begin{enumerate}<CR>\\item <CR>\\end{enumerate}<Esc>k$a", vim.tbl_extend("force", buf_opts, { desc = "Enumerate Environment" }))
+    map("n", "<leader>lea", "i\\begin{align}<CR><CR>\\end{align}<Esc>ka", vim.tbl_extend("force", buf_opts, { desc = "Align Environment" }))
+    map("n", "<leader>leq", "i\\begin{equation}<CR><CR>\\end{equation}<Esc>ka", vim.tbl_extend("force", buf_opts, { desc = "Equation Environment" }))
+    
+    -- 🎯 QUICK SYMBOLS (Insert mode)
+    vim.keymap.set("i", ",,", "\\,", buf_opts)  -- Thin space
+    vim.keymap.set("i", "..", "\\ldots", buf_opts)  -- Ellipsis
+    vim.keymap.set("i", "->", "\\rightarrow", buf_opts)  -- Right arrow
+    vim.keymap.set("i", "<-", "\\leftarrow", buf_opts)  -- Left arrow
+    vim.keymap.set("i", "<=", "\\leq", buf_opts)  -- Less than or equal
+    vim.keymap.set("i", ">=", "\\geq", buf_opts)  -- Greater than or equal
+    vim.keymap.set("i", "!=", "\\neq", buf_opts)  -- Not equal
+    vim.keymap.set("i", "+-", "\\pm", buf_opts)  -- Plus minus
+    vim.keymap.set("i", "~=", "\\approx", buf_opts)  -- Approximately equal
+    
+    -- 📐 MATH SHORTCUTS (Insert mode)
+    vim.keymap.set("i", "^^", "^{}<Left>", buf_opts)  -- Superscript
+    vim.keymap.set("i", "__", "_{}<Left>", buf_opts)  -- Subscript
+    vim.keymap.set("i", "//", "\\frac{}{}<Left><Left><Left>", buf_opts)  -- Fraction
+    vim.keymap.set("i", "((", "\\left(\\right)<Left><Left><Left><Left><Left><Left><Left>", buf_opts)  -- Parentheses
+    vim.keymap.set("i", "[[", "\\left[\\right]<Left><Left><Left><Left><Left><Left><Left>", buf_opts)  -- Brackets
+    vim.keymap.set("i", "{{", "\\left\\{\\right\\}<Left><Left><Left><Left><Left><Left><Left><Left>", buf_opts)  -- Braces
+  end,
+})
