@@ -113,6 +113,7 @@ require("lazy").setup({
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    priority = 1000,  -- High priority to load first
     build = ":TSUpdate",
     config = function()
       require('nvim-treesitter.configs').setup({
@@ -135,6 +136,7 @@ require("lazy").setup({
   {
     "OXY2DEV/markview.nvim",
     lazy = false,
+    priority = 500,  -- Lower priority than treesitter
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons"
