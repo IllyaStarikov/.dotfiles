@@ -43,7 +43,7 @@ require("lazy").setup({
   { "vim-airline/vim-airline" },
   { "vim-airline/vim-airline-themes" },
   
-  -- Menu system for Neovim
+  -- nvzone plugins ecosystem
   { "nvzone/volt", lazy = true },
   { 
     "nvzone/menu", 
@@ -61,6 +61,19 @@ require("lazy").setup({
       { "<leader>mc", desc = "Code Menu" },
       { "<leader>ma", desc = "AI Assistant Menu" },
       { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
+    }
+  },
+  {
+    "nvzone/typr",
+    lazy = true,
+    dependencies = { "nvzone/volt" },
+    config = function()
+      require('config.typr').setup()
+    end,
+    cmd = { "Typr", "TyprStats" },
+    keys = {
+      { "<leader>tt", "<cmd>Typr<cr>", desc = "Start Typing Test" },
+      { "<leader>ts", "<cmd>TyprStats<cr>", desc = "Show Typing Stats" },
     }
   },
 
