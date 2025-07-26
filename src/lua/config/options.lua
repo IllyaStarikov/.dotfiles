@@ -46,10 +46,9 @@ if vim.fn.has("gui_running") == 1 or vim.g.neovide then
 end
 opt.conceallevel = 0                 -- don't try to conceal things (except for markdown)
 opt.list = true
-opt.showbreak = "↪\\"
+opt.showbreak = ""
 opt.listchars = {
   tab = "→ ",
-  eol = "↲",
   nbsp = "␣",
   trail = "•",
   extends = "⟩",
