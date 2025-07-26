@@ -176,10 +176,60 @@ autocmd({ "BufRead", "BufNewFile" }, {
   command = "set filetype=c"
 })
 
--- Python specific settings
+-- Python specific settings - enforce 2-space indentation
+local python_group = augroup("python_indent", { clear = true })
+
 autocmd("FileType", {
+  group = python_group,
   pattern = "python",
-  command = "setlocal shiftwidth=2 tabstop=2 softtabstop=2"
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+  end
+})
+
+-- Re-enforce Python indentation after any buffer write or format
+autocmd({"BufWritePost", "User"}, {
+  group = python_group,
+  pattern = "*.py",
+  callback = function()
+    if vim.bo.filetype == "python" then
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.tabstop = 2
+      vim.opt_local.softtabstop = 2
+      vim.opt_local.expandtab = true
+    end
+  end
+})
+
+-- Also enforce on any LSP format or external command
+autocmd("User", {
+  group = python_group,
+  pattern = "FormatterPost",
+  callback = function()
+    if vim.bo.filetype == "python" then
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.tabstop = 2
+      vim.opt_local.softtabstop = 2
+      vim.opt_local.expandtab = true
+    end
+  end
+})
+
+-- Enforce Python indentation after buffer writes
+autocmd({"BufWritePre", "BufWritePost"}, {
+  group = python_group,
+  pattern = "*.py",
+  callback = function()
+    if vim.bo.filetype == "python" then
+      vim.opt_local.shiftwidth = 2
+      vim.opt_local.tabstop = 2
+      vim.opt_local.softtabstop = 2
+      vim.opt_local.expandtab = true
+    end
+  end
 })
 
 -- NERDTree group
@@ -353,29 +403,569 @@ autocmd("FileType", {
   end
 })
 
--- Skeleton files group
-local templates_group = augroup("templates", { clear = true })
+-- Skeleton files group - modern LuaSnip based auto-insertion
+local skeleton_group = augroup("skeleton_files", { clear = true })
 
-autocmd("BufNewFile", {
-  group = templates_group,
-  pattern = "main.*",
-  callback = function()
-    local ext = vim.fn.expand("<afile>:e")
-    vim.cmd("silent! execute '0r ~/.vim/plugged/skeleton-files/skeleton-main." .. ext .. "'")
+-- Helper function to get skeleton content directly
+local function get_skeleton_content(filetype, context)
+  local date = os.date('%Y-%m-%d')
+  local year = os.date('%Y')
+  local filename = vim.fn.expand('%:t') or 'untitled'
+  local project = vim.fn.expand('%:p:h:t') or 'project'
+  
+  if filetype == "python" then
+    return {
+      "#!/usr/bin/env python3",
+      '"""',
+      context.description or "Module description",
+      "",
+      "Author: " .. (context.author or "Illya Starikov"),
+      "Date: " .. date,
+      "License: MIT",
+      '"""',
+      "",
+      "import argparse",
+      "import logging",
+      "import sys",
+      "from typing import Optional",
+      "",
+      "",
+      "# Configure logging",
+      "logging.basicConfig(",
+      "  level=logging.INFO,",
+      "  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'",
+      ")",
+      "logger = logging.getLogger(__name__)",
+      "",
+      "",
+      "def main() -> int:",
+      '  """',
+      "  Main function entry point.",
+      "",
+      "  Returns:",
+      "    int: Exit code (0 for success, non-zero for failure)",
+      '  """',
+      "  parser = argparse.ArgumentParser(",
+      "    description='" .. (context.description or "Script description") .. "'",
+      "  )",
+      "",
+      "  # Add command line arguments",
+      "  parser.add_argument(",
+      "    '-v', '--verbose',",
+      "    action='store_true',",
+      "    help='Enable verbose logging'",
+      "  )",
+      "",
+      "  args = parser.parse_args()",
+      "",
+      "  # Set logging level based on verbosity",
+      "  if args.verbose:",
+      "    logger.setLevel(logging.DEBUG)",
+      "",
+      "  try:",
+      "    # Main logic here",
+      "    logger.info('Starting...')",
+      "    # TODO: Add your implementation here",
+      "",
+      "    logger.info('Completed successfully')",
+      "    return 0",
+      "",
+      "  except Exception as e:",
+      "    logger.error(f'Error: {e}')",
+      "    return 1",
+      "",
+      "",
+      'if __name__ == "__main__":',
+      "    sys.exit(main())",
+      ""
+    }
+  elseif filetype == "shell" then
+    return {
+      "#!/bin/bash",
+      "#",
+      "# " .. (context.description or "Script description"),
+      "#",
+      "# Author: " .. (context.author or "Illya Starikov"),
+      "# Date: " .. date,
+      "# Copyright (c) " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      "#",
+      "",
+      "# Enable strict error handling",
+      "set -euo pipefail",
+      "",
+      "# Script metadata",
+      'readonly SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"',
+      'readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
+      "",
+      "# Main function",
+      "main() {",
+      "  echo 'Hello, World!'",
+      "  # TODO: Add your implementation here",
+      "}",
+      "",
+      '# Only run main if script is executed directly (not sourced)',
+      'if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then',
+      '  main "$@"',
+      "fi",
+      ""
+    }
+  elseif filetype == "html" then
+    return {
+      "<!DOCTYPE html>",
+      '<html lang="' .. (context.lang or "en") .. '">',
+      "<head>",
+      '  <meta charset="UTF-8">',
+      '  <meta name="viewport" content="width=device-width, initial-scale=1.0">',
+      '  <meta name="description" content="' .. (context.description or "Page description") .. '">',
+      '  <meta name="author" content="' .. (context.author or "Illya Starikov") .. '">',
+      '  <title>' .. (context.title or "Page Title") .. '</title>',
+      '  <link rel="stylesheet" href="styles.css">',
+      "</head>",
+      "<body>",
+      "  <header>",
+      "    <nav>",
+      "      <!-- Navigation content -->",
+      "    </nav>",
+      "  </header>",
+      "",
+      "  <main>",
+      "    <h1>" .. (context.title or "Page Title") .. "</h1>",
+      "    <!-- Main content -->",
+      "  </main>",
+      "",
+      "  <footer>",
+      "    <p>&copy; " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.</p>",
+      "  </footer>",
+      "",
+      '  <script src="script.js"></script>',
+      "</body>",
+      "</html>",
+      ""
+    }
+  elseif filetype == "markdown" then
+    local filename_lower = filename:lower()
+    if filename_lower == "readme.md" then
+      return {
+        "# " .. (context.title or project:gsub("^%l", string.upper)),
+        "",
+        "> " .. (context.description or "Brief project description"),
+        "",
+        "## Table of Contents",
+        "",
+        "- [Installation](#installation)",
+        "- [Usage](#usage)",
+        "- [Features](#features)",
+        "- [Contributing](#contributing)",
+        "- [License](#license)",
+        "",
+        "## Installation",
+        "",
+        "```bash",
+        "# Installation instructions",
+        "```",
+        "",
+        "## Usage",
+        "",
+        "```bash",
+        "# Usage examples",
+        "```",
+        "",
+        "## Features",
+        "",
+        "- [ ] Feature 1",
+        "- [ ] Feature 2",
+        "- [ ] Feature 3",
+        "",
+        "## Contributing",
+        "",
+        "1. Fork the repository",
+        "2. Create a feature branch",
+        "3. Commit your changes",
+        "4. Push to the branch",
+        "5. Open a Pull Request",
+        "",
+        "## License",
+        "",
+        "This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.",
+        ""
+      }
+    else
+      return {
+        "---",
+        'title: "' .. (context.title or "Document Title") .. '"',
+        'author: "' .. (context.author or "Illya Starikov") .. '"',
+        'date: "' .. date .. '"',
+        "tags: []",
+        "categories: []",
+        "---",
+        "",
+        "# " .. (context.title or "Document Title"),
+        "",
+        context.description or "Brief introduction or overview.",
+        ""
+      }
+    end
+  elseif filetype == "javascript" then
+    return {
+      "/**",
+      " * " .. (context.description or "Module description"),
+      " *",
+      " * Author: " .. (context.author or "Illya Starikov"),
+      " * Date: " .. date,
+      " * Copyright (c) " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      " */",
+      "",
+      "'use strict';",
+      "",
+      "// TODO: Module implementation",
+      "",
+      "if (typeof module !== 'undefined' && module.exports) {",
+      "  module.exports = {",
+      "    // TODO: Exported functions/objects",
+      "  };",
+      "}",
+      ""
+    }
+  elseif filetype == "c" then
+    return {
+      "//",
+      "//  " .. filename,
+      "//  " .. project,
+      "//",
+      "//  Created by " .. (context.author or "Illya Starikov") .. " on " .. date .. ".",
+      "//  Copyright " .. year .. ". " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      "//",
+      "",
+      "#include <stdio.h>",
+      "#include <stdlib.h>",
+      "#include <string.h>",
+      "#include <stdbool.h>",
+      "",
+      "/**",
+      " * Main function - entry point of the program",
+      " *",
+      " * @param argc Number of command line arguments",
+      " * @param argv Array of command line argument strings",
+      " * @return EXIT_SUCCESS on success, EXIT_FAILURE on error",
+      " */",
+      "int main(int argc, char *argv[]) {",
+      "  // TODO: Program logic here",
+      '  printf("Hello, World!\\n");',
+      "",
+      "  return EXIT_SUCCESS;",
+      "}",
+      ""
+    }
+  elseif filetype == "java" then
+    local classname = filename:gsub("%.java$", ""):gsub("^%l", string.upper)
+    return {
+      "/*",
+      " * Copyright " .. year .. " " .. (context.author or "Illya Starikov"),
+      " *",
+      " * Licensed under the Apache License, Version 2.0 (the \"License\");",
+      " * you may not use this file except in compliance with the License.",
+      " * You may obtain a copy of the License at",
+      " *",
+      " *     http://www.apache.org/licenses/LICENSE-2.0",
+      " *",
+      " * Unless required by applicable law or agreed to in writing, software",
+      " * distributed under the License is distributed on an \"AS IS\" BASIS,",
+      " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+      " * See the License for the specific language governing permissions and",
+      " * limitations under the License.",
+      " */",
+      "",
+      "import java.util.logging.Logger;",
+      "import java.util.logging.Level;",
+      "",
+      "/**",
+      " * " .. (context.description or "Main application class"),
+      " *",
+      " * @author " .. (context.author or "Illya Starikov"),
+      " * @since " .. date,
+      " */",
+      "public final class " .. classname .. " {",
+      "",
+      "  private static final Logger logger = Logger.getLogger(" .. classname .. ".class.getName());",
+      "",
+      "  // Prevent instantiation",
+      "  private " .. classname .. "() {}",
+      "",
+      "  /**",
+      "   * Main entry point for the application.",
+      "   *",
+      "   * @param args Command line arguments",
+      "   */",
+      "  public static void main(String[] args) {",
+      "    try {",
+      '      logger.info("Starting application");',
+      "      // TODO: Application logic here",
+      '      System.out.println("Hello, World!");',
+      '      logger.info("Application completed successfully");',
+      "    } catch (Exception e) {",
+      '      logger.log(Level.SEVERE, "Application failed", e);',
+      "      System.exit(1);",
+      "    }",
+      "  }",
+      "}",
+      ""
+    }
+  elseif filetype == "latex" then
+    return {
+      "\\documentclass[12pt]{article}",
+      "",
+      "% Essential packages",
+      "\\usepackage[utf8]{inputenc}",
+      "\\usepackage[T1]{fontenc}",
+      "\\usepackage{lmodern}",
+      "\\usepackage{microtype}",
+      "\\usepackage{geometry}",
+      "",
+      "% Math packages",
+      "\\usepackage{amsmath,amssymb,amsthm}",
+      "\\usepackage{mathtools}",
+      "",
+      "% Graphics and tables",
+      "\\usepackage{graphicx}",
+      "\\usepackage{booktabs}",
+      "",
+      "% References and citations",
+      "\\usepackage[hidelinks]{hyperref}",
+      "\\usepackage{cleveref}",
+      "",
+      "% Document information",
+      "\\title{" .. (context.title or "Document Title") .. "}",
+      "\\author{" .. (context.author or "Illya Starikov") .. "}",
+      "\\date{\\today}",
+      "",
+      "\\begin{document}",
+      "\\maketitle",
+      "",
+      "% TODO: Document content",
+      "",
+      "\\end{document}",
+      ""
+    }
+  elseif filetype == "react" then
+    return {
+      "import React, { useState, useEffect } from 'react';",
+      "import PropTypes from 'prop-types';",
+      "",
+      "/**",
+      " * " .. (context.description or "Component description"),
+      " * @param {Object} props - Component props",
+      " * @returns {JSX.Element} Rendered component",
+      " */",
+      "const " .. (context.name or "ComponentName") .. " = ({ }) => {",
+      "  // TODO: Component state and effects",
+      "  const [state, setState] = useState(null);",
+      "",
+      "  useEffect(() => {",
+      "    // TODO: Effect logic",
+      "  }, []);",
+      "",
+      "  return (",
+      "    <div>",
+      "      <h1>" .. (context.title or "Component Title") .. "</h1>",
+      "      {/* TODO: Component content */}",
+      "    </div>",
+      "  );",
+      "};",
+      "",
+      (context.name or "ComponentName") .. ".propTypes = {",
+      "  // TODO: Define prop types",
+      "};",
+      "",
+      "export default " .. (context.name or "ComponentName") .. ";",
+      ""
+    }
+  end
+  
+  return {"# TODO: Add skeleton for " .. filetype}
+end
+
+-- Helper function to insert skeleton content
+local function insert_skeleton(filetype, context)
+  -- Only insert if the buffer is completely empty
+  local line_count = vim.api.nvim_buf_line_count(0)
+  local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or ""
+  
+  if line_count == 1 and first_line == "" then
+    local content = get_skeleton_content(filetype, context or {})
+    vim.api.nvim_buf_set_lines(0, 0, 1, false, content)
+    
+    -- Position cursor at first TODO or at end of first editable line
+    for i, line in ipairs(content) do
+      if line:match("TODO") or line:match("Module description") or line:match("Script description") then
+        vim.api.nvim_win_set_cursor(0, {i, 0})
+        break
+      end
+    end
+    
+    -- Force proper filetype detection and trigger events to ensure indentation guides work
+    vim.schedule(function()
+      -- Ensure filetype is properly detected
+      vim.cmd("filetype detect")
+      
+      -- Trigger events that plugins might be listening to
+      vim.cmd("doautocmd BufRead")
+      vim.cmd("doautocmd BufWinEnter")
+      
+      -- Trigger specific events for Snacks.nvim
+      vim.cmd("doautocmd User SnacksIndentRefresh")
+      vim.cmd("doautocmd CursorMoved")
+      vim.cmd("doautocmd CursorMovedI")
+      
+      -- Try to refresh Snacks indent if available
+      local ok, snacks = pcall(require, "snacks")
+      if ok and snacks.indent then
+        pcall(snacks.indent.refresh)
+      end
+      
+      -- Force a redraw to ensure indentation guides appear
+      vim.cmd("redraw!")
+      
+      -- Set buffer as modified initially, then unmodify to trigger proper state
+      vim.bo.modified = true
+      vim.bo.modified = false
+      
+      -- Additional schedule to ensure everything is processed
+      vim.schedule(function()
+        -- Trigger a small cursor movement to activate indent guides
+        local current_pos = vim.api.nvim_win_get_cursor(0)
+        vim.api.nvim_win_set_cursor(0, {current_pos[1], current_pos[2]})
+        
+        -- Final redraw
+        vim.cmd("redraw!")
+        
+        -- Trigger buffer text changed events that Snacks might listen to
+        vim.cmd("doautocmd TextChanged")
+        vim.cmd("doautocmd TextChangedI")
+      end)
+    end)
+  end
+end
+
+-- Helper function to check for trailing spaces in skeleton content
+local function check_skeleton_linting(filetype)
+  local content = get_skeleton_content(filetype, {})
+  local issues = {}
+  
+  for i, line in ipairs(content) do
+    -- Check for trailing spaces
+    if line:match("%s+$") and line ~= "" then
+      table.insert(issues, "Line " .. i .. ": Trailing spaces found: '" .. line .. "'")
+    end
+    -- Check for tabs instead of spaces
+    if line:match("\t") then
+      table.insert(issues, "Line " .. i .. ": Tab character found (should use spaces)")
+    end
+  end
+  
+  return issues
+end
+
+-- Create user command to test skeleton linting
+vim.api.nvim_create_user_command("CheckSkeletonLint", function(opts)
+  local filetype = opts.args
+  if filetype == "" then
+    filetype = "python" -- default
+  end
+  
+  local issues = check_skeleton_linting(filetype)
+  if #issues == 0 then
+    print("✓ Skeleton for " .. filetype .. " is clean (no linting issues)")
+  else
+    print("✗ Found " .. #issues .. " linting issues in " .. filetype .. " skeleton:")
+    for _, issue in ipairs(issues) do
+      print("  " .. issue)
+    end
+  end
+end, {
+  nargs = "?",
+  desc = "Check skeleton template for linting issues",
+  complete = function()
+    return {"python", "shell", "javascript", "html", "markdown", "c", "java", "react", "latex"}
   end
 })
 
+-- Python files
 autocmd("BufNewFile", {
-  group = templates_group,
-  pattern = "*.*",
+  group = skeleton_group,
+  pattern = "*.py",
   callback = function()
-    local ext = vim.fn.expand("<afile>:e")
-    vim.cmd("silent! execute '0r ~/.vim/plugged/skeleton-files/skeleton." .. ext .. "'")
+    insert_skeleton("python")
   end
 })
 
+-- Shell scripts
 autocmd("BufNewFile", {
-  group = templates_group,
-  pattern = "*",
-  command = [[%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge]]
+  group = skeleton_group,
+  pattern = {"*.sh", "*.bash"},
+  callback = function()
+    insert_skeleton("shell")
+  end
+})
+
+-- JavaScript files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.js", "*.mjs"},
+  callback = function()
+    insert_skeleton("javascript")
+  end
+})
+
+-- React components (JSX/TSX)
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.jsx", "*.tsx"},
+  callback = function()
+    insert_skeleton("react")
+  end
+})
+
+-- LaTeX documents
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = "*.tex",
+  callback = function()
+    insert_skeleton("latex")
+  end
+})
+
+-- Markdown files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.md", "*.markdown"},
+  callback = function()
+    insert_skeleton("markdown")
+  end
+})
+
+-- C/C++ files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.c", "*.cpp", "*.cc", "*.cxx"},
+  callback = function()
+    insert_skeleton("c")
+  end
+})
+
+-- Java files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = "*.java",
+  callback = function()
+    insert_skeleton("java")
+  end
+})
+
+-- HTML files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.html", "*.htm"},
+  callback = function()
+    insert_skeleton("html")
+  end
 })
