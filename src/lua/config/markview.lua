@@ -296,7 +296,7 @@ function M.setup()
       vim.opt_local.concealcursor = 'nc'
       
       -- Enable markview for this buffer
-      vim.cmd("Markview enableAll")
+      vim.cmd("Markview enable")
     end
   })
 end
