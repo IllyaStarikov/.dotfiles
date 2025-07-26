@@ -174,19 +174,19 @@ y = 100
 size = 18.0
 
 [font.normal]
-family = "MesloLGS Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 [font.bold]
-family = "MesloLGS Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Bold"
 
 [font.italic]
-family = "MesloLGS Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.bold_italic]
-family = "MesloLGS Nerd Font"
+family = "JetBrainsMono Nerd Font"
 style = "Bold Italic"
 
 # Font rendering optimizations

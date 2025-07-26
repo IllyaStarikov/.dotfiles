@@ -19,19 +19,25 @@ alias edit="nvim"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Enhanced eza-based file listing
-alias ls="eza --group-directories-first --icons"
-alias ll="eza -l --group-directories-first --time-style=relative --icons --git"
-alias la="eza -la --group-directories-first --time-style=relative --icons --git"
-alias lt="eza --tree --level=2 --icons"
-alias tree="eza --tree --icons"
-alias l1="eza --tree --level=1 --icons"
-alias l2="eza --tree --level=2 --icons"
-alias l3="eza --tree --level=3 --icons"
+# Note: --icons temporarily disabled due to font glyph issues
+alias ls="eza --group-directories-first"
+alias ll="eza -l --group-directories-first --time-style=relative --git"
+alias la="eza -la --group-directories-first --time-style=relative --git"
+alias lt="eza --tree --level=2"
+alias tree="eza --tree"
+alias l1="eza --tree --level=1"
+alias l2="eza --tree --level=2"
+alias l3="eza --tree --level=3"
+
+# Aliases with icons (use when font issues are resolved)
+alias lsi="eza --group-directories-first --icons"
+alias lli="eza -l --group-directories-first --time-style=relative --icons --git"
+alias lai="eza -la --group-directories-first --time-style=relative --icons --git"
 
 # Size-aware listings
-alias lh="eza -lah --group-directories-first --time-style=relative --icons --git"  # Human readable
-alias lS="eza -laS --group-directories-first --time-style=relative --icons --git"  # Sort by size
-alias lt_size="eza --tree --level=2 --icons -s size"
+alias lh="eza -lah --group-directories-first --time-style=relative --git"  # Human readable
+alias lS="eza -laS --group-directories-first --time-style=relative --git"  # Sort by size
+alias lt_size="eza --tree --level=2 -s size"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔧 TMUX & SESSION MANAGEMENT
