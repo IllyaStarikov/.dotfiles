@@ -17,6 +17,10 @@ local g = vim.g
 opt.history = 1000                   -- Increased history size for better undo
 opt.scrolloff = 8                    -- More context lines around cursor
 opt.sidescrolloff = 8                -- Horizontal scroll context
+
+-- Fast scrolling performance
+opt.regexpengine = 1                 -- Use old regex engine for better performance
+
 opt.clipboard = "unnamedplus"        -- Use system clipboard (modern approach)
 opt.backspace = { "indent", "eol", "start" }  -- Proper backspace
 
@@ -24,6 +28,7 @@ opt.autoread = true                  -- Set to auto read when a file is changed 
 opt.virtualedit = "block"            -- freedom of movement
 opt.updatetime = 300                 -- Faster completion (4s -> 300ms)
 opt.timeoutlen = 500                 -- Faster which-key trigger
+opt.ttimeoutlen = 0                  -- Instant key sequence timeout for immediate response
 
 -- Indentation
 opt.expandtab = true                 -- tabs => spaces
@@ -71,6 +76,8 @@ opt.syntax = "on"                    -- Syntax highlighting
 opt.spell = true
 opt.spelllang = "en_us"              -- set english as standard language
 opt.termguicolors = true             -- 24-bit RGB colors
+opt.cmdheight = 1                    -- Standard command line height
+opt.showmode = true                  -- Show mode in command line
 
 opt.cursorline = true                -- Turn on the cursorline
 opt.guicursor = ""
@@ -98,7 +105,7 @@ opt.shortmess:append("c")
 -- Performance
 opt.ttyfast = true
 opt.lazyredraw = true                -- Don't redraw while executing macros
-opt.synmaxcol = 240                  -- Don't syntax highlight long lines
+-- opt.synmaxcol = 240               -- Disabled: causes scrolling issues
 
 -- Python host (for legacy plugins)
 local python3_path = vim.fn.exepath('python3')
