@@ -312,6 +312,64 @@ autocmd({ "BufNewFile", "BufRead" }, {
 })
 
 -- =============================================================================
+-- BIG FILE OPTIMIZATIONS
+-- =============================================================================
+
+-- Disable expensive features for large files
+local bigfile_group = augroup("bigfile", { clear = true })
+
+-- Function to optimize settings for large files
+local function optimize_for_bigfile()
+  local file = vim.fn.expand("<afile>")
+  local size = vim.fn.getfsize(file)
+  local big_file_limit = 1024 * 1024 * 10  -- 10MB
+  
+  if size > big_file_limit or size == -2 then
+    -- Disable expensive features
+    vim.opt_local.syntax = "off"
+    vim.opt_local.filetype = "off"
+    vim.opt_local.swapfile = false
+    vim.opt_local.foldmethod = "manual"
+    vim.opt_local.undolevels = -1
+    vim.opt_local.undoreload = 0
+    vim.opt_local.list = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.colorcolumn = ""
+    vim.opt_local.cursorline = false
+    vim.opt_local.spell = false
+    
+    -- Disable matchparen
+    if vim.fn.exists(":NoMatchParen") == 2 then
+      vim.cmd("NoMatchParen")
+    end
+    
+    -- Notify user
+    vim.notify("Big file detected. Disabled expensive features for performance.", vim.log.levels.INFO)
+  end
+end
+
+-- Apply optimizations before reading large files
+autocmd("BufReadPre", {
+  group = bigfile_group,
+  pattern = "*",
+  callback = optimize_for_bigfile
+})
+
+-- Additional optimization for files with long lines
+autocmd("BufWinEnter", {
+  group = bigfile_group,
+  pattern = "*",
+  callback = function()
+    local max_filesize = 100 * 1024  -- 100KB
+    local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(0))
+    if ok and stats and stats.size > max_filesize then
+      vim.opt_local.wrap = false
+      vim.opt_local.synmaxcol = 200
+    end
+  end
+})
+
+-- =============================================================================
 -- MARKDOWN WRITING ENVIRONMENT
 -- =============================================================================
 
