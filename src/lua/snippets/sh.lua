@@ -1,0 +1,1 @@
+/Users/starikov/.dotfiles/src/snippets/sh.lua
