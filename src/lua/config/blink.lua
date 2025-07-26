@@ -90,6 +90,11 @@ function M.setup_luasnip()
     -- Load friendly-snippets
     require("luasnip.loaders.from_vscode").lazy_load()
     
+    -- Load custom snippets from our snippets directory
+    require("luasnip.loaders.from_lua").load({
+        paths = vim.fn.stdpath("config") .. "/lua/snippets/"
+    })
+    
     -- LuaSnip configuration
     luasnip.setup({
         -- Enable auto-triggered snippets
@@ -100,6 +105,9 @@ function M.setup_luasnip()
         
         -- Update events for real-time snippet updates  
         update_events = "TextChanged,TextChangedI",
+        
+        -- Enable history for better snippet navigation
+        history = true,
     })
 end
 
@@ -190,19 +198,8 @@ function M.setup_autocommands()
     
     -- Completion is now disabled for specific filetypes in main setup via enabled() function
     
-    -- Enhanced completion for specific filetypes
-    vim.api.nvim_create_autocmd("FileType", {
-        group = blink_group,
-        pattern = { "gitcommit", "markdown" },
-        callback = function()
-            -- Adjust completion behavior for text-based files
-            require("blink.cmp").setup_buffer({
-                sources = {
-                    default = { "buffer", "snippets" },
-                }
-            })
-        end,
-    })
+    -- Note: blink.cmp doesn't support per-buffer configuration like nvim-cmp
+    -- Filetype-specific behavior is handled through the main sources configuration
     
     -- Update completion on theme change
     vim.api.nvim_create_autocmd("ColorScheme", {
