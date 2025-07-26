@@ -98,6 +98,38 @@ function M.setup_custom_menus()
         { name = "  Mason (LSP)", cmd = "Mason", rtxt = "m" },
     }
     
+    -- LaTeX-specific menu for .tex files
+    local latex_menu = {
+        { name = "📝 Compile", cmd = "VimtexCompile", rtxt = "ll" },
+        { name = "📖 View PDF", cmd = "VimtexView", rtxt = "lv" },
+        { name = "📋 Toggle TOC", cmd = "VimtexTocToggle", rtxt = "lt" },
+        
+        { name = "separator" },
+        
+        { name = "🧹 Clean Aux", cmd = "VimtexClean", rtxt = "lk" },
+        { name = "🧹 Clean All", cmd = "VimtexClean!", rtxt = "lK" },
+        { name = "🛑 Stop", cmd = "VimtexStop", rtxt = "ls" },
+        
+        { name = "separator" },
+        
+        { name = "📐 Insert Section", cmd = "normal i\\section{}", rtxt = "lss" },
+        { name = "📐 Insert Subsection", cmd = "normal i\\subsection{}", rtxt = "lsS" },
+        { name = "🖼️ Insert Figure", cmd = "lua vim.api.nvim_put({'\\\\begin{figure}[htbp]', '    \\\\centering', '    \\\\includegraphics[width=0.8\\\\textwidth]{filename}', '    \\\\caption{Caption}', '    \\\\label{fig:label}', '\\\\end{figure}'}, 'l', true, true)", rtxt = "lff" },
+        { name = "📊 Insert Table", cmd = "lua vim.api.nvim_put({'\\\\begin{table}[htbp]', '    \\\\centering', '    \\\\begin{tabular}{|c|c|}', '        \\\\hline', '        Header1 & Header2 \\\\\\\\', '        \\\\hline', '        Data1 & Data2 \\\\\\\\', '        \\\\hline', '    \\\\end{tabular}', '    \\\\caption{Caption}', '    \\\\label{tab:label}', '\\\\end{table}'}, 'l', true, true)", rtxt = "lft" },
+        
+        { name = "separator" },
+        
+        { name = "📚 Insert Citation", cmd = "normal i\\cite{}", rtxt = "lrc" },
+        { name = "🏷️ Insert Label", cmd = "normal i\\label{}", rtxt = "lrl" },
+        { name = "🔗 Insert Reference", cmd = "normal i\\ref{}", rtxt = "lrr" },
+        
+        { name = "separator" },
+        
+        { name = "ℹ️ VimTeX Info", cmd = "VimtexInfo", rtxt = "li" },
+        { name = "📄 Show Log", cmd = "VimtexLog", rtxt = "lq" },
+        { name = "❌ Show Errors", cmd = "VimtexErrors", rtxt = "le" },
+    }
+    
     -- Context-specific menus
     local nvimtree_menu = {
         { name = "  Open File", cmd = "normal o", rtxt = "o" },
@@ -125,7 +157,8 @@ function M.setup_custom_menus()
     M.menus = {
         default = default_menu,
         nvimtree = nvimtree_menu,
-        terminal = terminal_menu
+        terminal = terminal_menu,
+        latex = latex_menu,
     }
 end
 
@@ -259,6 +292,11 @@ function M.get_context()
     -- NvimTree context
     if filetype == "NvimTree" then
         return "nvimtree"
+    end
+    
+    -- LaTeX context
+    if filetype == "tex" or filetype == "latex" or filetype == "plaintex" then
+        return "latex"
     end
     
     -- Default context

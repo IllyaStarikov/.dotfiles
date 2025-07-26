@@ -89,6 +89,20 @@ require("lazy").setup({
   { "keith/swift.vim", ft = "swift" },
   { "vim-pandoc/vim-pandoc-syntax" },
 
+  -- LaTeX support with vimtex
+  {
+    "lervag/vimtex",
+    lazy = false,  -- Load immediately for LaTeX files
+    ft = { "tex", "latex", "plaintex" },
+    config = function()
+      require('config.vimtex').setup()
+    end,
+    dependencies = {
+      -- Optional: Add LaTeX snippets support
+      "L3MON4D3/LuaSnip",
+    },
+  },
+
   -- LSP and completion plugins
   { "neovim/nvim-lspconfig" },
   {
@@ -148,7 +162,7 @@ require("lazy").setup({
         ensure_installed = {
           "markdown", "markdown_inline", "python", "javascript", "typescript",
           "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
-          "rust", "go", "c", "cpp", "java", "ruby", "php"
+          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex"
         },
         auto_install = true,
         highlight = {
