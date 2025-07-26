@@ -63,12 +63,10 @@ map("n", "<leader>s", "<C-Z>", opts)
 map("n", "<leader>d", '"_d', opts)
 
 map("n", "<leader>n", ":NERDTreeToggle<cr>", opts)
--- Prioritize Snacks.picker over FZF for better integration
--- map("n", "<leader>f", ":Files<cr>", opts)  -- Replaced by <leader>ff
--- map("n", "<leader>b", ":Buffers<cr>", opts)  -- Replaced by <leader>fb
--- Keep FZF as backup with different keys
-map("n", "<leader>F", ":Files<cr>", opts)  -- FZF fallback
-map("n", "<leader>B", ":Buffers<cr>", opts)  -- FZF fallback
+-- Telescope fuzzy finding (modern replacement for FZF)
+map("n", "<C-p>", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
+map("n", "<leader>F", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })  -- Telescope
+map("n", "<leader>B", function() require('telescope.builtin').buffers() end, { desc = "Buffers" })  -- Telescope
 map("n", "<leader>T", ":Tagbar<cr>", opts)
 map("n", "<leader>g", ":Grepper -tool grep<cr>", opts)
 map("n", "<leader><leader>", "v$h", opts)
@@ -236,41 +234,41 @@ map("n", "<leader>tg", function() Snacks.terminal("git status") end, { desc = "G
 map("n", "<leader>tp", function() Snacks.terminal("python3") end, { desc = "Python Terminal" })
 map("n", "<leader>tn", function() Snacks.terminal("node") end, { desc = "Node Terminal" })
 
--- 🔍 PICKER (Hyper-Optimized Fuzzy Finding)
--- Core pickers with power user options
-map("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files" })
-map("n", "<leader>fF", function() Snacks.picker.files({ hidden = true }) end, { desc = "Find Files (+ hidden)" })
-map("n", "<leader>fr", function() Snacks.picker.recent() end, { desc = "Recent Files" })
-map("n", "<leader>fg", function() Snacks.picker.grep() end, { desc = "Live Grep" })
-map("n", "<leader>fG", function() Snacks.picker.grep({ hidden = true }) end, { desc = "Live Grep (+ hidden)" })
-map("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
-map("n", "<leader>fh", function() Snacks.picker.help() end, { desc = "Help" })
-map("n", "<leader>fc", function() Snacks.picker.commands() end, { desc = "Commands" })
-map("n", "<leader>fk", function() Snacks.picker.keymaps() end, { desc = "Keymaps" })
+-- 🔍 TELESCOPE (Modern Fuzzy Finding)
+-- Core pickers with advanced features
+map("n", "<leader>ff", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
+map("n", "<leader>fF", function() require('telescope.builtin').find_files({ hidden = true }) end, { desc = "Find Files (+ hidden)" })
+map("n", "<leader>fr", function() require('telescope.builtin').oldfiles() end, { desc = "Recent Files" })
+map("n", "<leader>fg", function() require('telescope.builtin').live_grep() end, { desc = "Live Grep" })
+map("n", "<leader>fG", function() require('telescope.builtin').live_grep({ additional_args = {"--hidden"} }) end, { desc = "Live Grep (+ hidden)" })
+map("n", "<leader>fb", function() require('telescope.builtin').buffers() end, { desc = "Buffers" })
+map("n", "<leader>fh", function() require('telescope.builtin').help_tags() end, { desc = "Help" })
+map("n", "<leader>fc", function() require('telescope.builtin').commands() end, { desc = "Commands" })
+map("n", "<leader>fk", function() require('telescope.builtin').keymaps() end, { desc = "Keymaps" })
 
 -- Advanced pickers
-map("n", "<leader>f/", function() Snacks.picker.grep({ search = vim.fn.expand("<cword>") }) end, { desc = "Grep Word Under Cursor" })
-map("n", "<leader>f:", function() Snacks.picker.command_history() end, { desc = "Command History" })
-map("n", "<leader>f;", function() Snacks.picker.resume() end, { desc = "Resume Last Picker" })
-map("n", "<leader>fj", function() Snacks.picker.jumps() end, { desc = "Jumps" })
-map("n", "<leader>fm", function() Snacks.picker.marks() end, { desc = "Marks" })
-map("n", "<leader>fq", function() Snacks.picker.qflist() end, { desc = "Quickfix List" })
-map("n", "<leader>fl", function() Snacks.picker.loclist() end, { desc = "Location List" })
+map("n", "<leader>f/", function() require('telescope.builtin').grep_string() end, { desc = "Grep Word Under Cursor" })
+map("n", "<leader>f:", function() require('telescope.builtin').command_history() end, { desc = "Command History" })
+map("n", "<leader>f;", function() require('telescope.builtin').resume() end, { desc = "Resume Last Picker" })
+map("n", "<leader>fj", function() require('telescope.builtin').jumplist() end, { desc = "Jumps" })
+map("n", "<leader>fm", function() require('telescope.builtin').marks() end, { desc = "Marks" })
+map("n", "<leader>fq", function() require('telescope.builtin').quickfix() end, { desc = "Quickfix List" })
+map("n", "<leader>fl", function() require('telescope.builtin').loclist() end, { desc = "Location List" })
 
 -- Specialized pickers
-map("n", "<leader>fd", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Config Files" })
-map("n", "<leader>fp", function() Snacks.picker.files({ cwd = vim.fn.stdpath("data") .. "/lazy" }) end, { desc = "Plugin Files" })
-map("n", "<leader>fv", function() Snacks.picker.files({ cwd = vim.env.VIMRUNTIME }) end, { desc = "Neovim Runtime" })
+map("n", "<leader>fd", function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Config Files" })
+map("n", "<leader>fp", function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("data") .. "/lazy" }) end, { desc = "Plugin Files" })
+map("n", "<leader>fv", function() require('telescope.builtin').find_files({ cwd = vim.env.VIMRUNTIME }) end, { desc = "Neovim Runtime" })
 
 -- 🌐 GIT INTEGRATION (Supercharged)
 map("n", "<leader>gg", function() Snacks.lazygit() end, { desc = "Lazygit" })
 map("n", "<leader>gG", function() Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Lazygit (file dir)" })
 map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
 map("n", "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
-map("n", "<leader>gf", function() Snacks.picker.git_files() end, { desc = "Git Files" })
-map("n", "<leader>gs", function() Snacks.picker.git_status() end, { desc = "Git Status" })
-map("n", "<leader>gc", function() Snacks.picker.git_commits() end, { desc = "Git Commits" })
-map("n", "<leader>gC", function() Snacks.picker.git_bcommits() end, { desc = "Buffer Git Commits" })
+map("n", "<leader>gf", function() require('telescope.builtin').git_files() end, { desc = "Git Files" })
+map("n", "<leader>gs", function() require('telescope.builtin').git_status() end, { desc = "Git Status" })
+map("n", "<leader>gc", function() require('telescope.builtin').git_commits() end, { desc = "Git Commits" })
+map("n", "<leader>gC", function() require('telescope.builtin').git_bcommits() end, { desc = "Buffer Git Commits" })
 
 -- 📱 NOTIFICATIONS (Smart Management)
 map("n", "<leader>un", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
@@ -325,15 +323,15 @@ map("n", "<leader>pD", function() Snacks.debug.backtrace() end, { desc = "Debug 
 map("n", "<leader>vh", function() Snacks.words.jump(vim.v.count1, true) end, { desc = "Next Reference" })
 map("n", "<leader>vH", function() Snacks.words.jump(-vim.v.count1, true) end, { desc = "Prev Reference" })
 
--- 🌈 MULTI-SELECT OPERATIONS (Advanced Picker Usage)
+-- 🌈 MULTI-SELECT OPERATIONS (Advanced Telescope Usage)
 map("v", "<leader>fg", function() 
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
-  Snacks.picker.grep({ search = table.concat(selection, "\n") })
+  require('telescope.builtin').grep_string({ search = table.concat(selection, "\n") })
 end, { desc = "Grep Selection" })
 
 map("v", "<leader>ff", function()
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
-  Snacks.picker.files({ search = table.concat(selection, "") })
+  require('telescope.builtin').find_files({ default_text = table.concat(selection, "") })
 end, { desc = "Find Files with Selection" })
 
 -- 📝 VIMTEX: LaTeX Power User Keybindings (Buffer-local for .tex files)
