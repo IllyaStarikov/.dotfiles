@@ -17,9 +17,7 @@ SPACESHIP_BATTERY_SHOW=false
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #
-# Note: zsh-syntax-highlighting must be installed first.
-# https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
-# Optimized plugin loading order (syntax highlighting last for performance)
+# Optimized plugin loading order for performance
 plugins=(
   vi-mode
   git
@@ -29,7 +27,6 @@ plugins=(
   macos
   colored-man-pages
   command-not-found
-  zsh-syntax-highlighting
 )
 
 # Faster Vim Mode
@@ -50,6 +47,11 @@ HIST_STAMPS="mm/dd/yyyy"
 export ZSH=/Users/starikov/.oh-my-zsh
 export ZSH_CUSTOM=/Users/starikov/.oh-my-zsh/custom/
 source $ZSH/oh-my-zsh.sh
+
+# Load zsh-syntax-highlighting from Homebrew (must be after oh-my-zsh)
+if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 # Load current theme and update if needed
 if [ -f ~/.config/theme-switcher/current-theme.sh ]; then
