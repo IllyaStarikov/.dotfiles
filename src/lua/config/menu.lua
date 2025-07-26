@@ -75,6 +75,13 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
+        { name = "🐛 Toggle Breakpoint", cmd = "lua require('dap').toggle_breakpoint()", rtxt = "db", hl = "ExRed" },
+        { name = "🐛 Start/Continue Debug", cmd = "lua require('dap').continue()", rtxt = "dc", hl = "ExRed" },
+        { name = "🐛 Step Over", cmd = "lua require('dap').step_over()", rtxt = "ds", hl = "ExRed" },
+        { name = "🐛 Toggle DAP UI", cmd = "lua require('dapui').toggle()", rtxt = "du", hl = "ExRed" },
+        
+        { name = "separator" },
+        
         { name = "🍿 Dashboard", cmd = "lua Snacks.dashboard()", rtxt = "D", hl = "ExCyan" },
         { name = "🍿 Scratch Buffer", cmd = "lua Snacks.scratch()", rtxt = ".", hl = "ExCyan" },
         { name = "🍿 Explorer", cmd = "lua Snacks.explorer()", rtxt = "E", hl = "ExCyan" },
@@ -206,6 +213,10 @@ function M.setup_keymaps()
     vim.keymap.set("n", "<leader>ma", function()
         M.open_ai_menu()
     end, vim.tbl_extend("force", opts, { desc = "AI Assistant Menu" }))
+    
+    vim.keymap.set("n", "<leader>md", function()
+        M.open_debug_menu()
+    end, vim.tbl_extend("force", opts, { desc = "Debug Menu" }))
 end
 
 -- Smart menu opening based on context
@@ -429,6 +440,55 @@ function M.open_ai_menu()
         end
     else
         vim.notify("AI Assistant menu not found", vim.log.levels.WARN)
+    end
+end
+
+function M.open_debug_menu()
+    local menu = require("menu")
+    local menu_utils_ok, menu_utils = pcall(require, 'menu.utils')
+    if menu_utils_ok and menu_utils.delete_old_menus then
+        pcall(menu_utils.delete_old_menus)
+    end
+    
+    -- Create comprehensive debug menu
+    local debug_menu = {
+        { name = "🚀 Start/Continue Debug", cmd = "lua require('dap').continue()", rtxt = "dc" },
+        { name = "🛑 Stop Debugging", cmd = "lua require('dap').terminate()", rtxt = "dt" },
+        { name = "🔄 Restart Debug", cmd = "lua require('dap').restart()", rtxt = "dr" },
+        
+        { name = "separator" },
+        
+        { name = "🔴 Toggle Breakpoint", cmd = "lua require('dap').toggle_breakpoint()", rtxt = "db" },
+        { name = "🔶 Conditional Breakpoint", cmd = "lua require('dap').set_breakpoint(vim.fn.input('Condition: '))", rtxt = "dB" },
+        { name = "📝 Log Point", cmd = "lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log message: '))", rtxt = "dlp" },
+        { name = "🧹 Clear All Breakpoints", cmd = "lua require('dap').clear_breakpoints()", rtxt = "dbc" },
+        
+        { name = "separator" },
+        
+        { name = "⏩ Step Over", cmd = "lua require('dap').step_over()", rtxt = "ds" },
+        { name = "⏬ Step Into", cmd = "lua require('dap').step_into()", rtxt = "di" },
+        { name = "⏫ Step Out", cmd = "lua require('dap').step_out()", rtxt = "do" },
+        { name = "🎯 Run to Cursor", cmd = "lua require('dap').run_to_cursor()", rtxt = "dro" },
+        
+        { name = "separator" },
+        
+        { name = "🖥️ Toggle DAP UI", cmd = "lua require('dapui').toggle()", rtxt = "du" },
+        { name = "📊 Open REPL", cmd = "lua require('dap').repl.open()", rtxt = "dR" },
+        { name = "🔍 Hover Variables", cmd = "lua require('dap.ui.widgets').hover()", rtxt = "dh" },
+        { name = "👁️ Toggle Virtual Text", cmd = "lua require('nvim-dap-virtual-text').toggle()", rtxt = "dvt" },
+        
+        { name = "separator" },
+        
+        { name = "📋 Evaluate Expression", cmd = "lua vim.ui.input({prompt='Expression: '}, function(expr) if expr then require('dap').eval(expr) end end)", rtxt = "dE" },
+        { name = "📖 Open Scopes", cmd = "lua local widgets=require('dap.ui.widgets'); widgets.sidebar(widgets.scopes).open()", rtxt = "dS" },
+        { name = "🗂️ Open Frames", cmd = "lua local widgets=require('dap.ui.widgets'); widgets.sidebar(widgets.frames).open()", rtxt = "dF" },
+    }
+    
+    local success, err = pcall(menu.open, debug_menu, { 
+        border = true,
+    })
+    if not success then
+        vim.notify("Failed to open debug menu: " .. tostring(err), vim.log.levels.ERROR)
     end
 end
 

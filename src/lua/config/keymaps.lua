@@ -458,3 +458,159 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("i", "{{", "\\left\\{\\right\\}<Left><Left><Left><Left><Left><Left><Left><Left>", buf_opts)  -- Braces
   end,
 })
+
+-- 🐛 DEBUG ADAPTER PROTOCOL (DAP) BINDINGS
+-- Essential debugging keybindings for nvim-dap
+
+-- Core debugging actions
+map("n", "<leader>db", function()
+  require('dap').toggle_breakpoint()
+end, vim.tbl_extend("force", opts, { desc = "Toggle Breakpoint" }))
+
+map("n", "<leader>dB", function()
+  require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))
+end, vim.tbl_extend("force", opts, { desc = "Set Conditional Breakpoint" }))
+
+map("n", "<leader>dlp", function()
+  require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
+end, vim.tbl_extend("force", opts, { desc = "Set Log Point" }))
+
+-- Debug session control
+map("n", "<leader>dc", function()
+  require('dap').continue()
+end, vim.tbl_extend("force", opts, { desc = "Continue/Start Debugging" }))
+
+map("n", "<leader>dr", function()
+  require('dap').restart()
+end, vim.tbl_extend("force", opts, { desc = "Restart Debug Session" }))
+
+map("n", "<leader>dt", function()
+  require('dap').terminate()
+end, vim.tbl_extend("force", opts, { desc = "Terminate Debug Session" }))
+
+map("n", "<leader>dq", function()
+  require('dap').close()
+end, vim.tbl_extend("force", opts, { desc = "Close Debug Session" }))
+
+-- Stepping controls
+map("n", "<leader>ds", function()
+  require('dap').step_over()
+end, vim.tbl_extend("force", opts, { desc = "Step Over" }))
+
+map("n", "<leader>di", function()
+  require('dap').step_into()
+end, vim.tbl_extend("force", opts, { desc = "Step Into" }))
+
+map("n", "<leader>do", function()
+  require('dap').step_out()
+end, vim.tbl_extend("force", opts, { desc = "Step Out" }))
+
+map("n", "<leader>dj", function()
+  require('dap').down()
+end, vim.tbl_extend("force", opts, { desc = "Go Down Stack Frame" }))
+
+map("n", "<leader>dk", function()
+  require('dap').up()
+end, vim.tbl_extend("force", opts, { desc = "Go Up Stack Frame" }))
+
+-- DAP UI management
+map("n", "<leader>du", function()
+  require('dapui').toggle()
+end, vim.tbl_extend("force", opts, { desc = "Toggle DAP UI" }))
+
+map("n", "<leader>dU", function()
+  require('dapui').open()
+end, vim.tbl_extend("force", opts, { desc = "Open DAP UI" }))
+
+map("n", "<leader>dC", function()
+  require('dapui').close()
+end, vim.tbl_extend("force", opts, { desc = "Close DAP UI" }))
+
+-- Evaluation and inspection
+map("n", "<leader>de", function()
+  require('dap.ui.widgets').hover()
+end, vim.tbl_extend("force", opts, { desc = "Evaluate Expression Under Cursor" }))
+
+map("v", "<leader>de", function()
+  require('dap.ui.widgets').hover()
+end, vim.tbl_extend("force", opts, { desc = "Evaluate Selected Expression" }))
+
+map("n", "<leader>dE", function()
+  vim.ui.input({ prompt = "Expression: " }, function(expr)
+    if expr then
+      require('dap').eval(expr)
+    end
+  end)
+end, vim.tbl_extend("force", opts, { desc = "Evaluate Expression" }))
+
+-- REPL and scopes
+map("n", "<leader>dR", function()
+  require('dap').repl.open()
+end, vim.tbl_extend("force", opts, { desc = "Open REPL" }))
+
+map("n", "<leader>dS", function()
+  local widgets = require('dap.ui.widgets');
+  local sidebar = widgets.sidebar(widgets.scopes);
+  sidebar.open();
+end, vim.tbl_extend("force", opts, { desc = "Open Sidebar (Scopes)" }))
+
+map("n", "<leader>dF", function()
+  local widgets = require('dap.ui.widgets');
+  local sidebar = widgets.sidebar(widgets.frames);
+  sidebar.open();
+end, vim.tbl_extend("force", opts, { desc = "Open Sidebar (Frames)" }))
+
+-- Breakpoint management
+map("n", "<leader>dbc", function()
+  require('dap').clear_breakpoints()
+  print("All breakpoints cleared")
+end, vim.tbl_extend("force", opts, { desc = "Clear All Breakpoints" }))
+
+map("n", "<leader>dbl", function()
+  require('dap').list_breakpoints()
+end, vim.tbl_extend("force", opts, { desc = "List Breakpoints" }))
+
+-- Run configurations
+map("n", "<leader>drl", function()
+  require('dap').run_last()
+end, vim.tbl_extend("force", opts, { desc = "Run Last Configuration" }))
+
+map("n", "<leader>dro", function()
+  require('dap').run_to_cursor()
+end, vim.tbl_extend("force", opts, { desc = "Run to Cursor" }))
+
+-- Utility functions
+map("n", "<leader>dh", function()
+  require('dap.ui.widgets').hover()
+end, vim.tbl_extend("force", opts, { desc = "Hover Variables" }))
+
+map("n", "<leader>dp", function()
+  require('dap.ui.widgets').preview()
+end, vim.tbl_extend("force", opts, { desc = "Preview Variables" }))
+
+-- Custom debug functions
+map("n", "<leader>dn", function()
+  require('config.dap').debug_nearest()
+end, vim.tbl_extend("force", opts, { desc = "Debug Nearest" }))
+
+-- Function key shortcuts for common actions
+map("n", "<F5>", function()
+  require('dap').continue()
+end, vim.tbl_extend("force", opts, { desc = "DAP Continue" }))
+
+map("n", "<F10>", function()
+  require('dap').step_over()
+end, vim.tbl_extend("force", opts, { desc = "DAP Step Over" }))
+
+map("n", "<F11>", function()
+  require('dap').step_into()
+end, vim.tbl_extend("force", opts, { desc = "DAP Step Into" }))
+
+map("n", "<F12>", function()
+  require('dap').step_out()
+end, vim.tbl_extend("force", opts, { desc = "DAP Step Out" }))
+
+-- Quick toggle for virtual text
+map("n", "<leader>dvt", function()
+  require('nvim-dap-virtual-text').toggle()
+end, vim.tbl_extend("force", opts, { desc = "Toggle Virtual Text" }))
