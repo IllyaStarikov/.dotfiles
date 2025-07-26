@@ -98,13 +98,9 @@ require("lazy").setup({
       { "saghen/blink.compat", opts = {} }
     },
     version = "v0.*",
-    -- Build the Rust binary for fuzzy matching
-    build = function(plugin)
-      local obj = vim.system({ "cargo", "build", "--release" }, { cwd = plugin.dir })
-      if obj then
-        obj:wait()
-      end
-    end,
+    -- Optional: build the Rust binary for better performance (requires Rust nightly)
+    -- Commented out due to nightly requirement, using Lua fallback instead
+    -- build = "cargo build --release",
     config = function()
       require('config.blink').setup()
     end,
