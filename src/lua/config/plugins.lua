@@ -841,6 +841,7 @@ require("lazy").setup({
   -- File Management and Exploration
   {
     "stevearc/oil.nvim",
+    lazy = false,  -- Load immediately to handle directory opening
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require('config.oil').setup()
