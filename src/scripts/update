@@ -4,7 +4,11 @@ echo "Starting system update process..."
 
 # macOS System Updates
 echo "Checking for macOS system updates..."
-sudo softwareupdate -ia --restart --agree-to-license || echo "No macOS system updates or failed to install."
+if softwareupdate -l 2>&1 | grep -q "No new software available"; then
+    echo "No macOS system updates available."
+else
+    echo "macOS updates available. Use 'sudo softwareupdate -ia' to install manually."
+fi
 
 # Mac App Store Updates (requires 'mas' CLI tool)
 if command -v mas &> /dev/null; then
@@ -16,15 +20,32 @@ fi
 
 # Homebrew Updates
 echo "Updating Homebrew packages..."
-brew update && brew upgrade && brew upgrade --cask && brew cleanup || echo "Homebrew update failed."
+brew update
 
-# Neovim Plugin Updates (Vim-Plug)
+# Check for deprecated packages and remove them
+echo "Checking for deprecated packages..."
+deprecated_packages=$(brew outdated --formula 2>&1 | grep "has been disabled because it is deprecated" | awk '{print $2}' || true)
+if [[ -n "$deprecated_packages" ]]; then
+    echo "Found deprecated packages: $deprecated_packages"
+    echo "Removing deprecated packages..."
+    echo "$deprecated_packages" | xargs -r brew uninstall --ignore-dependencies || echo "Some deprecated packages couldn't be removed."
+fi
+
+# Upgrade remaining packages
+brew upgrade && brew upgrade --cask && brew cleanup || echo "Homebrew update failed."
+
+# Neovim Plugin Updates (lazy.nvim)
 echo "Updating Neovim plugins..."
-nvim -c "PlugUpgrade" -c "PlugUpdate" -c "qa!" || echo "Neovim plugin update failed."
+nvim --headless -c "Lazy! sync" -c "qa" || echo "Neovim plugin update failed."
 
 # Oh My Zsh Updates
-echo "Updating Oh My Zsh..."
-omz update || echo "Oh My Zsh update failed."
+if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    echo "Updating Oh My Zsh..."
+    cd "$HOME/.oh-my-zsh" && git pull origin master || echo "Oh My Zsh update failed."
+    cd - > /dev/null
+else
+    echo "Oh My Zsh not found, skipping update."
+fi
 
 # Node.js Global Package Updates (npm)
 if command -v npm &> /dev/null; then
@@ -48,13 +69,13 @@ fi
 if command -v pip3 &> /dev/null; then
     echo "Updating Python packages (pip3)..."
     pip3 install --upgrade pip setuptools wheel || echo "Failed to upgrade pip components."
-    pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U || echo "Python package update failed."
+    pip3 list --outdated --format=columns | tail -n +3 | awk '{print $1}' | xargs -n1 pip3 install -U || echo "Python package update failed."
 fi
 
-# RubyGems Updates (gem)
+# RubyGems Updates (gem) - skip system gems to avoid permission issues
 if command -v gem &> /dev/null; then
-    echo "Updating RubyGems..."
-    gem update --system && gem update || echo "RubyGems update failed."
+    echo "Updating RubyGems (user gems only)..."
+    gem update --user-install || echo "RubyGems update failed or no user gems to update."
 fi
 
 # Rust Toolchain and Cargo Package Updates
@@ -72,8 +93,8 @@ fi
 
 # TeX Live Manager Updates (tlmgr)
 if command -v tlmgr &> /dev/null; then
-    echo "Updating TeX Live packages (tlmgr)..."
-    sudo tlmgr update --all || echo "TeX Live update failed."
+    echo "Checking TeX Live packages (tlmgr)..."
+    tlmgr update --list 2>/dev/null | grep -q "update available" && echo "TeX Live updates available. Run 'sudo tlmgr update --all' manually." || echo "No TeX Live updates available."
 fi
 
 echo "System update process completed."
