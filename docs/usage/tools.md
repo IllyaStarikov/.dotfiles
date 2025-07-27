@@ -1,337 +1,211 @@
-# Tools & Scripts Usage Guide
+# Tools Reference
 
-## Command Reference Table
+## Daily Commands
+```
+FILE OPS              TEXT SEARCH           SYSTEM
+ll       List all     rg pattern  Grep      btop     Monitor
+lt       Tree         fd name     Find      duf      Disk usage
+z dir    Jump         fzf         Fuzzy     procs    Processes
 
-### System Update Script
-| Command | Action | Description |
-|---------|--------|-------------|
-| `update` | System update | Comprehensive system update (alias) |
-| `~/src/scripts/update` | Full path | Direct script execution |
-| `updateall` | Update everything | System + all package managers |
-
-### Theme Switcher
-| Command | Action | Description |
-|---------|--------|-------------|
-| `theme` | Auto switch | Detect and apply system theme |
-| `theme dark` | Force dark | Apply dark theme |
-| `theme light` | Force light | Apply light theme |
-| `dark` | Dark mode | Shortcut for theme dark |
-| `light` | Light mode | Shortcut for theme light |
-
-### Modern CLI Tools
-| Tool | Replaces | Description |
-|------|----------|-------------|
-| `eza` | `ls` | Modern file listing with git integration |
-| `bat` | `cat` | Syntax highlighting and git integration |
-| `fd` | `find` | Fast, user-friendly file finding |
-| `rg` | `grep` | Ripgrep - ultra-fast text search |
-| `htop` | `top` | Interactive process viewer |
-| `procs` | `ps` | Modern process viewer |
-| `delta` | `diff` | Better git diffs (optional) |
-
-### Development Servers
-| Command | Action | Description |
-|---------|--------|-------------|
-| `serve` | HTTP server on 8000 | Python simple HTTP server |
-| `serve 3000` | Custom port | Specify different port |
-| `serve8000` | Port 8000 | Alias shortcut |
-| `serve3000` | Port 3000 | Alias shortcut |
-
-### Package Management
-| Command | Action | Description |
-|---------|--------|-------------|
-| `brew` | Homebrew (ARM) | Apple Silicon optimized |
-| `ibrew` | Intel Homebrew | x86_64 compatibility |
-| `mas` | App Store CLI | Mac App Store updates |
-
-### Text Processing
-| Command | Action | Description |
-|---------|--------|-------------|
-| `json` | JSON formatter | Pretty print JSON |
-| `urlencode` | URL encode | Encode special characters |
-| `urldecode` | URL decode | Decode URLs |
-| `b64encode` | Base64 encode | Encode to base64 |
-| `b64decode` | Base64 decode | Decode from base64 |
-
-### Network Utilities
-| Command | Action | Description |
-|---------|--------|-------------|
-| `ip` | External IP | Show public IP |
-| `localip` | Internal IP | Show local network IP |
-| `myip` | All IPs | Show both IPs |
-| `speedtest` | Speed test | Test internet speed |
-| `ports` | Show ports | Active network ports |
-| `listening` | Listening ports | Ports accepting connections |
-
-### System Information
-| Command | Action | Description |
-|---------|--------|-------------|
-| `sysinfo` | System details | OS, architecture, uptime |
-| `df` | Disk usage | Human readable format |
-| `free` | Memory usage | VM statistics |
-| `cpu` | CPU usage | Processes by CPU |
-| `mem` | Memory usage | Processes by memory |
-
-### File Operations
-| Command | Action | Description |
-|---------|--------|-------------|
-| `cleanup` | Clean junk | Remove .DS_Store, .pyc |
-| `emptytrash` | Empty trash | Clear all trash folders |
-| `mkcd` | Make & enter | Create directory and cd |
-| `extract` | Extract archive | Universal extraction |
-| `biggest` | Large files | Find biggest files |
-
-### Fun Utilities
-| Command | Action | Description |
-|---------|--------|-------------|
-| `weather` | Weather info | Current weather |
-| `moon` | Moon phase | Current moon phase |
-| `crypto` | Crypto rates | Cryptocurrency prices |
-| `chuck` | Chuck Norris | Random joke |
-
-## System Update Script Details
-
-### What It Updates
-1. **macOS System** - Checks for OS updates
-2. **Mac App Store** - Updates store apps (if mas installed)
-3. **Homebrew** - Formulae and casks
-4. **Neovim Plugins** - Via lazy.nvim
-5. **Oh My Zsh** - Framework updates
-6. **Node.js Packages** - Global npm/yarn/pnpm
-7. **Python Packages** - pip3 packages
-8. **Ruby Gems** - User gems only
-9. **Rust Tools** - Cargo packages
-10. **TeX Live** - LaTeX packages (manual)
-
-### Update Script Features
-- Handles deprecated Homebrew packages
-- Continues on individual failures
-- Provides status for each component
-- Safe defaults (no system modifications)
-- Intelligent error handling
-
-## Theme Switcher Details
-
-### What It Switches
-1. **Alacritty** terminal colors
-2. **tmux** status bar theme
-3. **Environment variable** MACOS_THEME
-4. **Neovim** colorscheme (via auto-detection)
-
-### Theme Files
-- Config: `~/.config/theme-switcher/current-theme.sh`
-- Alacritty: `~/.config/alacritty/theme.toml`
-- tmux: `~/.config/tmux/theme.conf`
-
-### Supported Themes
-- **Dark**: Dracula theme
-- **Light**: Solarized Light theme
-- Auto-detects macOS appearance
-
-## Modern Tool Replacements
-
-### eza (Enhanced ls)
-**Features**:
-- Git status integration
-- Tree view support
-- Icons (when fonts support)
-- Better colors and formatting
-- Human-readable sizes
-
-**Usage**:
-```bash
-eza --tree --level=2 --git --long
+REPLACEMENTS          GIT TOOLS             NETWORK
+cat → bat            gh pr create           http GET url
+ls  → eza            delta (git diff)       gping host
+cd  → z              lazygit                bandwhich
+find → fd            gh issue list          curl → httpie
+grep → rg
 ```
 
-### bat (Better cat)
-**Features**:
-- Syntax highlighting
-- Git integration
-- Line numbers
-- Paging support
-- Theme support
+## Modern CLI Tools
 
-**Usage**:
-```bash
-bat --style=full --theme=Dracula file.py
-```
+### eza (ls++)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `eza` | List | `eza -l` | Long |
+| `eza -la` | All long | `eza -lh` | Human |
+| `eza --tree` | Tree | `eza --icons` | Icons |
+| `eza --git` | Git status | `eza -s size` | Sort size |
 
-### fd (Find alternative)
-**Features**:
-- Intuitive syntax
-- Respects .gitignore
-- Parallel execution
-- Smart case
-- Regular expressions
+### bat (cat++)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `bat file` | View | `bat -n` | Numbers |
+| `bat -p` | Plain | `bat -A` | Non-printable |
+| `bat --diff` | Diff mode | `bat -r 10:20` | Lines 10-20 |
+| `bat -l yaml` | Force syntax | `bat --theme` | Set theme |
 
-**Usage**:
-```bash
-fd -e py -x pytest  # Run pytest on all Python files
-```
+### fd (find++)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `fd pattern` | Find | `fd -e py` | Extension |
+| `fd -t f` | Files only | `fd -t d` | Dirs only |
+| `fd -H` | Hidden | `fd -I` | Ignored |
+| `fd -d 2` | Max depth | `fd -x cmd` | Execute |
 
-### ripgrep (rg)
-**Features**:
-- Blazing fast
-- Respects .gitignore
-- Parallel search
-- Compressed file support
-- Binary detection
+### ripgrep (grep++)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `rg pattern` | Search | `rg -i` | Ignore case |
+| `rg -w` | Words | `rg -n` | Line nums |
+| `rg -c` | Count | `rg -l` | Files only |
+| `rg --type py` | File type | `rg -C 3` | Context |
 
-**Usage**:
-```bash
-rg -t py "TODO" --context=2
-```
+### fzf
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `Ctrl+R` | History | `Ctrl+T` | Files |
+| `Alt+C` | Directories | `**<Tab>` | Complete |
+| `Ctrl+J/K` | Navigate | `Enter` | Select |
+| `Ctrl+Space` | Toggle | `Esc` | Cancel |
 
-## Quick Reference
+### zoxide (cd++)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `z pattern` | Jump | `zi` | Interactive |
+| `z -` | Previous | `z ..` | Parent |
 
-### Essential Aliases
-- File browsing: `ll`, `la`, `lt`
-- Quick edit configs: `zshconfig`, `vimconfig`, `tmuxconfig`
-- System maintenance: `update`, `cleanup`, `reload`
-- Development: `serve`, `json`, `todos`
+## Homebrew
 
-### Environment Tools
-- Python: `pyenv` for version management
-- Node: `nvm` (lazy loaded)
-- Ruby: System Ruby with user gems
-- Rust: `rustup` and `cargo`
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `brew install` | Install | `brew update` | Update brew |
+| `brew upgrade` | Upgrade pkgs | `brew list` | List |
+| `brew search` | Search | `brew info` | Details |
+| `brew cleanup` | Clean old | `brew doctor` | Health |
 
-### Shell Functions
-Available custom functions:
-- `mkcd` - Make directory and enter
-- `ff` - Find files with preview
-- `grep_smart` - Intelligent grep
-- `git_clean_branches` - Remove merged branches
-- `project` - Jump to project directory
-- `serve` - Quick HTTP server
+### Services
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `brew services list` | List | `brew services start` | Start |
+| `brew services stop` | Stop | `brew services restart` | Restart |
 
-## About
+## Development Tools
 
-This tools collection provides:
-- **Modern replacements** for Unix utilities
-- **Automated updates** for entire system
-- **Theme coordination** across applications
-- **Developer utilities** for common tasks
-- **Performance tools** for system monitoring
+### GitHub CLI
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `gh auth login` | Auth | `gh repo create` | Create |
+| `gh pr create` | New PR | `gh pr list` | List PRs |
+| `gh pr merge` | Merge | `gh issue create` | New issue |
+| `gh workflow run` | Run | `gh release create` | Release |
 
-## Additional Usage Info
+### httpie
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `http GET url` | GET | `http POST url` | POST |
+| `http --json` | JSON | `http --form` | Form |
+| `http --auth` | Auth | `http --download` | Download |
 
-### Update Strategy
-The update script follows a safe approach:
-- Non-destructive updates only
-- Skips on errors
-- Manual intervention for system updates
-- Preserves user configurations
-- No sudo operations (except where noted)
+### jq
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `jq '.'` | Pretty | `jq '.field'` | Field |
+| `jq '.[]'` | Array | `jq 'keys'` | Keys |
+| `jq 'select()'` | Filter | `jq -r` | Raw |
 
-### Theme System Architecture
-Theme switching is centralized:
-1. Script detects macOS appearance
-2. Generates theme configurations
-3. Reloads affected applications
-4. Sets environment variables
-5. Notifies completion
+## System Tools
 
-### Tool Selection Criteria
-Modern tools were chosen for:
-- **Performance** - Significantly faster
-- **Features** - Git awareness, colors, etc.
-- **Usability** - Better defaults
-- **Maintenance** - Active development
-- **Integration** - Works with ecosystem
+### btop
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `q` | Quit | `f` | Filter |
+| `t` | Tree | `p` | Sort PID |
+| `c` | Sort CPU | `m` | Sort MEM |
+| `k` | Kill | `Space` | Tag |
 
-## Theory & Background
+### duf
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `duf` | Show all | `duf -all` | All fs |
+| `duf -json` | JSON | `duf /path` | Specific |
 
-### Unix Philosophy Evolution
-Modern tools respect Unix philosophy while adding:
-- Better error messages
-- Sensible defaults
-- Color output
-- Parallel processing
-- User-friendly syntax
+### delta (git diff)
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `git diff` | Uses delta | `delta file1 file2` | Compare files |
+| `git show` | Pretty output | `git log -p` | With delta |
+| `git blame` | Enhanced | `git reflog -p` | Pretty reflog |
 
-### Performance Improvements
-Why modern tools are faster:
-- Written in Rust/Go (compiled)
-- Parallel execution
-- Smarter algorithms
-- Ignore unnecessary files
-- Memory efficiency
+### ranger
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `h/j/k/l` | Navigate | `Enter` | Open |
+| `q` | Quit | `S` | Shell here |
+| `yy` | Copy | `dd` | Cut |
+| `pp` | Paste | `dD` | Delete |
+| `space` | Select | `v` | Select all |
+| `/` | Search | `zh` | Show hidden |
 
-### Update Automation
-Automated updates balance:
-- Convenience vs. stability
-- Speed vs. safety
-- Automation vs. control
-- Coverage vs. complexity
+### procs
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `procs` | List | `procs name` | Search |
+| `procs -t` | Tree | `procs -w` | Watch |
 
-## Good to Know / Lore / History
+## Productivity
 
-### Tool Migration Timeline
-- 2015: Switched from `ack` to `ag`
-- 2017: Adopted `ripgrep` over `ag`
-- 2019: Replaced `ls` with `exa` (now `eza`)
-- 2020: `bat` replaced `cat`
-- 2021: `fd` replaced `find`
-- 2023: Full modern stack adoption
+### tldr
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `tldr cmd` | Examples | `tldr -u` | Update |
+| `tldr -l` | List all | `tldr -p linux` | Platform |
 
-### Why These Tools?
-Each tool was selected after extensive testing:
-- Must be 3x+ faster than original
-- Backward compatibility important
-- Active community required
-- Cross-platform support preferred
+### navi
+| Command | Action | Key | Action |
+|---------|--------|-----|--------|
+| `navi` | Browse | `Ctrl+G` | Trigger |
 
-### Hidden Features
+## Theme Switcher
 
-1. **eza**: Can show file permissions as octal
-2. **bat**: Can be used as `MANPAGER`
-3. **fd**: Supports arbitrary command execution
-4. **rg**: Can search compressed files
-5. **htop**: Has vim keybindings
-6. **procs**: Shows Docker container names
+| Command | Effect |
+|---------|--------|
+| `theme` | Auto-detect and switch |
+| Updates | Alacritty, tmux, Neovim |
+| Detection | `defaults read -g AppleInterfaceStyle` |
 
-### Integration Benefits
+## Package Managers
 
-**Shell Prompt**:
-- Shows git status via eza
-- Indicates background jobs
-- Displays command duration
+### Homebrew
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `brew install pkg` | Install | `brew uninstall pkg` | Remove |
+| `brew update` | Update brew | `brew upgrade` | Upgrade all |
+| `brew upgrade pkg` | Upgrade one | `brew outdated` | List outdated |
+| `brew cleanup` | Clean cache | `brew doctor` | Check health |
+| `brew search term` | Search | `brew info pkg` | Package info |
+| `brew list` | Installed | `brew leaves` | Top-level only |
+| `brew deps pkg` | Dependencies | `brew uses pkg` | Dependents |
 
-**Editor Integration**:
-- fd powers file finding
-- rg powers code search
-- bat provides preview
+### pyenv
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `pyenv install 3.x` | Install Python | `pyenv versions` | List versions |
+| `pyenv global 3.x` | Set default | `pyenv local 3.x` | Set for project |
+| `pyenv shell 3.x` | Set for session | `pyenv rehash` | Rehash shims |
 
-**Git Integration**:
-- delta for better diffs
-- eza shows git status
-- bat shows git changes
+## Update Script
 
-### Performance Benchmarks
+| Component | Command |
+|-----------|---------|
+| Homebrew | `brew update && brew upgrade` |
+| Oh My Zsh | `omz update` |
+| tmux plugins | TPM update |
+| npm packages | `npm update -g` |
+| pyenv | `pyenv update` |
 
-Typical improvements:
-- `fd` vs `find`: 5-10x faster
-- `rg` vs `grep`: 10-20x faster
-- `eza` vs `ls`: 2-3x faster
-- `bat` vs `cat`: Similar (adds features)
+## Troubleshooting
 
-### Pro Tips
+| Issue | Fix |
+|-------|-----|
+| Command not found | `brew install tool` |
+| Wrong version | `brew upgrade tool` |
+| PATH issue | Check `echo $PATH` |
+| Alias conflict | Use `\command` |
+| Icons missing | Install Nerd Font |
 
-1. **Chain tools**: `fd -e md | xargs rg TODO`
-2. **Use aliases**: Muscle memory stays same
-3. **Learn flags**: Each tool has powerful options
-4. **Preview everything**: `bat` for file preview
-5. **Parallel execution**: Many tools support `-j`
-6. **Respect gitignore**: Default for most tools
-7. **Custom ignore**: `.fdignore`, `.rgignore`
-8. **Export findings**: Tools support various formats
+## Tips
 
-### Troubleshooting
-
-Common issues:
-- **Fonts**: Install Nerd Fonts for icons
-- **Colors**: Check `TERM` variable
-- **Performance**: Disable icons if slow
-- **Updates fail**: Check network/permissions
-- **Theme mismatch**: Run theme command again
+- Use `\` to bypass aliases (`\ls` for original)
+- `which cmd` to find command location
+- `man cmd` or `tldr cmd` for help
+- Most tools respect `.gitignore`
+- Set `FZF_DEFAULT_COMMAND` for better results

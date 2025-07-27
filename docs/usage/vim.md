@@ -1,247 +1,264 @@
-# Neovim Usage Guide
+# Neovim Reference
 
-## Command/Shortcut Reference Table
+## Daily Commands
+```
+FILES                   TEXT                    CODE
+<leader>ff Find file    ciw Change word        <leader>la Code action
+<leader>fg Grep text    yy  Copy line          <leader>lf Format
+<leader>fr Recent       dd  Delete line        gd  Go to definition
+<leader>fb Buffers      p   Paste              K   Show docs
+:w  Save               u   Undo               <leader>lr Rename
+:q  Quit               .   Repeat             <leader>ld Diagnostics
 
-### Core Navigation & Editing
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<Space>` | Leader Key | Normal | Primary command prefix |
-| `j/k` | Down/Up (wrapped) | Normal | Smart navigation on wrapped text |
-| `0/$` | Start/End of wrapped line | Normal | Navigate wrapped lines properly |
-| `<Tab>` | Next buffer | Normal | Cycle through open buffers |
-| `<S-Tab>` | Previous buffer | Normal | Cycle backwards through buffers |
-| `<leader>w` | Save file | Normal | Quick save |
-| `<leader>q` | Quit | Normal | Quick quit |
-| `<leader>x` | Save & quit | Normal | Save and exit |
-| `<leader>c` | Close buffer | Normal | Smart buffer deletion |
-| `<leader>d` | Delete without yank | Normal | Delete to black hole register |
+GIT                    AI                      NAVIGATION
+<leader>gg LazyGit     <leader>cc Chat        Ctrl+o Back
+<leader>gb Blame       <leader>ca Actions     Ctrl+i Forward
+<leader>gd Diff        <leader>ci Inline      gg Top
+<leader>gs Status      <leader>cr Review      G  Bottom
+]g  Next change        <leader>ce Explain     *  Search word
+[g  Prev change        <leader>cf Fix         n  Next match
+```
 
-### File Management & Search
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<C-p>` | Find files | Normal | Telescope file finder |
-| `<leader>ff` | Find files | Normal | Modern file search |
-| `<leader>fF` | Find files + hidden | Normal | Include hidden files |
-| `<leader>fr` | Recent files | Normal | Quick access to recent |
-| `<leader>fg` | Live grep | Normal | Real-time text search |
-| `<leader>fG` | Live grep + hidden | Normal | Search in hidden files |
-| `<leader>f/` | Grep word under cursor | Normal | Quick word search |
-| `<leader>f;` | Resume last picker | Normal | Continue last search |
-| `<leader>o` | Open Oil file manager | Normal | Directory navigation |
-| `-` | Open Oil | Normal | Quick file browser |
-| `<leader>n` | Toggle NERDTree | Normal | File tree (fallback) |
+## Navigation
 
-### Window Management
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<up/down/left/right>` | Navigate windows | Normal | Arrow key navigation |
-| `<C-h/j/k/l>` | Smart window navigation | Normal | Vim/tmux aware |
-| `<leader>z` | Zen mode | Normal | Distraction-free coding |
-| `<leader>Z` | Zen zoom | Normal | Focus current window |
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `h/j/k/l` | ←/↓/↑/→ | `0/$` | Line start/end |
+| `w/b` | Word →/← | `^` | First char |
+| `W/B` | WORD →/← | `gg/G` | File top/bottom |
+| `e/ge` | Word end →/← | `{/}` | Paragraph ↑/↓ |
+| `f{char}` | Find → char | `%` | Matching bracket |
+| `F{char}` | Find ← char | `H/M/L` | Screen top/mid/bot |
+| `t{char}` | Till → char | `Ctrl+d/u` | Half page ↓/↑ |
+| `T{char}` | Till ← char | `Ctrl+f/b` | Full page ↓/↑ |
 
-### Git Integration
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>gg` | LazyGit | Normal | Full git interface |
-| `<leader>gb` | Git blame | Normal | Blame current line |
-| `<leader>gB` | Git browse | Normal | Open in browser |
-| `<leader>gf` | Git files | Normal | Browse git files |
-| `<leader>gs` | Git status | Normal | Pick from git status |
-| `<leader>gc` | Git commits | Normal | Browse commit history |
+## Editing
 
-### AI Assistant (CodeCompanion)
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>cc` | Open chat | Normal/Visual | AI chat interface |
-| `<leader>ca` | Action palette | Normal/Visual | Available AI actions |
-| `<leader>ci` | Inline assistance | Normal/Visual | Context-aware help |
-| `<leader>cr` | Code review | Visual | Review selected code |
-| `<leader>co` | Optimize code | Visual | Improve performance |
-| `<leader>cm` | Add comments | Visual | Document code |
-| `<leader>ct` | Generate tests | Visual | Create unit tests |
-| `<leader>ce` | Explain code | Visual | Understand code |
-| `<leader>cf` | Fix bugs | Visual | Debug assistance |
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `i/a` | Insert before/after | `I/A` | Insert line start/end |
+| `o/O` | New line below/above | `r` | Replace char |
+| `x/X` | Delete char →/← | `s` | Substitute char |
+| `dd` | Delete line | `D` | Delete to line end |
+| `cc` | Change line | `C` | Change to line end |
+| `yy` | Yank line | `Y` | Yank line |
+| `p/P` | Paste after/before | `u/Ctrl+r` | Undo/Redo |
+| `.` | Repeat last | `J` | Join lines |
 
-### Snacks.nvim Power Features
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>.` | Scratch buffer | Normal | Toggle scratch pad |
-| `<leader>tt` | Terminal | Normal | Toggle terminal |
-| `<leader>tf` | Float terminal | Normal | Floating terminal |
-| `<leader>sd` | Dashboard | Normal | Start screen |
-| `<leader>bd` | Delete buffer | Normal | Smart buffer deletion |
-| `<leader>bD` | Delete all buffers | Normal | Clear all buffers |
-| `<leader>bo` | Delete other buffers | Normal | Keep only current |
+## Text Objects
 
-### LaTeX Integration (VimTeX)
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>ll` | Toggle compilation | Normal | Start/stop LaTeX compile |
-| `<leader>lv` | View PDF | Normal | Open PDF viewer |
-| `<leader>lk` | Clean aux files | Normal | Remove build files |
-| `<leader>lt` | Toggle TOC | Normal | Table of contents |
-| `<leader>le` | Show errors | Normal | LaTeX error list |
+| Object | Meaning | Example | Object | Meaning | Example |
+|--------|---------|---------|---|--------|---------|---------|
+| `iw/aw` | inner/a word | `diw` | `i"/a"` | inner/around " | `ci"` |
+| `iW/aW` | inner/a WORD | `daW` | `i'/a'` | inner/around ' | `ya'` |
+| `is/as` | inner/a sentence | `dis` | `` i`/a` `` | inner/around ` | `` di` `` |
+| `ip/ap` | inner/a paragraph | `yap` | `i(/a(` | inner/around () | `da(` |
+| `it/at` | inner/a tag | `cit` | `i{/a{` | inner/around {} | `ci{` |
+| `ib/ab` | inner/a block | `dab` | `i[/a[` | inner/around [] | `ya[` |
 
-### Debugging (DAP)
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>db` | Toggle breakpoint | Normal | Set/unset breakpoint |
-| `<leader>dc` | Continue | Normal | Start/continue debug |
-| `<leader>ds` | Step over | Normal | Debug step over |
-| `<leader>di` | Step into | Normal | Debug step into |
-| `<leader>do` | Step out | Normal | Debug step out |
-| `<leader>du` | Toggle DAP UI | Normal | Debug interface |
+## Search & Replace
 
-### Toggle Utilities
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<leader>tw` | Toggle wrap | Normal | Line wrapping |
-| `<leader>tS` | Toggle spell | Normal | Spell checking |
-| `<leader>tn` | Toggle numbers | Normal | Line numbers |
-| `<leader>tr` | Toggle relative | Normal | Relative numbers |
-| `<leader>ti` | Toggle indent guides | Normal | Indent visualization |
-| `<leader>td` | Toggle dim | Normal | Focus dimming |
-| `<leader>tD` | Toggle diagnostics | Normal | LSP diagnostics |
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `/pattern` | Search forward | `?pattern` | Search backward |
+| `n/N` | Next/prev match | `*/#` | Search word →/← |
+| `gn` | Next match + select | `gN` | Prev match + select |
+| `:s/old/new/` | Replace line | `:%s/old/new/g` | Replace all |
+| `:s/old/new/gc` | Replace confirm | `&` | Repeat substitution |
+| `<leader>/` | Buffer search | `<leader>sr` | Search & replace |
+
+## Files & Buffers
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>ff` | Find files | `<leader>fr` | Recent files |
+| `<leader>fg` | Grep files | `<leader>fb` | List buffers |
+| `<leader>fn` | New file | `<leader>fs` | Save file |
+| `<Tab>` | Next buffer | `<S-Tab>` | Prev buffer |
+| `<leader>c` | Close buffer | `<leader>C` | Force close |
+| `:e file` | Edit file | `:b name` | Switch buffer |
+| `:ls` | List buffers | `:b#` | Toggle buffer |
+
+## Windows & Tabs
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<C-w>v` | Vertical split | `<C-w>s` | Horizontal split |
+| `<C-w>c` | Close window | `<C-w>o` | Close others |
+| `<C-h/j/k/l>` | Navigate windows | `<C-w>w` | Cycle windows |
+| `<C-w>H/J/K/L` | Move window | `<C-w>=` | Equal size |
+| `<C-w></>` | Width -/+ | `<C-w>-/+` | Height -/+ |
+| `<leader>sv` | Split vertical | `<leader>sh` | Split horizontal |
+| `:tabnew` | New tab | `gt/gT` | Next/prev tab |
+
+## LSP Commands
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `gd` | Go to definition | `gD` | Go to declaration |
+| `gr` | Find references | `gi` | Go to implementation |
+| `gy` | Go to type def | `K` | Show hover docs |
+| `<leader>la` | Code actions | `<leader>lr` | Rename |
+| `<leader>lf` | Format | `<leader>li` | LSP info |
+| `<leader>ld` | Diagnostics | `<leader>ll` | Line diagnostics |
+| `]d/[d` | Next/prev diagnostic | `<leader>lq` | Quickfix list |
+
+## AI Assistant
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>cc` | Open chat | `<leader>ci` | Inline assist |
+| `<leader>ca` | Actions menu | `<leader>cr` | Code review |
+| `<leader>ce` | Explain code | `<leader>cf` | Fix bugs |
+| `<leader>co` | Optimize | `<leader>ct` | Generate tests |
+| `<leader>cm` | Add comments | `<leader>cd` | Generate docs |
+| `<leader>cs` | Stop generation | `<leader>cl` | Toggle chat |
+
+### AI Adapters
+| Key | Adapter | Key | Adapter |
+|-----|---------|---|-----|---------|
+| `<leader>cal` | Local Ollama | `<leader>caa` | Anthropic Claude |
+| `<leader>cao` | OpenAI | `<leader>cac` | GitHub Copilot |
+
+## Git Integration
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>gg` | LazyGit | `<leader>gs` | Git status |
+| `<leader>gb` | Blame line | `<leader>gB` | Blame buffer |
+| `<leader>gd` | Diff this | `<leader>gD` | Diff view |
+| `]g/[g` | Next/prev hunk | `<leader>gp` | Preview hunk |
+| `<leader>gr` | Reset hunk | `<leader>gR` | Reset buffer |
+| `<leader>gu` | Undo stage | `<leader>gS` | Stage buffer |
+
+## Terminal
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<C-\>` | Toggle terminal | `<leader>tt` | Terminal below |
+| `<leader>tv` | Terminal right | `<C-w>N` | Terminal normal mode |
+| `<Esc><Esc>` | Exit terminal | `:term` | New terminal |
+
+## Folding
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `za` | Toggle fold | `zo/zc` | Open/close fold |
+| `zR/zM` | Open/close all | `zj/zk` | Next/prev fold |
+| `zd` | Delete fold | `zE` | Delete all folds |
+
+## Marks & Jumps
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `m{a-z}` | Set local mark | `m{A-Z}` | Set global mark |
+| `'{mark}` | Jump to mark line | `` `{mark}`` | Jump to mark pos |
+| `''` | Last jump line | ``` `` ``` | Last jump pos |
+| `<C-o>` | Jump back | `<C-i>` | Jump forward |
+| `:jumps` | List jumps | `:marks` | List marks |
+
+## Macros & Registers
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `q{reg}` | Record macro | `q` | Stop recording |
+| `@{reg}` | Play macro | `@@` | Repeat macro |
+| `"{reg}y` | Yank to register | `"{reg}p` | Paste from register |
+| `:reg` | List registers | `"+` | System clipboard |
+| `"0` | Yank register | `"1-9` | Delete registers |
+
+## Visual Mode
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `v` | Char visual | `V` | Line visual |
+| `<C-v>` | Block visual | `gv` | Reselect |
+| `o/O` | Other end | `I/A` | Insert start/end |
+| `>/<` | Indent/dedent | `=` | Auto indent |
+| `u/U` | Lower/uppercase | `~` | Toggle case |
+
+## Plugin Commands
+
+### Telescope
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>ff` | Find files | `<leader>fg` | Live grep |
+| `<leader>fb` | Buffers | `<leader>fh` | Help tags |
+| `<leader>fo` | Old files | `<leader>fc` | Commands |
+| `<leader>fk` | Keymaps | `<leader>fs` | Git status |
+| `<leader>gc` | Git commits | `<leader>gC` | Git branches |
+
+### LazyGit
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>gg` | Open LazyGit | `q` | Quit |
+| `?` | Help | `x` | Menu |
+| `<space>` | Stage | `d` | Delete |
+| `c` | Commit | `p` | Pull |
+| `P` | Push | `<tab>` | Switch panel |
+
+### Snacks.nvim
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<leader>sd` | Dashboard | `<leader>sD` | Force dashboard |
+| `<leader>.` | Toggle scratch | `<leader>S` | Select scratch |
+| `<leader>sn` | Notes scratch | `<leader>st` | Todo scratch |
+| `<leader>sc` | Code scratch | `<leader>e` | Explorer |
+| `<leader>E` | Explorer (file dir) | `<leader>N` | NERDTree fallback |
+| `<leader>z` | Zen mode | `<leader>Z` | Zoom window |
+| `<leader>bd` | Delete buffer | `<leader>bD` | Delete all buffers |
+| `<leader>bo` | Delete others | `<leader>bh` | Delete hidden |
+| `<leader>bu` | Delete unnamed | `<leader>rn` | Rename file |
+| `<leader>un` | Dismiss notifications | `<leader>nh` | Notification history |
+| `<leader>nd` | Clear & show history | `<leader>pp` | Profiler pick |
+| `<leader>pP` | Profiler scratch | `<leader>pd` | Debug inspect |
+| `<leader>pD` | Debug backtrace | `<leader>vh` | Next reference |
+| `<leader>vH` | Prev reference | `[s/]s` | Prev/next scope |
+| `[S/]S` | Prev/next scope edge | |
+
+### DAP (Debugging)
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<F5>` | Continue | `<F10>` | Step over |
+| `<F11>` | Step into | `<F12>` | Step out |
+| `<leader>db` | Toggle breakpoint | `<leader>dB` | Conditional break |
+| `<leader>dr` | Open REPL | `<leader>dl` | Run last |
+| `<leader>du` | Toggle UI | `<leader>dt` | Terminate |
 
 ### Menu System
-| Key | Action | Mode | Description |
-|-----|--------|------|-------------|
-| `<C-t>` | Context menu | Normal | Smart context-aware menu |
-| `<leader>m` | Main menu | Normal | All menu categories |
-| `<leader>M` | Context menu | Normal | Context-specific menu |
-| `<RightMouse>` | Context menu | Normal | Menu at mouse position |
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `<C-t>` | Context menu | `<leader>m` | Main menu |
+| `<leader>mf` | File menu | `<leader>mg` | Git menu |
+| `<leader>mc` | Code menu | `<leader>ma` | AI menu |
+| `<RightMouse>` | Mouse menu | `q` | Close menu |
 
-## Quick Reference
+## Commands
 
-### Essential Commands
-- `:W`, `:Q`, `:Wq` - Common typo corrections automatically mapped
-- `:Lazy` - Plugin manager interface
-- `:Mason` - LSP server manager
-- `:Telescope` - Fuzzy finder commands
-- `:CodeCompanion` - AI assistant commands
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `:Lazy` | Plugin manager | `:Mason` | LSP installer |
+| `:LspInfo` | LSP status | `:Telescope` | Fuzzy finder |
+| `:Neotree` | File tree | `:LazyGit` | Git UI |
+| `:CodeCompanion` | AI chat | `:TodoTelescope` | Find TODOs |
+| `:checkhealth` | Health check | `:messages` | Show messages |
 
-### Visual Mode Operations
-- `J/K` - Move selected lines up/down
-- `</>` - Indent/outdent (stays in visual mode)
-- `p` - Paste without yanking deleted text
-- `ga` - EasyAlign text alignment
+## Settings
 
-### Insert Mode Shortcuts
-- `<Down>/<Up>` - Navigate wrapped lines properly
-- `<C-o>` prefix - Execute normal mode command
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `:set nu!` | Toggle numbers | `:set wrap!` | Toggle wrap |
+| `:set paste!` | Toggle paste | `:set list!` | Toggle whitespace |
+| `:set ic!` | Toggle ignorecase | `:set hls!` | Toggle highlight |
+| `:syntax on/off` | Toggle syntax | `:noh` | Clear highlight |
 
-### Terminal Mode
-- `<Esc>` - Exit terminal mode to normal mode
-- `<leader>tt` - Quick terminal toggle
-
-## About
-
-This Neovim configuration is a modern, performance-optimized setup built entirely in Lua. It features:
-
-- **Lightning-fast startup** with lazy loading
-- **AI-powered coding** via CodeCompanion with multiple LLM support
-- **Smart completion** using Blink.cmp for ultra-fast LSP integration
-- **Quality of life** improvements via Snacks.nvim
-- **Professional LaTeX** environment with VimTeX
-- **Integrated debugging** with nvim-dap
-- **Dynamic theming** that follows macOS appearance
-
-## Additional Usage Info
-
-### Plugin Ecosystem
-The configuration uses lazy.nvim for plugin management, ensuring optimal startup performance through lazy loading and bytecode compilation.
-
-### LSP Configuration
-Language servers are automatically installed and configured via Mason. Supported languages include:
-- TypeScript/JavaScript (tsserver)
-- Python (pyright)
-- Lua (lua_ls)
-- Rust (rust_analyzer)
-- Go (gopls)
-- And many more...
-
-### AI Integration
-CodeCompanion supports multiple AI providers:
-- Local Ollama (default, no API key needed)
-- Anthropic Claude (set ANTHROPIC_API_KEY)
-- OpenAI GPT (set OPENAI_API_KEY)
-- GitHub Copilot (uses existing auth)
-
-### Performance Features
-- Sub-100ms startup time
-- Smart file exclusions for large files
-- Optimized syntax highlighting
-- Efficient buffer management
-- Cached completion results
-
-## Further Command Explanations
-
-### Snacks.nvim Commands
-The Snacks plugin provides a comprehensive suite of utilities:
-- **Dashboard**: Fast startup screen with recent files and quick actions
-- **Picker**: High-performance file search with frecency tracking
-- **Terminal**: Instant terminal access with smart keybindings
-- **Git**: LazyGit integration for visual git operations
-- **Buffers**: Smart buffer management with cleanup utilities
-
-### Telescope Advanced Usage
-- Use `<Tab>` in pickers to select multiple items
-- `<C-q>` sends results to quickfix list
-- `<C-x>` opens selection in horizontal split
-- `<C-v>` opens selection in vertical split
-- `<C-t>` opens selection in new tab
-
-### Oil.nvim File Management
-- `-` opens Oil in current file's directory
-- `g?` shows help in Oil buffer
-- `<CR>` opens file/enters directory
-- `-` goes up one directory
-- `g.` toggles hidden files
-
-## Theory & Background
-
-### Vi Mode Philosophy
-The configuration maintains Vim's modal editing philosophy while adding modern conveniences. The vi-mode is deeply integrated, with consistent keybindings across all contexts.
-
-### Lazy Loading Strategy
-Plugins are loaded only when needed:
-- UI plugins load on specific events
-- Syntax plugins load on file type detection
-- Heavy plugins load on first command usage
-
-### Theme Integration
-The configuration automatically detects macOS light/dark mode and switches themes accordingly. This extends to:
-- Neovim colorscheme
-- Terminal colors
-- Git diff highlighting
-- UI element contrast
-
-## Good to Know / Lore / History
-
-### Evolution from Vimscript
-This configuration represents a complete migration from Vimscript to Lua (completed July 2025), modernizing a setup that evolved over many years.
-
-### Plugin Choices
-- **Telescope over FZF**: Better Neovim integration and Lua performance
-- **Blink.cmp over nvim-cmp**: 10x faster completion engine
-- **Snacks over multiple plugins**: Unified, optimized plugin suite
-- **Oil over traditional explorers**: Edit directories like buffers
-
-### Performance Milestones
-- Original Vimscript config: ~300ms startup
-- Initial Lua migration: ~150ms startup
-- Current optimized config: <100ms startup
-
-### Hidden Features
-- The menu system (`<C-t>`) adapts based on context
-- Scratch buffers persist between sessions
-- Git integration includes GitHub CLI support
-- Debug configurations support multiple languages
-- Theme switching affects the entire terminal ecosystem
-
-### Pro Tips
-1. Use `<leader>.` for quick notes that persist
-2. Visual mode + AI commands = instant code improvement
-3. `<C-t>` in any context shows relevant actions
-4. Telescope resume (`<leader>f;`) maintains search state
-5. Oil.nvim lets you rename files with standard Vim commands
+## Tips
+- `<leader>` = Space
+- `jk` or `kj` = Escape in insert mode
+- `.` repeats last change
+- `u` undo, `Ctrl+r` redo
+- `:w !sudo tee %` to save with sudo
+- `:%s//new/g` replaces last search
+- `cgn` to change next search match
+- `q:` for command history
+- `@:` to repeat last command
