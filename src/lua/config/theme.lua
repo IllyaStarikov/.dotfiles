@@ -40,6 +40,7 @@ local function setup_theme()
     if theme == "dracula" then
       vim.cmd("colorscheme dracula")
       vim.opt.background = "dark"
+      vim.g.airline_theme = 'dracula'
     elseif theme == "iceberg_light" then
       vim.cmd("colorscheme iceberg")
       vim.g.airline_theme = 'iceberg'
@@ -123,6 +124,11 @@ local function setup_theme()
       vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")   -- Purple preprocessor
       vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")       -- Blue types
       vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")   -- Orange special chars
+    end
+    
+    -- Refresh airline to apply theme changes
+    if vim.fn.exists(":AirlineRefresh") == 2 then
+      vim.cmd("AirlineRefresh")
     end
   end)
 end
