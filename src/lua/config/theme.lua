@@ -39,7 +39,6 @@ local function setup_theme()
     -- Apply colorscheme and airline theme based on current theme
     if theme == "dracula" then
       vim.cmd("colorscheme dracula")
-      vim.g.airline_theme = 'dracula'
       vim.opt.background = "dark"
     elseif theme == "iceberg_light" then
       vim.cmd("colorscheme iceberg")
@@ -99,7 +98,6 @@ local function setup_theme()
     -- Default to dark theme if config file doesn't exist
     vim.opt.background = "dark"
     vim.cmd("colorscheme dracula")
-    vim.g.airline_theme = 'dracula'
   end
   
   -- Apply intelligent syntax highlighting optimizations
