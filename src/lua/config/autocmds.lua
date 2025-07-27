@@ -1106,3 +1106,67 @@ autocmd("BufNewFile", {
     insert_skeleton("html")
   end
 })
+
+-- =============================================================================
+-- DEBUG COMMANDS
+-- =============================================================================
+
+-- Debug airline tabline
+vim.api.nvim_create_user_command("DebugAirline", function()
+  print("Airline Tabline Settings:")
+  print("  tabline#enabled:", vim.g["airline#extensions#tabline#enabled"])
+  print("  show_buffers:", vim.g["airline#extensions#tabline#show_buffers"])
+  print("  show_tabs:", vim.g["airline#extensions#tabline#show_tabs"])
+  print("  buffer_idx_mode:", vim.g["airline#extensions#tabline#buffer_idx_mode"])
+  print("  formatter:", vim.g["airline#extensions#tabline#formatter"])
+  print("  powerline_fonts:", vim.g.airline_powerline_fonts)
+  print("  theme:", vim.g.airline_theme)
+  print("\nBuffers:")
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) then
+      local name = vim.api.nvim_buf_get_name(buf)
+      print("  " .. buf .. ": " .. (name ~= "" and name or "[No Name]"))
+    end
+  end
+end, { desc = "Debug airline tabline configuration" })
+
+-- Force airline refresh command
+vim.api.nvim_create_user_command("AirlineFixTabs", function()
+  vim.cmd("AirlineRefresh")
+  vim.cmd("AirlineToggle")
+  vim.cmd("AirlineToggle")
+end, { desc = "Fix airline tabline display" })
+
+-- Force Dracula theme for airline
+vim.api.nvim_create_user_command("AirlineDracula", function()
+  vim.g.airline_theme = 'dracula'
+  vim.cmd("AirlineRefresh")
+end, { desc = "Set airline theme to Dracula" })
+
+-- Fix airline buffer mappings and theme
+autocmd("VimEnter", {
+  group = augroup("AirlineTablineFix", { clear = true }),
+  callback = function()
+    vim.schedule(function()
+      -- Ensure mappings work with airline
+      vim.cmd([[
+        nmap <leader>1 <Plug>AirlineSelectTab1
+        nmap <leader>2 <Plug>AirlineSelectTab2
+        nmap <leader>3 <Plug>AirlineSelectTab3
+        nmap <leader>4 <Plug>AirlineSelectTab4
+        nmap <leader>5 <Plug>AirlineSelectTab5
+        nmap <leader>6 <Plug>AirlineSelectTab6
+        nmap <leader>7 <Plug>AirlineSelectTab7
+        nmap <leader>8 <Plug>AirlineSelectTab8
+        nmap <leader>9 <Plug>AirlineSelectTab9
+        nmap <leader>0 <Plug>AirlineSelectTab0
+      ]])
+      
+      -- Ensure Dracula theme is applied
+      vim.g.airline_theme = 'dracula'
+      if vim.fn.exists(':AirlineRefresh') == 2 then
+        vim.cmd('AirlineRefresh')
+      end
+    end)
+  end
+})

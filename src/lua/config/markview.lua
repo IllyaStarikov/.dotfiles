@@ -9,6 +9,28 @@ function M.setup()
   local markview = require("markview")
   local presets = require("markview.presets")
   
+  -- Set up highlight groups for markview
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxChecked", { fg = "#50fa7b", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxUnchecked", { fg = "#ff5555" })
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxPending", { fg = "#f1fa8c" })
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxProgress", { fg = "#8be9fd" })
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxCancelled", { fg = "#6272a4", strikethrough = true })
+  vim.api.nvim_set_hl(0, "MarkviewCheckboxImportant", { fg = "#ff79c6", bold = true })
+  
+  -- Heading highlights
+  vim.api.nvim_set_hl(0, "MarkviewHeading1", { fg = "#ff79c6", bg = "#44475a", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading1Sign", { fg = "#ff79c6", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading2", { fg = "#bd93f9", bg = "#44475a", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading2Sign", { fg = "#bd93f9", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading3", { fg = "#8be9fd", bg = "#44475a", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading3Sign", { fg = "#8be9fd", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading4", { fg = "#50fa7b", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading4Sign", { fg = "#50fa7b", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading5", { fg = "#f1fa8c", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading5Sign", { fg = "#f1fa8c", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading6", { fg = "#ffb86c", bold = true })
+  vim.api.nvim_set_hl(0, "MarkviewHeading6Sign", { fg = "#ffb86c", bold = true })
+  
   markview.setup({
     -- Core configuration
     experimental = {
@@ -16,11 +38,18 @@ function M.setup()
       check_rtp = false, -- Disable runtime path check since we've fixed load order
     },
     
+    -- Icons configuration - force nerd fonts
+    icons = "nerd",
+    max_length = 99999,
+    
     preview = {
       filetypes = { "markdown", "md", "mkd", "mkdn", "mdwn", "mdown", "mdtxt", "mdtext", "rmd", "wiki" },
       
       -- Enable hybrid mode - show rendered and raw content
       hybrid_modes = { "n" },
+      
+      -- Font and rendering settings (moved to preview section)
+      ignore_buftypes = {},
       
       -- Enhanced rendering options  
       modes = { "n", "i", "c" }, 
@@ -53,15 +82,15 @@ function M.setup()
           },
           ["TIP"] = {
             hl = "MarkviewBlockQuoteOk", 
-            preview = "󰌶 Tip",
+            preview = " Tip",
             title = true,
-            icon = "󰌶",
+            icon = "",
           },
           ["IMPORTANT"] = {
             hl = "MarkviewBlockQuoteSpecial",
-            preview = "󰅾 Important", 
+            preview = " Important", 
             title = true,
-            icon = "󰅾",
+            icon = "",
           },
           ["WARNING"] = {
             hl = "MarkviewBlockQuoteWarn",
@@ -71,9 +100,9 @@ function M.setup()
           },
           ["CAUTION"] = {
             hl = "MarkviewBlockQuoteError",
-            preview = "󰳦 Caution",
+            preview = " Caution",
             title = true,
-            icon = "󰳦",
+            icon = "",
           }
         }
       },
@@ -122,10 +151,35 @@ function M.setup()
         }
       },
       
-      -- Enhanced headings with glow-like styling
-      headings = vim.tbl_deep_extend("force", presets.headings.glow, {
+      -- Enhanced headings with simple ASCII markers
+      headings = {
+        enable = true,
         shift_width = 0,
-      }),
+        heading_1 = {
+          style = "simple",
+          hl = "MarkviewHeading1",
+        },
+        heading_2 = {
+          style = "simple", 
+          hl = "MarkviewHeading2",
+        },
+        heading_3 = {
+          style = "simple",
+          hl = "MarkviewHeading3",
+        },
+        heading_4 = {
+          style = "simple",
+          hl = "MarkviewHeading4",
+        },
+        heading_5 = {
+          style = "simple",
+          hl = "MarkviewHeading5",
+        },
+        heading_6 = {
+          style = "simple",
+          hl = "MarkviewHeading6",
+        },
+      },
       
       -- Horizontal rules
       horizontal_rules = {
@@ -212,21 +266,7 @@ function M.setup()
       enable = true,
       
       -- Checkboxes with nerd font icons
-      checkboxes = vim.tbl_deep_extend("force", presets.checkboxes.nerd, {
-        -- Additional custom checkboxes
-        custom = {
-          {
-            match_string = "~",
-            text = "",
-            hl = "MarkviewCheckboxProgress"
-          },
-          {
-            match_string = "!",
-            text = "",
-            hl = "MarkviewCheckboxImportant"
-          }
-        }
-      }),
+      checkboxes = presets.checkboxes.nerd,
       
       -- Enhanced inline code styling
       inline_codes = {
@@ -245,17 +285,17 @@ function M.setup()
         enable = true,
         
         hyperlinks = {
-          icon = "󰌹 ",
+          icon = " ",
           hl = "MarkviewLink"
         },
         
         images = {
-          icon = "󰋩 ",
+          icon = " ",
           hl = "MarkviewImage"
         },
         
         emails = {
-          icon = "󰇮 ",
+          icon = " ",
           hl = "MarkviewEmail"
         }
       },
@@ -265,17 +305,17 @@ function M.setup()
         enable = true,
         
         bold = {
-          icon = "󰖿 ",
+          icon = " ",
           hl = "MarkviewBold"
         },
         
         italic = {
-          icon = "󰗀 ",
+          icon = " ",
           hl = "MarkviewItalic"
         },
         
         strikethrough = {
-          icon = "󰗁 ",
+          icon = " ",
           hl = "MarkviewStrikethrough"
         }
       },
@@ -298,6 +338,71 @@ function M.setup()
       -- Enable markview for this buffer
       vim.cmd("Markview enable")
     end
+  })
+  
+  -- Debug commands for glyph issues
+  vim.api.nvim_create_user_command("MarkviewDebug", function()
+    local ok, icons = pcall(require, "nvim-web-devicons")
+    print("nvim-web-devicons loaded:", ok)
+    print("Have nerd font:", vim.g.have_nerd_font)
+    print("Terminal:", vim.env.TERM)
+    print("Encoding:", vim.o.encoding)
+    print("GUI font:", vim.o.guifont)
+    print("Conceallevel:", vim.o.conceallevel)
+    print("Concealcursor:", vim.o.concealcursor)
+    
+    -- Test rendering some glyphs
+    print("\nTest glyphs:")
+    print("Checkbox unchecked: ")
+    print("Checkbox checked: ")
+    print("H1 icon: 󰼏")
+    print("H2 icon: 󰎨")
+    print("H3 icon: 󰼑")
+    print("H1 sign: 󰌕")
+    print("H2 sign: 󰌖")
+    
+    -- Check markview config
+    local mv_ok, mv = pcall(require, "markview")
+    if mv_ok then
+      print("\nMarkview loaded successfully")
+    end
+  end, { desc = "Debug markview glyph rendering" })
+  
+  -- Command to test different heading styles
+  vim.api.nvim_create_user_command("MarkviewHeadingStyle", function(opts)
+    local style = opts.args
+    local markview = require("markview")
+    local presets = require("markview.presets")
+    
+    if style == "glow" then
+      markview.configuration.markdown.headings = presets.headings.glow
+    elseif style == "marker" then
+      markview.configuration.markdown.headings = presets.headings.marker
+    elseif style == "simple" then
+      markview.configuration.markdown.headings = presets.headings.simple
+    elseif style == "slanted" then
+      markview.configuration.markdown.headings = presets.headings.slanted
+    elseif style == "arrowed" then
+      markview.configuration.markdown.headings = presets.headings.arrowed
+    elseif style == "none" then
+      markview.configuration.markdown.headings = {
+        enable = false
+      }
+    else
+      print("Available styles: glow, marker, simple, slanted, arrowed, none")
+      return
+    end
+    
+    -- Refresh markview
+    vim.cmd("Markview disable")
+    vim.cmd("Markview enable")
+    print("Switched to " .. style .. " heading style")
+  end, {
+    nargs = 1,
+    complete = function()
+      return { "glow", "marker", "simple", "slanted", "arrowed", "none" }
+    end,
+    desc = "Switch markview heading style"
   })
 end
 
