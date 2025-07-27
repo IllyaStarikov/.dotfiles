@@ -77,6 +77,10 @@ opt.termguicolors = true             -- 24-bit RGB colors
 opt.cmdheight = 1                    -- Standard command line height
 opt.showmode = true                  -- Show mode in command line
 
+-- Buffer tabs at the top
+opt.showtabline = 2                  -- Always show tabline (buffer tabs)
+opt.laststatus = 2                   -- Always show status line
+
 opt.cursorline = true                -- Turn on the cursorline
 opt.guicursor = ""
 
