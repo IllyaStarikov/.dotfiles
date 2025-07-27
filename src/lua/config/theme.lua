@@ -127,9 +127,11 @@ local function setup_theme()
     end
     
     -- Refresh airline to apply theme changes
-    if vim.fn.exists(":AirlineRefresh") == 2 then
-      vim.cmd("AirlineRefresh")
-    end
+    vim.defer_fn(function()
+      if vim.fn.exists(":AirlineRefresh") == 2 then
+        vim.cmd("AirlineRefresh")
+      end
+    end, 100)
   end)
 end
 
