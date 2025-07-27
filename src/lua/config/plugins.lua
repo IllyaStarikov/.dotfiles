@@ -575,23 +575,43 @@ require("lazy").setup({
 
   -- UI/UX plugins
   { "airblade/vim-gitgutter" },
-  { "dracula/vim", name = "dracula" },
+  { "dracula/vim", name = "dracula", lazy = false, priority = 1000 },
   { "cocopon/iceberg.vim" },
   { "projekt0n/github-nvim-theme" },
   { "tpope/vim-fugitive" },
   { 
     "vim-airline/vim-airline",
+    lazy = false,
+    priority = 999,
     dependencies = { "vim-airline/vim-airline-themes" },
-    event = "VeryLazy",
     init = function()
-      -- Ensure airline is properly initialized
-      vim.cmd([[
-        let g:airline#extensions#tabline#enabled = 1
-        let g:airline#extensions#tabline#show_buffers = 1
-        let g:airline#extensions#tabline#show_tabs = 0
-        let g:airline#extensions#tabline#buffer_idx_mode = 1
-        let g:airline_theme = 'dracula'
-      ]])
+      -- Set powerline fonts BEFORE airline loads
+      vim.g.airline_powerline_fonts = 1
+    end,
+    config = function()
+      -- Set all airline settings here
+      vim.g["airline#extensions#whitespace#enabled"] = 0
+      vim.g["airline#extensions#ale#enabled"] = 1
+      vim.g.airline_detect_spell = 0
+      vim.g["airline#extensions#tabline#enabled"] = 1
+      vim.g["airline#extensions#tabline#fnamemod"] = ':t'
+      vim.g["airline#extensions#tabline#tab_nr_type"] = 2
+      vim.g["airline#extensions#tabline#show_buffers"] = 1
+      vim.g["airline#extensions#tabline#show_tabs"] = 0
+      vim.g["airline#extensions#tabline#buffer_idx_mode"] = 1
+      vim.g["airline#extensions#tabline#formatter"] = 'unique_tail_improved'
+      vim.g["airline#extensions#tabline#show_close_button"] = 0
+      vim.g["airline#extensions#tabline#show_tab_type"] = 0
+      vim.g["airline#extensions#tabline#buffer_nr_show"] = 0
+      vim.g["airline#extensions#tabline#buffer_nr_format"] = '%s:'
+      vim.g.airline_theme = 'dracula'
+      
+      -- Force refresh after settings
+      vim.defer_fn(function()
+        if vim.fn.exists(":AirlineRefresh") == 2 then
+          vim.cmd("AirlineRefresh")
+        end
+      end, 100)
     end,
   },
 
@@ -908,6 +928,10 @@ require("lazy").setup({
 local g = vim.g
 local opt = vim.opt
 
+-- Set Dracula theme as default
+vim.cmd("colorscheme dracula")
+
+
 -- NERDTree
 g.NERDTreeWinPos = "right"
 g.NERDTreeMapOpenInTab = '\r'
@@ -924,26 +948,7 @@ g.ale_echo_msg_error_str = 'E'
 g.ale_echo_msg_warning_str = 'W'
 g.ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
 
--- Airline
-g["airline#extensions#whitespace#enabled"] = 0
-g.airline_powerline_fonts = 1
-g["airline#extensions#ale#enabled"] = 1
-g.airline_detect_spell = 0
-g["airline#extensions#tabline#enabled"] = 1
-g["airline#extensions#tabline#fnamemod"] = ':t'
-g["airline#extensions#tabline#tab_nr_type"] = 2
-g["airline#extensions#tabline#show_buffers"] = 1
-g["airline#extensions#tabline#show_tabs"] = 0
-g["airline#extensions#tabline#buffer_idx_mode"] = 1
-g["airline#extensions#tabline#formatter"] = 'unique_tail_improved'
-g["airline#extensions#tabline#show_close_button"] = 0
-g["airline#extensions#tabline#show_tab_type"] = 0
-g["airline#extensions#tabline#buffer_nr_show"] = 0
-g["airline#extensions#tabline#buffer_nr_format"] = '%s:'
-g["airline#extensions#tabline#show_tab_count"] = 0
-g["airline#extensions#tabline#show_split_size"] = 0
-g["airline#extensions#tabline#excludes"] = {}
-g["airline#extensions#tabline#exclude_preview"] = 1
+-- Airline configuration moved to plugin definition above
 
 -- Grepper
 g.grepper = {
