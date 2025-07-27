@@ -1,305 +1,255 @@
-# Zsh with Oh My Zsh Usage Guide
+# Zsh Reference
 
-## Command/Shortcut Reference Table
+## Daily Commands
+```
+NAVIGATION           FILE OPS              GIT                TOOLS
+z project    Jump    ll      List all     gs   Status       v file     Edit
+cd -         Back    la      Hidden       gaa  Add all      fzf        Find
+..           Up      lt      Tree         gcmsg Commit      rg text    Grep
+...          Up 2    mkdir -p Create     gp   Push         fd name    Find file
+cd           Home    rm -rf  Delete      gl   Pull         btop       Monitor
 
-### Directory Navigation
-| Command | Action | Description |
-|---------|--------|-------------|
-| `cd` | Change directory | Auto-cd enabled - just type directory name |
-| `..` | Parent directory | Go up one level |
-| `...` | Two levels up | Go up two levels |
-| `....` | Three levels up | Go up three levels |
-| `.....` | Four levels up | Go up four levels |
-| `cd-` | Previous directory | Toggle between last two directories |
-| `z <pattern>` | Smart jump | Jump to frecent directory matching pattern |
-| `home` | Home directory | Quick jump to ~ |
-| `desktop` | Desktop folder | Jump to ~/Desktop |
-| `downloads` | Downloads folder | Jump to ~/Downloads |
-| `projects` | Projects folder | Jump to ~/Projects |
-| `dotfiles` | Dotfiles folder | Jump to ~/.dotfiles |
+ALIASES              SYSTEM               HISTORY            SHELL
+alias name   Show    reload  Reload zsh  h    History      c     Clear
+unalias x    Remove  update  Update all  !!   Last cmd     q     Exit
+which cmd    Find    src     Source file !$   Last arg     exec zsh Restart
+type cmd     Info    path    Show PATH   !^   First arg    jobs  List jobs
+```
 
-### File Listing (eza-powered)
-| Command | Action | Description |
-|---------|--------|-------------|
-| `ls` | List files | Enhanced with eza, groups directories first |
-| `ll` | Long listing | Detailed view with git status, relative time |
-| `la` | List all | Including hidden files |
-| `lt` | Tree view | Show as tree (2 levels) |
-| `lh` | Human readable | Show sizes in human format |
-| `lS` | Sort by size | Largest files first |
-| `l1/l2/l3` | Tree levels | Show tree with 1/2/3 levels |
+## Navigation Aliases
 
-### Git Shortcuts
-| Command | Action | Description |
-|---------|--------|-------------|
-| `g` | Git | Short for git |
-| `ga` | Git add | Stage changes |
-| `gaa` | Git add all | Stage all changes |
-| `gc` | Git commit | Commit staged changes |
-| `gcm` | Git commit message | Commit with inline message |
-| `gco` | Git checkout | Switch branches/restore files |
-| `gcb` | Git checkout -b | Create and switch to new branch |
-| `gd` | Git diff | Show unstaged changes |
-| `gdc` | Git diff cached | Show staged changes |
-| `gs` | Git status | Repository status |
-| `gp` | Git push | Push to remote |
-| `gpl` | Git pull | Pull from remote |
-| `gl` | Git log pretty | Beautiful commit history |
-| `gwip` | Work in progress | Quick WIP commit |
-| `gunwip` | Undo WIP | Undo last WIP commit |
-| `gfresh` | Cleanup branches | Delete merged branches |
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `..` | `cd ..` | `.3` | `cd ../../..` |
+| `...` | `cd ../..` | `.4` | `cd ../../../..` |
+| `cd-` | `cd -` | `~` | `cd ~` |
+| `z` | Autojump to dir | `zi` | Interactive jump |
+| `bd` | Jump to parent | `take` | mkdir && cd |
 
-### Search & Find
-| Command | Action | Description |
-|---------|--------|-------------|
-| `grep` | Ripgrep | Aliased to rg for speed |
-| `find-file` | Find files | Uses fd for fast file finding |
-| `find-content` | Search content | Uses ripgrep |
-| `search` | Pretty search | Ripgrep with context |
-| `todos` | Find TODOs | Search for TODO/FIXME/NOTE |
-| `pygrep` | Python search | Search only Python files |
-| `jsgrep` | JavaScript search | Search only JS files |
+## File Operations
 
-### Editor & Config Shortcuts
-| Command | Action | Description |
-|---------|--------|-------------|
-| `v` | Neovim | Quick editor access |
-| `vim` | Neovim | Aliased to nvim |
-| `zshconfig` | Edit zshrc | Open ~/.zshrc in editor |
-| `zshreload` | Reload config | Source ~/.zshrc |
-| `vimconfig` | Edit Neovim | Open init.lua |
-| `tmuxconfig` | Edit tmux | Open tmux.conf |
-| `gitconfig` | Edit git | Open gitconfig |
-| `reload` | Reload shell | Source zshrc and clear |
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `ll` | `eza -l` | `la` | `eza -la` |
+| `lt` | `eza --tree` | `l.` | List hidden |
+| `lsd` | List dirs only | `lsf` | List files only |
+| `cp` | `cp -i` | `mv` | `mv -i` |
+| `rm` | `rm -i` | `md` | `mkdir -p` |
+| `rd` | `rmdir` | `rmf` | `rm -rf` |
 
-### Tmux & Sessions
-| Command | Action | Description |
-|---------|--------|-------------|
-| `tm` | Tmux | Short for tmux |
-| `tma` | Attach session | Attach to existing |
-| `tmn` | New session | Create new session |
-| `tml` | List sessions | Show all sessions |
-| `tx` | Tmuxinator | Session manager |
-| `txs` | Start project | Start tmuxinator project |
-| `txl` | List projects | Show tmuxinator projects |
+## Git Aliases
 
-### System Utilities
-| Command | Action | Description |
-|---------|--------|-------------|
-| `update` | Update system | Brew update & upgrade |
-| `updateall` | Update everything | System + npm + pip packages |
-| `cleanup` | Clean files | Remove .DS_Store, .pyc files |
-| `df` | Disk free | Human readable disk usage |
-| `top` | Process monitor | Aliased to htop |
-| `ps` | Process list | Aliased to procs |
-| `ip` | External IP | Show public IP address |
-| `localip` | Internal IP | Show local network IP |
-| `speedtest` | Network speed | Test internet speed |
-| `sysinfo` | System info | Display system details |
-| `myip` | All IPs | Show internal and external IPs |
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `g` | `git` | `gs` | `git status` |
+| `ga` | `git add` | `gaa` | `git add --all` |
+| `gc` | `git commit -v` | `gc!` | `git commit -v --amend` |
+| `gcmsg` | `git commit -m` | `gca` | `git commit -v -a` |
+| `gco` | `git checkout` | `gcb` | `git checkout -b` |
+| `gb` | `git branch` | `gba` | `git branch -a` |
+| `gbd` | `git branch -d` | `gbD` | `git branch -D` |
+| `gd` | `git diff` | `gds` | `git diff --staged` |
+| `gf` | `git fetch` | `gfa` | `git fetch --all` |
+| `gl` | `git pull` | `gp` | `git push` |
+| `gpsup` | Push set upstream | `gpf` | `git push --force` |
+| `grb` | `git rebase` | `grbi` | `git rebase -i` |
+| `grh` | `git reset` | `grhh` | `git reset --hard` |
+| `gsta` | `git stash` | `gstp` | `git stash pop` |
+| `glog` | Pretty log | `gloga` | All branches |
 
-### Development Tools
-| Command | Action | Description |
-|---------|--------|-------------|
-| `py` | Python 3 | Quick Python access |
-| `serve` | HTTP server | Start local web server |
-| `d` | Docker | Docker shortcut |
-| `dc` | Docker Compose | Docker Compose shortcut |
-| `k` | Kubectl | Kubernetes shortcut |
-| `json` | JSON formatter | Pretty print JSON |
-| `urlencode` | URL encode | Encode URLs |
-| `urldecode` | URL decode | Decode URLs |
+## Architecture-Specific Aliases
 
-### Theme Management
-| Command | Action | Description |
-|---------|--------|-------------|
-| `theme` | Switch theme | Toggle light/dark mode |
-| `dark` | Dark mode | Force dark theme |
-| `light` | Light mode | Force light theme |
+| Alias | Command | Alias | Command |
+|-------|---------|---|----------|---------|
+| `brew` | `arch -arm64 brew` | `ibrew` | `arch -x86_64 brew` |
+| `pyenv` | `arch -arm64 pyenv` | |
 
-### Archive & History Management
-| Command | Action | Description |
-|---------|--------|-------------|
-| `h` | History | Show command history |
-| `Ctrl+R` | Reverse search | Search command history |
-| `↑/↓` | History search | Search with current prefix |
+## Lazy-Loaded Node.js
 
-### Enhanced Features
-| Command | Action | Description |
-|---------|--------|-------------|
-| `cat` | Better cat | Uses bat with syntax highlighting |
-| `diff` | Color diff | Colored diff output |
-| `tree` | Better tree | Uses eza tree view |
-| `man` | Better man | Opens in Neovim |
-| `weather` | Weather info | curl wttr.in |
-| `moon` | Moon phase | Current moon phase |
+| Alias | Command | Alias | Command |
+|-------|---------|---|----------|---------|
+| `nvm` | Lazy-load nvm | `node` | Lazy-load node |
+| `npm` | Lazy-load npm | `npx` | Lazy-load npx |
 
-## Quick Reference
+## Utility Aliases
 
-### Oh My Zsh Plugins Enabled
-- **vi-mode**: Vim keybindings in command line
-- **git**: Git aliases and functions
-- **z**: Smart directory jumping
-- **history-substring-search**: Better history search
-- **colored-man-pages**: Colorized manual pages
-- **command-not-found**: Package suggestions
-- **extract**: Universal archive extraction
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `h` | `history` | `help` | `man` |
+| `p` | `ps -f` | `path` | Show PATH |
+| `reload` | `exec zsh` | `src` | `source` |
+| `update` | Update system | `theme` | Switch theme |
+| `dark` | Force dark mode | `light` | Force light mode |
+| `myip` | Show IP | `localip` | Local IP |
+| `ports` | Open ports | `urlencode` | URL encode |
 
-### Shell Options
-- **AUTO_CD**: Change directory without typing cd
-- **CORRECT_ALL**: Command and argument correction
-- **GLOB_DOTS**: Include dotfiles in globs
-- **HIST_IGNORE_ALL_DUPS**: No duplicate history entries
-- **SHARE_HISTORY**: Share history between sessions
+## Editor Shortcuts
 
-### Keybindings
-- `Ctrl+A`: Beginning of line
-- `Ctrl+E`: End of line
-- `Ctrl+K`: Kill to end of line
-- `Ctrl+U`: Kill to beginning of line
-- `Ctrl+W`: Delete word backwards
-- `Ctrl+R`: Reverse history search
-- `Alt+←/→`: Move by word
-- `Esc`: Enter vi command mode
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `v` | `nvim` | `vi` | `nvim` |
+| `vim` | `nvim` | `e` | `$EDITOR` |
+| `zshconfig` | Edit ~/.zshrc | `vimconfig` | Edit nvim config |
+| `gitconfig` | Edit ~/.gitconfig | `tmuxconfig` | Edit tmux.conf |
 
-## About
+## Process Management
 
-This Zsh configuration provides a modern, productive shell environment with:
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `psa` | `ps aux` | `psg` | `ps aux | grep` |
+| `ka` | `killall` | `k9` | `kill -9` |
+| `jobs` | List jobs | `j` | `jobs -l` |
 
-- **Oh My Zsh** framework for plugin management
-- **Spaceship** prompt with git integration
-- **Vi-mode** for efficient command line editing
-- **Smart completions** with case-insensitive matching
-- **Modern tools** replacing traditional Unix utilities
-- **Theme integration** with the dotfiles ecosystem
+## Network
 
-## Additional Usage Info
+| Alias | Command | Alias | Command |
+|-------|---------|---|-------|---------|
+| `ping` | `ping -c 5` | `fastping` | `ping -c 100 -i 0.2` |
+| `ports` | Show open ports | `ips` | Show all IPs |
+| `myip` | Public IP | `localip` | Local IP |
+| `httpdump` | Dump HTTP traffic | `sniff` | Network sniffer |
 
-### Directory Stack
-The configuration enables automatic directory stack management:
-- Every `cd` pushes to the directory stack
-- Use `dirs -v` to view the stack
-- Use `~N` to jump to Nth directory in stack
-- Example: `~2` jumps to the 2nd directory in stack
+## Oh My Zsh Plugins
 
-### Z Directory Jumping
-The `z` command learns from your navigation:
-- `z proj` might jump to `~/Projects/my-project`
-- `z down` might jump to `~/Downloads`
-- Uses frecency (frequency + recency) algorithm
+| Plugin | Features | Key Commands |
+|--------|----------|--------------|
+| **git** | Git aliases | `gs`, `gco`, `gaa`, `gcmsg` |
+| **z** | Directory jumper | `z pattern` |
+| **fzf** | Fuzzy search | `Ctrl+R`, `Ctrl+T`, `**<Tab>` |
+| **zsh-autosuggestions** | Fish-like suggestions | `→` accept, `Ctrl+Space` accept word |
+| **zsh-syntax-highlighting** | Command highlighting | Automatic |
+| **vi-mode** | Vi keybindings | `Esc` for normal mode |
+| **history-substring-search** | Better history | `↑/↓` with partial command |
 
-### Git Plugin Features
-Oh My Zsh's git plugin provides hundreds of aliases:
-- `gst` = `git status`
-- `gco` = `git checkout`
-- `gcmsg` = `git commit -m`
-- Run `alias | grep git` to see all
+## FZF Integration
 
-### Completion System
-Advanced tab completion features:
-- Case-insensitive matching
-- Partial word completion
-- Menu selection with arrow keys
-- Grouped results by type
-- Cached results for speed
+| Shortcut | Action | Example |
+|----------|--------|---------|
+| `Ctrl+T` | File search | Insert file path |
+| `Ctrl+R` | History search | Search command history |
+| `Alt+C` | Directory search | cd to directory |
+| `**<Tab>` | Trigger completion | `vim **<Tab>` |
+| `kill -9 <Tab>` | Process completion | Select process |
+| `ssh **<Tab>` | Host completion | SSH hosts |
+| `unset **<Tab>` | Variable completion | Environment vars |
 
-## Further Command Explanations
+## Vi Mode
 
-### Vi-Mode Operations
-In vi-mode (after pressing Esc):
-- `k`/`j`: Navigate history
-- `w`/`b`: Move by word
-- `0`/`$`: Start/end of line
-- `i`/`a`: Enter insert mode
-- `v`: Visual selection mode
-- `/`: Search in command
+| Mode | Key | Action | Mode | Key | Action |
+|------|-----|--------|------|-----|--------|
+| Insert | `Esc` | Normal mode | Normal | `i` | Insert mode |
+| Normal | `a` | Append | Normal | `A` | Append EOL |
+| Normal | `o` | Open below | Normal | `O` | Open above |
+| Normal | `dd` | Delete line | Normal | `yy` | Yank line |
+| Normal | `p` | Paste | Normal | `u` | Undo |
+| Normal | `/` | Search | Normal | `n` | Next match |
+| Normal | `v` | Visual | Visual | `y` | Yank |
 
-### History Management
-- **50,000 commands** stored in history
-- **Shared history** across all sessions
-- **Substring search** with arrow keys
-- **No duplicates** automatically removed
-- **Timestamps** stored with each command
+## Suffix Aliases
 
-### Performance Features
-- **Lazy loading** for NVM (Node Version Manager)
-- **Cached completions** for faster response
-- **Optimized PATH** with deduplication
-- **Smart plugin loading** order
-- **Homebrew** optimized for Apple Silicon
+| Extension | Opens With | Extension | Opens With |
+|-----------|------------|-----------|------------|
+| `*.md` | Neovim | `*.txt` | Neovim |
+| `*.py` | Python | `*.rb` | Ruby |
+| `*.pdf` | Preview | `*.jpg` | Preview |
+| `*.tar.gz` | tar -xzvf | `*.zip` | unzip |
 
-### Custom Functions
-Built-in helper functions:
-- `mkcd`: Create directory and cd into it
-- `ff`: Find files with fzf preview
-- `grep_smart`: Intelligent grep with ripgrep
-- `git_clean_branches`: Remove merged branches
-- `project`: Quick jump to project directories
-- `serve`: Start Python HTTP server
+## Global Aliases
 
-## Theory & Background
+| Alias | Expands To | Usage |
+|-------|------------|-------|
+| `G` | `| grep` | `ls G pattern` |
+| `L` | `| less` | `cat file L` |
+| `NE` | `2> /dev/null` | `find / NE` |
+| `NUL` | `> /dev/null 2>&1` | `command NUL` |
+| `H` | `| head` | `ls H` |
+| `T` | `| tail` | `log T` |
+| `F` | `| fzf` | `ls F` |
 
-### Shell Philosophy
-This configuration balances power and usability:
-- **Power user features** without complexity
-- **Modern tools** replacing outdated utilities
-- **Consistent keybindings** across all tools
-- **Performance** without sacrificing features
+## Functions
 
-### Tool Choices
-- **eza over ls**: Modern, fast, git-aware
-- **ripgrep over grep**: 10x faster, better defaults
-- **fd over find**: Intuitive syntax, respects .gitignore
-- **bat over cat**: Syntax highlighting, git integration
-- **htop over top**: Interactive, colorful, informative
+| Function | Usage | Description |
+|----------|-------|-------------|
+| `mkd()` | `mkd dirname` | mkdir && cd |
+| `mkcd()` | `mkcd dirname` | mkdir -p && cd |
+| `cdf()` | `cdf` | cd to Finder dir |
+| `extract()` | `extract file.zip` | Extract any archive |
+| `fs()` | `fs` | File size of dir |
+| `gz()` | `gz file` | gzip size |
+| `json()` | `json < file.json` | Pretty print JSON |
+| `digga()` | `digga domain.com` | DNS lookup all |
+| `ff()` | `ff pattern` | Find files with fd |
+| `search()` | `search pattern` | Smart grep with rg |
+| `git_clean_branches()` | `git_clean_branches` | Clean merged branches |
+| `project()` | `project name` | cd to project dir |
+| `sysinfo()` | `sysinfo` | System information |
+| `myip()` | `myip` | Show public IP |
+| `serve()` | `serve [port]` | Start HTTP server |
 
-### Spaceship Prompt
-Displays contextual information:
-- Current directory (truncated)
-- Git branch and status
-- Python/Node version (when relevant)
-- Command execution time
-- Vi-mode indicator
-- Exit code on failure
+## Environment Variables
 
-## Good to Know / Lore / History
+| Variable | Value | Purpose |
+|----------|-------|---------|
+| `EDITOR` | nvim | Default editor |
+| `PAGER` | less | Default pager |
+| `LANG` | en_US.UTF-8 | Locale |
+| `PATH` | Multiple | Executable paths |
+| `FZF_DEFAULT_COMMAND` | rg --files | FZF file source |
+| `FZF_DEFAULT_OPTS` | --height 40% | FZF options |
 
-### Evolution
-This configuration evolved from:
-1. Basic bash setup (pre-2010)
-2. Initial Zsh adoption (2012)
-3. Oh My Zsh integration (2014)
-4. Modern tool adoption (2020+)
-5. Full Lua/performance optimization (2025)
+## Completion System
 
-### Performance Optimizations
-- Removed heavy prompt themes
-- Lazy-loaded language managers
-- Cached completion results
-- Minimal plugin set
-- Optimized for Apple Silicon
+| Key | Action | Context |
+|-----|--------|---------|
+| `Tab` | Complete | After partial command |
+| `Shift+Tab` | Reverse complete | Cycle backwards |
+| `Ctrl+Space` | Accept suggestion | Autosuggestions |
+| `Tab Tab` | Show options | Multiple matches |
+| `Ctrl+X Ctrl+F` | File completion | Force file complete |
+| `Ctrl+X Ctrl+D` | Directory completion | Force dir complete |
 
-### Hidden Features
+## History
 
-1. **Smart Correction**: Typos are automatically suggested for correction
-2. **Directory Shortcuts**: `~name` expands to full paths
-3. **Glob Qualifiers**: `*(.)` for files only, `*(/)` for directories
-4. **Parameter Expansion**: `!!:$` gets last argument of previous command
-5. **Arithmetic**: `$((2+2))` evaluates math expressions
+| Key/Command | Action | Key/Command | Action |
+|-------------|--------|-------------|--------|
+| `!!` | Last command | `!$` | Last argument |
+| `!^` | First argument | `!*` | All arguments |
+| `!-n` | n commands ago | `!string` | Last starting with |
+| `^old^new` | Replace in last | `fc` | Fix command |
+| `history` | Show history | `h` | History alias |
+| `Ctrl+R` | Search history | `↑/↓` | Browse history |
 
-### Integration Points
-- Sources theme configuration from `~/.config/theme-switcher/`
-- Integrates with Neovim as `EDITOR` and `MANPAGER`
-- Works with tmux for session management
-- Coordinates with Alacritty for true color support
+## Options
 
-### Pro Tips
+| Option | Effect | Set With |
+|--------|--------|----------|
+| `AUTO_CD` | cd without typing cd | `setopt AUTO_CD` |
+| `HIST_IGNORE_DUPS` | No duplicate history | `setopt HIST_IGNORE_DUPS` |
+| `SHARE_HISTORY` | Share between sessions | `setopt SHARE_HISTORY` |
+| `EXTENDED_HISTORY` | Timestamps in history | `setopt EXTENDED_HISTORY` |
+| `CORRECT` | Command correction | `setopt CORRECT` |
+| `NO_CASE_GLOB` | Case insensitive glob | `setopt NO_CASE_GLOB` |
 
-1. **Use `z` aggressively** - it learns and gets better
-2. **Tab completion everything** - commands, files, git branches
-3. **History substring search** - type partial command and press ↑
-4. **Vi-mode for editing** - complex edits are easier in command mode
-5. **Aliases are stackable** - `g` + `st` = `gst` = `git status`
-6. **Background jobs** - Use `&` and `jobs`/`fg`/`bg` commands
-7. **Process substitution** - `diff <(ls dir1) <(ls dir2)`
-8. **Extended globs** - `**/*.js` finds all JavaScript files recursively
+## Prompt Customization
+
+| Element | Variable | Example |
+|---------|----------|---------|
+| Username | `%n` | `user` |
+| Hostname | `%m` | `macbook` |
+| Directory | `%~` | `~/projects` |
+| Git branch | `$(git_prompt_info)` | `(main)` |
+| Time | `%T` | `14:30:00` |
+| Return code | `%?` | `0` |
+| Privileges | `%#` | `$` or `#` |
+
+## Tips
+
+- `bindkey -v` for vi mode, `bindkey -e` for emacs mode
+- `which alias` to see alias definition
+- `unalias name` to remove alias
+- `alias -g` for global aliases
+- `alias -s` for suffix aliases
+- Use `\command` to bypass alias
+- `exec zsh` to reload shell
+- `echo $0` to check current shell
+- `chsh -s /bin/zsh` to set default shell
