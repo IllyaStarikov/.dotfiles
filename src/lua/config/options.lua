@@ -95,6 +95,9 @@ opt.showmode = true                  -- Show mode in command line
 opt.showtabline = 2                  -- Always show tabline (buffer tabs)
 opt.laststatus = 2                   -- Always show status line
 
+-- Ensure tabline is visible
+vim.cmd("set showtabline=2")
+
 opt.cursorline = true                -- Turn on the cursorline
 opt.guicursor = ""
 
