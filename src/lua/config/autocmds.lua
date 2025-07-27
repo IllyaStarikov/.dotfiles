@@ -510,6 +510,25 @@ autocmd("FileType", {
 })
 
 -- =============================================================================
+-- AIRLINE TABLINE
+-- =============================================================================
+
+-- Ensure airline tabline is always visible and refreshed
+local airline_group = augroup("airline_tabline", { clear = true })
+
+autocmd({"BufEnter", "BufAdd", "BufNew", "BufDelete", "TabEnter"}, {
+  group = airline_group,
+  callback = function()
+    -- Force airline to refresh its tabline
+    vim.schedule(function()
+      if vim.fn.exists(":AirlineRefresh") == 2 then
+        vim.cmd("silent! AirlineRefresh")
+      end
+    end)
+  end,
+})
+
+-- =============================================================================
 -- SKELETON FILE SYSTEM
 -- =============================================================================
 
