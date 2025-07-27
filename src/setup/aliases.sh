@@ -8,8 +8,9 @@ rm -f "$HOME/.config/nvim/init.vim"  # Remove any conflicting init.vim
 ln -sf "$HOME/.dotfiles/src/init.lua" "$HOME/.config/nvim/init.lua"
 ln -sf "$HOME/.dotfiles/src/lua" "$HOME/.config/nvim/lua"
 
-# Legacy Vim (fallback to old vimscript)
+# Legacy Vim compatibility (VimScript wrapper)
 ln -sf "$HOME/.dotfiles/src/vimrc" "$HOME/.vimrc"
+
 
 # ZSH
 ln -sf "$HOME/.dotfiles/src/zshrc" "$HOME/.zshrc"
