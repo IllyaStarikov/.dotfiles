@@ -1,236 +1,199 @@
-# Alacritty Terminal Configuration
+# Alacritty Reference
 
-## Command/Shortcut Reference Table
+## Daily Commands
+```
+WINDOW                TEXT                   NAVIGATION
+Cmd+N    New          Cmd+C    Copy         Cmd+F    Search
+Cmd+W    Close        Cmd+V    Paste        Cmd+A    Select all
+Cmd+Q    Quit         Cmd+X    Cut          Cmd+K    Clear
+Cmd+M    Minimize     Cmd++    Font+        Cmd+0    Reset font
+Cmd+H    Hide         Cmd+-    Font-        Cmd+Return Fullscreen
 
-### Window Management
-| Key | Action | Description |
-|-----|--------|-------------|
-| `Cmd+N` | New window | Spawn new Alacritty instance |
-| `Cmd+Q` | Quit | Close Alacritty |
-| `Cmd+H` | Hide window | Hide to dock |
-| `Cmd+M` | Minimize | Minimize to dock |
-| `Cmd+Return` | Toggle fullscreen | Enter/exit fullscreen mode |
+VI MODE              MOUSE                   ZOOM
+Cmd+Shift+Space Toggle  Click     Select      Cmd++    Increase
+v        Visual        Dbl-click Word        Cmd+-    Decrease
+y        Copy          Tri-click Line        Cmd+0    Reset
+p        Paste         Mid-click Paste       Cmd+Scroll Zoom
+```
 
-### Text Operations
-| Key | Action | Description |
-|-----|--------|-------------|
-| `Cmd+C` | Copy | Copy selected text |
-| `Cmd+V` | Paste | Paste from clipboard |
-| `Cmd+A` | Select all | Select all terminal content |
-| `Cmd+F` | Search forward | Find text in scrollback |
-| `Cmd+Shift+B` | Search backward | Reverse search |
+## Keyboard Shortcuts
 
-### Font Control
-| Key | Action | Description |
-|-----|--------|-------------|
-| `Cmd+Plus` | Increase font | Make text larger |
-| `Cmd+Minus` | Decrease font | Make text smaller |
-| `Cmd+0` | Reset font | Return to default size |
+### macOS
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `Cmd+N` | New window | `Cmd+W` | Close |
+| `Cmd+T` | New tab | `Cmd+Q` | Quit |
+| `Cmd+M` | Minimize | `Cmd+H` | Hide |
+| `Cmd+C` | Copy | `Cmd+V` | Paste |
+| `Cmd+A` | Select all | `Cmd+X` | Cut |
+| `Cmd+Plus` | Font + | `Cmd+Minus` | Font - |
+| `Cmd+0` | Font reset | `Cmd+F` | Search |
+| `Cmd+K` | Clear buffer | `Cmd+L` | Clear screen |
+| `Cmd+Shift+B` | Search backward | `Cmd+Return` | Toggle fullscreen |
 
-### Mouse Operations
-| Action | Result | Description |
-|--------|--------|-------------|
-| Left Click | Position cursor | Terminal dependent |
-| Middle Click | Paste selection | Paste primary selection |
-| Right Click | Expand selection | Extend current selection |
-| Cmd+Click | Expand selection | Alternative selection extend |
-| Click & Drag | Select text | Create selection |
-| Double Click | Select word | Quick word selection |
-| Triple Click | Select line | Quick line selection |
+### Linux/Windows
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `Ctrl+Shift+N` | New | `Ctrl+Shift+Q` | Quit |
+| `Ctrl+Shift+C` | Copy | `Ctrl+Shift+V` | Paste |
+| `Ctrl+Plus` | Font + | `Ctrl+Minus` | Font - |
+| `Ctrl+0` | Font reset | `Ctrl+Shift+F` | Search |
 
-### Scrolling
-| Action | Result | Description |
-|--------|--------|-------------|
-| Mouse Wheel | Scroll | Navigate history |
-| Page Up/Down | Scroll pages | Large scroll jumps |
-| Shift+Page Up/Down | Scroll pages | Alternative method |
-| Cmd+Home | Scroll to top | Jump to beginning |
-| Cmd+End | Scroll to bottom | Jump to latest output |
+### Vi Mode
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `Cmd+Shift+Space` | Toggle | `v` | Visual |
+| `V` | Line select | `Ctrl+v` | Block |
+| `y` | Yank | `p` | Paste |
+| `/` | Search → | `?` | Search ← |
 
-## Quick Reference
+## Mouse Operations
 
-### Key Features
-- **GPU-accelerated** rendering for blazing fast performance
-- **Cross-platform** with consistent behavior
-- **True color** support (24-bit colors)
-- **Vi mode** for keyboard-based selection
-- **Configurable** via TOML configuration
-- **Minimal** resource usage
+| Action | Result | Modifier | Effect |
+|--------|--------|----------|--------|
+| Click | Cursor | Shift+Click | Extend |
+| Double-click | Word | Alt+Drag | Block |
+| Triple-click | Line | Cmd+Click | Expand selection |
+| Quad-click | All | Cmd+Scroll | Zoom |
+| Middle-click | Paste selection | Right-click | Expand selection |
 
-### Terminal Environment
-- `TERM=xterm-256color` for compatibility
-- `COLORTERM=truecolor` for 24-bit color
-- Works seamlessly with tmux and Neovim
-- Supports modern terminal features
+## Configuration
 
-### Performance Settings
-- 100,000 lines of scrollback history
-- 3x scroll multiplier for faster navigation
-- Smart selection with auto-copy
-- Optimized for 120x40 default size
+### Basic (alacritty.toml)
+```toml
+import = ["~/.config/alacritty/theme.toml"]
+live_config_reload = true
 
-## About
+[shell]
+program = "/bin/zsh"
+args = ["--login"]
 
-Alacritty is a modern, GPU-accelerated terminal emulator focused on:
+[env]
+TERM = "xterm-256color"
+```
 
-- **Performance**: Fastest terminal emulator available
-- **Simplicity**: No tabs, splits, or extra features
-- **Correctness**: Proper terminal emulation
-- **Cross-platform**: Same experience everywhere
+### Window
+```toml
+[window]
+dimensions = { columns = 120, lines = 40 }
+padding = { x = 8, y = 8 }
+decorations = "Full"  # Full, None, Transparent, Buttonless
+opacity = 0.95
+```
 
-Configuration uses:
-- **TOML format** for human-readable settings
-- **Dynamic reloading** for instant changes
-- **Theme imports** from ~/.config/alacritty/theme.toml
-- **Platform-specific** optimizations
+### Font
+```toml
+[font]
+size = 18.0
 
-## Additional Usage Info
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
 
-### Window Configuration
-- Default size: 120 columns × 40 lines
-- 8px padding for comfortable reading
-- 99% opacity for subtle transparency
-- Resize by character grid increments
-- Full window decorations on macOS
+[font.bold]
+style = "Bold"
 
-### Font Configuration
-Using JetBrainsMono Nerd Font:
-- Size: 18pt for comfortable reading
-- Includes ligatures and icons
-- Proper italic and bold variants
-- Slight vertical offset for alignment
+[font.italic]
+style = "Italic"
+```
 
-### Color Scheme
-- Dynamically loaded from theme.toml
-- Switches between Dracula (dark) and Solarized (light)
-- Bold text uses bright colors
-- Transparent background support
+### Colors
+```toml
+[colors.primary]
+background = "#282a36"
+foreground = "#f8f8f2"
 
-### Integration Points
-- **macOS**: Option key works as Alt
-- **tmux**: True color passthrough
-- **Neovim**: Focus events enabled
-- **Shell**: Inherits environment variables
+[colors.normal]
+black   = "#000000"
+red     = "#ff5555"
+green   = "#50fa7b"
+yellow  = "#f1fa8c"
+blue    = "#bd93f9"
+magenta = "#ff79c6"
+cyan    = "#8be9fd"
+white   = "#bfbfbf"
+```
 
-## Further Configuration Details
+## Key Bindings
 
-### Theme System
-The theme is loaded from `~/.config/alacritty/theme.toml`:
-- Automatically generated by theme switcher
-- Coordinates with system appearance
-- Includes all 16 ANSI colors
-- Defines cursor and selection colors
+```toml
+[[keyboard.bindings]]
+key = "V"
+mods = "Command"
+action = "Paste"
 
-### Bell Configuration
-Visual bell only (no sound):
-- 100ms duration
-- Nord-inspired blue color (#88c0d0)
-- EaseOutExpo animation
-- Non-intrusive notification
+[[keyboard.bindings]]
+key = "Return"
+mods = "Command"
+action = "ToggleFullscreen"
 
-### Selection Behavior
-- Automatically copies to clipboard
-- Semantic selection for URLs and paths
-- Custom word separators for programming
-- Middle-click pastes selection
+[[keyboard.bindings]]
+key = "Space"
+mods = "Shift|Control"
+action = "ToggleViMode"
+```
 
-### Debug Settings
-- Log level: Warn (minimal output)
-- No render timer by default
-- No persistent logging
-- Print events disabled
+## Actions
 
-## Theory & Background
+| Category | Actions |
+|----------|---------|
+| **Clipboard** | Paste, Copy, ClearSelection |
+| **Navigation** | ScrollToTop, ScrollToBottom, ScrollPageUp/Down |
+| **Window** | CreateNewWindow, ToggleFullscreen, Minimize, Quit |
+| **Font** | IncreaseFontSize, DecreaseFontSize, ResetFontSize |
+| **Vi Mode** | ToggleViMode, ClearSelection |
+| **Search** | SearchForward, SearchBackward, SearchConfirm |
 
-### GPU Acceleration
-Alacritty uses the GPU for rendering:
-- OpenGL for cross-platform support
-- Minimal CPU usage
-- Consistent 60+ FPS
-- Efficient power consumption
+## Performance
 
-### Design Philosophy
-- **Do one thing well**: Terminal emulation only
-- **No feature creep**: Use tmux for multiplexing
-- **Performance first**: Every feature must be fast
-- **Correctness**: Accurate VT100/xterm emulation
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| `draw_bold_text_with_bright_colors` | true | Bold = bright |
+| `save_to_clipboard` | true | Auto copy |
+| `history` | 100000 | Scrollback |
+| `multiplier` | 3 | Scroll speed |
 
-### Configuration Format
-Moved from YAML to TOML:
-- More explicit and less ambiguous
-- Better error messages
-- Cleaner syntax
-- Industry standard
+## Platform-Specific
 
-## Good to Know / Lore / History
+### macOS
+```toml
+[window]
+decorations = "Buttonless"
+option_as_alt = "Both"
 
-### Creation Story
-Alacritty was created by Joe Wilm in 2016:
-- Frustrated with slow terminals
-- Wanted to leverage modern GPU
-- Written in Rust for safety
-- Open source from day one
+[font]
+use_thin_strokes = true
+```
 
-### Name Origin
-"Alacritty" means cheerful readiness or promptness:
-- Reflects the terminal's speed
-- Easy to remember
-- Unique in the terminal space
+### Linux
+```toml
+[window]
+gtk_theme_variant = "dark"
+class = { instance = "Alacritty", general = "Alacritty" }
+```
 
-### Platform Differences
+### Windows
+```toml
+[shell]
+program = "powershell"
+# or
+program = "cmd"
+```
 
-**macOS Specific**:
-- Uses Core Text for font rendering
-- Integrates with macOS keybindings
-- Supports native fullscreen
-- Option key handling
+## Troubleshooting
 
-**Linux Specific**:
-- Uses fontconfig
-- Wayland and X11 support
-- Different default font paths
+| Issue | Fix |
+|-------|-----|
+| Font missing | `brew install --cask font-jetbrains-mono-nerd-font` |
+| No colors | `export TERM=xterm-256color` |
+| Slow | Reduce `history`, disable `opacity` |
+| Theme not updating | Check import paths, `touch alacritty.toml` |
+| Copy not working | `save_to_clipboard = true` |
 
-**Windows Specific**:
-- Uses DirectWrite
-- ConPTY for better compatibility
-- Different path handling
+## Tips
 
-### Performance Benchmarks
-Consistently fastest in:
-- Scrolling throughput
-- Latency measurements
-- Startup time
-- Memory usage
-
-### Common Integrations
-
-1. **tmux**: Use for tabs and splits
-2. **Neovim**: Perfect pairing for development
-3. **zsh**: Modern shell features
-4. **fzf**: Fuzzy finding interface
-
-### Troubleshooting Tips
-
-1. **Fonts not showing**: Install Nerd Fonts
-2. **Colors look wrong**: Check TERM variable
-3. **Slow performance**: Verify GPU drivers
-4. **Copy/paste issues**: Check selection settings
-
-### Hidden Features
-
-1. **Vi Mode**: Not built-in, use tmux
-2. **URL Detection**: Handled by tmux/shell
-3. **Ligatures**: Font-dependent support
-4. **Live Reload**: Config changes apply instantly
-5. **Message Bar**: Shows search and errors
-
-### Pro Tips
-
-1. **Use with tmux** for complete terminal environment
-2. **Adjust font size** per monitor DPI
-3. **Keep scrollback reasonable** for performance
-4. **Use semantic selection** for smart copying
-5. **Configure once** - it's stable across updates
-6. **Check debug mode** for troubleshooting
-7. **Monitor GPU usage** if performance degrades
-8. **Theme coordination** with rest of system
+- Config auto-reloads on save
+- Use TOML format (YAML deprecated)
+- `alacritty migrate` converts old configs
+- `alacritty --print-events` for debugging
+- Theme files in `~/.config/alacritty/themes/`

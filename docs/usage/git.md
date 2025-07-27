@@ -1,292 +1,240 @@
-# Git Configuration & Usage Guide
+# Git Reference
 
-## Command/Shortcut Reference Table
-
-### Basic Git Aliases
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `st` | `status` | Show working tree status |
-| `ci` | `commit` | Commit staged changes |
-| `co` | `checkout` | Switch branches or restore files |
-| `br` | `branch` | List, create, or delete branches |
-| `cp` | `cherry-pick` | Apply commits from another branch |
-| `df` | `diff` | Show changes not staged |
-| `dc` | `diff --cached` | Show staged changes |
-
-### Advanced Operations
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `unstage` | `reset HEAD --` | Unstage files |
-| `uncommit` | `reset --soft HEAD~1` | Undo last commit, keep changes |
-| `recommit` | `commit --amend --no-edit` | Amend last commit |
-| `assume` | `update-index --assume-unchanged` | Ignore file changes |
-| `unassume` | `update-index --no-assume-unchanged` | Track file again |
-| `assumed` | Shows assumed files | List ignored files |
-
-### Branch Management
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `brd` | `branch -D` | Force delete branch |
-| `brm` | `branch -m` | Rename branch |
-| `brc` | `checkout -b` | Create and switch branch |
-| `cleanup` | Custom command | Delete merged branches |
-| `activity` | Custom command | Show branch activity |
-
-### Log Viewing
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `l` | Pretty log | Oneline graph with decorations |
-| `ll` | Pretty log all | Include all branches |
-| `lp` | Pretty format | Colored author and time |
-| `lg` | Graph log | Beautiful tree view |
-| `standup` | Yesterday's commits | Your commits since yesterday |
-| `who` | `shortlog -sne` | Commit count by author |
-
-### Workflow Helpers
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `wip` | Quick WIP commit | Stage all and commit as WIP |
-| `unwip` | Undo WIP | Remove last WIP commit |
-| `f` | Find files | Case-insensitive file search |
-| `grep` | Search content | Case-insensitive grep |
-| `prune-all` | Prune remotes | Clean up all remotes |
-
-### Stash Operations
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `stash-unapply` | Reverse stash | Undo stash apply |
-| `stash-rename` | Rename stash | Give stash a better name |
-
-### Commit Type Shortcuts
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `feat` | Feature commit | `feat: <message>` |
-| `fix` | Bug fix commit | `fix: <message>` |
-| `docs` | Documentation | `docs: <message>` |
-| `style` | Style changes | `style: <message>` |
-| `refactor` | Code refactor | `refactor: <message>` |
-| `test` | Test changes | `test: <message>` |
-| `chore` | Maintenance | `chore: <message>` |
-
-### Diff Variants
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `word-diff` | Word-level diff | Show word changes |
-| `char-diff` | Character diff | Show character changes |
-
-### Interactive Rebase
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `ri` | `rebase -i` | Interactive rebase |
-| `rc` | `rebase --continue` | Continue rebase |
-| `ra` | `rebase --abort` | Abort rebase |
-
-### Submodule Helpers
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `subi` | Init submodules | Initialize and update |
-| `subu` | Update submodules | Update to latest |
-
-## Quick Reference
-
-### Core Settings
-- **Editor**: Neovim for commit messages and conflicts
-- **Default branch**: `main` (not master)
-- **Pull strategy**: Rebase by default
-- **Push behavior**: Simple with auto-setup
-- **Merge style**: No fast-forward, diff3 conflicts
-- **Performance**: Optimized for large repos
-
-### Safety Features
-- **safecrlf**: Warns about line ending issues
-- **Autocorrect**: Suggests correct commands
-- **Rerere**: Remembers resolved conflicts
-- **Commit verbose**: Shows diff in commit message
-- **Auto stash**: Stashes changes during rebase
-
-### Color Configuration
-- Colored output for all commands
-- Semantic colors for different elements
-- Whitespace errors highlighted
-- Moved code detection in diffs
-
-## About
-
-This Git configuration provides:
-
-- **Professional workflow** aliases and shortcuts
-- **Safety features** to prevent common mistakes
-- **Performance optimizations** for large repositories
-- **Modern conventions** like main branch and commit types
-- **Enhanced diffs** with better algorithms
-- **Tool integrations** with Neovim and GitHub CLI
-
-## Additional Usage Info
-
-### Global Ignore Patterns
-The `.gitignore` file includes:
-- OS files: `.DS_Store`, `Thumbs.db`
-- Editor files: `.swp`, `*~`, `.idea`
-- Build artifacts: `*.log`, `node_modules`
-- Security: `.env`, `*.pem`
-
-### Merge Conflict Resolution
-Using Neovim as mergetool:
-1. `git mergetool` opens Neovim with 3-way diff
-2. Navigate between conflicts with `]c` and `[c`
-3. Choose version with `:diffget LOCAL/REMOTE/BASE`
-4. Save and exit to mark as resolved
-
-### URL Shortcuts
-- `git@github.com:` preferred over HTTPS
-- Automatic URL rewriting for better performance
-- GitHub CLI integration for authentication
-
-### Performance Settings
-- Parallel pack operations
-- Optimized delta compression
-- Large pack size limits
-- Fast index version
-- Untracked cache enabled
-- File system monitor active
-
-## Further Command Explanations
-
-### Smart Aliases
-
-**`cleanup` Command**:
-```bash
-git branch --merged | grep -v '\*\|main\|master\|develop' | xargs -n 1 git branch -d
+## Daily Commands
 ```
-Safely deletes all branches merged into current branch.
+BASIC                  BRANCH                 REMOTE
+gs      Status         gco -b name  New       gp    Push
+gaa     Add all        gco main     Switch    gl    Pull
+gcmsg   Commit         gb           List      gpsup Set upstream
+gd      Diff          gbd name     Delete    gfa   Fetch all
+glog    Log           gbr          Remote    grhh  Reset hard
 
-**`activity` Command**:
-Shows all branches sorted by last commit date with author info.
-
-**`assumed` Command**:
-Lists files marked with `--assume-unchanged` flag.
-
-### Conventional Commits
-The commit type aliases follow the Conventional Commits specification:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Formatting, missing semicolons, etc.
-- `refactor`: Code change that neither fixes nor adds
-- `test`: Adding missing tests
-- `chore`: Maintain tasks, dependencies
-
-### Advanced Diff Options
-- **Patience algorithm**: Better for code refactoring
-- **Compaction heuristic**: Groups related changes
-- **Color moved**: Shows moved code blocks
-- **Word diff regex**: Customizable word boundaries
-
-### Rerere (Reuse Recorded Resolution)
-Automatically applies previous conflict resolutions:
-1. Enabled globally
-2. Records how you resolve conflicts
-3. Applies same resolution in future
-4. Huge time saver for repeated merges
-
-## Theory & Background
-
-### Git Philosophy
-This configuration embraces:
-- **Atomic commits**: Small, focused changes
-- **Clean history**: Rebase for linear history
-- **Branch hygiene**: Regular cleanup
-- **Semantic messages**: Clear commit intent
-
-### Rebase vs Merge
-Default to rebase because:
-- Cleaner, linear history
-- Easier to bisect
-- No merge commits clutter
-- Better for code review
-
-### Performance Optimizations
-For large repositories:
-- FSMonitor tracks file changes
-- Untracked cache speeds status
-- Pack optimizations reduce size
-- Parallel processing where possible
-
-## Good to Know / Lore / History
-
-### Evolution of Defaults
-- `master` → `main`: Industry-wide change
-- HTTP → SSH: Better security and performance
-- Merge → Rebase: Cleaner history preference
-
-### Hidden Features
-
-1. **Auto-correction**: Git suggests correct command after 0.1s
-2. **Commit templates**: Set with `commit.template`
-3. **Conditional includes**: Different configs per directory
-4. **Push options**: `--force-with-lease` for safety
-5. **Reflog**: Your safety net for "lost" commits
-
-### Integration Points
-
-**GitHub CLI**:
-- Credential helper integration
-- Works with git commands
-- PR and issue management
-
-**Neovim Integration**:
-- Fugitive plugin compatibility
-- Syntax highlighting in commits
-- Three-way merge interface
-
-**Shell Integration**:
-- Aliases stack with shell aliases
-- Completion works with all aliases
-- Prompt shows git status
-
-### Common Workflows
-
-**Feature Branch**:
-```bash
-git brc feature/new-thing  # Create branch
-# ... make changes ...
-git wip                    # Quick save
-git unwip                  # Continue work
-git feat "Add new thing"   # Semantic commit
-git push -u origin HEAD    # Push with tracking
+STASH                 HISTORY                FIX
+gsta    Stash         glog    Graph log     gc!   Amend
+gstp    Pop           gloga   All branches  grbi  Interactive rebase
+gstl    List          glol    Oneline       grhh  Reset hard HEAD
+gstd    Show          blame   Who changed   gclean Remove untracked
 ```
 
-**Cleanup Routine**:
+## Essential Commands
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git init` | Initialize | `gi` | init |
+| `git clone url` | Clone | `gcl` | clone |
+| `git add .` | Stage all | `gaa` | add all |
+| `git commit -m` | Commit | `gcmsg` | commit message |
+| `git push` | Push | `gp` | push |
+| `git pull` | Pull | `gl` | pull |
+| `git status` | Status | `gs` | status |
+| `git log` | History | `glog` | pretty log |
+
+## Staging & Commits
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git add file` | Stage file | `ga` | add |
+| `git add -p` | Stage hunks | `gap` | add patch |
+| `git reset file` | Unstage | `grh` | reset |
+| `git commit` | Commit | `gc` | commit |
+| `git commit --amend` | Amend | `gc!` | amend |
+| `git commit -a` | Commit all | `gca` | commit all |
+
+## Branches
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git branch` | List | `gb` | branch |
+| `git branch -a` | All | `gba` | branch all |
+| `git checkout -b` | Create | `gcb` | checkout -b |
+| `git checkout` | Switch | `gco` | checkout |
+| `git branch -d` | Delete | `gbd` | branch delete |
+| `git branch -D` | Force delete | `gbD` | force delete |
+| `git merge` | Merge | `gm` | merge |
+
+## Remote Operations
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git remote -v` | List remotes | `grv` | remote -v |
+| `git fetch` | Fetch | `gf` | fetch |
+| `git fetch --all` | Fetch all | `gfa` | fetch all |
+| `git pull --rebase` | Pull rebase | `gup` | pull rebase |
+| `git push -u` | Set upstream | `gpsup` | push upstream |
+| `git push --force` | Force push | `gpf!` | force push |
+
+## Stashing
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git stash` | Stash | `gsta` | stash |
+| `git stash pop` | Pop | `gstp` | stash pop |
+| `git stash list` | List | `gstl` | stash list |
+| `git stash drop` | Drop | `gstd` | stash drop |
+| `git stash apply` | Apply | `gstaa` | stash apply |
+| `git stash show` | Show | `gsts` | stash show |
+
+## History & Logs
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git log --graph` | Graph | `glog` | graph log |
+| `git log --oneline` | Oneline | `glol` | log oneline |
+| `git log --all` | All branches | `gloga` | log all |
+| `git log -p` | With patches | `glp` | log patch |
+| `git reflog` | Reference log | `grl` | reflog |
+| `git blame` | Blame | `gbl` | blame |
+
+## Diffs
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git diff` | Working diff | `gd` | diff |
+| `git diff --staged` | Staged diff | `gds` | diff staged |
+| `git diff HEAD` | All changes | `gdh` | diff HEAD |
+| `git diff branch` | Branch diff | `gdb` | diff branch |
+
+## Reset & Revert
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git reset --soft` | Soft reset | `grh` | reset |
+| `git reset --hard` | Hard reset | `grhh` | reset hard |
+| `git reset HEAD~1` | Undo commit | `grh~1` | reset 1 |
+| `git revert` | Revert | `grev` | revert |
+| `git clean -fd` | Clean | `gclean` | clean |
+
+## Rebase
+
+| Command | Action | Alias | Action |
+|---------|--------|-------|--------|
+| `git rebase` | Rebase | `grb` | rebase |
+| `git rebase -i` | Interactive | `grbi` | rebase -i |
+| `git rebase --abort` | Abort | `grba` | abort |
+| `git rebase --continue` | Continue | `grbc` | continue |
+| `git rebase main` | On main | `grbm` | rebase main |
+
+## Config
+
+| Command | Purpose |
+|---------|---------|
+| `git config --global user.name "Name"` | Set name |
+| `git config --global user.email "email"` | Set email |
+| `git config --global core.editor nvim` | Set editor |
+| `git config --list` | List config |
+| `git config --global alias.st status` | Create alias |
+
+## Advanced Aliases
+
+| Alias | Command | Purpose |
+|-------|---------|---------|
+| `grhh` | `reset --hard HEAD` | Reset everything |
+| `grhh~1` | `reset --hard HEAD~1` | Undo last commit |
+| `grbi` | `rebase -i` | Interactive rebase |
+| `grbc` | `rebase --continue` | Continue rebase |
+| `grba` | `rebase --abort` | Abort rebase |
+| `gpsup` | `push --set-upstream origin HEAD` | Push new branch |
+| `gfa` | `fetch --all --prune` | Fetch everything |
+| `gclean` | `clean -fd` | Remove untracked |
+| `gwip` | Add all & commit WIP | Work in progress |
+| `gunwip` | Undo WIP commit | Remove WIP |
+| `gcp` | Cherry-pick | Cherry-pick commit |
+
+## Custom Git Aliases
+
+| Alias | Purpose | Example |
+|-------|---------|---------|
+| `git st` | Status shortcut | `git st` |
+| `git ci` | Commit shortcut | `git ci -m "msg"` |
+| `git co` | Checkout shortcut | `git co branch` |
+| `git br` | Branch shortcut | `git br -a` |
+| `git cp` | Cherry-pick | `git cp hash` |
+| `git unstage` | Unstage files | `git unstage file` |
+| `git uncommit` | Undo commit soft | `git uncommit` |
+| `git recommit` | Amend no edit | `git recommit` |
+| `git word-diff` | Word-level diff | `git word-diff` |
+| `git who` | Contributor stats | `git who` |
+| `git standup` | Yesterday's work | `git standup` |
+| `git cleanup` | Delete merged branches | `git cleanup` |
+| `git aliases` | List all aliases | `git aliases` |
+
+## Commit Type Shortcuts
+
+| Command | Creates | Example |
+|---------|---------|---------|  
+| `git feat "msg"` | feat: msg | `git feat "add login"` |
+| `git fix "msg"` | fix: msg | `git fix "null pointer"` |
+| `git docs "msg"` | docs: msg | `git docs "update readme"` |
+| `git style "msg"` | style: msg | `git style "format code"` |
+| `git refactor "msg"` | refactor: msg | `git refactor "extract method"` |
+| `git test "msg"` | test: msg | `git test "add unit tests"` |
+| `git chore "msg"` | chore: msg | `git chore "update deps"` |
+
+## Workflows
+
+### Feature Branch
 ```bash
-git co main
-git pull
-git cleanup               # Remove merged branches
-git prune-all            # Clean up remotes
+gco -b feature/new    # Create branch
+# work...
+gaa                   # Add all
+gcmsg "feat: add X"   # Commit
+gpsup                 # Push & set upstream
 ```
 
-**Interactive Rebase**:
+### Update Branch
 ```bash
-git ri HEAD~3            # Rebase last 3 commits
-# Mark commits to squash/edit/reorder
-git rc                   # Continue after changes
+gfa                   # Fetch all
+grb origin/main       # Rebase on main
+# or
+gl --rebase           # Pull with rebase
 ```
 
-### Pro Tips
+### Quick Fix
+```bash
+# Forgot file in commit
+ga forgotten.txt
+gc! -n               # Amend, no edit
 
-1. **Use semantic commits** - Makes history searchable
-2. **Alias everything** - Save keystrokes
-3. **Learn reflog** - It's your safety net
-4. **Use rerere** - Conflict resolution memory
-5. **Prune regularly** - Keep repo clean
-6. **Assume unchanged** - For local config files
-7. **Interactive rebase** - Clean up before pushing
-8. **Stash creatively** - Name your stashes
+# Wrong branch
+gco correct-branch
+gcp wrong-branch~0  # Cherry-pick
+```
 
-### Performance Tips
+### Undo Operations
+```bash
+grh HEAD~1          # Undo commit, keep changes
+grhh HEAD~1         # Undo commit, discard changes
+grev HEAD           # Revert (new commit)
+grh file.txt        # Unstage file
+gco -- file.txt     # Discard changes
+```
 
-1. **Clone with depth** - For large repos: `--depth 1`
-2. **Sparse checkout** - Work with repo subset
-3. **Bundle for offline** - Create bundle files
-4. **Use SSH** - Faster than HTTPS
-5. **Enable FSMonitor** - Faster status checks
-6. **Pack regularly** - `git gc --aggressive`
+## Merge Conflicts
+
+| Step | Command | Purpose |
+|------|---------|---------|
+| 1 | `gs` | See conflicts |
+| 2 | Edit files | Resolve conflicts |
+| 3 | `ga file` | Mark resolved |
+| 4 | `gc` | Complete merge |
+| Abort | `gm --abort` | Cancel merge |
+
+## GitHub CLI
+
+| Command | Action | Command | Action |
+|---------|--------|---------|--------|
+| `gh pr create` | Create PR | `gh pr list` | List PRs |
+| `gh pr view` | View PR | `gh pr merge` | Merge PR |
+| `gh issue create` | New issue | `gh issue list` | List issues |
+| `gh repo clone` | Clone repo | `gh repo fork` | Fork repo |
+
+## Tips
+
+- Use `gaa && gcmsg "message" && gp` for quick commits
+- `grhh` to abandon all changes
+- `grbi HEAD~3` to clean up last 3 commits
+- `gsta` before switching branches
+- `gfa && grb origin/main` to update feature branch
+- `gl --rebase` instead of `gl` to avoid merge commits
+- Use `gc!` to amend last commit
+- `glog` for visual branch history
