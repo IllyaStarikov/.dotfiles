@@ -39,6 +39,12 @@ map("n", "<right>", "<C-w><right>", opts)
 map("n", "<Tab>", ":bnext<cr>", opts)
 map("n", "<S-Tab>", ":bprevious<cr>", opts)
 
+-- Buffer navigation by number (for airline tabline)
+for i = 1, 9 do
+  map("n", "<leader>" .. i, "<Plug>AirlineSelectTab" .. i, { desc = "Go to buffer " .. i })
+end
+map("n", "<leader>0", "<Plug>AirlineSelectPrevTab", { desc = "Go to previous buffer" })
+
 -- ALE Error navigation
 map("n", "[W", "<Plug>(ale_first)", { silent = true })
 map("n", "[w", "<Plug>(ale_previous)", { silent = true })

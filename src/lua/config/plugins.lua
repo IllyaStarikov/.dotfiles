@@ -579,8 +579,36 @@ require("lazy").setup({
   { "cocopon/iceberg.vim" },
   { "projekt0n/github-nvim-theme" },
   { "tpope/vim-fugitive" },
-  { "vim-airline/vim-airline" },
-  { "vim-airline/vim-airline-themes" },
+  { 
+    "vim-airline/vim-airline",
+    dependencies = { "vim-airline/vim-airline-themes" },
+    lazy = false,
+    priority = 900,
+    init = function()
+      -- Configure airline before it loads
+      vim.g["airline#extensions#tabline#enabled"] = 1
+      vim.g["airline#extensions#tabline#fnamemod"] = ':t'
+      vim.g["airline#extensions#tabline#tab_nr_type"] = 2
+      vim.g["airline#extensions#tabline#show_buffers"] = 1
+      vim.g["airline#extensions#tabline#show_tabs"] = 0
+      vim.g["airline#extensions#tabline#buffer_idx_mode"] = 1
+      vim.g["airline#extensions#tabline#formatter"] = 'default'
+      vim.g["airline#extensions#tabline#left_sep"] = ' '
+      vim.g["airline#extensions#tabline#left_alt_sep"] = '|'
+      vim.g["airline#extensions#tabline#show_close_button"] = 1
+      vim.g["airline#extensions#tabline#close_symbol"] = '×'
+      vim.g["airline#extensions#tabline#show_tab_type"] = 1
+      vim.g["airline#extensions#tabline#buffers_label"] = 'buffers'
+      vim.g["airline#extensions#tabline#tabs_label"] = 'tabs'
+      vim.g["airline#extensions#tabline#buffer_nr_show"] = 1
+      vim.g["airline#extensions#tabline#buffer_nr_format"] = '%s:'
+      vim.g["airline#extensions#whitespace#enabled"] = 0
+      vim.g.airline_symbols_ascii = 1
+      vim.g["airline#extensions#ale#enabled"] = 1
+      vim.g.airline_detect_spell = 0
+      vim.g.airline_theme = 'dracula'
+    end
+  },
 
   -- Git integration
   { "lewis6991/gitsigns.nvim", config = function() require('config.gitsigns').setup() end },
@@ -899,14 +927,7 @@ g.ale_echo_msg_error_str = 'E'
 g.ale_echo_msg_warning_str = 'W'
 g.ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
 
--- Airline
-g["airline#extensions#whitespace#enabled"] = 0
-g.airline_symbols_ascii = 1
-g["airline#extensions#ale#enabled"] = 1
-g.airline_detect_spell = 0
-g["airline#extensions#tabline#enabled"] = 1
-g["airline#extensions#tabline#fnamemod"] = ':t'
-g["airline#extensions#tabline#tab_nr_type"] = 2
+-- Airline configuration moved to plugin spec
 
 -- Grepper
 g.grepper = {
