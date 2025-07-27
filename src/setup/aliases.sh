@@ -33,3 +33,7 @@ ln -sf "$HOME/.dotfiles/src/tmuxinator" "$HOME/.config/tmuxinator"
 ln -sf "$HOME/.dotfiles/src/shortcuts.sh" "$HOME/.shortcuts"
 ln -sf "$HOME/.dotfiles/src/scripts" "$HOME/.scripts"
 
+# Spell files for Neovim
+mkdir -p "$HOME/.config/nvim"
+ln -sf "$HOME/.dotfiles/src/spell" "$HOME/.config/nvim/spell"
+
