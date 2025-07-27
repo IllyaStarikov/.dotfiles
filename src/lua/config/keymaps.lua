@@ -65,7 +65,6 @@ map("n", "<leader>w", ":w<cr>", opts)
 map("n", "<leader>q", ":q<cr>", opts)
 map("n", "<leader>c", ":Kwbd<cr>", opts)
 map("n", "<leader>x", ":x<cr>", opts)
-map("n", "<leader>s", "<C-Z>", opts)
 map("n", "<leader>d", '"_d', opts)
 
 -- File Management
