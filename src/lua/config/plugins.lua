@@ -579,8 +579,21 @@ require("lazy").setup({
   { "cocopon/iceberg.vim" },
   { "projekt0n/github-nvim-theme" },
   { "tpope/vim-fugitive" },
-  { "vim-airline/vim-airline" },
-  { "vim-airline/vim-airline-themes" },
+  { 
+    "vim-airline/vim-airline",
+    dependencies = { "vim-airline/vim-airline-themes" },
+    event = "VeryLazy",
+    init = function()
+      -- Ensure airline is properly initialized
+      vim.cmd([[
+        let g:airline#extensions#tabline#enabled = 1
+        let g:airline#extensions#tabline#show_buffers = 1
+        let g:airline#extensions#tabline#show_tabs = 0
+        let g:airline#extensions#tabline#buffer_idx_mode = 1
+        let g:airline_theme = 'dracula'
+      ]])
+    end,
+  },
 
   -- Git integration
   { "lewis6991/gitsigns.nvim", config = function() require('config.gitsigns').setup() end },
@@ -822,7 +835,19 @@ require("lazy").setup({
     priority = 500,  -- Lower priority than treesitter
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons"
+      {
+        "nvim-tree/nvim-web-devicons",
+        config = function()
+          require('nvim-web-devicons').setup({
+            -- Force override for better compatibility
+            override = {},
+            -- Ensure color icons are enabled
+            color_icons = true,
+            -- Use default icons
+            default = true,
+          })
+        end
+      }
     },
     config = function()
       require('config.markview').setup()
@@ -910,6 +935,15 @@ g["airline#extensions#tabline#tab_nr_type"] = 2
 g["airline#extensions#tabline#show_buffers"] = 1
 g["airline#extensions#tabline#show_tabs"] = 0
 g["airline#extensions#tabline#buffer_idx_mode"] = 1
+g["airline#extensions#tabline#formatter"] = 'unique_tail_improved'
+g["airline#extensions#tabline#show_close_button"] = 0
+g["airline#extensions#tabline#show_tab_type"] = 0
+g["airline#extensions#tabline#buffer_nr_show"] = 0
+g["airline#extensions#tabline#buffer_nr_format"] = '%s:'
+g["airline#extensions#tabline#show_tab_count"] = 0
+g["airline#extensions#tabline#show_split_size"] = 0
+g["airline#extensions#tabline#excludes"] = {}
+g["airline#extensions#tabline#exclude_preview"] = 1
 
 -- Grepper
 g.grepper = {
