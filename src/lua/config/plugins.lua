@@ -604,6 +604,8 @@ require("lazy").setup({
     init = function()
       -- Set powerline fonts BEFORE airline loads
       vim.g.airline_powerline_fonts = 1
+      -- Disable problematic tabline autocommands
+      vim.g["airline#extensions#tabline#disable_refresh"] = 1
     end,
     config = function()
       -- Set all airline settings here
