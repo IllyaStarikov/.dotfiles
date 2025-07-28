@@ -1,0 +1,33 @@
+# TokyoNight Moon Alacritty Colors
+
+[colors.primary]
+background = '#222436'
+foreground = '#c8d3f5'
+
+[colors.normal]
+black = '#444a73'
+red = '#ff757f'
+green = '#c3e88d'
+yellow = '#ffc777'
+blue = '#82aaff'
+magenta = '#c099ff'
+cyan = '#86e1fc'
+white = '#c8d3f5'
+
+[colors.bright]
+black = '#545c7e'
+red = '#c53b53'
+green = '#4fd6be'
+yellow = '#ff966c'
+blue = '#65bcff'
+magenta = '#ff007c'
+cyan = '#89ddff'
+white = '#828bb8'
+
+[[colors.indexed_colors]]
+index = 16
+color = '#ff966c'
+
+[[colors.indexed_colors]]
+index = 17
+color = '#c53b53'
