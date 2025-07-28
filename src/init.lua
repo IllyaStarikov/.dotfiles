@@ -71,6 +71,12 @@ vim.schedule(function()
   -- Trigger initial theme setup
   vim.cmd('doautocmd ColorScheme')
   
+  -- Force reload the theme to ensure it's properly applied
+  -- This handles cases where plugins might override theme settings
+  vim.defer_fn(function()
+    require('config.theme')
+  end, 100)
+  
   -- Clear startup messages for clean interface
   vim.cmd('echo ""')
 end)

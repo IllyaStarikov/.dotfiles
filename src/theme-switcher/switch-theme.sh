@@ -3,8 +3,8 @@ set -eo pipefail  # Exit on error, pipe failures (removed -u for array handling)
 
 show_help() {
     # Default theme mapping
-    local DEFAULT_LIGHT_THEME="iceberg_light"
-    local DEFAULT_DARK_THEME="dracula"
+    local DEFAULT_LIGHT_THEME="tokyonight_day"
+    local DEFAULT_DARK_THEME="tokyonight_moon"
     
     echo "Theme Switcher - dotfiles theme management"
     echo "========================================="
@@ -16,8 +16,8 @@ show_help() {
     echo "EXAMPLES:"
     echo "  theme                # Auto-detect based on macOS appearance"
     echo "  theme default        # Same as auto-detect"
-    echo "  theme iceberg_light  # Switch to Iceberg light theme"
-    echo "  theme iceberg_dark   # Switch to Iceberg dark theme"
+    echo "  theme tokyonight_day # Switch to Tokyo Night Day (light)"
+    echo "  theme tokyonight_moon # Switch to Tokyo Night Moon (dark)"
     echo "  theme dracula        # Switch to Dracula theme"
     echo ""
     echo "AVAILABLE THEMES:"
@@ -36,6 +36,12 @@ show_help() {
                 # Special handling for GitHub themes
                 if [[ "$theme_name" == github_* ]]; then
                     github_themes+=("$theme_name")
+                # Special handling for Tokyo Night themes
+                elif [[ "$theme_name" == tokyonight_* ]]; then
+                    # Tokyo Night has its own variant system, treat each as standalone
+                    if [[ ! " ${theme_families[@]} " =~ " tokyonight " ]]; then
+                        theme_families+=("tokyonight")
+                    fi
                 else
                     # Extract theme family from name
                     local family_name="${theme_name%_light}"
@@ -62,18 +68,39 @@ show_help() {
             echo ""
             echo "${family} theme:"
             
-            # Check for light/dark variants with new naming
-            if [ -d "$themes_dir/${family}_light" ]; then
-                printf "  theme %-25s # Light mode\n" "${family}_light"
-            fi
-            
-            if [ -d "$themes_dir/${family}_dark" ]; then
-                printf "  theme %-25s # Dark mode\n" "${family}_dark"
-            fi
-            
-            # Check if standalone theme exists
-            if [ -d "$themes_dir/$family" ] && [ ! -d "$themes_dir/${family}_light" ] && [ ! -d "$themes_dir/${family}_dark" ]; then
-                printf "  theme %-25s\n" "$family"
+            # Special handling for Tokyo Night themes
+            if [ "$family" = "tokyonight" ]; then
+                # List all Tokyo Night variants
+                for variant_dir in "$themes_dir"/tokyonight_*; do
+                    if [ -d "$variant_dir" ]; then
+                        local variant_name=$(basename "$variant_dir")
+                        local variant_type="${variant_name#tokyonight_}"
+                        local description="Tokyo Night variant"
+                        
+                        case "$variant_type" in
+                            "day")   description="Light mode (default light)" ;;
+                            "moon")  description="Dark mode (default dark)" ;;
+                            "storm") description="Dark mode (storm variant)" ;;
+                            "night") description="Dark mode (night variant)" ;;
+                        esac
+                        
+                        printf "  theme %-25s # %s\n" "$variant_name" "$description"
+                    fi
+                done
+            else
+                # Check for light/dark variants with new naming
+                if [ -d "$themes_dir/${family}_light" ]; then
+                    printf "  theme %-25s # Light mode\n" "${family}_light"
+                fi
+                
+                if [ -d "$themes_dir/${family}_dark" ]; then
+                    printf "  theme %-25s # Dark mode\n" "${family}_dark"
+                fi
+                
+                # Check if standalone theme exists
+                if [ -d "$themes_dir/$family" ] && [ ! -d "$themes_dir/${family}_light" ] && [ ! -d "$themes_dir/${family}_dark" ]; then
+                    printf "  theme %-25s\n" "$family"
+                fi
             fi
         done
         
@@ -128,6 +155,24 @@ parse_theme_name() {
         return
     fi
     
+    # Special handling for Tokyo Night themes - they define their own variants
+    if [[ "$input_theme" == tokyonight_* ]]; then
+        BASE_THEME="$input_theme"
+        # Determine variant based on the specific Tokyo Night theme
+        case "$input_theme" in
+            tokyonight_day)
+                VARIANT="light"
+                ;;
+            tokyonight_moon|tokyonight_storm|tokyonight_night)
+                VARIANT="dark"
+                ;;
+            *)
+                VARIANT="dark"  # Default to dark for unknown variants
+                ;;
+        esac
+        return
+    fi
+    
     # Handle new naming convention with actual theme names
     if [[ "$input_theme" == *"_light" ]]; then
         BASE_THEME="$input_theme"
@@ -143,9 +188,9 @@ parse_theme_name() {
 }
 
 # Default theme mapping
-# Currently: light = iceberg_light, dark = dracula
-DEFAULT_LIGHT_THEME="iceberg_light"
-DEFAULT_DARK_THEME="dracula"
+# Currently: light = tokyonight_day, dark = tokyonight_moon
+DEFAULT_LIGHT_THEME="tokyonight_day"
+DEFAULT_DARK_THEME="tokyonight_moon"
 
 # Determine theme and variant
 if [ -z "$1" ]; then
@@ -221,6 +266,8 @@ ALACRITTY_CONFIG_DIR="$HOME/.config/alacritty"
 mkdir -p "$ALACRITTY_CONFIG_DIR"
 if [ -f "$THEME_DIR/alacritty.toml" ]; then
     cp "$THEME_DIR/alacritty.toml" "$ALACRITTY_CONFIG_DIR/theme.toml"
+elif [ -f "$THEME_DIR/alacritty/theme.toml" ]; then
+    cp "$THEME_DIR/alacritty/theme.toml" "$ALACRITTY_CONFIG_DIR/theme.toml"
 fi
 
 # Tmux
