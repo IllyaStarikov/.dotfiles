@@ -60,7 +60,7 @@
 | **Terminal** | [Alacritty](https://alacritty.org/) | GPU-accelerated terminal |
 | **Editor** | [Neovim](https://neovim.io/) | Hyperextensible Vim-based editor |
 | **Multiplexer** | [tmux](https://github.com/tmux/tmux) + [Tmuxinator](https://github.com/tmuxinator/tmuxinator) | Terminal session management |
-| **Font** | [JetBrainsMono Nerd Font](https://www.nerdfonts.com/) | Ligatures + icons |
+| **Font** | [FiraCode Nerd Font](https://www.nerdfonts.com/) | Ligatures + icons |
 | **Package Manager** | [Homebrew](https://brew.sh/) | macOS package management |
 | **Version Control** | [Git](https://git-scm.com/) + [GitHub CLI](https://cli.github.com/) | Enhanced with 50+ aliases |
 | **Python** | [pyenv](https://github.com/pyenv/pyenv) | Python version management |

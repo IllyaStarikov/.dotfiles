@@ -87,7 +87,7 @@ opacity = 0.95
 size = 18.0
 
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+family = "FiraCode Nerd Font"
 style = "Regular"
 
 [font.bold]
@@ -184,7 +184,7 @@ program = "cmd"
 
 | Issue | Fix |
 |-------|-----|
-| Font missing | `brew install --cask font-jetbrains-mono-nerd-font` |
+| Font missing | `brew install --cask font-fira-code-nerd-font` |
 | No colors | `export TERM=xterm-256color` |
 | Slow | Reduce `history`, disable `opacity` |
 | Theme not updating | Check import paths, `touch alacritty.toml` |

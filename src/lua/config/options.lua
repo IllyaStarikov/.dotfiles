@@ -42,12 +42,14 @@ opt.linebreak = true                 -- word wrap like a sane human being
 
 -- GUI font settings (for Neovide, VimR, etc.)
 if vim.fn.has("gui_running") == 1 or vim.g.neovide then
-  opt.guifont = "JetBrainsMono Nerd Font:h18"  -- Match Alacritty font size
+  opt.guifont = "FiraCode Nerd Font:h18"  -- Match Alacritty font size
 end
 
 -- Unicode and font encoding settings for proper glyph rendering
 opt.encoding = "utf-8"
 opt.fileencoding = "utf-8"
+opt.ambiwidth = "single"  -- For Western environments (Nerd Font compatibility)
+opt.emoji = true  -- Enable emoji rendering (requires proper font support)
 
 -- Ensure terminal supports unicode and has proper font
 if vim.fn.has("multi_byte") == 1 then

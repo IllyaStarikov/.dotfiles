@@ -99,7 +99,7 @@ C-a s     # Sessions        C-a [    # Copy mode
 - Blazing fast GPU rendering
 - Vi mode support
 - Platform optimizations
-- Pixel-perfect JetBrainsMono font
+- Pixel-perfect FiraCode Nerd Font
 - Mouse and keyboard driven
 
 ### [🔀 Git](git.md)
@@ -246,7 +246,7 @@ gitconfig    # Edit ~/.gitconfig
 ### Quick Fixes
 | Problem | Solution |
 |---------|----------|
-| Icons broken | `brew install --cask font-jetbrains-mono-nerd-font` |
+| Icons broken | `brew install --cask font-fira-code-nerd-font` |
 | Command not found | `which command` or `brew install tool` |
 | Theme not updating | Run `theme` manually |
 | Slow startup | Check `zsh -xvf` for bottlenecks |
