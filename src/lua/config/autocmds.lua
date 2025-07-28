@@ -1185,3 +1185,26 @@ autocmd({"VimEnter", "BufEnter", "BufAdd"}, {
 -- Load markview debug commands
 -- require('config.markview-debug') -- Disabled while markview is disabled
 
+-- Fix airline's problematic autocommand for checkhealth
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  callback = function()
+    -- Override problematic airline functions to prevent <afile> errors
+    vim.cmd([[
+      if exists('*airline#extensions#tabline#buflist#invalidate')
+        " Create a safe wrapper
+        function! airline#extensions#tabline#buflist#invalidate_safe()
+          try
+            " Only call if we have a valid file context
+            if expand('<afile>') != ''
+              call airline#extensions#tabline#buflist#invalidate()
+            endif
+          catch
+            " Silently ignore errors
+          endtry
+        endfunction
+      endif
+    ]])
+  end,
+  group = augroup("airline_safety", { clear = true })
+})
