@@ -18,10 +18,15 @@ function M.setup()
         -- Key mappings configuration
         keymap = { 
             preset = "default",
-            -- Faster acceptance
+            ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+            ["<C-e>"] = { "hide" },
             ["<CR>"] = { "accept", "fallback" },
             ["<Tab>"] = { "select_next", "fallback" },
             ["<S-Tab>"] = { "select_prev", "fallback" },
+            ["<C-p>"] = { "select_prev", "fallback" },
+            ["<C-n>"] = { "select_next", "fallback" },
+            ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+            ["<C-f>"] = { "scroll_documentation_down", "fallback" },
         },
         
         -- Fuzzy matching configuration (use pure Lua implementation)
@@ -47,10 +52,12 @@ function M.setup()
                 auto_show = false,  -- Don't auto-show docs (major performance improvement)
                 auto_show_delay_ms = 0,
             },
-            -- Trigger configuration for faster response
+            -- Trigger configuration
             trigger = {
+                show_in_snippet = true,
+                show_on_keyword = true,
+                show_on_trigger_character = true,
                 show_on_insert_on_trigger_character = true,
-                show_on_x_blocked_trigger_characters = { "'", '"', "(", "{" },
             },
             accept = {
                 auto_brackets = {
@@ -59,33 +66,41 @@ function M.setup()
             },
         },
         
-        -- Source configuration with priorities
+        -- Source configuration
         sources = {
-            default = { "lsp", "path", "buffer" },  -- Remove snippets from default to speed up
-            providers = {
-                lsp = {
-                    score_offset = 100,  -- Prioritize LSP
-                    timeout_ms = 500,    -- Faster timeout for LSP
-                },
-                path = {
-                    score_offset = 0,
-                    opts = {
-                        trailing_slash = false,
-                        label_trailing_slash = false,
-                        get_cwd = vim.fn.getcwd,
-                        show_hidden_files_by_default = false,
-                    },
-                },
-                buffer = {
-                    score_offset = -100,  -- Lower priority
-                    max_items = 5,        -- Limit buffer suggestions
-                    opts = {
-                        get_bufnrs = function()
-                            -- Only current buffer for speed
-                            return { vim.api.nvim_get_current_buf() }
-                        end,
-                    },
-                },
+            default = { "lsp", "path", "buffer", "snippets" },
+            -- Per source configuration
+            lsp = {
+                enabled = true,
+                max_items = 20,
+                min_keyword_length = 0,  -- Show completions immediately
+                fallback_for = {},  -- Don't use as fallback
+                score_offset = 0,  -- No offset needed
+            },
+            path = {
+                enabled = true,
+                max_items = 10,
+                min_keyword_length = 0,
+                trailing_slash = false,
+                label_trailing_slash = false,
+                get_cwd = vim.fn.getcwd,
+                show_hidden_files_by_default = false,
+            },
+            buffer = {
+                enabled = true,
+                max_items = 10,
+                min_keyword_length = 2,
+                get_buffers = function()
+                    -- All visible buffers
+                    return vim.iter(vim.api.nvim_list_wins()):map(function(win)
+                        return vim.api.nvim_win_get_buf(win)
+                    end):totable()
+                end,
+            },
+            snippets = {
+                enabled = true,
+                max_items = 10,
+                min_keyword_length = 1,
             },
         },
         
@@ -223,19 +238,6 @@ function M.setup_lsp_integration()
     M.get_lsp_capabilities = function()
         return blink.get_lsp_capabilities()
     end
-    
-    -- Ensure LSP servers get the right capabilities
-    local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
-    if lspconfig_ok then
-        local capabilities = blink.get_lsp_capabilities()
-        
-        -- Update default capabilities for all LSP servers
-        lspconfig.util.default_config = vim.tbl_deep_extend(
-            "force",
-            lspconfig.util.default_config,
-            { capabilities = capabilities }
-        )
-    end
 end
 
 -- Enhanced autocommands for better integration
@@ -273,5 +275,24 @@ function M.get_completion_status()
     -- You can extend this to show completion status
     return ""
 end
+
+-- Debug function to check blink status
+function M.debug_status()
+    local blink_ok, blink = pcall(require, "blink.cmp")
+    print("Blink.cmp loaded:", blink_ok)
+    
+    if blink_ok then
+        print("Blink capabilities:", vim.inspect(blink.get_lsp_capabilities() ~= nil))
+    end
+    
+    -- Check if any sources are active
+    print("\nChecking completion sources...")
+    print("LSP clients:", #vim.lsp.get_active_clients())
+end
+
+-- Create debug command
+vim.api.nvim_create_user_command("BlinkDebug", function()
+    M.debug_status()
+end, { desc = "Debug blink.cmp status" })
 
 return M
