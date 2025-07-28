@@ -798,6 +798,8 @@ require("lazy").setup({
       "L3MON4D3/LuaSnip", -- Snippet engine
     },
     version = "v0.*",
+    -- Don't build the Rust binary - we'll use Lua implementation
+    build = false,
     config = function()
       require('config.blink-simple').setup()
     end,

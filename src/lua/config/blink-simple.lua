@@ -14,25 +14,15 @@ function M.setup()
   
   -- Minimal setup - let blink.cmp use its smart defaults
   blink.setup({
-    -- Default keymap preset includes:
-    -- <Tab> / <S-Tab> - navigate items
-    -- <CR> - accept
-    -- <C-e> - hide
-    -- <C-space> - show
+    -- Just use all defaults - blink.cmp works out of the box
     keymap = { preset = 'default' },
     
-    -- Sources - use all defaults
-    sources = {
-      default = { 'lsp', 'path', 'buffer', 'snippets' },
+    -- Fuzzy matching - skip binary download
+    fuzzy = {
+      prebuilt_binaries = {
+        download = false,
+      },
     },
-    
-    -- Enable in all modes except specific filetypes
-    enabled = function()
-      return not vim.tbl_contains(
-        { "TelescopePrompt", "oil" },
-        vim.bo.filetype
-      )
-    end,
   })
 end
 
