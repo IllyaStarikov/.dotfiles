@@ -53,7 +53,9 @@ function M.setup()
                 show_on_x_blocked_trigger_characters = { "'", '"', "(", "{" },
             },
             accept = {
-                resolve_timeout_ms = 50,  -- Faster resolve timeout (default 100)
+                auto_brackets = {
+                    enabled = true,
+                },
             },
         },
         
