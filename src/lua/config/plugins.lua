@@ -790,17 +790,12 @@ require("lazy").setup({
   -- Modern high-performance completion
   {
     "saghen/blink.cmp",
-    lazy = false, -- lazy loading handled internally
+    lazy = false,  -- Load immediately for LSP integration
     dependencies = { 
       "rafamadriz/friendly-snippets",
       "L3MON4D3/LuaSnip", -- Snippet engine
-      -- Optional: add icon support
-      { "saghen/blink.compat", opts = {} }
     },
     version = "v0.*",
-    -- Optional: build the Rust binary for better performance (requires Rust nightly)
-    -- Commented out due to nightly requirement, using Lua fallback instead
-    -- build = "cargo build --release",
     config = function()
       require('config.blink').setup()
     end,
