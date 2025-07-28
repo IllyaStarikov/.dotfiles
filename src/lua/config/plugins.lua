@@ -578,6 +578,23 @@ require("lazy").setup({
   { "dracula/vim", name = "dracula", lazy = false, priority = 1000 },
   { "cocopon/iceberg.vim" },
   { "projekt0n/github-nvim-theme" },
+  { 
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        style = "moon", -- default style
+        transparent = false,
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true },
+        },
+      })
+      -- Also set the vim global for compatibility
+      vim.g.tokyonight_style = "moon"
+    end
+  },
   { "tpope/vim-fugitive" },
   { 
     "vim-airline/vim-airline",
@@ -928,8 +945,7 @@ require("lazy").setup({
 local g = vim.g
 local opt = vim.opt
 
--- Set Dracula theme as default
-vim.cmd("colorscheme dracula")
+-- Theme is set dynamically in config/theme.lua
 
 
 -- NERDTree
@@ -959,6 +975,4 @@ g.grepper = {
 
 -- Telescope is now configured in config/telescope.lua
 
--- Dracula theme settings
-g.dracula_italic = 1
-g.dracula_bold = 1
+-- Theme settings are handled in config/theme.lua
