@@ -66,45 +66,9 @@ function M.setup()
             },
         },
         
-        -- Source configuration
+        -- Source configuration - simplified to avoid validation errors
         sources = {
             default = { "lsp", "path", "buffer", "snippets" },
-            -- The sources table should only contain the 'default' list
-            -- Individual source configurations go in 'providers'
-            providers = {
-                lsp = {
-                    enabled = true,
-                    max_items = 20,
-                    min_keyword_length = 0,  -- Show completions immediately
-                    fallback_for = {},  -- Don't use as fallback
-                    score_offset = 0,  -- No offset needed
-                },
-                path = {
-                    enabled = true,
-                    max_items = 10,
-                    min_keyword_length = 0,
-                    trailing_slash = false,
-                    label_trailing_slash = false,
-                    get_cwd = vim.fn.getcwd,
-                    show_hidden_files_by_default = false,
-                },
-                buffer = {
-                    enabled = true,
-                    max_items = 10,
-                    min_keyword_length = 2,
-                    get_buffers = function()
-                        -- All visible buffers
-                        return vim.iter(vim.api.nvim_list_wins()):map(function(win)
-                            return vim.api.nvim_win_get_buf(win)
-                        end):totable()
-                    end,
-                },
-                snippets = {
-                    enabled = true,
-                    max_items = 10,
-                    min_keyword_length = 1,
-                },
-            },
         },
         
         -- Disable completion in certain filetypes
