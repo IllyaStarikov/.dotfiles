@@ -10,6 +10,14 @@ local opts = { noremap = true, silent = true }
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Ensure VIMRUNTIME is properly set (fix for checkhealth)
+if not vim.env.VIMRUNTIME or vim.env.VIMRUNTIME == "" then
+  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h") .. "/share/nvim/runtime"
+  if vim.fn.isdirectory(runtime_path) == 1 then
+    vim.env.VIMRUNTIME = runtime_path
+  end
+end
+
 -- Commands for common typos
 vim.api.nvim_create_user_command("W", "w", {})
 vim.api.nvim_create_user_command("Q", "q", {})
