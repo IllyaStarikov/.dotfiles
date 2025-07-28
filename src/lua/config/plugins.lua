@@ -887,7 +887,64 @@ require("lazy").setup({
       }
     },
     config = function()
-      require('config.markview').setup()
+      -- FIRST: Load markview modules to ensure they're available
+      local markview = require("markview")
+      local spec = require("markview.spec")
+      local filetypes = require("markview.filetypes")
+      
+      -- Remove all filetype icons
+      for _, style in pairs(filetypes.styles) do
+        style.icon = ""
+        style.sign = ""
+      end
+      
+      -- Directly modify the spec.default BEFORE any setup
+      if spec.default and spec.default.markdown and spec.default.markdown.list_items then
+        spec.default.markdown.list_items.marker_minus.text = "-"
+        spec.default.markdown.list_items.marker_plus.text = "+"
+        spec.default.markdown.list_items.marker_star.text = "*"
+      end
+      
+      -- Create our configuration that will be merged
+      local config = require('config.markview')
+      
+      -- Patch the markview.setup function to ensure our list item config takes precedence
+      local original_setup = markview.setup
+      markview.setup = function(opts)
+        -- Deep merge to ensure our list_items settings override defaults
+        if opts and opts.markdown and opts.markdown.list_items then
+          opts.markdown.list_items.marker_minus = opts.markdown.list_items.marker_minus or {}
+          opts.markdown.list_items.marker_plus = opts.markdown.list_items.marker_plus or {}
+          opts.markdown.list_items.marker_star = opts.markdown.list_items.marker_star or {}
+          
+          opts.markdown.list_items.marker_minus.text = "-"
+          opts.markdown.list_items.marker_plus.text = "+"
+          opts.markdown.list_items.marker_star.text = "*"
+        end
+        
+        -- Call original setup
+        return original_setup(opts)
+      end
+      
+      -- Now run our setup
+      config.setup()
+      
+      -- AFTER setup, also patch spec.get as a fallback
+      local original_get = spec.get
+      spec.get = function(path, opts)
+        local result = original_get(path, opts)
+        -- If this is a list marker request, force ASCII text
+        if path[1] and path[1]:match("^marker_") and result then
+          if path[1] == "marker_minus" then
+            result.text = "-"
+          elseif path[1] == "marker_plus" then
+            result.text = "+"
+          elseif path[1] == "marker_star" then
+            result.text = "*"
+          end
+        end
+        return result
+      end
     end
   },
   { "junegunn/vim-easy-align" },

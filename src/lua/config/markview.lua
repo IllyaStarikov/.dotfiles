@@ -1,6 +1,6 @@
 --
 -- Markview.nvim configuration
--- Enhanced markdown rendering with all features enabled
+-- Maximum compatibility configuration with rich features
 --
 
 local M = {}
@@ -9,400 +9,537 @@ function M.setup()
   local markview = require("markview")
   local presets = require("markview.presets")
   
-  -- Set up highlight groups for markview
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxChecked", { fg = "#50fa7b", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxUnchecked", { fg = "#ff5555" })
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxPending", { fg = "#f1fa8c" })
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxProgress", { fg = "#8be9fd" })
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxCancelled", { fg = "#6272a4", strikethrough = true })
-  vim.api.nvim_set_hl(0, "MarkviewCheckboxImportant", { fg = "#ff79c6", bold = true })
-  
-  -- Heading highlights
-  vim.api.nvim_set_hl(0, "MarkviewHeading1", { fg = "#ff79c6", bg = "#44475a", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading1Sign", { fg = "#ff79c6", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading2", { fg = "#bd93f9", bg = "#44475a", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading2Sign", { fg = "#bd93f9", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading3", { fg = "#8be9fd", bg = "#44475a", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading3Sign", { fg = "#8be9fd", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading4", { fg = "#50fa7b", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading4Sign", { fg = "#50fa7b", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading5", { fg = "#f1fa8c", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading5Sign", { fg = "#f1fa8c", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading6", { fg = "#ffb86c", bold = true })
-  vim.api.nvim_set_hl(0, "MarkviewHeading6Sign", { fg = "#ffb86c", bold = true })
-  
   markview.setup({
-    -- Core configuration
-    experimental = {
-      file_open_command = "open", -- macOS
-      check_rtp = false, -- Disable runtime path check since we've fixed load order
-    },
-    
-    -- Icons configuration - force nerd fonts
-    icons = "nerd",
-    max_length = 99999,
-    
+    -- Preview configuration (moved deprecated options here)
     preview = {
-      filetypes = { "markdown", "md", "mkd", "mkdn", "mdwn", "mdown", "mdtxt", "mdtext", "rmd", "wiki" },
+      -- Mode configuration - render in normal mode only
+      modes = { "n", "no" },
+      hybrid_modes = { "i" },
       
-      -- Enable hybrid mode - show rendered and raw content
-      hybrid_modes = { "n" },
+      -- Callbacks
+      callbacks = {
+        on_enable = {},
+        on_disable = {},
+        on_mode_change = {}
+      },
       
-      -- Font and rendering settings (moved to preview section)
-      ignore_buftypes = {},
-      
-      -- Enhanced rendering options  
-      modes = { "n", "i", "c" }, 
-      
-      -- Debounce for performance
+      -- Buffer options
+      ignore_buftypes = { "nofile" },
       debounce = 50,
+      
+      -- Filetypes
+      filetypes = { "markdown", "quarto", "rmd" },
+      
+      -- Split options
+      splitview_winopts = {},
+      
+      -- Icon provider - set to empty string to disable all icons
+      icon_provider = "",
     },
     
-    -- Markdown configuration with all features
+    -- Highlight groups
+    highlight_groups = "dynamic",
+    
+    -- Main markdown configuration
     markdown = {
       enable = true,
+      max_file_length = 1000,
       
-      -- Enhanced blockquotes with callout support
-      block_quotes = {
-        enable = true,
-        
-        default = {
-          border_left = "▍",
-          border_left_hl = "MarkviewBlockQuoteDefault",
-          hl = "MarkviewBlockQuoteDefault"
-        },
-        
-        -- GitHub-style callouts
-        callouts = {
-          ["NOTE"] = {
-            hl = "MarkviewBlockQuoteNote",
-            preview = " Note",
-            title = true,
-            icon = "",
-          },
-          ["TIP"] = {
-            hl = "MarkviewBlockQuoteOk", 
-            preview = " Tip",
-            title = true,
-            icon = "",
-          },
-          ["IMPORTANT"] = {
-            hl = "MarkviewBlockQuoteSpecial",
-            preview = " Important", 
-            title = true,
-            icon = "",
-          },
-          ["WARNING"] = {
-            hl = "MarkviewBlockQuoteWarn",
-            preview = " Warning",
-            title = true,
-            icon = "",
-          },
-          ["CAUTION"] = {
-            hl = "MarkviewBlockQuoteError",
-            preview = " Caution",
-            title = true,
-            icon = "",
-          }
-        }
-      },
-      
-      -- Enhanced code blocks with syntax highlighting
-      code_blocks = {
-        enable = true,
-        style = "language",
-        
-        -- Icons for different styles
-        icons = "mini",
-        
-        -- Padding and styling
-        min_width = 60,
-        pad_amount = 3,
-        pad_char = " ",
-        
-        -- Sign column
-        sign = true,
-        
-        -- Language label positioning
-        label_direction = "right",
-        
-        -- Highlight groups
-        border_hl = "MarkviewCodeBorder",
-        info_hl = "MarkviewCodeInfo",
-        
-        -- Default styling for all languages
-        default = {
-          block_hl = "MarkviewCode",
-          pad_hl = "MarkviewCode"
-        },
-        
-        -- Special handling for diff blocks
-        ["diff"] = {
-          block_hl = function(_, line)
-            if line:match("^%+") then
-              return "MarkviewDiffAdd"
-            elseif line:match("^%-") then
-              return "MarkviewDiffDelete"
-            else
-              return "MarkviewCode"
-            end
-          end,
-          pad_hl = "MarkviewCode"
-        }
-      },
-      
-      -- Enhanced headings with simple ASCII markers
+      -- Headings with simple style (no icons)
       headings = {
         enable = true,
         shift_width = 0,
+        
         heading_1 = {
-          style = "simple",
+          style = "label",
+          padding_left = " ",
+          padding_right = " ",
           hl = "MarkviewHeading1",
+          sign = false,
         },
         heading_2 = {
-          style = "simple", 
+          style = "label", 
+          padding_left = " ",
+          padding_right = " ",
           hl = "MarkviewHeading2",
+          sign = false,
         },
         heading_3 = {
-          style = "simple",
+          style = "label",
+          padding_left = " ",
+          padding_right = " ",
           hl = "MarkviewHeading3",
+          sign = false,
         },
         heading_4 = {
           style = "simple",
           hl = "MarkviewHeading4",
+          sign = false,
         },
         heading_5 = {
           style = "simple",
           hl = "MarkviewHeading5",
+          sign = false,
         },
         heading_6 = {
           style = "simple",
           hl = "MarkviewHeading6",
+          sign = false,
         },
       },
       
-      -- Horizontal rules
+      -- Code blocks with language labels (no icons)
+      code_blocks = {
+        enable = true,
+        style = "minimal",
+        min_width = 70,
+        pad_amount = 2,
+        pad_char = " ",
+        
+        -- Language configuration
+        language_names = {
+          bash = "BASH",
+          sh = "SHELL",
+          python = "PYTHON",
+          py = "PYTHON",
+          javascript = "JS",
+          js = "JS",
+          typescript = "TS",
+          ts = "TS",
+          lua = "LUA",
+          vim = "VIM",
+          rust = "RUST",
+          go = "GO",
+          c = "C",
+          cpp = "C++",
+          java = "JAVA",
+          ruby = "RUBY",
+          rb = "RUBY",
+          html = "HTML",
+          css = "CSS",
+          json = "JSON",
+          yaml = "YAML",
+          yml = "YAML",
+          toml = "TOML",
+          markdown = "MD",
+          md = "MD",
+        },
+        
+        -- Language direction
+        language_direction = "right",
+        
+        -- Disable icons completely
+        icons = false,
+        sign = false,
+        
+        -- Default highlighting
+        hl = "MarkviewCode",
+      },
+      
+      -- Block quotes with simple ASCII
+      block_quotes = {
+        enable = true,
+        default = {
+          border_left = "|",
+          border_left_hl = "MarkviewBlockQuoteDefault",
+          border_top_left = "",
+          border_top = "",
+          border_top_right = "",
+          border_bottom_left = "",
+          border_bottom = "",
+          border_bottom_right = "",
+          border_right = "",
+          
+          quote_char = ">",
+          quote_char_hl = "MarkviewBlockQuoteDefault",
+        },
+        
+        -- Callouts without icons
+        callouts = {
+          {
+            match_string = "NOTE",
+            callout_preview = "Note",
+            callout_preview_hl = "MarkviewBlockQuoteNote",
+            custom_title = true,
+            custom_icon = "",
+            border_left = "|",
+            border_left_hl = "MarkviewBlockQuoteNote",
+          },
+          {
+            match_string = "TIP",
+            callout_preview = "Tip",
+            callout_preview_hl = "MarkviewBlockQuoteOk",
+            custom_title = true,
+            custom_icon = "",
+            border_left = "|",
+            border_left_hl = "MarkviewBlockQuoteOk",
+          },
+          {
+            match_string = "IMPORTANT",
+            callout_preview = "Important",
+            callout_preview_hl = "MarkviewBlockQuoteSpecial",
+            custom_title = true,
+            custom_icon = "",
+            border_left = "|",
+            border_left_hl = "MarkviewBlockQuoteSpecial",
+          },
+          {
+            match_string = "WARNING",
+            callout_preview = "Warning",
+            callout_preview_hl = "MarkviewBlockQuoteWarn",
+            custom_title = true,
+            custom_icon = "",
+            border_left = "|",
+            border_left_hl = "MarkviewBlockQuoteWarn",
+          },
+          {
+            match_string = "CAUTION",
+            callout_preview = "Caution",
+            callout_preview_hl = "MarkviewBlockQuoteError",
+            custom_title = true,
+            custom_icon = "",
+            border_left = "|",
+            border_left_hl = "MarkviewBlockQuoteError",
+          },
+        },
+      },
+      
+      -- Horizontal rules with simple ASCII
       horizontal_rules = {
         enable = true,
-        
         parts = {
           {
             type = "repeating",
-            text = "━",
+            repeat_amount = vim.api.nvim_win_get_width,
+            
+            text = "-",
             hl = "MarkviewRule",
-            repeat_amount = function()
-              return math.max(vim.api.nvim_win_get_width(0) - 10, 40)
-            end
-          }
-        }
+          },
+        },
       },
       
-      -- Enhanced list items with proper bullet visibility
+      -- DISABLE list items entirely - they cause Unicode rendering and double-dash issues
       list_items = {
-        enable = true,
-        wrap = true,
-        
-        indent_size = function(buffer)
-          if type(buffer) ~= "number" then
-            return vim.bo.shiftwidth or 4
-          end
-          return vim.bo[buffer].shiftwidth or 4
-        end,
-        shift_width = 2,
-        
-        -- Bullet markers with distinct icons and colors
-        marker_minus = {
-          add_padding = true,
-          text = "●", -- Solid bullet for better visibility
-          hl = "MarkviewListItemMinus"
-        },
-        
-        marker_plus = {
-          add_padding = true, 
-          text = "◆", -- Diamond for plus items
-          hl = "MarkviewListItemPlus"
-        },
-        
-        marker_star = {
-          add_padding = true,
-          text = "▸", -- Triangle for star items
-          hl = "MarkviewListItemStar"
-        },
-        
-        -- Ordered list markers
-        marker_dot = {
-          enable = true,
-          add_padding = true
-        },
-        
-        marker_parenthesis = {
-          enable = true,
-          add_padding = true
-        }
+        enable = false
       },
       
-      -- Enhanced tables with better styling
+      -- Tables with ASCII borders
       tables = {
         enable = true,
-        use_virt_lines = true,
+        col_min_width = 10,
+        block_decorator = true,
+        use_virt_lines = false,
         
-        block_hl = "MarkviewTable",
-        border_hl = "MarkviewTableBorder",
-        
-        -- Table parts styling
+        -- ASCII table parts
         parts = {
-          top = { "╭", "─", "┬", "─", "╮" },
-          header_sep = { "├", "─", "┼", "─", "┤" },
-          sep = { "├", "─", "┼", "─", "┤" },
-          bottom = { "╰", "─", "┴", "─", "╯" },
-          overlap = { "┃", " ", "┃", " ", "┃" },
-          row = { "┃", " ", "┃", " ", "┃" }
-        }
-      }
+          top = { "+", "-", "+", "-", "+" },
+          header = { "|", " ", "|", " ", "|" },
+          separator = { "+", "=", "+", "=", "+" },
+          row = { "|", " ", "|", " ", "|" },
+          bottom = { "+", "-", "+", "-", "+" },
+        },
+        
+        -- Alignment
+        align_left = " ",
+        align_right = " ",
+        align_center = " ",
+        
+        -- Highlighting
+        hl = {
+          top = "MarkviewTableBorder",
+          header = "MarkviewTableHeader",
+          separator = "MarkviewTableBorder",
+          row = "MarkviewTable",
+          bottom = "MarkviewTableBorder",
+        },
+      },
     },
     
-    -- Markdown inline features (for inline elements)
+    -- Inline markdown features
     markdown_inline = {
       enable = true,
       
-      -- Checkboxes with nerd font icons
-      checkboxes = presets.checkboxes.nerd,
+      -- COMPLETELY disable checkboxes to avoid Unicode symbols
+      checkboxes = {
+        enable = false
+      },
       
-      -- Enhanced inline code styling
-      inline_codes = {
+      -- Code spans
+      code = {
         enable = true,
-        
         corner_left = " ",
         corner_right = " ",
-        padding_left = " ",
-        padding_right = " ",
         
-        hl = "MarkviewInlineCode"
+        hl = "MarkviewInlineCode",
       },
       
-      -- Enhanced links with icons
-      links = {
+      -- Emphasis
+      italic = {
         enable = true,
-        
-        hyperlinks = {
-          icon = " ",
-          hl = "MarkviewLink"
-        },
-        
-        images = {
-          icon = " ",
-          hl = "MarkviewImage"
-        },
-        
-        emails = {
-          icon = " ",
-          hl = "MarkviewEmail"
-        }
+        corner_left = "",
+        corner_right = "",
+        hl = "MarkviewItalic",
       },
-      
-      -- Text emphasis
-      emphasis = {
+      bold = {
         enable = true,
-        
-        bold = {
-          icon = " ",
-          hl = "MarkviewBold"
-        },
-        
-        italic = {
-          icon = " ",
-          hl = "MarkviewItalic"
-        },
-        
-        strikethrough = {
-          icon = " ",
-          hl = "MarkviewStrikethrough"
-        }
+        corner_left = "",
+        corner_right = "",
+        hl = "MarkviewBold",
+      },
+      bold_italic = {
+        enable = true,
+        corner_left = "",
+        corner_right = "",
+        hl = "MarkviewBoldItalic",
+      },
+      strikethrough = {
+        enable = true,
+        corner_left = "",
+        corner_right = "",
+        hl = "MarkviewStrikethrough",
       },
       
-      -- HTML entities support
-      entities = {
-        enable = true
-      }
-    }
+      -- Disable problematic features
+      images = { enable = false },
+      links = { enable = false },
+      emails = { enable = false },
+    },
   })
   
-  -- Auto-enable for markdown files with proper concealment settings
+  -- Set up highlight groups with TokyoNight colors
+  local highlights = {
+    -- Headings
+    MarkviewHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
+    MarkviewHeading1Sign = { fg = "#ff79c6", bold = true },
+    MarkviewHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
+    MarkviewHeading2Sign = { fg = "#bd93f9", bold = true },
+    MarkviewHeading3 = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
+    MarkviewHeading3Sign = { fg = "#8be9fd", bold = true },
+    MarkviewHeading4 = { fg = "#50fa7b", bold = true },
+    MarkviewHeading5 = { fg = "#f1fa8c", bold = true },
+    MarkviewHeading6 = { fg = "#ffb86c", bold = true },
+    
+    -- Lists
+    MarkviewListItemMinus = { fg = "#50fa7b", bold = true },
+    MarkviewListItemPlus = { fg = "#8be9fd", bold = true },
+    MarkviewListItemStar = { fg = "#f1fa8c", bold = true },
+    
+    -- Code
+    MarkviewCode = { bg = "#2d2e3f" },
+    MarkviewInlineCode = { fg = "#8be9fd", bg = "#2d2e3f" },
+    
+    -- Tables
+    MarkviewTable = { bg = "#1e1f2e" },
+    MarkviewTableHeader = { fg = "#bd93f9", bg = "#1e1f2e", bold = true },
+    MarkviewTableBorder = { fg = "#6272a4" },
+    
+    -- Block quotes
+    MarkviewBlockQuoteDefault = { fg = "#6272a4", italic = true },
+    MarkviewBlockQuoteNote = { fg = "#8be9fd", bg = "#2d3f4f" },
+    MarkviewBlockQuoteOk = { fg = "#50fa7b", bg = "#2d3f2d" },
+    MarkviewBlockQuoteSpecial = { fg = "#bd93f9", bg = "#3d2d4f" },
+    MarkviewBlockQuoteWarn = { fg = "#f1fa8c", bg = "#4f4f2d" },
+    MarkviewBlockQuoteError = { fg = "#ff5555", bg = "#4f2d2d" },
+    
+    -- Checkboxes
+    MarkviewCheckboxChecked = { fg = "#50fa7b", bold = true },
+    MarkviewCheckboxUnchecked = { fg = "#ff5555" },
+    MarkviewCheckboxPending = { fg = "#f1fa8c" },
+    MarkviewCheckboxProgress = { fg = "#8be9fd" },
+    MarkviewCheckboxCancelled = { fg = "#6272a4", strikethrough = true },
+    
+    -- Text emphasis
+    MarkviewBold = { bold = true },
+    MarkviewItalic = { italic = true },
+    MarkviewBoldItalic = { bold = true, italic = true },
+    MarkviewStrikethrough = { strikethrough = true },
+    
+    -- Rules
+    MarkviewRule = { fg = "#6272a4" },
+  }
+  
+  for group, opts in pairs(highlights) do
+    vim.api.nvim_set_hl(0, group, opts)
+  end
+  
+  -- Apply overrides immediately after setup
+  local function apply_overrides()
+    local success, _ = pcall(function()
+        -- Override filetypes to remove ALL icons
+        local filetypes = require("markview.filetypes")
+        if filetypes and filetypes.styles then
+          for lang, style in pairs(filetypes.styles) do
+            style.icon = ""
+            style.sign = ""
+          end
+        end
+        
+        -- Override link rendering to remove icons
+        local links = require("markview.links")
+        if links then
+          -- Override the link icons
+          if links.hyperlinks then
+            links.hyperlinks.icon = ""
+          end
+          if links.images then
+            links.images.icon = ""
+          end
+          if links.emails then
+            links.emails.icon = ""
+          end
+        end
+        
+        -- Override spec configuration
+        local spec = require("markview.spec")
+        if spec then
+          -- Override in spec.config
+          if spec.config and spec.config.markdown and spec.config.markdown.list_items then
+            local list_items = spec.config.markdown.list_items
+            
+            if list_items.marker_minus then
+              list_items.marker_minus.text = "-"
+              list_items.marker_minus.padding_left = ""
+              list_items.marker_minus.padding_right = ""
+            end
+            if list_items.marker_plus then
+              list_items.marker_plus.text = "+"
+              list_items.marker_plus.padding_left = ""
+              list_items.marker_plus.padding_right = ""
+            end
+            if list_items.marker_star then
+              list_items.marker_star.text = "*"
+              list_items.marker_star.padding_left = ""
+              list_items.marker_star.padding_right = ""
+            end
+          end
+          
+          -- Override in spec.default
+          if spec.default and spec.default.markdown and spec.default.markdown.list_items then
+            local list_items = spec.default.markdown.list_items
+            
+            if list_items.marker_minus then
+              list_items.marker_minus.text = "-"
+              list_items.marker_minus.padding_left = ""
+              list_items.marker_minus.padding_right = ""
+            end
+            if list_items.marker_plus then
+              list_items.marker_plus.text = "+"
+              list_items.marker_plus.padding_left = ""
+              list_items.marker_plus.padding_right = ""
+            end
+            if list_items.marker_star then
+              list_items.marker_star.text = "*"
+              list_items.marker_star.padding_left = ""
+              list_items.marker_star.padding_right = ""
+            end
+          end
+          
+          -- Override link configuration
+          if spec.config and spec.config.markdown_inline and spec.config.markdown_inline.links then
+            spec.config.markdown_inline.links.hyperlinks = { icon = "", hl = "MarkviewLink" }
+            spec.config.markdown_inline.links.images = { icon = "", hl = "MarkviewImage" }
+            spec.config.markdown_inline.links.emails = { icon = "", hl = "MarkviewEmail" }
+          end
+          
+          -- Override hyperlinks configuration
+          if spec.config and spec.config.markdown_inline and spec.config.markdown_inline.hyperlinks then
+            if spec.config.markdown_inline.hyperlinks.default then
+              spec.config.markdown_inline.hyperlinks.default.icon = ""
+            end
+            -- Override all pattern-based hyperlinks
+            for pattern, config in pairs(spec.config.markdown_inline.hyperlinks) do
+              if type(config) == "table" and config.icon then
+                config.icon = ""
+              end
+            end
+          end
+          
+          -- Override default link config
+          if spec.default and spec.default.markdown_inline and spec.default.markdown_inline.links then
+            spec.default.markdown_inline.links.hyperlinks = { icon = "", hl = "MarkviewLink" }
+            spec.default.markdown_inline.links.images = { icon = "", hl = "MarkviewImage" }
+            spec.default.markdown_inline.links.emails = { icon = "", hl = "MarkviewEmail" }
+          end
+          
+          -- Override default hyperlinks configuration
+          if spec.default and spec.default.markdown_inline and spec.default.markdown_inline.hyperlinks then
+            if spec.default.markdown_inline.hyperlinks.default then
+              spec.default.markdown_inline.hyperlinks.default.icon = ""
+            end
+            -- Override all pattern-based hyperlinks
+            for pattern, config in pairs(spec.default.markdown_inline.hyperlinks) do
+              if type(config) == "table" and config.icon then
+                config.icon = ""
+              end
+            end
+          end
+        end
+        
+    end)
+  end
+  
+  -- Apply overrides immediately
+  apply_overrides()
+  
+  -- Create a more aggressive override that patches the renderer
+  local function patch_list_renderer()
+    local success, markdown_renderer = pcall(require, "markview.renderers.markdown")
+    if success and markdown_renderer.list_item then
+      local original_list_item = markdown_renderer.list_item
+      markdown_renderer.list_item = function(buffer, item, config_table)
+        -- Override the config to use ASCII bullets
+        if config_table and config_table.marker_minus then
+          config_table.marker_minus.text = "-"
+        end
+        if config_table and config_table.marker_plus then
+          config_table.marker_plus.text = "+"
+        end
+        if config_table and config_table.marker_star then
+          config_table.marker_star.text = "*"
+        end
+        -- Call the original function with our modified config
+        return original_list_item(buffer, item, config_table)
+      end
+    end
+  end
+  
+  -- Apply the patch
+  patch_list_renderer()
+  
+  -- Auto-enable for markdown files
   vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "md", "mkd", "mkdn", "mdwn", "mdown", "mdtxt", "mdtext", "rmd", "wiki" },
+    pattern = { "markdown", "quarto", "rmd" },
     callback = function()
-      -- Optimal concealment settings for markview
       vim.opt_local.conceallevel = 2
-      vim.opt_local.concealcursor = 'nc'
+      vim.opt_local.concealcursor = "nc"
       
-      -- Enable markview for this buffer
-      vim.cmd("Markview enable")
+      -- Re-apply overrides and patch to ensure they stick
+      apply_overrides()
+      patch_list_renderer()
     end
   })
   
-  -- Debug commands for glyph issues
-  vim.api.nvim_create_user_command("MarkviewDebug", function()
-    local ok, icons = pcall(require, "nvim-web-devicons")
-    print("nvim-web-devicons loaded:", ok)
-    print("Have nerd font:", vim.g.have_nerd_font)
-    print("Terminal:", vim.env.TERM)
-    print("Encoding:", vim.o.encoding)
-    print("GUI font:", vim.o.guifont)
-    print("Conceallevel:", vim.o.conceallevel)
-    print("Concealcursor:", vim.o.concealcursor)
-    
-    -- Test rendering some glyphs
-    print("\nTest glyphs:")
-    print("Checkbox unchecked: ")
-    print("Checkbox checked: ")
-    print("H1 icon: 󰼏")
-    print("H2 icon: 󰎨")
-    print("H3 icon: 󰼑")
-    print("H1 sign: 󰌕")
-    print("H2 sign: 󰌖")
-    
-    -- Check markview config
-    local mv_ok, mv = pcall(require, "markview")
-    if mv_ok then
-      print("\nMarkview loaded successfully")
+  -- Also apply on BufRead to catch files loaded from command line
+  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
+    callback = function()
+      -- Apply overrides immediately when file is read
+      vim.schedule(apply_overrides)
     end
-  end, { desc = "Debug markview glyph rendering" })
+  })
   
-  -- Command to test different heading styles
-  vim.api.nvim_create_user_command("MarkviewHeadingStyle", function(opts)
-    local style = opts.args
-    local markview = require("markview")
-    local presets = require("markview.presets")
-    
-    if style == "glow" then
-      markview.configuration.markdown.headings = presets.headings.glow
-    elseif style == "marker" then
-      markview.configuration.markdown.headings = presets.headings.marker
-    elseif style == "simple" then
-      markview.configuration.markdown.headings = presets.headings.simple
-    elseif style == "slanted" then
-      markview.configuration.markdown.headings = presets.headings.slanted
-    elseif style == "arrowed" then
-      markview.configuration.markdown.headings = presets.headings.arrowed
-    elseif style == "none" then
-      markview.configuration.markdown.headings = {
-        enable = false
-      }
-    else
-      print("Available styles: glow, marker, simple, slanted, arrowed, none")
-      return
+  -- Add mode-specific handling for proper concealing
+  vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
+    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
+    callback = function(args)
+      if args.event == "InsertEnter" then
+        -- In insert mode, show raw markdown
+        vim.opt_local.conceallevel = 0
+      else
+        -- In normal mode, use concealing
+        vim.opt_local.conceallevel = 2
+      end
     end
-    
-    -- Refresh markview
-    vim.cmd("Markview disable")
-    vim.cmd("Markview enable")
-    print("Switched to " .. style .. " heading style")
-  end, {
-    nargs = 1,
-    complete = function()
-      return { "glow", "marker", "simple", "slanted", "arrowed", "none" }
-    end,
-    desc = "Switch markview heading style"
   })
 end
 
