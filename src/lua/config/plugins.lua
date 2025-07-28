@@ -799,7 +799,7 @@ require("lazy").setup({
     },
     version = "v0.*",
     config = function()
-      require('config.blink').setup()
+      require('config.blink-simple').setup()
     end,
   },
 
