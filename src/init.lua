@@ -52,8 +52,7 @@ require('config.plugins')     -- Plugin specifications (lazy.nvim)
 require('config.theme')       -- Dynamic theme system with macOS integration
 
 -- 4. Language Support: LSP and completion
--- Note: LSP is loaded after plugins are initialized via lazy.nvim
--- The actual LSP setup happens in the lsp.lua module
+-- LSP is loaded via autocmd in lsp.lua after plugins are initialized
 
 -- 5. Enhanced UI: Modern interface improvements
 require('config.snacks')      -- High-performance QoL suite
