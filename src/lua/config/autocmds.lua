@@ -1182,3 +1182,6 @@ autocmd({"VimEnter", "BufEnter", "BufAdd"}, {
   end
 })
 
+-- Load markview debug commands
+-- require('config.markview-debug') -- Disabled while markview is disabled
+
