@@ -58,9 +58,9 @@ python3 -m pip install ipython
 # Global Git Ignore
 git config --global core.excludesfile '~/.gitignore'
 
-# Fonts - Install JetBrainsMono Nerd Font as default
+# Fonts - Install FiraCode Nerd Font as default
 brew tap homebrew/cask-fonts
-brew install --cask font-jetbrains-mono-nerd-font
+brew install --cask font-fira-code-nerd-font
 brew install --cask font-symbols-only-nerd-font  # For additional glyph coverage
 
 # Also install powerline fonts for compatibility

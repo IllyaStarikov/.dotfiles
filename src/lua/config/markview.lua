@@ -33,8 +33,8 @@ function M.setup()
       -- Split options
       splitview_winopts = {},
       
-      -- Icon provider - set to empty string to disable all icons
-      icon_provider = "",
+      -- Icon provider - enable devicons for language icons
+      icon_provider = "devicons",
     },
     
     -- Highlight groups
@@ -128,9 +128,9 @@ function M.setup()
         -- Language direction
         language_direction = "right",
         
-        -- Disable icons completely
-        icons = false,
-        sign = false,
+        -- Enable language icons now that FiraCode works
+        icons = true,
+        sign = true,
         
         -- Default highlighting
         hl = "MarkviewCode",
@@ -158,46 +158,46 @@ function M.setup()
         callouts = {
           {
             match_string = "NOTE",
-            callout_preview = "Note",
+            callout_preview = "📝 Note",
             callout_preview_hl = "MarkviewBlockQuoteNote",
             custom_title = true,
-            custom_icon = "",
+            custom_icon = "📝",
             border_left = "|",
             border_left_hl = "MarkviewBlockQuoteNote",
           },
           {
             match_string = "TIP",
-            callout_preview = "Tip",
+            callout_preview = "💡 Tip",
             callout_preview_hl = "MarkviewBlockQuoteOk",
             custom_title = true,
-            custom_icon = "",
+            custom_icon = "💡",
             border_left = "|",
             border_left_hl = "MarkviewBlockQuoteOk",
           },
           {
             match_string = "IMPORTANT",
-            callout_preview = "Important",
+            callout_preview = "⚠️  Important",
             callout_preview_hl = "MarkviewBlockQuoteSpecial",
             custom_title = true,
-            custom_icon = "",
+            custom_icon = "⚠️",
             border_left = "|",
             border_left_hl = "MarkviewBlockQuoteSpecial",
           },
           {
             match_string = "WARNING",
-            callout_preview = "Warning",
+            callout_preview = "⚡ Warning",
             callout_preview_hl = "MarkviewBlockQuoteWarn",
             custom_title = true,
-            custom_icon = "",
+            custom_icon = "⚡",
             border_left = "|",
             border_left_hl = "MarkviewBlockQuoteWarn",
           },
           {
             match_string = "CAUTION",
-            callout_preview = "Caution",
+            callout_preview = "🚨 Caution",
             callout_preview_hl = "MarkviewBlockQuoteError",
             custom_title = true,
-            custom_icon = "",
+            custom_icon = "🚨",
             border_left = "|",
             border_left_hl = "MarkviewBlockQuoteError",
           },
@@ -218,7 +218,7 @@ function M.setup()
         },
       },
       
-      -- DISABLE list items entirely - they cause Unicode rendering and double-dash issues
+      -- Disable list items - they don't render cleanly with the markers
       list_items = {
         enable = false
       },
@@ -259,9 +259,21 @@ function M.setup()
     markdown_inline = {
       enable = true,
       
-      -- COMPLETELY disable checkboxes to avoid Unicode symbols
+      -- Enable checkboxes with nice symbols
       checkboxes = {
-        enable = false
+        enable = true,
+        checked = { 
+          text = "✓", 
+          hl = "MarkviewCheckboxChecked" 
+        },
+        unchecked = { 
+          text = "✗", 
+          hl = "MarkviewCheckboxUnchecked" 
+        },
+        pending = { 
+          text = "◯", 
+          hl = "MarkviewCheckboxPending" 
+        },
       },
       
       -- Code spans
@@ -299,10 +311,16 @@ function M.setup()
         hl = "MarkviewStrikethrough",
       },
       
-      -- Disable problematic features
-      images = { enable = false },
-      links = { enable = false },
-      emails = { enable = false },
+      -- Disable link icons - they clutter the display
+      images = { 
+        enable = false,
+      },
+      links = { 
+        enable = false,
+      },
+      emails = { 
+        enable = false,
+      },
     },
   })
   
@@ -362,149 +380,7 @@ function M.setup()
     vim.api.nvim_set_hl(0, group, opts)
   end
   
-  -- Apply overrides immediately after setup
-  local function apply_overrides()
-    local success, _ = pcall(function()
-        -- Override filetypes to remove ALL icons
-        local filetypes = require("markview.filetypes")
-        if filetypes and filetypes.styles then
-          for lang, style in pairs(filetypes.styles) do
-            style.icon = ""
-            style.sign = ""
-          end
-        end
-        
-        -- Override link rendering to remove icons
-        local links = require("markview.links")
-        if links then
-          -- Override the link icons
-          if links.hyperlinks then
-            links.hyperlinks.icon = ""
-          end
-          if links.images then
-            links.images.icon = ""
-          end
-          if links.emails then
-            links.emails.icon = ""
-          end
-        end
-        
-        -- Override spec configuration
-        local spec = require("markview.spec")
-        if spec then
-          -- Override in spec.config
-          if spec.config and spec.config.markdown and spec.config.markdown.list_items then
-            local list_items = spec.config.markdown.list_items
-            
-            if list_items.marker_minus then
-              list_items.marker_minus.text = "-"
-              list_items.marker_minus.padding_left = ""
-              list_items.marker_minus.padding_right = ""
-            end
-            if list_items.marker_plus then
-              list_items.marker_plus.text = "+"
-              list_items.marker_plus.padding_left = ""
-              list_items.marker_plus.padding_right = ""
-            end
-            if list_items.marker_star then
-              list_items.marker_star.text = "*"
-              list_items.marker_star.padding_left = ""
-              list_items.marker_star.padding_right = ""
-            end
-          end
-          
-          -- Override in spec.default
-          if spec.default and spec.default.markdown and spec.default.markdown.list_items then
-            local list_items = spec.default.markdown.list_items
-            
-            if list_items.marker_minus then
-              list_items.marker_minus.text = "-"
-              list_items.marker_minus.padding_left = ""
-              list_items.marker_minus.padding_right = ""
-            end
-            if list_items.marker_plus then
-              list_items.marker_plus.text = "+"
-              list_items.marker_plus.padding_left = ""
-              list_items.marker_plus.padding_right = ""
-            end
-            if list_items.marker_star then
-              list_items.marker_star.text = "*"
-              list_items.marker_star.padding_left = ""
-              list_items.marker_star.padding_right = ""
-            end
-          end
-          
-          -- Override link configuration
-          if spec.config and spec.config.markdown_inline and spec.config.markdown_inline.links then
-            spec.config.markdown_inline.links.hyperlinks = { icon = "", hl = "MarkviewLink" }
-            spec.config.markdown_inline.links.images = { icon = "", hl = "MarkviewImage" }
-            spec.config.markdown_inline.links.emails = { icon = "", hl = "MarkviewEmail" }
-          end
-          
-          -- Override hyperlinks configuration
-          if spec.config and spec.config.markdown_inline and spec.config.markdown_inline.hyperlinks then
-            if spec.config.markdown_inline.hyperlinks.default then
-              spec.config.markdown_inline.hyperlinks.default.icon = ""
-            end
-            -- Override all pattern-based hyperlinks
-            for pattern, config in pairs(spec.config.markdown_inline.hyperlinks) do
-              if type(config) == "table" and config.icon then
-                config.icon = ""
-              end
-            end
-          end
-          
-          -- Override default link config
-          if spec.default and spec.default.markdown_inline and spec.default.markdown_inline.links then
-            spec.default.markdown_inline.links.hyperlinks = { icon = "", hl = "MarkviewLink" }
-            spec.default.markdown_inline.links.images = { icon = "", hl = "MarkviewImage" }
-            spec.default.markdown_inline.links.emails = { icon = "", hl = "MarkviewEmail" }
-          end
-          
-          -- Override default hyperlinks configuration
-          if spec.default and spec.default.markdown_inline and spec.default.markdown_inline.hyperlinks then
-            if spec.default.markdown_inline.hyperlinks.default then
-              spec.default.markdown_inline.hyperlinks.default.icon = ""
-            end
-            -- Override all pattern-based hyperlinks
-            for pattern, config in pairs(spec.default.markdown_inline.hyperlinks) do
-              if type(config) == "table" and config.icon then
-                config.icon = ""
-              end
-            end
-          end
-        end
-        
-    end)
-  end
-  
-  -- Apply overrides immediately
-  apply_overrides()
-  
-  -- Create a more aggressive override that patches the renderer
-  local function patch_list_renderer()
-    local success, markdown_renderer = pcall(require, "markview.renderers.markdown")
-    if success and markdown_renderer.list_item then
-      local original_list_item = markdown_renderer.list_item
-      markdown_renderer.list_item = function(buffer, item, config_table)
-        -- Override the config to use ASCII bullets
-        if config_table and config_table.marker_minus then
-          config_table.marker_minus.text = "-"
-        end
-        if config_table and config_table.marker_plus then
-          config_table.marker_plus.text = "+"
-        end
-        if config_table and config_table.marker_star then
-          config_table.marker_star.text = "*"
-        end
-        -- Call the original function with our modified config
-        return original_list_item(buffer, item, config_table)
-      end
-    end
-  end
-  
-  -- Apply the patch
-  patch_list_renderer()
+  -- No overrides needed with FiraCode Nerd Font!
   
   -- Auto-enable for markdown files
   vim.api.nvim_create_autocmd("FileType", {
@@ -512,21 +388,10 @@ function M.setup()
     callback = function()
       vim.opt_local.conceallevel = 2
       vim.opt_local.concealcursor = "nc"
-      
-      -- Re-apply overrides and patch to ensure they stick
-      apply_overrides()
-      patch_list_renderer()
     end
   })
   
-  -- Also apply on BufRead to catch files loaded from command line
-  vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
-    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
-    callback = function()
-      -- Apply overrides immediately when file is read
-      vim.schedule(apply_overrides)
-    end
-  })
+  -- No longer need this autocmd since we're not overriding anything
   
   -- Add mode-specific handling for proper concealing
   vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
