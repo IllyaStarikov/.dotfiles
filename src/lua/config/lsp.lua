@@ -149,10 +149,36 @@ end
 local M = {}
 M.kwbd = kwbd
 
+-- Debug function to check LSP status
+function M.check_lsp_status()
+  local clients = vim.lsp.get_active_clients()
+  if #clients == 0 then
+    print("No active LSP clients")
+  else
+    print("Active LSP clients:")
+    for _, client in ipairs(clients) do
+      print(string.format("  - %s (id: %d)", client.name, client.id))
+    end
+  end
+  
+  -- Check blink.cmp status
+  local blink_ok, blink = pcall(require, "blink.cmp")
+  if blink_ok then
+    print("blink.cmp is loaded")
+  else
+    print("blink.cmp is NOT loaded")
+  end
+end
+
 -- Create user command for Kwbd
 vim.api.nvim_create_user_command("Kwbd", function()
   kwbd(1)
 end, {})
+
+-- Create debug command
+vim.api.nvim_create_user_command("LspStatus", function()
+  M.check_lsp_status()
+end, { desc = "Check LSP and completion status" })
 
 -- Work-specific overrides
 if vim.g.vimrc_type == 'work' then
@@ -162,7 +188,15 @@ if vim.g.vimrc_type == 'work' then
   end
 end
 
--- Initialize LSP
-setup_lsp()
+-- Export setup function
+M.setup = setup_lsp
+
+-- Setup LSP after plugins are loaded
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  callback = function()
+    setup_lsp()
+  end,
+})
 
 return M
