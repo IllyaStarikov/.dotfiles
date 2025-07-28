@@ -16,13 +16,52 @@ local function setup_lsp()
   local lspconfig = require("lspconfig")
 
   -- Capabilities for blink.cmp integration
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  
+  -- Try to get blink.cmp capabilities
   local blink_ok, blink = pcall(require, "blink.cmp")
-  local capabilities
-  if blink_ok then
-    capabilities = blink.get_lsp_capabilities()
-  else
-    capabilities = vim.lsp.protocol.make_client_capabilities()
+  if blink_ok and blink.get_lsp_capabilities then
+    local blink_caps = blink.get_lsp_capabilities()
+    if blink_caps then
+      capabilities = blink_caps
+    end
   end
+  
+  -- Ensure completion capability is set
+  capabilities.textDocument.completion = capabilities.textDocument.completion or {
+    completionItem = {
+      snippetSupport = true,
+      commitCharactersSupport = true,
+      deprecatedSupport = true,
+      preselectSupport = true,
+      tagSupport = {
+        valueSet = { 1 }
+      },
+      insertReplaceSupport = true,
+      resolveSupport = {
+        properties = {
+          "documentation",
+          "detail",
+          "additionalTextEdits",
+        },
+      },
+      insertTextModeSupport = {
+        valueSet = { 1, 2 }
+      },
+      labelDetailsSupport = true,
+    },
+    contextSupport = true,
+    insertTextMode = 1,
+    completionList = {
+      itemDefaults = {
+        'commitCharacters',
+        'editRange',
+        'insertTextFormat',
+        'insertTextMode',
+        'data',
+      }
+    }
+  }
 
   -- Optional: on_attach function to bind keys after LSP attaches to buffer
   local on_attach = function(client, bufnr)
@@ -158,16 +197,30 @@ function M.check_lsp_status()
     print("Active LSP clients:")
     for _, client in ipairs(clients) do
       print(string.format("  - %s (id: %d)", client.name, client.id))
+      -- Check if client has completion capability
+      if client.server_capabilities.completionProvider then
+        print("    ✓ Completion provider enabled")
+      else
+        print("    ✗ Completion provider NOT enabled")
+      end
     end
   end
   
   -- Check blink.cmp status
   local blink_ok, blink = pcall(require, "blink.cmp")
   if blink_ok then
-    print("blink.cmp is loaded")
+    print("\nblink.cmp is loaded")
+    if blink.get_lsp_capabilities then
+      print("  ✓ get_lsp_capabilities function exists")
+    else
+      print("  ✗ get_lsp_capabilities function NOT found")
+    end
   else
-    print("blink.cmp is NOT loaded")
+    print("\nblink.cmp is NOT loaded")
   end
+  
+  -- Check current buffer's filetype
+  print("\nCurrent buffer filetype: " .. vim.bo.filetype)
 end
 
 -- Create user command for Kwbd
@@ -191,15 +244,7 @@ end
 -- Export setup function
 M.setup = setup_lsp
 
--- Setup LSP after plugins are loaded
-vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
-  callback = function()
-    -- Ensure ALE is disabled before setting up LSP
-    vim.g.ale_disable_lsp = 1
-    vim.g.ale_completion_enabled = 0
-    setup_lsp()
-  end,
-})
+-- Setup LSP immediately since blink.cmp loads with lazy=false
+setup_lsp()
 
 return M
