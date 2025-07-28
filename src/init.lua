@@ -52,7 +52,10 @@ require('config.plugins')     -- Plugin specifications (lazy.nvim)
 require('config.theme')       -- Dynamic theme system with macOS integration
 
 -- 4. Language Support: LSP and completion
--- LSP is loaded via autocmd in lsp.lua after plugins are initialized
+-- Delay LSP setup to ensure blink.cmp is fully loaded
+vim.schedule(function()
+  require('config.lsp')       -- Language Server Protocol setup
+end)
 
 -- 5. Enhanced UI: Modern interface improvements
 require('config.snacks')      -- High-performance QoL suite
