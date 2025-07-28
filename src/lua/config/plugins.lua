@@ -915,7 +915,16 @@ require("lazy").setup({
   { "wellle/targets.vim" },
 
   -- Linting
-  { "dense-analysis/ale" },
+  { 
+    "dense-analysis/ale",
+    init = function()
+      -- Configure ALE before it loads to prevent LSP conflicts
+      vim.g.ale_disable_lsp = 1
+      vim.g.ale_completion_enabled = 0
+      vim.g.ale_use_neovim_diagnostics_api = 0
+      vim.g.ale_lsp_suggestions = 0
+    end,
+  },
 
   -- File Management and Exploration
   {
@@ -970,8 +979,11 @@ g.NERDTreeWinPos = "right"
 g.NERDTreeMapOpenInTab = '\r'
 g.NERDTreeGitStatusWithFlags = 1
 
--- ALE (disable completion since we use blink.cmp)
+-- ALE (disable completion and LSP features since we use blink.cmp and native LSP)
 g.ale_completion_enabled = 0
+g.ale_disable_lsp = 1  -- Disable ALE's LSP features completely
+g.ale_use_neovim_diagnostics_api = 0  -- Don't use Neovim's diagnostics API
+g.ale_lsp_suggestions = 0  -- Disable LSP suggestions
 g.ale_python_pyls_executable = "pylsp"
 g.ale_python_flake8_options = "--max-line-length=200"
 g.ale_python_pylint_options = "--max-line-length=200 --errors-only"

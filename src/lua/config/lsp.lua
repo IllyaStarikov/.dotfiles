@@ -195,6 +195,9 @@ M.setup = setup_lsp
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   callback = function()
+    -- Ensure ALE is disabled before setting up LSP
+    vim.g.ale_disable_lsp = 1
+    vim.g.ale_completion_enabled = 0
     setup_lsp()
   end,
 })
