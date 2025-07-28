@@ -14,6 +14,7 @@ function M.setup()
         return
     end
     
+    -- Use minimal configuration to let blink.cmp work with defaults
     blink.setup({
         -- Key mappings configuration
         keymap = { 
