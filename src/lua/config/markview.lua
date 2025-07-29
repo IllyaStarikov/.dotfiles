@@ -402,7 +402,7 @@ function M.setup()
   
   -- Set up highlight groups with TokyoNight colors
   local highlights = {
-    -- Headings - all with background colors
+    -- Headings - dark text on bright backgrounds for readability
     MarkviewHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
     MarkviewHeading1Sign = { fg = "#ff79c6", bold = true },
     MarkviewHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
