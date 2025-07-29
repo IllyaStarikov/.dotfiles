@@ -87,7 +87,8 @@ brew install \
     lua-language-server \
     marksman \
     yaml-language-server \
-    typescript-language-server
+    typescript-language-server \
+    gopls || true  # Don't fail if gopls can't be installed
 
 # Install additional Python tools
 echo "🐍 Installing Python LSP dependencies..."
