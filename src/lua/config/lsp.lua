@@ -20,12 +20,20 @@ local function setup_lsp()
   
   -- Try to get blink.cmp capabilities
   local blink_ok, blink = pcall(require, "blink.cmp")
-  if blink_ok and blink.get_lsp_capabilities then
-    local blink_caps = blink.get_lsp_capabilities()
-    if blink_caps then
-      capabilities = blink_caps
-      -- Successfully using blink.cmp capabilities
+  if blink_ok then
+    -- Try the get_lsp_capabilities function if it exists
+    if blink.get_lsp_capabilities then
+      local blink_caps = blink.get_lsp_capabilities()
+      if blink_caps then
+        capabilities = blink_caps
+        vim.notify("Using blink.cmp capabilities", vim.log.levels.DEBUG)
+      end
+    else
+      -- Fallback: manually ensure completion capabilities are set
+      vim.notify("blink.cmp loaded but get_lsp_capabilities not found", vim.log.levels.DEBUG)
     end
+  else
+    vim.notify("blink.cmp not loaded when setting up LSP", vim.log.levels.WARN)
   end
   
   -- Ensure completion capability is set
@@ -70,6 +78,16 @@ local function setup_lsp()
     if client.name == "clangd" then
       -- Ensure semantic tokens are enabled for better highlighting
       client.server_capabilities.semanticTokensProvider = nil
+      
+      -- Debug: Print trigger characters
+      if client.server_capabilities.completionProvider then
+        local triggers = client.server_capabilities.completionProvider.triggerCharacters
+        if triggers then
+          vim.notify("Clangd trigger characters: " .. vim.inspect(triggers), vim.log.levels.INFO)
+        else
+          vim.notify("Clangd has no trigger characters!", vim.log.levels.WARN)
+        end
+      end
     end
     
     local buf = vim.lsp.buf    -- alias for convenience
@@ -101,7 +119,8 @@ local function setup_lsp()
     pyright = {},
     clangd = {
       cmd = {
-        "clangd",
+        -- Use Homebrew LLVM clangd for better C++ support
+        "/opt/homebrew/opt/llvm/bin/clangd",
         "--background-index",
         "--clang-tidy",
         "--header-insertion=iwyu",
@@ -111,7 +130,10 @@ local function setup_lsp()
         "--header-insertion-decorators",
         "--suggest-missing-includes",
         "--cross-file-rename",
-        "--enable-config"
+        "--enable-config",
+        -- Ensure proper completion triggers
+        "--completion-parse=auto",
+        "--pch-storage=memory"
       },
       init_options = {
         usePlaceholders = true,
@@ -146,7 +168,15 @@ local function setup_lsp()
   }
   
   for server, config in pairs(servers) do
-    if vim.fn.executable(server) == 1 or server == "lua_ls" then
+    -- Special handling for clangd to use LLVM version
+    if server == "clangd" then
+      if vim.fn.executable("/opt/homebrew/opt/llvm/bin/clangd") == 1 then
+        config.capabilities = capabilities
+        config.on_attach = on_attach
+        lspconfig[server].setup(config)
+        -- LSP server configured successfully
+      end
+    elseif vim.fn.executable(server) == 1 or server == "lua_ls" then
       config.capabilities = capabilities
       config.on_attach = on_attach
       lspconfig[server].setup(config)
