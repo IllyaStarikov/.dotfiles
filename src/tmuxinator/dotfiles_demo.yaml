@@ -67,33 +67,33 @@ windows:
           cd ~/.dotfiles
           cat > /tmp/showcase.ts << 'EOF'
           // ⚡ BLINK.CMP - Experience Sub-Millisecond Completions
-          
+
           interface Developer {
             name: string;
             skills: string[];
             productivity: number;
           }
-          
+
           class PowerUser implements Developer {
             name = "You";
             skills = ["Everything"];
             productivity = 9000;
-            
+
             constructor() {
               // 💡 Type 'this.' and watch the magic happen instantly
-              
+
             }
-            
+
             async optimizeWorkflow(): Promise<void> {
               // 🚀 Try these completions:
               // console.
               // document.
               // Promise.
               // Array.prototype.
-              
+
             }
           }
-          
+
           // 🎯 PRODUCTIVITY FEATURES:
           // • <leader>ff - Fuzzy find files (10k files in <50ms)
           // • <leader>fg - Live grep entire codebase
@@ -145,22 +145,22 @@ windows:
           cat > /tmp/ai_showcase.py << 'EOF'
           """
           🤖 AI-POWERED DEVELOPMENT - 4 Models at Your Fingertips
-          
+
           Select any code and press:
           • <leader>co - Optimize for performance
-          • <leader>ce - Get detailed explanation  
+          • <leader>ce - Get detailed explanation
           • <leader>ct - Generate comprehensive tests
           • <leader>cr - Professional code review
           • <leader>cf - Fix bugs automatically
           """
-          
+
           import asyncio
           from typing import List, Dict, Optional
-          
-          
+
+
           class DataProcessor:
               """This class needs optimization - perfect for AI assistance!"""
-              
+
               def process_large_dataset(self, data: List[Dict]) -> Dict[str, any]:
                   # 🐌 Intentionally slow implementation
                   # Select this method and press <leader>co to optimize!
@@ -170,26 +170,26 @@ windows:
                           if key not in result:
                               result[key] = []
                           result[key].append(value)
-                  
+
                   # Sorting each list (inefficient)
                   for key in result:
                       for i in range(len(result[key])):
                           for j in range(i + 1, len(result[key])):
                               if result[key][i] > result[key][j]:
                                   result[key][i], result[key][j] = result[key][j], result[key][i]
-                  
+
                   return result
-              
+
               # TODO: Ask AI to implement these methods
               async def parallel_process(self, data: List[Dict]) -> Dict[str, any]:
                   """TODO: Implement parallel processing"""
                   pass
-              
+
               def optimize_memory(self, data: List[Dict]) -> Generator:
-                  """TODO: Implement memory-efficient processing"""
+                 """TODO: Implement memory-efficient processing"""
                   pass
-          
-          
+
+
           # 💡 TRY THIS:
           # 1. Select the slow method above
           # 2. Press <leader>co to optimize
@@ -287,77 +287,77 @@ windows:
           #include <vector>
           #include <thread>
           #include <chrono>
-          
+
           class DebugShowcase {
           private:
               std::vector<int> data;
               int* dangerous_ptr;
-              
+
           public:
               DebugShowcase() : dangerous_ptr(nullptr) {
                   data = {10, 20, 30, 40, 50};
               }
-              
+
               void demonstrateBreakpoint() {
                   std::cout << "🔴 Set breakpoint here: <leader>db" << std::endl;
-                  
+
                   for (size_t i = 0; i < data.size(); ++i) {
                       int value = data[i];
                       std::cout << "Processing: " << value << std::endl;
-                      
+
                       // Hover over 'value' during debug: <leader>dh
                       processValue(value);
                   }
               }
-              
+
               void processValue(int val) {
                   // Step into this function: <leader>di
                   int result = val * val;
                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                  
+
                   if (val > 30) {
                       // Conditional breakpoint territory
                       triggerBug();  // 💥 This will crash!
                   }
               }
-              
+
               void triggerBug() {
                   // Bug: dereferencing null pointer
                   *dangerous_ptr = 42;  // 💥 Crash here!
               }
-              
+
               void multiThreadDemo() {
                   // DAP handles multiple threads beautifully
                   std::vector<std::thread> threads;
-                  
+
                   for (int i = 0; i < 4; ++i) {
                       threads.emplace_back([this, i]() {
                           std::cout << "Thread " << i << " running" << std::endl;
                           std::this_thread::sleep_for(std::chrono::seconds(1));
                       });
                   }
-                  
+
                   for (auto& t : threads) {
                       t.join();
                   }
               }
           };
-          
+
           int main() {
               DebugShowcase demo;
-              
+
               std::cout << "🚀 DAP Debugging Showcase" << std::endl;
               std::cout << "========================" << std::endl;
-              
+
               demo.demonstrateBreakpoint();
               demo.multiThreadDemo();
-              
+
               return 0;
           }
-          
+
           // 🎯 DEBUGGING COMMANDS:
           // <leader>db - Toggle breakpoint
-          // <leader>dc - Start/Continue debugging  
+          // <leader>dc - Start/Continue debugging
           // <leader>di - Step into
           // <leader>do - Step over
           // <leader>dO - Step out
@@ -404,11 +404,11 @@ windows:
         - |
           cat > /tmp/productivity.md << 'EOF'
           # 🚀 PRODUCTIVITY SUITE POWERED BY SNACKS.NVIM
-          
+
           ## Why This Setup is a Game Changer
-          
+
           This configuration replaces **15+ individual plugins** with one optimized suite:
-          
+
           | Old Way (Many Plugins)        | New Way (Snacks.nvim)         |
           |-------------------------------|-------------------------------|
           | telescope.nvim                | → Integrated picker           |
@@ -426,36 +426,36 @@ windows:
           | fidget.nvim                   | → LSP progress                |
           | dressing.nvim                 | → UI improvements             |
           | nui.nvim                      | → UI components               |
-          
+
           ## ⚡ Performance Impact
-          
+
           - **Startup Time**: Only +8ms for ALL features
-          - **Memory Usage**: 60% less than individual plugins  
+          - **Memory Usage**: 60% less than individual plugins
           - **Lazy Loading**: Everything loads on-demand
           - **Unified Config**: One place to configure everything
-          
+
           ## 🎯 Key Features
-          
+
           Press `<C-t>` anywhere to see the context menu!
-          
+
           ### File Operations (<leader>f...)
           - Find files with smart sorting and frecency
           - Live grep with preview
           - Recent files tracking
           - Git-aware file browsing
-          
+
           ### Terminal Management (<leader>t...)
           - Instant terminal spawn (<20ms)
           - Floating and split modes
           - Persistent sessions
           - Smart navigation between vim and terminal
-          
+
           ### Git Integration
           - LazyGit integration (<leader>tg)
           - Inline git blame
           - Hunk navigation
           - Visual diff mode
-          
+
           ### Focus Features
           - Zen mode for distraction-free coding (<leader>z)
           - Smart window management
@@ -571,23 +571,23 @@ windows:
           \usepackage{hyperref}
           \usepackage{tikz}
           \usepackage{listings}
-          
+
           \title{VimTeX: The Ultimate \LaTeX{} Experience}
           \author{Power User}
           \date{\today}
-          
+
           \begin{document}
           \maketitle
-          
+
           \begin{abstract}
           This document demonstrates the power of VimTeX for academic writing.
           Press \texttt{\textbackslash ll} to start continuous compilation and watch
           your PDF update in real-time as you type!
           \end{abstract}
-          
+
           \section{Introduction}
           VimTeX provides a complete \LaTeX{} authoring environment with features like:
-          
+
           \begin{itemize}
               \item Continuous compilation with \texttt{latexmk}
               \item Forward/reverse search between source and PDF
@@ -595,22 +595,22 @@ windows:
               \item Citation and reference completion
               \item Integrated error handling
           \end{itemize}
-          
+
           \section{Mathematical Typesetting}
-          
+
           VimTeX excels at mathematical content. Consider the following equation:
-          
+
           \begin{equation}
               \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
           \end{equation}
-          
+
           \begin{theorem}[Euler's Identity]
           The most beautiful equation in mathematics:
           \begin{equation}
               e^{i\pi} + 1 = 0
           \end{equation}
           \end{theorem}
-          
+
           \begin{proof}
           Using Euler's formula $e^{ix} = \cos(x) + i\sin(x)$, we have:
           % Try code folding with za here!
@@ -621,7 +621,7 @@ windows:
           \end{align}
           Therefore, $e^{i\pi} + 1 = 0$.
           \end{proof}
-          
+
           % VIMTEX COMMANDS:
           % \ll - Start continuous compilation
           % \lv - View PDF with forward search
