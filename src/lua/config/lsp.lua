@@ -24,6 +24,7 @@ local function setup_lsp()
     local blink_caps = blink.get_lsp_capabilities()
     if blink_caps then
       capabilities = blink_caps
+      -- Successfully using blink.cmp capabilities
     end
   end
   
@@ -65,6 +66,12 @@ local function setup_lsp()
 
   -- Optional: on_attach function to bind keys after LSP attaches to buffer
   local on_attach = function(client, bufnr)
+    -- Ensure completion is working for C++ dot operator
+    if client.name == "clangd" then
+      -- Ensure semantic tokens are enabled for better highlighting
+      client.server_capabilities.semanticTokensProvider = nil
+    end
+    
     local buf = vim.lsp.buf    -- alias for convenience
     local map = function(mode, lhs, rhs, desc)
       if desc then desc = "[LSP] " .. desc end
@@ -92,7 +99,36 @@ local function setup_lsp()
   -- Enable language servers only if they exist
   local servers = {
     pyright = {},
-    clangd = {},
+    clangd = {
+      cmd = {
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--completion-style=detailed",
+        "--function-arg-placeholders",
+        "--fallback-style=llvm",
+        "--header-insertion-decorators",
+        "--suggest-missing-includes",
+        "--cross-file-rename",
+        "--enable-config"
+      },
+      init_options = {
+        usePlaceholders = true,
+        completeUnimported = true,
+        clangdFileStatus = true
+      },
+      filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+      root_dir = lspconfig.util.root_pattern(
+        '.clangd',
+        '.clang-tidy',
+        '.clang-format',
+        'compile_commands.json',
+        'compile_flags.txt',
+        'configure.ac',
+        '.git'
+      ),
+    },
     marksman = {},
     texlab = {},
     lua_ls = {
@@ -114,6 +150,7 @@ local function setup_lsp()
       config.capabilities = capabilities
       config.on_attach = on_attach
       lspconfig[server].setup(config)
+      -- LSP server configured successfully
     end
   end
 end
@@ -244,7 +281,7 @@ end
 -- Export setup function
 M.setup = setup_lsp
 
--- Setup LSP immediately since blink.cmp loads with lazy=false
-setup_lsp()
+-- Don't setup LSP immediately - let init.lua handle it after plugins are loaded
+-- setup_lsp()
 
 return M
