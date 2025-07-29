@@ -46,6 +46,12 @@ function M.setup()
         show_on_x_blocked_trigger_characters = {},
       },
       
+      accept = {
+        auto_brackets = {
+          enabled = true,
+        },
+      },
+      
       list = {
         max_items = 200,
         selection = {
@@ -78,8 +84,11 @@ function M.setup()
       providers = {
         lsp = {
           name = 'LSP',
+          enabled = true,
           min_keyword_length = 0,  -- CRITICAL: Allow LSP to trigger on 0 characters
           score_offset = 100,  -- Prioritize LSP completions
+          -- Note: fallbacks work in opposite direction now
+          -- Don't specify fallbacks - let LSP be primary
         },
         path = {
           name = 'Path',
