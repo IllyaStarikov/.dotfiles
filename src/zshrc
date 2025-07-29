@@ -180,7 +180,7 @@ if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
   source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   
   # Customize highlighting colors
-  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
   ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
   ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
   ZSH_HIGHLIGHT_STYLES[builtin]='fg=yellow,bold'
