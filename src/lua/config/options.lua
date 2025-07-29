@@ -101,7 +101,10 @@ opt.laststatus = 2                   -- Always show status line
 vim.cmd("set showtabline=2")
 
 opt.cursorline = true                -- Turn on the cursorline
--- opt.guicursor = ""                -- Commented out: was making cursor invisible
+-- Set cursor to be visible in all modes
+opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
+  .. ",a:blinkwait700-blinkoff400-blinkon250"
+  .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- For regular expressions
 opt.magic = true

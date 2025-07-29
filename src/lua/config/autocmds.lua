@@ -13,6 +13,15 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+-- Terminal cursor fix
+autocmd({ "TermEnter" }, {
+  group = augroup("TerminalCursorFix", { clear = true }),
+  callback = function()
+    vim.opt.guicursor = "a:ver25-blinkon1"
+  end,
+  desc = "Ensure cursor is visible in terminal mode"
+})
+
 -- =============================================================================
 -- HELPER FUNCTIONS
 -- =============================================================================
