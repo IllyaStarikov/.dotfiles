@@ -888,6 +888,7 @@ require("lazy").setup({
     "OXY2DEV/markview.nvim",
     lazy = false,
     priority = 500,  -- Lower priority than treesitter
+    ft = { "markdown", "quarto", "rmd" },  -- Only load for markdown files
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       {
