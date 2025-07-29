@@ -88,6 +88,7 @@ brew install \
     marksman \
     yaml-language-server \
     typescript-language-server \
+    vscode-langservers-extracted \
     gopls || true  # Don't fail if gopls can't be installed
 
 # Install additional Python tools
