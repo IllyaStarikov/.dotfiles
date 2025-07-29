@@ -1,0 +1,347 @@
+# Full-Stack Development Workflow 💻
+# Complete development environment showcase
+
+name: fullstack_workflow_demo
+root: ~/
+
+# Launch with: tmuxinator start fullstack_workflow_demo
+
+windows:
+  - frontend:
+      layout: main-vertical
+      main-pane-width: 65%
+      panes:
+        - |
+          mkdir -p /tmp/fullstack_demo/{frontend,backend,database}
+          cd /tmp/fullstack_demo/frontend
+          
+          cat << 'EOF' > App.tsx
+          // ⚛️ React + TypeScript with Lightning Completion
+          import React, { useState, useEffect } from 'react';
+          import { motion } from 'framer-motion';
+          
+          interface User {
+            id: string;
+            name: string;
+            email: string;
+            role: 'admin' | 'user';
+          }
+          
+          export const App: React.FC = () => {
+            const [users, setUsers] = useState<User[]>([]);
+            const [loading, setLoading] = useState(true);
+            
+            // Watch Blink.cmp complete everything instantly!
+            useEffect(() => {
+              // Type 'fetch' and see API completions
+              // Type 'async' for async patterns
+            }, []);
+            
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="container"
+              >
+                {/* JSX completions are instant! */}
+              </motion.div>
+            );
+          };
+          
+          // 🚀 Try these:
+          // 1. Import any npm package
+          // 2. Use React hooks (use...)
+          // 3. Add Tailwind classes
+          // 4. Create components
+          EOF
+          
+          nvim App.tsx -c "echo '⚛️ REACT + TYPESCRIPT POWERHOUSE'" -c "echo 'Experience the full-stack workflow!'"
+        - |
+          echo "🎨 Frontend Tooling"
+          echo "=================="
+          echo ""
+          echo "Active LSPs:"
+          echo "  ✅ TypeScript"
+          echo "  ✅ ESLint"
+          echo "  ✅ Prettier"
+          echo "  ✅ Tailwind CSS"
+          echo ""
+          echo "⚡ Hot Features:"
+          echo "  • Auto-imports"
+          echo "  • Error lens"
+          echo "  • Quick fixes"
+          echo "  • Refactoring"
+          echo ""
+          echo "🔥 All with <1ms latency!"
+
+  - backend:
+      layout: even-horizontal
+      panes:
+        - |
+          cd /tmp/fullstack_demo/backend
+          
+          cat << 'EOF' > server.ts
+          // 🚀 Node.js + Express + TypeScript
+          import express, { Request, Response } from 'express';
+          import { PrismaClient } from '@prisma/client';
+          import { z } from 'zod';
+          
+          const app = express();
+          const prisma = new PrismaClient();
+          
+          // Schema validation with Zod
+          const UserSchema = z.object({
+            name: z.string().min(3),
+            email: z.string().email(),
+            password: z.string().min(8),
+          });
+          
+          // API endpoint with full type safety
+          app.post('/api/users', async (req: Request, res: Response) => {
+            try {
+              // Watch the AI suggest error handling!
+              const validatedData = UserSchema.parse(req.body);
+              
+              // Prisma completions are instant!
+              const user = await prisma.user.create({
+                data: validatedData,
+              });
+              
+              res.json(user);
+            } catch (error) {
+              // Smart error handling
+            }
+          });
+          
+          // 🎯 Features to explore:
+          // 1. Database queries with Prisma
+          // 2. Middleware patterns
+          // 3. Authentication logic
+          // 4. API documentation
+          EOF
+          
+          nvim server.ts -c "echo '🔧 BACKEND WITH FULL TYPE SAFETY'"
+        - |
+          cd /tmp/fullstack_demo/backend
+          
+          cat << 'EOF' > schema.prisma
+          // 🗄️ Database Schema with Prisma
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          datasource db {
+            provider = "postgresql"
+            url      = env("DATABASE_URL")
+          }
+          
+          model User {
+            id        String   @id @default(cuid())
+            email     String   @unique
+            name      String
+            role      Role     @default(USER)
+            posts     Post[]
+            profile   Profile?
+            createdAt DateTime @default(now())
+            updatedAt DateTime @updatedAt
+          }
+          
+          model Post {
+            id        String   @id @default(cuid())
+            title     String
+            content   String?
+            published Boolean  @default(false)
+            author    User     @relation(fields: [authorId], references: [id])
+            authorId  String
+            tags      Tag[]
+          }
+          
+          model Profile {
+            id     String @id @default(cuid())
+            bio    String?
+            user   User   @relation(fields: [userId], references: [id])
+            userId String @unique
+          }
+          
+          model Tag {
+            id    String @id @default(cuid())
+            name  String @unique
+            posts Post[]
+          }
+          
+          enum Role {
+            USER
+            ADMIN
+          }
+          EOF
+          
+          nvim schema.prisma -c "echo '🗄️ DATABASE SCHEMA DESIGN'"
+
+  - testing:
+      layout: tiled
+      panes:
+        - |
+          cd /tmp/fullstack_demo
+          
+          cat << 'EOF' > frontend/App.test.tsx
+          // 🧪 Testing with Jest + React Testing Library
+          import { render, screen, waitFor } from '@testing-library/react';
+          import userEvent from '@testing-library/user-event';
+          import { App } from './App';
+          
+          describe('App Component', () => {
+            it('should load and display users', async () => {
+              render(<App />);
+              
+              // AI can help generate test cases!
+              expect(screen.getByText(/loading/i)).toBeInTheDocument();
+              
+              await waitFor(() => {
+                expect(screen.getByText(/users/i)).toBeInTheDocument();
+              });
+            });
+            
+            // Press <leader>ct to generate more tests!
+          });
+          EOF
+          
+          nvim frontend/App.test.tsx -c "echo '🧪 AI-POWERED TEST GENERATION'" -c "echo 'Select code and press <leader>ct for tests!'"
+        - |
+          cd /tmp/fullstack_demo
+          
+          cat << 'EOF' > backend/server.test.ts
+          // 🔬 API Testing with Supertest
+          import request from 'supertest';
+          import { app } from './server';
+          
+          describe('User API', () => {
+            it('POST /api/users', async () => {
+              const response = await request(app)
+                .post('/api/users')
+                .send({
+                  name: 'Test User',
+                  email: 'test@example.com',
+                  password: 'secure123',
+                });
+                
+              expect(response.status).toBe(201);
+              expect(response.body).toHaveProperty('id');
+            });
+          });
+          EOF
+          
+          nvim backend/server.test.ts -c "echo '🔬 BACKEND TESTING SUITE'"
+        - |
+          echo "🎯 Test Coverage"
+          echo "==============="
+          echo ""
+          echo "Frontend: ████████ 85%"
+          echo "Backend:  ███████ 78%"
+          echo "E2E:      ██████ 65%"
+          echo ""
+          echo "AI assists with:"
+          echo "  • Test generation"
+          echo "  • Edge cases"
+          echo "  • Mocking strategies"
+        - |
+          echo "🚀 CI/CD Integration"
+          echo "=================="
+          echo ""
+          echo "GitHub Actions ready:"
+          echo "  ✓ Auto testing"
+          echo "  ✓ Type checking"
+          echo "  ✓ Linting"
+          echo "  ✓ Deployment"
+
+  - devops:
+      layout: even-horizontal
+      panes:
+        - |
+          cd /tmp/fullstack_demo
+          
+          cat << 'EOF' > docker-compose.yml
+          # 🐳 Full-Stack Docker Setup
+          version: '3.8'
+          
+          services:
+            frontend:
+              build: ./frontend
+              ports:
+                - "3000:3000"
+              environment:
+                - VITE_API_URL=http://localhost:5000
+              volumes:
+                - ./frontend:/app
+                - /app/node_modules
+          
+            backend:
+              build: ./backend
+              ports:
+                - "5000:5000"
+              environment:
+                - DATABASE_URL=postgresql://user:pass@db:5432/myapp
+                - JWT_SECRET=your-secret-key
+              depends_on:
+                - db
+              volumes:
+                - ./backend:/app
+                - /app/node_modules
+          
+            db:
+              image: postgres:15-alpine
+              environment:
+                - POSTGRES_USER=user
+                - POSTGRES_PASSWORD=pass
+                - POSTGRES_DB=myapp
+              volumes:
+                - postgres_data:/var/lib/postgresql/data
+          
+          volumes:
+            postgres_data:
+          EOF
+          
+          nvim docker-compose.yml -c "echo '🐳 CONTAINERIZED DEVELOPMENT'"
+        - |
+          echo "🔧 DevOps Tools"
+          echo "=============="
+          echo ""
+          echo "Integrated:"
+          echo "  • Docker"
+          echo "  • Kubernetes"
+          echo "  • Terraform"
+          echo "  • GitHub Actions"
+          echo ""
+          echo "📊 Monitoring:"
+          echo "  • Logs"
+          echo "  • Metrics"
+          echo "  • Traces"
+
+  - git_workflow:
+      layout: main-horizontal
+      main-pane-height: 70%
+      panes:
+        - |
+          cd /tmp/fullstack_demo
+          git init
+          git add .
+          
+          echo "🐙 GIT WORKFLOW INTEGRATION"
+          echo "=========================="
+          echo ""
+          echo "Press <leader>tg for LazyGit!"
+          echo ""
+          nvim -c "echo 'Try these Git commands:'" \
+               -c "echo '  <leader>gd - Git diff'" \
+               -c "echo '  <leader>gb - Git blame'" \
+               -c "echo '  <leader>gl - Git log'" \
+               -c "echo '  <leader>gs - Git status'" \
+               -c "echo '  <leader>tg - LazyGit (full UI)'"
+        - |
+          echo "📈 Git Statistics"
+          echo "================"
+          echo ""
+          watch -n 1 'echo "Files: $(find . -type f | wc -l)"
+          echo "Lines: $(find . -name "*.ts" -o -name "*.tsx" | xargs wc -l | tail -1)"
+          echo ""
+          echo "🔥 Productivity boost: 300%"'
