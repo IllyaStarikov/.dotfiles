@@ -17,13 +17,5 @@ vim.api.nvim_create_autocmd("VimEnter", {
     
     -- Load LSP configuration
     require("config.lsp").setup()
-    
-    -- Load debug modules
-    pcall(require, "config.completion-debug")
-    pcall(require, "config.minimal-completion-test")
-    pcall(require, "config.lsp-completion-test")
-    
-    -- Apply C++ completion fix
-    require("config.fix-cpp-completion")
   end,
 })

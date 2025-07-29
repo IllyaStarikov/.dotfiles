@@ -63,11 +63,44 @@ brew install \
     git-delta \
     zoxide \
     zsh-syntax-highlighting \
-    zsh-autosuggestions
+    zsh-autosuggestions \
+    jq \
+    tree \
+    wget \
+    curl \
+    gh
 
-# Install C++ development tools
-echo "🛠️  Installing C++ development tools..."
-brew install llvm
+# Install programming language tools
+echo "🛠️  Installing programming language tools..."
+brew install \
+    llvm \
+    cmake \
+    ninja \
+    rust \
+    go \
+    node
+
+# Install LSP servers
+echo "📡 Installing Language Servers..."
+brew install \
+    pyright \
+    lua-language-server \
+    marksman \
+    yaml-language-server \
+    typescript-language-server
+
+# Install additional Python tools
+echo "🐍 Installing Python LSP dependencies..."
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install \
+    neovim \
+    ipython \
+    pynvim \
+    python-lsp-server \
+    pylsp-mypy \
+    python-lsp-black \
+    python-lsp-ruff \
+    debugpy
 
 # Install fonts
 echo "🔤 Installing fonts..."
@@ -115,10 +148,24 @@ if command -v pyenv &>/dev/null; then
         pyenv install -s "$LATEST_PYTHON"
         pyenv global "$LATEST_PYTHON"
     fi
-    
-    # Install Python packages
-    python3 -m pip install --upgrade pip
-    python3 -m pip install neovim ipython
+fi
+
+# Install tmux plugin manager
+echo "📦 Installing tmux plugin manager..."
+if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
+
+# Install Neovim providers
+echo "💎 Installing Neovim providers..."
+gem install neovim 2>/dev/null || true
+npm install -g neovim 2>/dev/null || true
+
+# Setup Rust (for blink.cmp and other tools)
+echo "🦀 Setting up Rust..."
+if ! command -v cargo &>/dev/null; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
 fi
 
 # Change default shell to zsh if needed
