@@ -119,7 +119,8 @@ python3 -m pip install \
 # Install fonts
 echo "🔤 Installing fonts..."
 brew tap homebrew/cask-fonts
-brew install --cask font-fira-code-nerd-font
+brew install --cask font-hasklug-nerd-font
+brew install --cask font-lilex-nerd-font
 brew install --cask font-symbols-only-nerd-font
 brew install --cask font-meslo-lg-nerd-font
 
