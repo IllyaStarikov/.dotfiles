@@ -400,57 +400,57 @@ function M.setup()
     },
   })
   
-  -- Set up highlight groups with TokyoNight colors
+  -- Set up highlight groups with TokyoNight Moon colors
   local highlights = {
     -- Headings - dark text on bright backgrounds for readability
-    MarkviewHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
-    MarkviewHeading1Sign = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
-    MarkviewHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
-    MarkviewHeading2Sign = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
-    MarkviewHeading3 = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
-    MarkviewHeading3Sign = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
-    MarkviewHeading4 = { fg = "#1a1b26", bg = "#50fa7b", bold = true },
-    MarkviewHeading4Sign = { fg = "#1a1b26", bg = "#50fa7b", bold = true },
-    MarkviewHeading5 = { fg = "#1a1b26", bg = "#f1fa8c", bold = true },
-    MarkviewHeading5Sign = { fg = "#1a1b26", bg = "#f1fa8c", bold = true },
-    MarkviewHeading6 = { fg = "#1a1b26", bg = "#ffb86c", bold = true },
-    MarkviewHeading6Sign = { fg = "#1a1b26", bg = "#ffb86c", bold = true },
+    MarkviewHeading1 = { fg = "#222436", bg = "#ff757f", bold = true },
+    MarkviewHeading1Sign = { fg = "#222436", bg = "#ff757f", bold = true },
+    MarkviewHeading2 = { fg = "#222436", bg = "#c099ff", bold = true },
+    MarkviewHeading2Sign = { fg = "#222436", bg = "#c099ff", bold = true },
+    MarkviewHeading3 = { fg = "#222436", bg = "#86e1fc", bold = true },
+    MarkviewHeading3Sign = { fg = "#222436", bg = "#86e1fc", bold = true },
+    MarkviewHeading4 = { fg = "#222436", bg = "#c3e88d", bold = true },
+    MarkviewHeading4Sign = { fg = "#222436", bg = "#c3e88d", bold = true },
+    MarkviewHeading5 = { fg = "#222436", bg = "#ffc777", bold = true },
+    MarkviewHeading5Sign = { fg = "#222436", bg = "#ffc777", bold = true },
+    MarkviewHeading6 = { fg = "#222436", bg = "#ff966c", bold = true },
+    MarkviewHeading6Sign = { fg = "#222436", bg = "#ff966c", bold = true },
     
     -- Setext headers and their underlines
-    MarkviewSetextHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
-    MarkviewSetextHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
-    MarkviewSetext1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
-    MarkviewSetext2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
-    MarkviewSetextUnderline = { fg = "#ff79c6", bold = true },
+    MarkviewSetextHeading1 = { fg = "#222436", bg = "#ff757f", bold = true },
+    MarkviewSetextHeading2 = { fg = "#222436", bg = "#c099ff", bold = true },
+    MarkviewSetext1 = { fg = "#222436", bg = "#ff757f", bold = true },
+    MarkviewSetext2 = { fg = "#222436", bg = "#c099ff", bold = true },
+    MarkviewSetextUnderline = { fg = "#ff757f", bold = true },
     
     -- Lists
-    MarkviewListItemMinus = { fg = "#50fa7b", bold = true },
-    MarkviewListItemPlus = { fg = "#8be9fd", bold = true },
-    MarkviewListItemStar = { fg = "#f1fa8c", bold = true },
+    MarkviewListItemMinus = { fg = "#c3e88d", bold = true },
+    MarkviewListItemPlus = { fg = "#86e1fc", bold = true },
+    MarkviewListItemStar = { fg = "#ffc777", bold = true },
     
     -- Code
-    MarkviewCode = { bg = "#2d2e3f" },
-    MarkviewInlineCode = { fg = "#8be9fd", bg = "#2d2e3f" },
+    MarkviewCode = { bg = "#2f334d" },
+    MarkviewInlineCode = { fg = "#86e1fc", bg = "#2f334d" },
     
     -- Tables
-    MarkviewTable = { bg = "#1e1f2e" },
-    MarkviewTableHeader = { fg = "#bd93f9", bg = "#1e1f2e", bold = true },
-    MarkviewTableBorder = { fg = "#6272a4" },
+    MarkviewTable = { bg = "#1e2030" },
+    MarkviewTableHeader = { fg = "#c099ff", bg = "#1e2030", bold = true },
+    MarkviewTableBorder = { fg = "#636da6" },
     
     -- Block quotes
-    MarkviewBlockQuoteDefault = { fg = "#6272a4", italic = true },
-    MarkviewBlockQuoteNote = { fg = "#8be9fd", bg = "#2d3f4f" },
-    MarkviewBlockQuoteOk = { fg = "#50fa7b", bg = "#2d3f2d" },
-    MarkviewBlockQuoteSpecial = { fg = "#bd93f9", bg = "#3d2d4f" },
-    MarkviewBlockQuoteWarn = { fg = "#f1fa8c", bg = "#4f4f2d" },
-    MarkviewBlockQuoteError = { fg = "#ff5555", bg = "#4f2d2d" },
+    MarkviewBlockQuoteDefault = { fg = "#636da6", italic = true },
+    MarkviewBlockQuoteNote = { fg = "#86e1fc", bg = "#2d3f4f" },
+    MarkviewBlockQuoteOk = { fg = "#c3e88d", bg = "#2d3f2d" },
+    MarkviewBlockQuoteSpecial = { fg = "#c099ff", bg = "#3d2d4f" },
+    MarkviewBlockQuoteWarn = { fg = "#ffc777", bg = "#4f4f2d" },
+    MarkviewBlockQuoteError = { fg = "#ff757f", bg = "#4f2d2d" },
     
     -- Checkboxes
-    MarkviewCheckboxChecked = { fg = "#50fa7b", bold = true },
-    MarkviewCheckboxUnchecked = { fg = "#ff5555" },
-    MarkviewCheckboxPending = { fg = "#f1fa8c" },
-    MarkviewCheckboxProgress = { fg = "#8be9fd" },
-    MarkviewCheckboxCancelled = { fg = "#6272a4", strikethrough = true },
+    MarkviewCheckboxChecked = { fg = "#c3e88d", bold = true },
+    MarkviewCheckboxUnchecked = { fg = "#ff757f" },
+    MarkviewCheckboxPending = { fg = "#ffc777" },
+    MarkviewCheckboxProgress = { fg = "#86e1fc" },
+    MarkviewCheckboxCancelled = { fg = "#636da6", strikethrough = true },
     
     -- Text emphasis
     MarkviewBold = { bold = true },
@@ -459,11 +459,11 @@ function M.setup()
     MarkviewStrikethrough = { strikethrough = true },
     
     -- Rules
-    MarkviewRule = { fg = "#6272a4" },
+    MarkviewRule = { fg = "#636da6" },
     
     -- Links
-    MarkviewLink = { fg = "#8be9fd", underline = true },
-    MarkviewHyperlink = { fg = "#8be9fd", underline = true },
+    MarkviewLink = { fg = "#82aaff", underline = true },
+    MarkviewHyperlink = { fg = "#82aaff", underline = true },
   }
   
   -- Apply highlights with higher priority to ensure they override theme
