@@ -75,8 +75,33 @@ action = "SearchBackward"
 key = "B"
 mods = "Command|Shift"
 
-# Tab management - Alacritty doesn't support tabs natively
-# Use tmux or a window manager for tab functionality
+# Window/Tab management - Alacritty doesn't support tabs, only windows
+[[keyboard.bindings]]
+action = "CreateNewWindow"
+key = "T"
+mods = "Command"
+
+# Use tmux for tab-like functionality
+# [[keyboard.bindings]]
+# chars = "\u0001c"  # Ctrl-A c (new tmux window)
+# key = "T"
+# mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0001n"  # Ctrl-A n (next tmux window)
+key = "]"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+chars = "\u0001p"  # Ctrl-A p (previous tmux window)
+key = "["
+mods = "Command|Shift"
+
+# Clear terminal (Cmd+K)
+[[keyboard.bindings]]
+chars = "\u000c"  # Ctrl-L
+key = "K"
+mods = "Command"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🎵 AUDIO & VISUAL FEEDBACK
