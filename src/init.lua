@@ -6,21 +6,24 @@ require("config.plugins")
 require("config.theme")
 
 -- Load LSP after plugins are loaded
--- Using BufEnter instead of VeryLazy to ensure LSP loads for the first buffer
-vim.api.nvim_create_autocmd({"BufEnter", "BufNewFile"}, {
-  pattern = "*",
-  once = true,  -- Only run once
+-- Using VimEnter to ensure all plugins are fully initialized
+vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
-    -- Small delay to ensure plugins are fully loaded
-    vim.defer_fn(function()
-      -- Load LSP configuration
-      require("config.lsp").setup()
-      
-      -- Load debug/test modules (can be removed later)
-      require("config.debug-lsp")
-      require("config.test-completion")
-      require("config.debug-completion")
-      require("config.completion-test")
-    end, 100)
+    -- Ensure blink.cmp is loaded first
+    local blink_ok = pcall(require, "blink.cmp")
+    if not blink_ok then
+      vim.notify("Warning: blink.cmp not loaded before LSP setup", vim.log.levels.WARN)
+    end
+    
+    -- Load LSP configuration
+    require("config.lsp").setup()
+    
+    -- Load debug modules
+    pcall(require, "config.completion-debug")
+    pcall(require, "config.minimal-completion-test")
+    pcall(require, "config.lsp-completion-test")
+    
+    -- Apply C++ completion fix
+    require("config.fix-cpp-completion")
   end,
 })
