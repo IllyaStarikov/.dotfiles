@@ -1,28 +1,29 @@
 # TokyoNight Moon Alacritty Colors
+# Official colors from https://github.com/folke/tokyonight.nvim
 
 [colors.primary]
 background = '#222436'
 foreground = '#c8d3f5'
 
 [colors.normal]
-black = '#444a73'
+black = '#1b1d2b'
 red = '#ff757f'
 green = '#c3e88d'
 yellow = '#ffc777'
 blue = '#82aaff'
 magenta = '#c099ff'
 cyan = '#86e1fc'
-white = '#c8d3f5'
+white = '#828bb8'
 
 [colors.bright]
-black = '#545c7e'
-red = '#c53b53'
-green = '#4fd6be'
-yellow = '#ff966c'
-blue = '#65bcff'
-magenta = '#ff007c'
-cyan = '#89ddff'
-white = '#828bb8'
+black = '#444a73'
+red = '#ff8d94'
+green = '#c7fb6d'
+yellow = '#ffd8ab'
+blue = '#9ab8ff'
+magenta = '#caabff'
+cyan = '#b2ebff'
+white = '#c8d3f5'
 
 [[colors.indexed_colors]]
 index = 16
