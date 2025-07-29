@@ -1,68 +1,142 @@
 #!/bin/bash
+set -euo pipefail
 
-# Dotfiles (+ Linking, but not ZSH because it will get overwritten)
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+echo "🚀 macOS Development Environment Setup"
+echo "======================================"
 
-mv ~/.vimrc ~/.vimrc.old # A vimrc might already exist
-mkdir -p ~/.config/nvim  # This directory might not exist yet
+# Check if running on macOS
+if [[ "$(uname)" != "Darwin" ]]; then
+    echo "❌ This script is designed for macOS only"
+    exit 1
+fi
 
-# ZSH
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Install Xcode Command Line Tools first
+echo "📦 Installing Xcode Command Line Tools..."
+if ! xcode-select -p &>/dev/null; then
+    xcode-select --install
+    echo "⏸️  Please complete Xcode installation in the popup, then press Enter to continue..."
+    read -r
+fi
 
-# NOTE/WARNING: Installation might stop here. This is because a new shell is installed, and because the
-# shell is switched, the shell script might not be able to proceed.
+# Install Homebrew
+echo "🍺 Installing Homebrew..."
+if ! command -v brew &>/dev/null; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Add Homebrew to PATH for this session
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
 
-# Run the following two commands, and in the ZSHRC replace /Users/starikov with where /.../starikov exists
-mv ~/.zshrc ~/.zshrc.pre-oh-my-zsh
+# Update Homebrew
+echo "📦 Updating Homebrew..."
+brew update
 
-## Spaceship Theme
-git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+# Clone dotfiles if not already present
+if [[ ! -d "$HOME/.dotfiles" ]]; then
+    echo "📂 Cloning dotfiles..."
+    git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+else
+    echo "✅ Dotfiles already present"
+fi
 
-## ZSH Syntax Highlighting & Auto-suggestions
-brew install zsh-syntax-highlighting
-brew install zsh-autosuggestions
+# Install essential packages first
+echo "📦 Installing essential packages..."
+brew install git neovim tmux
 
-# Vim
-curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+# Install development tools
+echo "🛠️  Installing development tools..."
+brew install \
+    pyenv \
+    ranger \
+    fzf \
+    tmuxinator \
+    eza \
+    bat \
+    ripgrep \
+    fd \
+    htop \
+    procs \
+    git-delta \
+    zoxide \
+    zsh-syntax-highlighting \
+    zsh-autosuggestions
 
-xcode-select --install
-
-# Brew (and associated packages)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-chsh -s /bin/zsh
-
-brew install pyenv
-brew install neovim
-brew install ranger
-brew install fzf
-brew install tmux
-brew install tmuxinator
-
-# Modern CLI tools
-brew install eza        # Modern ls replacement
-brew install bat        # Better cat with syntax highlighting
-brew install ripgrep    # Better grep
-brew install fd         # Better find
-brew install htop       # Better top
-brew install procs      # Modern ps
-brew install git-delta  # Better git diff
-brew install zoxide     # Smarter cd
-brew install starship   # Consider as alternative to spaceship prompt
-
-# Pip Packages
-python3 -m pip install neovim
-python3 -m pip install ipython
-
-# Global Git Ignore
-git config --global core.excludesfile '~/.gitignore'
-
-# Fonts - Install FiraCode Nerd Font as default
+# Install fonts
+echo "🔤 Installing fonts..."
 brew tap homebrew/cask-fonts
 brew install --cask font-fira-code-nerd-font
-brew install --cask font-symbols-only-nerd-font  # For additional glyph coverage
+brew install --cask font-symbols-only-nerd-font
+brew install --cask font-meslo-lg-nerd-font
 
-# Also install powerline fonts for compatibility
-brew install --cask font-meslo-lg-nerd-font  # Fallback option
+# Backup existing configs
+echo "💾 Backing up existing configurations..."
+[[ -f "$HOME/.zshrc" ]] && mv "$HOME/.zshrc" "$HOME/.zshrc.backup.$(date +%Y%m%d_%H%M%S)"
+[[ -f "$HOME/.vimrc" ]] && mv "$HOME/.vimrc" "$HOME/.vimrc.backup.$(date +%Y%m%d_%H%M%S)"
 
+# Create necessary directories
+echo "📁 Creating configuration directories..."
+mkdir -p "$HOME/.config/nvim"
+mkdir -p "$HOME/.config/alacritty"
+mkdir -p "$HOME/.config/tmux"
+
+# Run aliases setup
+echo "🔗 Setting up symlinks..."
+if [[ -f "$HOME/.dotfiles/src/setup/aliases.sh" ]]; then
+    bash "$HOME/.dotfiles/src/setup/aliases.sh"
+fi
+
+# Install Oh My Zsh (this might change the shell)
+echo "🐚 Installing Oh My Zsh..."
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    RUNZSH=no sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# Install Spaceship theme
+echo "🚀 Installing Spaceship theme..."
+if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt" ]]; then
+    git clone https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt" --depth=1
+    ln -sf "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship.zsh-theme"
+fi
+
+# Python setup
+echo "🐍 Setting up Python environment..."
+if command -v pyenv &>/dev/null; then
+    # Install latest Python 3
+    LATEST_PYTHON=$(pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -1 | xargs)
+    if [[ -n "$LATEST_PYTHON" ]]; then
+        pyenv install -s "$LATEST_PYTHON"
+        pyenv global "$LATEST_PYTHON"
+    fi
+    
+    # Install Python packages
+    python3 -m pip install --upgrade pip
+    python3 -m pip install neovim ipython
+fi
+
+# Change default shell to zsh if needed
+if [[ "$SHELL" != *"zsh"* ]]; then
+    echo "🐚 Changing default shell to zsh..."
+    chsh -s /bin/zsh
+fi
+
+# Setup git configuration
+echo "⚙️  Setting up Git configuration..."
+git config --global core.excludesfile '~/.gitignore'
+
+# Final instructions
+echo ""
+echo "✅ Setup complete!"
+echo ""
+echo "🎯 Next steps:"
+echo "  1. Restart your terminal or run: source ~/.zshrc"
+echo "  2. Open Neovim and run :Lazy to install plugins"
+echo "  3. Run 'theme' to set up your preferred theme"
+echo ""
+echo "📚 Optional tools to consider:"
+echo "  - brew install --cask alacritty  # GPU-accelerated terminal"
+echo "  - brew install starship           # Alternative to spaceship prompt"
+echo ""
