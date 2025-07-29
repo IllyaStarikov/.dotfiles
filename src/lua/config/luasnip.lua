@@ -12,6 +12,12 @@ function M.setup()
     return
   end
 
+  -- Setup jsregexp for transform snippets (if available)
+  local jsregexp_ok = pcall(require, "luasnip-jsregexp")
+  if jsregexp_ok then
+    luasnip.setup_jsregexp()
+  end
+
   -- Configure LuaSnip
   luasnip.config.set_config({
     -- Keep snippets around after leaving snippet region

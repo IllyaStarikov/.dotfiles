@@ -68,7 +68,8 @@ brew install \
     tree \
     wget \
     curl \
-    gh
+    gh \
+    lazygit
 
 # Install programming language tools
 echo "🛠️  Installing programming language tools..."
@@ -162,6 +163,13 @@ fi
 echo "💎 Installing Neovim providers..."
 gem install neovim 2>/dev/null || true
 npm install -g neovim 2>/dev/null || true
+
+# Install luarocks (already installed via Homebrew, but ensure it's configured)
+echo "🪨 Configuring LuaRocks..."
+if command -v luarocks &>/dev/null; then
+    # Install jsregexp for LuaSnip transform snippets
+    luarocks install jsregexp 2>/dev/null || true
+fi
 
 # Setup Rust (for blink.cmp and other tools)
 echo "🦀 Setting up Rust..."
