@@ -69,7 +69,9 @@ brew install \
     wget \
     curl \
     gh \
-    lazygit
+    lazygit \
+    mercurial \
+    imagemagick
 
 # Install programming language tools
 echo "🛠️  Installing programming language tools..."
@@ -80,6 +82,15 @@ brew install \
     rust \
     go \
     node
+
+# Install optional programming languages (for Mason compatibility)
+echo "🌐 Installing optional language tools..."
+# PHP and Composer
+brew install php composer 2>/dev/null || true
+# Java (via OpenJDK)
+brew install openjdk 2>/dev/null || true
+# Julia (optional for scientific computing)
+# brew install julia 2>/dev/null || true  # Commented out - large download
 
 # Install LSP servers
 echo "📡 Installing Language Servers..."
@@ -163,6 +174,10 @@ fi
 echo "💎 Installing Neovim providers..."
 gem install neovim 2>/dev/null || true
 npm install -g neovim 2>/dev/null || true
+
+# Install optional tools for enhanced features
+echo "🎨 Installing optional enhancement tools..."
+npm install -g @mermaid-js/mermaid-cli 2>/dev/null || true  # For Mermaid diagrams
 
 # Install luarocks (already installed via Homebrew, but ensure it's configured)
 echo "🪨 Configuring LuaRocks..."
