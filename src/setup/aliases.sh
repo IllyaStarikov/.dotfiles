@@ -43,3 +43,6 @@ ln -sf "$HOME/.dotfiles/src/scripts" "$HOME/.scripts"
 mkdir -p "$HOME/.config/nvim"
 ln -sf "$HOME/.dotfiles/src/spell" "$HOME/.config/nvim/spell"
 
+# Clangd configuration
+mkdir -p "$HOME/.config/clangd"
+ln -sf "$HOME/.dotfiles/src/clangd_config.yaml" "$HOME/.config/clangd/config.yaml"
