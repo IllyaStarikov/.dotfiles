@@ -404,17 +404,17 @@ function M.setup()
   local highlights = {
     -- Headings - dark text on bright backgrounds for readability
     MarkviewHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
-    MarkviewHeading1Sign = { fg = "#ff79c6", bold = true },
+    MarkviewHeading1Sign = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
     MarkviewHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
-    MarkviewHeading2Sign = { fg = "#bd93f9", bold = true },
+    MarkviewHeading2Sign = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
     MarkviewHeading3 = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
-    MarkviewHeading3Sign = { fg = "#8be9fd", bold = true },
+    MarkviewHeading3Sign = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
     MarkviewHeading4 = { fg = "#1a1b26", bg = "#50fa7b", bold = true },
-    MarkviewHeading4Sign = { fg = "#50fa7b", bold = true },
+    MarkviewHeading4Sign = { fg = "#1a1b26", bg = "#50fa7b", bold = true },
     MarkviewHeading5 = { fg = "#1a1b26", bg = "#f1fa8c", bold = true },
-    MarkviewHeading5Sign = { fg = "#f1fa8c", bold = true },
+    MarkviewHeading5Sign = { fg = "#1a1b26", bg = "#f1fa8c", bold = true },
     MarkviewHeading6 = { fg = "#1a1b26", bg = "#ffb86c", bold = true },
-    MarkviewHeading6Sign = { fg = "#ffb86c", bold = true },
+    MarkviewHeading6Sign = { fg = "#1a1b26", bg = "#ffb86c", bold = true },
     
     -- Setext headers and their underlines
     MarkviewSetextHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
@@ -466,9 +466,12 @@ function M.setup()
     MarkviewHyperlink = { fg = "#8be9fd", underline = true },
   }
   
-  for group, opts in pairs(highlights) do
-    vim.api.nvim_set_hl(0, group, opts)
-  end
+  -- Apply highlights with higher priority to ensure they override theme
+  vim.schedule(function()
+    for group, opts in pairs(highlights) do
+      vim.api.nvim_set_hl(0, group, opts)
+    end
+  end)
   
   -- Configure Lilex Nerd Font ligatures for markview
   -- This ensures ligatures render properly in markdown preview
@@ -487,6 +490,13 @@ function M.setup()
       
       -- Create a buffer-local variable to track state
       vim.b.markview_enabled = true
+      
+      -- Reapply highlights to ensure they take effect
+      vim.schedule(function()
+        for group, opts in pairs(highlights) do
+          vim.api.nvim_set_hl(0, group, opts)
+        end
+      end)
       
       -- Smart toggle between rich preview and ligatures
       vim.keymap.set("n", "<leader>mp", function()
