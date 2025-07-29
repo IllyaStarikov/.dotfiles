@@ -138,23 +138,6 @@ function M.setup()
     },
   })
   
-  -- Add a debug autocmd to verify trigger characters
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      if client and client.server_capabilities.completionProvider then
-        local triggers = client.server_capabilities.completionProvider.triggerCharacters
-        if triggers and vim.tbl_contains(triggers, '.') then
-          vim.notify(client.name .. " supports dot completion", vim.log.levels.DEBUG)
-        end
-      end
-    end,
-  })
-  
-  -- Manual completion trigger for debugging
-  vim.keymap.set('i', '<C-x><C-o>', function()
-    require('blink.cmp').show()
-  end, { desc = "Manually trigger completion" })
 end
 
 return M
