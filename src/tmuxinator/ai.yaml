@@ -14,11 +14,11 @@ windows:
             - cd ~/Documents/Development/academia
             - claude
         - resume:
-            - cd ~/Documents/Development/resume
+            - cd ~/Documents/Development/resume-radix
             - claude
         - home:
             - cd ~
-            - claude
+            - 
   - workspaces:
       layout: tiled
       panes:
@@ -27,6 +27,6 @@ windows:
         - academia:
             - cd ~/Documents/Development/academia
         - resume:
-            - cd ~/Documents/Development/resume
+            - cd ~/Documents/Development/resume-radix
         - home:
             - cd ~
