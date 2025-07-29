@@ -6,10 +6,29 @@
 local M = {}
 
 function M.setup()
+  -- Start with markview enabled for rich preview
+  vim.g.markview_enable = 1
+  
+  -- Ensure font is set before markview loads
+  if vim.fn.has('gui_running') == 1 or vim.g.neovide then
+    vim.opt.guifont = "Lilex Nerd Font:h18"
+  end
+  
+  -- Ensure UTF-8 encoding
+  vim.opt.encoding = "utf-8"
+  vim.opt.fileencoding = "utf-8"
+  
+  -- Tell Neovim we have nerd fonts
+  vim.g.have_nerd_font = true
+  
   local markview = require("markview")
   local presets = require("markview.presets")
   
   markview.setup({
+    
+    -- Preserve ligatures
+    preserve_whitespace = true,
+    
     -- Preview configuration (moved deprecated options here)
     preview = {
       -- Mode configuration - render in normal mode only
@@ -45,7 +64,7 @@ function M.setup()
       enable = true,
       max_file_length = 1000,
       
-      -- Headings with simple style (no icons)
+      -- Headings with ligature-like symbols
       headings = {
         enable = true,
         shift_width = 0,
@@ -54,37 +73,69 @@ function M.setup()
           style = "label",
           padding_left = " ",
           padding_right = " ",
+          icon = "❯ ",  -- Single chevron for H1
           hl = "MarkviewHeading1",
+          icon_hl = "MarkviewHeading1",
           sign = false,
         },
         heading_2 = {
           style = "label", 
           padding_left = " ",
           padding_right = " ",
+          icon = "❯❯ ",  -- Double chevron for H2
           hl = "MarkviewHeading2",
+          icon_hl = "MarkviewHeading2",
           sign = false,
         },
         heading_3 = {
           style = "label",
           padding_left = " ",
           padding_right = " ",
+          icon = "❯❯❯ ",  -- Triple chevron for H3
           hl = "MarkviewHeading3",
+          icon_hl = "MarkviewHeading3",
           sign = false,
         },
         heading_4 = {
-          style = "simple",
+          style = "label",
+          padding_left = " ",
+          padding_right = " ",
+          icon = "❯❯❯❯ ",  -- Quadruple chevron for H4
           hl = "MarkviewHeading4",
+          icon_hl = "MarkviewHeading4",
           sign = false,
         },
         heading_5 = {
-          style = "simple",
+          style = "label",
+          padding_left = " ",
+          padding_right = " ",
+          icon = "❯❯❯❯❯ ",  -- Quintuple chevron for H5
           hl = "MarkviewHeading5",
+          icon_hl = "MarkviewHeading5",
           sign = false,
         },
         heading_6 = {
-          style = "simple",
+          style = "label",
+          padding_left = " ",
+          padding_right = " ",
+          icon = "❯❯❯❯❯❯ ",  -- Sextuple chevron for H6
           hl = "MarkviewHeading6",
+          icon_hl = "MarkviewHeading6",
           sign = false,
+        },
+        
+        -- Setext headers (alternative headers with === and ---)
+        setext_1 = {
+          style = "simple",
+          hl = "MarkviewHeading1",
+          icon = "❯ ",  -- Single chevron for setext H1
+          icon_hl = "MarkviewHeading1",
+        },
+        setext_2 = {
+          style = "simple", 
+          hl = "MarkviewHeading2",
+          icon = "❯❯ ",  -- Double chevron for setext H2
+          icon_hl = "MarkviewHeading2",
         },
       },
       
@@ -128,9 +179,9 @@ function M.setup()
         -- Language direction
         language_direction = "right",
         
-        -- Enable language icons now that FiraCode works
-        icons = true,
-        sign = true,
+        -- Disable icons if they're not showing
+        icons = false,
+        sign = false,
         
         -- Default highlighting
         hl = "MarkviewCode",
@@ -140,7 +191,7 @@ function M.setup()
       block_quotes = {
         enable = true,
         default = {
-          border_left = "|",
+          border_left = "┃",
           border_left_hl = "MarkviewBlockQuoteDefault",
           border_top_left = "",
           border_top = "",
@@ -150,7 +201,7 @@ function M.setup()
           border_bottom_right = "",
           border_right = "",
           
-          quote_char = ">",
+          quote_char = "┃ ",
           quote_char_hl = "MarkviewBlockQuoteDefault",
         },
         
@@ -158,53 +209,53 @@ function M.setup()
         callouts = {
           {
             match_string = "NOTE",
-            callout_preview = "📝 Note",
+            callout_preview = "ℹ️  NOTE",
             callout_preview_hl = "MarkviewBlockQuoteNote",
             custom_title = true,
-            custom_icon = "📝",
-            border_left = "|",
+            custom_icon = "ℹ️ ",
+            border_left = "│",
             border_left_hl = "MarkviewBlockQuoteNote",
           },
           {
             match_string = "TIP",
-            callout_preview = "💡 Tip",
+            callout_preview = "💡 TIP",
             callout_preview_hl = "MarkviewBlockQuoteOk",
             custom_title = true,
             custom_icon = "💡",
-            border_left = "|",
+            border_left = "│",
             border_left_hl = "MarkviewBlockQuoteOk",
           },
           {
             match_string = "IMPORTANT",
-            callout_preview = "⚠️  Important",
+            callout_preview = "⭐ IMPORTANT",
             callout_preview_hl = "MarkviewBlockQuoteSpecial",
             custom_title = true,
-            custom_icon = "⚠️",
-            border_left = "|",
+            custom_icon = "⭐",
+            border_left = "│",
             border_left_hl = "MarkviewBlockQuoteSpecial",
           },
           {
             match_string = "WARNING",
-            callout_preview = "⚡ Warning",
+            callout_preview = "⚡ WARNING",
             callout_preview_hl = "MarkviewBlockQuoteWarn",
             custom_title = true,
             custom_icon = "⚡",
-            border_left = "|",
+            border_left = "│",
             border_left_hl = "MarkviewBlockQuoteWarn",
           },
           {
             match_string = "CAUTION",
-            callout_preview = "🚨 Caution",
+            callout_preview = "🚨 CAUTION",
             callout_preview_hl = "MarkviewBlockQuoteError",
             custom_title = true,
             custom_icon = "🚨",
-            border_left = "|",
+            border_left = "│",
             border_left_hl = "MarkviewBlockQuoteError",
           },
         },
       },
       
-      -- Horizontal rules with simple ASCII
+      -- Horizontal rules with elegant line
       horizontal_rules = {
         enable = true,
         parts = {
@@ -212,15 +263,27 @@ function M.setup()
             type = "repeating",
             repeat_amount = vim.api.nvim_win_get_width,
             
-            text = "-",
+            text = "─",
             hl = "MarkviewRule",
           },
         },
       },
       
-      -- Disable list items - they don't render cleanly with the markers
+      -- Enable list items with better Unicode symbols
       list_items = {
-        enable = false
+        enable = true,
+        marker_plus = {
+          text = "✦ ",  -- Four-pointed star for plus lists
+          hl = "MarkviewListItemPlus"
+        },
+        marker_minus = {
+          text = "▪ ",  -- Square bullet for minus lists
+          hl = "MarkviewListItemMinus"  
+        },
+        marker_star = {
+          text = "◆ ",  -- Diamond for star lists
+          hl = "MarkviewListItemStar"
+        }
       },
       
       -- Tables with ASCII borders
@@ -230,13 +293,13 @@ function M.setup()
         block_decorator = true,
         use_virt_lines = false,
         
-        -- ASCII table parts
+        -- Table parts with modern box drawing
         parts = {
-          top = { "+", "-", "+", "-", "+" },
-          header = { "|", " ", "|", " ", "|" },
-          separator = { "+", "=", "+", "=", "+" },
-          row = { "|", " ", "|", " ", "|" },
-          bottom = { "+", "-", "+", "-", "+" },
+          top = { "┌", "─", "┬", "─", "┐" },
+          header = { "│", " ", "│", " ", "│" },
+          separator = { "├", "─", "┼", "─", "┤" },
+          row = { "│", " ", "│", " ", "│" },
+          bottom = { "└", "─", "┴", "─", "┘" },
         },
         
         -- Alignment
@@ -259,7 +322,12 @@ function M.setup()
     markdown_inline = {
       enable = true,
       
-      -- Enable checkboxes with nice symbols
+      -- Disable features that might interfere with ligatures
+      escape = {
+        enable = false  -- Don't process escape sequences
+      },
+      
+      -- Enable checkboxes with modern symbols
       checkboxes = {
         enable = true,
         checked = { 
@@ -267,11 +335,11 @@ function M.setup()
           hl = "MarkviewCheckboxChecked" 
         },
         unchecked = { 
-          text = "✗", 
+          text = "□", 
           hl = "MarkviewCheckboxUnchecked" 
         },
         pending = { 
-          text = "◯", 
+          text = "◐", 
           hl = "MarkviewCheckboxPending" 
         },
       },
@@ -311,13 +379,21 @@ function M.setup()
         hl = "MarkviewStrikethrough",
       },
       
-      -- Disable link icons - they clutter the display
+      -- Hyperlinks (for [text](url) style links)
+      hyperlinks = { 
+        enable = true,
+        default = {
+          icon = "◉ ",  -- Filled circle for hyperlinks
+          hl = "MarkviewHyperlink",
+        }
+      },
+      
+      -- Images
       images = { 
         enable = false,
       },
-      links = { 
-        enable = false,
-      },
+      
+      -- Email links
       emails = { 
         enable = false,
       },
@@ -326,16 +402,26 @@ function M.setup()
   
   -- Set up highlight groups with TokyoNight colors
   local highlights = {
-    -- Headings
+    -- Headings - all with background colors
     MarkviewHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
     MarkviewHeading1Sign = { fg = "#ff79c6", bold = true },
     MarkviewHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
     MarkviewHeading2Sign = { fg = "#bd93f9", bold = true },
     MarkviewHeading3 = { fg = "#1a1b26", bg = "#8be9fd", bold = true },
     MarkviewHeading3Sign = { fg = "#8be9fd", bold = true },
-    MarkviewHeading4 = { fg = "#50fa7b", bold = true },
-    MarkviewHeading5 = { fg = "#f1fa8c", bold = true },
-    MarkviewHeading6 = { fg = "#ffb86c", bold = true },
+    MarkviewHeading4 = { fg = "#1a1b26", bg = "#50fa7b", bold = true },
+    MarkviewHeading4Sign = { fg = "#50fa7b", bold = true },
+    MarkviewHeading5 = { fg = "#1a1b26", bg = "#f1fa8c", bold = true },
+    MarkviewHeading5Sign = { fg = "#f1fa8c", bold = true },
+    MarkviewHeading6 = { fg = "#1a1b26", bg = "#ffb86c", bold = true },
+    MarkviewHeading6Sign = { fg = "#ffb86c", bold = true },
+    
+    -- Setext headers and their underlines
+    MarkviewSetextHeading1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
+    MarkviewSetextHeading2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
+    MarkviewSetext1 = { fg = "#1a1b26", bg = "#ff79c6", bold = true },
+    MarkviewSetext2 = { fg = "#1a1b26", bg = "#bd93f9", bold = true },
+    MarkviewSetextUnderline = { fg = "#ff79c6", bold = true },
     
     -- Lists
     MarkviewListItemMinus = { fg = "#50fa7b", bold = true },
@@ -374,38 +460,56 @@ function M.setup()
     
     -- Rules
     MarkviewRule = { fg = "#6272a4" },
+    
+    -- Links
+    MarkviewLink = { fg = "#8be9fd", underline = true },
+    MarkviewHyperlink = { fg = "#8be9fd", underline = true },
   }
   
   for group, opts in pairs(highlights) do
     vim.api.nvim_set_hl(0, group, opts)
   end
   
-  -- No overrides needed with FiraCode Nerd Font!
+  -- Configure Lilex Nerd Font ligatures for markview
+  -- This ensures ligatures render properly in markdown preview
+  vim.opt.guifont = "Lilex Nerd Font:h18"
+  
+  -- Lilex Nerd Font has excellent ligature support!
   
   -- Auto-enable for markdown files
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "quarto", "rmd" },
     callback = function()
+      -- Start with markview enabled (rich preview)
       vim.opt_local.conceallevel = 2
-      vim.opt_local.concealcursor = "nc"
+      vim.opt_local.concealcursor = ""
+      vim.opt_local.list = false
+      
+      -- Create a buffer-local variable to track state
+      vim.b.markview_enabled = true
+      
+      -- Smart toggle between rich preview and ligatures
+      vim.keymap.set("n", "<leader>mp", function()
+        if vim.b.markview_enabled then
+          vim.cmd("Markview disable")
+          vim.opt_local.conceallevel = 0
+          vim.b.markview_enabled = false
+          vim.notify("Ligatures enabled ✓ (markview disabled)", vim.log.levels.INFO)
+        else
+          vim.cmd("Markview enable")
+          vim.opt_local.conceallevel = 2
+          vim.b.markview_enabled = true
+          vim.notify("Rich preview enabled (ligatures disabled)", vim.log.levels.INFO)
+        end
+      end, { 
+        buffer = true, 
+        desc = "Toggle between rich preview and ligatures" 
+      })
+      
     end
   })
   
-  -- No longer need this autocmd since we're not overriding anything
-  
-  -- Add mode-specific handling for proper concealing
-  vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
-    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
-    callback = function(args)
-      if args.event == "InsertEnter" then
-        -- In insert mode, show raw markdown
-        vim.opt_local.conceallevel = 0
-      else
-        -- In normal mode, use concealing
-        vim.opt_local.conceallevel = 2
-      end
-    end
-  })
+  -- No longer need conflicting autocmds - toggle handles concealment
 end
 
 return M
