@@ -789,13 +789,31 @@ require("lazy").setup({
   },
   { "williamboman/mason-lspconfig.nvim" },
 
+  -- Snippet Engine
+  {
+    "L3MON4D3/LuaSnip",
+    version = "v2.*",
+    dependencies = {
+      "rafamadriz/friendly-snippets", -- Preconfigured snippets
+    },
+    config = function()
+      require('config.luasnip').setup()
+    end,
+    keys = {
+      { "<Tab>", mode = {"i", "s"}, desc = "Expand/Jump in snippet" },
+      { "<S-Tab>", mode = {"i", "s"}, desc = "Jump back in snippet" },
+      { "<C-j>", mode = {"i", "s"}, desc = "Next choice in snippet" },
+      { "<C-k>", mode = {"i", "s"}, desc = "Previous choice in snippet" },
+      { "<leader>sl", desc = "Show available snippets" },
+    },
+  },
+
   -- Modern high-performance completion
   {
     "saghen/blink.cmp",
     lazy = false,  -- Load immediately for LSP integration
     dependencies = { 
-      "rafamadriz/friendly-snippets",
-      "L3MON4D3/LuaSnip", -- Snippet engine
+      "L3MON4D3/LuaSnip", -- Snippet engine integration
     },
     version = "v0.*",
     -- Build the Rust fuzzy matching library for optimal performance
