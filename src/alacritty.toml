@@ -222,14 +222,10 @@ action = "ExpandSelection"
 
 [cursor]
 # Cursor style
-[cursor.style]
-shape = "Block"       # Block, Underline, or Beam
-blinking = "On"       # On, Off, or Always
+style = { shape = "Block", blinking = "On" }
 
 # Vi mode cursor style (when vi mode is enabled)
-[cursor.vi_mode_style]
-shape = "Block"
-blinking = "Off"
+vi_mode_style = { shape = "Block", blinking = "Off" }
 
 # Cursor blinking interval in milliseconds
 blink_interval = 750
