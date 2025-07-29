@@ -32,7 +32,7 @@ local function setup_lsp()
   local additional_servers = {
     "marksman",      -- Markdown
     "texlab",        -- LaTeX  
-    "tsserver",      -- TypeScript/JavaScript
+    "ts_ls",         -- TypeScript/JavaScript
     "rust_analyzer", -- Rust
     "gopls",         -- Go
   }
@@ -208,9 +208,20 @@ local function setup_lsp()
         }
       }
     },
-    tsserver = {
+    ts_ls = {
       settings = {
         typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        },
+        javascript = {
           inlayHints = {
             includeInlayParameterNameHints = 'all',
             includeInlayParameterNameHintsWhenArgumentMatchesName = false,
