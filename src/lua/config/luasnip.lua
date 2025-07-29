@@ -13,9 +13,13 @@ function M.setup()
   end
 
   -- Setup jsregexp for transform snippets (if available)
-  local jsregexp_ok = pcall(require, "luasnip-jsregexp")
-  if jsregexp_ok then
+  -- Load jsregexp module (for snippet transformations)
+  local jsregexp_ok = pcall(function()
     luasnip.setup_jsregexp()
+  end)
+  if not jsregexp_ok then
+    -- Try alternate method if first fails
+    pcall(require, "luasnip.jsregexp")
   end
 
   -- Configure LuaSnip

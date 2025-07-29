@@ -855,7 +855,8 @@ require("lazy").setup({
         ensure_installed = {
           "markdown", "markdown_inline", "python", "javascript", "typescript",
           "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
-          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex"
+          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex",
+          "scss", "svelte", "tsx", "typst", "vue", "norg"
         },
         auto_install = true,
         highlight = {
