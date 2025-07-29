@@ -18,19 +18,37 @@ local function setup_lsp()
   })
   
   require("mason-lspconfig").setup({
-    -- Ensure these servers are installed
+    -- Ensure these servers are installed (only the essential ones)
     ensure_installed = { 
       "pyright",     -- Python
       "clangd",      -- C/C++
       "lua_ls",      -- Lua
-      "marksman",    -- Markdown
-      "texlab",      -- LaTeX
-      "tsserver",    -- TypeScript/JavaScript
-      "rust_analyzer", -- Rust
-      "gopls",       -- Go
     },
-    automatic_installation = true,
+    -- Don't automatically install to avoid failures
+    automatic_installation = false,
   })
+  
+  -- Try to install additional servers but don't fail if they can't be installed
+  local additional_servers = {
+    "marksman",      -- Markdown
+    "texlab",        -- LaTeX  
+    "tsserver",      -- TypeScript/JavaScript
+    "rust_analyzer", -- Rust
+    "gopls",         -- Go
+  }
+  
+  -- Attempt to install additional servers without blocking
+  vim.defer_fn(function()
+    local registry = require("mason-registry")
+    for _, server in ipairs(additional_servers) do
+      local ok, pkg = pcall(registry.get_package, server)
+      if ok and not pkg:is_installed() then
+        pkg:install():on("closed", function()
+          -- Silent install, no notifications
+        end)
+      end
+    end
+  end, 1000)
 
   -- 2. LSP server configurations
   local lspconfig = require("lspconfig")
@@ -252,7 +270,10 @@ local function setup_lsp()
     end)
     
     if not ok then
-      vim.notify("Failed to setup " .. server .. ": " .. tostring(err), vim.log.levels.WARN)
+      -- Only show warning for essential servers
+      if server == "pyright" or server == "clangd" or server == "lua_ls" then
+        vim.notify("Failed to setup " .. server .. ": " .. tostring(err), vim.log.levels.WARN)
+      end
     end
     
     ::continue::
@@ -369,10 +390,14 @@ vim.api.nvim_create_user_command("Kwbd", function()
   kwbd(1)
 end, {})
 
--- Create debug command
+-- Create LSP management commands
 vim.api.nvim_create_user_command("LspStatus", function()
   M.check_lsp_status()
 end, { desc = "Check LSP and completion status" })
+
+vim.api.nvim_create_user_command("LspInstallEssential", function()
+  vim.cmd("MasonInstall pyright clangd lua-language-server")
+end, { desc = "Install essential LSP servers" })
 
 -- Work-specific overrides
 if vim.g.vimrc_type == 'work' then
