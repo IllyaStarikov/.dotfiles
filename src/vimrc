@@ -1,20 +1,225 @@
-" Legacy Vim compatibility wrapper
-" This file provides compatibility for tools that expect ~/.vimrc
-" It loads the modern Lua configuration when running in Neovim
+" Enhanced Vim Configuration with Theme Support
+" This configuration works for both Vim and Neovim
 
+" ==============================================================================
+" NEOVIM DETECTION
+" ==============================================================================
 if has('nvim')
     " Running in Neovim - load the modern Lua config
     lua dofile(vim.fn.stdpath('config') .. '/init.lua')
-else
-    " Running in legacy Vim - provide basic fallback
-    echo "This configuration is optimized for Neovim. Please install Neovim for the full experience."
-    " Basic fallback settings for legacy Vim
-    set number
-    set relativenumber
-    set expandtab
-    set shiftwidth=2
-    set tabstop=2
-    syntax on
-    set hlsearch
-    set incsearch
+    finish
+endif
+
+" ==============================================================================
+" VIM CONFIGURATION
+" ==============================================================================
+
+" Basic Settings
+set nocompatible
+set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8
+set ttyfast
+
+" Enable syntax and filetype detection
+syntax enable
+filetype plugin indent on
+
+" ==============================================================================
+" UI SETTINGS
+" ==============================================================================
+set number
+set relativenumber
+set ruler
+set showcmd
+set showmode
+set wildmenu
+set wildmode=list:longest,full
+set laststatus=2
+set cmdheight=1
+set signcolumn=yes
+set cursorline
+set colorcolumn=80
+set termguicolors
+
+" ==============================================================================
+" EDITING SETTINGS
+" ==============================================================================
+set expandtab
+set shiftwidth=2
+set tabstop=2
+set softtabstop=2
+set autoindent
+set smartindent
+set wrap
+set linebreak
+set backspace=indent,eol,start
+
+" ==============================================================================
+" SEARCH SETTINGS
+" ==============================================================================
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set showmatch
+
+" ==============================================================================
+" PERFORMANCE SETTINGS
+" ==============================================================================
+set lazyredraw
+set updatetime=300
+set timeoutlen=500
+set ttimeoutlen=0
+
+" ==============================================================================
+" BACKUP AND UNDO
+" ==============================================================================
+set nobackup
+set nowritebackup
+set noswapfile
+if has('persistent_undo')
+    set undodir=~/.vim/undodir
+    set undofile
+endif
+
+" ==============================================================================
+" THEME LOADING
+" ==============================================================================
+
+" Function to load theme from environment
+function! LoadThemeFromEnv()
+    " Source the theme environment file if it exists
+    if filereadable(expand('~/.config/theme-switcher/current-theme.sh'))
+        " Read the theme name from the environment file
+        let theme_content = readfile(expand('~/.config/theme-switcher/current-theme.sh'))
+        for line in theme_content
+            if line =~ '^export MACOS_THEME='
+                let theme_name = substitute(line, '^export MACOS_THEME="\(.*\)"$', '\1', '')
+                let theme_file = expand('~/.dotfiles/src/theme-switcher/themes/' . theme_name . '/vim.vim')
+                
+                " Load the theme if it exists
+                if filereadable(theme_file)
+                    execute 'source ' . theme_file
+                    return
+                endif
+            endif
+        endfor
+    endif
+    
+    " Fallback to default colorscheme if no theme is set
+    try
+        colorscheme desert
+    catch
+        " Ignore if colorscheme doesn't exist
+    endtry
+endfunction
+
+" Load theme on startup
+call LoadThemeFromEnv()
+
+" ==============================================================================
+" KEY MAPPINGS
+" ==============================================================================
+
+" Set leader key
+let mapleader = " "
+
+" Better window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Better indenting
+vnoremap < <gv
+vnoremap > >gv
+
+" Move lines up and down
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Clear search highlighting
+nnoremap <leader>h :nohlsearch<CR>
+
+" Save file
+nnoremap <leader>w :w<CR>
+
+" Quit
+nnoremap <leader>q :q<CR>
+
+" ==============================================================================
+" AUTO COMMANDS
+" ==============================================================================
+
+" Reload theme when the environment file changes
+augroup ThemeReload
+    autocmd!
+    autocmd BufWritePost ~/.config/theme-switcher/current-theme.sh call LoadThemeFromEnv()
+augroup END
+
+" Remove trailing whitespace on save
+augroup TrailingWhitespace
+    autocmd!
+    autocmd BufWritePre * %s/\s\+$//e
+augroup END
+
+" Return to last edit position when opening files
+augroup LastPosition
+    autocmd!
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+augroup END
+
+" ==============================================================================
+" PLUGIN MANAGEMENT (if vim-plug is installed)
+" ==============================================================================
+if filereadable(expand('~/.vim/autoload/plug.vim'))
+    call plug#begin('~/.vim/plugged')
+    
+    " Essential plugins
+    Plug 'tpope/vim-sensible'
+    Plug 'tpope/vim-surround'
+    Plug 'tpope/vim-commentary'
+    Plug 'tpope/vim-fugitive'
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+    Plug 'preservim/nerdtree'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+    
+    " Add more plugins as needed
+    
+    call plug#end()
+    
+    " Plugin configurations
+    let g:airline_powerline_fonts = 1
+    let g:airline_theme = 'tokyonight'
+    
+    " NERDTree mappings
+    nnoremap <leader>e :NERDTreeToggle<CR>
+    
+    " FZF mappings
+    nnoremap <leader>f :Files<CR>
+    nnoremap <leader>b :Buffers<CR>
+    nnoremap <leader>g :Rg<CR>
+endif
+
+" ==============================================================================
+" STATUS LINE (if airline is not available)
+" ==============================================================================
+if !exists('g:loaded_airline')
+    set statusline=
+    set statusline+=%#PmenuSel#
+    set statusline+=\ %f
+    set statusline+=%m
+    set statusline+=%=
+    set statusline+=%#CursorColumn#
+    set statusline+=\ %y
+    set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+    set statusline+=\ [%{&fileformat}]
+    set statusline+=\ %p%%
+    set statusline+=\ %l:%c
+    set statusline+=\ 
 endif
