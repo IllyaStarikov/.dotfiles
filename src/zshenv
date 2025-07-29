@@ -16,3 +16,4 @@ export python3="/usr/local/bin/python3"
 # If not on SSH, still use vim
 export VISUAL=nvim
 export EDITOR="$VISUAL"
+. "$HOME/.cargo/env"
