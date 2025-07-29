@@ -509,6 +509,27 @@ function M.setup()
     end
   })
   
+  -- Disable markview in insert mode, re-enable in normal mode
+  vim.api.nvim_create_autocmd({"InsertEnter"}, {
+    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
+    callback = function()
+      if vim.b.markview_enabled then
+        vim.cmd("Markview disable")
+        vim.b.markview_insert_disabled = true
+      end
+    end
+  })
+  
+  vim.api.nvim_create_autocmd({"InsertLeave"}, {
+    pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
+    callback = function()
+      if vim.b.markview_insert_disabled then
+        vim.cmd("Markview enable")
+        vim.b.markview_insert_disabled = false
+      end
+    end
+  })
+  
   -- No longer need conflicting autocmds - toggle handles concealment
 end
 
