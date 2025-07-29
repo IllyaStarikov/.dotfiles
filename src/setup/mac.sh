@@ -65,6 +65,10 @@ brew install \
     zsh-syntax-highlighting \
     zsh-autosuggestions
 
+# Install C++ development tools
+echo "🛠️  Installing C++ development tools..."
+brew install llvm
+
 # Install fonts
 echo "🔤 Installing fonts..."
 brew tap homebrew/cask-fonts
