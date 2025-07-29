@@ -819,7 +819,7 @@ require("lazy").setup({
     -- Build the Rust fuzzy matching library for optimal performance
     build = "cargo build --release",
     config = function()
-      require('config.blink-simple').setup()
+      require('config.blink').setup()
     end,
   },
 

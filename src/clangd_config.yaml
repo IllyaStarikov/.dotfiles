@@ -1,0 +1,22 @@
+# Global clangd configuration
+CompileFlags:
+  Add: 
+    - "-std=c++17"
+    - "-stdlib=libc++"
+    - "-I/usr/local/include"
+    - "-I/opt/homebrew/include"
+    - "-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+
+Diagnostics:
+  ClangTidy:
+    Add: [performance-*, modernize-*]
+    Remove: [modernize-use-trailing-return-type]
+
+Completion:
+  AllScopes: true
+  DetailedLabel: true
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
