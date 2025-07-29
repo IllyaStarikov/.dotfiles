@@ -1,7 +1,10 @@
+#!/bin/bash
 # Create symlinks for all the relevant files
 
 # -s | `symbolic` (soft) link
 # -f | `force` the symlink if it already exists
+
+set -euo pipefail
 
 # Neovim (modern Lua configuration)
 rm -f "$HOME/.config/nvim/init.vim"  # Remove any conflicting init.vim
@@ -17,10 +20,12 @@ ln -sf "$HOME/.dotfiles/src/zshrc" "$HOME/.zshrc"
 ln -sf "$HOME/.dotfiles/src/zshenv" "$HOME/.zshenv"
 
 # Terminal
-ln -sf "$HOME/.dotfiles/src/alacritty.toml" "$HOME/.config/alacritty/"
+mkdir -p "$HOME/.config/alacritty"
+ln -sf "$HOME/.dotfiles/src/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
 
-# Gitignore
+# Git
 ln -sf "$HOME/.dotfiles/src/gitignore" "$HOME/.gitignore"
+ln -sf "$HOME/.dotfiles/src/gitconfig" "$HOME/.gitconfig"
 
 # LaTeX
 ln -sf "$HOME/.dotfiles/src/latexmkrc" "$HOME/.latexmkrc"
