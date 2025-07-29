@@ -28,6 +28,16 @@ C-a [       # Copy mode gd        # Go to def  *        # Word search
 
 Each guide is optimized for daily reference with quick-access commands at the top.
 
+### [🚀 Daily Workflow](daily-workflow.md)
+**Your Day-to-Day Development Guide**
+- **Morning to Evening**: Complete workflow patterns
+- Project navigation and file operations
+- AI-assisted development workflows
+- Git workflows from feature to deployment
+- Terminal multiplexing strategies
+- Speed shortcuts and pro tips
+- Emergency recovery commands
+
 ### [⚡ Neovim](vim.md) 
 **The Hyperextensible Editor**
 - **Quick Start**: Daily command cheatsheet
