@@ -42,7 +42,7 @@ opt.linebreak = true                 -- word wrap like a sane human being
 
 -- GUI font settings (for Neovide, VimR, etc.)
 if vim.fn.has("gui_running") == 1 or vim.g.neovide then
-  opt.guifont = "FiraCode Nerd Font:h18"  -- Match Alacritty font size
+  opt.guifont = "Lilex Nerd Font:h18"  -- Match Alacritty font size
 end
 
 -- Unicode and font encoding settings for proper glyph rendering
@@ -65,10 +65,10 @@ opt.list = true
 opt.showbreak = ""
 opt.listchars = {
   tab = "→ ",
-  nbsp = "␣",
-  trail = "•",
-  extends = "⟩",
-  precedes = "⟨"
+  nbsp = "·",
+  trail = "·",
+  extends = "›",
+  precedes = "‹"
 }
 opt.signcolumn = "yes"               -- Always show sign column to prevent layout shift
 opt.colorcolumn = "100"              -- Visual line length guide
