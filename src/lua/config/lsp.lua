@@ -5,11 +5,31 @@
 
 -- LSP Setup with blink.cmp
 local function setup_lsp()
-  -- 1. Setup Mason (servers already installed via Homebrew)
-  require("mason").setup()
+  -- 1. Setup Mason for LSP management
+  require("mason").setup({
+    ui = {
+      border = "rounded",
+      icons = {
+        package_installed = "✓",
+        package_pending = "➜",
+        package_uninstalled = "✗"
+      }
+    }
+  })
+  
   require("mason-lspconfig").setup({
-    -- ensure_installed = { "pyright", "clangd", "marksman", "texlab", "lua_ls" }
-    -- ^ commented out since servers are installed via Homebrew
+    -- Ensure these servers are installed
+    ensure_installed = { 
+      "pyright",     -- Python
+      "clangd",      -- C/C++
+      "lua_ls",      -- Lua
+      "marksman",    -- Markdown
+      "texlab",      -- LaTeX
+      "tsserver",    -- TypeScript/JavaScript
+      "rust_analyzer", -- Rust
+      "gopls",       -- Go
+    },
+    automatic_installation = true,
   })
 
   -- 2. LSP server configurations
@@ -26,14 +46,13 @@ local function setup_lsp()
       local blink_caps = blink.get_lsp_capabilities()
       if blink_caps then
         capabilities = blink_caps
-        vim.notify("Using blink.cmp capabilities", vim.log.levels.DEBUG)
+        -- Successfully using blink.cmp capabilities
       end
     else
       -- Fallback: manually ensure completion capabilities are set
-      vim.notify("blink.cmp loaded but get_lsp_capabilities not found", vim.log.levels.DEBUG)
     end
   else
-    vim.notify("blink.cmp not loaded when setting up LSP", vim.log.levels.WARN)
+    -- blink.cmp not loaded when setting up LSP
   end
   
   -- Ensure completion capability is set
@@ -79,14 +98,9 @@ local function setup_lsp()
       -- Ensure semantic tokens are enabled for better highlighting
       client.server_capabilities.semanticTokensProvider = nil
       
-      -- Debug: Print trigger characters
+      -- Ensure completion provider is properly configured
       if client.server_capabilities.completionProvider then
-        local triggers = client.server_capabilities.completionProvider.triggerCharacters
-        if triggers then
-          vim.notify("Clangd trigger characters: " .. vim.inspect(triggers), vim.log.levels.INFO)
-        else
-          vim.notify("Clangd has no trigger characters!", vim.log.levels.WARN)
-        end
+        vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
       end
     end
     
@@ -116,7 +130,18 @@ local function setup_lsp()
 
   -- Enable language servers only if they exist
   local servers = {
-    pyright = {},
+    pyright = {
+      settings = {
+        python = {
+          analysis = {
+            autoSearchPaths = true,
+            useLibraryCodeForTypes = true,
+            diagnosticMode = "workspace",
+            typeCheckingMode = "basic",
+          },
+        },
+      },
+    },
     clangd = {
       cmd = {
         -- Use Homebrew LLVM clangd for better C++ support
@@ -164,24 +189,73 @@ local function setup_lsp()
           telemetry = { enable = false }
         }
       }
-    }
+    },
+    tsserver = {
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          }
+        }
+      }
+    },
+    rust_analyzer = {
+      settings = {
+        ["rust-analyzer"] = {
+          checkOnSave = {
+            command = "clippy",
+          },
+        },
+      },
+    },
+    gopls = {
+      settings = {
+        gopls = {
+          analyses = {
+            unusedparams = true,
+          },
+          staticcheck = true,
+        },
+      },
+    },
   }
   
+  -- Setup all configured servers
   for server, config in pairs(servers) do
     -- Special handling for clangd to use LLVM version
     if server == "clangd" then
+      -- Check for LLVM clangd first, fallback to system clangd
       if vim.fn.executable("/opt/homebrew/opt/llvm/bin/clangd") == 1 then
-        config.capabilities = capabilities
-        config.on_attach = on_attach
-        lspconfig[server].setup(config)
-        -- LSP server configured successfully
+        -- Use LLVM clangd (already configured in cmd)
+      elseif vim.fn.executable("clangd") == 1 then
+        -- Fallback to system clangd
+        config.cmd = { "clangd" }
+      else
+        -- Skip if no clangd found
+        goto continue
       end
-    elseif vim.fn.executable(server) == 1 or server == "lua_ls" then
-      config.capabilities = capabilities
-      config.on_attach = on_attach
-      lspconfig[server].setup(config)
-      -- LSP server configured successfully
     end
+    
+    -- Setup the server
+    config.capabilities = capabilities
+    config.on_attach = on_attach
+    
+    -- Use pcall to handle servers that might not be installed
+    local ok, err = pcall(function()
+      lspconfig[server].setup(config)
+    end)
+    
+    if not ok then
+      vim.notify("Failed to setup " .. server .. ": " .. tostring(err), vim.log.levels.WARN)
+    end
+    
+    ::continue::
   end
 end
 
