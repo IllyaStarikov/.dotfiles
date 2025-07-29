@@ -1,264 +1,419 @@
-# Neovim Reference
+# Neovim Commands
 
 ## Daily Commands
+
+```bash
+EDITING                 NAVIGATION              AI ASSIST
+v file     Open file    <l>ff    Find files    <l>cc    AI chat
+:w         Save         <l>fg    Grep text     <l>co    Optimize
+:q         Quit         <l>fb    Buffers       <l>ct    Gen tests
+:wq        Save+quit    gd       Go to def     <l>ce    Explain
+ZZ         Save+quit    gr       References    <l>cf    Fix bugs
+<C-s>      Save         K        Hover docs    <l>ca    AI menu
+
+PRODUCTIVITY           CODE OPS               DEBUGGING
+<C-t>      Smart menu   <l>lf    Format       <l>db    Breakpoint
+<l>z       Zen mode     <l>la    Actions      <l>dc    Continue
+<l>te      Terminal     <l>lr    Rename       <l>di    Step into
+<l>tg      LazyGit      <l>ld    Diagnostics  <l>do    Step over
+<l>mp      Toggle MD    gI       Implement    <l>dr    REPL
 ```
-FILES                   TEXT                    CODE
-<leader>ff Find file    ciw Change word        <leader>la Code action
-<leader>fg Grep text    yy  Copy line          <leader>lf Format
-<leader>fr Recent       dd  Delete line        gd  Go to definition
-<leader>fb Buffers      p   Paste              K   Show docs
-:w  Save               u   Undo               <leader>lr Rename
-:q  Quit               .   Repeat             <leader>ld Diagnostics
 
-GIT                    AI                      NAVIGATION
-<leader>gg LazyGit     <leader>cc Chat        Ctrl+o Back
-<leader>gb Blame       <leader>ca Actions     Ctrl+i Forward
-<leader>gd Diff        <leader>ci Inline      gg Top
-<leader>gs Status      <leader>cr Review      G  Bottom
-]g  Next change        <leader>ce Explain     *  Search word
-[g  Prev change        <leader>cf Fix         n  Next match
+## AI Commands
+
+### Models
+| Model | Shortcut | Strengths | API Key |
+|-------|----------|-----------|---------|
+| **Ollama** (Local) | `<leader>cal` | Privacy, Fast, No key needed | None |
+| **Claude** (Anthropic) | `<leader>caa` | Best reasoning, Complex tasks | `ANTHROPIC_API_KEY` |
+| **GPT-4** (OpenAI) | `<leader>cao` | Creative, Broad knowledge | `OPENAI_API_KEY` |
+| **Copilot** (GitHub) | `<leader>cac` | Integrated, Real-time | Via Copilot.vim |
+
+### AI Commands
+| Command | Purpose | Mode | Example |
+|---------|---------|------|---------|
+| `<leader>cc` | Open AI chat | Normal/Visual | Ask any coding question |
+| `<leader>ca` | Action palette | Normal/Visual | Show all AI actions |
+| `<leader>co` | Optimize code | Visual | Select slow code → optimize |
+| `<leader>ce` | Explain code | Visual | Select complex code → explain |
+| `<leader>ct` | Generate tests | Visual | Select function → create tests |
+| `<leader>cf` | Fix bugs | Visual | Select buggy code → fix |
+| `<leader>cr` | Code review | Visual | Select code → review |
+| `<leader>cm` | Add comments | Visual | Select code → document |
+| `<leader>cl` | Toggle chat | Normal | Show/hide chat window |
+
+### Chat Commands
+```vim
+/file           " Insert current file
+/buffer         " Insert current buffer  
+/symbols        " Browse and insert symbols
+/fetch <url>    " Fetch and discuss URL content
+/now            " Insert current date/time
+/help           " Show all commands
 ```
 
-## Navigation
+## Context Menu
+
+### Categories (`<C-t>` to open)
+| Category | Key | Contains |
+|----------|-----|----------|
+| **Files** | `f` | Find, Recent, Browser, New |
+| **Buffers** | `b` | List, Delete, Only, Close |
+| **Code** | `c` | LSP actions, Format, Rename |
+| **AI** | `a` | Chat, Actions, Models |
+| **Git** | `g` | Status, Diff, Log, LazyGit |
+| **Terminal** | `t` | New, LazyGit, Commands |
+| **Settings** | `s` | Options, Plugins, Health |
+
+### Menu Keys
+
+```vim
+<C-t>         " Context menu
+<leader>m     " Main menu
+<leader>M     " Mode-specific menu
+<RightMouse>  " Menu at cursor
+```
+
+## Completion
+
+### Triggers
+
+- Automatic when typing
+- `<C-Space>` manual trigger
+- `.` or `->` for members
+- `/` or `./` for paths
+
+### Navigation
 
 | Key | Action | Key | Action |
 |-----|--------|-----|--------|
-| `h/j/k/l` | ←/↓/↑/→ | `0/$` | Line start/end |
-| `w/b` | Word →/← | `^` | First char |
-| `W/B` | WORD →/← | `gg/G` | File top/bottom |
-| `e/ge` | Word end →/← | `{/}` | Paragraph ↑/↓ |
-| `f{char}` | Find → char | `%` | Matching bracket |
-| `F{char}` | Find ← char | `H/M/L` | Screen top/mid/bot |
-| `t{char}` | Till → char | `Ctrl+d/u` | Half page ↓/↑ |
-| `T{char}` | Till ← char | `Ctrl+f/b` | Full page ↓/↑ |
+| `<Tab>` | Accept completion | `<C-n>` | Next item |
+| `<S-Tab>` | Previous item | `<C-p>` | Previous item |
+| `<CR>` | Confirm selection | `<C-e>` | Cancel |
+| `<C-f>` | Scroll docs down | `<C-b>` | Scroll docs up |
 
-## Editing
+### Sources
 
-| Command | Action | Command | Action |
-|---------|--------|---------|--------|
-| `i/a` | Insert before/after | `I/A` | Insert line start/end |
-| `o/O` | New line below/above | `r` | Replace char |
-| `x/X` | Delete char →/← | `s` | Substitute char |
-| `dd` | Delete line | `D` | Delete to line end |
-| `cc` | Change line | `C` | Change to line end |
-| `yy` | Yank line | `Y` | Yank line |
-| `p/P` | Paste after/before | `u/Ctrl+r` | Undo/Redo |
-| `.` | Repeat last | `J` | Join lines |
+1. LSP (highest priority)
+2. Snippets (LuaSnip)
+3. Path
+4. Buffer
 
-## Text Objects
+## LSP
 
-| Object | Meaning | Example | Object | Meaning | Example |
-|--------|---------|---------|---|--------|---------|---------|
-| `iw/aw` | inner/a word | `diw` | `i"/a"` | inner/around " | `ci"` |
-| `iW/aW` | inner/a WORD | `daW` | `i'/a'` | inner/around ' | `ya'` |
-| `is/as` | inner/a sentence | `dis` | `` i`/a` `` | inner/around ` | `` di` `` |
-| `ip/ap` | inner/a paragraph | `yap` | `i(/a(` | inner/around () | `da(` |
-| `it/at` | inner/a tag | `cit` | `i{/a{` | inner/around {} | `ci{` |
-| `ib/ab` | inner/a block | `dab` | `i[/a[` | inner/around [] | `ya[` |
+### Commands
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `gd` | Go to definition | `gr` | Find references |
+| `gD` | Go to declaration | `gI` | Go to implementation |
+| `K` | Hover documentation | `<F2>` | Rename symbol |
+| `<F4>` | Code actions | `gl` | Show diagnostics |
+| `[d` | Previous diagnostic | `]d` | Next diagnostic |
 
-## Search & Replace
+### Language Servers
+| Language | Server | Features |
+|----------|--------|----------|
+| **Python** | pyright | Type checking, IntelliSense, Refactoring |
+| **C/C++** | clangd (LLVM) | Completion, Diagnostics, Formatting |
+| **TypeScript/JS** | ts_ls | Full TS/JS support, JSX/TSX |
+| **Lua** | lua_ls | Neovim API, Diagnostics |
+| **Markdown** | marksman | Links, References, TOC |
+| **LaTeX** | texlab | Completion, Build, Preview |
+| **Rust** | rust_analyzer | Cargo integration, Inlay hints |
+| **Go** | gopls | Modules, Formatting, Tests |
 
-| Command | Action | Command | Action |
-|---------|--------|---------|--------|
-| `/pattern` | Search forward | `?pattern` | Search backward |
-| `n/N` | Next/prev match | `*/#` | Search word →/← |
-| `gn` | Next match + select | `gN` | Prev match + select |
-| `:s/old/new/` | Replace line | `:%s/old/new/g` | Replace all |
-| `:s/old/new/gc` | Replace confirm | `&` | Repeat substitution |
-| `<leader>/` | Buffer search | `<leader>sr` | Search & replace |
+## File Navigation
 
-## Files & Buffers
+### Picker
+| Command | Purpose |
+|---------|---------|
+| `<leader>ff` | Find files |
+| `<leader>fg` | Live grep |
+| `<leader>fb` | Browse buffers |
+| `<leader>fr` | Recent files |
+| `<leader>fs` | Search symbols |
+| `<leader>fh` | Command history |
 
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>ff` | Find files | `<leader>fr` | Recent files |
-| `<leader>fg` | Grep files | `<leader>fb` | List buffers |
-| `<leader>fn` | New file | `<leader>fs` | Save file |
-| `<Tab>` | Next buffer | `<S-Tab>` | Prev buffer |
-| `<leader>c` | Close buffer | `<leader>C` | Force close |
-| `:e file` | Edit file | `:b name` | Switch buffer |
-| `:ls` | List buffers | `:b#` | Toggle buffer |
+### File Explorer
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `<leader>e` | Toggle tree | `a` | Create file |
+| `d` | Delete | `r` | Rename |
+| `x` | Cut | `c` | Copy |
+| `p` | Paste | `y` | Copy name |
 
-## Windows & Tabs
+## Keybindings
 
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<C-w>v` | Vertical split | `<C-w>s` | Horizontal split |
-| `<C-w>c` | Close window | `<C-w>o` | Close others |
-| `<C-h/j/k/l>` | Navigate windows | `<C-w>w` | Cycle windows |
-| `<C-w>H/J/K/L` | Move window | `<C-w>=` | Equal size |
-| `<C-w></>` | Width -/+ | `<C-w>-/+` | Height -/+ |
-| `<leader>sv` | Split vertical | `<leader>sh` | Split horizontal |
-| `:tabnew` | New tab | `gt/gT` | Next/prev tab |
+### Window Management
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `<C-w>s` | Split horizontal | `<C-w>v` | Split vertical |
+| `<C-w>q` | Close window | `<C-w>o` | Only window |
+| `<C-h/j/k/l>` | Navigate windows | `<C-w>=` | Equal size |
+| `<A-h/l>` | Resize horizontal | `<A-j/k>` | Resize vertical |
 
-## LSP Commands
+### Buffer Operations
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `<leader>bd` | Delete buffer | `<leader>bo` | Buffer only |
+| `<S-h>` | Previous buffer | `<S-l>` | Next buffer |
+| `<leader>bp` | Pin buffer | `<leader>bP` | Delete non-pinned |
 
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `gd` | Go to definition | `gD` | Go to declaration |
-| `gr` | Find references | `gi` | Go to implementation |
-| `gy` | Go to type def | `K` | Show hover docs |
-| `<leader>la` | Code actions | `<leader>lr` | Rename |
-| `<leader>lf` | Format | `<leader>li` | LSP info |
-| `<leader>ld` | Diagnostics | `<leader>ll` | Line diagnostics |
-| `]d/[d` | Next/prev diagnostic | `<leader>lq` | Quickfix list |
+### Text Objects & Motions
+| Object | Meaning | Example |
+|--------|---------|---------|
+| `iw/aw` | Inner/around word | `ciw` - change word |
+| `i"/a"` | Inner/around quotes | `di"` - delete in quotes |
+| `i{/a{` | Inner/around braces | `va{` - select block |
+| `ip/ap` | Inner/around paragraph | `dip` - delete paragraph |
+| `it/at` | Inner/around tag | `cit` - change tag content |
 
-## AI Assistant
+## Debugging
 
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>cc` | Open chat | `<leader>ci` | Inline assist |
-| `<leader>ca` | Actions menu | `<leader>cr` | Code review |
-| `<leader>ce` | Explain code | `<leader>cf` | Fix bugs |
-| `<leader>co` | Optimize | `<leader>ct` | Generate tests |
-| `<leader>cm` | Add comments | `<leader>cd` | Generate docs |
-| `<leader>cs` | Stop generation | `<leader>cl` | Toggle chat |
-
-### AI Adapters
-| Key | Adapter | Key | Adapter |
-|-----|---------|---|-----|---------|
-| `<leader>cal` | Local Ollama | `<leader>caa` | Anthropic Claude |
-| `<leader>cao` | OpenAI | `<leader>cac` | GitHub Copilot |
-
-## Git Integration
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>gg` | LazyGit | `<leader>gs` | Git status |
-| `<leader>gb` | Blame line | `<leader>gB` | Blame buffer |
-| `<leader>gd` | Diff this | `<leader>gD` | Diff view |
-| `]g/[g` | Next/prev hunk | `<leader>gp` | Preview hunk |
-| `<leader>gr` | Reset hunk | `<leader>gR` | Reset buffer |
-| `<leader>gu` | Undo stage | `<leader>gS` | Stage buffer |
-
-## Terminal
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<C-\>` | Toggle terminal | `<leader>tt` | Terminal below |
-| `<leader>tv` | Terminal right | `<C-w>N` | Terminal normal mode |
-| `<Esc><Esc>` | Exit terminal | `:term` | New terminal |
-
-## Folding
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `za` | Toggle fold | `zo/zc` | Open/close fold |
-| `zR/zM` | Open/close all | `zj/zk` | Next/prev fold |
-| `zd` | Delete fold | `zE` | Delete all folds |
-
-## Marks & Jumps
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `m{a-z}` | Set local mark | `m{A-Z}` | Set global mark |
-| `'{mark}` | Jump to mark line | `` `{mark}`` | Jump to mark pos |
-| `''` | Last jump line | ``` `` ``` | Last jump pos |
-| `<C-o>` | Jump back | `<C-i>` | Jump forward |
-| `:jumps` | List jumps | `:marks` | List marks |
-
-## Macros & Registers
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `q{reg}` | Record macro | `q` | Stop recording |
-| `@{reg}` | Play macro | `@@` | Repeat macro |
-| `"{reg}y` | Yank to register | `"{reg}p` | Paste from register |
-| `:reg` | List registers | `"+` | System clipboard |
-| `"0` | Yank register | `"1-9` | Delete registers |
-
-## Visual Mode
-
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `v` | Char visual | `V` | Line visual |
-| `<C-v>` | Block visual | `gv` | Reselect |
-| `o/O` | Other end | `I/A` | Insert start/end |
-| `>/<` | Indent/dedent | `=` | Auto indent |
-| `u/U` | Lower/uppercase | `~` | Toggle case |
-
-## Plugin Commands
-
-### Telescope
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>ff` | Find files | `<leader>fg` | Live grep |
-| `<leader>fb` | Buffers | `<leader>fh` | Help tags |
-| `<leader>fo` | Old files | `<leader>fc` | Commands |
-| `<leader>fk` | Keymaps | `<leader>fs` | Git status |
-| `<leader>gc` | Git commits | `<leader>gC` | Git branches |
-
-### LazyGit
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>gg` | Open LazyGit | `q` | Quit |
-| `?` | Help | `x` | Menu |
-| `<space>` | Stage | `d` | Delete |
-| `c` | Commit | `p` | Pull |
-| `P` | Push | `<tab>` | Switch panel |
-
-### Snacks.nvim
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>sd` | Dashboard | `<leader>sD` | Force dashboard |
-| `<leader>.` | Toggle scratch | `<leader>S` | Select scratch |
-| `<leader>sn` | Notes scratch | `<leader>st` | Todo scratch |
-| `<leader>sc` | Code scratch | `<leader>e` | Explorer |
-| `<leader>E` | Explorer (file dir) | `<leader>N` | NERDTree fallback |
-| `<leader>z` | Zen mode | `<leader>Z` | Zoom window |
-| `<leader>bd` | Delete buffer | `<leader>bD` | Delete all buffers |
-| `<leader>bo` | Delete others | `<leader>bh` | Delete hidden |
-| `<leader>bu` | Delete unnamed | `<leader>rn` | Rename file |
-| `<leader>un` | Dismiss notifications | `<leader>nh` | Notification history |
-| `<leader>nd` | Clear & show history | `<leader>pp` | Profiler pick |
-| `<leader>pP` | Profiler scratch | `<leader>pd` | Debug inspect |
-| `<leader>pD` | Debug backtrace | `<leader>vh` | Next reference |
-| `<leader>vH` | Prev reference | `[s/]s` | Prev/next scope |
-| `[S/]S` | Prev/next scope edge | |
-
-### DAP (Debugging)
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<F5>` | Continue | `<F10>` | Step over |
-| `<F11>` | Step into | `<F12>` | Step out |
+### Debug Commands
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
 | `<leader>db` | Toggle breakpoint | `<leader>dB` | Conditional break |
-| `<leader>dr` | Open REPL | `<leader>dl` | Run last |
-| `<leader>du` | Toggle UI | `<leader>dt` | Terminate |
+| `<leader>dc` | Start/Continue | `<leader>dC` | Run to cursor |
+| `<leader>di` | Step into | `<leader>do` | Step over |
+| `<leader>dO` | Step out | `<leader>dr` | Toggle REPL |
+| `<leader>dl` | Run last | `<leader>dt` | Terminate |
+| `<leader>dh` | Hover value | `<leader>dp` | Preview value |
+| `<leader>df` | Frames (stack) | `<leader>ds` | Scopes |
 
-### Menu System
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<C-t>` | Context menu | `<leader>m` | Main menu |
-| `<leader>mf` | File menu | `<leader>mg` | Git menu |
-| `<leader>mc` | Code menu | `<leader>ma` | AI menu |
-| `<RightMouse>` | Mouse menu | `q` | Close menu |
+### Debuggers
 
-## Commands
+- Python: debugpy
+- JavaScript/TypeScript: node2, chrome
+- C/C++: lldb, gdb  
+- Rust: lldb/gdb via CodeLLDB
+- Go: delve
+- Java: jdtls
 
-| Command | Action | Command | Action |
-|---------|--------|---------|--------|
-| `:Lazy` | Plugin manager | `:Mason` | LSP installer |
-| `:LspInfo` | LSP status | `:Telescope` | Fuzzy finder |
-| `:Neotree` | File tree | `:LazyGit` | Git UI |
-| `:CodeCompanion` | AI chat | `:TodoTelescope` | Find TODOs |
-| `:checkhealth` | Health check | `:messages` | Show messages |
+## VimTeX for LaTeX
 
-## Settings
+### Compilation & Preview
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `\ll` | Start compilation | `\lk` | Stop compilation |
+| `\lv` | View PDF | `\lr` | Reverse search |
+| `\le` | Show errors | `\lo` | Show output |
+| `\lc` | Clean aux files | `\lC` | Full clean |
+| `\lt` | Table of contents | `\li` | Info |
 
-| Command | Action | Command | Action |
-|---------|--------|---------|--------|
-| `:set nu!` | Toggle numbers | `:set wrap!` | Toggle wrap |
-| `:set paste!` | Toggle paste | `:set list!` | Toggle whitespace |
-| `:set ic!` | Toggle ignorecase | `:set hls!` | Toggle highlight |
-| `:syntax on/off` | Toggle syntax | `:noh` | Clear highlight |
+### LaTeX Text Objects
+| Object | Meaning | Example |
+|--------|---------|---------|
+| `ic/ac` | Commands | `dic` - delete command |
+| `id/ad` | Delimiters | `cad` - change with delims |
+| `ie/ae` | Environments | `vie` - select env content |
+| `i$/a$` | Math mode | `da$` - delete math |
+| `iP/aP` | Sections | `vaP` - select section |
 
-## Tips
-- `<leader>` = Space
-- `jk` or `kj` = Escape in insert mode
-- `.` repeats last change
-- `u` undo, `Ctrl+r` redo
-- `:w !sudo tee %` to save with sudo
-- `:%s//new/g` replaces last search
-- `cgn` to change next search match
-- `q:` for command history
-- `@:` to repeat last command
+## Markview Markdown
+
+### Markdown Rendering
+
+| Feature | Description | Visual |
+|---------|-------------|---------|
+| **Headings** | Chevron-styled labels | ❯ H1, ❯❯ H2, ❯❯❯ H3 |
+| **Code blocks** | Syntax highlighted with labels | Language indicators |
+| **Tables** | Clean ASCII borders | Aligned columns |
+| **Lists** | Elegant Unicode bullets | ◆ +list, ▸ -list, ★ *list |
+| **Links** | Concealed with indicators | ◈ hyperlinks |
+| **Bold/Italic** | Proper font styling | **bold**, *italic* |
+| **Checkboxes** | Interactive toggles | ☐ todo, ✅ done |
+| **Callouts** | Styled notes with emojis | ℹ️ NOTE, 💡 TIP, ⚡ WARNING |
+
+### Markview Commands
+| Command | Purpose |
+|---------|---------|  
+| `<leader>mp` | Toggle between rich preview and ligatures |
+| Auto-enabled | For .md, .markdown, .qmd files |
+| `conceallevel=2` | Rich preview mode (default) |
+| `conceallevel=0` | Ligature mode (see raw markdown) |
+| Insert mode | Auto-disables markview for editing |
+
+### Smart Toggle Feature
+- **Rich Preview Mode**: Beautiful rendering with concealment
+- **Ligature Mode**: Raw markdown with Lilex font ligatures
+- **Insert Mode**: Markview auto-disables for distraction-free editing
+- **Normal Mode**: Markview auto-enables for rich preview
+- Preserves your preference per buffer
+
+## Theme & UI
+
+### Theme Controls
+| Command | Purpose |
+|---------|---------|
+| `:colorscheme` | Show current theme |
+| `:Lazy load` | Reload theme plugins |
+| System preference | Auto-switches dark/light |
+
+### UI Features
+
+- Automatic theme switching
+- Animations (120ms)
+- Indentation guides
+- Git signs in gutter
+- Diagnostic signs
+- Breadcrumbs
+- Statusline
+
+## Productivity
+
+### Snacks.nvim Suite
+| Feature | Command | Description |
+|---------|---------|-------------|
+| Dashboard | Start Neovim | Recent files, projects |
+| Terminal | `<leader>te` | Floating terminal |
+| Git | `<leader>tg` | LazyGit integration |
+| Zen Mode | `<leader>z` | Distraction-free |
+| Notifications | Automatic | Alerts |
+| Big File | Automatic | Large file handling |
+| Rename | `<leader>lr` | Rename with preview |
+
+### Session Management
+| Command | Purpose |
+|---------|---------|
+| `:SessionSave` | Save current session |
+| `:SessionLoad` | Load session |
+| Auto-save | On exit if session exists |
+
+### Marks & Registers
+| Command | Purpose | Command | Purpose |
+|---------|---------|---------|---------|
+| `m{a-z}` | Set mark | `'{a-z}` | Jump to mark |
+| `"ay` | Yank to reg a | `"ap` | Paste from a |
+| `:marks` | List marks | `:reg` | List registers |
+
+## Plugin Management
+
+### Lazy.nvim Commands
+| Command | Purpose |
+|---------|---------|
+| `:Lazy` | Open plugin manager |
+| `:Lazy sync` | Update all plugins |
+| `:Lazy install` | Install missing |
+| `:Lazy clean` | Remove unused |
+| `:Lazy profile` | Startup profiling |
+| `:Lazy health` | Check plugin health |
+
+### Key Plugins
+- **lazy.nvim** - Plugin manager (45ms total startup)
+- **blink.cmp** - Completions (<1ms response)
+- **snacks.nvim** - Productivity suite
+- **codecompanion.nvim** - AI integration
+- **nvim-treesitter** - Syntax highlighting
+- **mason.nvim** - LSP installer
+- **vimtex** - LaTeX support
+- **conform.nvim** - Formatting (stop_after_first)
+- **nvim-dap** - Debugging
+- **markview.nvim** - Beautiful markdown
+
+## 💎 Formatting & Linting
+
+### Conform.nvim Configuration
+**Smart formatting with stop_after_first strategy**
+
+| Language | Formatters | Priority Order |
+|----------|------------|----------------|
+| **Python** | isort, black | First available wins |
+| **JavaScript/TypeScript** | prettier | Single formatter |
+| **HTML/CSS** | prettier | Single formatter |
+| **JSON/YAML** | prettier | Single formatter |
+| **Markdown** | prettier | Single formatter |
+| **Lua** | stylua | Single formatter |
+
+### Format Commands
+| Command | Purpose |
+|---------|---------|
+| `<leader>lf` | Format file/selection |
+| `:ConformInfo` | Show active formatters |
+| Auto-format | On save (500ms timeout) |
+
+## Pro Tips
+
+### Optimizations
+
+1. Lazy loading
+2. Compiled configs
+3. Caching
+4. Async operations
+
+### Power User Techniques
+```vim
+" Quick macro recording
+qa{commands}q  " Record to register a
+@a             " Play macro
+@@             " Repeat last macro
+
+" Advanced search/replace
+:%s/old/new/gc " Interactive replace
+:g/pattern/d   " Delete matching lines
+:v/pattern/d   " Delete non-matching
+
+" Multiple cursors (via visual block)
+<C-v>          " Visual block mode
+I              " Insert at start
+A              " Append at end
+```
+
+### Workflow Tips
+
+1. Use `<C-t>` for context menus
+2. Master text objects (`ciw`, `da{`, `vi"`)
+3. Learn marks for navigation
+4. Use AI for boilerplate
+5. Use macros for repetitive edits
+6. Toggle markdown with `<leader>mp`
+
+## Troubleshooting
+
+### Common Issues
+| Problem | Solution |
+|---------|----------|
+| Slow startup | Run `:Lazy profile` to find culprit |
+| No completions | Check `:LspStatus` and `:Lazy load blink.cmp` |
+| Missing icons | Install Lilex: `brew install --cask font-lilex-nerd-font` |
+| Ligatures not working | Toggle with `<leader>mp` or check font installation |
+| LSP not working | Run `:LspInstallEssential` then restart |
+| Plugin errors | `:Lazy clean` then `:Lazy sync` |
+| Markdown ugly | Ensure Lilex font is installed |
+
+### Health Checks
+```vim
+:checkhealth          " Full system check
+:checkhealth lsp      " LSP specific
+:checkhealth mason    " Package manager
+:Lazy health          " Plugin health
+:ConformInfo          " Formatter status
+```
+
+### Debug Commands
+```vim
+:LspInfo              " LSP server info
+:LspLog               " LSP error log
+:messages             " Vim messages
+:Notifications        " Recent notifications
+```
+
+## Font & Rendering
+
+### Lilex Nerd Font
+
+- **Programming Ligatures**: `=>`, `->`, `::`, `!=`, `<=`, `>=`, `===`, `<=>`, `...`, `||`, `&&`, `<<`, `>>`, `|>`, `<|`
+- **Icons**: Complete Nerd Font icon set for devicons, file types, git symbols
+- **Size**: 18pt for optimal readability
+- **Features**: Modern coding font with excellent ligature support and comprehensive symbol coverage
+
+### Font Configuration
+```lua
+-- GUI settings (Neovide, VimR)
+vim.opt.guifont = "Lilex Nerd Font:h18"
+
+-- Terminal settings
+-- Alacritty: Lilex Nerd Font
+-- Size: 18.0
+```
+
