@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eo pipefail  # Exit on error, pipe failures (removed -u for array handling)
 
+# Script directory for relative paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 show_help() {
     # Default theme mapping
     local DEFAULT_LIGHT_THEME="tokyonight_day"
@@ -252,12 +255,12 @@ export MACOS_BACKGROUND="$BACKGROUND"
 EOF
 
 # Theme directory
-THEME_DIR="$HOME/.dotfiles/src/theme-switcher/themes/$FULL_THEME_NAME"
+THEME_DIR="$SCRIPT_DIR/themes/$FULL_THEME_NAME"
 
 if [[ ! -d "$THEME_DIR" ]]; then
     echo "❌ Error: Theme '$FULL_THEME_NAME' not found at $THEME_DIR"
     echo "Available themes:"
-    ls -1 "$HOME/.dotfiles/src/theme-switcher/themes/" | head -5
+    ls -1 "$SCRIPT_DIR/themes/" 2>/dev/null | head -10 || echo "No themes found"
     exit 1
 fi
 
@@ -288,7 +291,14 @@ fi
 
 # Reload tmux
 if tmux info &> /dev/null; then
-    tmux source-file "$TMUX_CONFIG_DIR/theme.conf"
+    # First ensure main tmux.conf is loaded
+    if [[ -f "$HOME/.tmux.conf" ]]; then
+        tmux source-file "$HOME/.tmux.conf" 2>/dev/null || true
+    fi
+    # Then load theme-specific config
+    if [[ -f "$TMUX_CONFIG_DIR/theme.conf" ]]; then
+        tmux source-file "$TMUX_CONFIG_DIR/theme.conf" 2>/dev/null || true
+    fi
     tmux refresh-client -S
     if [[ "$THEME_RESET" == true ]]; then
         tmux display-message "Theme reset to $FULL_THEME_NAME"
@@ -299,7 +309,12 @@ fi
 
 # Display appropriate message
 if [[ "$THEME_RESET" == true ]]; then
-    echo "Theme reset to $FULL_THEME_NAME mode (already active)"
+    echo "✅ Theme reset to $FULL_THEME_NAME mode (already active)"
 else
-    echo "Theme switched to $FULL_THEME_NAME mode"
+    echo "✅ Theme switched to $FULL_THEME_NAME mode"
 fi
+
+# Notify user about Neovim
+echo ""
+echo "ℹ️  Note: Neovim will detect the theme automatically on next start"
+echo "         Current sessions may need :source $MYVIMRC to update"
