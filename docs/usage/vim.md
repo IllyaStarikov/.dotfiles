@@ -22,6 +22,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## AI Commands
 
 ### Models
+
 | Model | Shortcut | Strengths | API Key |
 |-------|----------|-----------|---------|
 | **Ollama** (Local) | `<leader>cal` | Privacy, Fast, No key needed | None |
@@ -30,6 +31,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | **Copilot** (GitHub) | `<leader>cac` | Integrated, Real-time | Via Copilot.vim |
 
 ### AI Commands
+
 | Command | Purpose | Mode | Example |
 |---------|---------|------|---------|
 | `<leader>cc` | Open AI chat | Normal/Visual | Ask any coding question |
@@ -55,6 +57,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## Context Menu
 
 ### Categories (`<C-t>` to open)
+
 | Category | Key | Contains |
 |----------|-----|----------|
 | **Files** | `f` | Find, Recent, Browser, New |
@@ -102,6 +105,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## LSP
 
 ### Commands
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `gd` | Go to definition | `gr` | Find references |
@@ -111,6 +115,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `[d` | Previous diagnostic | `]d` | Next diagnostic |
 
 ### Language Servers
+
 | Language | Server | Features |
 |----------|--------|----------|
 | **Python** | pyright | Type checking, IntelliSense, Refactoring |
@@ -125,6 +130,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## File Navigation
 
 ### Picker
+
 | Command | Purpose |
 |---------|---------|
 | `<leader>ff` | Find files |
@@ -135,6 +141,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `<leader>fh` | Command history |
 
 ### File Explorer
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `<leader>e` | Toggle tree | `a` | Create file |
@@ -145,6 +152,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## Keybindings
 
 ### Window Management
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `<C-w>s` | Split horizontal | `<C-w>v` | Split vertical |
@@ -153,6 +161,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `<A-h/l>` | Resize horizontal | `<A-j/k>` | Resize vertical |
 
 ### Buffer Operations
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `<leader>bd` | Delete buffer | `<leader>bo` | Buffer only |
@@ -160,6 +169,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `<leader>bp` | Pin buffer | `<leader>bP` | Delete non-pinned |
 
 ### Text Objects & Motions
+
 | Object | Meaning | Example |
 |--------|---------|---------|
 | `iw/aw` | Inner/around word | `ciw` - change word |
@@ -171,6 +181,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## Debugging
 
 ### Debug Commands
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `<leader>db` | Toggle breakpoint | `<leader>dB` | Conditional break |
@@ -193,6 +204,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## VimTeX for LaTeX
 
 ### Compilation & Preview
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `\ll` | Start compilation | `\lk` | Stop compilation |
@@ -202,6 +214,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `\lt` | Table of contents | `\li` | Info |
 
 ### LaTeX Text Objects
+
 | Object | Meaning | Example |
 |--------|---------|---------|
 | `ic/ac` | Commands | `dic` - delete command |
@@ -226,6 +239,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | **Callouts** | Styled notes with emojis | ℹ️ NOTE, 💡 TIP, ⚡ WARNING |
 
 ### Markview Commands
+
 | Command | Purpose |
 |---------|---------|  
 | `<leader>mp` | Toggle between rich preview and ligatures |
@@ -234,35 +248,22 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | `conceallevel=0` | Ligature mode (see raw markdown) |
 | Insert mode | Auto-disables markview for editing |
 
-### Smart Toggle Feature
-- **Rich Preview Mode**: Beautiful rendering with concealment
-- **Ligature Mode**: Raw markdown with Lilex font ligatures
-- **Insert Mode**: Markview auto-disables for distraction-free editing
-- **Normal Mode**: Markview auto-enables for rich preview
-- Preserves your preference per buffer
 
 ## Theme & UI
 
 ### Theme Controls
+
 | Command | Purpose |
 |---------|---------|
 | `:colorscheme` | Show current theme |
 | `:Lazy load` | Reload theme plugins |
 | System preference | Auto-switches dark/light |
 
-### UI Features
-
-- Automatic theme switching
-- Animations (120ms)
-- Indentation guides
-- Git signs in gutter
-- Diagnostic signs
-- Breadcrumbs
-- Statusline
 
 ## Productivity
 
 ### Snacks.nvim Suite
+
 | Feature | Command | Description |
 |---------|---------|-------------|
 | Dashboard | Start Neovim | Recent files, projects |
@@ -274,6 +275,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | Rename | `<leader>lr` | Rename with preview |
 
 ### Session Management
+
 | Command | Purpose |
 |---------|---------|
 | `:SessionSave` | Save current session |
@@ -281,6 +283,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | Auto-save | On exit if session exists |
 
 ### Marks & Registers
+
 | Command | Purpose | Command | Purpose |
 |---------|---------|---------|---------|
 | `m{a-z}` | Set mark | `'{a-z}` | Jump to mark |
@@ -290,6 +293,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 ## Plugin Management
 
 ### Lazy.nvim Commands
+
 | Command | Purpose |
 |---------|---------|
 | `:Lazy` | Open plugin manager |
@@ -326,6 +330,7 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 | **Lua** | stylua | Single formatter |
 
 ### Format Commands
+
 | Command | Purpose |
 |---------|---------|
 | `<leader>lf` | Format file/selection |
@@ -334,12 +339,6 @@ PRODUCTIVITY           CODE OPS               DEBUGGING
 
 ## Pro Tips
 
-### Optimizations
-
-1. Lazy loading
-2. Compiled configs
-3. Caching
-4. Async operations
 
 ### Power User Techniques
 ```vim
@@ -371,6 +370,7 @@ A              " Append at end
 ## Troubleshooting
 
 ### Common Issues
+
 | Problem | Solution |
 |---------|----------|
 | Slow startup | Run `:Lazy profile` to find culprit |
