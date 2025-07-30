@@ -123,8 +123,6 @@ local function setup_lsp()
         return root or lspconfig.util.path.dirname(fname)
       end,
       single_file_support = true,
-      -- Prevent multiple instances
-      autostart = false,  -- Disable autostart, we'll start it manually
     },
     marksman = {},
     texlab = {},

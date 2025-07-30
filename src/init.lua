@@ -1,6 +1,6 @@
--- Disable automatic LSP detection to prevent duplicate servers
+-- Enable automatic LSP detection
 -- This must be set before any plugins are loaded
-vim.g.lsp_autostart = false
+vim.g.lsp_autostart = true
 
 -- Load core configuration modules
 require("config.options")
