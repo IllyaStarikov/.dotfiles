@@ -28,7 +28,7 @@ C-a [       # Copy mode gd        # Go to def  *        # Word search
 
 Each guide is optimized for daily reference with quick-access commands at the top.
 
-### [🚀 Daily Workflow](daily-workflow.md)
+### [🚀 Daily Workflow](workflow.md)
 **Your Day-to-Day Development Guide**
 - **Morning to Evening**: Complete workflow patterns
 - Project navigation and file operations
@@ -243,6 +243,7 @@ gitconfig    # Edit ~/.gitconfig
 ```
 
 ### Key Files
+
 | Config | Location | Purpose |
 |--------|----------|---------|
 | Shell | `~/.zshrc` | Aliases, functions, plugins |
@@ -254,6 +255,7 @@ gitconfig    # Edit ~/.gitconfig
 ## Troubleshooting
 
 ### Quick Fixes
+
 | Problem | Solution |
 |---------|----------|
 | Icons broken | `brew install --cask font-fira-code-nerd-font` |
