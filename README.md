@@ -25,32 +25,43 @@
 
 ## Features
 
-### Lightning Fast
-- Modern CLI tools that are 10-100x faster than traditional Unix utilities
-- Lazy-loaded shell plugins for instant terminal startup
-- GPU-accelerated terminal rendering with Alacritty
-- Optimized configurations for minimal latency
+### ⚡ Lightning Fast
+- **Modern CLI tools** that are 10-100x faster than traditional Unix utilities
+- **Lazy-loaded shell plugins** for instant terminal startup
+- **GPU-accelerated terminal** rendering with Alacritty
+- **Sub-millisecond completions** with Blink.cmp (Rust-powered)
+- **Optimized Neovim** startup time < 50ms
 
-### AI-Powered Development
-- Integrated AI coding assistant (CodeCompanion.nvim)
-- Support for Claude, GPT, and GitHub Copilot
-- Context-aware code suggestions and explanations
-- Automated code reviews and refactoring
+### 🤖 AI-Powered Development
+- **Integrated AI assistant** (CodeCompanion.nvim) with multiple LLM support
+- **Local Ollama** (default), Anthropic Claude, OpenAI GPT, GitHub Copilot
+- **Context-aware suggestions** with full codebase understanding
+- **Smart prompts** for code review, optimization, test generation, and debugging
+- **Visual mode commands** for inline AI assistance
 
-### Aesthetic & Functional
-- Automatic dark/light theme switching based on system preferences
-- Consistent color schemes across all tools
-- Beautiful prompt with git integration
-- Nerd Font icons throughout the interface
+### 🎨 Aesthetic & Functional
+- **Automatic theme switching** based on macOS appearance (light/dark)
+- **Consistent color schemes** across Neovim, tmux, and Alacritty
+- **Beautiful Spaceship prompt** with git integration and Nerd Font icons
+- **Professional typography** with JetBrainsMono Nerd Font (ligatures enabled)
+- **Smooth animations** and modern UI elements
 
-### Developer Productivity
-- 200+ shell aliases for common tasks
-- Smart directory jumping with `z`
-- Fuzzy finding everywhere (files, commands, git branches)
-- Persistent tmux sessions that survive reboots
-- Integrated debugging with DAP
-- LaTeX support with VimTeX
-- Menu system for discoverable commands
+### 🚀 Developer Productivity
+- **200+ shell aliases** for common tasks and quick navigation
+- **Smart directory jumping** with `zoxide` (learns your habits)
+- **Fuzzy finding everywhere** with `fzf` integration
+- **Persistent tmux sessions** with tmuxinator templates
+- **Work-specific overrides** via private configuration system
+
+### 📚 Advanced Features
+- **LaTeX environment** with VimTeX (continuous compilation, PDF sync)
+- **Snippet engine** with 1000+ snippets for all languages
+- **LSP servers** auto-installed for 8+ languages
+- **Git integration** with LazyGit, fugitive, and gitsigns
+- **Menu system** with context-aware actions (nvzone/menu)
+- **Integrated debugging** with DAP (Debug Adapter Protocol)
+- **Big file handling** with automatic optimization
+- **Markdown enhancements** with live preview
 
 ## The Stack
 
@@ -108,7 +119,21 @@ cd ~/.dotfiles
 :Lazy sync
 ```
 
-## Documentation
+## 📖 Documentation
+
+### Setup & Installation
+- **[Setup Guide](docs/setup.md)** - Complete installation and configuration guide
+
+### Plugin Guides
+- **[Snacks.nvim Guide](docs/snacks_guide.md)** - Complete keybinding reference for the QoL suite
+- **[Snippets Guide](docs/snippets_guide.md)** - Snippet usage and customization
+- **[VimTeX Guide](docs/vimtex_guide.md)** - LaTeX environment reference
+
+### Key Bindings
+- **Leader Key**: `Space` (Neovim), `Ctrl-a` (tmux)
+- **Find Files**: `<Space>ff` | **Live Grep**: `<Space>fg`
+- **AI Chat**: `<Space>cc` | **Git**: `<Space>gg`
+- **Context Menu**: `<Ctrl-t>` or right-click
 
 ### [**📚 Complete Usage Guide**](docs/usage/)
 Comprehensive documentation for all configurations with daily workflow examples.
