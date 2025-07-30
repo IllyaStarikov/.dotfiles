@@ -610,7 +610,7 @@ require("lazy").setup({
     config = function()
       -- Set all airline settings here
       vim.g["airline#extensions#whitespace#enabled"] = 0
-      vim.g["airline#extensions#ale#enabled"] = 1
+      vim.g["airline#extensions#ale#enabled"] = 0
       vim.g.airline_detect_spell = 0
       vim.g["airline#extensions#tabline#enabled"] = 1
       vim.g["airline#extensions#tabline#fnamemod"] = ':t'
@@ -676,13 +676,13 @@ require("lazy").setup({
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort", "black" },
-        javascript = { "prettierd", "prettier", stop_after_first = true },
-        typescript = { "prettierd", "prettier", stop_after_first = true },
-        html = { "prettierd", "prettier", stop_after_first = true },
-        css = { "prettierd", "prettier", stop_after_first = true },
-        json = { "prettierd", "prettier", stop_after_first = true },
-        yaml = { "prettierd", "prettier", stop_after_first = true },
-        markdown = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { { "prettierd", "prettier" } },
+        typescript = { { "prettierd", "prettier" } },
+        html = { { "prettierd", "prettier" } },
+        css = { { "prettierd", "prettier" } },
+        json = { { "prettierd", "prettier" } },
+        yaml = { { "prettierd", "prettier" } },
+        markdown = { { "prettierd", "prettier" } },
       },
       -- Set up format-on-save
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
@@ -782,12 +782,21 @@ require("lazy").setup({
   },
 
   -- LSP and completion plugins
-  { "neovim/nvim-lspconfig" },
+  { 
+    "neovim/nvim-lspconfig",
+    dependencies = { "saghen/blink.cmp" },
+    config = function()
+      require("config.lsp").setup()
+    end,
+  },
   {
     "williamboman/mason.nvim",
     build = ":MasonUpdate"
   },
-  { "williamboman/mason-lspconfig.nvim" },
+  { 
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+  },
 
   -- Snippet Engine
   {
@@ -811,15 +820,21 @@ require("lazy").setup({
   -- Modern high-performance completion
   {
     "saghen/blink.cmp",
-    lazy = false,  -- Load immediately for LSP integration
-    dependencies = { 
-      "L3MON4D3/LuaSnip", -- Snippet engine integration
+    lazy = false,
+    priority = 1000,
+    dependencies = {
+      "rafamadriz/friendly-snippets",
+      "L3MON4D3/LuaSnip",
     },
-    version = "v0.*",
-    -- Build the Rust fuzzy matching library for optimal performance
-    build = "cargo build --release",
-    config = function()
-      require('config.blink').setup()
+    version = "v1.*",  -- Use stable v1 series
+    opts = function()
+      return require('config.blink-setup')
+    end,
+    -- Allow extending sources array
+    opts_extend = { "sources.default" },
+    config = function(_, opts)
+      -- Setup blink.cmp
+      require('blink.cmp').setup(opts)
     end,
   },
 
@@ -855,8 +870,7 @@ require("lazy").setup({
         ensure_installed = {
           "markdown", "markdown_inline", "python", "javascript", "typescript",
           "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
-          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex",
-          "scss", "svelte", "tsx", "typst", "vue", "norg"
+          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex"
         },
         auto_install = true,
         highlight = {
@@ -888,7 +902,6 @@ require("lazy").setup({
     "OXY2DEV/markview.nvim",
     lazy = false,
     priority = 500,  -- Lower priority than treesitter
-    ft = { "markdown", "quarto", "rmd" },  -- Only load for markdown files
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       {
@@ -938,17 +951,6 @@ require("lazy").setup({
   { "tpope/vim-surround" },
   { "wellle/targets.vim" },
 
-  -- Linting
-  { 
-    "dense-analysis/ale",
-    init = function()
-      -- Configure ALE before it loads to prevent LSP conflicts
-      vim.g.ale_disable_lsp = 1
-      vim.g.ale_completion_enabled = 0
-      vim.g.ale_use_neovim_diagnostics_api = 0
-      vim.g.ale_lsp_suggestions = 0
-    end,
-  },
 
   -- File Management and Exploration
   {
@@ -1003,19 +1005,6 @@ g.NERDTreeWinPos = "right"
 g.NERDTreeMapOpenInTab = '\r'
 g.NERDTreeGitStatusWithFlags = 1
 
--- ALE (disable completion and LSP features since we use blink.cmp and native LSP)
-g.ale_completion_enabled = 0
-g.ale_disable_lsp = 1  -- Disable ALE's LSP features completely
-g.ale_use_neovim_diagnostics_api = 0  -- Don't use Neovim's diagnostics API
-g.ale_lsp_suggestions = 0  -- Disable LSP suggestions
-g.ale_python_pyls_executable = "pylsp"
-g.ale_python_flake8_options = "--max-line-length=200"
-g.ale_python_pylint_options = "--max-line-length=200 --errors-only"
-g.ale_sign_error = '>>'
-g.ale_sign_warning = '>'
-g.ale_echo_msg_error_str = 'E'
-g.ale_echo_msg_warning_str = 'W'
-g.ale_echo_msg_format = '[%linter% | %severity%][%code%] %s'
 
 -- Airline configuration moved to plugin definition above
 

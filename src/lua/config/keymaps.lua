@@ -53,16 +53,16 @@ for i = 1, 9 do
 end
 map("n", "<leader>0", "<Plug>AirlineSelectPrevTab", { desc = "Go to previous buffer" })
 
--- ALE Error navigation
-map("n", "[W", "<Plug>(ale_first)", { silent = true })
-map("n", "[w", "<Plug>(ale_previous)", { silent = true })
-map("n", "]w", "<Plug>(ale_next)", { silent = true })
-map("n", "]W", "<Plug>(ale_last)", { silent = true })
+-- Diagnostic navigation (using built-in LSP)
+map("n", "[W", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Go to first error" })
+map("n", "[w", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
+map("n", "]w", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
+map("n", "]W", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Go to last error" })
 
--- ALE functionality
-map("n", "<C-]>", ":ALEGoToDefinition<CR>", opts)
-map("n", "<C-\\>", ":ALEFindReferences<CR>", opts)
-map("n", "<C-[>", ":ALEHover<CR>", opts)
+-- LSP functionality (replacing ALE)
+map("n", "<C-]>", vim.lsp.buf.definition, { desc = "Go to definition" })
+map("n", "<C-\\>", vim.lsp.buf.references, { desc = "Find references" })
+map("n", "<C-[>", vim.lsp.buf.hover, { desc = "Show hover information" })
 
 -- Copy filename
 map("n", ",cs", ":let @+=expand('%')<CR>", opts)
@@ -98,6 +98,27 @@ map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", opts)
 -- Terminal (using snacks.nvim terminal instead)
 -- Removed duplicate <leader>T mapping - using Tagbar only
 map("t", "<Esc>", "<C-\\><C-n>", opts)
+
+-- Quick save
+map("n", "<C-s>", ":w<CR>", opts)
+map("i", "<C-s>", "<Esc>:w<CR>a", opts)
+map("v", "<C-s>", "<Esc>:w<CR>", opts)
+
+-- Select all
+map("n", "<C-a>", "ggVG", opts)
+
+-- Better indenting
+map("v", "<", "<gv", opts)
+map("v", ">", ">gv", opts)
+
+-- Move lines up and down
+map("n", "<A-j>", ":m .+1<CR>==", opts)
+map("n", "<A-k>", ":m .-2<CR>==", opts)
+map("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
+map("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
+
+-- Clear search highlight
+map("n", "<Esc>", ":noh<CR>", opts)
 
 -- Menu system (comprehensive configuration in config/menu.lua)
 -- <C-t>        - Smart context-aware menu
@@ -138,7 +159,7 @@ map("n", "N", "Nzv", opts)
 map("n", "<leader>W", ":wa<cr>", opts)
 
 -- Close all but current buffer
-map("n", "<leader>o", ":%bd|e#<cr>", opts)
+map("n", "<leader>bo", ":%bd|e#<cr>", opts)
 
 -- CodeCompanion AI Assistant
 -- Chat and interaction
@@ -629,3 +650,72 @@ end, vim.tbl_extend("force", opts, { desc = "DAP Step Out" }))
 map("n", "<leader>dvt", function()
   require('nvim-dap-virtual-text').toggle()
 end, vim.tbl_extend("force", opts, { desc = "Toggle Virtual Text" }))
+
+-- Additional quality of life keymaps
+-- Quick window resizing
+map("n", "<C-Up>", ":resize +2<CR>", opts)
+map("n", "<C-Down>", ":resize -2<CR>", opts)
+map("n", "<C-Left>", ":vertical resize -2<CR>", opts)
+map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
+
+-- Smart split navigation
+map("n", "<C-h>", "<C-w>h", opts)
+map("n", "<C-j>", "<C-w>j", opts)
+map("n", "<C-k>", "<C-w>k", opts)
+map("n", "<C-l>", "<C-w>l", opts)
+
+-- Quick split creation
+map("n", "<leader>-", ":split<CR>", { desc = "Horizontal Split" })
+map("n", "<leader>|", ":vsplit<CR>", { desc = "Vertical Split" })
+
+-- Center cursor after jumps
+map("n", "<C-d>", "<C-d>zz", opts)
+map("n", "<C-u>", "<C-u>zz", opts)
+map("n", "n", "nzzzv", opts)
+map("n", "N", "Nzzzv", opts)
+map("n", "*", "*zz", opts)
+map("n", "#", "#zz", opts)
+map("n", "g*", "g*zz", opts)
+map("n", "g#", "g#zz", opts)
+
+-- Better join lines
+map("n", "J", "mzJ`z", opts)
+
+-- Quickfix navigation
+map("n", "<leader>qo", ":copen<CR>", { desc = "Open Quickfix" })
+map("n", "<leader>qc", ":cclose<CR>", { desc = "Close Quickfix" })
+map("n", "[q", ":cprevious<CR>", { desc = "Previous Quickfix" })
+map("n", "]q", ":cnext<CR>", { desc = "Next Quickfix" })
+
+-- Location list navigation
+map("n", "<leader>lo", ":lopen<CR>", { desc = "Open Location List" })
+map("n", "<leader>lc", ":lclose<CR>", { desc = "Close Location List" })
+map("n", "[l", ":lprevious<CR>", { desc = "Previous Location" })
+map("n", "]l", ":lnext<CR>", { desc = "Next Location" })
+
+-- Tab navigation
+map("n", "<leader>tn", ":tabnew<CR>", { desc = "New Tab" })
+map("n", "<leader>tc", ":tabclose<CR>", { desc = "Close Tab" })
+map("n", "<leader>to", ":tabonly<CR>", { desc = "Close Other Tabs" })
+map("n", "[t", ":tabprevious<CR>", { desc = "Previous Tab" })
+map("n", "]t", ":tabnext<CR>", { desc = "Next Tab" })
+
+-- Replace word under cursor
+map("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+
+-- Quick macro playback
+map("n", "Q", "@q", { desc = "Play macro q" })
+map("v", "Q", ":norm @q<CR>", { desc = "Play macro q on selection" })
+
+-- Yank to system clipboard shortcuts
+map({"n", "v"}, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
+
+-- Delete without yanking
+map({"n", "v"}, "<leader>d", [["_d]], { desc = "Delete without yank" })
+
+-- Paste in visual mode without yanking
+map("v", "<leader>p", [["_dP]], { desc = "Paste without yank" })
+
+-- Manual completion trigger is now handled by nvim-cmp mapping
+
