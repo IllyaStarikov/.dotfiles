@@ -1,0 +1,55 @@
+# Ripgrep configuration file
+# https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file
+
+# Search hidden files/directories by default
+--hidden
+
+# Follow symbolic links
+--follow
+
+# Exclude directories
+--glob=!.git/
+--glob=!node_modules/
+--glob=!.cache/
+--glob=!.venv/
+--glob=!__pycache__/
+--glob=!*.pyc
+--glob=!.mypy_cache/
+--glob=!.pytest_cache/
+--glob=!.tox/
+--glob=!dist/
+--glob=!build/
+--glob=!*.egg-info/
+--glob=!.coverage
+--glob=!.DS_Store
+--glob=!.Trash/
+--glob=!Library/
+--glob=!.Spotlight-V100/
+--glob=!.fseventsd/
+
+# Add useful type definitions
+--type-add=config:*.{json,toml,yaml,yml,ini,conf,config}
+--type-add=web:*.{html,css,scss,js,jsx,ts,tsx,vue}
+--type-add=md:*.{md,markdown,mkd,mdx}
+--type-add=shell:*.{sh,bash,zsh,fish}
+
+# Set max columns to prevent long line issues
+--max-columns=150
+--max-columns-preview
+
+# Case insensitive search by default (use -s to override)
+--smart-case
+
+# Colors that work well with both light and dark themes
+--colors=line:fg:blue
+--colors=line:style:bold
+--colors=path:fg:green
+--colors=path:style:bold
+--colors=match:fg:red
+--colors=match:style:bold
+
+# Show context by default
+--context=2
+
+# Sort by path
+--sort=path
