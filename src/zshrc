@@ -91,7 +91,7 @@ SPACESHIP_HOST_SHOW_FULL=false
 SPACESHIP_DIR_TRUNC=3
 SPACESHIP_DIR_TRUNC_REPO=false
 
-# Git optimizations
+# Git optimizations with Nerd Font symbols
 SPACESHIP_GIT_STATUS_SHOW=true
 SPACESHIP_GIT_STATUS_UNTRACKED="?"
 SPACESHIP_GIT_STATUS_ADDED="+"
@@ -103,6 +103,9 @@ SPACESHIP_GIT_STATUS_UNMERGED="="
 SPACESHIP_GIT_STATUS_AHEAD="⇡"
 SPACESHIP_GIT_STATUS_BEHIND="⇣"
 SPACESHIP_GIT_STATUS_DIVERGED="⇕"
+
+# Use Nerd Font git branch symbol
+SPACESHIP_GIT_SYMBOL=" "
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔌 PLUGIN ECOSYSTEM - Carefully Selected for Performance
@@ -332,6 +335,11 @@ export LESS='-R -S -M -I -x4'
 export LESSHISTFILE=-
 # For correct symbol rendering in less (Nerd Font Private Use Area)
 export LESSUTFCHARDEF=e000-f8ff:p,f0001-fffff:p
+
+# Ensure proper UTF-8 handling for Nerd Fonts
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 
 # FZF configuration for enhanced fuzzy finding
 export FZF_DEFAULT_OPTS='
