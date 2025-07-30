@@ -884,7 +884,7 @@ require("lazy").setup({
     },
     version = "v1.*",  -- Use stable v1 series
     opts = function()
-      return require('config.blink-setup')
+      return require('config.blink')
     end,
     -- Allow extending sources array
     opts_extend = { "sources.default" },
