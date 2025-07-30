@@ -411,7 +411,7 @@ function M.setup()
 
   vim.api.nvim_create_user_command('DapClearBreakpoints', function()
     dap.clear_breakpoints()
-    print("All breakpoints cleared")
+    vim.notify("All breakpoints cleared", vim.log.levels.INFO)
   end, { desc = 'Clear all breakpoints' })
 
   vim.api.nvim_create_user_command('DapShowLog', function()
@@ -481,13 +481,13 @@ end
 function M.debug_class()
   local dap = require('dap')
   -- This would need to be customized per language
-  print("Debug class functionality would be implemented per language")
+  vim.notify("Debug class not implemented for this language", vim.log.levels.WARN)
 end
 
 function M.debug_method()
   local dap = require('dap')
   -- This would need to be customized per language  
-  print("Debug method functionality would be implemented per language")
+  vim.notify("Debug method not implemented for this language", vim.log.levels.WARN)
 end
 
 return M

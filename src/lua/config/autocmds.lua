@@ -999,48 +999,6 @@ local function insert_skeleton(filetype, context)
   end
 end
 
--- Helper function to check for trailing spaces in skeleton content
-local function check_skeleton_linting(filetype)
-  local content = get_skeleton_content(filetype, {})
-  local issues = {}
-  
-  for i, line in ipairs(content) do
-    -- Check for trailing spaces
-    if line:match("%s+$") and line ~= "" then
-      table.insert(issues, "Line " .. i .. ": Trailing spaces found: '" .. line .. "'")
-    end
-    -- Check for tabs instead of spaces
-    if line:match("\t") then
-      table.insert(issues, "Line " .. i .. ": Tab character found (should use spaces)")
-    end
-  end
-  
-  return issues
-end
-
--- Create user command to test skeleton linting
-vim.api.nvim_create_user_command("CheckSkeletonLint", function(opts)
-  local filetype = opts.args
-  if filetype == "" then
-    filetype = "python" -- default
-  end
-  
-  local issues = check_skeleton_linting(filetype)
-  if #issues == 0 then
-    print("✓ Skeleton for " .. filetype .. " is clean (no linting issues)")
-  else
-    print("✗ Found " .. #issues .. " linting issues in " .. filetype .. " skeleton:")
-    for _, issue in ipairs(issues) do
-      print("  " .. issue)
-    end
-  end
-end, {
-  nargs = "?",
-  desc = "Check skeleton template for linting issues",
-  complete = function()
-    return {"python", "shell", "javascript", "html", "markdown", "c", "java", "react", "latex"}
-  end
-})
 
 -- Python files
 autocmd("BufNewFile", {
@@ -1127,25 +1085,6 @@ autocmd("BufNewFile", {
 -- DEBUG COMMANDS
 -- =============================================================================
 
--- Debug airline tabline
-vim.api.nvim_create_user_command("DebugAirline", function()
-  print("Airline Tabline Settings:")
-  print("  tabline#enabled:", vim.g["airline#extensions#tabline#enabled"])
-  print("  show_buffers:", vim.g["airline#extensions#tabline#show_buffers"])
-  print("  show_tabs:", vim.g["airline#extensions#tabline#show_tabs"])
-  print("  buffer_idx_mode:", vim.g["airline#extensions#tabline#buffer_idx_mode"])
-  print("  formatter:", vim.g["airline#extensions#tabline#formatter"])
-  print("  powerline_fonts:", vim.g.airline_powerline_fonts)
-  print("  theme:", vim.g.airline_theme)
-  print("\nBuffers:")
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_loaded(buf) then
-      local name = vim.api.nvim_buf_get_name(buf)
-      print("  " .. buf .. ": " .. (name ~= "" and name or "[No Name]"))
-    end
-  end
-end, { desc = "Debug airline tabline configuration" })
-
 -- Force airline refresh command
 vim.api.nvim_create_user_command("AirlineFixTabs", function()
   -- Ensure we have showtabline set
@@ -1166,7 +1105,7 @@ vim.api.nvim_create_user_command("AirlineFixTabs", function()
   -- Final refresh
   vim.defer_fn(function()
     vim.cmd("AirlineRefresh")
-    print("Airline tabline should now be visible")
+    -- Airline tabline refreshed
   end, 100)
 end, { desc = "Fix airline tabline display" })
 
@@ -1197,6 +1136,3 @@ autocmd({"VimEnter", "BufEnter", "BufAdd"}, {
     end
   end
 })
-
--- Load markview debug commands
--- require('config.markview-debug') -- Disabled while markview is disabled

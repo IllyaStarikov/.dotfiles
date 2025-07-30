@@ -232,11 +232,11 @@ vim.api.nvim_create_user_command("FixComments", function()
   if current_bg == "dark" then
     vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
     vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
-    print("Applied dark theme comment colors")
+    -- Dark theme comment colors applied
   else
     vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
     vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
-    print("Applied light theme comment colors")
+    -- Light theme comment colors applied
   end
 end, {
   desc = "Fix comment colors for current background"
@@ -259,9 +259,9 @@ vim.api.nvim_create_user_command("TokyoNight", function(args)
     })
     vim.g.tokyonight_style = style
     vim.cmd("colorscheme tokyonight-" .. style)
-    print("Tokyo Night " .. style .. " theme loaded")
+    -- Tokyo Night theme loaded
   else
-    print("Tokyo Night plugin not found")
+    vim.notify("Tokyo Night plugin not found", vim.log.levels.WARN)
   end
 end, {
   nargs = "?",
