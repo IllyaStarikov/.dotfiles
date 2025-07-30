@@ -188,9 +188,7 @@ alias haskellcc="ghc"
 alias py="python3"
 alias py2="python2"
 alias pip="pip3"
-alias node="node"
-alias npm="npm"
-alias yarn="yarn"
+# Node/npm/yarn are handled by NVM lazy loading - no aliases needed
 
 # Docker shortcuts
 alias d="docker"
