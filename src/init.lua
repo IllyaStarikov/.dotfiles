@@ -1,21 +1,14 @@
+-- Disable automatic LSP detection to prevent duplicate servers
+-- This must be set before any plugins are loaded
+vim.g.lsp_autostart = false
+
 -- Load core configuration modules
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
 require("config.plugins")
 require("config.theme")
+require("config.commands")
 
--- Load LSP after plugins are loaded
--- Using VimEnter to ensure all plugins are fully initialized
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    -- Ensure blink.cmp is loaded first
-    local blink_ok = pcall(require, "blink.cmp")
-    if not blink_ok then
-      vim.notify("Warning: blink.cmp not loaded before LSP setup", vim.log.levels.WARN)
-    end
-    
-    -- Load LSP configuration
-    require("config.lsp").setup()
-  end,
-})
+-- LSP setup is now handled by lazy.nvim after all plugins are loaded
+-- See plugins.lua for the setup timing
