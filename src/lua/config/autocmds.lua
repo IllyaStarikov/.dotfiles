@@ -200,6 +200,13 @@ autocmd("BufWritePre", {
 })
 
 -- =============================================================================
+-- LSP SETUP AFTER PLUGINS
+-- =============================================================================
+
+-- LSP setup is now handled in plugins.lua via nvim-lspconfig's config function
+-- This prevents duplicate initialization
+
+-- =============================================================================
 -- PROJECT-SPECIFIC SETTINGS
 -- =============================================================================
 
