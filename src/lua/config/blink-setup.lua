@@ -2,8 +2,25 @@
 -- Based on best practices for performance and functionality
 
 return {
-  -- Keymap preset (default provides standard VSCode-like bindings)
-  keymap = { preset = 'default' },
+  -- Keymap preset with custom Tab handling
+  keymap = { 
+    preset = 'default',
+    ['<Tab>'] = {
+      -- If completion menu is visible, accept the selected item
+      function(cmp)
+        if cmp.snippet_active() then
+          return cmp.accept()
+        else
+          return cmp.select_and_accept()
+        end
+      end,
+      -- Otherwise, try snippet expansion/jump
+      'snippet_forward',
+      -- Finally, fallback to default Tab behavior
+      'fallback'
+    },
+    ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
+  },
   
   -- Appearance settings
   appearance = {

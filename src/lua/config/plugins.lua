@@ -864,10 +864,11 @@ require("lazy").setup({
       require('config.luasnip').setup()
     end,
     keys = {
-      { "<Tab>", mode = {"i", "s"}, desc = "Expand/Jump in snippet" },
-      { "<S-Tab>", mode = {"i", "s"}, desc = "Jump back in snippet" },
+      -- Tab/S-Tab handled by blink.cmp to avoid conflicts
       { "<C-j>", mode = {"i", "s"}, desc = "Next choice in snippet" },
       { "<C-k>", mode = {"i", "s"}, desc = "Previous choice in snippet" },
+      { "<C-l>", mode = {"i", "s"}, desc = "Expand/Jump in snippet" },
+      { "<C-h>", mode = {"i", "s"}, desc = "Jump back in snippet" },
       { "<leader>sl", desc = "Show available snippets" },
     },
   },
