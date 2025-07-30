@@ -23,35 +23,6 @@ autocmd({ "TermEnter" }, {
 })
 
 -- =============================================================================
--- HELPER FUNCTIONS
--- =============================================================================
-
--- Text processing utilities
-local function trim_whitespace()
-  local save = vim.fn.winsaveview()
-  vim.cmd([[%s/\t/    /ge]])
-  vim.cmd([[%s/\s\+$//ge]])
-  vim.fn.winrestview(save)
-end
-
-local function normalize_markdown()
-  local save = vim.fn.winsaveview()
-  vim.cmd([[%s/'/'/ge]])
-  vim.cmd([[%s/"/"/ge]])
-  vim.cmd([[%s/"/"/ge]])
-  vim.cmd([[%s/"/"/ge]])
-  vim.fn.winrestview(save)
-end
-
--- Export helper functions as user commands
-vim.api.nvim_create_user_command("TrimWhitespace", trim_whitespace, {
-  desc = "Remove trailing whitespace and convert tabs to spaces"
-})
-vim.api.nvim_create_user_command("NormalizeMarkdown", normalize_markdown, {
-  desc = "Normalize smart quotes and typography in markdown files"
-})
-
--- =============================================================================
 -- MARKDOWN ENHANCEMENTS
 -- =============================================================================
 
@@ -178,26 +149,8 @@ autocmd("FileType", {
   command = "set noexpandtab"
 })
 
-autocmd("BufWritePre", {
-  group = normalize_group,
-  pattern = "*",
-  callback = function()
-    local blocklist = { "make", "makefile", "snippets", "sh" }
-    local ft = vim.bo.filetype
-    for _, blocked_ft in ipairs(blocklist) do
-      if ft == blocked_ft then
-        return
-      end
-    end
-    trim_whitespace()
-  end
-})
-
-autocmd("BufWritePre", {
-  group = normalize_group,
-  pattern = "*.md",
-  callback = normalize_markdown
-})
+-- Removed auto-formatting on save
+-- Use :Format command to manually format files
 
 -- =============================================================================
 -- LSP SETUP AFTER PLUGINS
@@ -238,47 +191,8 @@ autocmd("FileType", {
   end
 })
 
--- Re-enforce Python indentation after any buffer write or format
-autocmd({"BufWritePost", "User"}, {
-  group = python_group,
-  pattern = "*.py",
-  callback = function()
-    if vim.bo.filetype == "python" then
-      vim.opt_local.shiftwidth = 2
-      vim.opt_local.tabstop = 2
-      vim.opt_local.softtabstop = 2
-      vim.opt_local.expandtab = true
-    end
-  end
-})
-
--- Also enforce on any LSP format or external command
-autocmd("User", {
-  group = python_group,
-  pattern = "FormatterPost",
-  callback = function()
-    if vim.bo.filetype == "python" then
-      vim.opt_local.shiftwidth = 2
-      vim.opt_local.tabstop = 2
-      vim.opt_local.softtabstop = 2
-      vim.opt_local.expandtab = true
-    end
-  end
-})
-
--- Enforce Python indentation after buffer writes
-autocmd({"BufWritePre", "BufWritePost"}, {
-  group = python_group,
-  pattern = "*.py",
-  callback = function()
-    if vim.bo.filetype == "python" then
-      vim.opt_local.shiftwidth = 2
-      vim.opt_local.tabstop = 2
-      vim.opt_local.softtabstop = 2
-      vim.opt_local.expandtab = true
-    end
-  end
-})
+-- Removed auto-enforcement of Python settings
+-- Settings are only applied when opening Python files, not on save
 
 -- =============================================================================
 -- NERDTREE INTEGRATION
