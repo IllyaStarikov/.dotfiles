@@ -13,6 +13,9 @@ alias vi="nvim"
 alias v="nvim"
 alias code="code ."
 alias edit="nvim"
+alias vimconfig="nvim ~/.config/nvim/init.lua"
+alias zshconfig="nvim ~/.zshrc"
+alias tmuxconfig="nvim ~/.tmux.conf"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📁 FILE MANAGEMENT - Modern ls with eza
@@ -259,6 +262,8 @@ alias vimconfig="nvim ~/.config/nvim/init.lua"
 alias tmuxconfig="nvim ~/.tmux.conf"
 alias gitconfig="nvim ~/.gitconfig"
 alias sshconfig="nvim ~/.ssh/config"
+alias alacrittyconfig="nvim ~/.dotfiles/src/alacritty.toml"
+alias ripgrepconfig="nvim ~/.dotfiles/src/ripgreprc"
 
 # Time savers
 alias h="history"
@@ -304,3 +309,36 @@ alias jsonpp='python3 -m json.tool'
 alias md5sum='md5'
 alias sha1sum='shasum -a 1'
 alias sha256sum='shasum -a 256'
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🔒 SECURITY & PERMISSIONS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Fix common permission issues
+alias fix-permissions="find . -type f -exec chmod 644 {} \; && find . -type d -exec chmod 755 {} \;"
+alias fix-ssh="chmod 700 ~/.ssh && chmod 600 ~/.ssh/* && chmod 644 ~/.ssh/*.pub 2>/dev/null || true"
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 📱 MODERN UTILITIES
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Quick file sharing
+alias share="python3 -m http.server 8000"
+
+# Lazy git - interactive git UI
+alias lg="lazygit"
+
+# Better df with duf if available
+if command -v duf &> /dev/null; then
+    alias df='duf'
+fi
+
+# Better du with dust if available
+if command -v dust &> /dev/null; then
+    alias du='dust'
+fi
+
+# Better ping with gping if available
+if command -v gping &> /dev/null; then
+    alias ping='gping'
+fi

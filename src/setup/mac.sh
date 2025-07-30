@@ -1,6 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
+# Color output helpers
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+error() { echo -e "${RED}❌ $1${NC}"; }
+
 echo "🚀 macOS Development Environment Setup"
 echo "======================================"
 
@@ -48,7 +60,7 @@ echo "📦 Installing essential packages..."
 brew install git neovim tmux
 
 # Install development tools
-echo "🛠️  Installing development tools..."
+info "Installing development tools..."
 brew install \
     pyenv \
     ranger \
@@ -71,7 +83,17 @@ brew install \
     gh \
     lazygit \
     mercurial \
-    imagemagick
+    imagemagick \
+    colordiff \
+    duf \
+    dust \
+    gping \
+    hyperfine \
+    sd \
+    tokei \
+    xh \
+    glow \
+    mdcat
 
 # Install programming language tools
 echo "🛠️  Installing programming language tools..."
@@ -117,12 +139,16 @@ python3 -m pip install \
     debugpy
 
 # Install fonts
-echo "🔤 Installing fonts..."
+info "Installing fonts..."
 brew tap homebrew/cask-fonts
 brew install --cask font-hasklug-nerd-font
 brew install --cask font-lilex-nerd-font
 brew install --cask font-symbols-only-nerd-font
 brew install --cask font-meslo-lg-nerd-font
+
+# Install applications
+info "Installing applications..."
+brew install --cask alacritty || warning "Alacritty installation failed"
 
 # Backup existing configs
 echo "💾 Backing up existing configurations..."
@@ -204,16 +230,41 @@ fi
 echo "⚙️  Setting up Git configuration..."
 git config --global core.excludesfile '~/.gitignore'
 
+# Setup theme switcher
+info "Setting up theme switcher..."
+if [[ -f "$HOME/.dotfiles/src/theme-switcher/install-auto-theme.sh" ]]; then
+    bash "$HOME/.dotfiles/src/theme-switcher/install-auto-theme.sh" || warning "Theme switcher setup failed"
+fi
+
+# Install TPM plugins
+info "Installing tmux plugins..."
+if [[ -d "$HOME/.tmux/plugins/tpm" ]]; then
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins" || warning "TPM plugin installation failed"
+fi
+
+# macOS specific optimizations
+info "Applying macOS optimizations..."
+# Enable key repeat for Vim
+defaults write -g ApplePressAndHoldEnabled -bool false
+# Fast key repeat
+defaults write -g KeyRepeat -int 2
+defaults write -g InitialKeyRepeat -int 15
+# Show hidden files in Finder
+defaults write com.apple.finder AppleShowAllFiles -bool true
+# Don't create .DS_Store files on network volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+
 # Final instructions
 echo ""
-echo "✅ Setup complete!"
+success "Setup complete!"
 echo ""
 echo "🎯 Next steps:"
 echo "  1. Restart your terminal or run: source ~/.zshrc"
 echo "  2. Open Neovim and run :Lazy to install plugins"
 echo "  3. Run 'theme' to set up your preferred theme"
+echo "  4. Open tmux and press prefix + I to install plugins"
 echo ""
-echo "📚 Optional tools to consider:"
-echo "  - brew install --cask alacritty  # GPU-accelerated terminal"
-echo "  - brew install starship           # Alternative to spaceship prompt"
+echo "⚡ Performance tips:"
+echo "  - Restart your Mac for all system changes to take effect"
+echo "  - Run 'brew cleanup' periodically to free up disk space"
 echo ""
