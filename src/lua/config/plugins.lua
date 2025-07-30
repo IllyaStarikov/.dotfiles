@@ -5,15 +5,18 @@
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
 vim.opt.runtimepath:prepend(lazypath)
 
@@ -43,6 +46,7 @@ require("lazy").setup({
       { "<leader>fh", function() require('telescope.builtin').help_tags() end, desc = "Help Tags" },
       { "<leader>fr", function() require('telescope.builtin').oldfiles() end, desc = "Recent Files" },
       { "<leader>fc", function() require('telescope.builtin').commands() end, desc = "Commands" },
+      { "<leader>fp", function() require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root }) end, desc = "Find Plugin File" },
     },
   },
 
@@ -650,19 +654,35 @@ require("lazy").setup({
   { "sindrets/diffview.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 
   -- UI enhancements
-  { "stevearc/dressing.nvim", opts = {} },
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+  },
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-    end,
     opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    }
+      plugins = { spelling = true },
+      defaults = {
+        mode = { "n", "v" },
+      },
+    },
+    config = function(_, opts)
+      local wk = require("which-key")
+      wk.setup(opts)
+    end,
   },
 
   -- Formatting
@@ -801,7 +821,32 @@ require("lazy").setup({
   },
   {
     "williamboman/mason.nvim",
-    build = ":MasonUpdate"
+    cmd = "Mason",
+    build = ":MasonUpdate",
+    opts = {
+      ensure_installed = {
+        "stylua",
+        "shfmt",
+        "shellcheck",
+      },
+    },
+    config = function(_, opts)
+      require("mason").setup(opts)
+      local mr = require("mason-registry")
+      local function ensure_installed()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
+        end
+      end
+      if mr.refresh then
+        mr.refresh(ensure_installed)
+      else
+        ensure_installed()
+      end
+    end,
   },
   { 
     "williamboman/mason-lspconfig.nvim",
@@ -999,6 +1044,25 @@ require("lazy").setup({
       source = "📄",
       start = "🚀",
       task = "📌",
+    },
+  },
+  checker = {
+    enabled = true,  -- check for plugin updates periodically
+    notify = false,  -- don't notify on update (less intrusive)
+  },
+  performance = {
+    rtp = {
+      -- disable some rtp plugins for faster startup
+      disabled_plugins = {
+        "gzip",
+        -- "matchit",
+        -- "matchparen",
+        -- "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
     },
   },
 })
