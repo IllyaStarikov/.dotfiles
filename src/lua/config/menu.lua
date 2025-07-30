@@ -15,15 +15,7 @@ function M.setup()
         return
     end
 
-    -- Setup enhanced highlights
-    local highlights_ok, highlights = pcall(require, "config.menu-highlights")
-    if highlights_ok and type(highlights) == "table" then
-        pcall(highlights.setup)
-        pcall(highlights.setup_theme_aware_highlights)
-        pcall(highlights.integrate_with_theme_switcher)
-    else
-        vim.notify("Menu highlights configuration not available", vim.log.levels.WARN)
-    end
+    -- Use default highlights from the plugin
 
     -- Define custom menu configurations
     M.setup_custom_menus()
