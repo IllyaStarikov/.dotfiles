@@ -10,21 +10,37 @@
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Skip global compinit for faster startup (Oh My Zsh will handle it)
+skip_global_compinit=1
+
+# Completion options for performance
 setopt COMPLETE_IN_WORD
 setopt AUTO_MENU
 setopt AUTO_PARAM_SLASH
 setopt AUTO_LIST
+setopt LIST_AMBIGUOUS
+setopt MENU_COMPLETE
+
+# Performance: Disable start/stop characters
+setopt NO_FLOW_CONTROL
+
+# Don't check for new mail
+unset MAILCHECK
 
 # Performance: Only eval brew if not already in PATH
-if [[ ! "$PATH" == */opt/homebrew/bin* ]]; then
-  eval $(/opt/homebrew/bin/brew shellenv)
+if [[ ! "$PATH" == */opt/homebrew/bin* ]] && [[ ! "$PATH" == */usr/local/bin* ]]; then
+  if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    # Intel Mac fallback
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 fi
 
 # ┌─ EARLY PYTHON ENVIRONMENT SETUP ─┐
 # Initialize pyenv early to avoid "python not found" errors
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv 1>/dev/null 2>&1; then
+[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init --path)"
 fi
 
@@ -127,6 +143,10 @@ plugins=(
 # Lightning-fast vi mode transitions
 export KEYTIMEOUT=1
 
+# Better command history
+export HISTCONTROL=ignoredups:erasedups  # No duplicate entries
+export HISTIGNORE="&:ls:ll:la:l.:pwd:exit:clear:history"
+
 # Intelligent command correction
 ENABLE_CORRECTION="true"
 setopt CORRECT                    # Correct commands
@@ -176,8 +196,8 @@ source $ZSH/oh-my-zsh.sh
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Enhanced syntax highlighting (must be loaded after oh-my-zsh)
-if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [[ -f "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
   
   # Customize highlighting colors
   ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
@@ -190,16 +210,16 @@ if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 fi
 
 # Auto-suggestions for command completion
-if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [[ -f "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=241'
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)
   ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 fi
 
 # Load current theme configuration
-if [ -f ~/.config/theme-switcher/current-theme.sh ]; then
-  source ~/.config/theme-switcher/current-theme.sh
+if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
+  source "$HOME/.config/theme-switcher/current-theme.sh"
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -306,35 +326,50 @@ export LESSHISTFILE=-
 export LESSUTFCHARDEF=e000-f8ff:p,f0001-fffff:p
 
 # FZF configuration for enhanced fuzzy finding
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview="bat --color=always --style=header,grid --line-range :300 {}" --preview-window=right:50%:wrap'
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS='
+  --height 40% 
+  --layout=reverse 
+  --border=rounded 
+  --preview="([[ -f {} ]] && (bat --style=numbers --color=always --line-range=:300 {} || cat {})) || ([[ -d {} ]] && (eza --tree --level=2 --color=always {} | head -200)) || echo {}"
+  --preview-window=right:50%:wrap
+  --bind="ctrl-/:toggle-preview"
+  --bind="ctrl-d:preview-page-down"
+  --bind="ctrl-u:preview-page-up"
+  --color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796
+  --color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6
+  --color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796
+'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
 
 # Ripgrep configuration
-export RIPGREP_CONFIG_PATH=~/.ripgreprc
+export RIPGREP_CONFIG_PATH=~/.dotfiles/src/ripgreprc
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📁 PATH MANAGEMENT & TOOL INITIALIZATION
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Custom scripts and local configurations
-[ -d ~/.localrc ] && source ~/.localrc
-[ -d ~/.shortcuts ] && source ~/.shortcuts
-[ -d ~/.scripts ] && export PATH="$HOME/.scripts:$PATH"
+[[ -f "$HOME/.localrc" ]] && source "$HOME/.localrc"
+[[ -f "$HOME/.shortcuts" ]] && source "$HOME/.shortcuts"
+[[ -d "$HOME/.scripts" ]] && export PATH="$HOME/.scripts:$PATH"
 
 # Modern development tools path management
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 # FZF integration for enhanced file searching
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
 
 # ┌─ PYTHON ENVIRONMENT MANAGEMENT ─┐
 # Complete pyenv initialization (already path initialized early)
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
+  # Only init virtualenv if it exists
+  if pyenv commands | grep -q virtualenv-init; then
+    eval "$(pyenv virtualenv-init -)"
+  fi
   # Enable Python in Spaceship prompt after pyenv is loaded
   if command -v python &>/dev/null || command -v python3 &>/dev/null; then
     SPACESHIP_PYTHON_SHOW=true
@@ -344,22 +379,38 @@ fi
 # ┌─ NODE.JS ENVIRONMENT ─┐
 # NVM initialization (lazy loading for performance)
 export NVM_DIR="$HOME/.nvm"
-if [ -s "$NVM_DIR/nvm.sh" ]; then
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
   # Lazy load NVM to improve shell startup time
-  alias nvm='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && nvm'
-  alias node='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && node'
-  alias npm='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && npm'
-  alias npx='unalias nvm node npm npx && source "$NVM_DIR/nvm.sh" && npx'
+  nvm() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    nvm "$@"
+  }
+  node() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    node "$@"
+  }
+  npm() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npm "$@"
+  }
+  npx() {
+    unset -f nvm node npm npx
+    source "$NVM_DIR/nvm.sh"
+    npx "$@"
+  }
 fi
 
 # ┌─ RUST ENVIRONMENT ─┐
 # Cargo path for Rust tools
-[ -f ~/.cargo/env ] && source ~/.cargo/env
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # ┌─ GO ENVIRONMENT ─┐
 # Go workspace configuration
 export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$PATH"
+[[ -d "$GOPATH/bin" ]] && export PATH="$GOPATH/bin:$PATH"
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🏗️ ARCHITECTURE-SPECIFIC OPTIMIZATIONS
@@ -378,17 +429,25 @@ alias ibrew='arch -x86_64 /usr/local/bin/brew'
 
 # Smart mkdir and cd
 mkdir_cd() {
-    mkdir -p "$1" && cd "$1"
+    mkdir -p "$1" && cd "$1" || return 1
 }
 alias mkcd=mkdir_cd
 
 # Enhanced file finding
 ff() {
-    fd "$1" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {}'
+    if [[ -z "$1" ]]; then
+        echo "Usage: ff <pattern>" >&2
+        return 1
+    fi
+    fd "$1" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {} 2>/dev/null || cat {}'
 }
 
 # Smart grep with ripgrep
 grep_smart() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: search <pattern> [options]" >&2
+        return 1
+    fi
     if command -v rg >/dev/null 2>&1; then
         rg --color=always --line-number --no-heading --smart-case "$@" | fzf --ansi
     else
@@ -399,12 +458,25 @@ alias search=grep_smart
 
 # Git utilities
 git_clean_branches() {
-    git branch --merged | grep -v "\*\|master\|main\|develop" | xargs -n 1 git branch -d
+    local branches
+    branches=$(git branch --merged | grep -v "\*\|master\|main\|develop")
+    if [[ -z "$branches" ]]; then
+        echo "No merged branches to clean" >&2
+        return 0
+    fi
+    echo "$branches" | xargs -n 1 git branch -d
 }
 
 # Quick project navigation
 project() {
-    cd ~/Projects/"$1" 2>/dev/null || cd ~/projects/"$1" 2>/dev/null || echo "Project $1 not found"
+    if [[ -z "$1" ]]; then
+        echo "Usage: project <name>" >&2
+        return 1
+    fi
+    cd "$HOME/Projects/$1" 2>/dev/null || cd "$HOME/projects/$1" 2>/dev/null || {
+        echo "Project '$1' not found" >&2
+        return 1
+    }
 }
 
 # System information
@@ -437,23 +509,58 @@ serve() {
     fi
 }
 
+# Extract any archive type
+extract() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: extract <archive>" >&2
+        return 1
+    fi
+    if [[ ! -f "$1" ]]; then
+        echo "Error: '$1' is not a valid file" >&2
+        return 1
+    fi
+    case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz)  tar xzf "$1" ;;
+        *.bz2)     bunzip2 "$1" ;;
+        *.rar)     unrar x "$1" ;;
+        *.gz)      gunzip "$1" ;;
+        *.tar)     tar xf "$1" ;;
+        *.tbz2)    tar xjf "$1" ;;
+        *.tgz)     tar xzf "$1" ;;
+        *.zip)     unzip "$1" ;;
+        *.Z)       uncompress "$1" ;;
+        *.7z)      7z x "$1" ;;
+        *) echo "Error: '$1' cannot be extracted via extract()" >&2; return 1 ;;
+    esac
+}
+
+# Create directory and cd into it
+take() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: take <directory>" >&2
+        return 1
+    fi
+    mkdir -p "$1" && cd "$1" || return 1
+}
+
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 # ☁️ CLOUD & EXTERNAL TOOL INTEGRATIONS
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Google Cloud SDK integration
-if [ -f '/Users/starikov/google-cloud-sdk/path.zsh.inc' ]; then
-    source '/Users/starikov/google-cloud-sdk/path.zsh.inc'
+if [[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]]; then
+    source "$HOME/google-cloud-sdk/path.zsh.inc"
 fi
 
-if [ -f '/Users/starikov/google-cloud-sdk/completion.zsh.inc' ]; then
-    source '/Users/starikov/google-cloud-sdk/completion.zsh.inc'
+if [[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]]; then
+    source "$HOME/google-cloud-sdk/completion.zsh.inc"
 fi
 
 # Docker completion (if installed)
 if command -v docker >/dev/null 2>&1; then
-    if [ -f ~/.docker/completion/zsh/_docker ]; then
-        source ~/.docker/completion/zsh/_docker
+    if [[ -f "$HOME/.docker/completion/zsh/_docker" ]]; then
+        source "$HOME/.docker/completion/zsh/_docker"
     fi
 fi
 
@@ -461,7 +568,8 @@ fi
 if command -v kubectl >/dev/null 2>&1; then
     source <(kubectl completion zsh)
     alias k=kubectl
-    complete -F __start_kubectl k
+    # Use compdef for zsh completion
+    compdef k=kubectl
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -477,7 +585,7 @@ HISTFILE=~/.zsh_history
 typeset -U PATH
 
 # Load any additional local configurations
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # Performance profiling (uncomment for debugging startup time)
 # zprof
