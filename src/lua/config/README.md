@@ -45,8 +45,8 @@ This directory contains the modular Lua configuration for Neovim, organized for 
 3. Export a `setup()` function if initialization is needed
 4. Load the module from the appropriate location (init.lua or plugins.lua)
 
-## Debugging
+## Diagnostics
 
-- Use `:LspStatus` to check LSP and completion status
 - Run `:checkhealth` for comprehensive diagnostics
 - Check `:messages` for any error messages during startup
+- Use `:LspInfo` to check LSP client status

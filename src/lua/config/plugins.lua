@@ -713,7 +713,6 @@ require("lazy").setup({
       { "<leader>mg", desc = "Git Menu" },
       { "<leader>mc", desc = "Code Menu" },
       { "<leader>ma", desc = "AI Assistant Menu" },
-      { "<leader>md", desc = "Debug Menu" },
       { "<leader>mF", desc = "File Management Menu" },
       { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
     }

@@ -290,11 +290,6 @@ function M.setup()
   -- This lets oil take over naturally when needed
   
   -- Oil will automatically take over directory buffers due to default_file_explorer = true
-  
-  -- 📝 DEBUG LOGGING
-  -- Note: Oil supports debug logging via:
-  -- require("oil").setup({ log_level = "debug" })
-  
 end
 
 -- 🎯 ADDITIONAL UTILITIES
