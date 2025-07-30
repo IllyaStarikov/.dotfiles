@@ -107,11 +107,11 @@ function! LoadThemeFromEnv()
         endfor
     endif
     
-    " Fallback to default colorscheme if no theme is set
+    " Fallback to default colorscheme iceberg
     try
-        colorscheme desert
+        colorscheme iceberg
     catch
-        " Ignore if colorscheme doesn't exist
+        " Ignore if colorscheme iceberg
     endtry
 endfunction
 
@@ -205,6 +205,7 @@ if filereadable(expand('~/.vim/autoload/plug.vim'))
     nnoremap <leader>b :Buffers<CR>
     nnoremap <leader>g :Rg<CR>
 endif
+
 
 " ==============================================================================
 " STATUS LINE (if airline is not available)
