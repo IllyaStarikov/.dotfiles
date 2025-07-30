@@ -229,6 +229,14 @@ fi
 # Load custom aliases
 source "$HOME/.dotfiles/src/zsh/aliases.zsh"
 
+# Load work-specific aliases if available (silent if private repo doesn't exist)
+if [[ -d "$HOME/.dotfiles/.dotfiles.private" && -f "$HOME/.dotfiles/.dotfiles.private/HOSTS" ]]; then
+  WORK_ALIASES=$(nvim --headless -c "lua print(require('config.work').get_profile().aliases_path or '')" -c quit 2>/dev/null)
+  if [[ -n "$WORK_ALIASES" && -f "$WORK_ALIASES" ]]; then
+    source "$WORK_ALIASES"
+  fi
+fi
+
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🎯 ADVANCED COMPLETION SYSTEM
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────

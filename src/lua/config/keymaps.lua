@@ -225,28 +225,24 @@ map("n", "<leader>cal", function()
   require("codecompanion").setup({
     strategies = { chat = { adapter = "ollama" } }
   })
-  print("Switched to Local Ollama")
 end, { desc = "Switch to Ollama" })
 
 map("n", "<leader>caa", function()
   require("codecompanion").setup({
     strategies = { chat = { adapter = "anthropic" } }
   })
-  print("Switched to Anthropic Claude")
 end, { desc = "Switch to Anthropic" })
 
 map("n", "<leader>cao", function()
   require("codecompanion").setup({
     strategies = { chat = { adapter = "openai" } }
   })
-  print("Switched to OpenAI")
 end, { desc = "Switch to OpenAI" })
 
 map("n", "<leader>cac", function()
   require("codecompanion").setup({
     strategies = { chat = { adapter = "copilot" } }
   })
-  print("Switched to Copilot")
 end, { desc = "Switch to Copilot" })
 
 -- 🍿 SNACKS.NVIM: High-Performance Power User Keybindings
