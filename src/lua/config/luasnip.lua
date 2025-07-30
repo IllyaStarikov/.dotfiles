@@ -49,24 +49,8 @@ function M.setup()
   })
   
   -- Keymaps for snippet navigation
-  -- Tab handling: blink.cmp takes priority, then falls back to LuaSnip
-  vim.keymap.set({"i", "s"}, "<Tab>", function()
-    -- If we can expand or jump in a snippet, do that
-    if luasnip.expand_or_jumpable() then
-      luasnip.expand_or_jump()
-    else
-      -- Otherwise, let blink.cmp handle it (fallback)
-      return "<Tab>"
-    end
-  end, { expr = true, silent = true })
-  
-  vim.keymap.set({"i", "s"}, "<S-Tab>", function()
-    if luasnip.jumpable(-1) then
-      luasnip.jump(-1)
-    else
-      return "<S-Tab>"
-    end
-  end, { expr = true, silent = true })
+  -- NOTE: Tab/S-Tab are now handled by blink.cmp to avoid conflicts
+  -- Blink.cmp will call LuaSnip for snippet expansion/jumping automatically
   
   -- Alternative keys for snippet navigation
   vim.keymap.set({"i", "s"}, "<C-l>", function()
