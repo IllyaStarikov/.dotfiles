@@ -17,9 +17,11 @@
     safecrlf = true
     excludesfile = ~/.dotfiles/src/gitignore
     attributesfile = ~/.gitattributes
-    precomposeUnicode = true
-    untrackedCache = true
-    fsmonitor = true
+    precomposeUnicode = true  # macOS Unicode normalization
+    untrackedCache = true  # Speed up status on large repos
+    fsmonitor = true  # File system monitoring for speed
+    commitGraph = true  # Use commit graph for performance
+    multiPackIndex = true  # Optimize object lookups
 
 [init]
     defaultBranch = main
@@ -35,6 +37,7 @@
 [fetch]
     prune = true
     prunetags = true
+    writeCommitGraph = true  # Update commit graph on fetch
 
 [rebase]
     autoStash = true
@@ -54,9 +57,10 @@
 
 [diff]
     tool = nvimdiff
-    algorithm = patience
+    algorithm = histogram  # Better than patience for most cases
     compactionHeuristic = true
     colorMoved = default
+    indentHeuristic = true  # Better diffs for indented code
 
 [difftool]
     prompt = false
@@ -70,7 +74,7 @@
 
 [commit]
     verbose = true
-    template = ~/.gitmessage
+    # template = ~/.gitmessage  # Uncomment if using commit template
 
 [log]
     decorate = short
@@ -85,7 +89,7 @@
     autoupdate = true
 
 [help]
-    autocorrect = 1
+    autocorrect = 10  # 1 second delay before autocorrecting
 
 [web]
     browser = open
@@ -225,15 +229,19 @@
 
 [gc]
     auto = 1000
+    writeCommitGraph = true  # Maintain commit graph on gc
 
 [pack]
-    threads = 0
+    threads = 0  # Use all available CPU cores
     deltaCacheSize = 2g
     packSizeLimit = 2g
     windowMemory = 2g
+    compression = 9  # Maximum compression
+    writeBitmapHashCache = true  # Faster counting objects
 
 [index]
     version = 4
+    threads = true  # Parallel index operations
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔀 DELTA DIFF VIEWER (if installed)
