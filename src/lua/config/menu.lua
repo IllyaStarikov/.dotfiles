@@ -670,7 +670,7 @@ function M.get_project_specific_menu()
         table.insert(project_menu, { name = "🔭 Find Rust", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.rs'}})", rtxt = "r" })
     end
     
-    if vim.fn.filereadable(cwd .. "/requirements.txt") == 1 or vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
+    if vim.fn.filereadable(cwd .. "/requirements.txt") == 1 or vim.fn.filereadable(cwd .. "/src/pyproject.toml") == 1 then
         table.insert(project_menu, { name = "🐍 pip install", cmd = "lua Snacks.terminal('pip install -r requirements.txt')", rtxt = "I" })
         table.insert(project_menu, { name = "🐍 pytest", cmd = "lua Snacks.terminal('python -m pytest')", rtxt = "p" })
         table.insert(project_menu, { name = "🐍 run main", cmd = "lua Snacks.terminal('python main.py')", rtxt = "M" })
