@@ -182,9 +182,6 @@ local function setup_lsp()
     config.capabilities = capabilities
     config.on_attach = on_attach
     
-    -- Debug: log server setup
-    -- vim.notify("Setting up " .. server .. " LSP server", vim.log.levels.INFO)
-    
     -- Use pcall to handle servers that might not be installed
     local ok, err = pcall(function()
       lspconfig[server].setup(config)
@@ -192,8 +189,6 @@ local function setup_lsp()
     
     if not ok then
       vim.notify("Failed to setup " .. server .. ": " .. tostring(err), vim.log.levels.WARN)
-    else
-      -- vim.notify("Successfully setup " .. server, vim.log.levels.INFO)
     end
   end
   
@@ -285,50 +280,10 @@ end
 local M = {}
 M.kwbd = kwbd
 
--- Debug function to check LSP status
-function M.check_lsp_status()
-  local clients = vim.lsp.get_clients()
-  if #clients == 0 then
-    print("No active LSP clients")
-  else
-    print("Active LSP clients:")
-    for _, client in ipairs(clients) do
-      print(string.format("  - %s (id: %d)", client.name, client.id))
-      -- Check if client has completion capability
-      if client.server_capabilities.completionProvider then
-        print("    ✓ Completion provider enabled")
-      else
-        print("    ✗ Completion provider NOT enabled")
-      end
-    end
-  end
-  
-  -- Check blink.cmp status
-  local blink_ok, blink = pcall(require, "blink.cmp")
-  if blink_ok then
-    print("\nblink.cmp is loaded")
-    if blink.get_lsp_capabilities then
-      print("  ✓ get_lsp_capabilities function exists")
-    else
-      print("  ✗ get_lsp_capabilities function NOT found")
-    end
-  else
-    print("\nblink.cmp is NOT loaded")
-  end
-  
-  -- Check current buffer's filetype
-  print("\nCurrent buffer filetype: " .. vim.bo.filetype)
-end
-
 -- Create user command for Kwbd
 vim.api.nvim_create_user_command("Kwbd", function()
   kwbd(1)
 end, {})
-
--- Create debug command
-vim.api.nvim_create_user_command("LspStatus", function()
-  M.check_lsp_status()
-end, { desc = "Check LSP and completion status" })
 
 -- Work-specific overrides
 if vim.g.vimrc_type == 'work' then
