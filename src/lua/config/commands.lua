@@ -39,21 +39,18 @@ end, { desc = "Delete all unmodified buffers" })
 api.nvim_create_user_command("CopyPath", function()
   local path = fn.expand("%:p")
   fn.setreg("+", path)
-  vim.notify("Copied: " .. path)
 end, { desc = "Copy full file path to clipboard" })
 
 -- Copy relative file path
 api.nvim_create_user_command("CopyRelPath", function()
   local path = fn.expand("%")
   fn.setreg("+", path)
-  vim.notify("Copied: " .. path)
 end, { desc = "Copy relative file path to clipboard" })
 
 -- Copy file name only
 api.nvim_create_user_command("CopyFileName", function()
   local name = fn.expand("%:t")
   fn.setreg("+", name)
-  vim.notify("Copied: " .. name)
 end, { desc = "Copy file name to clipboard" })
 
 -- =============================================================================
@@ -81,7 +78,6 @@ api.nvim_create_user_command("RemoveTrailingWhitespace", function()
   local save = fn.winsaveview()
   vim.cmd([[%s/\s\+$//e]])
   fn.winrestview(save)
-  vim.notify("Removed trailing whitespace")
 end, { desc = "Remove trailing whitespace from file" })
 
 -- Convert tabs to spaces
@@ -89,7 +85,6 @@ api.nvim_create_user_command("TabsToSpaces", function()
   local save = fn.winsaveview()
   vim.cmd([[%s/\t/  /ge]])
   fn.winrestview(save)
-  vim.notify("Converted tabs to spaces")
 end, { desc = "Convert tabs to spaces" })
 
 -- Format JSON
@@ -107,10 +102,8 @@ api.nvim_create_user_command("DiagnosticsToggle", function()
   diagnostics_active = not diagnostics_active
   if diagnostics_active then
     vim.diagnostic.enable()
-    vim.notify("Diagnostics enabled")
   else
     vim.diagnostic.disable()
-    vim.notify("Diagnostics disabled")
   end
 end, { desc = "Toggle diagnostics" })
 
@@ -142,7 +135,7 @@ api.nvim_create_user_command("StartupTime", function()
   local start_time = fn.reltime()
   vim.cmd("runtime! plugin/**/*.vim")
   local elapsed = fn.reltimefloat(fn.reltime(start_time))
-  vim.notify(string.format("Startup time: %.3f ms", elapsed * 1000))
+  print(string.format("Startup time: %.3f ms", elapsed * 1000))
 end, { desc = "Measure startup time" })
 
 -- =============================================================================
@@ -185,13 +178,67 @@ api.nvim_create_user_command("Scratch", function(opts)
 end, { nargs = "?", desc = "Create scratch buffer with optional filetype" })
 
 -- =============================================================================
+-- MANUAL FORMATTING
+-- =============================================================================
+
+-- Unified format command with options
+api.nvim_create_user_command("Format", function(opts)
+  local args = opts.args
+  local save = fn.winsaveview()
+  local actions_performed = {}
+  
+  -- Parse arguments
+  local do_all = args == "" or args:find("all")
+  local do_trailing = do_all or args:find("trailing")
+  local do_tabs = do_all or args:find("tabs")
+  local do_quotes = do_all or args:find("quotes")
+  
+  -- Remove trailing whitespace
+  if do_trailing then
+    vim.cmd([[%s/\s\+$//e]])
+    table.insert(actions_performed, "removed trailing whitespace")
+  end
+  
+  -- Convert tabs to spaces
+  if do_tabs then
+    local tabstop = vim.bo.tabstop
+    local spaces = string.rep(" ", tabstop)
+    vim.cmd([[%s/\t/]] .. spaces .. [[/ge]])
+    table.insert(actions_performed, "converted tabs to spaces")
+  end
+  
+  -- Normalize smart quotes (for markdown and text files)
+  if do_quotes then
+    vim.cmd([[%s/'/'/ge]])
+    vim.cmd([[%s/'/'/ge]])
+    vim.cmd([[%s/"/"/ge]])
+    vim.cmd([[%s/"/"/ge]])
+    table.insert(actions_performed, "normalized quotes")
+  end
+  
+  fn.winrestview(save)
+  
+  -- Report what was done
+  if #actions_performed > 0 then
+    print("Format: " .. table.concat(actions_performed, ", "))
+  else
+    print("Format: no actions specified. Use: trailing, tabs, quotes, or all")
+  end
+end, { 
+  nargs = "?",
+  desc = "Format buffer with options: trailing, tabs, quotes, all (default: all)",
+  complete = function()
+    return { "all", "trailing", "tabs", "quotes" }
+  end
+})
+
+-- =============================================================================
 -- MESSAGES UTILITIES
 -- =============================================================================
 
 -- Clear messages
 api.nvim_create_user_command("ClearMessages", function()
   vim.cmd("messages clear")
-  vim.notify("Messages cleared")
 end, { desc = "Clear command messages" })
 
 -- Show messages in buffer
