@@ -1,19 +1,21 @@
---
--- config/options.lua
--- Core Neovim configuration options
---
--- Performance-optimized settings for modern development workflow:
+-- ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+-- 🎯 NEOVIM OPTIONS - Performance-Optimized Core Configuration
+-- ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+-- Modern development environment optimized for:
 -- • 2-space indentation standard across all languages
 -- • Enhanced clipboard integration and navigation
 -- • Optimized for large files and responsive editing
 -- • Professional UI with consistent theming
 -- • Security-focused with disabled unused providers
---
+-- ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 local opt = vim.opt
 local g = vim.g
 
--- General settings
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- ⚙️ GENERAL SETTINGS
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
 opt.history = 1000                   -- Increased history size for better undo
 opt.scrolloff = 8                    -- More context lines around cursor
 opt.sidescrolloff = 8                -- Horizontal scroll context
@@ -24,21 +26,27 @@ opt.regexpengine = 1                 -- Use old regex engine for better performa
 opt.clipboard = "unnamedplus"        -- Use system clipboard (modern approach)
 opt.backspace = { "indent", "eol", "start" }  -- Proper backspace
 
-opt.autoread = true                  -- Set to auto read when a file is changed from the outside
-opt.virtualedit = "block"            -- freedom of movement
+opt.autoread = true                  -- Auto-reload changed files
+opt.virtualedit = "block"            -- Freedom of movement in visual block mode
 opt.updatetime = 300                 -- Faster completion (4s -> 300ms)
 opt.timeoutlen = 500                 -- Faster which-key trigger
 
--- Indentation
-opt.expandtab = true                 -- tabs => spaces
-opt.shiftwidth = 2                   -- set number of spaces to 2
-opt.tabstop = 2                      -- if i has to use tabs, make it look like 2 spaces
-opt.softtabstop = 2                  -- same as above
-opt.smartindent = true               -- autoindent on newlines
-opt.autoindent = true                -- copy indentation from previous lines
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 📐 INDENTATION
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- Display
-opt.linebreak = true                 -- word wrap like a sane human being
+opt.expandtab = true                 -- Convert tabs to spaces
+opt.shiftwidth = 2                   -- 2 spaces for indentation
+opt.tabstop = 2                      -- Tab width = 2 spaces
+opt.softtabstop = 2                  -- Soft tab stop at 2 spaces
+opt.smartindent = true               -- Smart autoindenting
+opt.autoindent = true                -- Copy indent from current line
+
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 🖼️ DISPLAY & UI
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+opt.linebreak = true                 -- Wrap lines at word boundaries
 
 -- GUI font settings (for Neovide, VimR, etc.)
 if vim.fn.has("gui_running") == 1 or vim.g.neovide then
@@ -60,45 +68,46 @@ end
 
 -- Tell Neovim we have a nerd font
 g.have_nerd_font = true
-opt.conceallevel = 0                 -- don't try to conceal things (except for markdown)
+opt.conceallevel = 0                 -- Don't conceal text (except markdown)
 opt.list = true
-opt.showbreak = ""
+opt.showbreak = "↪ "                 -- Show line continuation
 opt.listchars = {
   tab = "→ ",
   nbsp = "·",
   trail = "·",
   extends = "›",
-  precedes = "‹"
+  precedes = "‹",
+  eol = "¬"
 }
-opt.signcolumn = "yes"               -- Always show sign column to prevent layout shift
+opt.signcolumn = "yes"               -- Always show sign column
 opt.colorcolumn = "100"              -- Visual line length guide
 
 opt.number = true                    -- Show current line number
 opt.relativenumber = true            -- Relative line numbers
 opt.hlsearch = true                  -- Highlight searches
 
--- Files
-opt.backup = false                   -- Turn backup off
-opt.writebackup = false
-opt.swapfile = false                 -- Disable swap files
-opt.undofile = true                  -- Enable persistent undo
-opt.undodir = os.getenv("HOME") .. "/.vim/undodir"  -- Undo directory
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 📁 FILE HANDLING
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- UI
-opt.mouse = "a"                      -- Enable mouse support
+opt.backup = false                   -- No backup files
+opt.writebackup = false              -- No write backup
+opt.swapfile = false                 -- No swap files
+opt.undofile = true                  -- Persistent undo history
+opt.undodir = vim.fn.stdpath("data") .. "/undo"  -- XDG-compliant undo directory
+
+-- UI settings
+opt.mouse = "a"                      -- Enable full mouse support
 opt.syntax = "on"                    -- Syntax highlighting
-opt.spell = true
-opt.spelllang = "en_us"              -- set english as standard language
+opt.spell = true                     -- Enable spell checking
+opt.spelllang = "en_us"              -- US English spelling
 opt.termguicolors = true             -- 24-bit RGB colors
-opt.cmdheight = 1                    -- Standard command line height
-opt.showmode = true                  -- Show mode in command line
+opt.cmdheight = 1                    -- Command line height
+opt.showmode = true                  -- Show current mode
 
--- Buffer tabs at the top
-opt.showtabline = 2                  -- Always show tabline (buffer tabs)
+-- Status and tab lines
+opt.showtabline = 2                  -- Always show tabline
 opt.laststatus = 2                   -- Always show status line
-
--- Ensure tabline is visible
-vim.cmd("set showtabline=2")
 
 opt.cursorline = true                -- Turn on the cursorline
 -- Set cursor to be visible in all modes
@@ -118,41 +127,62 @@ opt.wildmode = { "longest:list", "full" }
 
 opt.hidden = true                    -- Don't warn me about unsaved buffers
 
--- No annoying sounds
-opt.errorbells = false
-opt.visualbell = false
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 🔇 SOUND & ALERTS
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- Completion
+opt.errorbells = false               -- No error bells
+opt.visualbell = false               -- No visual bells
+
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 🔍 COMPLETION
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
 opt.completeopt = { "menu", "menuone", "noselect" }
-opt.shortmess:append("c")
+opt.shortmess:append("c")            -- Don't show completion messages
 
--- Performance
-opt.ttyfast = true
-opt.lazyredraw = true                -- Don't redraw while executing macros
--- opt.synmaxcol = 240               -- Disabled: causes scrolling issues
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- ⚡ PERFORMANCE OPTIMIZATIONS
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- Additional performance optimizations
-opt.updatecount = 100                -- Write swap file after 100 characters
-opt.redrawtime = 1500                -- Time in milliseconds for redrawing
-opt.ttimeout = true                  -- Time out on terminal codes
-opt.ttimeoutlen = 0                  -- Instant key sequence timeout
+opt.ttyfast = true                   -- Fast terminal connection
+opt.lazyredraw = true                -- Don't redraw during macros
 
--- Mouse scrolling optimization
-opt.mousescroll = "ver:3,hor:6"      -- Faster mouse scroll speed
+-- Timing optimizations
+opt.updatecount = 100                -- Swap file update frequency
+opt.redrawtime = 1500                -- Max time for syntax highlighting
+opt.ttimeout = true                  -- Terminal code timeout
+opt.ttimeoutlen = 0                  -- Instant escape sequence
 
--- Python host (for legacy plugins)
+-- Large file optimizations
+opt.maxmempattern = 2000             -- Pattern matching memory limit
+opt.synmaxcol = 500                  -- Max column for syntax highlighting
+
+-- Mouse optimizations
+opt.mousescroll = "ver:3,hor:6"      -- Faster mouse scrolling
+
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 🚀 PROVIDER OPTIMIZATION
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+-- Python host configuration
 local python3_path = vim.fn.exepath('python3')
 if python3_path ~= '' then
   g.python3_host_prog = python3_path
 else
+  -- Fallback for systems without python3 in PATH
   g.python3_host_prog = '/usr/bin/python3'
 end
 
 -- Disable unused providers for faster startup
-g.loaded_python_provider = 0
-g.loaded_ruby_provider = 0
-g.loaded_node_provider = 0
-g.loaded_perl_provider = 0
+g.loaded_python_provider = 0         -- Python 2 (deprecated)
+g.loaded_ruby_provider = 0           -- Ruby provider
+g.loaded_node_provider = 0           -- Node.js provider
+g.loaded_perl_provider = 0           -- Perl provider
+
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 📚 LANGUAGE-SPECIFIC SETTINGS
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 -- LaTeX
-g.tex_flavor = "latex"
+g.tex_flavor = "latex"               -- Default TeX flavor
