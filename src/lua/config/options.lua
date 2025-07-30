@@ -181,6 +181,80 @@ g.loaded_node_provider = 0           -- Node.js provider
 g.loaded_perl_provider = 0           -- Perl provider
 
 -- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+-- 🔇 PRODUCTION OPTIMIZATIONS
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+-- Reduce startup verbosity
+opt.shortmess:append("IcCsS")        -- No intro, completion messages, search messages
+opt.report = 9999                    -- Don't report changes unless 9999 lines changed
+opt.showcmd = false                  -- Don't show partial commands (airline handles this)
+opt.ruler = false                    -- Don't show cursor position (airline handles this)
+
+-- Disable unused built-in plugins for faster startup
+g.loaded_2html_plugin = 1
+g.loaded_getscriptPlugin = 1
+g.loaded_gzip = 1
+g.loaded_logipat = 1
+g.loaded_rrhelper = 1
+g.loaded_spellfile_plugin = 1
+g.loaded_tarPlugin = 1
+g.loaded_vimballPlugin = 1
+g.loaded_zipPlugin = 1
+
+-- Ensure required directories exist
+local data_dir = vim.fn.stdpath("data")
+local config_dir = vim.fn.stdpath("config")
+local required_dirs = {
+  data_dir .. "/undo",
+  data_dir .. "/backup",
+  data_dir .. "/swap",
+  data_dir .. "/sessions",
+  config_dir .. "/spell",
+}
+
+for _, dir in ipairs(required_dirs) do
+  if vim.fn.isdirectory(dir) == 0 then
+    vim.fn.mkdir(dir, "p")
+  end
+end
+
+-- Fix matchit loading (prevents "not found in packpath" warning)
+vim.cmd([[
+  if !exists('g:loaded_matchit')
+    runtime! macros/matchit.vim
+  endif
+]])
+
+-- Optimize clipboard operations on macOS
+if vim.fn.has("mac") == 1 then
+  g.clipboard = {
+    name = "macOS-clipboard",
+    copy = {
+      ["+"] = "pbcopy",
+      ["*"] = "pbcopy",
+    },
+    paste = {
+      ["+"] = "pbpaste",
+      ["*"] = "pbpaste",
+    },
+    cache_enabled = 1,
+  }
+end
+
+-- Reduce LSP logging
+vim.lsp.set_log_level("ERROR")
+
+-- Clear startup messages after VimEnter
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.defer_fn(function()
+      vim.cmd("silent! messages clear")
+    end, 50)
+  end,
+  desc = "Clear startup messages"
+})
+
+-- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 📚 LANGUAGE-SPECIFIC SETTINGS
 -- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 

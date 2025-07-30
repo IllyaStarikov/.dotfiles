@@ -606,6 +606,17 @@ require("lazy").setup({
       vim.g.airline_powerline_fonts = 1
       -- Disable problematic tabline autocommands
       vim.g["airline#extensions#tabline#disable_refresh"] = 1
+      -- Performance optimizations
+      vim.g.airline_focuslost_inactive = 0
+      vim.g.airline_inactive_collapse = 1
+      vim.g.airline_skip_empty_sections = 1
+      vim.g.airline_highlighting_cache = 1
+      -- Disable extensions that trigger frequent updates
+      vim.g["airline#extensions#branch#enabled"] = 1  -- Keep git branch
+      vim.g["airline#extensions#hunks#enabled"] = 0   -- Disable git hunks (performance)
+      vim.g["airline#extensions#nvimlsp#enabled"] = 1 -- Keep LSP status
+      vim.g["airline#extensions#wordcount#enabled"] = 0 -- Disable word count
+      vim.g["airline#extensions#searchcount#enabled"] = 0 -- Disable search count
     end,
     config = function()
       -- Set all airline settings here
