@@ -153,7 +153,6 @@ brew install --cask alacritty || warning "Alacritty installation failed"
 # Backup existing configs
 echo "💾 Backing up existing configurations..."
 [[ -f "$HOME/.zshrc" ]] && mv "$HOME/.zshrc" "$HOME/.zshrc.backup.$(date +%Y%m%d_%H%M%S)"
-[[ -f "$HOME/.vimrc" ]] && mv "$HOME/.vimrc" "$HOME/.vimrc.backup.$(date +%Y%m%d_%H%M%S)"
 
 # Create necessary directories
 echo "📁 Creating configuration directories..."

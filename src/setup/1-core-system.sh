@@ -294,7 +294,6 @@ mkdir -p "$BACKUP_DIR"
 
 # List of files to backup
 declare -a backup_files=(
-    "$HOME/.vimrc"
     "$HOME/.zshrc"
     "$HOME/.bashrc"
     "$HOME/.bash_profile"

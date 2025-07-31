@@ -140,9 +140,6 @@ fi
 create_symlink "$DOTFILES_DIR/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init.lua"
 create_symlink "$DOTFILES_DIR/lua" "$HOME/.config/nvim/lua" "Neovim Lua configs"
 
-# Legacy Vim compatibility
-progress "Setting up Vim compatibility"
-create_symlink "$DOTFILES_DIR/vimrc" "$HOME/.vimrc" "Vim configuration"
 
 # ZSH configuration
 progress "Setting up ZSH configuration"
