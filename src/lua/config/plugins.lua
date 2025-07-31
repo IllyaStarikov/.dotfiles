@@ -1148,11 +1148,6 @@ require("lazy").setup({
   },
   { "majutsushi/tagbar" },
   { "mhinz/vim-grepper" },
-  {
-    "scrooloose/nerdtree",
-    cmd = "NERDTreeToggle"
-  },
-  { "xuyuanp/nerdtree-git-plugin" },
 
 }, {
   -- Lazy.nvim options
@@ -1199,10 +1194,6 @@ local opt = vim.opt
 -- Theme is set dynamically in config/theme.lua
 
 
--- NERDTree
-g.NERDTreeWinPos = "right"
-g.NERDTreeMapOpenInTab = '\r'
-g.NERDTreeGitStatusWithFlags = 1
 
 
 -- Airline configuration moved to plugin definition above

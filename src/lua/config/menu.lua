@@ -501,7 +501,6 @@ function M.open_file_management_menu()
     local file_menu = {
         { name = "📁 Open Oil File Manager", cmd = "lua require('oil').open()", rtxt = "o" },
         { name = "🪟 Open Oil Float", cmd = "lua require('oil').open_float()", rtxt = "O" },
-        { name = "🌳 Toggle NERDTree", cmd = "NERDTreeToggle", rtxt = "n" },
         { name = "🍿 Snacks Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
