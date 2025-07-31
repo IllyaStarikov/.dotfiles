@@ -127,7 +127,7 @@ map("n", "<Esc>", ":noh<CR>", opts)
 -- <leader>ma   - AI Assistant menu
 -- <RightMouse> - Context menu at mouse position
 
--- Typing practice (comprehensive configuration in config/typr.lua)
+-- Typing practice (comprehensive configuration in config/plugins/typr.lua)
 -- Access via commands: :Typr, :TyprStats, :TyprQuick, :TyprLong, :TyprProgramming
 -- Or via main menu (<C-t> or <leader>m) under "Typing Test" section
 
