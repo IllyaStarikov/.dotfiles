@@ -578,25 +578,11 @@ require("lazy").setup({
   } --]]
 
   -- UI/UX plugins
-  { "dracula/vim", name = "dracula", lazy = false, priority = 1000 },
-  { "cocopon/iceberg.vim" },
-  { "projekt0n/github-nvim-theme" },
   { 
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
-    config = function()
-      require("tokyonight").setup({
-        style = "moon", -- default style
-        transparent = false,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
-      })
-      -- Also set the vim global for compatibility
-      vim.g.tokyonight_style = "moon"
-    end
+    -- Don't configure here, let theme.lua handle it dynamically
   },
   { "tpope/vim-fugitive" },
   -- Mini.nvim suite - Modern Neovim plugins
