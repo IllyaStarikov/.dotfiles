@@ -77,7 +77,6 @@
     # template = ~/.gitmessage  # Uncomment if using commit template
 
 [log]
-    decorate = short
     abbrevCommit = true
 
 [branch]
