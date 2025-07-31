@@ -1,6 +1,5 @@
 --
--- Python snippets - Google Style Guide compliant templates
--- Following https://google.github.io/styleguide/pyguide.html
+-- Python snippets - Modern, concise templates
 --
 
 local ls = require("luasnip")
@@ -8,728 +7,303 @@ local s = ls.snippet
 local t = ls.text_node
 local i = ls.insert_node
 local f = ls.function_node
-local d = ls.dynamic_node
-local sn = ls.snippet_node
+local c = ls.choice_node
 
--- Helper functions following Google naming conventions
-local function get_filename()
-  return vim.fn.expand('%:t') or 'untitled.py'
-end
-
-local function get_module_name()
-  local filename = vim.fn.expand('%:t:r') or 'untitled'
-  return filename:lower():gsub('-', '_')
-end
-
+-- Helper functions
 local function get_class_name()
-  local filename = vim.fn.expand('%:t:r') or 'Untitled'
-  return filename:gsub("^%l", string.upper):gsub("_(%l)", string.upper):gsub("_", "")
-end
-
-local function get_date()
-  return os.date('%Y-%m-%d')
-end
-
-local function get_year()
-  return os.date('%Y')
+  local filename = vim.fn.expand('%:t:r') or 'Class'
+  return filename:gsub("^%l", string.upper):gsub("_(%l)", function(match) return match:upper() end):gsub("_", "")
 end
 
 return {
-  -- Python file skeleton - matches the autocmd template
-  s("skeleton", {
-    t({"#!/usr/bin/env python3"}),
-    t({'"""'}),
-    t({"Module description"}),
-    t({""}),
-    t({"Author: Illya Starikov"}),
-    t({"Date: "}), f(get_date, {}),
-    t({"License: MIT"}),
-    t({'"""'}),
-    t({""}),
-    t({"import argparse"}),
-    t({"import logging"}),
-    t({"import sys"}),
-    t({"from typing import Optional"}),
-    t({""}),
-    t({""}),
-    t({"# Configure logging"}),
-    t({"logging.basicConfig("}),
-    t({"    level=logging.INFO,"}),
-    t({"    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'"}),
-    t({")"}),
-    t({"logger = logging.getLogger(__name__)"}),
-    t({""}),
-    t({""}),
-    t({"def main() -> int:"}),
-    t({'    """'}),
-    t({"    Main function entry point."}),
-    t({""}),
-    t({"    Returns:"}),
-    t({"        int: Exit code (0 for success, non-zero for failure)"}),
-    t({'    """'}),
-    t({"    parser = argparse.ArgumentParser("}),
-    t({"        description='"}), i(1, "Script description"), t({"'"}),
-    t({"    )"}),
-    t({""}),
-    t({"    # Add command line arguments"}),
-    t({"    parser.add_argument("}),
-    t({"        '-v', '--verbose',"}),
-    t({"        action='store_true',"}),
-    t({"        help='Enable verbose logging'"}),
-    t({"    )"}),
-    t({""}),
-    t({"    args = parser.parse_args()"}),
-    t({""}),
-    t({"    # Set logging level based on verbosity"}),
-    t({"    if args.verbose:"}),
-    t({"        logger.setLevel(logging.DEBUG)"}),
-    t({""}),
-    t({"    try:"}),
-    t({"        # Main logic here"}),
-    t({"        logger.info('Starting...')"}),
-    t({"        "}), i(2, "# TODO: Add your implementation here"),
-    t({""}),
-    t({"        logger.info('Completed successfully')"}),
-    t({"        return 0"}),
-    t({""}),
-    t({"    except KeyboardInterrupt:"}),
-    t({"        logger.info('Interrupted by user')"}),
-    t({"        return 130"}),
-    t({"    except Exception as e:"}),
-    t({"        logger.error('Error: %s', e)"}),
-    t({"        return 1"}),
-    t({""}),
-    t({""}),
-    t({"if __name__ == '__main__':"}),
-    t({"    sys.exit(main())"}),
-    i(0)
-  }),
-
-  -- Google-style module header with proper docstring
-  s("header", {
-    t({"#!/usr/bin/env python3"}),
-    t({"# -*- coding: utf-8 -*-"}),
-    t({"\"\"\"Module: "}), f(get_module_name, {}),
-    t({""}),
-    t({""}), i(1, "Brief description of the module."),
-    t({""}),
-    t({"This module provides functionality for "}), i(2, "describe main purpose"), t({"."}),
-    t({"It follows Google Python Style Guide conventions."}),
-    t({""}),
-    t({"Typical usage example:"}),
-    t({""}),
-    t({"    "}), i(3, "result = function_name()"),
-    t({"    print(result)"}),
-    t({""}),
-    t({"Authors:"}),
-    t({"    Illya Starikov ("}), i(4, "email@example.com"), t({")"}),
-    t({""}),
-    t({"Created: "}), f(get_date, {}),
-    t({"Copyright (c) "}), f(get_year, {}), t({", Illya Starikov. All rights reserved."}),
-    t({"\"\"\""}),
-    t({""}),
-    i(0)
-  }),
-
-  -- Google-style main function with proper structure
+  -- Main entry point
   s("main", {
-    t({"from typing import Sequence"}),
-    t({"import sys"}),
-    t({""}),
-    t({""}),
-    t({"def main(argv: Sequence[str]) -> None:"}),
-    t({"    \"\"\"Main entry point for the application."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"        argv: Command line arguments."}),
-    t({"    \"\"\""}),
-    t({"    del argv  # Unused argument"}),
-    t({"    "}), i(1, "# Application logic here"),
-    t({"    "}), i(2, "print('Hello, World!')"),
-    t({""}),
-    t({""}),
-    t({"if __name__ == '__main__':"}),
-    t({"    main(sys.argv)"}),
+    t({"def main():", ""}),
+    t({"    "}), i(1), t({"", ""}),
+    t({"", ""}),
+    t({"if __name__ == '__main__':", ""}),
+    t({"    main()"}),
     i(0)
   }),
 
-  -- Google-style class with comprehensive documentation
-  s("class", {
-    t({"class "}), f(get_class_name, {}), t({":"}),
-    t({"    \"\"\"A "}), i(1, "brief description of the class"), t({"."}),
-    t({""}),
-    t({"    "}), i(2, "Detailed description of what this class does and why it exists."),
-    t({"    "}), i(3, "Include usage patterns and key responsibilities."),
-    t({""}),
-    t({"    Attributes:"}),
-    t({"    "}), i(4, "_private_var"), t({": "}), i(5, "str"), t({", "}), i(6, "description of private attribute."),
-    t({"    "}), i(7, "public_var"), t({": "}), i(8, "int"), t({", "}), i(9, "description of public attribute."),
-    t({""}),
-    t({"    Example:"}),
-    t({"        Typical usage of the class:"}),
-    t({""}),
-    t({"        >>> instance = "}), f(get_class_name, {}), t({"("}), i(10, "'example'"), t({")"}),
-    t({"        >>> result = instance.method()"}),
-    t({"        >>> print(result)"}),
-    t({"    "}), i(11, "'expected_output'"),
-    t({"    \"\"\""}),
-    t({""}),
-    t({"    def __init__(self, "}), i(12, "param: str"), t({") -> None:"}),
-    t({"        \"\"\"Initialize the "}), f(get_class_name, {}), t({"."}),
-    t({""}),
-    t({"        Args:"}),
-    t({"            "}), i(13, "param"), t({": "}), i(14, "Description of the parameter."),
-    t({""}),
-    t({"        Raises:"}),
-    t({"            ValueError: If param is invalid."}),
-    t({"        \"\"\""}),
-    t({"        if not "}), f(function(args) return args[1][1] end, {13}), t({":"}),
-    t({"            raise ValueError(f'Invalid parameter: {"}), f(function(args) return args[1][1] end, {13}), t({"}'"}),
-    t({"    "}),
-    t({"        self._"}), f(function(args) return args[1][1] end, {13}), t({" = "}), f(function(args) return args[1][1] end, {13}),
-    t({"    "}), i(15, "# Additional initialization"),
-    i(0)
-  }),
-
-  -- Google-style function with comprehensive documentation
+  -- Function
   s("def", {
-    t({"def "}), i(1, "function_name"), t({"("}), i(2, "param: str"), t({") -> "}), i(3, "str"), t({":"}),
-    t({"    \"\"\""}), i(4, "Brief description of what the function does"), t({"."}),
-    t({""}),
-    t({"    "}), i(5, "More detailed explanation of the function's purpose, algorithm,"),
-    t({"    "}), i(6, "or any important implementation details."),
-    t({""}),
-    t({"    Args:"}),
-    t({"    "}), i(7, "param"), t({": "}), i(8, "Description of the parameter, including type info"),
-    t({"            "}), i(9, "and any constraints or expected format."),
-    t({""}),
-    t({"    Returns:"}),
-    t({"    "}), i(10, "Description of the return value, including type and"),
-    t({"    "}), i(11, "any special cases or conditions."),
-    t({""}),
-    t({"    Raises:"}),
-    t({"    "}), i(12, "ValueError: If param is invalid or out of range."),
-    t({"    "}), i(13, "TypeError: If param is not of expected type."),
-    t({""}),
-    t({"    Example:"}),
-    t({"        >>> result = "}), f(function(args) return args[1][1] end, {1}), t({"("}), i(14, "'example'"), t({")"}),
-    t({"        >>> print(result)"}),
-    t({"    "}), i(15, "'expected_output'"),
-    t({"    \"\"\""}),
-    t({"    # Input validation"}),
-    t({"    if not isinstance("}), f(function(args) return args[1][1] end, {7}), t({", "}), i(16, "str"), t({"):"}),
-    t({"        raise TypeError(f'Expected str, got {type("}), f(function(args) return args[1][1] end, {7}), t({").__name__}')"}),
-    t({"    "}),
-    t({"    "}), i(17, "# Function implementation"),
-    t({"    "}), i(18, "return param.upper()"),
+    t({"def "}), i(1, "function_name"), t({"("}), i(2), t({")"}), c(3, {
+      t(""),
+      t(" -> None"),
+      t(" -> int"),
+      t(" -> str"),
+      t(" -> bool"),
+      t(" -> list"),
+      t(" -> dict"),
+    }), t({":", ""}),
+    t({"    \"\"\""}), i(4, "Brief description"), t({".\"\"\"", ""}),
+    t({"    "}), i(5, "pass"),
     i(0)
   }),
 
-  -- Async function with proper Google-style documentation
+  -- Async function
   s("async", {
-    t({"import asyncio"}),
-    t({"from typing import "}), i(1, "Optional"),
-    t({""}),
-    t({""}),
-    t({"async def "}), i(2, "async_function"), t({"("}), i(3, "param: str"), t({") -> "}), i(4, "str"), t({":"}),
-    t({"    \"\"\""}), i(5, "Asynchronous function description"), t({"."}),
-    t({""}),
-    t({"    This function performs asynchronous operations and should be"}),
-    t({"    awaited when called."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"    "}), i(6, "param"), t({": "}), i(7, "Description of the parameter."),
-    t({""}),
-    t({"    Returns:"}),
-    t({"    "}), i(8, "Description of the return value."),
-    t({""}),
-    t({"    Raises:"}),
-    t({"    "}), i(9, "AsyncError: If async operation fails."),
-    t({"    \"\"\""}),
-    t({"    await asyncio.sleep(0.1)  # Simulate async work"}),
-    t({"    "}), i(10, "# Async implementation here"),
-    t({"    return "}), i(11, "f'Processed: {param}'"),
+    t({"async def "}), i(1, "function_name"), t({"("}), i(2), t({"):", ""}),
+    t({"    "}), i(3, "pass"),
     i(0)
   }),
 
-  -- Comprehensive error handling with logging
-  s("try", {
-    t({"import logging"}),
-    t({""}),
-    t({"logger = logging.getLogger(__name__)"}),
-    t({""}),
-    t({"try:"}),
-    t({"    "}), i(1, "# Code that might raise an exception"),
-    t({"    "}), i(2, "result = risky_operation()"),
-    t({"except "}), i(3, "ValueError"), t({" as e:"}),
-    t({"    logger.error('ValueError occurred: %s', e)"}),
-    t({"    "}), i(4, "# Handle specific error"),
-    t({"    raise  # Re-raise if needed"}),
-    t({"except "}), i(5, "Exception"), t({" as e:"}),
-    t({"    logger.exception('Unexpected error: %s', e)"}),
-    t({"    "}), i(6, "# Handle general error"),
-    t({"else:"}),
-    t({"    logger.info('Operation completed successfully')"}),
-    t({"    "}), i(7, "# Success handling"),
-    t({"finally:"}),
-    t({"    "}), i(8, "# Cleanup code"),
+  -- Class
+  s("class", {
+    t({"class "}), i(1, f(get_class_name, {})), t({":", ""}),
+    t({"    \"\"\""}), i(2, "Brief description"), t({".\"\"\"", ""}),
+    t({"    ", ""}),
+    t({"    def __init__(self"}), i(3), t({"):", ""}),
+    t({"        "}), i(4, "pass"),
     i(0)
   }),
 
-  -- Enhanced dataclass with validation
+  -- Dataclass
   s("dataclass", {
-    t({"from dataclasses import dataclass, field"}),
-    t({"from typing import "}), i(1, "List, Optional"),
-    t({""}),
-    t({""}),
-    t({"@dataclass(frozen="}), i(2, "True"), t({")"}),
-    t({"class "}), i(3, "DataClass"), t({":"}),
-    t({"    \"\"\""}), i(4, "A data class representing"), t({" "}), i(5, "some entity"), t({"."}),
-    t({""}),
-    t({"    This dataclass follows Google Python Style Guide conventions"}),
-    t({"    and includes proper type hints and validation."}),
-    t({""}),
-    t({"    Attributes:"}),
-    t({"    "}), i(6, "name"), t({": "}), i(7, "str"), t({", "}), i(8, "the name of the entity."),
-    t({"    "}), i(9, "value"), t({": "}), i(10, "int"), t({", "}), i(11, "the value associated with the entity."),
-    t({"    "}), i(12, "tags"), t({": List[str], optional tags for categorization."}),
-    t({""}),
-    t({"    Example:"}),
-    t({"        >>> data = "}), f(function(args) return args[1][1] end, {3}), t({"("}), i(13, "'example', 42"), t({")"}),
-    t({"        >>> print(data.name)"}),
-    t({"        'example'"}),
-    t({"    \"\"\""}),
-    t({"    "}), f(function(args) return args[1][1] end, {6}), t({": "}), f(function(args) return args[1][1] end, {7}),
-    t({"    "}), f(function(args) return args[1][1] end, {9}), t({": "}), f(function(args) return args[1][1] end, {10}),
-    t({"    "}), f(function(args) return args[1][1] end, {12}), t({": List[str] = field(default_factory=list)"}),
-    t({""}),
-    t({"    def __post_init__(self) -> None:"}),
-    t({"        \"\"\"Validate data after initialization.\"\"\""}),
-    t({"        if not self."}), f(function(args) return args[1][1] end, {6}), t({":"}),
-    t({"            raise ValueError('Name cannot be empty')"}),
-    t({"        if self."}), f(function(args) return args[1][1] end, {9}), t({" < 0:"}),
-    t({"            raise ValueError('Value must be non-negative')"}),
+    t({"from dataclasses import dataclass", "", ""}),
+    t({"@dataclass", ""}),
+    t({"class "}), i(1, "Name"), t({":", ""}),
+    t({"    "}), i(2, "field: int"), t({"", ""}),
+    t({"    "}), i(3, "field2: str = 'default'"),
     i(0)
   }),
 
-  -- Google-style property with validation
+  -- Method
+  s("method", {
+    t({"def "}), i(1, "method_name"), t({"(self"}), i(2), t({"):", ""}),
+    t({"    "}), i(3, "pass"),
+    i(0)
+  }),
+
+  -- Property
   s("property", {
-    t({"@property"}),
-    t({"def "}), i(1, "property_name"), t({"(self) -> "}), i(2, "str"), t({":"}),
-    t({"    \"\"\""}), i(3, "Get the property value"), t({"."}),
-    t({""}),
-    t({"    Returns:"}),
-    t({"    "}), i(4, "The current value of the property."),
-    t({"    \"\"\""}),
+    t({"@property", ""}),
+    t({"def "}), i(1, "name"), t({"(self):", ""}),
     t({"    return self._"}), f(function(args) return args[1][1] end, {1}),
-    t({""}),
-    t({"@"}), f(function(args) return args[1][1] end, {1}), t({".setter"}),
-    t({"def "}), f(function(args) return args[1][1] end, {1}), t({"(self, value: "}), f(function(args) return args[1][1] end, {2}), t({") -> None:"}),
-    t({"    \"\"\"Set the property value with validation."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"        value: "}), i(5, "The new value to set."),
-    t({""}),
-    t({"    Raises:"}),
-    t({"        ValueError: If value is invalid."}),
-    t({"        TypeError: If value is wrong type."}),
-    t({"    \"\"\""}),
-    t({"    if not isinstance(value, "}), f(function(args) return args[1][1] end, {2}), t({"):"}),
-    t({"        raise TypeError(f'Expected "}), f(function(args) return args[1][1] end, {2}), t({", got {type(value).__name__}')"}),
-    t({"    "}), i(6, "# Additional validation"),
-    t({"    self._"}), f(function(args) return args[1][1] end, {1}), t({" = value"}),
     i(0)
   }),
 
-  -- Professional pytest with fixtures and parametrize
-  s("test", {
-    t({"import pytest"}),
-    t({"from unittest.mock import Mock, patch"}),
-    t({""}),
-    t({""}),
-    t({"class Test"}), i(1, "FeatureName"), t({":"}),
-    t({"    \"\"\"Test suite for "}), i(2, "feature description"), t({"."}),
-    t({""}),
-    t({"    This test class covers all aspects of the "}), f(function(args) return args[1][1] end, {2}),
-    t({"    functionality including edge cases and error conditions."}),
-    t({"    \"\"\""}),
-    t({""}),
-    t({"    @pytest.fixture"}),
-    t({"    def "}), i(3, "sample_data"), t({"(self):"}),
-    t({"        \"\"\"Provide test data for the test methods.\"\"\""}),
-    t({"        return "}), i(4, "{'key': 'value'}"),
-    t({""}),
-    t({"    def test_"}), i(5, "normal_case"), t({"(self, "}), f(function(args) return args[1][1] end, {3}), t({"):"}),
-    t({"        \"\"\"Test "}), i(6, "normal operation behavior"), t({"."}),
-    t({""}),
-    t({"        This test verifies that the function behaves correctly"}),
-    t({"        under normal operating conditions."}),
-    t({"        \"\"\""}),
-    t({"        # Arrange"}),
-    t({"        expected = "}), i(7, "'expected_result'"),
-    t({"    "}), i(8, "input_value = sample_data['key']"),
-    t({"    "}),
-    t({"        # Act"}),
-    t({"        result = "}), i(9, "function_under_test(input_value)"),
-    t({"    "}),
-    t({"        # Assert"}),
-    t({"        assert result == expected"}),
-    t({"    "}), i(10, "# Additional assertions"),
-    t({""}),
-    t({"    @pytest.mark.parametrize('input_val,expected', ["}),
-    t({"        ("}), i(11, "'test1', 'result1'"), t({"),"}),
-    t({"        ("}), i(12, "'test2', 'result2'"), t({"),"}),
-    t({"    ])"}),
-    t({"    def test_"}), i(13, "parametrized_cases"), t({"(self, input_val, expected):"}),
-    t({"        \"\"\"Test multiple input/output combinations.\"\"\""}),
-    t({"        result = "}), i(14, "function_under_test(input_val)"),
-    t({"        assert result == expected"}),
-    t({""}),
-    t({"    def test_"}), i(15, "error_case"), t({"(self):"}),
-    t({"        \"\"\"Test error handling behavior.\"\"\""}),
-    t({"        with pytest.raises("}), i(16, "ValueError"), t({", match=r'"}), i(17, "error pattern"), t({"'):"}),
-    t({"            "}), i(18, "function_under_test(invalid_input)"),
+  -- Context manager
+  s("with", {
+    t({"with "}), i(1, "open('file.txt')"), t({" as "}), i(2, "f"), t({":", ""}),
+    t({"    "}), i(3),
     i(0)
   }),
 
-  -- Professional logging setup
-  s("logging", {
-    t({"import logging"}),
-    t({"import logging.config"}),
-    t({"from typing import Dict, Any"}),
-    t({""}),
-    t({""}),
-    t({"def setup_logging(log_level: str = 'INFO') -> None:"}),
-    t({"    \"\"\"Configure application logging."}),
-    t({""}),
-    t({"    Sets up structured logging with appropriate formatters"}),
-    t({"    and handlers for both console and file output."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"        log_level: The minimum log level ('DEBUG', 'INFO', 'WARNING', 'ERROR')."}),
-    t({"    \"\"\""}),
-    t({"    logging_config: Dict[str, Any] = {"}),
-    t({"        'version': 1,"}),
-    t({"        'disable_existing_loggers': False,"}),
-    t({"        'formatters': {"}),
-    t({"            'detailed': {"}),
-    t({"                'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',"}),
-    t({"                'datefmt': '%Y-%m-%d %H:%M:%S'"}),
-    t({"            },"}),
-    t({"            'simple': {"}),
-    t({"                'format': '%(levelname)s - %(message)s'"}),
-    t({"            }"}),
-    t({"        },"}),
-    t({"        'handlers': {"}),
-    t({"            'console': {"}),
-    t({"                'class': 'logging.StreamHandler',"}),
-    t({"                'level': log_level,"}),
-    t({"                'formatter': 'simple',"}),
-    t({"                'stream': 'ext://sys.stdout'"}),
-    t({"            },"}),
-    t({"            'file': {"}),
-    t({"                'class': 'logging.FileHandler',"}),
-    t({"                'level': 'DEBUG',"}),
-    t({"                'formatter': 'detailed',"}),
-    t({"                'filename': '"}), i(1, "application.log"), t({"',"}),
-    t({"                'mode': 'a'"}),
-    t({"            }"}),
-    t({"        },"}),
-    t({"        'root': {"}),
-    t({"            'level': 'DEBUG',"}),
-    t({"            'handlers': ['console', 'file']"}),
-    t({"        }"}),
-    t({"    }"}),
-    t({"    "}),
-    t({"    logging.config.dictConfig(logging_config)"}),
-    t({""}),
-    t({""}),
-    t({"# Module logger"}),
-    t({"logger = logging.getLogger(__name__)"}),
+  -- Try-except
+  s("try", {
+    t({"try:", ""}),
+    t({"    "}), i(1), t({"", ""}),
+    t({"except "}), i(2, "Exception"), t({" as e:", ""}),
+    t({"    "}), i(3, "pass"),
     i(0)
   }),
 
-  -- Modern CLI with argparse and type hints
-  s("cli", {
-    t({"import argparse"}),
-    t({"import sys"}),
-    t({"from pathlib import Path"}),
-    t({"from typing import Sequence, Optional"}),
-    t({""}),
-    t({""}),
-    t({"def create_parser() -> argparse.ArgumentParser:"}),
-    t({"    \"\"\"Create and configure the argument parser."}),
-    t({""}),
-    t({"    Returns:"}),
-    t({"        Configured ArgumentParser instance."}),
-    t({"    \"\"\""}),
-    t({"    parser = argparse.ArgumentParser("}),
-    t({"        description='"}), i(1, "Application description"), t({"',"}),
-    t({"        formatter_class=argparse.RawDescriptionHelpFormatter,"}),
-    t({"        epilog='\\n'.join(["}),
-    t({"            'Examples:',"}),
-    t({"            '  %(prog)s --input data.txt --output result.txt',"}),
-    t({"            '  %(prog)s --verbose --config config.yaml'"}),
-    t({"        ])"}),
-    t({"    )"}),
-    t({"    "}),
-    t({"    # Required arguments"}),
-    t({"    parser.add_argument("}),
-    t({"        'input_file',"}),
-    t({"        type=Path,"}),
-    t({"        help='"}), i(2, "Input file path"), t({"'"}),
-    t({"    )"}),
-    t({"    "}),
-    t({"    # Optional arguments"}),
-    t({"    parser.add_argument("}),
-    t({"        '--output', '-o',"}),
-    t({"        type=Path,"}),
-    t({"        help='"}), i(3, "Output file path (default: stdout)"), t({"'"}),
-    t({"    )"}),
-    t({"    "}),
-    t({"    parser.add_argument("}),
-    t({"        '--verbose', '-v',"}),
-    t({"        action='store_true',"}),
-    t({"        help='Enable verbose output'"}),
-    t({"    )"}),
-    t({"    "}),
-    t({"    parser.add_argument("}),
-    t({"        '--config',"}),
-    t({"        type=Path,"}),
-    t({"        help='Configuration file path'"}),
-    t({"    )"}),
-    t({"    "}),
-    t({"    return parser"}),
-    t({""}),
-    t({""}),
-    t({"def main(argv: Optional[Sequence[str]] = None) -> int:"}),
-    t({"    \"\"\"Main entry point for the application."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"        argv: Command line arguments. If None, uses sys.argv."}),
-    t({""}),
-    t({"    Returns:"}),
-    t({"        Exit code (0 for success, non-zero for failure)."}),
-    t({"    \"\"\""}),
-    t({"    parser = create_parser()"}),
-    t({"    args = parser.parse_args(argv)"}),
-    t({"    "}),
-    t({"    try:"}),
-    t({"    "}), i(4, "# Application logic here"),
-    t({"    "}), i(5, "process_file(args.input_file, args.output)"),
-    t({"        return 0"}),
-    t({"    except Exception as e:"}),
-    t({"        print(f'Error: {e}', file=sys.stderr)"}),
-    t({"        return 1"}),
-    t({""}),
-    t({""}),
-    t({"if __name__ == '__main__':"}),
-    t({"    sys.exit(main())"}),
+  -- List comprehension
+  s("lc", {
+    t({"["}), i(1, "x"), t({" for "}), i(2, "x"), t({" in "}), i(3, "items"), t({"]"}),
     i(0)
   }),
 
-  -- Modern FastAPI with proper error handling
-  s("fastapi", {
-    t({"from fastapi import FastAPI, HTTPException, Depends"}),
-    t({"from fastapi.middleware.cors import CORSMiddleware"}),
-    t({"from pydantic import BaseModel, Field, validator"}),
-    t({"from typing import List, Optional"}),
-    t({"import logging"}),
-    t({""}),
-    t({"logger = logging.getLogger(__name__)"}),
-    t({""}),
-    t({"app = FastAPI("}),
-    t({"    title='"}), i(1, "API Title"), t({"',"}),
-    t({"    description='"}), i(2, "API Description"), t({"',"}),
-    t({"    version='"}), i(3, "1.0.0"), t({"'"}),
-    t({")"}),
-    t({""}),
-    t({"# CORS middleware"}),
-    t({"app.add_middleware("}),
-    t({"    CORSMiddleware,"}),
-    t({"    allow_origins=['*'],  # Configure appropriately for production"}),
-    t({"    allow_credentials=True,"}),
-    t({"    allow_methods=['*'],"}),
-    t({"    allow_headers=['*']"}),
-    t({")"}),
-    t({""}),
-    t({""}),
-    t({"class "}), i(4, "RequestModel"), t({"(BaseModel):"}),
-    t({"    \"\"\"Request model for the API endpoint.\"\"\""}),
-    t({"    "}), i(5, "name"), t({": str = Field(..., description='"}), i(6, "Name field description"), t({"')"}),
-    t({"    "}), i(7, "value"), t({": int = Field(ge=0, le=100, description='"}), i(8, "Value between 0 and 100"), t({"')"}),
-    t({"    "}), i(9, "tags"), t({": Optional[List[str]] = Field(None, description='Optional tags')"}),
-    t({""}),
-    t({"    @validator('"}), f(function(args) return args[1][1] end, {5}), t({"')"}),
-    t({"    def validate_name(cls, v):"}),
-    t({"        \"\"\"Validate the name field.\"\"\""}),
-    t({"        if not v or not v.strip():"}),
-    t({"            raise ValueError('Name cannot be empty')"}),
-    t({"        return v.strip()"}),
-    t({""}),
-    t({""}),
-    t({"class "}), i(10, "ResponseModel"), t({"(BaseModel):"}),
-    t({"    \"\"\"Response model for the API endpoint.\"\"\""}),
-    t({"    message: str"}),
-    t({"    data: Optional[dict] = None"}),
-    t({"    success: bool = True"}),
-    t({""}),
-    t({""}),
-    t({"@app."}), i(11, "post"), t({"('/"}), i(12, "endpoint"), t({"', response_model="}), f(function(args) return args[1][1] end, {10}), t({")"}),
-    t({"async def "}), i(13, "endpoint_function"), t({"(request: "}), f(function(args) return args[1][1] end, {4}), t({") -> "}), f(function(args) return args[1][1] end, {10}), t({":"}),
-    t({"    \"\"\""}), i(14, "Endpoint description"), t({"."}),
-    t({""}),
-    t({"    This endpoint handles "}), i(15, "specific functionality"), t({" with proper"}),
-    t({"    error handling and validation."}),
-    t({""}),
-    t({"    Args:"}),
-    t({"        request: The validated request model."}),
-    t({""}),
-    t({"    Returns:"}),
-    t({"        Response model with operation result."}),
-    t({""}),
-    t({"    Raises:"}),
-    t({"        HTTPException: If the operation fails."}),
-    t({"    \"\"\""}),
-    t({"    try:"}),
-    t({"        logger.info('Processing request: %s', request."}), f(function(args) return args[1][1] end, {5}), t({"})"}),
-    t({"    "}),
-    t({"    "}), i(16, "# Business logic here"),
-    t({"        result = "}), i(17, "process_data(request)"),
-    t({"    "}),
-    t({"        return "}), f(function(args) return args[1][1] end, {10}), t({"("}),
-    t({"            message='Operation completed successfully',"}),
-    t({"            data=result"}),
-    t({"        )"}),
-    t({"    except ValueError as e:"}),
-    t({"        logger.error('Validation error: %s', e)"}),
-    t({"        raise HTTPException(status_code=400, detail=str(e))"}),
-    t({"    except Exception as e:"}),
-    t({"        logger.exception('Unexpected error: %s', e)"}),
-    t({"        raise HTTPException(status_code=500, detail='Internal server error')"}),
-    t({""}),
-    t({""}),
-    t({"@app.get('/health')"}),
-    t({"async def health_check():"}),
-    t({"    \"\"\"Health check endpoint.\"\"\""}),
-    t({"    return {'status': 'healthy', 'service': '"}), f(function(args) return args[1][1] end, {1}), t({"'}"}),
+  -- Dict comprehension
+  s("dc", {
+    t({"{"}), i(1, "k"), t({": "}), i(2, "v"), t({" for "}), i(3, "k, v"), t({" in "}), i(4, "items.items()"), t({"}"}),
     i(0)
   }),
 
-  -- Context manager implementation
-  s("context", {
-    t({"from typing import Any, Optional"}),
-    t({"import logging"}),
-    t({""}),
-    t({"logger = logging.getLogger(__name__)"}),
-    t({""}),
-    t({""}),
-    t({"class "}), i(1, "ResourceManager"), t({":"}),
-    t({"    \"\"\"Context manager for "}), i(2, "resource management"), t({"."}),
-    t({""}),
-    t({"    This context manager ensures proper resource acquisition"}),
-    t({"    and cleanup, following the RAII pattern."}),
-    t({""}),
-    t({"    Example:"}),
-    t({"        with "}), f(function(args) return args[1][1] end, {1}), t({"("}), i(3, "'resource'"), t({") as resource:"}),
-    t({"            # Use resource safely"}),
-    t({"            resource.do_something()"}),
-    t({"    \"\"\""}),
-    t({""}),
-    t({"    def __init__(self, "}), i(4, "resource_path: str"), t({") -> None:"}),
-    t({"        \"\"\"Initialize the resource manager."}),
-    t({""}),
-    t({"        Args:"}),
-    t({"            "}), i(5, "resource_path"), t({": "}), i(6, "Path to the resource."),
-    t({"        \"\"\""}),
-    t({"        self."}), f(function(args) return args[1][1] end, {5}), t({" = "}), f(function(args) return args[1][1] end, {5}),
-    t({"        self._resource: Optional[Any] = None"}),
-    t({""}),
-    t({"    def __enter__(self) -> Any:"}),
-    t({"        \"\"\"Acquire the resource."}),
-    t({""}),
-    t({"        Returns:"}),
-    t({"            The acquired resource."}),
-    t({""}),
-    t({"        Raises:"}),
-    t({"            ResourceError: If resource acquisition fails."}),
-    t({"        \"\"\""}),
-    t({"        logger.info('Acquiring resource: %s', self."}), f(function(args) return args[1][1] end, {5}), t({")"}),
-    t({"        try:"}),
-    t({"            "}), i(7, "self._resource = acquire_resource(self.resource_path)"),
-    t({"            return self._resource"}),
-    t({"        except Exception as e:"}),
-    t({"            logger.error('Failed to acquire resource: %s', e)"}),
-    t({"            raise"}),
-    t({""}),
-    t({"    def __exit__(self, exc_type, exc_val, exc_tb) -> None:"}),
-    t({"        \"\"\"Release the resource."}),
-    t({""}),
-    t({"        Args:"}),
-    t({"            exc_type: Exception type if an exception occurred."}),
-    t({"            exc_val: Exception value if an exception occurred."}),
-    t({"            exc_tb: Exception traceback if an exception occurred."}),
-    t({"        \"\"\""}),
-    t({"        if self._resource is not None:"}),
-    t({"            logger.info('Releasing resource: %s', self."}), f(function(args) return args[1][1] end, {5}), t({")"}),
-    t({"            try:"}),
-    t({"                "}), i(8, "release_resource(self._resource)"),
-    t({"            except Exception as e:"}),
-    t({"                logger.error('Failed to release resource: %s', e)"}),
-    t({"            finally:"}),
-    t({"                self._resource = None"}),
+  -- Generator expression
+  s("ge", {
+    t({"("}), i(1, "x"), t({" for "}), i(2, "x"), t({" in "}), i(3, "items"), t({")"}),
     i(0)
   }),
 
-  -- Type alias and constants
-  s("types", {
-    t({"from typing import Dict, List, Union, NewType, TypeAlias, Final"}),
-    t({"from enum import Enum, auto"}),
-    t({""}),
-    t({""}),
-    t({"# Type aliases for better code readability"}),
-    i(1, "UserID"), t({" = NewType('"}), f(function(args) return args[1][1] end, {1}), t({"', int)"}),
-    i(2, "ConfigDict"), t({": TypeAlias = Dict[str, Union[str, int, bool]]"}),
-    i(3, "DataList"), t({": TypeAlias = List["}), i(4, "Dict[str, Any]"), t({"]"}),
-    t({""}),
-    t({""}),
-    t({"# Constants following Google style guide"}),
-    i(5, "DEFAULT_TIMEOUT"), t({": Final[int] = "}), i(6, "30"),
-    i(7, "MAX_RETRIES"), t({": Final[int] = "}), i(8, "3"),
-    i(9, "API_BASE_URL"), t({": Final[str] = '"}), i(10, "https://api.example.com"), t({"'"}),
-    t({""}),
-    t({""}),
-    t({"class "}), i(11, "Status"), t({"(Enum):"}),
-    t({"    \"\"\"Status enumeration for "}), i(12, "application states"), t({"."}),
-    t({""}),
-    t({"    This enum defines all possible states that the application"}),
-    t({"    can be in during its lifecycle."}),
-    t({"    \"\"\""}),
-    t({"    "}), i(13, "PENDING"), t({" = auto()"}),
-    t({"    "}), i(14, "PROCESSING"), t({" = auto()"}),
-    t({"    "}), i(15, "COMPLETED"), t({" = auto()"}),
-    t({"    "}), i(16, "FAILED"), t({" = auto()"}),
-    t({""}),
-    t({"    def __str__(self) -> str:"}),
-    t({"        \"\"\"Return string representation of the status.\"\"\""}),
-    t({"        return self.name.lower()"}),
+  -- Lambda
+  s("lambda", {
+    t({"lambda "}), i(1, "x"), t({": "}), i(2, "x"),
     i(0)
   }),
 
-  -- Simple inline snippets for quick use
+  -- Import
+  s("imp", {
+    t({"import "}), i(1, "module"),
+    i(0)
+  }),
+
+  -- From import
+  s("from", {
+    t({"from "}), i(1, "module"), t({" import "}), i(2, "name"),
+    i(0)
+  }),
+
+  -- If name main
   s("ifmain", {
-    t({"if __name__ == '__main__':"}),
+    t({"if __name__ == '__main__':", ""}),
     t({"    "}), i(1, "main()"),
     i(0)
   }),
 
-  s("import", {
-    t({"from "}), i(1, "module"), t({" import "}), i(2, "function"),
+  -- Pytest test
+  s("test", {
+    t({"def test_"}), i(1, "name"), t({"():", ""}),
+    t({"    "}), i(2, "assert True"),
     i(0)
   }),
 
-  s("pdb", {
-    t({"import pdb; pdb.set_trace()"}),
+  -- Fixture
+  s("fixture", {
+    t({"@pytest.fixture", ""}),
+    t({"def "}), i(1, "name"), t({"():", ""}),
+    t({"    "}), i(2, "return None"),
+    i(0)
+  }),
+
+  -- Parametrize
+  s("param", {
+    t({"@pytest.mark.parametrize('"}), i(1, "arg"), t({"', [", ""}),
+    t({"    "}), i(2, "value1"), t({",", ""}),
+    t({"    "}), i(3, "value2"), t({",", ""}),
+    t({"])", ""}),
+    t({"def test_"}), i(4, "name"), t({"("}), f(function(args) return args[1][1] end, {1}), t({"):", ""}),
+    t({"    "}), i(5, "pass"),
+    i(0)
+  }),
+
+  -- Logging
+  s("log", {
+    t({"logger."}), c(1, {t("info"), t("debug"), t("warning"), t("error"), t("critical")}), t({"("}), i(2, "'message'"), t({")"}),
+    i(0)
+  }),
+
+  -- F-string
+  s("f", {
+    t({"f'"}), i(1), t({"{"}), i(2, "var"), t({"}"}), i(3), t({"'"}),
+    i(0)
+  }),
+
+  -- Type hint
+  s("type", {
+    i(1, "var"), t({": "}), c(2, {
+      t("int"),
+      t("str"), 
+      t("bool"),
+      t("float"),
+      t("list"),
+      t("dict"),
+      t("tuple"),
+      t("set"),
+      t("Optional[str]"),
+      t("List[str]"),
+      t("Dict[str, Any]"),
+    }),
+    i(0)
+  }),
+
+  -- Decorator
+  s("deco", {
+    t({"def "}), i(1, "decorator"), t({"(func):", ""}),
+    t({"    def wrapper(*args, **kwargs):", ""}),
+    t({"        "}), i(2, "# Before"), t({"", ""}),
+    t({"        result = func(*args, **kwargs)", ""}),
+    t({"        "}), i(3, "# After"), t({"", ""}),
+    t({"        return result", ""}),
+    t({"    return wrapper"}),
+    i(0)
+  }),
+
+  -- Enumerate
+  s("enum", {
+    t({"for "}), i(1, "i"), t({", "}), i(2, "item"), t({" in enumerate("}), i(3, "items"), t({"):", ""}),
+    t({"    "}), i(4, "pass"),
+    i(0)
+  }),
+
+  -- Zip
+  s("zip", {
+    t({"for "}), i(1, "a"), t({", "}), i(2, "b"), t({" in zip("}), i(3, "list1"), t({", "}), i(4, "list2"), t({"):", ""}),
+    t({"    "}), i(5, "pass"),
+    i(0)
+  }),
+
+  -- Assert
+  s("assert", {
+    t({"assert "}), i(1, "condition"), t({", "}), i(2, "'error message'"),
+    i(0)
+  }),
+
+  -- Raise
+  s("raise", {
+    t({"raise "}), c(1, {
+      t("ValueError"),
+      t("TypeError"),
+      t("KeyError"),
+      t("IndexError"),
+      t("RuntimeError"),
+      t("NotImplementedError"),
+    }), t({"("}), i(2, "'message'"), t({")"}),
+    i(0)
+  }),
+
+  -- Super
+  s("super", {
+    t({"super().__init__("}), i(1), t({")"}),
+    i(0)
+  }),
+
+  -- Argparse
+  s("argparse", {
+    t({"import argparse", "", ""}),
+    t({"parser = argparse.ArgumentParser(description='"}), i(1, "Description"), t({"')", ""}),
+    t({"parser.add_argument('"}), i(2, "arg"), t({"', help='"}), i(3, "help text"), t({"')", ""}),
+    t({"args = parser.parse_args()"}),
+    i(0)
+  }),
+
+  -- Dict get
+  s("get", {
+    i(1, "dict"), t({".get('"}), i(2, "key"), t({"', "}), i(3, "default"), t({")"}),
+    i(0)
+  }),
+
+  -- String join
+  s("join", {
+    i(1, "', '"), t({".join("}), i(2, "items"), t({")"}),
+    i(0)
+  }),
+
+  -- Path
+  s("path", {
+    t({"from pathlib import Path", "", ""}),
+    t({"path = Path("}), i(1, "'.'"), t({")"}),
+    i(0)
+  }),
+
+  -- Datetime
+  s("now", {
+    t({"from datetime import datetime", "", ""}),
+    t({"now = datetime.now()"}),
+    i(0)
+  }),
+
+  -- JSON
+  s("json", {
+    t({"import json", "", ""}),
+    c(1, {
+      t({"data = json.loads(json_string)"}),
+      t({"json_string = json.dumps(data, indent=2)"}),
+    }),
+    i(0)
+  }),
+
+  -- CSV
+  s("csv", {
+    t({"import csv", "", ""}),
+    t({"with open('"}), i(1, "file.csv"), t({"', '"}), c(2, {t("r"), t("w")}), t({"') as f:", ""}),
+    t({"    "}), c(3, {
+      t({"reader = csv.DictReader(f)", ""}),
+      t({"writer = csv.DictWriter(f, fieldnames=['field1', 'field2'])", ""}),
+    }),
+    t({"    "}), i(4, "pass"),
     i(0)
   }),
 }
