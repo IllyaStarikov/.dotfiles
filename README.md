@@ -25,6 +25,12 @@
 
 ## Features
 
+### 📐 Google Style Guide Compliance
+- **Full integration** with [Google Style Guides](https://google.github.io/styleguide/) (included as submodule)
+- **Automatic formatting** for Python, C++, JavaScript, Shell, and more
+- **Official linters**: pylintrc, clang-format, and other Google configs
+- **Consistent standards** across all languages and tools
+
 ### ⚡ Lightning Fast
 - **Modern CLI tools** that are 10-100x faster than traditional Unix utilities
 - **Lazy-loaded shell plugins** for instant terminal startup
@@ -75,7 +81,7 @@
 | **Package Manager** | [Homebrew](https://brew.sh/) | macOS package management |
 | **Version Control** | [Git](https://git-scm.com/) + [GitHub CLI](https://cli.github.com/) | Enhanced with 50+ aliases |
 | **Python** | [pyenv](https://github.com/pyenv/pyenv) | Python version management |
-| **File Manager** | [ranger](https://github.com/ranger/ranger) + [Oil.nvim](https://github.com/stevearc/oil.nvim) | Terminal file navigation |
+| **File Manager** | [ranger](https://github.com/ranger/ranger) + [Snacks.nvim Explorer](https://github.com/folke/snacks.nvim) | Modern file navigation |
 
 ### Modern CLI Replacements
 
@@ -93,7 +99,7 @@
 ### One-Line Install
 
 ```bash
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/mac.sh
+git clone --recursive https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/mac.sh
 ```
 
 This will:
