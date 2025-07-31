@@ -34,7 +34,7 @@ function M.setup()
             { icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
             { icon = " ", key = "b", desc = "Buffers", action = ":Telescope buffers" },
             { icon = " ", key = "c", desc = "Config", action = function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end },
-            { icon = " ", key = ".", desc = "Browse Files", action = ":Oil" },
+            { icon = " ", key = ".", desc = "Browse Files", action = function() Snacks.explorer() end },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
         },

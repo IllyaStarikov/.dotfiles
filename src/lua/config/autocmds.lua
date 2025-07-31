@@ -518,22 +518,8 @@ autocmd("FileType", {
 -- CODE EXECUTION SYSTEM
 -- =============================================================================
 
--- Language-specific code execution with AsyncRun integration
+-- AsyncRun integration for background compilation
 local run_group = augroup("run", { clear = true })
-
--- RunCode function
-local function run_code(run_command)
-  if vim.fn.filereadable("makefile") == 1 or vim.fn.filereadable("Makefile") == 1 then
-    vim.cmd("AsyncRun make")
-  else
-    vim.cmd("AsyncRun " .. run_command)
-  end
-end
-
--- Create user command for RunCode
-vim.api.nvim_create_user_command("RunCode", function(opts)
-  run_code(opts.args)
-end, { nargs = 1 })
 
 local window_open = 1
 
@@ -553,55 +539,14 @@ autocmd("QuickFixCmdPost", {
   end
 })
 
--- Language-specific run commands
-local run_commands = {
-  python = "python3 %",
-  c = "clang *.c -o driver && ./driver",
-  cpp = "clang++ *.cpp -std=c++14 -o driver && ./driver",
-  tex = "latexmk",
-  plaintex = "latexmk",
-  perl = "perl %",
-  sh = "bash %",
-  swift = "swift %"
-}
+-- Note: Language-specific run commands have been moved to commands.lua RunFile command
 
--- Commented out - now using global RunFile command instead
--- for ft, cmd in pairs(run_commands) do
---   autocmd("FileType", {
---     group = run_group,
---     pattern = ft,
---     callback = function()
---       vim.keymap.set("n", "<leader>r", function()
---         run_code(cmd)
---       end, { buffer = true })
---     end
---   })
--- end
-
--- Commented out - now using global RunFile command instead
--- -- Markdown run command (platform specific)
--- autocmd("FileType", {
---   group = run_group,
---   pattern = "markdown",
---   callback = function()
---     local cmd
---     if vim.fn.has("macunix") == 1 then
---       cmd = "pandoc --standalone --from=markdown --to=rtf % | pbcopy"
---     else
---       cmd = "pandoc % | xclip -t text/html -selection clipboard"
---     end
---     vim.keymap.set("n", "<leader>r", function()
---       run_code(cmd)
---     end, { buffer = true })
---   end
--- })
-
--- Generic async run repeat
+-- Async run repeat for last command
 autocmd("FileType", {
   group = run_group,
   pattern = "*",
   callback = function()
-    vim.keymap.set("n", "<leader>R", ":Async<Up><CR>", { buffer = true })
+    vim.keymap.set("n", "<leader>R", ":AsyncRun<Up><CR>", { buffer = true, desc = "Repeat last async command" })
   end
 })
 

@@ -38,8 +38,6 @@ function M.setup_custom_menus()
         { name = "🔭 Find File", cmd = "lua require('telescope.builtin').find_files()", rtxt = "f" },
         { name = "🔭 Recent Files", cmd = "lua require('telescope.builtin').oldfiles()", rtxt = "r" },
         { name = "🔭 Find in Files", cmd = "lua require('telescope.builtin').live_grep()", rtxt = "g" },
-        { name = "🛢️ Oil File Manager", cmd = "lua require('oil').open()", rtxt = "o" },
-        { name = "🛢️ Oil Float", cmd = "lua require('oil').open_float()", rtxt = "O" },
         { name = "🍿 File Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
@@ -499,8 +497,8 @@ function M.open_file_management_menu()
     
     -- Create comprehensive file management menu
     local file_menu = {
-        { name = "📁 Open Oil File Manager", cmd = "lua require('oil').open()", rtxt = "o" },
-        { name = "🪟 Open Oil Float", cmd = "lua require('oil').open_float()", rtxt = "O" },
+        { name = "📁 Open File Explorer", cmd = "lua Snacks.explorer()", rtxt = "o" },
+        { name = "🪟 Open Explorer (Float)", cmd = "lua Snacks.explorer({ float = true })", rtxt = "O" },
         { name = "🍿 Snacks Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
         
         { name = "separator" },
@@ -521,7 +519,7 @@ function M.open_file_management_menu()
         
         { name = "📋 Copy File Path", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:p'))", rtxt = "p" },
         { name = "📋 Copy File Name", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:t'))", rtxt = "t" },
-        { name = "📂 Open File Directory", cmd = "lua require('oil').open(vim.fn.expand('%:p:h'))", rtxt = "d" },
+        { name = "📂 Open File Directory", cmd = "lua Snacks.explorer({ cwd = vim.fn.expand('%:p:h') })", rtxt = "d" },
     }
     
     local success, err = pcall(menu.open, file_menu, { 
