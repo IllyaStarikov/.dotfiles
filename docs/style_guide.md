@@ -67,3 +67,17 @@ To check current settings:
 ## Format Command
 
 Use the `:Format` command or the `format` shell script to automatically format files according to these standards.
+
+## Python Linting
+
+Google's official pylintrc is automatically configured at `~/.pylintrc`. This provides:
+- Google Python Style Guide compliance checking
+- Consistent error and warning detection
+- Best practices enforcement
+
+Run pylint on any Python file:
+```bash
+pylint myfile.py
+```
+
+The format script will automatically run pylint if it's installed.
