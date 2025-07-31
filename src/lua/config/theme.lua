@@ -4,7 +4,7 @@
 --
 -- Features:
 -- • Automatic theme switching based on macOS Dark/Light mode
--- • Support for multiple colorschemes (Dracula, Iceberg, GitHub themes)
+-- • Support for Tokyo Night (primary) and GitHub (backup) themes
 -- • Intelligent comment color adaptation for readability
 -- • Real-time theme reloading when system appearance changes
 -- • Fallback handling for missing theme configurations
@@ -29,6 +29,17 @@ local function setup_theme()
     local variant = vim.fn.system(variant_cmd):gsub('\n', '')
     local background = vim.fn.system(background_cmd):gsub('\n', '')
     
+    -- Handle legacy format where theme is just "light" or "dark"
+    if theme == "light" then
+      theme = "tokyonight_day"
+      variant = "light"
+      background = "light"
+    elseif theme == "dark" then
+      theme = "tokyonight_moon"
+      variant = "dark"
+      background = "dark"
+    end
+    
     -- Set background
     if background == "dark" then
       vim.opt.background = "dark"
@@ -36,12 +47,8 @@ local function setup_theme()
       vim.opt.background = "light"
     end
     
-    -- Apply colorscheme and airline theme based on current theme
-    if theme == "dracula" then
-      vim.cmd("colorscheme dracula")
-      vim.opt.background = "dark"
-      -- vim.g.airline_theme = 'dracula'
-    elseif theme == "tokyonight_moon" then
+    -- Apply colorscheme based on current theme
+    if theme == "tokyonight_moon" then
       vim.opt.background = "dark"
       require("tokyonight").setup({
         style = "moon",
@@ -100,59 +107,18 @@ local function setup_theme()
       })
       vim.cmd("colorscheme tokyonight-day")
       -- vim.g.airline_theme = 'base16'
-    elseif theme == "iceberg_light" then
-      vim.cmd("colorscheme iceberg")
-      -- vim.g.airline_theme = 'iceberg'
-      vim.opt.background = "light"
-    elseif theme == "iceberg_dark" then
-      vim.cmd("colorscheme iceberg")
-      -- vim.g.airline_theme = 'iceberg'
-      vim.opt.background = "dark"
-    elseif theme == "tron" then
-      if variant == "dark" then
-        vim.cmd("colorscheme iceberg")
-        -- vim.g.airline_theme = 'iceberg'
-      else
-        vim.cmd("colorscheme iceberg")
-        -- vim.g.airline_theme = 'iceberg'
-      end
-    elseif theme == "github_light" then
-      vim.cmd("colorscheme github_light")
-      -- vim.g.airline_theme = 'sol'
-    elseif theme == "github_light_default" then
-      vim.cmd("colorscheme github_light_default")
-      -- vim.g.airline_theme = 'sol'
-    elseif theme == "github_light_high_contrast" then
-      vim.cmd("colorscheme github_light_high_contrast")
-      -- vim.g.airline_theme = 'sol'
-    elseif theme == "github_light_colorblind" then
-      vim.cmd("colorscheme github_light_colorblind")
-      -- vim.g.airline_theme = 'sol'
-    elseif theme == "github_light_tritanopia" then
-      vim.cmd("colorscheme github_light_tritanopia")
-      -- vim.g.airline_theme = 'sol'
-    elseif theme == "github_dark" then
-      vim.cmd("colorscheme github_dark_default")
-      -- vim.g.airline_theme = 'base16_grayscale'
-    elseif theme == "github_dark_default" then
-      vim.cmd("colorscheme github_dark_default")
-      -- vim.g.airline_theme = 'base16_grayscale'
-    elseif theme == "github_dark_dimmed" then
-      vim.cmd("colorscheme github_dark_dimmed")
-      -- vim.g.airline_theme = 'base16_grayscale'
-    elseif theme == "github_dark_high_contrast" then
-      vim.cmd("colorscheme github_dark_high_contrast")
-      -- vim.g.airline_theme = 'base16_grayscale'
-    elseif theme == "github_dark_colorblind" then
-      vim.cmd("colorscheme github_dark_colorblind")
-      -- vim.g.airline_theme = 'base16_grayscale'
-    elseif theme == "github_dark_tritanopia" then
-      vim.cmd("colorscheme github_dark_tritanopia")
-      -- vim.g.airline_theme = 'base16_grayscale'
     else
-      -- Default fallback
-      vim.cmd("colorscheme iceberg")
-      -- vim.g.airline_theme = 'iceberg'
+      -- Default fallback to Tokyo Night Moon
+      vim.opt.background = "dark"
+      require("tokyonight").setup({
+        style = "moon",
+        transparent = false,
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true },
+        },
+      })
+      vim.cmd("colorscheme tokyonight-moon")
     end
   else
     -- Default to dark theme if config file doesn't exist
