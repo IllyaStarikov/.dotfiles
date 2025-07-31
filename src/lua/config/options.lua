@@ -40,7 +40,6 @@ opt.shiftwidth = 2                   -- 2 spaces for indentation
 opt.tabstop = 2                      -- Tab width = 2 spaces
 opt.softtabstop = 2                  -- Soft tab stop at 2 spaces
 opt.smartindent = true               -- Smart autoindenting
-opt.autoindent = true                -- Copy indent from current line
 
 -- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 🖼️ DISPLAY & UI
@@ -98,7 +97,6 @@ opt.undodir = vim.fn.stdpath("data") .. "/undo"  -- XDG-compliant undo directory
 
 -- UI settings
 opt.mouse = "a"                      -- Enable full mouse support
-opt.syntax = "on"                    -- Syntax highlighting
 opt.spell = false                    -- Disable global spell check (enable per-buffer as needed)
 opt.spelllang = "en_us"              -- US English spelling
 opt.termguicolors = true             -- 24-bit RGB colors
@@ -115,14 +113,10 @@ opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
   .. ",a:blinkwait700-blinkoff400-blinkon250"
   .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
 
--- For regular expressions
-opt.magic = true
-
 -- File formats
 opt.fileformats = { "unix", "dos", "mac" }  -- Use Unix as the standard file type
 
 -- Wild menu
-opt.wildmenu = true
 opt.wildmode = { "longest:list", "full" }
 
 opt.hidden = true                    -- Don't warn me about unsaved buffers
@@ -145,13 +139,11 @@ opt.shortmess:append("c")            -- Don't show completion messages
 -- ⚡ PERFORMANCE OPTIMIZATIONS
 -- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-opt.ttyfast = true                   -- Fast terminal connection
 opt.lazyredraw = false               -- Smoother visual feedback (modern terminals handle this well)
 
 -- Timing optimizations
 opt.updatecount = 100                -- Swap file update frequency
 opt.redrawtime = 1500                -- Max time for syntax highlighting
-opt.ttimeout = true                  -- Terminal code timeout
 opt.ttimeoutlen = 0                  -- Instant escape sequence
 
 -- Large file optimizations
