@@ -3,12 +3,20 @@
 vim.g.lsp_autostart = true
 
 -- Load core configuration modules
-require("config.options")
+require("config.core")
+require("config.ui")
 require("config.keymaps")
 require("config.autocmds")
 require("config.plugins")
-require("config.theme")
 require("config.commands")
+
+-- Load theme after plugins are available
+vim.api.nvim_create_autocmd("User", {
+  pattern = "LazyVimStarted",
+  callback = function()
+    require("config.ui.theme")
+  end,
+})
 
 -- Apply work-specific overrides if available
 -- This should happen after base config but before LSP setup

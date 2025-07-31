@@ -56,7 +56,7 @@ require("lazy").setup({
     priority = 1000,
     lazy = false,
     config = function()
-      require('config.snacks').setup()
+      require('config.plugins.snacks').setup()
     end,
   },
   
@@ -344,7 +344,7 @@ require("lazy").setup({
     lazy = true,
     dependencies = { "nvzone/volt" },
     config = function()
-      require('config.typr').setup()
+      require('config.plugins.typr').setup()
     end,
     cmd = { "Typr", "TyprStats", "TyprQuick", "TyprLong", "TyprTimed", "TyprProgramming", "TyprHistory", "TyprDashboard", "TyprConfig" },
   },
@@ -427,7 +427,7 @@ require("lazy").setup({
     lazy = false,  -- Load immediately for LaTeX files
     ft = { "tex", "latex", "plaintex" },
     config = function()
-      require('config.vimtex').setup()
+      require('config.plugins.vimtex').setup()
     end,
     dependencies = {
       -- Optional: Add LaTeX snippets support
@@ -473,7 +473,7 @@ require("lazy").setup({
     "neovim/nvim-lspconfig",
     dependencies = { "saghen/blink.cmp" },
     config = function()
-      require("config.lsp").setup()
+      require("config.lsp.servers").setup()
     end,
   },
   {
@@ -518,7 +518,7 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets", -- Preconfigured snippets
     },
     config = function()
-      require('config.luasnip').setup()
+      require('config.plugins.snippets').setup()
     end,
     keys = {
       -- Tab/S-Tab handled by blink.cmp to avoid conflicts
@@ -541,7 +541,7 @@ require("lazy").setup({
     },
     version = "v1.*",  -- Use stable v1 series
     opts = function()
-      return require('config.blink')
+      return require('config.plugins.completion')
     end,
     -- Allow extending sources array
     opts_extend = { "sources.default" },
@@ -565,7 +565,7 @@ require("lazy").setup({
       },
     },
     config = function()
-      require('config.codecompanion').setup()
+      require('config.plugins.ai').setup()
     end
   },
 
@@ -651,7 +651,7 @@ require("lazy").setup({
       end
       
       -- Create our configuration that will be merged
-      local config = require('config.markview')
+      local config = require('config.plugins.markview')
       
       -- Just run setup, no patches needed with FiraCode
       config.setup()
