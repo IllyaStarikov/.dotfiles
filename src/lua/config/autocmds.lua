@@ -194,27 +194,6 @@ autocmd("FileType", {
 -- Removed auto-enforcement of Python settings
 -- Settings are only applied when opening Python files, not on save
 
--- =============================================================================
--- NERDTREE INTEGRATION
--- =============================================================================
-
--- Legacy NERDTree support (automatically close when last window)
-local nerdtree_group = augroup("nerdtreehelp", { clear = true })
-
-
-autocmd("BufEnter", {
-  group = nerdtree_group,
-  pattern = "*",
-  callback = function()
-    -- Close NERDTree if it's the last window and is a tab tree
-    if vim.fn.winnr("$") == 1 and vim.fn.exists("b:NERDTree") == 1 then
-      local nerdtree = vim.b.NERDTree
-      if nerdtree and type(nerdtree) == "table" and nerdtree.isTabTree and nerdtree:isTabTree() then
-        vim.cmd("q")
-      end
-    end
-  end
-})
 
 -- =============================================================================
 -- SYNTAX OPTIMIZATIONS

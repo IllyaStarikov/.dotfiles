@@ -270,7 +270,7 @@ function M.setup()
   -- 📊 INTEGRATION WITH EXISTING WORKFLOW
   -- Set up integration points for existing keybindings
   
-  -- Replace some NERDTree functionality
+  -- File explorer functionality
   vim.api.nvim_create_user_command('Oil', function()
     require('oil').open()
   end, { desc = 'Open Oil file manager' })
