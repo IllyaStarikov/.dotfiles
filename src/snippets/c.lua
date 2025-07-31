@@ -56,10 +56,10 @@ return {
     t({" * @return EXIT_SUCCESS on success, EXIT_FAILURE on error"}),
     t({" */"}),
     t({"int main(int argc, char *argv[]) {"}),
-    t({"    "}), i(2, "// Program logic here"),
-    t({"    printf(\"Hello, World!\\n\");"),
-    t({"    "}),
-    t({"    return EXIT_SUCCESS;"}),
+    t({"  "}), i(2, "// Program logic here"),
+    t({"  printf(\"Hello, World!\\n\");"),
+    t({"  "}),
+    t({"  return EXIT_SUCCESS;"}),
     t({"}"}),
     t({""}),
     i(0)
@@ -84,9 +84,9 @@ return {
     t({"#include <stdlib.h>"}),
     t({""}),
     t({"int main(int argc, char *argv[]) {"}),
-    t({"    "}), i(1, "printf(\"Hello, World!\\n\");"),
-    t({"    "}),
-    t({"    return EXIT_SUCCESS;"}),
+    t({"  "}), i(1, "printf(\"Hello, World!\\n\");"),
+    t({"  "}),
+    t({"  return EXIT_SUCCESS;"}),
     t({"}"}),
     i(0)
   }),
@@ -100,7 +100,7 @@ return {
     t({" * @return "}), i(4, "Return value description"),
     t({" */"}),
     i(5, "int"), t({" "}), i(6, "function_name"), t({"("}), i(7, "int param"), t({") {"}),
-    t({"    "}), i(8, "return 0;"),
+    t({"  "}), i(8, "return 0;"),
     t({"}"}),
     t({""}),
     i(0)
@@ -112,7 +112,7 @@ return {
     t({" * "}), i(1, "Structure description"),
     t({" */"}),
     t({"typedef struct "}), i(2, "struct_name"), t({" {"}),
-    t({"    "}), i(3, "int field;"), t({"  /**< "}), i(4, "Field description"), t({" */"}),
+    t({"  "}), i(3, "int field;"), t({"  /**< "}), i(4, "Field description"), t({" */"}),
     t({"} "}), f(function(args) return args[1][1] end, {2}), t({"_t;"}),
     t({""}),
     i(0)
@@ -148,7 +148,7 @@ return {
   -- For loop
   s("for", {
     t({"for ("}), i(1, "size_t i = 0"), t({"; "}), i(2, "i < n"), t({"; "}), i(3, "i++"), t({") {"}),
-    t({"    "}), i(4, "/* loop body */"),
+    t({"  "}), i(4, "/* loop body */"),
     t({"}"}),
     i(0)
   }),
@@ -156,7 +156,7 @@ return {
   -- While loop
   s("while", {
     t({"while ("}), i(1, "condition"), t({") {"}),
-    t({"    "}), i(2, "/* loop body */"),
+    t({"  "}), i(2, "/* loop body */"),
     t({"}"}),
     i(0)
   }),
@@ -164,9 +164,9 @@ return {
   -- If-else statement
   s("if", {
     t({"if ("}), i(1, "condition"), t({") {"}),
-    t({"    "}), i(2, "/* if body */"),
+    t({"  "}), i(2, "/* if body */"),
     t({"} else {"}),
-    t({"    "}), i(3, "/* else body */"),
+    t({"  "}), i(3, "/* else body */"),
     t({"}"}),
     i(0)
   }),
@@ -174,15 +174,15 @@ return {
   -- Switch statement
   s("switch", {
     t({"switch ("}), i(1, "expression"), t({") {"}),
-    t({"    case "}), i(2, "value1"), t({":"}),
-    t({"        "}), i(3, "/* case 1 */"),
-    t({"        break;"}),
-    t({"    case "}), i(4, "value2"), t({":"}),
-    t({"        "}), i(5, "/* case 2 */"),
-    t({"        break;"}),
-    t({"    default:"}),
-    t({"        "}), i(6, "/* default case */"),
-    t({"        break;"}),
+    t({"  case "}), i(2, "value1"), t({":"}),
+    t({"    "}), i(3, "/* case 1 */"),
+    t({"    break;"}),
+    t({"  case "}), i(4, "value2"), t({":"}),
+    t({"    "}), i(5, "/* case 2 */"),
+    t({"    break;"}),
+    t({"  default:"}),
+    t({"    "}), i(6, "/* default case */"),
+    t({"    break;"}),
     t({"}"}),
     i(0)
   }),
@@ -248,7 +248,7 @@ return {
   -- Linked list node
   s("listnode", {
     t({"typedef struct "}), i(1, "node"), t({" {"}),
-    t({"    "}), i(2, "int data"), t({";"}),
+    t({"  "}), i(2, "int data"), t({";"}),
     t({"    struct "}), f(function(args) return args[1][1] end, {1}), t({" *next;"}),
     t({"} "}), f(function(args) return args[1][1] end, {1}), t({"_t;"}),
     i(0)
