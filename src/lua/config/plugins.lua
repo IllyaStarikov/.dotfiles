@@ -685,6 +685,130 @@ require("lazy").setup({
     end,
   },
 
+  -- Trouble.nvim - Pretty diagnostics, references, quickfix, loclist
+  {
+    "folke/trouble.nvim",
+    cmd = { "Trouble", "TroubleToggle" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      position = "bottom",
+      height = 10,
+      width = 50,
+      icons = true,
+      mode = "document_diagnostics",
+      fold_open = "",
+      fold_closed = "",
+      group = true,
+      padding = true,
+      action_keys = {
+        close = { "q", "<esc>" },
+        cancel = "<c-e>",
+        refresh = "r",
+        jump = { "<cr>", "<tab>" },
+        open_split = { "<c-x>" },
+        open_vsplit = { "<c-v>" },
+        open_tab = { "<c-t>" },
+        jump_close = {"o"},
+        toggle_mode = "m",
+        toggle_preview = "P",
+        hover = "K",
+        preview = "p",
+        close_folds = {"zM", "zm"},
+        open_folds = {"zR", "zr"},
+        toggle_fold = {"zA", "za"},
+        previous = "k",
+        next = "j"
+      },
+      indent_lines = true,
+      auto_open = false,
+      auto_close = false,
+      auto_preview = true,
+      auto_fold = false,
+      auto_jump = {"lsp_definitions"},
+      signs = {
+        error = "",
+        warning = "",
+        hint = "",
+        information = "",
+        other = ""
+      },
+      use_diagnostic_signs = true
+    },
+    keys = {
+      { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
+      { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics" },
+      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics" },
+      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List" },
+      { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List" },
+      { "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo Comments" },
+      { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+      { "[q", function() require("trouble").previous({skip_groups = true, jump = true}) end, desc = "Previous Trouble Item" },
+      { "]q", function() require("trouble").next({skip_groups = true, jump = true}) end, desc = "Next Trouble Item" },
+    },
+  },
+
+  -- Todo comments highlighting
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      signs = true,
+      sign_priority = 8,
+      keywords = {
+        FIX = { icon = " ", color = "error", alt = { "FIXME", "BUG", "FIXIT", "ISSUE" } },
+        TODO = { icon = " ", color = "info" },
+        HACK = { icon = " ", color = "warning" },
+        WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+        PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
+        NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+        TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
+      },
+      gui_style = {
+        fg = "NONE",
+        bg = "BOLD",
+      },
+      merge_keywords = true,
+      highlight = {
+        multiline = true,
+        multiline_pattern = "^.",
+        multiline_context = 10,
+        before = "",
+        keyword = "wide",
+        after = "fg",
+        pattern = [[.*<(KEYWORDS)\s*:]],
+        comments_only = true,
+        max_line_len = 400,
+        exclude = {},
+      },
+      colors = {
+        error = { "DiagnosticError", "ErrorMsg", "#DC2626" },
+        warning = { "DiagnosticWarn", "WarningMsg", "#FBBF24" },
+        info = { "DiagnosticInfo", "#2563EB" },
+        hint = { "DiagnosticHint", "#10B981" },
+        default = { "Identifier", "#7C3AED" },
+        test = { "Identifier", "#FF00FF" }
+      },
+      search = {
+        command = "rg",
+        args = {
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+        },
+        pattern = [[\b(KEYWORDS):]],
+      },
+    },
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Search Todo Comments" },
+    },
+  },
+
   -- Formatting
   {
     'stevearc/conform.nvim',
