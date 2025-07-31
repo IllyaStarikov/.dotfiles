@@ -59,6 +59,15 @@ end
 -- Load work-specific vim configuration
 local function load_work_vimrc(profile)
   local function safe_dofile(path)
+    -- Validate path is within the expected directory
+    local resolved_path = vim.fn.resolve(path)
+    local expected_base = vim.fn.resolve(WORK_CONFIG_PATH)
+    
+    -- Security check: ensure the file is within the work config directory
+    if not vim.startswith(resolved_path, expected_base) then
+      error("Security violation: Attempted to load file outside work config directory")
+    end
+    
     if vim.fn.filereadable(path) == 1 then
       local ok, err = pcall(dofile, path)
       if not ok then
