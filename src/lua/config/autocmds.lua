@@ -565,34 +565,36 @@ local run_commands = {
   swift = "swift %"
 }
 
-for ft, cmd in pairs(run_commands) do
-  autocmd("FileType", {
-    group = run_group,
-    pattern = ft,
-    callback = function()
-      vim.keymap.set("n", "<leader>r", function()
-        run_code(cmd)
-      end, { buffer = true })
-    end
-  })
-end
+-- Commented out - now using global RunFile command instead
+-- for ft, cmd in pairs(run_commands) do
+--   autocmd("FileType", {
+--     group = run_group,
+--     pattern = ft,
+--     callback = function()
+--       vim.keymap.set("n", "<leader>r", function()
+--         run_code(cmd)
+--       end, { buffer = true })
+--     end
+--   })
+-- end
 
--- Markdown run command (platform specific)
-autocmd("FileType", {
-  group = run_group,
-  pattern = "markdown",
-  callback = function()
-    local cmd
-    if vim.fn.has("macunix") == 1 then
-      cmd = "pandoc --standalone --from=markdown --to=rtf % | pbcopy"
-    else
-      cmd = "pandoc % | xclip -t text/html -selection clipboard"
-    end
-    vim.keymap.set("n", "<leader>r", function()
-      run_code(cmd)
-    end, { buffer = true })
-  end
-})
+-- Commented out - now using global RunFile command instead
+-- -- Markdown run command (platform specific)
+-- autocmd("FileType", {
+--   group = run_group,
+--   pattern = "markdown",
+--   callback = function()
+--     local cmd
+--     if vim.fn.has("macunix") == 1 then
+--       cmd = "pandoc --standalone --from=markdown --to=rtf % | pbcopy"
+--     else
+--       cmd = "pandoc % | xclip -t text/html -selection clipboard"
+--     end
+--     vim.keymap.set("n", "<leader>r", function()
+--       run_code(cmd)
+--     end, { buffer = true })
+--   end
+-- })
 
 -- Generic async run repeat
 autocmd("FileType", {
