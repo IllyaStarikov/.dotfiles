@@ -418,24 +418,6 @@ autocmd("FileType", {
   end
 })
 
--- =============================================================================
--- AIRLINE TABLINE
--- =============================================================================
-
--- Ensure airline tabline is always visible and refreshed
-local airline_group = augroup("airline_tabline", { clear = true })
-
-autocmd({"BufEnter", "BufAdd", "BufNew", "BufDelete", "TabEnter"}, {
-  group = airline_group,
-  callback = function()
-    -- Force airline to refresh its tabline
-    vim.schedule(function()
-      if vim.fn.exists(":AirlineRefresh") == 2 then
-        vim.cmd("silent! AirlineRefresh")
-      end
-    end)
-  end,
-})
 
 
 -- =============================================================================
@@ -978,54 +960,4 @@ autocmd("BufNewFile", {
 -- DEBUG COMMANDS
 -- =============================================================================
 
--- Force airline refresh command
-vim.api.nvim_create_user_command("AirlineFixTabs", function()
-  -- Ensure we have showtabline set
-  vim.o.showtabline = 2
-  
-  -- Set all tabline variables
-  vim.g["airline#extensions#tabline#enabled"] = 1
-  vim.g["airline#extensions#tabline#show_buffers"] = 1
-  vim.g["airline#extensions#tabline#show_tabs"] = 0
-  vim.g["airline#extensions#tabline#buffer_idx_mode"] = 1
-  vim.g["airline#extensions#tabline#formatter"] = 'unique_tail_improved'
-  
-  -- Force airline to reload
-  vim.cmd("AirlineRefresh")
-  vim.cmd("AirlineToggle")
-  vim.cmd("AirlineToggle")
-  
-  -- Final refresh
-  vim.defer_fn(function()
-    vim.cmd("AirlineRefresh")
-    -- Airline tabline refreshed
-  end, 100)
-end, { desc = "Fix airline tabline display" })
-
--- Force Dracula theme for airline
-vim.api.nvim_create_user_command("AirlineDracula", function()
-  vim.g.airline_theme = 'dracula'
-  vim.cmd("AirlineRefresh")
-end, { desc = "Set airline theme to Dracula" })
-
--- Ensure airline tabline is enabled
-autocmd({"VimEnter", "BufEnter", "BufAdd"}, {
-  group = augroup("AirlineTablineEnable", { clear = true }),
-  callback = function()
-    -- Only run if we have multiple buffers
-    local buffers = vim.fn.getbufinfo({buflisted = 1})
-    if #buffers > 0 then
-      vim.g["airline#extensions#tabline#enabled"] = 1
-      vim.g["airline#extensions#tabline#show_buffers"] = 1
-      vim.g["airline#extensions#tabline#show_tabs"] = 0
-      vim.g["airline#extensions#tabline#buffer_idx_mode"] = 1
-      vim.o.showtabline = 2
-      
-      vim.defer_fn(function()
-        if vim.fn.exists(":AirlineRefresh") == 2 then
-          vim.cmd("AirlineRefresh")
-        end
-      end, 50)
-    end
-  end
-})
+-- Additional debug commands can be added here

@@ -40,7 +40,7 @@ local function setup_theme()
     if theme == "dracula" then
       vim.cmd("colorscheme dracula")
       vim.opt.background = "dark"
-      vim.g.airline_theme = 'dracula'
+      -- vim.g.airline_theme = 'dracula'
     elseif theme == "tokyonight_moon" then
       vim.opt.background = "dark"
       require("tokyonight").setup({
@@ -52,7 +52,7 @@ local function setup_theme()
         },
       })
       vim.cmd("colorscheme tokyonight-moon")
-      vim.g.airline_theme = 'base16'
+      -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_storm" then
       vim.opt.background = "dark"
       require("tokyonight").setup({
@@ -64,7 +64,7 @@ local function setup_theme()
         },
       })
       vim.cmd("colorscheme tokyonight-storm")
-      vim.g.airline_theme = 'base16'
+      -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_night" then
       vim.opt.background = "dark"
       -- Ensure Tokyo Night plugin is configured before loading
@@ -87,7 +87,7 @@ local function setup_theme()
         -- Fallback to basic tokyonight command
         vim.cmd("colorscheme tokyonight")
       end
-      vim.g.airline_theme = 'base16'
+      -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_day" then
       vim.opt.background = "light"
       require("tokyonight").setup({
@@ -99,60 +99,60 @@ local function setup_theme()
         },
       })
       vim.cmd("colorscheme tokyonight-day")
-      vim.g.airline_theme = 'base16'
+      -- vim.g.airline_theme = 'base16'
     elseif theme == "iceberg_light" then
       vim.cmd("colorscheme iceberg")
-      vim.g.airline_theme = 'iceberg'
+      -- vim.g.airline_theme = 'iceberg'
       vim.opt.background = "light"
     elseif theme == "iceberg_dark" then
       vim.cmd("colorscheme iceberg")
-      vim.g.airline_theme = 'iceberg'
+      -- vim.g.airline_theme = 'iceberg'
       vim.opt.background = "dark"
     elseif theme == "tron" then
       if variant == "dark" then
         vim.cmd("colorscheme iceberg")
-        vim.g.airline_theme = 'iceberg'
+        -- vim.g.airline_theme = 'iceberg'
       else
         vim.cmd("colorscheme iceberg")
-        vim.g.airline_theme = 'iceberg'
+        -- vim.g.airline_theme = 'iceberg'
       end
     elseif theme == "github_light" then
       vim.cmd("colorscheme github_light")
-      vim.g.airline_theme = 'sol'
+      -- vim.g.airline_theme = 'sol'
     elseif theme == "github_light_default" then
       vim.cmd("colorscheme github_light_default")
-      vim.g.airline_theme = 'sol'
+      -- vim.g.airline_theme = 'sol'
     elseif theme == "github_light_high_contrast" then
       vim.cmd("colorscheme github_light_high_contrast")
-      vim.g.airline_theme = 'sol'
+      -- vim.g.airline_theme = 'sol'
     elseif theme == "github_light_colorblind" then
       vim.cmd("colorscheme github_light_colorblind")
-      vim.g.airline_theme = 'sol'
+      -- vim.g.airline_theme = 'sol'
     elseif theme == "github_light_tritanopia" then
       vim.cmd("colorscheme github_light_tritanopia")
-      vim.g.airline_theme = 'sol'
+      -- vim.g.airline_theme = 'sol'
     elseif theme == "github_dark" then
       vim.cmd("colorscheme github_dark_default")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     elseif theme == "github_dark_default" then
       vim.cmd("colorscheme github_dark_default")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     elseif theme == "github_dark_dimmed" then
       vim.cmd("colorscheme github_dark_dimmed")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     elseif theme == "github_dark_high_contrast" then
       vim.cmd("colorscheme github_dark_high_contrast")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     elseif theme == "github_dark_colorblind" then
       vim.cmd("colorscheme github_dark_colorblind")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     elseif theme == "github_dark_tritanopia" then
       vim.cmd("colorscheme github_dark_tritanopia")
-      vim.g.airline_theme = 'base16_grayscale'
+      -- vim.g.airline_theme = 'base16_grayscale'
     else
       -- Default fallback
       vim.cmd("colorscheme iceberg")
-      vim.g.airline_theme = 'iceberg'
+      -- vim.g.airline_theme = 'iceberg'
     end
   else
     -- Default to dark theme if config file doesn't exist
@@ -166,7 +166,7 @@ local function setup_theme()
       },
     })
     vim.cmd("colorscheme tokyonight-moon")
-    vim.g.airline_theme = 'base16'
+    -- vim.g.airline_theme = 'base16'
   end
   
   -- Apply intelligent syntax highlighting optimizations
@@ -194,12 +194,7 @@ local function setup_theme()
       vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")   -- Orange special chars
     end
     
-    -- Refresh airline to apply theme changes
-    vim.defer_fn(function()
-      if vim.fn.exists(":AirlineRefresh") == 2 then
-        vim.cmd("AirlineRefresh")
-      end
-    end, 100)
+    -- Theme changes are automatically applied by mini.statusline
   end)
 end
 

@@ -47,11 +47,11 @@ map("n", "<right>", "<C-w><right>", opts)
 map("n", "<Tab>", ":bnext<cr>", opts)
 map("n", "<S-Tab>", ":bprevious<cr>", opts)
 
--- Buffer navigation by number (for airline tabline)
+-- Buffer navigation by number
 for i = 1, 9 do
-  map("n", "<leader>" .. i, "<Plug>AirlineSelectTab" .. i, { desc = "Go to buffer " .. i })
+  map("n", "<leader>" .. i, function() vim.cmd("buffer " .. i) end, { desc = "Go to buffer " .. i })
 end
-map("n", "<leader>0", "<Plug>AirlineSelectPrevTab", { desc = "Go to previous buffer" })
+map("n", "<leader>0", ":bprevious<cr>", { desc = "Go to previous buffer" })
 
 -- Diagnostic navigation (using built-in LSP)
 map("n", "[W", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR }) end, { desc = "Go to first error" })
@@ -83,19 +83,17 @@ map("n", "-", function() require('oil').open() end, { desc = "Open Oil File Mana
 map("n", "<C-p>", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
 map("n", "<leader>F", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })  -- Telescope
 map("n", "<leader>B", function() require('telescope.builtin').buffers() end, { desc = "Buffers" })  -- Telescope
-map("n", "<leader>T", ":Tagbar<cr>", opts)
-map("n", "<leader>g", ":Grepper -tool grep<cr>", opts)
+-- <leader>T is now used for Aerial (code outline)
+map("n", "<leader>g", function() require('telescope.builtin').live_grep() end, { desc = "Live Grep" })
 map("n", "<leader><leader>", "v$h", opts)
 
--- EasyAlign
-map("n", "ga", "<Plug>(EasyAlign)", {})
-map("x", "ga", "<Plug>(EasyAlign)", {})
+-- Mini.align is configured with ga/gA in the plugin setup
 
 -- Copy full path
 map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", opts)
 
 -- Terminal (using snacks.nvim terminal instead)
--- Removed duplicate <leader>T mapping - using Tagbar only
+-- <leader>T is now used for Aerial (code outline)
 map("t", "<Esc>", "<C-\\><C-n>", opts)
 
 -- Quick save
