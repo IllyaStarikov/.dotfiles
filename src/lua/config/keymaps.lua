@@ -324,8 +324,7 @@ map("n", "<leader>z", function() Snacks.zen() end, { desc = "Toggle Zen Mode" })
 map("n", "<leader>Z", function() Snacks.zen.zoom() end, { desc = "Zen Zoom" })
 
 -- 🔄 RENAME (LSP-Integrated)
-map("n", "<leader>rn", function() Snacks.rename.rename_file() end, { desc = "Rename File" })
-map("n", "<leader>rN", function() vim.lsp.buf.rename() end, { desc = "LSP Rename Symbol" })
+map("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "LSP Rename Symbol" })
 
 -- ⚡ TOGGLE UTILITIES (Quick Switches)
 map("n", "<leader>tw", function() Snacks.toggle.option("wrap", { name = "Wrap" }) end, { desc = "Toggle Wrap" })
@@ -686,8 +685,8 @@ map("n", "<leader>lc", ":lclose<CR>", { desc = "Close Location List" })
 map("n", "[l", ":lprevious<CR>", { desc = "Previous Location" })
 map("n", "]l", ":lnext<CR>", { desc = "Next Location" })
 
--- Code execution (using <leader>R to avoid conflict with rename mappings)
-map("n", "<leader>R", function() vim.cmd.RunFile() end, { desc = "Run current file" })
+-- Code execution
+vim.keymap.set("n", "<leader>r", "<cmd>RunFile<cr>", { desc = "Run current file" })
 
 -- Python specific run command with better terminal
 map("n", "<F5>", function()
@@ -711,7 +710,7 @@ map("n", "[t", ":tabprevious<CR>", { desc = "Previous Tab" })
 map("n", "]t", ":tabnext<CR>", { desc = "Next Tab" })
 
 -- Replace word under cursor
-map("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+map("n", "<leader>sw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
 
 -- Quick macro playback
 map("n", "Q", "@q", { desc = "Play macro q" })
