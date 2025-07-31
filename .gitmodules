@@ -1,6 +1,7 @@
 [submodule ".dotfiles.private"]
 	path = .dotfiles.private
 	url = git@github.com:IllyaStarikov/.dotfiles.private.git
-[submodule "src/submodules/google-styleguide"]
-	path = src/submodules/google-styleguide
+[submodule "styleguide"]
+	path = styleguide
 	url = https://github.com/google/styleguide.git
+	branch = gh-pages

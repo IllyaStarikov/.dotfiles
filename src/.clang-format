@@ -1,0 +1,7 @@
+---
+# Use Google's C++ style guide
+# https://google.github.io/styleguide/cppguide.html
+BasedOnStyle: Google
+IndentWidth: 2
+ColumnLimit: 80
+...
