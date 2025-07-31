@@ -375,9 +375,6 @@ declare -A SYMLINKS=(
     ["$HOME/.dotfiles/src/lua"]="$HOME/.config/nvim/lua"
     ["$HOME/.dotfiles/src/lazy-lock.json"]="$HOME/.config/nvim/lazy-lock.json"
     
-    # Legacy Vim
-    ["$HOME/.dotfiles/src/vimrc"]="$HOME/.vimrc"
-    
     # Zsh
     ["$HOME/.dotfiles/src/zshrc"]="$HOME/.zshrc"
     ["$HOME/.dotfiles/src/zshenv"]="$HOME/.zshenv"
