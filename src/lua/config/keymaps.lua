@@ -132,16 +132,6 @@ map("n", "<Esc>", ":noh<CR>", opts)
 -- Or via main menu (<C-t> or <leader>m) under "Typing Test" section
 
 -- Modern improvements
--- Better search experience
-map("n", "<Esc>", ":nohlsearch<CR>", opts)
-
--- Move lines up/down
-map("v", "J", ":m '>+1<CR>gv=gv", opts)
-map("v", "K", ":m '<-2<CR>gv=gv", opts)
-
--- Better indenting in visual mode
-map("v", "<", "<gv", opts)
-map("v", ">", ">gv", opts)
 
 -- Paste without yanking in visual mode
 map("v", "p", '"_dP', opts)
