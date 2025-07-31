@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Fetch inspirational quotes from multiple sources
+# Usage: fetch-quotes [number_of_quotes]
+
+QUOTES_COUNT=${1:-5}
+TIMEOUT=3  # increased timeout
+
+# Colors
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Simple quote fetching function
+fetch_quotes() {
+    local count=$1
+    local fetched=0
+    
+    # Try each API multiple times to ensure we get enough quotes
+    while [ $fetched -lt $count ]; do
+        # ZenQuotes
+        if [ $fetched -lt $count ]; then
+            quote=$(timeout $TIMEOUT curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
+            if [ -n "$quote" ] && [ "$quote" != "null" ]; then
+                echo -e "$quote\n"
+                ((fetched++))
+            fi
+        fi
+        
+        # Quotable
+        if [ $fetched -lt $count ]; then
+            quote=$(timeout $TIMEOUT curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
+            if [ -n "$quote" ] && [ "$quote" != "null" ]; then
+                echo -e "$quote\n"
+                ((fetched++))
+            fi
+        fi
+        
+        # Advice Slip
+        if [ $fetched -lt $count ]; then
+            quote=$(timeout $TIMEOUT curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
+            if [ -n "$quote" ] && [ "$quote" != "null" ]; then
+                echo -e "$quote\n"
+                ((fetched++))
+            fi
+        fi
+        
+        # If we still need more quotes, add a small delay before retrying
+        if [ $fetched -lt $count ]; then
+            sleep 0.5
+        fi
+    done
+}
+
+# Header
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
+echo -e "${CYAN}                         ✨ Daily Inspiration ✨                               ${NC}"
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
+echo ""
+
+# Fetch quotes sequentially to ensure we get the requested number
+fetch_quotes $QUOTES_COUNT
+
+echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"

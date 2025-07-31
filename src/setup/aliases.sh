@@ -168,9 +168,27 @@ create_symlink "$DOTFILES_DIR/latexmkrc" "$HOME/.latexmkrc" "LaTeX build config"
 # TMUX configuration
 progress "Setting up tmux configuration"
 create_symlink "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux configuration"
-create_symlink "$DOTFILES_DIR/tmuxinator" "$HOME/.tmuxinator" "tmuxinator configs"
-ensure_dir "$HOME/.config"
-create_symlink "$DOTFILES_DIR/tmuxinator" "$HOME/.config/tmuxinator" "tmuxinator XDG config"
+
+# Tmuxinator with private repo fallback
+progress "Setting up tmuxinator configuration"
+PRIVATE_TMUXINATOR="$HOME/.dotfiles/.dotfiles.private/src/tmuxinator"
+PUBLIC_TMUXINATOR="$DOTFILES_DIR/tmuxinator"
+
+# Check if private tmuxinator directory exists
+if [[ -d "$PRIVATE_TMUXINATOR" ]]; then
+    info "Using tmuxinator configs from private repository"
+    create_symlink "$PRIVATE_TMUXINATOR" "$HOME/.tmuxinator" "tmuxinator configs (private)"
+    ensure_dir "$HOME/.config"
+    create_symlink "$PRIVATE_TMUXINATOR" "$HOME/.config/tmuxinator" "tmuxinator XDG config (private)"
+elif [[ -d "$PUBLIC_TMUXINATOR" ]]; then
+    warn "Private tmuxinator directory not found, falling back to public configs"
+    create_symlink "$PUBLIC_TMUXINATOR" "$HOME/.tmuxinator" "tmuxinator configs (public)"
+    ensure_dir "$HOME/.config"
+    create_symlink "$PUBLIC_TMUXINATOR" "$HOME/.config/tmuxinator" "tmuxinator XDG config (public)"
+else
+    error "No tmuxinator configs found in either private or public repositories"
+    ((ERROR_COUNT++))
+fi
 
 # Custom scripts
 progress "Setting up custom scripts"
