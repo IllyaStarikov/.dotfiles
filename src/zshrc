@@ -41,7 +41,7 @@ fi
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init --path)"
+  eval "$(command pyenv init --path)"
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -381,10 +381,10 @@ export PATH="$HOME/.local/bin:$PATH"
 # ┌─ PYTHON ENVIRONMENT MANAGEMENT ─┐
 # Complete pyenv initialization (already path initialized early)
 if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+  eval "$(command pyenv init -)"
   # Only init virtualenv if it exists
-  if pyenv commands | grep -q virtualenv-init; then
-    eval "$(pyenv virtualenv-init -)"
+  if command pyenv commands | grep -q virtualenv-init; then
+    eval "$(command pyenv virtualenv-init -)"
   fi
   # Enable Python in Spaceship prompt after pyenv is loaded
   if command -v python &>/dev/null || command -v python3 &>/dev/null; then
