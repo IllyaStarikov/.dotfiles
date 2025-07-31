@@ -1076,7 +1076,11 @@ autocmd("BufNewFile", {
   group = skeleton_group,
   pattern = {"*.md", "*.markdown"},
   callback = function()
-    insert_skeleton("markdown")
+    -- Only insert skeleton for truly new files, not existing ones
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    if #lines == 1 and lines[1] == "" then
+      insert_skeleton("markdown")
+    end
   end
 })
 
