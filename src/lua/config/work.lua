@@ -58,28 +58,31 @@ end
 
 -- Load work-specific vim configuration
 local function load_work_vimrc(profile)
+  local function safe_dofile(path)
+    if vim.fn.filereadable(path) == 1 then
+      local ok, err = pcall(dofile, path)
+      if not ok then
+        error("Failed to load " .. path .. ": " .. tostring(err))
+      end
+    end
+  end
+  
   if type(profile) == "string" then
     -- Simple string profile - load from profile directory
     local vimrc_path = WORK_CONFIG_PATH .. "/" .. profile .. "/vimrc.lua"
-    if vim.fn.filereadable(vimrc_path) == 1 then
-      dofile(vimrc_path)
-    end
+    safe_dofile(vimrc_path)
   elseif type(profile) == "table" then
     -- Complex profile with specific settings
     if profile.vimrc then
       local vimrc_path = WORK_CONFIG_PATH .. "/" .. profile.vimrc
-      if vim.fn.filereadable(vimrc_path) == 1 then
-        dofile(vimrc_path)
-      end
+      safe_dofile(vimrc_path)
     end
     
     -- Load additional modules if specified
     if profile.modules then
       for _, module in ipairs(profile.modules) do
         local module_path = WORK_CONFIG_PATH .. "/" .. module
-        if vim.fn.filereadable(module_path) == 1 then
-          dofile(module_path)
-        end
+        safe_dofile(module_path)
       end
     end
   end
@@ -89,11 +92,13 @@ end
 function M.apply_overrides()
   -- Check if private repo exists
   if vim.fn.isdirectory(WORK_CONFIG_PATH) == 0 then
+    -- Silently return - private repo is optional
     return
   end
   
   local profile = get_work_profile()
   if not profile then
+    -- No profile matches this hostname
     return
   end
   
@@ -101,8 +106,17 @@ function M.apply_overrides()
   vim.g.work_profile = type(profile) == "table" and profile.name or profile
   vim.g.work_config_dir = WORK_CONFIG_PATH
   
-  -- Load work-specific configurations
-  load_work_vimrc(profile)
+  -- Load work-specific configurations with error handling
+  local ok, err = pcall(load_work_vimrc, profile)
+  if not ok then
+    vim.notify("Failed to load work profile: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+  
+  -- Log successful profile load
+  vim.schedule(function()
+    vim.notify("Work profile loaded: " .. vim.g.work_profile, vim.log.levels.INFO)
+  end)
   
   -- Source shell aliases if they exist
   local aliases_path
