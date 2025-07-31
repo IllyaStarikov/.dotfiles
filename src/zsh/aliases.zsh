@@ -23,9 +23,8 @@ alias tmuxconfig="nvim ~/.tmux.conf"
 
 # Enhanced eza-based file listing
 # Note: --icons temporarily disabled due to font glyph issues
+alias l="eza --group-directories-first --time-style=relative --git --icons --all --header --long --total-size"
 alias ls="eza --group-directories-first"
-alias ll="eza -l --group-directories-first --time-style=relative --git"
-alias la="eza -la --group-directories-first --time-style=relative --git"
 alias lt="eza --tree --level=2"
 alias tree="eza --tree"
 alias l1="eza --tree --level=1"
