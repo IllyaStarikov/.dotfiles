@@ -2,6 +2,10 @@
 -- LuaSnip Configuration
 -- Advanced snippet engine setup with custom snippets
 --
+-- IMPORTANT: We exclude languages from friendly-snippets where we have custom
+-- snippets to avoid duplicates. Custom snippets take priority and are more
+-- tailored to our workflow and Google Style Guide compliance.
+--
 
 local M = {}
 
@@ -38,12 +42,15 @@ function M.setup()
   })
 
   -- Load snippets from friendly-snippets
-  require("luasnip.loaders.from_vscode").lazy_load()
+  -- Exclude languages where we have custom snippets to avoid duplicates
+  require("luasnip.loaders.from_vscode").lazy_load({
+    exclude = { "python", "cpp", "c", "java", "javascript", "html", "sh", "markdown", "tex", "todo" }
+  })
   
   -- Load custom snippets
   local snippet_path = vim.fn.stdpath("config") .. "/snippets"
   
-  -- Load Lua snippets
+  -- Load Lua snippets (these take priority over VSCode snippets)
   require("luasnip.loaders.from_lua").lazy_load({
     paths = { snippet_path }
   })
