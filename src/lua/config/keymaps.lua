@@ -687,7 +687,7 @@ map("n", "[l", ":lprevious<CR>", { desc = "Previous Location" })
 map("n", "]l", ":lnext<CR>", { desc = "Next Location" })
 
 -- Code execution (using <leader>R to avoid conflict with rename mappings)
-map("n", "<leader>R", function() vim.cmd("RunFile") end, { desc = "Run current file" })
+map("n", "<leader>R", function() vim.cmd.RunFile() end, { desc = "Run current file" })
 
 -- Python specific run command with better terminal
 map("n", "<F5>", function()
