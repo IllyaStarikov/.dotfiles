@@ -187,8 +187,8 @@ g.loaded_perl_provider = 0           -- Perl provider
 -- Reduce startup verbosity
 opt.shortmess:append("IcCsS")        -- No intro, completion messages, search messages
 opt.report = 9999                    -- Don't report changes unless 9999 lines changed
-opt.showcmd = false                  -- Don't show partial commands (airline handles this)
-opt.ruler = false                    -- Don't show cursor position (airline handles this)
+opt.showcmd = false                  -- Don't show partial commands (statusline handles this)
+opt.ruler = false                    -- Don't show cursor position (statusline handles this)
 
 -- Disable unused built-in plugins for faster startup
 g.loaded_2html_plugin = 1
