@@ -578,7 +578,6 @@ require("lazy").setup({
   } --]]
 
   -- UI/UX plugins
-  { "airblade/vim-gitgutter" },
   { "dracula/vim", name = "dracula", lazy = false, priority = 1000 },
   { "cocopon/iceberg.vim" },
   { "projekt0n/github-nvim-theme" },
@@ -600,52 +599,50 @@ require("lazy").setup({
     end
   },
   { "tpope/vim-fugitive" },
-  { 
-    "vim-airline/vim-airline",
-    lazy = false,
-    priority = 999,
-    dependencies = { "vim-airline/vim-airline-themes" },
-    init = function()
-      -- Set powerline fonts BEFORE airline loads
-      vim.g.airline_powerline_fonts = 1
-      -- Disable problematic tabline autocommands
-      vim.g["airline#extensions#tabline#disable_refresh"] = 1
-      -- Performance optimizations
-      vim.g.airline_focuslost_inactive = 0
-      vim.g.airline_inactive_collapse = 1
-      vim.g.airline_skip_empty_sections = 1
-      vim.g.airline_highlighting_cache = 1
-      -- Disable extensions that trigger frequent updates
-      vim.g["airline#extensions#branch#enabled"] = 1  -- Keep git branch
-      vim.g["airline#extensions#hunks#enabled"] = 0   -- Disable git hunks (performance)
-      vim.g["airline#extensions#nvimlsp#enabled"] = 1 -- Keep LSP status
-      vim.g["airline#extensions#wordcount#enabled"] = 0 -- Disable word count
-      vim.g["airline#extensions#searchcount#enabled"] = 0 -- Disable search count
-    end,
+  -- Mini.nvim suite - Modern Neovim plugins
+  {
+    "echasnovski/mini.nvim",
+    version = false,
     config = function()
-      -- Set all airline settings here
-      vim.g["airline#extensions#whitespace#enabled"] = 0
-      vim.g["airline#extensions#ale#enabled"] = 0
-      vim.g.airline_detect_spell = 0
-      vim.g["airline#extensions#tabline#enabled"] = 1
-      vim.g["airline#extensions#tabline#fnamemod"] = ':t'
-      vim.g["airline#extensions#tabline#tab_nr_type"] = 2
-      vim.g["airline#extensions#tabline#show_buffers"] = 1
-      vim.g["airline#extensions#tabline#show_tabs"] = 0
-      vim.g["airline#extensions#tabline#buffer_idx_mode"] = 1
-      vim.g["airline#extensions#tabline#formatter"] = 'unique_tail_improved'
-      vim.g["airline#extensions#tabline#show_close_button"] = 0
-      vim.g["airline#extensions#tabline#show_tab_type"] = 0
-      vim.g["airline#extensions#tabline#buffer_nr_show"] = 0
-      vim.g["airline#extensions#tabline#buffer_nr_format"] = '%s:'
-      vim.g.airline_theme = 'dracula'
+      -- mini.statusline - Modern statusline
+      require('mini.statusline').setup({
+        use_icons = true,
+        set_vim_settings = true,
+      })
       
-      -- Force refresh after settings
-      vim.defer_fn(function()
-        if vim.fn.exists(":AirlineRefresh") == 2 then
-          vim.cmd("AirlineRefresh")
-        end
-      end, 100)
+      -- mini.surround - Better surround operations
+      require('mini.surround').setup({
+        mappings = {
+          add = 'ys',
+          delete = 'ds',
+          find = '',
+          find_left = '',
+          highlight = '',
+          replace = 'cs',
+          update_n_lines = '',
+        },
+      })
+      
+      -- mini.align - Easy alignment
+      require('mini.align').setup({
+        mappings = {
+          start = 'ga',
+          start_with_preview = 'gA',
+        },
+      })
+      
+      -- mini.ai - Enhanced text objects
+      require('mini.ai').setup({
+        n_lines = 500,
+        custom_textobjects = {
+          o = require('mini.ai').gen_spec.treesitter({
+            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
+            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+          }),
+          f = require('mini.ai').gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
+          c = require('mini.ai').gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }),
+        },
+      })
     end,
   },
 
@@ -882,11 +879,77 @@ require("lazy").setup({
     cmd = { "Typr", "TyprStats", "TyprQuick", "TyprLong", "TyprTimed", "TyprProgramming", "TyprHistory", "TyprDashboard", "TyprConfig" },
   },
 
+  -- Aerial.nvim - Modern code outline window
+  {
+    "stevearc/aerial.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons"
+    },
+    opts = {
+      backends = { "treesitter", "lsp", "markdown", "man" },
+      layout = {
+        max_width = { 40, 0.2 },
+        width = nil,
+        min_width = 20,
+        default_direction = "right",
+        placement = "edge",
+      },
+      close_automatic_events = { "switch_buffer", "unsupported" },
+      keymaps = {
+        ["?"] = "actions.show_help",
+        ["g?"] = "actions.show_help",
+        ["<CR>"] = "actions.jump",
+        ["<2-LeftMouse>"] = "actions.jump",
+        ["<C-v>"] = "actions.jump_vsplit",
+        ["<C-s>"] = "actions.jump_split",
+        ["p"] = "actions.scroll",
+        ["<C-j>"] = "actions.down_and_scroll",
+        ["<C-k>"] = "actions.up_and_scroll",
+        ["{"] = "actions.prev",
+        ["}"] = "actions.next",
+        ["[["] = "actions.prev_up",
+        ["]]"] = "actions.next_up",
+        ["q"] = "actions.close",
+        ["o"] = "actions.tree_toggle",
+        ["za"] = "actions.tree_toggle",
+        ["O"] = "actions.tree_toggle_recursive",
+        ["zA"] = "actions.tree_toggle_recursive",
+        ["l"] = "actions.tree_open",
+        ["zo"] = "actions.tree_open",
+        ["L"] = "actions.tree_open_recursive",
+        ["zO"] = "actions.tree_open_recursive",
+        ["h"] = "actions.tree_close",
+        ["zc"] = "actions.tree_close",
+        ["H"] = "actions.tree_close_recursive",
+        ["zC"] = "actions.tree_close_recursive",
+        ["zr"] = "actions.tree_increase_fold_level",
+        ["zR"] = "actions.tree_open_all",
+        ["zm"] = "actions.tree_decrease_fold_level",
+        ["zM"] = "actions.tree_close_all",
+        ["zx"] = "actions.tree_sync_folds",
+        ["zX"] = "actions.tree_sync_folds",
+      },
+      filter_kind = false,
+      show_guides = true,
+      guides = {
+        mid_item = "├─",
+        last_item = "└─",
+        nested_top = "│ ",
+        whitespace = "  ",
+      },
+    },
+    cmd = { "AerialToggle", "AerialOpen", "AerialNavToggle" },
+    keys = {
+      { "<leader>T", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
+      { "<leader>at", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
+      { "<leader>an", "<cmd>AerialNavToggle<cr>", desc = "Aerial Nav Toggle" },
+    },
+  },
+
   -- Language specific
-  { "illyastarikov/skeleton-files" },
   { "justinmk/vim-syntax-extra" },
   { "keith/swift.vim", ft = "swift" },
-  { "vim-pandoc/vim-pandoc-syntax" },
 
   -- LaTeX support with vimtex
   {
@@ -1124,12 +1187,23 @@ require("lazy").setup({
       config.setup()
     end
   },
-  { "junegunn/vim-easy-align" },
   { "skywind3000/asyncrun.vim" },
   { "tommcdo/vim-lion" },
-  { "tpope/vim-commentary" },
-  { "tpope/vim-surround" },
-  { "wellle/targets.vim" },
+  -- Comment.nvim - Smart commenting
+  {
+    "numToStr/Comment.nvim",
+    event = "VeryLazy",
+    config = function()
+      require('Comment').setup({
+        padding = true,
+        sticky = true,
+        mappings = {
+          basic = true,
+          extra = true,
+        },
+      })
+    end,
+  },
 
 
   -- File Management and Exploration
@@ -1146,8 +1220,6 @@ require("lazy").setup({
       { "-", function() require('oil').open() end, desc = "Open Oil File Manager" },
     },
   },
-  { "majutsushi/tagbar" },
-  { "mhinz/vim-grepper" },
 
 }, {
   -- Lazy.nvim options
@@ -1196,14 +1268,7 @@ local opt = vim.opt
 
 
 
--- Airline configuration moved to plugin definition above
-
--- Grepper
-g.grepper = {
-  grep = {
-    grepprg = 'grep -Rn --color --exclude=*.{o,exe,out,dll,obj} --exclude-dir=bin $*'
-  }
-}
+-- Plugin configurations have been moved to their respective setup functions
 
 -- Telescope is now configured in config/telescope.lua
 
