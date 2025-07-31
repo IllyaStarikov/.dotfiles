@@ -1,0 +1,42 @@
+# Format Script Configuration
+# Using Google Style Guides as the default for all languages
+# https://google.github.io/styleguide/
+
+# Global settings
+COLUMN_LIMIT=80
+
+# C/C++ formatting (Google C++ Style Guide)
+# https://google.github.io/styleguide/cppguide.html
+CPP_STYLE="Google"
+CPP_INDENT_WIDTH=2
+CPP_COLUMN_LIMIT=80
+
+# Python formatting (Google Python Style Guide)
+# https://google.github.io/styleguide/pyguide.html
+# Google Python style uses 4 spaces
+PYTHON_LINE_LENGTH=80
+PYTHON_INDENT_WIDTH=4
+# For isort
+PYTHON_PROFILE="google"
+
+# Shell formatting (Google Shell Style Guide)
+# https://google.github.io/styleguide/shellguide.html
+SHELL_INDENT=2
+SHELL_BINARY_NEXT_LINE=true
+SHELL_CASE_INDENT=true
+
+# JavaScript/TypeScript (Google JavaScript Style Guide)
+# https://google.github.io/styleguide/jsguide.html
+PRETTIER_TAB_WIDTH=2
+PRETTIER_PRINT_WIDTH=80
+PRETTIER_SINGLE_QUOTE=true
+PRETTIER_TRAILING_COMMA="none"  # Google style: no trailing commas
+
+# File patterns to ignore (space-separated)
+IGNORE_PATTERNS="*.min.js *.min.css *.lock package-lock.json yarn.lock"
+
+# Additional file extensions for each formatter (space-separated)
+# These are in addition to the default extensions
+EXTRA_CPP_EXTENSIONS="cu cuh"  # CUDA files
+EXTRA_PYTHON_EXTENSIONS="pyw pyi"
+EXTRA_PRETTIER_EXTENSIONS="mdx vue"
