@@ -393,7 +393,6 @@ declare -A SYMLINKS=(
     
     # tmux
     ["$HOME/.dotfiles/src/tmux.conf"]="$HOME/.tmux.conf"
-    ["$HOME/.dotfiles/src/tmuxinator"]="$HOME/.tmuxinator"
     
     # Scripts
     ["$HOME/.dotfiles/src/scripts"]="$HOME/.scripts"
@@ -411,8 +410,21 @@ for source in "${!SYMLINKS[@]}"; do
     create_symlink "$source" "$target"
 done
 
-# Special handling for tmuxinator config
-create_symlink "$HOME/.dotfiles/src/tmuxinator" "$HOME/.config/tmuxinator"
+# Special handling for tmuxinator config with private repo fallback
+PRIVATE_TMUXINATOR="$HOME/.dotfiles/.dotfiles.private/src/tmuxinator"
+PUBLIC_TMUXINATOR="$HOME/.dotfiles/src/tmuxinator"
+
+if [[ -d "$PRIVATE_TMUXINATOR" ]]; then
+    info "Using tmuxinator configs from private repository"
+    create_symlink "$PRIVATE_TMUXINATOR" "$HOME/.tmuxinator"
+    create_symlink "$PRIVATE_TMUXINATOR" "$HOME/.config/tmuxinator"
+elif [[ -d "$PUBLIC_TMUXINATOR" ]]; then
+    warn "Private tmuxinator directory not found, falling back to public configs"
+    create_symlink "$PUBLIC_TMUXINATOR" "$HOME/.tmuxinator"
+    create_symlink "$PUBLIC_TMUXINATOR" "$HOME/.config/tmuxinator"
+else
+    warn "No tmuxinator configs found in either private or public repositories"
+fi
 
 # Spell checking files
 mkdir -p "$HOME/.config/nvim/spell"
