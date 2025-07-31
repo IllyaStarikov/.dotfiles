@@ -2,7 +2,7 @@
 -- 🎯 NEOVIM OPTIONS - Performance-Optimized Core Configuration
 -- ══════════════════════════════════════════════════════════════════════════════════════════════════════════
 -- Modern development environment optimized for:
--- • 2-space indentation standard across all languages
+-- • 2-space indentation (4 spaces for Python per Google Style Guide)
 -- • Enhanced clipboard integration and navigation
 -- • Optimized for large files and responsive editing
 -- • Professional UI with consistent theming
@@ -99,7 +99,7 @@ opt.undodir = vim.fn.stdpath("data") .. "/undo"  -- XDG-compliant undo directory
 -- UI settings
 opt.mouse = "a"                      -- Enable full mouse support
 opt.syntax = "on"                    -- Syntax highlighting
-opt.spell = true                     -- Enable spell checking
+opt.spell = false                    -- Disable global spell check (enable per-buffer as needed)
 opt.spelllang = "en_us"              -- US English spelling
 opt.termguicolors = true             -- 24-bit RGB colors
 opt.cmdheight = 1                    -- Command line height
@@ -146,7 +146,7 @@ opt.shortmess:append("c")            -- Don't show completion messages
 -- ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 opt.ttyfast = true                   -- Fast terminal connection
-opt.lazyredraw = true                -- Don't redraw during macros
+opt.lazyredraw = false               -- Smoother visual feedback (modern terminals handle this well)
 
 -- Timing optimizations
 opt.updatecount = 100                -- Swap file update frequency
@@ -156,7 +156,7 @@ opt.ttimeoutlen = 0                  -- Instant escape sequence
 
 -- Large file optimizations
 opt.maxmempattern = 2000             -- Pattern matching memory limit
-opt.synmaxcol = 500                  -- Max column for syntax highlighting
+opt.synmaxcol = 1000                 -- Reasonable limit for syntax highlighting
 
 -- Mouse optimizations
 opt.mousescroll = "ver:3,hor:6"      -- Faster mouse scrolling
@@ -170,8 +170,9 @@ local python3_path = vim.fn.exepath('python3')
 if python3_path ~= '' then
   g.python3_host_prog = python3_path
 else
-  -- Fallback for systems without python3 in PATH
-  g.python3_host_prog = '/usr/bin/python3'
+  -- If Python 3 is not found, disable the provider
+  -- This is safer than hardcoding a path that might not exist
+  g.loaded_python3_provider = 1
 end
 
 -- Disable unused providers for faster startup

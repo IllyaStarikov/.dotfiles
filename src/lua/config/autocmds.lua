@@ -553,6 +553,22 @@ autocmd("FileType", {
 
 
 -- =============================================================================
+-- SPELL CHECKING CONFIGURATION
+-- =============================================================================
+-- Enable spell checking only for text-heavy file types to avoid performance issues
+local spell_group = augroup("spell_check", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = spell_group,
+  pattern = { "markdown", "tex", "latex", "plaintex", "text", "gitcommit", "rst" },
+  callback = function()
+    vim.opt_local.spell = true
+    vim.opt_local.spelllang = "en_us"
+  end,
+  desc = "Enable spell checking for documentation files"
+})
+
+-- =============================================================================
 -- SKELETON FILE SYSTEM
 -- =============================================================================
 
@@ -561,7 +577,7 @@ autocmd("FileType", {
 -- Features:
 -- • Professional headers with author, date, and license information
 -- • Language-specific imports and structure (e.g., if __name__ == '__main__')
--- • 2-space indentation standard across all templates
+-- • 2-space indentation (4 spaces for Python per Google Style Guide)
 -- • Integration with Snacks.nvim for immediate indentation guides
 -- • Cursor positioning at first TODO or editable content
 local skeleton_group = augroup("skeleton_files", { clear = true })
