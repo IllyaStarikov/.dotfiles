@@ -20,6 +20,9 @@ pip install black     # Popular alternative, opinionated formatter
 pip install yapf      # Google's formatter with explicit Google style support
 pip install autopep8  # Traditional PEP8 formatter
 
+# Python linter (Google style checking)
+pip install pylint    # Uses Google's official pylintrc automatically
+
 # Shell script formatter
 brew install shfmt
 
@@ -77,7 +80,7 @@ All languages follow the official [Google Style Guides](https://google.github.io
 | Language | Formatter | Style Guide |
 |----------|-----------|-------------|
 | C/C++ | clang-format | [Google C++ Style](https://google.github.io/styleguide/cppguide.html): 2 spaces, 80 column limit |
-| Python | ruff/black/yapf | [Google Python Style](https://google.github.io/styleguide/pyguide.html): 4 spaces, 80 column limit |
+| Python | ruff/black/yapf + pylint | [Google Python Style](https://google.github.io/styleguide/pyguide.html): 4 spaces, 80 column limit |
 | Shell | shfmt | [Google Shell Style](https://google.github.io/styleguide/shellguide.html): 2 spaces |
 | JavaScript/TypeScript | prettier/prettierd | [Google JS Style](https://google.github.io/styleguide/jsguide.html): 2 spaces, single quotes, 80 column |
 | Lua | stylua | 2 spaces, 80 column limit |

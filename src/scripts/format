@@ -147,6 +147,13 @@ format_python() {
       echo -n "  → Running ruff check --fix... "
       ruff check --fix "$file" 2>/dev/null || true
       echo -e "${GREEN}✓${NC}"
+      
+      # Also run pylint if available with Google's config
+      if command_exists pylint && [[ -f "$HOME/.pylintrc" ]]; then
+        echo -n "  → Running pylint (Google style)... "
+        pylint --score=no "$file" 2>/dev/null || true
+        echo -e "${GREEN}✓${NC}"
+      fi
       echo -n "  → Running ruff format (4-space indent)... "
       ruff format --line-length 80 "$file"
       echo -e "${GREEN}✓${NC}"

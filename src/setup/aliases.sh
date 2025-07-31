@@ -198,6 +198,14 @@ create_symlink "$DOTFILES_DIR/scripts" "$HOME/.scripts" "Utility scripts"
 progress "Setting up spell files"
 create_symlink "$DOTFILES_DIR/spell" "$HOME/.config/nvim/spell" "Neovim spell files"
 
+# Google Style Guide pylintrc
+progress "Setting up Google pylintrc"
+if [[ -f "$DOTFILES_DIR/submodules/google-styleguide/pylintrc" ]]; then
+    create_symlink "$DOTFILES_DIR/submodules/google-styleguide/pylintrc" "$HOME/.pylintrc" "Google Style Guide pylintrc"
+else
+    warn "Google styleguide submodule not found. Run: git submodule update --init --recursive"
+fi
+
 # Clangd configuration
 progress "Setting up clangd configuration"
 ensure_dir "$HOME/.config/clangd"
