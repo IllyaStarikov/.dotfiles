@@ -2,8 +2,8 @@
 
 ## Keymaps
 
-- `<leader>R` - Run current file (capital R to avoid conflict with rename)
-- `<F5>` - Alternative run key
+- `<leader>r` - Run current file
+- `<F5>` - Alternative run key (Python specific)
 - `:RunFile` - Command to run current file
 
 ## Supported Languages
