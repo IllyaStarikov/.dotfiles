@@ -76,7 +76,6 @@ map("n", "<leader>x", ":x<cr>", opts)
 map("n", "<leader>d", '"_d', opts)
 
 -- File Management
-map("n", "<leader>n", ":NERDTreeToggle<cr>", opts)
 map("n", "<leader>o", function() require('oil').open() end, { desc = "Open Oil File Manager" })
 map("n", "<leader>O", function() require('oil').open_float() end, { desc = "Open Oil in Float" })
 map("n", "-", function() require('oil').open() end, { desc = "Open Oil File Manager" })
@@ -319,8 +318,8 @@ map("n", "<leader>bu", function() Snacks.bufdelete.unnamed() end, { desc = "Dele
 -- 🔍 FILE EXPLORER (Lightning Fast)
 map("n", "<leader>e", function() Snacks.explorer() end, { desc = "Explorer" })
 map("n", "<leader>E", function() Snacks.explorer({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Explorer (file dir)" })
--- Keep NERDTree as fallback
-map("n", "<leader>N", ":NERDTreeToggle<cr>", { desc = "NERDTree (fallback)" })
+-- Alternative file explorer (Oil)
+map("n", "<leader>N", function() require('oil').open() end, { desc = "Oil File Explorer" })
 
 -- 🧘 ZEN MODE (Focus Enhancement)
 map("n", "<leader>z", function() Snacks.zen() end, { desc = "Toggle Zen Mode" })

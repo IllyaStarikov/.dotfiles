@@ -52,6 +52,19 @@
 | `<leader>tg` | Git Terminal | `git status` terminal |
 | `<leader>tp` | Python Terminal | Python REPL |
 
+### File Explorer
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>e` | Explorer | Open file explorer in current directory |
+| `<leader>E` | Explorer (file dir) | Open explorer in current file's directory |
+
+The Snacks file explorer is a modern, picker-based file browser that replaces traditional tree-style explorers like NERDTree. It provides:
+- **Fast navigation**: Fuzzy search through files and directories
+- **Preview support**: See file contents before opening
+- **Multi-select**: Select multiple files with `<Tab>`
+- **Integrated actions**: Create, rename, delete files without leaving the explorer
+
 ### Git
 
 | Key | Action | Description |
