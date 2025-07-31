@@ -686,6 +686,23 @@ map("n", "<leader>lc", ":lclose<CR>", { desc = "Close Location List" })
 map("n", "[l", ":lprevious<CR>", { desc = "Previous Location" })
 map("n", "]l", ":lnext<CR>", { desc = "Next Location" })
 
+-- Code execution (using <leader>R to avoid conflict with rename mappings)
+map("n", "<leader>R", "<cmd>RunFile<cr>", { desc = "Run current file" })
+
+-- Python specific run command with better terminal
+map("n", "<F5>", function()
+  if vim.bo.filetype == "python" then
+    vim.cmd("write")
+    local cmd = "python3 " .. vim.fn.shellescape(vim.fn.expand("%"))
+    local ok, snacks = pcall(require, "snacks")
+    if ok then
+      snacks.terminal(cmd, { cwd = vim.fn.expand("%:p:h"), win = { position = "bottom", height = 0.3 } })
+    else
+      vim.cmd("split | terminal " .. cmd)
+    end
+  end
+end, { desc = "Run Python file" })
+
 -- Tab navigation
 map("n", "<leader>tn", ":tabnew<CR>", { desc = "New Tab" })
 map("n", "<leader>tc", ":tabclose<CR>", { desc = "Close Tab" })
