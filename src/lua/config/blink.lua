@@ -4,6 +4,8 @@
 return {
   -- Enable blink.cmp
   enabled = function() return true end,
+  -- Configure snippet preset for LuaSnip
+  snippets = { preset = 'luasnip' },
   -- Keymap preset with custom Tab handling
   keymap = { 
     preset = 'default',
@@ -158,18 +160,6 @@ return {
           label_trailing_slash = true,
           show_hidden_files_by_default = false,
         }
-      },
-      snippets = {
-        name = 'Snippets',
-        module = 'blink.cmp.sources.snippets',
-        enabled = true,
-        max_items = 10,
-        score_offset = -1, -- Lower priority than LSP but higher than buffer
-        opts = {
-          friendly_snippets = true,
-          search_paths = { vim.fn.stdpath('config') .. '/snippets' },
-          global_snippets = { 'all' },
-        },
       },
     },
   },
