@@ -261,7 +261,9 @@ function M.setup()
         parts = {
           {
             type = "repeating",
-            repeat_amount = vim.api.nvim_win_get_width,
+            repeat_amount = function()
+              return vim.api.nvim_win_get_width(0) - 4
+            end,
             
             text = "─",
             hl = "MarkviewRule",
