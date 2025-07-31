@@ -181,54 +181,56 @@ end, { nargs = "?", desc = "Create scratch buffer with optional filetype" })
 -- MANUAL FORMATTING
 -- =============================================================================
 
--- Unified format command with options
+-- Unified format command using external script
 api.nvim_create_user_command("Format", function(opts)
-  local args = opts.args
+  -- Save current view
   local save = fn.winsaveview()
-  local actions_performed = {}
   
-  -- Parse arguments
-  local do_all = args == "" or args:find("all")
-  local do_trailing = do_all or args:find("trailing")
-  local do_tabs = do_all or args:find("tabs")
-  local do_quotes = do_all or args:find("quotes")
+  -- Save the file first to ensure script operates on latest content
+  vim.cmd("silent! write")
   
-  -- Remove trailing whitespace
-  if do_trailing then
-    vim.cmd([[%s/\s\+$//e]])
-    table.insert(actions_performed, "removed trailing whitespace")
+  -- Build command
+  local format_script = vim.fn.expand("~/.dotfiles/src/scripts/format")
+  local current_file = vim.fn.expand("%:p")
+  local cmd = { format_script }
+  
+  -- Parse arguments to convert to script flags
+  local args = opts.args
+  if args ~= "" then
+    if args:find("trailing") then table.insert(cmd, "-t") end
+    if args:find("tabs") then table.insert(cmd, "-T") end
+    if args:find("quotes") then table.insert(cmd, "-q") end
+    if args:find("formatters") then table.insert(cmd, "-f") end
+    if args:find("all") then table.insert(cmd, "-a") end
+  else
+    -- Default to all operations
+    table.insert(cmd, "-a")
   end
   
-  -- Convert tabs to spaces
-  if do_tabs then
-    local tabstop = vim.bo.tabstop
-    local spaces = string.rep(" ", tabstop)
-    vim.cmd([[%s/\t/]] .. spaces .. [[/ge]])
-    table.insert(actions_performed, "converted tabs to spaces")
-  end
+  -- Add the current file
+  table.insert(cmd, current_file)
   
-  -- Normalize smart quotes (for markdown and text files)
-  if do_quotes then
-    vim.cmd([[%s/'/'/ge]])
-    vim.cmd([[%s/'/'/ge]])
-    vim.cmd([[%s/"/"/ge]])
-    vim.cmd([[%s/"/"/ge]])
-    table.insert(actions_performed, "normalized quotes")
-  end
+  -- Execute the format script
+  local output = vim.fn.system(table.concat(cmd, " "))
+  local exit_code = vim.v.shell_error
   
+  -- Reload the buffer to show changes
+  vim.cmd("silent! edit!")
+  
+  -- Restore view
   fn.winrestview(save)
   
-  -- Report what was done
-  if #actions_performed > 0 then
-    print("Format: " .. table.concat(actions_performed, ", "))
+  -- Show output
+  if exit_code == 0 then
+    print("Format: completed successfully")
   else
-    print("Format: no actions specified. Use: trailing, tabs, quotes, or all")
+    print("Format: " .. output)
   end
 end, { 
   nargs = "?",
-  desc = "Format buffer with options: trailing, tabs, quotes, all (default: all)",
+  desc = "Format buffer with external script: trailing, tabs, quotes, formatters, all (default: all)",
   complete = function()
-    return { "all", "trailing", "tabs", "quotes" }
+    return { "all", "trailing", "tabs", "quotes", "formatters" }
   end
 })
 
