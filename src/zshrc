@@ -370,10 +370,14 @@ export RIPGREP_CONFIG_PATH=~/.dotfiles/src/ripgreprc
 [[ -f "$HOME/.localrc" ]] && source "$HOME/.localrc"
 [[ -f "$HOME/.shortcuts" ]] && source "$HOME/.shortcuts"
 [[ -d "$HOME/.scripts" ]] && export PATH="$HOME/.scripts:$PATH"
+[[ -d "$HOME/.dotfiles/src/scripts" ]] && export PATH="$HOME/.dotfiles/src/scripts:$PATH"
 
 # Modern development tools path management
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# Format command alias
+alias fmt="format"
 
 # FZF integration for enhanced file searching
 [[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"

@@ -5,7 +5,9 @@
 -- This module provides:
 -- • Automated file processing (whitespace, markdown normalization)
 -- • Enhanced markdown syntax highlighting with embedded code blocks
--- • Python indentation enforcement (2-space)
+-- • Google Style Guide indentation for all languages:
+--   - Python: 4 spaces (Google Python Style)
+--   - C/C++, Shell, JavaScript, Swift, Lua: 2 spaces
 -- • Comprehensive skeleton file templates for new files
 -- • LaTeX and code runner integrations
 --
@@ -176,13 +178,142 @@ autocmd({ "BufRead", "BufNewFile" }, {
 -- PYTHON INDENTATION ENFORCEMENT
 -- =============================================================================
 
--- Comprehensive Python indentation management (2-space standard)
--- Multiple autocmds ensure persistence across saves and formatter runs
+-- Google Python Style Guide indentation (4-space standard)
+-- https://google.github.io/styleguide/pyguide.html
 local python_group = augroup("python_indent", { clear = true })
 
 autocmd("FileType", {
   group = python_group,
   pattern = "python",
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.expandtab = true
+  end
+})
+
+-- Removed auto-enforcement of Python settings
+-- Settings are only applied when opening Python files, not on save
+
+-- =============================================================================
+-- GOOGLE STYLE GUIDE INDENTATION FOR OTHER LANGUAGES
+-- =============================================================================
+
+-- Google style guides for various languages
+local google_style_group = augroup("google_style", { clear = true })
+
+-- C/C++ (Google C++ Style Guide: 2 spaces)
+-- https://google.github.io/styleguide/cppguide.html
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "c", "cpp", "cc", "cxx", "h", "hpp", "hxx" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- Shell/Bash (Google Shell Style Guide: 2 spaces)
+-- https://google.github.io/styleguide/shellguide.html
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "sh", "bash", "zsh", "fish" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- Swift (Apple/Google convention: 2 spaces)
+-- Swift typically follows similar conventions to Google's other languages
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "swift" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end
+})
+
+-- Lua (Common convention: 2 spaces)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "lua" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- LaTeX (Common convention: 2 spaces)
+-- LaTeX doesn't have an official Google style guide, but 2 spaces is common
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "tex", "latex", "plaintex", "bib" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+    -- LaTeX-specific settings
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+  end
+})
+
+-- JavaScript/TypeScript (Google JavaScript Style Guide: 2 spaces)
+-- https://google.github.io/styleguide/jsguide.html
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "jsonc" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- HTML/XML (Google HTML/CSS Style Guide: 2 spaces)
+-- https://google.github.io/styleguide/htmlcssguide.html
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "html", "xml", "xhtml", "css", "scss", "sass", "less" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- YAML/TOML (Common convention: 2 spaces)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "yaml", "yml", "toml" },
   callback = function()
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
@@ -191,9 +322,63 @@ autocmd("FileType", {
   end
 })
 
--- Removed auto-enforcement of Python settings
--- Settings are only applied when opening Python files, not on save
+-- Ruby (Common convention: 2 spaces)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "ruby", "erb", "rake" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
 
+-- Go (Official Go style: tabs)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "go" },
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.expandtab = false  -- Go uses tabs
+    vim.opt_local.textwidth = 80
+    vim.opt_local.colorcolumn = "80"
+  end
+})
+
+-- Rust (Official Rust style: 4 spaces)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "rust" },
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end
+})
+
+-- Markdown (Common convention: 2 spaces, wider text)
+autocmd("FileType", {
+  group = google_style_group,
+  pattern = { "markdown", "pandoc", "rst" },
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+  end
+})
 
 -- =============================================================================
 -- SYNTAX OPTIMIZATIONS
