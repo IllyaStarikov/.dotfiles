@@ -7,11 +7,15 @@
 local M = {}
 
 function M.setup()
-  -- Use a very minimal snacks configuration to avoid picker conflicts
+  -- Enable Snacks.nvim with file explorer support
   require("snacks").setup({
-    -- Only enable core modules that don't use the problematic picker
+    -- Core modules
     bigfile = { enabled = true },
-    picker = { enabled = false },   -- COMPLETELY DISABLE picker to prevent format errors
+    picker = { enabled = true },   -- Required for explorer
+    explorer = { 
+      enabled = true,
+      replace_netrw = true,  -- Replace netrw with Snacks explorer
+    },
     
     -- Re-enable dashboard with safe configuration (uses Telescope instead of picker)
     dashboard = { 
