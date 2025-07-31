@@ -21,26 +21,21 @@ show_help() {
     echo "  theme default        # Same as auto-detect"
     echo "  theme tokyonight_day # Switch to Tokyo Night Day (light)"
     echo "  theme tokyonight_moon # Switch to Tokyo Night Moon (dark)"
-    echo "  theme dracula        # Switch to Dracula theme"
     echo ""
     echo "AVAILABLE THEMES:"
     
     # List available themes from directory structure
     local themes_dir="$HOME/.dotfiles/src/theme-switcher/themes"
     if [ -d "$themes_dir" ]; then
-        # Get unique theme families, handling GitHub themes specially
+        # Get unique theme families
         local theme_families=()
-        local github_themes=()
         
         for theme_dir in "$themes_dir"/*; do
             if [ -d "$theme_dir" ]; then
                 local theme_name=$(basename "$theme_dir")
                 
-                # Special handling for GitHub themes
-                if [[ "$theme_name" == github_* ]]; then
-                    github_themes+=("$theme_name")
                 # Special handling for Tokyo Night themes
-                elif [[ "$theme_name" == tokyonight_* ]]; then
+                if [[ "$theme_name" == tokyonight_* ]]; then
                     # Tokyo Night has its own variant system, treat each as standalone
                     if [[ ! " ${theme_families[@]} " =~ " tokyonight " ]]; then
                         theme_families+=("tokyonight")
@@ -60,10 +55,6 @@ show_help() {
         
         # Sort theme families
         IFS=$'\n' theme_families=($(sort <<<"${theme_families[*]}"))
-        unset IFS
-        
-        # Sort GitHub themes
-        IFS=$'\n' github_themes=($(sort <<<"${github_themes[*]}"))
         unset IFS
         
         # Display regular theme families
@@ -106,20 +97,6 @@ show_help() {
                 fi
             fi
         done
-        
-        # Display GitHub themes as one family
-        if [ ${#github_themes[@]} -gt 0 ]; then
-            echo ""
-            echo "github family (all standalone themes):"
-            
-            for theme in "${github_themes[@]}"; do
-                local mode="Light mode"
-                if [[ "$theme" == *dark* ]]; then
-                    mode="Dark mode"
-                fi
-                printf "  theme %-25s # $mode\n" "$theme"
-            done
-        fi
     fi
     
     echo ""
@@ -129,9 +106,8 @@ show_help() {
     echo "    - Dark mode: $DEFAULT_DARK_THEME"
     echo ""
     echo "THEME NAMING CONVENTION:"
-    echo "  • Light themes end with _light (e.g., iceberg_light)"
-    echo "  • Dark themes end with _dark (e.g., iceberg_dark)"
-    echo "  • Standalone themes have no suffix (e.g., dracula)"
+    echo "  • Light themes end with _light or _day"
+    echo "  • Dark themes end with _dark, _moon, _night, _storm"
     echo ""
     echo "AUTOMATIC DETECTION:"
     echo "  When no theme is specified or 'default' is used, automatically selects:"
@@ -150,13 +126,6 @@ fi
 # Parse theme name to extract base theme and variant
 parse_theme_name() {
     local input_theme="$1"
-    
-    # Special handling for GitHub themes - they are standalone themes, not base_variant
-    if [[ "$input_theme" == github_* ]]; then
-        BASE_THEME="$input_theme"
-        VARIANT="light"  # Default variant for GitHub themes
-        return
-    fi
     
     # Special handling for Tokyo Night themes - they define their own variants
     if [[ "$input_theme" == tokyonight_* ]]; then
@@ -198,7 +167,7 @@ DEFAULT_DARK_THEME="tokyonight_moon"
 # Determine theme and variant
 if [ -z "$1" ]; then
     # Auto-detect based on system appearance
-    APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+    APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "")
     if [[ "$APPEARANCE" == "Dark" ]]; then
         BASE_THEME="$DEFAULT_DARK_THEME"
         VARIANT="dark"
@@ -208,7 +177,7 @@ if [ -z "$1" ]; then
     fi
 elif [[ "$1" == "default" ]]; then
     # Handle 'default' specially - use system appearance
-    APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+    APPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "")
     if [[ "$APPEARANCE" == "Dark" ]]; then
         BASE_THEME="$DEFAULT_DARK_THEME"
         VARIANT="dark"
@@ -217,15 +186,21 @@ elif [[ "$1" == "default" ]]; then
         VARIANT="light"
     fi
 else
-    parse_theme_name "$1"
+    # Handle simple "light" or "dark" arguments (from auto-theme-watcher)
+    if [[ "$1" == "light" ]]; then
+        BASE_THEME="$DEFAULT_LIGHT_THEME"
+        VARIANT="light"
+    elif [[ "$1" == "dark" ]]; then
+        BASE_THEME="$DEFAULT_DARK_THEME"
+        VARIANT="dark"
+    else
+        parse_theme_name "$1"
+    fi
 fi
 
 # Determine background for Vim
 BACKGROUND="light"
 if [[ "$VARIANT" == "dark" ]]; then
-    BACKGROUND="dark"
-elif [[ "$BASE_THEME" == github_dark* ]]; then
-    # GitHub dark themes should have dark background
     BACKGROUND="dark"
 fi
 
@@ -284,9 +259,7 @@ fi
 VIM_THEME_DIR="$HOME/.vim/colors"
 mkdir -p "$VIM_THEME_DIR"
 if [ -f "$THEME_DIR/vim.vim" ]; then
-    cp "$THEME_DIR/vim.vim" "$VIM_THEME_DIR/iceberg.vim"
-    # Update .vimrc to use the new theme
-    sed -i '' "s/colorscheme .*/colorscheme iceberg/g" "$HOME/.dotfiles/src/vimrc"
+    cp "$THEME_DIR/vim.vim" "$VIM_THEME_DIR/theme.vim"
 fi
 
 # Reload tmux
