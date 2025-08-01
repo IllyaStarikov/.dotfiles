@@ -1,9 +1,16 @@
 -- Core configuration modules
 
--- Load all core modules
-require("config.core.options")
-require("config.core.indentation")
-require("config.core.performance")
-require("config.core.backup")
-require("config.core.search")
-require("config.core.folding")
+-- Load utils for error handling
+local utils = require("config.utils")
+
+-- Load all core modules with error protection
+local core_modules = {
+  "config.core.options",
+  "config.core.indentation",
+  "config.core.performance",
+  "config.core.backup",
+  "config.core.search",
+  "config.core.folding"
+}
+
+utils.batch_require(core_modules)

@@ -36,17 +36,45 @@ require("lazy").setup({
       },
     },
     config = function()
-      require('config.telescope').setup()
+      local utils = require("config.utils")
+      utils.load_config('config.telescope')
     end,
     keys = {
-      { "<C-p>", function() require('telescope.builtin').find_files() end, desc = "Find Files" },
-      { "<leader>ff", function() require('telescope.builtin').find_files() end, desc = "Find Files" },
-      { "<leader>fg", function() require('telescope.builtin').live_grep() end, desc = "Live Grep" },
-      { "<leader>fb", function() require('telescope.builtin').buffers() end, desc = "Buffers" },
-      { "<leader>fh", function() require('telescope.builtin').help_tags() end, desc = "Help Tags" },
-      { "<leader>fr", function() require('telescope.builtin').oldfiles() end, desc = "Recent Files" },
-      { "<leader>fc", function() require('telescope.builtin').commands() end, desc = "Commands" },
-      { "<leader>fp", function() require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root }) end, desc = "Find Plugin File" },
+      { "<C-p>", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.find_files() end
+      end, desc = "Find Files" },
+      { "<leader>ff", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.find_files() end
+      end, desc = "Find Files" },
+      { "<leader>fg", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.live_grep() end
+      end, desc = "Live Grep" },
+      { "<leader>fb", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.buffers() end
+      end, desc = "Buffers" },
+      { "<leader>fh", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.help_tags() end
+      end, desc = "Help Tags" },
+      { "<leader>fr", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.oldfiles() end
+      end, desc = "Recent Files" },
+      { "<leader>fc", function() 
+        local builtin, ok = pcall(require, 'telescope.builtin')
+        if ok then builtin.commands() end
+      end, desc = "Commands" },
+      { "<leader>fp", function() 
+        local builtin, ok = pcall(require, "telescope.builtin")
+        local config_ok, lazy_config = pcall(require, "lazy.core.config")
+        if ok and config_ok then 
+          builtin.find_files({ cwd = lazy_config.options.root }) 
+        end
+      end, desc = "Find Plugin File" },
     },
   },
 
@@ -56,7 +84,8 @@ require("lazy").setup({
     priority = 1000,
     lazy = false,
     config = function()
-      require('config.plugins.snacks').setup()
+      local utils = require("config.utils")
+      utils.load_config('config.plugins.snacks')
     end,
   },
   
@@ -74,14 +103,16 @@ require("lazy").setup({
     "echasnovski/mini.nvim",
     version = false,
     config = function()
+      local utils = require("config.utils")
+      
       -- mini.statusline - Modern statusline
-      require('mini.statusline').setup({
+      utils.setup_plugin('mini.statusline', {
         use_icons = true,
         set_vim_settings = true,
       })
       
       -- mini.surround - Better surround operations
-      require('mini.surround').setup({
+      utils.setup_plugin('mini.surround', {
         mappings = {
           add = 'ys',
           delete = 'ds',
@@ -94,7 +125,7 @@ require("lazy").setup({
       })
       
       -- mini.align - Easy alignment
-      require('mini.align').setup({
+      utils.setup_plugin('mini.align', {
         mappings = {
           start = 'ga',
           start_with_preview = 'gA',
@@ -102,22 +133,28 @@ require("lazy").setup({
       })
       
       -- mini.ai - Enhanced text objects
-      require('mini.ai').setup({
-        n_lines = 500,
-        custom_textobjects = {
-          o = require('mini.ai').gen_spec.treesitter({
-            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
-          }),
-          f = require('mini.ai').gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
-          c = require('mini.ai').gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }),
-        },
-      })
+      local ai_ok, ai = pcall(require, 'mini.ai')
+      if ai_ok then
+        utils.setup_plugin('mini.ai', {
+          n_lines = 500,
+          custom_textobjects = {
+            o = ai.gen_spec.treesitter({
+              a = { '@block.outer', '@conditional.outer', '@loop.outer' },
+              i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+            }),
+            f = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
+            c = ai.gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }),
+          },
+        })
+      end
     end,
   },
 
   -- Git integration
-  { "lewis6991/gitsigns.nvim", config = function() require('config.gitsigns').setup() end },
+  { "lewis6991/gitsigns.nvim", config = function() 
+    local utils = require("config.utils")
+    utils.load_config('config.gitsigns')
+  end },
   { "sindrets/diffview.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 
   -- UI enhancements
