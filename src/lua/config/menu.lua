@@ -38,7 +38,7 @@ function M.setup_custom_menus()
         { name = "🔭 Find File", cmd = "lua require('telescope.builtin').find_files()", rtxt = "f" },
         { name = "🔭 Recent Files", cmd = "lua require('telescope.builtin').oldfiles()", rtxt = "r" },
         { name = "🔭 Find in Files", cmd = "lua require('telescope.builtin').live_grep()", rtxt = "g" },
-        { name = "🍿 File Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
+        { name = "🍿 File Explorer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "e" },
         
         { name = "separator" },
         
@@ -74,11 +74,11 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "🍿 Dashboard", cmd = "lua Snacks.dashboard()", rtxt = "D", hl = "ExCyan" },
-        { name = "🍿 Scratch Buffer", cmd = "lua Snacks.scratch()", rtxt = ".", hl = "ExCyan" },
-        { name = "🍿 Explorer", cmd = "lua Snacks.explorer()", rtxt = "E", hl = "ExCyan" },
-        { name = "🍿 Zen Mode", cmd = "lua Snacks.zen()", rtxt = "Z", hl = "ExCyan" },
-        { name = "🍿 LazyGit", cmd = "lua Snacks.lazygit()", rtxt = "G", hl = "ExCyan" },
+        { name = "🍿 Dashboard", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.dashboard() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "D", hl = "ExCyan" },
+        { name = "🍿 Scratch Buffer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.scratch() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = ".", hl = "ExCyan" },
+        { name = "🍿 Explorer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "E", hl = "ExCyan" },
+        { name = "🍿 Zen Mode", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.zen() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "Z", hl = "ExCyan" },
+        { name = "🍿 LazyGit", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.lazygit() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "G", hl = "ExCyan" },
         
         { name = "separator" },
         
@@ -92,7 +92,7 @@ function M.setup_custom_menus()
         
         { name = "separator" },
         
-        { name = "🍿 Terminal", cmd = "lua Snacks.terminal()", rtxt = "t" },
+        { name = "🍿 Terminal", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "t" },
         { name = "  Plugin Manager", cmd = "Lazy", rtxt = "l" },
         { name = "  Mason (LSP)", cmd = "Mason", rtxt = "m" },
     }
@@ -148,7 +148,7 @@ function M.setup_custom_menus()
     local terminal_menu = {
         { name = "  Exit Terminal Mode", cmd = "stopinsert", rtxt = "e" },
         { name = "  Close Terminal", cmd = "close", rtxt = "c" },
-        { name = "  New Terminal", cmd = "lua Snacks.terminal()", rtxt = "n" },
+        { name = "  New Terminal", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "n" },
         { name = "  Clear Screen", cmd = "normal i<C-l>", rtxt = "l" },
     }
     
@@ -497,9 +497,9 @@ function M.open_file_management_menu()
     
     -- Create comprehensive file management menu
     local file_menu = {
-        { name = "📁 Open File Explorer", cmd = "lua Snacks.explorer()", rtxt = "o" },
-        { name = "🪟 Open Explorer (Float)", cmd = "lua Snacks.explorer({ float = true })", rtxt = "O" },
-        { name = "🍿 Snacks Explorer", cmd = "lua Snacks.explorer()", rtxt = "e" },
+        { name = "📁 Open File Explorer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "o" },
+        { name = "🪟 Open Explorer (Float)", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer({ float = true }) else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "O" },
+        { name = "🍿 Snacks Explorer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "e" },
         
         { name = "separator" },
         
@@ -513,13 +513,13 @@ function M.open_file_management_menu()
         { name = "📄 New File", cmd = "enew", rtxt = "N" },
         { name = "💾 Save File", cmd = "w", rtxt = "s" },
         { name = "💾 Save All", cmd = "wa", rtxt = "a" },
-        { name = "❌ Close Buffer", cmd = "lua Snacks.bufdelete()", rtxt = "c" },
+        { name = "❌ Close Buffer", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.bufdelete() else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "c" },
         
         { name = "separator" },
         
         { name = "📋 Copy File Path", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:p'))", rtxt = "p" },
         { name = "📋 Copy File Name", cmd = "lua vim.fn.setreg('+', vim.fn.expand('%:t'))", rtxt = "t" },
-        { name = "📂 Open File Directory", cmd = "lua Snacks.explorer({ cwd = vim.fn.expand('%:p:h') })", rtxt = "d" },
+        { name = "📂 Open File Directory", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.explorer({ cwd = vim.fn.expand('%:p:h') }) else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "d" },
     }
     
     local success, err = pcall(menu.open, file_menu, { 
@@ -652,26 +652,26 @@ function M.get_project_specific_menu()
     
     -- Check for specific project types and add relevant menu items
     if vim.fn.filereadable(cwd .. "/package.json") == 1 then
-        table.insert(project_menu, { name = "📦 npm install", cmd = "lua Snacks.terminal('npm install')", rtxt = "i" })
-        table.insert(project_menu, { name = "📦 npm start", cmd = "lua Snacks.terminal('npm start')", rtxt = "s" })
-        table.insert(project_menu, { name = "📦 npm test", cmd = "lua Snacks.terminal('npm test')", rtxt = "t" })
-        table.insert(project_menu, { name = "📦 npm build", cmd = "lua Snacks.terminal('npm run build')", rtxt = "b" })
+        table.insert(project_menu, { name = "📦 npm install", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm install') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "i" })
+        table.insert(project_menu, { name = "📦 npm start", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm start') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "s" })
+        table.insert(project_menu, { name = "📦 npm test", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "t" })
+        table.insert(project_menu, { name = "📦 npm build", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm run build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "b" })
         table.insert(project_menu, { name = "🔭 Find JS/TS", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.{js,ts,jsx,tsx}'}})", rtxt = "j" })
     end
     
     if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
-        table.insert(project_menu, { name = "🦀 cargo build", cmd = "lua Snacks.terminal('cargo build')", rtxt = "B" })
-        table.insert(project_menu, { name = "🦀 cargo run", cmd = "lua Snacks.terminal('cargo run')", rtxt = "R" })
-        table.insert(project_menu, { name = "🦀 cargo test", cmd = "lua Snacks.terminal('cargo test')", rtxt = "T" })
-        table.insert(project_menu, { name = "🦀 cargo check", cmd = "lua Snacks.terminal('cargo check')", rtxt = "C" })
+        table.insert(project_menu, { name = "🦀 cargo build", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "B" })
+        table.insert(project_menu, { name = "🦀 cargo run", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo run') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "R" })
+        table.insert(project_menu, { name = "🦀 cargo test", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "T" })
+        table.insert(project_menu, { name = "🦀 cargo check", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo check') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "C" })
         table.insert(project_menu, { name = "🔭 Find Rust", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.rs'}})", rtxt = "r" })
     end
     
     if vim.fn.filereadable(cwd .. "/requirements.txt") == 1 or vim.fn.filereadable(cwd .. "/src/pyproject.toml") == 1 then
-        table.insert(project_menu, { name = "🐍 pip install", cmd = "lua Snacks.terminal('pip install -r requirements.txt')", rtxt = "I" })
-        table.insert(project_menu, { name = "🐍 pytest", cmd = "lua Snacks.terminal('python -m pytest')", rtxt = "p" })
-        table.insert(project_menu, { name = "🐍 run main", cmd = "lua Snacks.terminal('python main.py')", rtxt = "M" })
-        table.insert(project_menu, { name = "🐍 pip freeze", cmd = "lua Snacks.terminal('pip freeze')", rtxt = "F" })
+        table.insert(project_menu, { name = "🐍 pip install", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip install -r requirements.txt') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "I" })
+        table.insert(project_menu, { name = "🐍 pytest", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python -m pytest') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "p" })
+        table.insert(project_menu, { name = "🐍 run main", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python main.py') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "M" })
+        table.insert(project_menu, { name = "🐍 pip freeze", cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip freeze') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end", rtxt = "F" })
         table.insert(project_menu, { name = "🔭 Find Python", cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.py'}})", rtxt = "y" })
     end
     

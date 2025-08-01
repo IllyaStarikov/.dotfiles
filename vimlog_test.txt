@@ -1,0 +1,443 @@
+
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/ftplugin.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/ftplugin.vim
+sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/indent.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/indent.vim
+could not source "/opt/homebrew/etc/xdg/nvim/sysinit.vim"
+could not source "/etc/xdg/nvim/sysinit.vim"
+could not source "$VIM/sysinit.vim"
+sourcing "/Users/starikov/.config/nvim/init.lua"
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/cls.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/cls.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/tex.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/tex.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/tikz.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vimtex/ftdetect/tikz.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/swift.vim/ftdetect/swift.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/swift.vim/ftdetect/swift.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua"
+line 0: sourcing "nvim_exec2() called at /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua:0"
+not found in runtime path: "ftdetect/*.{vim,lua}"
+finished sourcing nvim_exec2() called at /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua:0
+continuing in /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/nvim-treesitter/plugin/nvim-treesitter.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/nvim-treesitter/plugin/nvim-treesitter.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/snacks.nvim/plugin/snacks.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/snacks.nvim/plugin/snacks.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/LuaSnip/plugin/luasnip.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/LuaSnip/plugin/luasnip.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/LuaSnip/plugin/luasnip.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/LuaSnip/plugin/luasnip.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+not found in runtime path: "package.jsonc"
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/blink.cmp/plugin/blink-cmp.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/blink.cmp/plugin/blink-cmp.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/nvim-web-devicons/plugin/nvim-web-devicons.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/nvim-web-devicons/plugin/nvim-web-devicons.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/markview.nvim/plugin/markview.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/markview.nvim/plugin/markview.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+Executing command: "'/bin/zsh' '-c' 'source /Users/starikov/.config/theme-switcher/current-theme.sh && echo $MACOS_THEME'"
+
+
+Executing command: "'/bin/zsh' '-c' 'source /Users/starikov/.config/theme-switcher/current-theme.sh && echo $MACOS_BACKGROUND'"
+
+
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vim-lion/plugin/lion.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vim-lion/plugin/lion.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/gitsigns.nvim/plugin/gitsigns.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/gitsigns.nvim/plugin/gitsigns.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/nvim-lspconfig/plugin/lspconfig.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/nvim-lspconfig/plugin/lspconfig.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vimtex/plugin/vimtex.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vimtex/plugin/vimtex.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/asyncrun.vim/plugin/asyncrun.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/asyncrun.vim/plugin/asyncrun.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/asyncrun.vim/plugin/script_load.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/asyncrun.vim/plugin/script_load.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/plenary.nvim/plugin/plenary.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/plenary.nvim/plugin/plenary.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/telescope.nvim/plugin/telescope.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/telescope.nvim/plugin/telescope.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 414: ~/.local/share/nvim/lazy/nvim-web-devicons/lua/nvim-web-devicons.lua:153>
+
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 423: ~/.local/share/nvim/lazy/markview.nvim/plugin/markview.lua:278>
+
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 471: ~/.local/share/nvim/lazy/gitsigns.nvim/lua/gitsigns/highlight.lua:288>
+
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 532: ~/.local/share/nvim/lazy/mini.nvim/lua/mini/statusline.lua:532>
+
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 540: ~/.local/share/nvim/lazy/mini.nvim/lua/mini/surround.lua:1243>
+
+Executing ColorScheme Autocommands for "*"
+autocommand <Lua 586: ~/.config/nvim/lua/config/telescope.lua:401>
+
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/dressing.nvim/plugin/dressing.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/dressing.nvim/plugin/dressing.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/codecompanion.nvim/plugin/codecompanion.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/codecompanion.nvim/plugin/codecompanion.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vim-syntax-extra/plugin/vim-syntax-extra.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vim-syntax-extra/plugin/vim-syntax-extra.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/diffview.nvim/plugin/diffview.lua"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/diffview.nvim/plugin/diffview.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/markdown-preview.nvim/plugin/mkdp.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/markdown-preview.nvim/plugin/mkdp.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vim-fugitive/plugin/fugitive.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vim-fugitive/plugin/fugitive.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/Users/starikov/.local/share/nvim/lazy/vim-fugitive/ftdetect/fugitive.vim"
+finished sourcing /Users/starikov/.local/share/nvim/lazy/vim-fugitive/ftdetect/fugitive.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/editorconfig.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/editorconfig.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/man.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/man.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/matchit.vim"
+not found in 'packpath': "pack/*/start/matchit"
+line 3: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/matchit.vim
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/matchit.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/matchparen.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/matchparen.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/netrwPlugin.vim"
+not found in 'packpath': "pack/*/start/netrw"
+line 7: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/pack/dist/opt/netrw/plugin/netrwPlugin.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/pack/dist/opt/netrw/plugin/netrwPlugin.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/netrwPlugin.vim
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/netrwPlugin.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/osc52.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/osc52.lua
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/rplugin.vim"
+line 3: sourcing "/Users/starikov/.local/share/nvim/rplugin.vim"
+finished sourcing /Users/starikov/.local/share/nvim/rplugin.vim
+continuing in <SNR>87_LoadRemotePlugins
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/rplugin.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/shada.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/shada.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/spellfile.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/plugin/spellfile.vim
+continuing in nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+finished sourcing nvim_exec2() called at /Users/starikov/.dotfiles/src/init.lua:0
+continuing in /Users/starikov/.dotfiles/src/init.lua
+Executing User Autocommands for "LazyDone"
+autocommand <Lua 288: ~/.local/share/nvim/lazy/lazy.nvim/lua/lazy/core/util.lua:183>
+
+finished sourcing /Users/starikov/.config/nvim/init.lua
+sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/filetype.lua
+sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/syntax/syntax.vim"
+line 20: sourcing "/opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/syntax/synload.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/syntax/synload.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/runtime/syntax/syntax.vim
+Executing FileType Autocommands for "*"
+autocommand if !exists('b:ts_highlight') | 0verbose exe "set syntax=" . expand("<amatch>") | endif
+
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.3/share/nvim/r
