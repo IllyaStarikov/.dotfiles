@@ -1,612 +1,252 @@
-# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
-# 🚀 ZSH CONFIGURATION - Production-Ready Shell Environment
-# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
-# High-performance Zsh setup optimized for development workflows
-# Features: Fast startup, intelligent completions, modern tooling integration
-# ══════════════════════════════════════════════════════════════════════════════════════════════════════════
+# Modern Zsh Configuration - Minimal, Fast, and Powerful
+# No Oh My Zsh, No bloat, Just what you need
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# ⚡ PERFORMANCE OPTIMIZATIONS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Core Settings
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Skip global compinit for faster startup (Oh My Zsh will handle it)
+# Essential options
+setopt AUTO_CD              # cd by typing directory name
+setopt INTERACTIVE_COMMENTS # Allow comments in interactive mode
+setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
+setopt SHARE_HISTORY        # Share history between sessions
+setopt HIST_REDUCE_BLANKS   # Remove blanks from history
+setopt CORRECT              # Command correction
+setopt NO_BEEP              # No beeping
+setopt GLOB_DOTS            # Include dotfiles in globbing
+
+# History
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+
+# Performance: Skip global compinit (we'll do it once)
 skip_global_compinit=1
 
-# Completion options for performance
-setopt COMPLETE_IN_WORD
-setopt AUTO_MENU
-setopt AUTO_PARAM_SLASH
-setopt AUTO_LIST
-setopt LIST_AMBIGUOUS
-setopt MENU_COMPLETE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Zinit - Modern Plugin Manager
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Performance: Disable start/stop characters
-setopt NO_FLOW_CONTROL
+# Install zinit if not present
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+    print -P "%F{33}▓▒░ Installing zinit...%f"
+    command mkdir -p "$(dirname $ZINIT_HOME)"
+    command git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "${ZINIT_HOME}/zinit.zsh"
 
-# Don't check for new mail
-unset MAILCHECK
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Essential Plugins Only
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Performance: Only eval brew if not already in PATH
-# Use more precise pattern matching to prevent bypass
-if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
-  if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x "/usr/local/bin/brew" ]]; then
-    # Intel Mac fallback
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+# Fast syntax highlighting (turbo mode for speed)
+zinit wait lucid for \
+    atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    zdharma-continuum/fast-syntax-highlighting
+
+# Autosuggestions (turbo mode)
+zinit wait lucid atload"!_zsh_autosuggest_start" for \
+    zsh-users/zsh-autosuggestions
+
+# Better directory navigation
+zinit ice wait"0" lucid
+zinit light agkozak/zsh-z
+
+# Essential completions
+zinit ice wait"0" lucid blockf
+zinit light zsh-users/zsh-completions
+
+# Git aliases (minimal, not the full oh-my-zsh plugin)
+zinit snippet OMZ::lib/git.zsh
+zinit wait lucid for \
+    OMZ::plugins/git/git.plugin.zsh
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Environment Setup
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Homebrew (only if not in PATH)
+if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]]; then
+    [[ -x "/opt/homebrew/bin/brew" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# ┌─ EARLY PYTHON ENVIRONMENT SETUP ─┐
-# Initialize pyenv early to avoid "python not found" errors
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(command pyenv init --path)"
-fi
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🎨 THEME CONFIGURATION
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Spaceship theme with optimized settings
-ZSH_THEME="spaceship"
-
-# Spaceship prompt - minimal configuration for performance
-SPACESHIP_PROMPT_ORDER=(
-  dir           # Current directory section
-  git           # Git section (git_branch + git_status)
-  exec_time     # Execution time
-  line_sep      # Line break
-  vi_mode       # Vi-mode indicator
-  exit_code     # Exit code section
-  char          # Prompt character
-)
-
-# Python configuration for Spaceship
-SPACESHIP_PYTHON_SHOW=false  # Disable by default to prevent errors
-SPACESHIP_PYTHON_PREFIX="via "
-SPACESHIP_PYTHON_SUFFIX=" "
-SPACESHIP_PYTHON_SYMBOL="🐍 "
-SPACESHIP_PYTHON_COLOR="yellow"
-
-# Vi-mode indicators
-SPACESHIP_VI_MODE_INSERT="[λ]"
-SPACESHIP_VI_MODE_NORMAL="[µ]"
-SPACESHIP_VI_MODE_SHOW=true
-
-# Performance optimizations - disable unnecessary features
-SPACESHIP_BATTERY_SHOW=false
-SPACESHIP_TIME_SHOW=false    # Disabled for performance
-SPACESHIP_USER_SHOW=false    # Disabled for performance
-SPACESHIP_HOST_SHOW=false
-SPACESHIP_HOST_SHOW_FULL=false
-SPACESHIP_DIR_TRUNC=3
-SPACESHIP_DIR_TRUNC_REPO=false
-SPACESHIP_PACKAGE_SHOW=false  # Disabled for performance
-SPACESHIP_NODE_SHOW=false     # Disabled for performance
-
-# Git optimizations with Nerd Font symbols
-SPACESHIP_GIT_STATUS_SHOW=true
-SPACESHIP_GIT_STATUS_UNTRACKED="?"
-SPACESHIP_GIT_STATUS_ADDED="+"
-SPACESHIP_GIT_STATUS_MODIFIED="!"
-SPACESHIP_GIT_STATUS_RENAMED="»"
-SPACESHIP_GIT_STATUS_DELETED="✘"
-SPACESHIP_GIT_STATUS_STASHED="$"
-SPACESHIP_GIT_STATUS_UNMERGED="="
-SPACESHIP_GIT_STATUS_AHEAD="⇡"
-SPACESHIP_GIT_STATUS_BEHIND="⇣"
-SPACESHIP_GIT_STATUS_DIVERGED="⇕"
-
-# Use Nerd Font git branch symbol
-SPACESHIP_GIT_SYMBOL=" "
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🔌 PLUGIN ECOSYSTEM - Carefully Selected for Performance
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Essential plugins - reduced for faster startup
-plugins=(
-  # Core functionality only
-  git                        # Git aliases and functions
-  vi-mode                    # Vim keybindings in command line
-  
-  # Navigation
-  z                         # Smart directory jumping
-  
-  # Essential utilities
-  history-substring-search   # Search through history with up/down arrows
-  colored-man-pages         # Colorized manual pages
-  extract                   # Universal archive extraction
-)
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# ⚙️ SHELL BEHAVIOR CONFIGURATION
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Lightning-fast vi mode transitions
-export KEYTIMEOUT=1
-
-# Better command history
-export HISTCONTROL=ignoredups:erasedups  # No duplicate entries
-export HISTIGNORE="&:ls:ll:la:l.:pwd:exit:clear:history"
-
-# Intelligent command correction
-ENABLE_CORRECTION="true"
-setopt CORRECT                    # Correct commands
-setopt CORRECT_ALL               # Correct all arguments
-
-# Enhanced completion experience
-COMPLETION_WAITING_DOTS="true"
-setopt COMPLETE_ALIASES          # Complete command aliases
-setopt LIST_PACKED               # Compact completion lists
-setopt AUTO_PARAM_KEYS           # Intelligent parameter completion
-
-# Git performance optimization
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# History configuration with timestamps
-HIST_STAMPS="mm/dd/yyyy"
-setopt EXTENDED_HISTORY          # Record timestamp of command
-setopt HIST_EXPIRE_DUPS_FIRST    # Delete duplicates first when trimming history
-setopt HIST_IGNORE_DUPS          # Ignore duplicate commands
-setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate
-setopt HIST_FIND_NO_DUPS         # Do not display duplicates during search
-setopt HIST_IGNORE_SPACE         # Ignore commands that start with space
-setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file
-setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry
-setopt HIST_VERIFY               # Show command with history expansion to user before running it
-
-# Advanced shell options for power users
-setopt AUTO_CD                   # Change directory without cd command
-setopt AUTO_PUSHD                # Push directories onto stack automatically
-setopt PUSHD_IGNORE_DUPS         # Don't push duplicate directories
-setopt GLOB_DOTS                 # Include dotfiles in glob matches
-setopt NUMERIC_GLOB_SORT         # Sort numerically when possible
-setopt RC_EXPAND_PARAM           # Expand parameters in array format
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🏠 OH-MY-ZSH INITIALIZATION
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-export ZSH=/Users/starikov/.oh-my-zsh
-export ZSH_CUSTOM=/Users/starikov/.oh-my-zsh/custom/
-
-# Initialize Oh My Zsh
-source $ZSH/oh-my-zsh.sh
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🌈 SYNTAX HIGHLIGHTING & THEME INTEGRATION
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Enhanced syntax highlighting (must be loaded after oh-my-zsh)
-if [[ -f "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  
-  # Customize highlighting colors
-  ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
-  ZSH_HIGHLIGHT_STYLES[command]='fg=green,bold'
-  ZSH_HIGHLIGHT_STYLES[alias]='fg=magenta,bold'
-  ZSH_HIGHLIGHT_STYLES[builtin]='fg=yellow,bold'
-  ZSH_HIGHLIGHT_STYLES[function]='fg=blue,bold'
-  ZSH_HIGHLIGHT_STYLES[path]='fg=cyan'
-  ZSH_HIGHLIGHT_STYLES[globbing]='fg=red'
-fi
-
-# Auto-suggestions for command completion
-if [[ -f "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=241'
-  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-  ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-fi
-
-# Load current theme configuration
-if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
-  source "$HOME/.config/theme-switcher/current-theme.sh"
-fi
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🔗 ALIASES & CUSTOM FUNCTIONS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Load custom aliases
-source "$HOME/.dotfiles/src/zsh/aliases.zsh"
-
-# Load work-specific aliases if available (with security checks)
-# Only source from a specific, controlled location with validation
-DOTFILES_PRIVATE_DIR="$HOME/.dotfiles/.dotfiles.private"
-if [[ -d "$DOTFILES_PRIVATE_DIR" ]]; then
-  # Define allowed source files explicitly (allowlist approach)
-  ALLOWED_SOURCES=(
-    "work-aliases.zsh"
-  )
-  
-  for allowed_file in "${ALLOWED_SOURCES[@]}"; do
-    WORK_CONFIG="$DOTFILES_PRIVATE_DIR/$allowed_file"
-    if [[ -f "$WORK_CONFIG" ]]; then
-      # Verify file ownership and permissions before sourcing
-      if [[ -O "$WORK_CONFIG" ]] && [[ "$(stat -f '%p' "$WORK_CONFIG" 2>/dev/null || stat -c '%a' "$WORK_CONFIG" 2>/dev/null)" =~ ^[67][04][04]$ ]]; then
-        source "$WORK_CONFIG"
-      else
-        echo "Warning: Skipping $WORK_CONFIG due to ownership/permission issues" >&2
-      fi
-    fi
-  done
-fi
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🎯 ADVANCED COMPLETION SYSTEM
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Completion styling and behavior
-zstyle ':completion:*' menu select
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' verbose true
-zstyle ':completion:*' use-cache true
-zstyle ':completion:*' cache-path ~/.zsh/cache
-
-# Enhanced directory completion
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
-zstyle ':completion:*' special-dirs true
-
-# Process completion enhancement
-zstyle ':completion:*:processes' command 'ps -au$USER'
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
-
-# Man page completion with sections
-zstyle ':completion:*:manuals' separate-sections true
-zstyle ':completion:*:manuals.*' insert-sections true
-zstyle ':completion:*:man:*' menu yes select
-
-# SSH completion from known hosts
-zstyle ':completion:*:ssh:*' hosts off
-zstyle ':completion:*:scp:*' hosts off
-
-# Case-insensitive completion
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-
-# Colorful completion
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# ⌨️ ENHANCED KEYBINDINGS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Smart history search with arrow keys
-bindkey "^[[A" history-substring-search-up
-bindkey "^[[B" history-substring-search-down
-bindkey "^P" history-substring-search-up
-bindkey "^N" history-substring-search-down
-
-# Enhanced line editing
-bindkey "^X\x7f" backward-kill-line        # Delete line (iTerm compatible)
-bindkey "^A" beginning-of-line             # Ctrl+A: beginning of line
-bindkey "^E" end-of-line                   # Ctrl+E: end of line
-bindkey "^K" kill-line                     # Ctrl+K: kill to end of line
-bindkey "^U" backward-kill-line            # Ctrl+U: kill to beginning of line
-bindkey "^W" backward-kill-word            # Ctrl+W: kill word backwards
-bindkey "^R" history-incremental-search-backward  # Ctrl+R: reverse search
-
-# Word movement (Alt+arrow keys)
-bindkey "^[[1;3C" forward-word             # Alt+Right: forward word
-bindkey "^[[1;3D" backward-word            # Alt+Left: backward word
-
-# Modern terminal compatibility
-bindkey "^[[H" beginning-of-line           # Home key
-bindkey "^[[F" end-of-line                 # End key
-bindkey "^[[3~" delete-char                # Delete key
-
-# Vi-mode improvements
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
-
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🌈 ENVIRONMENT VARIABLES & COLORS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Enhanced terminal colors
-export CLICOLOR=1
-export LSCOLORS=GxFxCxDxBxegedabagaced
-export LS_COLORS='di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43'
-
-# Modern editor configuration
+# Editor
 export EDITOR=nvim
 export VISUAL=nvim
-export PAGER=less
-export MANPAGER='nvim +Man!'
 
-# Terminal capabilities
-export TERM=xterm-256color
-export COLORTERM=truecolor
-
-# Language and locale
+# Language
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Less configuration for better paging
-export LESS='-R -S -M -I -x4'
-export LESSHISTFILE=-
-# For correct symbol rendering in less (Nerd Font Private Use Area)
-export LESSUTFCHARDEF=e000-f8ff:p,f0001-fffff:p
+# Less options
+export LESS='-R -S -M -i'
 
+# FZF configuration
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 
-# FZF configuration for enhanced fuzzy finding
-export FZF_DEFAULT_OPTS='
-  --height 40% 
-  --layout=reverse 
-  --border=rounded 
-  --preview="([[ -f {} ]] && (bat --style=numbers --color=always --line-range=:300 {} || cat {})) || ([[ -d {} ]] && (eza --tree --level=2 --color=always {} | head -200)) || echo {}"
-  --preview-window=right:50%:wrap
-  --bind="ctrl-/:toggle-preview"
-  --bind="ctrl-d:preview-page-down"
-  --bind="ctrl-u:preview-page-up"
-  --color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796
-  --color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6
-  --color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796
-'
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude node_modules --exclude .cache'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git --exclude node_modules'
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Key Bindings
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Ripgrep configuration
-export RIPGREP_CONFIG_PATH=~/.dotfiles/src/ripgreprc
+# Vi mode
+bindkey -v
+export KEYTIMEOUT=1
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 📁 PATH MANAGEMENT & TOOL INITIALIZATION
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Better searching
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
 
-# Custom scripts and local configurations
-[[ -f "$HOME/.localrc" ]] && source "$HOME/.localrc"
-[[ -f "$HOME/.shortcuts" ]] && source "$HOME/.shortcuts"
-[[ -d "$HOME/.scripts" ]] && export PATH="$HOME/.scripts:$PATH"
-[[ -d "$HOME/.dotfiles/src/scripts" ]] && export PATH="$HOME/.dotfiles/src/scripts:$PATH"
+# Edit command line
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd 'v' edit-command-line
 
-# Modern development tools path management
-# PATH already set in zshenv, only add local bin if not present
-[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"
+# Common shortcuts
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^K' kill-line
+bindkey '^W' backward-kill-word
 
-# Format command alias
-alias fmt="format"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Completion System
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# FZF integration for enhanced file searching
-[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
-
-# ┌─ PYTHON ENVIRONMENT MANAGEMENT ─┐
-# Complete pyenv initialization (already path initialized early)
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(command pyenv init -)"
-  # Only init virtualenv if it exists
-  if command pyenv commands | grep -q virtualenv-init; then
-    eval "$(command pyenv virtualenv-init -)"
-  fi
-  # Enable Python in Spaceship prompt after pyenv is loaded
-  if command -v python &>/dev/null || command -v python3 &>/dev/null; then
-    SPACESHIP_PYTHON_SHOW=true
-  fi
+# Initialize completion system
+autoload -Uz compinit
+if [[ -n ${ZDOTDIR}/.zcompdump(#qNmh+24) ]]; then
+    compinit
+else
+    compinit -C
 fi
 
-# ┌─ NODE.JS ENVIRONMENT ─┐
-# NVM initialization (lazy loading for performance)
-export NVM_DIR="$HOME/.nvm"
-if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-  # Lazy load NVM to improve shell startup time
-  nvm() {
-    unset -f nvm node npm npx
-    source "$NVM_DIR/nvm.sh"
-    nvm "$@"
-  }
-  node() {
-    unset -f nvm node npm npx
-    source "$NVM_DIR/nvm.sh"
-    node "$@"
-  }
-  npm() {
-    unset -f nvm node npm npx
-    source "$NVM_DIR/nvm.sh"
-    npm "$@"
-  }
-  npx() {
-    unset -f nvm node npm npx
-    source "$NVM_DIR/nvm.sh"
-    npx "$@"
-  }
-fi
+# Completion options
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
 
-# ┌─ RUST ENVIRONMENT ─┐
-# Cargo path for Rust tools
-[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Aliases - Only the Essential Ones
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ┌─ GO ENVIRONMENT ─┐
-# Go workspace configuration
-export GOPATH="$HOME/go"
-[[ -d "$GOPATH/bin" ]] && export PATH="$GOPATH/bin:$PATH"
+# Core shortcuts
+alias l='eza -la --group-directories-first'
+alias ls='eza --group-directories-first'
+alias tree='eza --tree'
+alias cat='bat'
+alias grep='rg'
+alias find='fd'
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🏗️ ARCHITECTURE-SPECIFIC OPTIMIZATIONS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Directory navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
-# Apple Silicon optimizations
-alias brew='arch -arm64 /opt/homebrew/bin/brew'
-alias pyenv='arch -arm64 pyenv'
+# Git essentials (provided by git plugin)
+# alias g='git'
+# alias gs='git status'
+# alias gd='git diff'
+# alias gc='git commit'
+# alias gp='git push'
+# alias gl='git pull'
 
-# Intel compatibility when needed
-alias ibrew='arch -x86_64 /usr/local/bin/brew'
+# Safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🔧 CUSTOM FUNCTIONS & UTILITIES
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Quick edits
+alias zshrc='$EDITOR ~/.zshrc'
+alias vimrc='$EDITOR ~/.config/nvim/init.lua'
 
-# Smart mkdir and cd
-mkdir_cd() {
-    mkdir -p "$1" && cd "$1" || return 1
-}
-alias mkcd=mkdir_cd
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Functions - Only What We Actually Use
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Enhanced file finding (with proper escaping)
-ff() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: ff <pattern>" >&2
-        return 1
-    fi
-    # Properly escape the pattern to prevent injection
-    local pattern="${1//[^a-zA-Z0-9._-]/\\$&}"
-    fd -- "$pattern" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {} 2>/dev/null || cat {}'
+# Make directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
 }
 
-# Smart grep with ripgrep (with proper escaping)
-grep_smart() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: search <pattern> [options]" >&2
-        return 1
-    fi
-    if command -v rg >/dev/null 2>&1; then
-        # Use -- to separate options from patterns to prevent injection
-        rg --color=always --line-number --no-heading --smart-case -- "$@" | fzf --ansi
-    else
-        grep -r --color=always -- "$@" .
-    fi
-}
-alias search=grep_smart
-
-# Git utilities
-git_clean_branches() {
-    local branches
-    branches=$(git branch --merged | grep -v "\*\|master\|main\|develop")
-    if [[ -z "$branches" ]]; then
-        echo "No merged branches to clean" >&2
-        return 0
-    fi
-    echo "$branches" | xargs -n 1 git branch -d
-}
-
-# Quick project navigation
-project() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: project <name>" >&2
-        return 1
-    fi
-    cd "$HOME/Projects/$1" 2>/dev/null || cd "$HOME/projects/$1" 2>/dev/null || {
-        echo "Project '$1' not found" >&2
-        return 1
-    }
-}
-
-# System information
-sysinfo() {
-    echo "System Information:"
-    echo "=================="
-    echo "OS: $(sw_vers -productName) $(sw_vers -productVersion)"
-    echo "Architecture: $(uname -m)"
-    echo "Uptime: $(uptime | awk '{print $3,$4}' | sed 's/,//')"
-    echo "Shell: $SHELL"
-    echo "Terminal: $TERM_PROGRAM"
-}
-
-# Network utilities
-myip() {
-    echo "Internal IP: $(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo 'N/A')"
-    echo "External IP: $(curl -s ipinfo.io/ip 2>/dev/null || echo 'N/A')"
-}
-
-# Quick development server
+# Quick server
 serve() {
     local port=${1:-8000}
-    echo "Starting server on http://localhost:$port"
-    if command -v python3 >/dev/null 2>&1; then
-        python3 -m http.server "$port" 2>/dev/null
-    elif command -v python >/dev/null 2>&1; then
-        python -m SimpleHTTPServer "$port" 2>/dev/null
-    else
-        echo "Python not found"
-    fi
+    python3 -m http.server $port
 }
 
-# Extract any archive type
+# Extract archives
 extract() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: extract <archive>" >&2
-        return 1
+    if [[ -f "$1" ]]; then
+        case "$1" in
+            *.tar.bz2) tar xjf "$1" ;;
+            *.tar.gz)  tar xzf "$1" ;;
+            *.tar.xz)  tar xJf "$1" ;;
+            *.bz2)     bunzip2 "$1" ;;
+            *.rar)     unrar x "$1" ;;
+            *.gz)      gunzip "$1" ;;
+            *.tar)     tar xf "$1" ;;
+            *.tbz2)    tar xjf "$1" ;;
+            *.tgz)     tar xzf "$1" ;;
+            *.zip)     unzip "$1" ;;
+            *.Z)       uncompress "$1" ;;
+            *.7z)      7z x "$1" ;;
+            *) echo "'$1' cannot be extracted" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
     fi
-    if [[ ! -f "$1" ]]; then
-        echo "Error: '$1' is not a valid file" >&2
-        return 1
-    fi
-    case "$1" in
-        *.tar.bz2) tar xjf "$1" ;;
-        *.tar.gz)  tar xzf "$1" ;;
-        *.bz2)     bunzip2 "$1" ;;
-        *.rar)     unrar x "$1" ;;
-        *.gz)      gunzip "$1" ;;
-        *.tar)     tar xf "$1" ;;
-        *.tbz2)    tar xjf "$1" ;;
-        *.tgz)     tar xzf "$1" ;;
-        *.zip)     unzip "$1" ;;
-        *.Z)       uncompress "$1" ;;
-        *.7z)      7z x "$1" ;;
-        *) echo "Error: '$1' cannot be extracted via extract()" >&2; return 1 ;;
-    esac
 }
 
-# Create directory and cd into it
-take() {
-    if [[ -z "$1" ]]; then
-        echo "Usage: take <directory>" >&2
-        return 1
-    fi
-    mkdir -p "$1" && cd "$1" || return 1
-}
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Development Tools
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# ☁️ CLOUD & EXTERNAL TOOL INTEGRATIONS
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-# Google Cloud SDK integration
-if [[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]]; then
-    source "$HOME/google-cloud-sdk/path.zsh.inc"
+# fnm - Fast Node Manager (replacing nvm)
+if command -v fnm &>/dev/null; then
+    eval "$(fnm env --use-on-cd)"
 fi
 
-if [[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]]; then
-    source "$HOME/google-cloud-sdk/completion.zsh.inc"
+# pyenv
+if command -v pyenv &>/dev/null; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
 fi
 
-# Docker completion (if installed)
-if command -v docker >/dev/null 2>&1; then
-    if [[ -f "$HOME/.docker/completion/zsh/_docker" ]]; then
-        source "$HOME/.docker/completion/zsh/_docker"
-    fi
-fi
+# Rust
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
-# Kubernetes completion (lazy loaded for performance)
-if command -v kubectl >/dev/null 2>&1; then
-    # Create a lazy-loaded wrapper
-    kubectl() {
-        # Remove this function
-        unfunction kubectl
-        # Load completions
-        source <(command kubectl completion zsh)
-        # Execute the real kubectl
-        command kubectl "$@"
-    }
-    # Simple alias without compdef for now
-    alias k=kubectl
-fi
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Starship Prompt
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 🎯 FINAL OPTIMIZATIONS & CLEANUP
-# ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+eval "$(starship init zsh)"
 
-# History optimization
-HISTSIZE=50000
-SAVEHIST=50000
-HISTFILE=~/.zsh_history
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Local Overrides
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Deduplicate PATH to prevent it from growing in nested shells
-typeset -U path PATH
-
-# Load any additional local configurations
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
-# Performance profiling (uncomment for debugging startup time)
-# zprof
+# Load work configs securely
+if [[ -d "$HOME/.dotfiles/.dotfiles.private" ]]; then
+    local work_config="$HOME/.dotfiles/.dotfiles.private/work-aliases.zsh"
+    if [[ -f "$work_config" ]] && [[ -O "$work_config" ]]; then
+        source "$work_config"
+    fi
+fi
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# FZF Integration
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+# Theme integration
+[[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
