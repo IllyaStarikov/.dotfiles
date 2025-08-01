@@ -68,9 +68,12 @@ end
 -- Reduce LSP logging
 vim.lsp.set_log_level("ERROR")
 
--- Suppress startup messages
+-- Suppress startup messages and prevent vimlog.txt creation
 vim.opt.verbose = 0
 vim.opt.verbosefile = ""
+-- Force disable verbose even if set elsewhere
+vim.cmd("set verbose=0")
+vim.cmd("set verbosefile=")
 
 -- Clear startup messages after VimEnter
 vim.api.nvim_create_autocmd("VimEnter", {

@@ -1,3 +1,7 @@
+-- Disable verbose logging early to prevent vimlog.txt
+vim.opt.verbose = 0
+vim.opt.verbosefile = ""
+
 -- Enable automatic LSP detection
 -- This must be set before any plugins are loaded
 vim.g.lsp_autostart = true
