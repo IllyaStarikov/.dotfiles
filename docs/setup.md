@@ -56,7 +56,8 @@ git config --global user.email "your.email@example.com"
 - Neovim (editor) + LSP servers for 8+ languages
 - tmux (terminal multiplexer)
 - Alacritty (GPU-accelerated terminal)
-- Zsh + Oh My Zsh + Spaceship theme
+- Zsh + Zinit (modern plugin manager)
+- Starship (blazing-fast prompt)
 
 ### Modern CLI Tools
 - `fzf` - fuzzy finder
