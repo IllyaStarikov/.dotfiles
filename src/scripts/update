@@ -24,14 +24,19 @@ brew update
 
 # Check for deprecated packages and remove them
 echo "Checking for deprecated packages..."
-# Use array to prevent command injection
-mapfile -t deprecated_packages < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}')
+# Use array to prevent command injection with proper validation
+mapfile -t deprecated_packages < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}' | grep -E '^[a-zA-Z0-9._@+-]+$')
 if [[ ${#deprecated_packages[@]} -gt 0 ]]; then
     echo "Found deprecated packages: ${deprecated_packages[*]}"
     echo "Removing deprecated packages..."
-    # Safely iterate through array
+    # Safely iterate through array with validated package names
     for pkg in "${deprecated_packages[@]}"; do
-        brew uninstall --ignore-dependencies "$pkg" || echo "Failed to remove: $pkg"
+        # Double-check package name format before using
+        if [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+            brew uninstall --ignore-dependencies -- "$pkg" || echo "Failed to remove: $pkg"
+        else
+            echo "Skipping invalid package name: $pkg" >&2
+        fi
     done
 fi
 
@@ -73,11 +78,16 @@ fi
 if command -v pip3 &> /dev/null; then
     echo "Updating Python packages (pip3)..."
     pip3 install --upgrade pip setuptools wheel || echo "Failed to upgrade pip components."
-    # Use array to safely handle package names
-    mapfile -t outdated_packages < <(pip3 list --outdated --format=json | jq -r '.[].name')
+    # Use array to safely handle package names with validation
+    mapfile -t outdated_packages < <(pip3 list --outdated --format=json | jq -r '.[].name' | grep -E '^[a-zA-Z0-9._-]+$')
     if [[ ${#outdated_packages[@]} -gt 0 ]]; then
         for pkg in "${outdated_packages[@]}"; do
-            pip3 install -U "$pkg" || echo "Failed to update: $pkg"
+            # Validate package name format
+            if [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+                pip3 install -U -- "$pkg" || echo "Failed to update: $pkg"
+            else
+                echo "Skipping invalid package name: $pkg" >&2
+            fi
         done
     fi
 fi
