@@ -1,10 +1,11 @@
 #!/bin/bash
-# Minimal theme switcher - 50 lines or less
+# Minimal theme switcher with Starship support
 
 THEME="${1:-auto}"
 CONFIG_DIR="$HOME/.config/theme-switcher"
 ALACRITTY_DIR="$HOME/.config/alacritty"
 TMUX_DIR="$HOME/.config/tmux"
+STARSHIP_DIR="$HOME/.config"
 
 # Default themes
 LIGHT_THEME="tokyonight_day"
@@ -43,6 +44,7 @@ EOF
 THEME_DIR="$(dirname "$0")/themes/$THEME"
 [[ -f "$THEME_DIR/alacritty.toml" ]] && cp "$THEME_DIR/alacritty.toml" "$ALACRITTY_DIR/theme.toml"
 [[ -f "$THEME_DIR/tmux.conf" ]] && cp "$THEME_DIR/tmux.conf" "$TMUX_DIR/theme.conf"
+[[ -f "$THEME_DIR/starship.toml" ]] && cp "$THEME_DIR/starship.toml" "$STARSHIP_DIR/starship.toml"
 
 # Reload tmux if running
 if tmux info &>/dev/null; then
