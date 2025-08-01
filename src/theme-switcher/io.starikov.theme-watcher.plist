@@ -8,15 +8,27 @@
     <array>
         <string>/usr/bin/env</string>
         <string>bash</string>
-        <string>~/.dotfiles/src/theme-switcher/auto-theme-watcher.sh</string>
+        <string>/Users/starikov/.dotfiles/src/theme-switcher/auto-theme-watcher.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
-    <true/>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>HOME</key>
+        <string>/Users/starikov</string>
+    </dict>
     <key>StandardOutPath</key>
-    <string>/tmp/theme-watcher.log</string>
+    <string>/Users/starikov/.cache/theme-switcher/launchd.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/theme-watcher.error.log</string>
+    <string>/Users/starikov/.cache/theme-switcher/launchd.error.log</string>
 </dict>
 </plist>
