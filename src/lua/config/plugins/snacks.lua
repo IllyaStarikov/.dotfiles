@@ -40,7 +40,14 @@ function M.setup()
             { icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
             { icon = " ", key = "b", desc = "Buffers", action = ":Telescope buffers" },
             { icon = " ", key = "c", desc = "Config", action = function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end },
-            { icon = " ", key = ".", desc = "Browse Files", action = function() Snacks.explorer() end },
+            { icon = " ", key = ".", desc = "Browse Files", action = function() 
+              local ok, snacks = pcall(require, "snacks")
+              if ok and snacks then 
+                snacks.explorer() 
+              else 
+                vim.notify("Snacks not loaded", vim.log.levels.WARN) 
+              end 
+            end },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
         },

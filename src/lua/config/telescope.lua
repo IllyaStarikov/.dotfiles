@@ -20,23 +20,6 @@ function M.setup()
     return
   end
   
-  -- Custom action to open multiple selected files
-  local multi_open = function(prompt_bufnr)
-    local picker = action_state.get_current_picker(prompt_bufnr)
-    local multi_selections = picker:get_multi_selection()
-    
-    if vim.tbl_isempty(multi_selections) then
-      actions.select_default(prompt_bufnr)
-    else
-      actions.close(prompt_bufnr)
-      for _, entry in pairs(multi_selections) do
-        local filename = entry.filename or entry.value
-        if filename then
-          vim.cmd("edit " .. filename)
-        end
-      end
-    end
-  end
   
   -- ⚡ PERFORMANCE & UI SETTINGS
   telescope.setup({
@@ -121,7 +104,7 @@ function M.setup()
           ["<C-c>"] = actions.close,
           ["<Esc>"] = actions.close,
           
-          ["<CR>"] = multi_open,
+          ["<CR>"] = actions.select_default,
           ["<C-x>"] = actions.select_horizontal,
           ["<C-v>"] = actions.select_vertical,
           ["<C-t>"] = actions.select_tab,
@@ -144,7 +127,7 @@ function M.setup()
         n = {
           -- Normal mode mappings
           ["<Esc>"] = actions.close,
-          ["<CR>"] = multi_open,
+          ["<CR>"] = actions.select_default,
           ["<C-x>"] = actions.select_horizontal,
           ["<C-v>"] = actions.select_vertical,
           ["<C-t>"] = actions.select_tab,
