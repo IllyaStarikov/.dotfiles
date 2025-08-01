@@ -30,10 +30,27 @@ if ! xcode-select -p &>/dev/null; then
     read -r
 fi
 
-# Install Homebrew
+# Install Homebrew with verification
 echo "🍺 Installing Homebrew..."
 if ! command -v brew &>/dev/null; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # Download installer to temp file for verification
+    BREW_INSTALLER="/tmp/homebrew-installer-$$.sh"
+    info "Downloading Homebrew installer..."
+    if ! curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o "$BREW_INSTALLER"; then
+        error "Failed to download Homebrew installer"
+        exit 1
+    fi
+    
+    # Basic verification - check it's a shell script and contains expected content
+    if ! grep -q "Homebrew" "$BREW_INSTALLER" || ! grep -q "/bin/bash" "$BREW_INSTALLER"; then
+        error "Downloaded file doesn't appear to be valid Homebrew installer"
+        rm -f "$BREW_INSTALLER"
+        exit 1
+    fi
+    
+    # Run installer
+    /bin/bash "$BREW_INSTALLER"
+    rm -f "$BREW_INSTALLER"
     
     # Add Homebrew to PATH for this session
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
@@ -166,10 +183,27 @@ if [[ -f "$HOME/.dotfiles/src/setup/aliases.sh" ]]; then
     bash "$HOME/.dotfiles/src/setup/aliases.sh"
 fi
 
-# Install Oh My Zsh (this might change the shell)
+# Install Oh My Zsh with verification
 echo "🐚 Installing Oh My Zsh..."
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    # Download installer for verification
+    OMZ_INSTALLER="/tmp/omz-installer-$$.sh"
+    info "Downloading Oh My Zsh installer..."
+    if ! curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o "$OMZ_INSTALLER"; then
+        error "Failed to download Oh My Zsh installer"
+        exit 1
+    fi
+    
+    # Basic verification
+    if ! grep -q "oh-my-zsh" "$OMZ_INSTALLER" || ! grep -q "#!/bin/sh" "$OMZ_INSTALLER"; then
+        error "Downloaded file doesn't appear to be valid Oh My Zsh installer"
+        rm -f "$OMZ_INSTALLER"
+        exit 1
+    fi
+    
+    # Run installer
+    RUNZSH=no sh "$OMZ_INSTALLER"
+    rm -f "$OMZ_INSTALLER"
 fi
 
 # Install Spaceship theme
@@ -212,10 +246,27 @@ if command -v luarocks &>/dev/null; then
     luarocks install jsregexp 2>/dev/null || true
 fi
 
-# Setup Rust (for blink.cmp and other tools)
+# Setup Rust with verification
 echo "🦀 Setting up Rust..."
 if ! command -v cargo &>/dev/null; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    # Download installer for verification
+    RUST_INSTALLER="/tmp/rustup-installer-$$.sh"
+    info "Downloading Rust installer..."
+    if ! curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$RUST_INSTALLER"; then
+        error "Failed to download Rust installer"
+        exit 1
+    fi
+    
+    # Basic verification
+    if ! grep -q "rustup" "$RUST_INSTALLER" || ! grep -q "#!/bin/sh" "$RUST_INSTALLER"; then
+        error "Downloaded file doesn't appear to be valid Rust installer"
+        rm -f "$RUST_INSTALLER"
+        exit 1
+    fi
+    
+    # Run installer with non-interactive mode
+    sh "$RUST_INSTALLER" -y
+    rm -f "$RUST_INSTALLER"
     source "$HOME/.cargo/env"
 fi
 
