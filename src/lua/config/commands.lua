@@ -60,14 +60,31 @@ end, { desc = "Copy file name to clipboard" })
 -- Search for word under cursor in project
 api.nvim_create_user_command("SearchProject", function()
   local word = fn.expand("<cword>")
-  require('telescope.builtin').grep_string({ search = word })
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  if ok then
+    builtin.grep_string({ search = word })
+  else
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+  end
 end, { desc = "Search word under cursor in project" })
 
 -- Search for visual selection in project
 api.nvim_create_user_command("SearchSelection", function()
   local selection = fn.getregion(fn.getpos("'<"), fn.getpos("'>"), { type = fn.mode() })
-  require('telescope.builtin').grep_string({ search = table.concat(selection, "\n") })
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  if ok then
+    builtin.grep_string({ search = table.concat(selection, "\n") })
+  else
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+  end
 end, { range = true, desc = "Search visual selection in project" })
+
+-- =============================================================================
+-- HEALTH CHECK
+-- =============================================================================
+
+-- Load health check module
+pcall(require, "config.health")
 
 -- =============================================================================
 -- FORMATTING UTILITIES

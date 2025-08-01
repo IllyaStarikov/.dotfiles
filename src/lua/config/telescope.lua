@@ -6,9 +6,19 @@
 local M = {}
 
 function M.setup()
-  local telescope = require('telescope')
-  local actions = require('telescope.actions')
-  local action_state = require('telescope.actions.state')
+  local telescope_ok, telescope = pcall(require, 'telescope')
+  if not telescope_ok then
+    vim.notify("Failed to load telescope", vim.log.levels.ERROR)
+    return
+  end
+  
+  local actions_ok, actions = pcall(require, 'telescope.actions')
+  local state_ok, action_state = pcall(require, 'telescope.actions.state')
+  
+  if not actions_ok or not state_ok then
+    vim.notify("Failed to load telescope actions", vim.log.levels.ERROR)
+    return
+  end
   
   -- Custom action to open multiple selected files
   local multi_open = function(prompt_bufnr)
