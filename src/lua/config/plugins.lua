@@ -41,35 +41,35 @@ require("lazy").setup({
     end,
     keys = {
       { "<C-p>", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.find_files() end
       end, desc = "Find Files" },
       { "<leader>ff", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.find_files() end
       end, desc = "Find Files" },
       { "<leader>fg", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.live_grep() end
       end, desc = "Live Grep" },
       { "<leader>fb", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.buffers() end
       end, desc = "Buffers" },
       { "<leader>fh", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.help_tags() end
       end, desc = "Help Tags" },
       { "<leader>fr", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.oldfiles() end
       end, desc = "Recent Files" },
       { "<leader>fc", function() 
-        local builtin, ok = pcall(require, 'telescope.builtin')
+        local ok, builtin = pcall(require, 'telescope.builtin')
         if ok then builtin.commands() end
       end, desc = "Commands" },
       { "<leader>fp", function() 
-        local builtin, ok = pcall(require, "telescope.builtin")
+        local ok, builtin = pcall(require, "telescope.builtin")
         local config_ok, lazy_config = pcall(require, "lazy.core.config")
         if ok and config_ok then 
           builtin.find_files({ cwd = lazy_config.options.root }) 
