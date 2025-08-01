@@ -1,0 +1,47 @@
+#!/bin/bash
+# Pre-commit hook for secret scanning with gitleaks
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Check if gitleaks is installed
+if ! command -v gitleaks &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Warning: gitleaks is not installed${NC}"
+    echo "Install with: brew install gitleaks"
+    echo "Skipping secret scanning..."
+    exit 0
+fi
+
+# Find gitleaks config
+GITLEAKS_CONFIG=""
+if [[ -f ".gitleaks.toml" ]]; then
+    GITLEAKS_CONFIG=".gitleaks.toml"
+elif [[ -f "$HOME/.dotfiles/src/gitleaks.toml" ]]; then
+    GITLEAKS_CONFIG="$HOME/.dotfiles/src/gitleaks.toml"
+fi
+
+# Run gitleaks on staged files
+echo "🔍 Scanning for secrets..."
+
+if [[ -n "$GITLEAKS_CONFIG" ]]; then
+    gitleaks protect --staged --config="$GITLEAKS_CONFIG" --verbose --no-banner
+else
+    gitleaks protect --staged --verbose --no-banner
+fi
+
+RESULT=$?
+
+if [[ $RESULT -ne 0 ]]; then
+    echo -e "${RED}❌ Potential secrets detected!${NC}"
+    echo "Please remove sensitive information before committing."
+    echo ""
+    echo "If this is a false positive, you can:"
+    echo "1. Update the gitleaks.toml configuration"
+    echo "2. Use 'git commit --no-verify' to skip this check (NOT RECOMMENDED)"
+    exit 1
+else
+    echo -e "${GREEN}✅ No secrets detected${NC}"
+fi
