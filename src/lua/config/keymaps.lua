@@ -114,11 +114,22 @@ map("n", "<leader>o", safe_snacks("explorer"), { desc = "Open File Explorer" })
 map("n", "<leader>O", function() safe_snacks("explorer")({ float = true }) end, { desc = "Open Explorer in Float" })
 map("n", "-", safe_snacks("explorer"), { desc = "Open File Explorer" })
 -- Telescope fuzzy finding (modern replacement for FZF)
-map("n", "<C-p>", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
-map("n", "<leader>F", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })  -- Telescope
-map("n", "<leader>B", function() require('telescope.builtin').buffers() end, { desc = "Buffers" })  -- Telescope
+local function safe_telescope(picker, opts)
+  return function()
+    local ok, builtin = pcall(require, 'telescope.builtin')
+    if ok and builtin[picker] then
+      builtin[picker](opts)
+    else
+      vim.notify("Telescope not available", vim.log.levels.WARN)
+    end
+  end
+end
+
+map("n", "<C-p>", safe_telescope("find_files"), { desc = "Find Files" })
+map("n", "<leader>F", safe_telescope("find_files"), { desc = "Find Files" })  -- Telescope
+map("n", "<leader>B", safe_telescope("buffers"), { desc = "Buffers" })  -- Telescope
 -- <leader>T is now used for Aerial (code outline)
-map("n", "<leader>g", function() require('telescope.builtin').live_grep() end, { desc = "Live Grep" })
+map("n", "<leader>g", safe_telescope("live_grep"), { desc = "Live Grep" })
 map("n", "<leader><leader>", "v$h", opts)
 
 -- Mini.align is configured with ga/gA in the plugin setup
@@ -324,29 +335,29 @@ map("n", "<leader>tn", function() safe_snacks("terminal")("node") end, { desc = 
 
 -- 🔍 TELESCOPE (Modern Fuzzy Finding)
 -- Core pickers with advanced features
-map("n", "<leader>ff", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
-map("n", "<leader>fF", function() require('telescope.builtin').find_files({ hidden = true }) end, { desc = "Find Files (+ hidden)" })
-map("n", "<leader>fr", function() require('telescope.builtin').oldfiles() end, { desc = "Recent Files" })
-map("n", "<leader>fg", function() require('telescope.builtin').live_grep() end, { desc = "Live Grep" })
-map("n", "<leader>fG", function() require('telescope.builtin').live_grep({ additional_args = {"--hidden"} }) end, { desc = "Live Grep (+ hidden)" })
-map("n", "<leader>fb", function() require('telescope.builtin').buffers() end, { desc = "Buffers" })
-map("n", "<leader>fh", function() require('telescope.builtin').help_tags() end, { desc = "Help" })
-map("n", "<leader>fc", function() require('telescope.builtin').commands() end, { desc = "Commands" })
-map("n", "<leader>fk", function() require('telescope.builtin').keymaps() end, { desc = "Keymaps" })
+map("n", "<leader>ff", safe_telescope("find_files"), { desc = "Find Files" })
+map("n", "<leader>fF", safe_telescope("find_files", { hidden = true }), { desc = "Find Files (+ hidden)" })
+map("n", "<leader>fr", safe_telescope("oldfiles"), { desc = "Recent Files" })
+map("n", "<leader>fg", safe_telescope("live_grep"), { desc = "Live Grep" })
+map("n", "<leader>fG", safe_telescope("live_grep", { additional_args = {"--hidden"} }), { desc = "Live Grep (+ hidden)" })
+map("n", "<leader>fb", safe_telescope("buffers"), { desc = "Buffers" })
+map("n", "<leader>fh", safe_telescope("help_tags"), { desc = "Help" })
+map("n", "<leader>fc", safe_telescope("commands"), { desc = "Commands" })
+map("n", "<leader>fk", safe_telescope("keymaps"), { desc = "Keymaps" })
 
 -- Advanced pickers
-map("n", "<leader>f/", function() require('telescope.builtin').grep_string() end, { desc = "Grep Word Under Cursor" })
-map("n", "<leader>f:", function() require('telescope.builtin').command_history() end, { desc = "Command History" })
-map("n", "<leader>f;", function() require('telescope.builtin').resume() end, { desc = "Resume Last Picker" })
-map("n", "<leader>fj", function() require('telescope.builtin').jumplist() end, { desc = "Jumps" })
-map("n", "<leader>fm", function() require('telescope.builtin').marks() end, { desc = "Marks" })
-map("n", "<leader>fq", function() require('telescope.builtin').quickfix() end, { desc = "Quickfix List" })
-map("n", "<leader>fl", function() require('telescope.builtin').loclist() end, { desc = "Location List" })
+map("n", "<leader>f/", safe_telescope("grep_string"), { desc = "Grep Word Under Cursor" })
+map("n", "<leader>f:", safe_telescope("command_history"), { desc = "Command History" })
+map("n", "<leader>f;", safe_telescope("resume"), { desc = "Resume Last Picker" })
+map("n", "<leader>fj", safe_telescope("jumplist"), { desc = "Jumps" })
+map("n", "<leader>fm", safe_telescope("marks"), { desc = "Marks" })
+map("n", "<leader>fq", safe_telescope("quickfix"), { desc = "Quickfix List" })
+map("n", "<leader>fl", safe_telescope("loclist"), { desc = "Location List" })
 
 -- Specialized pickers
-map("n", "<leader>fd", function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Config Files" })
-map("n", "<leader>fp", function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("data") .. "/lazy" }) end, { desc = "Plugin Files" })
-map("n", "<leader>fv", function() require('telescope.builtin').find_files({ cwd = vim.env.VIMRUNTIME }) end, { desc = "Neovim Runtime" })
+map("n", "<leader>fd", safe_telescope("find_files", { cwd = vim.fn.stdpath("config") }), { desc = "Config Files" })
+map("n", "<leader>fp", safe_telescope("find_files", { cwd = vim.fn.stdpath("data") .. "/lazy" }), { desc = "Plugin Files" })
+map("n", "<leader>fv", safe_telescope("find_files", { cwd = vim.env.VIMRUNTIME }), { desc = "Neovim Runtime" })
 
 -- 🌐 GIT INTEGRATION (Supercharged)
 map("n", "<leader>gg", safe_snacks("lazygit"), { desc = "Lazygit" })
@@ -360,10 +371,10 @@ map("n", "<leader>gb", function()
   end
 end, { desc = "Git Blame Line" })
 map("n", "<leader>gB", safe_snacks("gitbrowse"), { desc = "Git Browse" })
-map("n", "<leader>gf", function() require('telescope.builtin').git_files() end, { desc = "Git Files" })
-map("n", "<leader>gs", function() require('telescope.builtin').git_status() end, { desc = "Git Status" })
-map("n", "<leader>gc", function() require('telescope.builtin').git_commits() end, { desc = "Git Commits" })
-map("n", "<leader>gC", function() require('telescope.builtin').git_bcommits() end, { desc = "Buffer Git Commits" })
+map("n", "<leader>gf", safe_telescope("git_files"), { desc = "Git Files" })
+map("n", "<leader>gs", safe_telescope("git_status"), { desc = "Git Status" })
+map("n", "<leader>gc", safe_telescope("git_commits"), { desc = "Git Commits" })
+map("n", "<leader>gC", safe_telescope("git_bcommits"), { desc = "Buffer Git Commits" })
 
 -- 📱 NOTIFICATIONS (Smart Management)
 map("n", "<leader>un", function()
@@ -431,7 +442,14 @@ end, { desc = "Delete Unnamed Buffers" })
 map("n", "<leader>e", safe_snacks("explorer"), { desc = "Explorer" })
 map("n", "<leader>E", function() safe_snacks("explorer")({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Explorer (file dir)" })
 -- Alternative file explorer (Oil)
-map("n", "<leader>N", function() require('oil').open() end, { desc = "Oil File Explorer" })
+map("n", "<leader>N", function() 
+  local ok, oil = pcall(require, 'oil')
+  if ok then 
+    oil.open() 
+  else
+    vim.notify("Oil.nvim not loaded", vim.log.levels.WARN)
+  end
+end, { desc = "Oil File Explorer" })
 
 -- 🧘 ZEN MODE (Focus Enhancement)
 map("n", "<leader>z", safe_snacks("zen"), { desc = "Toggle Zen Mode" })
@@ -448,27 +466,66 @@ end, { desc = "Zen Zoom" })
 map("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "LSP Rename Symbol" })
 
 -- ⚡ TOGGLE UTILITIES (Quick Switches)
-map("n", "<leader>tw", function() Snacks.toggle.option("wrap", { name = "Wrap" }) end, { desc = "Toggle Wrap" })
-map("n", "<leader>tS", function() Snacks.toggle.option("spell", { name = "Spell" }) end, { desc = "Toggle Spell" })
-map("n", "<leader>tn", function() Snacks.toggle.option("number", { name = "Number" }) end, { desc = "Toggle Number" })
-map("n", "<leader>tr", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }) end, { desc = "Toggle Relative Number" })
-map("n", "<leader>tc", function() Snacks.toggle.option("conceallevel", { off = 0, on = 2 }) end, { desc = "Toggle Conceal" })
-map("n", "<leader>th", function() Snacks.toggle.option("hlsearch") end, { desc = "Toggle Highlight Search" })
-map("n", "<leader>ti", function() Snacks.toggle.indent() end, { desc = "Toggle Indent Guides" })
-map("n", "<leader>td", function() Snacks.toggle.dim() end, { desc = "Toggle Dim" })
-map("n", "<leader>tD", function() Snacks.toggle.diagnostics() end, { desc = "Toggle Diagnostics" })
+local function safe_toggle(toggle_fn, ...)
+  local args = {...}
+  return function()
+    local ok, snacks = pcall(require, "snacks")
+    if ok and snacks and snacks.toggle then
+      local fn = snacks.toggle[toggle_fn] or snacks.toggle
+      if type(fn) == "function" then
+        fn(unpack(args))
+      else
+        vim.notify("Snacks toggle." .. toggle_fn .. " not available", vim.log.levels.WARN)
+      end
+    else
+      vim.notify("Snacks toggle not available", vim.log.levels.WARN)
+    end
+  end
+end
+
+map("n", "<leader>tw", safe_toggle("option", "wrap", { name = "Wrap" }), { desc = "Toggle Wrap" })
+map("n", "<leader>tS", safe_toggle("option", "spell", { name = "Spell" }), { desc = "Toggle Spell" })
+map("n", "<leader>tn", safe_toggle("option", "number", { name = "Number" }), { desc = "Toggle Number" })
+map("n", "<leader>tr", safe_toggle("option", "relativenumber", { name = "Relative Number" }), { desc = "Toggle Relative Number" })
+map("n", "<leader>tc", safe_toggle("option", "conceallevel", { off = 0, on = 2 }), { desc = "Toggle Conceal" })
+map("n", "<leader>th", safe_toggle("option", "hlsearch"), { desc = "Toggle Highlight Search" })
+map("n", "<leader>ti", safe_toggle("indent"), { desc = "Toggle Indent Guides" })
+map("n", "<leader>td", safe_toggle("dim"), { desc = "Toggle Dim" })
+map("n", "<leader>tD", safe_toggle("diagnostics"), { desc = "Toggle Diagnostics" })
 
 -- 🎯 SCOPE NAVIGATION (Treesitter Magic)
-map("n", "[s", function() Snacks.scope.jump({ direction = "prev" }) end, { desc = "Previous Scope" })
-map("n", "]s", function() Snacks.scope.jump({ direction = "next" }) end, { desc = "Next Scope" })
-map("n", "[S", function() Snacks.scope.jump({ direction = "prev", edge = true }) end, { desc = "Previous Scope Edge" })
-map("n", "]S", function() Snacks.scope.jump({ direction = "next", edge = true }) end, { desc = "Next Scope Edge" })
+local function safe_scope_jump(opts)
+  return function()
+    local ok, snacks = pcall(require, "snacks")
+    if ok and snacks and snacks.scope and snacks.scope.jump then
+      snacks.scope.jump(opts)
+    else
+      vim.notify("Snacks scope not available", vim.log.levels.WARN)
+    end
+  end
+end
+
+map("n", "[s", safe_scope_jump({ direction = "prev" }), { desc = "Previous Scope" })
+map("n", "]s", safe_scope_jump({ direction = "next" }), { desc = "Next Scope" })
+map("n", "[S", safe_scope_jump({ direction = "prev", edge = true }), { desc = "Previous Scope Edge" })
+map("n", "]S", safe_scope_jump({ direction = "next", edge = true }), { desc = "Next Scope Edge" })
 
 -- 🔧 POWER USER UTILITIES
-map("n", "<leader>pp", function() Snacks.profiler.pick() end, { desc = "Profiler" })
-map("n", "<leader>pP", function() Snacks.profiler.scratch() end, { desc = "Profiler Scratch" })
-map("n", "<leader>pd", function() Snacks.debug.inspect() end, { desc = "Debug Inspect" })
-map("n", "<leader>pD", function() Snacks.debug.backtrace() end, { desc = "Debug Backtrace" })
+local function safe_snacks_sub(module, fn)
+  return function(...)
+    local ok, snacks = pcall(require, "snacks")
+    if ok and snacks and snacks[module] and snacks[module][fn] then
+      snacks[module][fn](...)
+    else
+      vim.notify("Snacks " .. module .. "." .. fn .. " not available", vim.log.levels.WARN)
+    end
+  end
+end
+
+map("n", "<leader>pp", safe_snacks_sub("profiler", "pick"), { desc = "Profiler" })
+map("n", "<leader>pP", safe_snacks_sub("profiler", "scratch"), { desc = "Profiler Scratch" })
+map("n", "<leader>pd", safe_snacks_sub("debug", "inspect"), { desc = "Debug Inspect" })
+map("n", "<leader>pD", safe_snacks_sub("debug", "backtrace"), { desc = "Debug Backtrace" })
 
 -- 🎨 VISUAL ENHANCEMENTS
 map("n", "<leader>vh", function()
@@ -491,12 +548,22 @@ end, { desc = "Prev Reference" })
 -- 🌈 MULTI-SELECT OPERATIONS (Advanced Telescope Usage)
 map("v", "<leader>fg", function() 
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
-  require('telescope.builtin').grep_string({ search = table.concat(selection, "\n") })
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  if ok then
+    builtin.grep_string({ search = table.concat(selection, "\n") })
+  else
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+  end
 end, { desc = "Grep Selection" })
 
 map("v", "<leader>ff", function()
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
-  require('telescope.builtin').find_files({ default_text = table.concat(selection, "") })
+  local ok, builtin = pcall(require, 'telescope.builtin')
+  if ok then
+    builtin.find_files({ default_text = table.concat(selection, "") })
+  else
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+  end
 end, { desc = "Find Files with Selection" })
 
 -- 📝 VIMTEX: LaTeX Power User Keybindings (Buffer-local for .tex files)
