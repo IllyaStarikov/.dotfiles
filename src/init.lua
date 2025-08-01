@@ -1,6 +1,9 @@
--- Disable verbose logging early to prevent vimlog.txt
-vim.opt.verbose = 0
-vim.opt.verbosefile = ""
+-- Disable verbose logging early to prevent vimlog.txt during normal operation
+-- This won't affect explicit -V flag usage
+if vim.fn.has('vim_starting') == 1 and vim.v.verbose == 0 then
+  vim.opt.verbose = 0
+  vim.opt.verbosefile = ""
+end
 
 -- Enable automatic LSP detection
 -- This must be set before any plugins are loaded

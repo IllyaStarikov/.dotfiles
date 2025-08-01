@@ -46,11 +46,33 @@ map("n", "<right>", "<C-w><right>", opts)
 -- Buffer navigation
 map("n", "<Tab>", ":bnext<cr>", opts)
 map("n", "<S-Tab>", ":bprevious<cr>", opts)
+map("n", "<S-h>", ":bprevious<cr>", { desc = "Previous buffer" })
+map("n", "<S-l>", ":bnext<cr>", { desc = "Next buffer" })
+map("n", "[b", ":bprevious<cr>", { desc = "Previous buffer" })
+map("n", "]b", ":bnext<cr>", { desc = "Next buffer" })
+
+-- Buffer management
+map("n", "<leader>bd", ":bdelete<cr>", { desc = "Delete buffer" })
+map("n", "<leader>ba", ":%bdelete<cr>", { desc = "Delete all buffers" })
+map("n", "<leader>bo", ":%bdelete|edit#|bdelete#<cr>", { desc = "Delete other buffers" })
 
 -- Buffer navigation by number
 for i = 1, 9 do
   map("n", "<leader>" .. i, function() vim.cmd("buffer " .. i) end, { desc = "Go to buffer " .. i })
 end
+
+-- Show buffer list with indices
+map("n", "<leader>bb", function()
+  local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+  local lines = {}
+  for i, buf in ipairs(buffers) do
+    local name = vim.fn.fnamemodify(buf.name, ':t')
+    if name == '' then name = '[No Name]' end
+    local modified = buf.changed == 1 and ' [+]' or ''
+    table.insert(lines, string.format('%d: %s%s', i, name, modified))
+  end
+  vim.notify(table.concat(lines, '\n'), vim.log.levels.INFO, { title = 'Open Buffers' })
+end, { desc = "Show buffer list" })
 map("n", "<leader>0", ":bprevious<cr>", { desc = "Go to previous buffer" })
 
 -- Diagnostic navigation (using built-in LSP)
@@ -75,10 +97,22 @@ map("n", "<leader>c", ":Kwbd<cr>", opts)
 map("n", "<leader>x", ":x<cr>", opts)
 map("n", "<leader>d", '"_d', opts)
 
+-- Safe Snacks wrapper
+local function safe_snacks(fn)
+  return function(...)
+    local ok, snacks = pcall(require, "snacks")
+    if ok and snacks and snacks[fn] then
+      return snacks[fn](...)
+    else
+      vim.notify("Snacks.nvim is not loaded", vim.log.levels.WARN)
+    end
+  end
+end
+
 -- File Management
-map("n", "<leader>o", function() Snacks.explorer() end, { desc = "Open File Explorer" })
-map("n", "<leader>O", function() Snacks.explorer({ float = true }) end, { desc = "Open Explorer in Float" })
-map("n", "-", function() Snacks.explorer() end, { desc = "Open File Explorer" })
+map("n", "<leader>o", safe_snacks("explorer"), { desc = "Open File Explorer" })
+map("n", "<leader>O", function() safe_snacks("explorer")({ float = true }) end, { desc = "Open Explorer in Float" })
+map("n", "-", safe_snacks("explorer"), { desc = "Open File Explorer" })
 -- Telescope fuzzy finding (modern replacement for FZF)
 map("n", "<C-p>", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })
 map("n", "<leader>F", function() require('telescope.builtin').find_files() end, { desc = "Find Files" })  -- Telescope
@@ -235,25 +269,60 @@ end, { desc = "Switch to Copilot" })
 -- 🍿 SNACKS.NVIM: High-Performance Power User Keybindings
 
 -- 🎯 DASHBOARD & CORE
-map("n", "<leader>sd", function() Snacks.dashboard() end, { desc = "Dashboard" })
-map("n", "<leader>sD", function() Snacks.dashboard.open() end, { desc = "Force Open Dashboard" })
+map("n", "<leader>sd", safe_snacks("dashboard"), { desc = "Dashboard" })
+map("n", "<leader>sD", function() 
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.dashboard and snacks.dashboard.open then
+    snacks.dashboard.open()
+  else
+    vim.notify("Snacks dashboard not available", vim.log.levels.WARN)
+  end
+end, { desc = "Force Open Dashboard" })
 
 -- 📋 SCRATCH BUFFERS (Power User Workflow)
-map("n", "<leader>.", function() Snacks.scratch() end, { desc = "Toggle Scratch Buffer" })
-map("n", "<leader>S", function() Snacks.scratch.select() end, { desc = "Select Scratch Buffer" })
-map("n", "<leader>sn", function() Snacks.scratch({ name = "notes" }) end, { desc = "Notes Scratch" })
-map("n", "<leader>st", function() Snacks.scratch({ name = "todo", ft = "markdown" }) end, { desc = "Todo Scratch" })
-map("n", "<leader>sc", function() Snacks.scratch({ name = "code", ft = "lua" }) end, { desc = "Code Scratch" })
+map("n", "<leader>.", safe_snacks("scratch"), { desc = "Toggle Scratch Buffer" })
+map("n", "<leader>S", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.scratch and snacks.scratch.select then
+    snacks.scratch.select()
+  else
+    vim.notify("Snacks scratch not available", vim.log.levels.WARN)
+  end
+end, { desc = "Select Scratch Buffer" })
+map("n", "<leader>sn", function() safe_snacks("scratch")({ name = "notes" }) end, { desc = "Notes Scratch" })
+map("n", "<leader>st", function() safe_snacks("scratch")({ name = "todo", ft = "markdown" }) end, { desc = "Todo Scratch" })
+map("n", "<leader>sc", function() safe_snacks("scratch")({ name = "code", ft = "lua" }) end, { desc = "Code Scratch" })
 
 -- 🚀 TERMINAL (Lightning Fast)
-map("n", "<leader>tt", function() Snacks.terminal() end, { desc = "Toggle Terminal" })
-map("n", "<leader>tf", function() Snacks.terminal.float() end, { desc = "Terminal (float)" })
-map("n", "<leader>ts", function() Snacks.terminal.split() end, { desc = "Terminal (split)" })
-map("n", "<leader>tv", function() Snacks.terminal.split({ position = "right" }) end, { desc = "Terminal (vsplit)" })
+map("n", "<leader>tt", safe_snacks("terminal"), { desc = "Toggle Terminal" })
+map("n", "<leader>tf", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.terminal and snacks.terminal.float then
+    snacks.terminal.float()
+  else
+    vim.notify("Snacks terminal not available", vim.log.levels.WARN)
+  end
+end, { desc = "Terminal (float)" })
+map("n", "<leader>ts", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.terminal and snacks.terminal.split then
+    snacks.terminal.split()
+  else
+    vim.notify("Snacks terminal not available", vim.log.levels.WARN)
+  end
+end, { desc = "Terminal (split)" })
+map("n", "<leader>tv", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.terminal and snacks.terminal.split then
+    snacks.terminal.split({ position = "right" })
+  else
+    vim.notify("Snacks terminal not available", vim.log.levels.WARN)
+  end
+end, { desc = "Terminal (vsplit)" })
 -- Quick terminal commands
-map("n", "<leader>tg", function() Snacks.terminal("git status") end, { desc = "Git Status Terminal" })
-map("n", "<leader>tp", function() Snacks.terminal("python3") end, { desc = "Python Terminal" })
-map("n", "<leader>tn", function() Snacks.terminal("node") end, { desc = "Node Terminal" })
+map("n", "<leader>tg", function() safe_snacks("terminal")("git status") end, { desc = "Git Status Terminal" })
+map("n", "<leader>tp", function() safe_snacks("terminal")("python3") end, { desc = "Python Terminal" })
+map("n", "<leader>tn", function() safe_snacks("terminal")("node") end, { desc = "Node Terminal" })
 
 -- 🔍 TELESCOPE (Modern Fuzzy Finding)
 -- Core pickers with advanced features
@@ -282,36 +351,100 @@ map("n", "<leader>fp", function() require('telescope.builtin').find_files({ cwd 
 map("n", "<leader>fv", function() require('telescope.builtin').find_files({ cwd = vim.env.VIMRUNTIME }) end, { desc = "Neovim Runtime" })
 
 -- 🌐 GIT INTEGRATION (Supercharged)
-map("n", "<leader>gg", function() Snacks.lazygit() end, { desc = "Lazygit" })
-map("n", "<leader>gG", function() Snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Lazygit (file dir)" })
-map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
-map("n", "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
+map("n", "<leader>gg", safe_snacks("lazygit"), { desc = "Lazygit" })
+map("n", "<leader>gG", function() safe_snacks("lazygit")({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Lazygit (file dir)" })
+map("n", "<leader>gb", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.git and snacks.git.blame_line then
+    snacks.git.blame_line()
+  else
+    vim.notify("Snacks git not available", vim.log.levels.WARN)
+  end
+end, { desc = "Git Blame Line" })
+map("n", "<leader>gB", safe_snacks("gitbrowse"), { desc = "Git Browse" })
 map("n", "<leader>gf", function() require('telescope.builtin').git_files() end, { desc = "Git Files" })
 map("n", "<leader>gs", function() require('telescope.builtin').git_status() end, { desc = "Git Status" })
 map("n", "<leader>gc", function() require('telescope.builtin').git_commits() end, { desc = "Git Commits" })
 map("n", "<leader>gC", function() require('telescope.builtin').git_bcommits() end, { desc = "Buffer Git Commits" })
 
 -- 📱 NOTIFICATIONS (Smart Management)
-map("n", "<leader>un", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
-map("n", "<leader>nh", function() Snacks.notifier.show_history() end, { desc = "Notification History" })
-map("n", "<leader>nd", function() Snacks.notifier.hide() Snacks.notifier.show_history() end, { desc = "Clear & Show History" })
+map("n", "<leader>un", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.notifier and snacks.notifier.hide then
+    snacks.notifier.hide()
+  else
+    vim.notify("Snacks notifier not available", vim.log.levels.WARN)
+  end
+end, { desc = "Dismiss All Notifications" })
+map("n", "<leader>nh", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.notifier and snacks.notifier.show_history then
+    snacks.notifier.show_history()
+  else
+    vim.notify("Snacks notifier not available", vim.log.levels.WARN)
+  end
+end, { desc = "Notification History" })
+map("n", "<leader>nd", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.notifier then
+    if snacks.notifier.hide then snacks.notifier.hide() end
+    if snacks.notifier.show_history then snacks.notifier.show_history() end
+  else
+    vim.notify("Snacks notifier not available", vim.log.levels.WARN)
+  end
+end, { desc = "Clear & Show History" })
 
 -- 📦 BUFFER MANAGEMENT (Power User)
-map("n", "<leader>bd", function() Snacks.bufdelete() end, { desc = "Delete Buffer" })
-map("n", "<leader>bD", function() Snacks.bufdelete.all() end, { desc = "Delete All Buffers" })
-map("n", "<leader>bo", function() Snacks.bufdelete.other() end, { desc = "Delete Other Buffers" })
-map("n", "<leader>bh", function() Snacks.bufdelete.hidden() end, { desc = "Delete Hidden Buffers" })
-map("n", "<leader>bu", function() Snacks.bufdelete.unnamed() end, { desc = "Delete Unnamed Buffers" })
+map("n", "<leader>bd", safe_snacks("bufdelete"), { desc = "Delete Buffer" })
+map("n", "<leader>bD", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.bufdelete and snacks.bufdelete.all then
+    snacks.bufdelete.all()
+  else
+    vim.notify("Snacks bufdelete not available", vim.log.levels.WARN)
+  end
+end, { desc = "Delete All Buffers" })
+map("n", "<leader>bo", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.bufdelete and snacks.bufdelete.other then
+    snacks.bufdelete.other()
+  else
+    vim.notify("Snacks bufdelete not available", vim.log.levels.WARN)
+  end
+end, { desc = "Delete Other Buffers" })
+map("n", "<leader>bh", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.bufdelete and snacks.bufdelete.hidden then
+    snacks.bufdelete.hidden()
+  else
+    vim.notify("Snacks bufdelete not available", vim.log.levels.WARN)
+  end
+end, { desc = "Delete Hidden Buffers" })
+map("n", "<leader>bu", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.bufdelete and snacks.bufdelete.unnamed then
+    snacks.bufdelete.unnamed()
+  else
+    vim.notify("Snacks bufdelete not available", vim.log.levels.WARN)
+  end
+end, { desc = "Delete Unnamed Buffers" })
 
 -- 🔍 FILE EXPLORER (Lightning Fast)
-map("n", "<leader>e", function() Snacks.explorer() end, { desc = "Explorer" })
-map("n", "<leader>E", function() Snacks.explorer({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Explorer (file dir)" })
+map("n", "<leader>e", safe_snacks("explorer"), { desc = "Explorer" })
+map("n", "<leader>E", function() safe_snacks("explorer")({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Explorer (file dir)" })
 -- Alternative file explorer (Oil)
 map("n", "<leader>N", function() require('oil').open() end, { desc = "Oil File Explorer" })
 
 -- 🧘 ZEN MODE (Focus Enhancement)
-map("n", "<leader>z", function() Snacks.zen() end, { desc = "Toggle Zen Mode" })
-map("n", "<leader>Z", function() Snacks.zen.zoom() end, { desc = "Zen Zoom" })
+map("n", "<leader>z", safe_snacks("zen"), { desc = "Toggle Zen Mode" })
+map("n", "<leader>Z", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.zen and snacks.zen.zoom then
+    snacks.zen.zoom()
+  else
+    vim.notify("Snacks zen not available", vim.log.levels.WARN)
+  end
+end, { desc = "Zen Zoom" })
 
 -- 🔄 RENAME (LSP-Integrated)
 map("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "LSP Rename Symbol" })
@@ -340,8 +473,22 @@ map("n", "<leader>pd", function() Snacks.debug.inspect() end, { desc = "Debug In
 map("n", "<leader>pD", function() Snacks.debug.backtrace() end, { desc = "Debug Backtrace" })
 
 -- 🎨 VISUAL ENHANCEMENTS
-map("n", "<leader>vh", function() Snacks.words.jump(vim.v.count1, true) end, { desc = "Next Reference" })
-map("n", "<leader>vH", function() Snacks.words.jump(-vim.v.count1, true) end, { desc = "Prev Reference" })
+map("n", "<leader>vh", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.words and snacks.words.jump then
+    snacks.words.jump(vim.v.count1, true)
+  else
+    vim.notify("Snacks words not available", vim.log.levels.WARN)
+  end
+end, { desc = "Next Reference" })
+map("n", "<leader>vH", function()
+  local ok, snacks = pcall(require, "snacks")
+  if ok and snacks and snacks.words and snacks.words.jump then
+    snacks.words.jump(-vim.v.count1, true)
+  else
+    vim.notify("Snacks words not available", vim.log.levels.WARN)
+  end
+end, { desc = "Prev Reference" })
 
 -- 🌈 MULTI-SELECT OPERATIONS (Advanced Telescope Usage)
 map("v", "<leader>fg", function() 
