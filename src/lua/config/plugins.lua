@@ -95,7 +95,11 @@ require("lazy").setup({
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
-    -- Don't configure here, let theme.lua handle it dynamically
+    opts = {
+      integrations = {
+        bufferline = true,
+      },
+    },
   },
   { "tpope/vim-fugitive" },
   -- Mini.nvim suite - Modern Neovim plugins
@@ -148,6 +152,136 @@ require("lazy").setup({
         })
       end
     end,
+  },
+  
+  -- Bufferline - Better buffer management
+  {
+    'akinsho/bufferline.nvim',
+    version = "*",
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      -- Function to get Tokyo Night colors
+      local function get_tokyonight_colors()
+        local colors = {}
+        local has_tokyonight, tokyonight_colors = pcall(require, "tokyonight.colors")
+        
+        if has_tokyonight then
+          colors = tokyonight_colors.setup()
+        else
+          -- Default fallback colors
+          colors = {
+            bg = "#1a1b26",
+            bg_dark = "#16161e",
+            bg_highlight = "#292e42",
+            fg = "#c0caf5",
+            fg_dark = "#a9b1d6",
+            blue = "#7aa2f7",
+          }
+        end
+        
+        return colors
+      end
+      
+      -- Setup bufferline with dynamic colors
+      local function setup_bufferline()
+        local colors = get_tokyonight_colors()
+        
+        require("bufferline").setup({
+          options = {
+            mode = "buffers",
+            separator_style = "slant",
+            always_show_bufferline = false,
+            show_buffer_close_icons = false,
+            show_close_icon = false,
+            color_icons = true,
+            themable = true,
+            indicator = {
+              style = 'icon',
+              icon = '▎',
+            },
+            modified_icon = '●',
+            left_trunc_marker = '',
+            right_trunc_marker = '',
+            offsets = {
+              {
+                filetype = "neo-tree",
+                text = "File Explorer",
+                text_align = "center",
+                separator = true,
+              }
+            },
+          },
+          highlights = {
+            fill = {
+              bg = colors.bg_dark,
+            },
+            background = {
+              fg = colors.fg_dark,
+              bg = colors.bg_dark,
+            },
+            buffer_visible = {
+              fg = colors.fg_dark,
+              bg = colors.bg_dark,
+            },
+            buffer_selected = {
+              fg = colors.fg,
+              bg = colors.bg,
+              bold = true,
+              italic = false,
+            },
+            separator = {
+              fg = colors.bg_dark,
+              bg = colors.bg_dark,
+            },
+            separator_visible = {
+              fg = colors.bg_dark,
+              bg = colors.bg_dark,
+            },
+            separator_selected = {
+              fg = colors.bg_dark,
+              bg = colors.bg,
+            },
+            indicator_selected = {
+              fg = colors.blue,
+              bg = colors.bg,
+            },
+            modified = {
+              fg = colors.yellow or colors.fg,
+              bg = colors.bg_dark,
+            },
+            modified_selected = {
+              fg = colors.yellow or colors.fg,
+              bg = colors.bg,
+            },
+          }
+        })
+      end
+      
+      -- Initial setup
+      vim.defer_fn(setup_bufferline, 100)
+      
+      -- Reload on colorscheme change
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "tokyonight*",
+        callback = function()
+          vim.defer_fn(setup_bufferline, 100)
+        end,
+      })
+    end,
+    keys = {
+      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous Buffer" },
+      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
+      { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous Buffer" },
+      { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
+      { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "Pin Buffer" },
+      { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "Close Unpinned Buffers" },
+      { "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", desc = "Close Other Buffers" },
+      { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "Close Buffers to Right" },
+      { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "Close Buffers to Left" },
+      { "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous Buffer" },
+      { "<Tab>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
+    },
   },
 
   -- Git integration

@@ -192,7 +192,7 @@ y = 100
 [font]
 size = 18.0
 # Enable built-in font fallbacks for better symbol support
-builtin_box_drawing = true
+builtin_box_drawing = false  # Disable to use font's own box drawing chars
 
 
 
