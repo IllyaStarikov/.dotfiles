@@ -27,7 +27,8 @@ setopt NO_FLOW_CONTROL
 unset MAILCHECK
 
 # Performance: Only eval brew if not already in PATH
-if [[ ! "$PATH" == */opt/homebrew/bin* ]] && [[ ! "$PATH" == */usr/local/bin* ]]; then
+# Use more precise pattern matching to prevent bypass
+if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
   if [[ -x "/opt/homebrew/bin/brew" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   elif [[ -x "/usr/local/bin/brew" ]]; then
@@ -232,13 +233,26 @@ fi
 # Load custom aliases
 source "$HOME/.dotfiles/src/zsh/aliases.zsh"
 
-# Load work-specific aliases if available (silent if private repo doesn't exist)
-if [[ -d "$HOME/.dotfiles/.dotfiles.private" && -f "$HOME/.dotfiles/.dotfiles.private/HOSTS" ]]; then
-  # Use a more secure approach - check for a static config file instead
-  WORK_CONFIG="$HOME/.dotfiles/.dotfiles.private/work-aliases.zsh"
-  if [[ -f "$WORK_CONFIG" ]]; then
-    source "$WORK_CONFIG"
-  fi
+# Load work-specific aliases if available (with security checks)
+# Only source from a specific, controlled location with validation
+DOTFILES_PRIVATE_DIR="$HOME/.dotfiles/.dotfiles.private"
+if [[ -d "$DOTFILES_PRIVATE_DIR" ]]; then
+  # Define allowed source files explicitly (allowlist approach)
+  ALLOWED_SOURCES=(
+    "work-aliases.zsh"
+  )
+  
+  for allowed_file in "${ALLOWED_SOURCES[@]}"; do
+    WORK_CONFIG="$DOTFILES_PRIVATE_DIR/$allowed_file"
+    if [[ -f "$WORK_CONFIG" ]]; then
+      # Verify file ownership and permissions before sourcing
+      if [[ -O "$WORK_CONFIG" ]] && [[ "$(stat -f '%p' "$WORK_CONFIG" 2>/dev/null || stat -c '%a' "$WORK_CONFIG" 2>/dev/null)" =~ ^[67][04][04]$ ]]; then
+        source "$WORK_CONFIG"
+      else
+        echo "Warning: Skipping $WORK_CONFIG due to ownership/permission issues" >&2
+      fi
+    fi
+  done
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -449,25 +463,28 @@ mkdir_cd() {
 }
 alias mkcd=mkdir_cd
 
-# Enhanced file finding
+# Enhanced file finding (with proper escaping)
 ff() {
     if [[ -z "$1" ]]; then
         echo "Usage: ff <pattern>" >&2
         return 1
     fi
-    fd "$1" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {} 2>/dev/null || cat {}'
+    # Properly escape the pattern to prevent injection
+    local pattern="${1//[^a-zA-Z0-9._-]/\\$&}"
+    fd -- "$pattern" 2>/dev/null | fzf --preview 'bat --color=always --style=header,grid --line-range :300 {} 2>/dev/null || cat {}'
 }
 
-# Smart grep with ripgrep
+# Smart grep with ripgrep (with proper escaping)
 grep_smart() {
     if [[ -z "$1" ]]; then
         echo "Usage: search <pattern> [options]" >&2
         return 1
     fi
     if command -v rg >/dev/null 2>&1; then
-        rg --color=always --line-number --no-heading --smart-case "$@" | fzf --ansi
+        # Use -- to separate options from patterns to prevent injection
+        rg --color=always --line-number --no-heading --smart-case -- "$@" | fzf --ansi
     else
-        grep -r --color=always "$@" .
+        grep -r --color=always -- "$@" .
     fi
 }
 alias search=grep_smart
