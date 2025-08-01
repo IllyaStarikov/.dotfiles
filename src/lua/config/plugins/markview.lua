@@ -35,6 +35,9 @@ function M.setup()
       modes = { "n", "no" },
       hybrid_modes = { "i" },
       
+      -- Don't show virtual text for non-existent frontmatter
+      show_virtual = false,
+      
       -- Callbacks
       callbacks = {
         on_enable = {},
@@ -63,6 +66,11 @@ function M.setup()
     markdown = {
       enable = true,
       max_file_length = 1000,
+      
+      -- Disable frontmatter rendering if not present
+      frontmatter = {
+        enable = false
+      },
       
       -- Headings with ligature-like symbols
       headings = {
