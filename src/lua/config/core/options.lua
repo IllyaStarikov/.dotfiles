@@ -48,7 +48,7 @@ opt.spelllang = "en_us"
 -- Command and status lines
 opt.cmdheight = 1
 opt.showmode = true
-opt.showtabline = 2
+-- opt.showtabline = 2  -- Now handled by bufferline.nvim plugin
 opt.laststatus = 2
 
 -- Language-specific settings

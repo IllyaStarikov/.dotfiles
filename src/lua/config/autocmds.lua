@@ -1082,3 +1082,8 @@ autocmd("BufNewFile", {
 -- =============================================================================
 
 -- Additional debug commands can be added here
+
+-- =============================================================================
+-- TABLINE - Now handled by bufferline.nvim plugin
+-- =============================================================================
+-- Tabline functionality moved to bufferline.nvim for better buffer overflow handling

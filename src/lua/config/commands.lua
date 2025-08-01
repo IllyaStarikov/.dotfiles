@@ -321,4 +321,28 @@ api.nvim_create_user_command("Messages", function()
   api.nvim_set_current_buf(buf)
 end, { desc = "Show messages in buffer" })
 
+-- Tabline debugging is now handled by bufferline.nvim plugin
+-- Use :BufferLineDebug for buffer line debugging
+
+-- Bufferline refresh command
+api.nvim_create_user_command("BufferLineRefresh", function()
+  -- Force reload bufferline with current theme colors
+  local ok, bufferline = pcall(require, "bufferline")
+  if ok then
+    -- Get fresh colors
+    local colors = {}
+    local theme_ok, theme = pcall(require, "tokyonight.colors")
+    if theme_ok then
+      colors = theme.setup()
+      -- Force re-setup
+      vim.schedule(function()
+        vim.cmd("Lazy reload bufferline.nvim")
+      end)
+    end
+    vim.notify("Bufferline refreshed with current theme")
+  else
+    vim.notify("Bufferline not loaded", vim.log.levels.WARN)
+  end
+end, { desc = "Refresh bufferline with current theme colors" })
+
 -- Load this module from init.lua with: require('config.commands')
