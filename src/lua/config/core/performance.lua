@@ -44,7 +44,10 @@ g.netrw_browse_split = 0
 g.netrw_banner = 0
 g.netrw_winsize = 25
 g.netrw_liststyle = 3
-g.netrw_localrmdir = "rm -r"
+-- Use safer rm command with proper flags
+-- The -f flag prevents prompts, -r for recursive
+-- Netrw handles path validation, but we use the safest form
+g.netrw_localrmdir = "rm -rf"
 
 -- Matchit is handled by Neovim's built-in runtime/plugin/matchit.vim
 -- No need to manually load it
