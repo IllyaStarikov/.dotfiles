@@ -1,9 +1,6 @@
 # Starship Light Theme Configuration - Tokyo Night Day
 # Optimized for light terminal backgrounds
 
-# Use the main config as base, only override colors
-"$schema" = 'https://starship.rs/config-schema.json'
-
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
