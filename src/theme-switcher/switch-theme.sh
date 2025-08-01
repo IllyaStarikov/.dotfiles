@@ -152,30 +152,73 @@ update_alacritty_theme() {
     return 0
 }
 
+# Atomic file update helper
+atomic_update() {
+    local source="$1"
+    local dest="$2"
+    local mode="${3:-644}"
+    
+    if [[ ! -f "$source" ]]; then
+        log "Source file not found: $source" "WARN"
+        return 1
+    fi
+    
+    local temp_file="${dest}.tmp.$$"
+    
+    # Copy to temp file
+    cp "$source" "$temp_file" || {
+        rm -f "$temp_file"
+        return 1
+    }
+    
+    # Set permissions on temp file
+    chmod "$mode" "$temp_file"
+    
+    # Atomic replacement
+    mv -f "$temp_file" "$dest" || {
+        rm -f "$temp_file"
+        return 1
+    }
+    
+    # Clean up any leftover temp files
+    rm -f "${dest}.tmp."* 2>/dev/null || true
+    
+    return 0
+}
+
 # Update other application themes
 update_app_themes() {
     local theme_dir="$(dirname "$0")/themes/$THEME"
+    local success=1
     
     # Update Alacritty
     if [[ -f "$theme_dir/alacritty/theme.toml" ]]; then
-        update_alacritty_theme "$theme_dir/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml"
+        update_alacritty_theme "$theme_dir/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml" || success=0
     elif [[ -f "$theme_dir/alacritty.toml" ]]; then
-        update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml"
+        update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=0
     fi
     
     # Update tmux
     if [[ -f "$theme_dir/tmux.conf" ]]; then
-        cp "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"
-        chmod 644 "$TMUX_DIR/theme.conf"
-        log "Updated tmux theme"
+        if atomic_update "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"; then
+            log "Updated tmux theme"
+        else
+            log "Failed to update tmux theme" "ERROR"
+            success=0
+        fi
     fi
     
     # Update Starship
     if [[ -f "$theme_dir/starship.toml" ]]; then
-        cp "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml"
-        chmod 644 "$STARSHIP_DIR/starship.toml"
-        log "Updated Starship theme"
+        if atomic_update "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml"; then
+            log "Updated Starship theme"
+        else
+            log "Failed to update Starship theme" "ERROR"
+            success=0
+        fi
     fi
+    
+    return $success
 }
 
 # Reload tmux configuration
@@ -187,6 +230,35 @@ reload_tmux() {
     fi
 }
 
+# Backup current configuration
+backup_config() {
+    local backup_dir="$CACHE_DIR/backup.$$"
+    mkdir -p "$backup_dir"
+    
+    # Backup current files
+    [[ -f "$CONFIG_DIR/current-theme.sh" ]] && cp "$CONFIG_DIR/current-theme.sh" "$backup_dir/"
+    [[ -f "$ALACRITTY_DIR/theme.toml" ]] && cp "$ALACRITTY_DIR/theme.toml" "$backup_dir/"
+    [[ -f "$TMUX_DIR/theme.conf" ]] && cp "$TMUX_DIR/theme.conf" "$backup_dir/"
+    [[ -f "$STARSHIP_DIR/starship.toml" ]] && cp "$STARSHIP_DIR/starship.toml" "$backup_dir/"
+    
+    echo "$backup_dir"
+}
+
+# Restore configuration on failure
+restore_config() {
+    local backup_dir="$1"
+    
+    if [[ -d "$backup_dir" ]]; then
+        [[ -f "$backup_dir/current-theme.sh" ]] && cp "$backup_dir/current-theme.sh" "$CONFIG_DIR/"
+        [[ -f "$backup_dir/theme.toml" ]] && cp "$backup_dir/theme.toml" "$ALACRITTY_DIR/"
+        [[ -f "$backup_dir/theme.conf" ]] && cp "$backup_dir/theme.conf" "$TMUX_DIR/"
+        [[ -f "$backup_dir/starship.toml" ]] && cp "$backup_dir/starship.toml" "$STARSHIP_DIR/"
+        
+        rm -rf "$backup_dir"
+        log "Restored previous configuration"
+    fi
+}
+
 # Main execution
 main() {
     determine_theme
@@ -194,13 +266,29 @@ main() {
     
     acquire_lock
     check_current_theme
-    save_theme_state
-    update_app_themes
-    reload_tmux
-    release_lock
     
-    log "Theme switch completed successfully"
-    echo "✅ Theme switched to $THEME ($VARIANT mode)"
+    # Create backup before making changes
+    local backup_dir=$(backup_config)
+    
+    # Attempt theme switch
+    if save_theme_state && update_app_themes; then
+        reload_tmux
+        release_lock
+        
+        # Clean up backup on success
+        rm -rf "$backup_dir"
+        
+        log "Theme switch completed successfully"
+        echo "✅ Theme switched to $THEME ($VARIANT mode)"
+    else
+        # Restore on failure
+        restore_config "$backup_dir"
+        release_lock
+        
+        log "Theme switch failed, configuration restored" "ERROR"
+        echo "❌ Theme switch failed, previous configuration restored" >&2
+        exit 1
+    fi
 }
 
 main
