@@ -1,0 +1,23 @@
+#!/bin/bash
+# Install the theme watcher as a LaunchAgent
+
+echo "Installing theme watcher..."
+
+# Create LaunchAgents directory if it doesn't exist
+mkdir -p "$HOME/Library/LaunchAgents"
+
+# Copy the plist file
+cp "$HOME/.dotfiles/src/LaunchAgents/com.starikov.theme-switcher.plist" "$HOME/Library/LaunchAgents/"
+
+# Load the agent
+launchctl load "$HOME/Library/LaunchAgents/com.starikov.theme-switcher.plist" 2>/dev/null || {
+    # If already loaded, unload and reload
+    launchctl unload "$HOME/Library/LaunchAgents/com.starikov.theme-switcher.plist" 2>/dev/null
+    launchctl load "$HOME/Library/LaunchAgents/com.starikov.theme-switcher.plist"
+}
+
+echo "✅ Theme watcher installed and started"
+echo "   It will now automatically switch themes when you change macOS appearance"
+echo ""
+echo "To stop the watcher:"
+echo "   launchctl unload ~/Library/LaunchAgents/com.starikov.theme-switcher.plist"
