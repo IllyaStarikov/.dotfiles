@@ -1,9 +1,6 @@
--- Disable verbose logging early to prevent vimlog.txt during normal operation
--- This won't affect explicit -V flag usage
-if vim.fn.has('vim_starting') == 1 and vim.v.verbose == 0 then
-  vim.opt.verbose = 0
-  vim.opt.verbosefile = ""
-end
+-- Disable verbose logging for normal operation
+vim.opt.verbose = 0
+vim.opt.verbosefile = ""
 
 -- Enable automatic LSP detection
 -- This must be set before any plugins are loaded
@@ -15,7 +12,7 @@ require("config.error-handler").init()
 -- Load utils for protected requires
 local utils = require("config.utils")
 
--- Load core configuration modules with error protection
+-- Load core configuration modules with error protection and fallback
 local modules = {
   "config.core",       -- Core Vim options and settings
   "config.ui",         -- UI-related settings and appearance
@@ -26,7 +23,11 @@ local modules = {
 }
 
 for _, module in ipairs(modules) do
-  utils.safe_require(module)
+  local ok, err = pcall(require, module)
+  if not ok then
+    vim.notify("Failed to load " .. module .. ": " .. tostring(err), vim.log.levels.ERROR)
+    -- Continue loading other modules
+  end
 end
 
 -- Load theme after plugins are available
