@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Trap errors and provide meaningful feedback
+trap 'echo "Error occurred at line $LINENO. Exit code: $?" >&2' ERR
+
 # Color output helpers
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -41,6 +44,14 @@ if ! command -v brew &>/dev/null; then
         exit 1
     fi
     
+    # Verify installer size (should be substantial)
+    INSTALLER_SIZE=$(stat -f%z "$BREW_INSTALLER" 2>/dev/null || stat -c%s "$BREW_INSTALLER" 2>/dev/null || echo 0)
+    if [[ $INSTALLER_SIZE -lt 1000 ]]; then
+        error "Downloaded installer is too small ($INSTALLER_SIZE bytes)"
+        rm -f "$BREW_INSTALLER"
+        exit 1
+    fi
+    
     # Basic verification - check it's a shell script and contains expected content
     if ! grep -q "Homebrew" "$BREW_INSTALLER" || ! grep -q "/bin/bash" "$BREW_INSTALLER"; then
         error "Downloaded file doesn't appear to be valid Homebrew installer"
@@ -52,11 +63,14 @@ if ! command -v brew &>/dev/null; then
     /bin/bash "$BREW_INSTALLER"
     rm -f "$BREW_INSTALLER"
     
-    # Add Homebrew to PATH for this session
-    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    # Add Homebrew to PATH for this session (with validation)
+    if [[ -f "/opt/homebrew/bin/brew" ]] && [[ -x "/opt/homebrew/bin/brew" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
-    elif [[ -f "/usr/local/bin/brew" ]]; then
+    elif [[ -f "/usr/local/bin/brew" ]] && [[ -x "/usr/local/bin/brew" ]]; then
         eval "$(/usr/local/bin/brew shellenv)"
+    else
+        error "Homebrew installed but brew executable not found"
+        exit 1
     fi
 fi
 
@@ -111,7 +125,8 @@ brew install \
     xh \
     glow \
     mdcat \
-    starship
+    starship \
+    gitleaks
 
 # Install programming language tools
 echo "🛠️  Installing programming language tools..."
@@ -195,6 +210,14 @@ if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
         exit 1
     fi
     
+    # Verify installer size
+    INSTALLER_SIZE=$(stat -f%z "$OMZ_INSTALLER" 2>/dev/null || stat -c%s "$OMZ_INSTALLER" 2>/dev/null || echo 0)
+    if [[ $INSTALLER_SIZE -lt 1000 ]]; then
+        error "Downloaded installer is too small ($INSTALLER_SIZE bytes)"
+        rm -f "$OMZ_INSTALLER"
+        exit 1
+    fi
+    
     # Basic verification
     if ! grep -q "oh-my-zsh" "$OMZ_INSTALLER" || ! grep -q "#!/bin/sh" "$OMZ_INSTALLER"; then
         error "Downloaded file doesn't appear to be valid Oh My Zsh installer"
@@ -255,6 +278,14 @@ if ! command -v cargo &>/dev/null; then
     info "Downloading Rust installer..."
     if ! curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$RUST_INSTALLER"; then
         error "Failed to download Rust installer"
+        exit 1
+    fi
+    
+    # Verify installer size
+    INSTALLER_SIZE=$(stat -f%z "$RUST_INSTALLER" 2>/dev/null || stat -c%s "$RUST_INSTALLER" 2>/dev/null || echo 0)
+    if [[ $INSTALLER_SIZE -lt 1000 ]]; then
+        error "Downloaded installer is too small ($INSTALLER_SIZE bytes)"
+        rm -f "$RUST_INSTALLER"
         exit 1
     fi
     
