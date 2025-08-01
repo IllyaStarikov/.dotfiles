@@ -31,9 +31,6 @@ function M.setup()
     
     -- Disable all sign column modifications
     signs = false,
-    
-    -- Disable gutter/sign column features entirely
-    buf_ignore = { "help", "nofile", "terminal" },
     disable_signs = true,
     disable_folds = true,
     
@@ -46,6 +43,9 @@ function M.setup()
       -- Don't show virtual text for non-existent frontmatter
       show_virtual = false,
       
+      -- Ignore certain buffer types (moved from deprecated buf_ignore)
+      ignore_buftypes = { "help", "nofile", "terminal" },
+      
       -- Callbacks
       callbacks = {
         on_enable = {},
@@ -53,8 +53,7 @@ function M.setup()
         on_mode_change = {}
       },
       
-      -- Buffer options
-      ignore_buftypes = { "nofile" },
+      -- Buffer options (already set above)
       debounce = 50,
       
       -- Filetypes

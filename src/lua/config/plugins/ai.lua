@@ -6,11 +6,19 @@
 local M = {}
 
 function M.setup()
-  require("codecompanion").setup({
+  local ok, codecompanion = pcall(require, "codecompanion")
+  if not ok then
+    vim.notify("Failed to load codecompanion", vim.log.levels.WARN)
+    return
+  end
+  
+  codecompanion.setup({
     -- Adapter configuration
     adapters = {
       anthropic = function()
-        return require("codecompanion.adapters").extend("anthropic", {
+        local adapters_ok, adapters = pcall(require, "codecompanion.adapters")
+        if not adapters_ok then return nil end
+        return adapters.extend("anthropic", {
           env = {
             api_key = "ANTHROPIC_API_KEY",
           },
