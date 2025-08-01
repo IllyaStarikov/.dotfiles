@@ -20,7 +20,7 @@
     autoSetupRemote = true
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 
 [diff]
     algorithm = histogram
@@ -28,6 +28,7 @@
 
 [commit]
     template = ~/.gitmessage
+    gpgsign = true
 
 # Essential Aliases Only (15 max)
 [alias]
@@ -72,3 +73,25 @@
 [credential "https://github.com"]
     helper = 
     helper = !/opt/homebrew/bin/gh auth git-credential
+
+# Security and performance enhancements
+[gpg]
+    # Use SSH key for signing if available (easier than GPG)
+    format = ssh
+
+[user]
+    # Point to your SSH key for signing (update path as needed)
+    # signingkey = ~/.ssh/id_ed25519.pub
+
+[transfer]
+    fsckobjects = true
+
+[receive]
+    fsckobjects = true
+
+[fetch]
+    fsckobjects = true
+
+[maintenance]
+    auto = true
+    strategy = incremental
