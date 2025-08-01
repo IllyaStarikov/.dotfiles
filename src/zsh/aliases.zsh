@@ -106,7 +106,9 @@ alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\\
 # Modern search tools
 alias find-file="fd"
 alias find-content="rg"
-alias grep="rg"
+# Don't override system grep - use explicit aliases instead
+# alias grep="rg"  # REMOVED: Can break scripts expecting standard grep
+alias rgrep="rg"  # Use rgrep for ripgrep
 alias search="rg -i --pretty --context=3"
 
 # Project-specific searches
@@ -222,8 +224,44 @@ alias md2docx="pandoc -o"
 # 🧹 CLEANUP & MAINTENANCE
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-alias cleanup="find . -type f -name '*.DS_Store' -delete && find . -type f -name '*.pyc' -delete"
-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes && sudo rm -rfv ~/.Trash && sudo rm -rfv /private/var/log/asl/*.asl"
+# Safer cleanup with confirmation
+cleanup() {
+    echo "This will delete all .DS_Store and .pyc files recursively from current directory."
+    echo -n "Are you sure? [y/N] "
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        find . -type f -name '*.DS_Store' -delete
+        find . -type f -name '*.pyc' -delete
+        echo "Cleanup complete."
+    else
+        echo "Cleanup cancelled."
+    fi
+}
+
+# Safer trash emptying function with confirmation
+emptytrash() {
+    echo "WARNING: This will permanently delete:"
+    echo "  - All items in Trash"
+    echo "  - System trash folders"
+    echo "  - ASL log files"
+    echo -n "Are you ABSOLUTELY sure? Type 'yes' to confirm: "
+    read -r response
+    if [[ "$response" == "yes" ]]; then
+        # Use specific paths instead of wildcards with sudo
+        sudo rm -rfv ~/.Trash
+        # Only clear Trashes on mounted volumes if they exist
+        for volume in /Volumes/*; do
+            if [[ -d "$volume/.Trashes" ]]; then
+                sudo rm -rfv "$volume/.Trashes"
+            fi
+        done
+        # Clear ASL logs safely
+        sudo rm -rfv /private/var/log/asl/*.asl 2>/dev/null || true
+        echo "Trash emptied."
+    else
+        echo "Operation cancelled."
+    fi
+}
 alias reset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 alias reloadzsh="source ~/.zshrc"
