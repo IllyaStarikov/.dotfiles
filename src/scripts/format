@@ -545,9 +545,15 @@ for file in "${FILES[@]}"; do
       fi
     fi
   else
-    # Try glob expansion
+    # Try glob expansion safely
     shopt -s nullglob
-    expanded=($file)
+    # Quote to prevent command injection
+    expanded=( "$file" )
+    # Check if glob expanded
+    if [[ "${expanded[0]}" == "$file" ]] && [[ ! -e "$file" ]]; then
+      # Glob didn't expand, try actual expansion
+      expanded=( $file )
+    fi
     shopt -u nullglob
     
     if [[ ${#expanded[@]} -eq 0 ]]; then
