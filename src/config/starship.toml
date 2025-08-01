@@ -1,7 +1,10 @@
-# Starship Prompt Configuration
-# Minimal, fast, and informative
+# Starship Prompt - Production-Ready Configuration
+# Optimized for performance, readability, and cross-platform use
 
+# Prompt format - clean and informative
 format = """
+$username\
+$hostname\
 $directory\
 $git_branch\
 $git_status\
@@ -9,75 +12,192 @@ $python\
 $nodejs\
 $rust\
 $golang\
+$docker_context\
+$kubernetes\
 $cmd_duration\
 $line_break\
+$jobs\
+$battery\
+$time\
+$status\
 $character"""
 
-# Timeout for commands
+# Global timeout for external commands (ms)
 command_timeout = 500
 
-[directory]
-truncation_length = 3
-truncate_to_repo = true
-format = "[$path]($style) "
-style = "cyan bold"
-
+# Prompt character configuration
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 vicmd_symbol = "[❮](bold green)"
 
+# Directory configuration
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style) "
+style = "cyan bold"
+read_only = " 🔒"
+truncation_symbol = "…/"
+home_symbol = "~"
+
+# Show when in specific important directories
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+"Projects" = "󰲋 "
+"~" = " "
+
+# Git configuration - essential info only
 [git_branch]
-format = "[$symbol$branch]($style) "
+format = "[$symbol$branch(:$remote_branch)]($style) "
 symbol = " "
 style = "bold purple"
+truncation_length = 20
+truncation_symbol = "…"
 
 [git_status]
-format = "([$all_status$ahead_behind]($style) )"
+format = '([$all_status$ahead_behind]($style) )'
 style = "bold red"
 conflicted = "="
 ahead = "⇡${count}"
 behind = "⇣${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-untracked = "?"
-stashed = "$"
-modified = "!"
-staged = "+"
-renamed = "»"
-deleted = "✘"
+up_to_date = ""
+untracked = "?${count}"
+stashed = "$${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
 
+# Show command duration for slow commands
 [cmd_duration]
-min_time = 2000
+min_time = 2000  # Show if command took more than 2 seconds
 format = "took [$duration]($style) "
 style = "yellow bold"
+show_milliseconds = false
+show_notifications = false
 
+# Username - only show when not default user or in SSH
+[username]
+style_user = "green bold"
+style_root = "red bold"
+format = "[$user]($style) "
+disabled = false
+show_always = false
+
+# Hostname - only show in SSH sessions
+[hostname]
+ssh_only = true
+format = "[@$hostname]($style) "
+style = "green dimmed"
+trim_at = "."
+
+# Language/Framework modules - show only when relevant
 [python]
 format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
 symbol = "🐍 "
 style = "yellow bold"
 pyenv_version_name = false
+pyenv_prefix = ""
+python_binary = ["python3", "python"]
 detect_extensions = ["py"]
-detect_files = ["requirements.txt", "pyproject.toml", "Pipfile"]
+detect_files = ["requirements.txt", "pyproject.toml", "Pipfile", "poetry.lock"]
+detect_folders = ["__pycache__", ".venv", "venv"]
 
 [nodejs]
 format = "[$symbol($version )]($style)"
 symbol = " "
 style = "green bold"
-detect_extensions = ["js", "mjs", "cjs", "ts", "tsx"]
-detect_files = ["package.json", ".node-version"]
-not_capable_style = "dim red"
+detect_extensions = ["js", "mjs", "cjs", "ts", "tsx", "jsx"]
+detect_files = ["package.json", ".node-version", ".nvmrc"]
+detect_folders = ["node_modules"]
+version_format = "v${major}.${minor}"
 
 [rust]
 format = "[$symbol($version )]($style)"
 symbol = "🦀 "
 style = "red bold"
+detect_extensions = ["rs"]
+detect_files = ["Cargo.toml", "Cargo.lock"]
+detect_folders = []
+version_format = "v${major}.${minor}"
 
 [golang]
 format = "[$symbol($version )]($style)"
 symbol = "🐹 "
 style = "cyan bold"
+detect_extensions = ["go"]
+detect_files = ["go.mod", "go.sum", "go.work"]
+detect_folders = []
+version_format = "v${major}.${minor}"
 
-# Disabled modules for performance
+# Docker - show only when in use
+[docker_context]
+format = "[$symbol$context]($style) "
+symbol = "🐳 "
+style = "blue bold"
+only_with_files = true
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
+detect_folders = []
+disabled = false
+
+# Kubernetes - show only when not default
+[kubernetes]
+format = '[$symbol$context( \($namespace\))]($style) '
+symbol = "☸ "
+style = "cyan bold"
+disabled = false
+detect_files = ["k8s"]
+
+# Jobs indicator
+[jobs]
+symbol = "+"
+style = "bold blue"
+number_threshold = 1
+symbol_threshold = 1
+format = "[$symbol$number]($style) "
+
+# Battery - only show when low
+[battery]
+full_symbol = ""
+charging_symbol = "⚡️"
+discharging_symbol = "💀"
+unknown_symbol = "❓"
+empty_symbol = "❗️"
+format = "[$symbol$percentage]($style) "
+disabled = false
+
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+# Time - optional, disabled by default
+[time]
+disabled = true
+format = '[$time]($style) '
+style = "yellow"
+use_12hr = false
+time_format = "%H:%M"
+
+# Exit status - show on error
+[status]
+style = "bg:red"
+symbol = "✖"
+success_symbol = ""
+format = '[$symbol $common_meaning$signal_name$maybe_int]($style) '
+map_symbol = true
+disabled = false
+pipestatus = true
+
+# Performance optimizations - disable unnecessary modules
 [aws]
 disabled = true
 
@@ -87,11 +207,98 @@ disabled = true
 [package]
 disabled = true
 
-[docker_context]
-disabled = true
-
 [helm]
 disabled = true
 
 [terraform]
+disabled = true
+
+[buf]
+disabled = true
+
+[cmake]
+disabled = true
+
+[dart]
+disabled = true
+
+[dotnet]
+disabled = true
+
+[elixir]
+disabled = true
+
+[elm]
+disabled = true
+
+[erlang]
+disabled = true
+
+[haskell]
+disabled = true
+
+[java]
+disabled = true
+
+[julia]
+disabled = true
+
+[kotlin]
+disabled = true
+
+[lua]
+disabled = true
+
+[nim]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[ocaml]
+disabled = true
+
+[perl]
+disabled = true
+
+[php]
+disabled = true
+
+[purescript]
+disabled = true
+
+[rlang]
+disabled = true
+
+[ruby]
+disabled = true
+
+[scala]
+disabled = true
+
+[swift]
+disabled = true
+
+[vagrant]
+disabled = true
+
+[zig]
+disabled = true
+
+[conda]
+disabled = true
+
+[spack]
+disabled = true
+
+[memory_usage]
+disabled = true
+
+[openstack]
+disabled = true
+
+[crystal]
+disabled = true
+
+[vlang]
 disabled = true
