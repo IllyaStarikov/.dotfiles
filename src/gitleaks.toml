@@ -1,0 +1,60 @@
+# Gitleaks configuration for secret scanning
+# https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks config for dotfiles"
+
+# Extend the base configuration
+[extend]
+useDefault = true
+
+# Additional patterns to detect
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''(?i)(-----BEGIN[ A-Z0-9_-]{0,100}PRIVATE KEY-----)'''
+tags = ["key", "private"]
+
+[[rules]]
+id = "env-var-secret"
+description = "Environment variable with secret"
+regex = '''(?i)(api[_\-\s]?key|api[_\-\s]?secret|password|passwd|pwd|token|secret)[\s]*=[\s]*["']?[^\s"']+["']?'''
+tags = ["env", "secret"]
+
+# Allowlist for false positives
+[allowlist]
+description = "Global allowlist"
+paths = [
+    # Documentation files often have example secrets
+    '''.*\.md$''',
+    '''.*\.txt$''',
+    '''docs/.*''',
+    
+    # Test files
+    '''.*test.*''',
+    '''.*spec.*''',
+    
+    # Lock files
+    '''.*\.lock$''',
+    
+    # This config file
+    '''gitleaks\.toml$''',
+]
+
+# Specific allowlist patterns
+[[allowlist.regexes]]
+description = "Allow example/dummy secrets in comments"
+regex = '''(?i)(example|dummy|fake|test|placeholder|your[_\-\s]?own)'''
+
+[[allowlist.regexes]]
+description = "Allow localhost URLs"
+regex = '''(?i)(localhost|127\.0\.0\.1|0\.0\.0\.0)'''
+
+# Files to always scan regardless of allowlist
+[override]
+paths = [
+    ".env",
+    ".env.local",
+    ".env.production",
+    "config.json",
+    "settings.json",
+]
