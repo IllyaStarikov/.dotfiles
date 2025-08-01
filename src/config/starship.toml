@@ -48,7 +48,6 @@ home_symbol = "~"
 "Music" = " "
 "Pictures" = " "
 "Projects" = "󰲋 "
-"~" = " "
 
 # Git configuration - essential info only
 [git_branch]
