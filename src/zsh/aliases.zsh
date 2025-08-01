@@ -176,7 +176,9 @@ alias dotfiles="cd ~/.dotfiles"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh"
-alias theme-watch="nohup ~/.dotfiles/src/scripts/theme-watcher >/dev/null 2>&1 & echo '✅ Theme watcher started (checking every 2s)'"
+alias theme-watch="~/.dotfiles/src/scripts/theme-daemon > /tmp/theme-daemon.log 2>&1 & echo '✅ Theme daemon started (logs at /tmp/theme-daemon.log)'"
+alias theme-log="tail -f /tmp/theme-daemon.log"
+alias theme-stop="pkill -f 'theme-(daemon|watcher)' && echo '⏹ Theme watchers stopped'"
 alias theme-install="~/.dotfiles/src/scripts/install-theme-watcher"
 alias dark="theme dark"
 alias light="theme light"
