@@ -241,30 +241,28 @@ map("n", "<leader>cl", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Toggle Cod
 map("n", "<leader>cs", "<cmd>CodeCompanionChat Stop<cr>", { desc = "Stop CodeCompanion" })
 map("n", "<leader>cn", "<cmd>CodeCompanionChat New<cr>", { desc = "New CodeCompanion Chat" })
 
--- Toggle between different adapters (requires custom function)
-map("n", "<leader>cal", function()
-  require("codecompanion").setup({
-    strategies = { chat = { adapter = "ollama" } }
-  })
-end, { desc = "Switch to Ollama" })
+-- Toggle between different adapters (safe switching without destroying config)
+local function switch_codecompanion_adapter(adapter_name)
+  local ok, codecompanion = pcall(require, "codecompanion")
+  if not ok then
+    vim.notify("CodeCompanion not loaded", vim.log.levels.ERROR)
+    return
+  end
+  
+  -- Get current config and update only the adapter
+  local config = codecompanion.config
+  if config and config.strategies and config.strategies.chat then
+    config.strategies.chat.adapter = adapter_name
+    vim.notify("CodeCompanion switched to " .. adapter_name, vim.log.levels.INFO)
+  else
+    vim.notify("Failed to switch adapter - config structure not found", vim.log.levels.ERROR)
+  end
+end
 
-map("n", "<leader>caa", function()
-  require("codecompanion").setup({
-    strategies = { chat = { adapter = "anthropic" } }
-  })
-end, { desc = "Switch to Anthropic" })
-
-map("n", "<leader>cao", function()
-  require("codecompanion").setup({
-    strategies = { chat = { adapter = "openai" } }
-  })
-end, { desc = "Switch to OpenAI" })
-
-map("n", "<leader>cac", function()
-  require("codecompanion").setup({
-    strategies = { chat = { adapter = "copilot" } }
-  })
-end, { desc = "Switch to Copilot" })
+map("n", "<leader>cal", function() switch_codecompanion_adapter("ollama") end, { desc = "Switch to Ollama" })
+map("n", "<leader>caa", function() switch_codecompanion_adapter("anthropic") end, { desc = "Switch to Anthropic" })
+map("n", "<leader>cao", function() switch_codecompanion_adapter("openai") end, { desc = "Switch to OpenAI" })
+map("n", "<leader>cac", function() switch_codecompanion_adapter("copilot") end, { desc = "Switch to Copilot" })
 
 -- 🍿 SNACKS.NVIM: High-Performance Power User Keybindings
 
