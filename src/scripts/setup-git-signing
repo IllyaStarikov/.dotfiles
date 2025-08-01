@@ -1,0 +1,83 @@
+#!/bin/bash
+# Setup script for Git commit signing with SSH keys
+
+set -euo pipefail
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo "🔐 Git Commit Signing Setup"
+echo "=========================="
+echo ""
+
+# Check for existing SSH keys
+echo "Looking for SSH keys..."
+SSH_KEYS=()
+if [[ -f "$HOME/.ssh/id_ed25519.pub" ]]; then
+    SSH_KEYS+=("$HOME/.ssh/id_ed25519.pub")
+fi
+if [[ -f "$HOME/.ssh/id_rsa.pub" ]]; then
+    SSH_KEYS+=("$HOME/.ssh/id_rsa.pub")
+fi
+
+if [[ ${#SSH_KEYS[@]} -eq 0 ]]; then
+    echo -e "${RED}No SSH keys found!${NC}"
+    echo "Please generate an SSH key first:"
+    echo "  ssh-keygen -t ed25519 -C \"your.email@example.com\""
+    exit 1
+fi
+
+echo -e "${GREEN}Found SSH keys:${NC}"
+for i in "${!SSH_KEYS[@]}"; do
+    echo "  $((i+1)). ${SSH_KEYS[$i]}"
+done
+
+# Select key
+if [[ ${#SSH_KEYS[@]} -eq 1 ]]; then
+    SELECTED_KEY="${SSH_KEYS[0]}"
+    echo -e "${YELLOW}Using the only available key: $SELECTED_KEY${NC}"
+else
+    echo ""
+    read -p "Select key number (1-${#SSH_KEYS[@]}): " KEY_NUM
+    SELECTED_KEY="${SSH_KEYS[$((KEY_NUM-1))]}"
+fi
+
+# Configure git
+echo ""
+echo "Configuring Git to use SSH signing..."
+git config --global gpg.format ssh
+git config --global user.signingkey "$SELECTED_KEY"
+git config --global commit.gpgsign true
+
+# Add to allowed signers
+ALLOWED_SIGNERS="$HOME/.ssh/allowed_signers"
+echo ""
+echo "Setting up allowed signers file..."
+mkdir -p "$(dirname "$ALLOWED_SIGNERS")"
+
+# Get email from git config
+EMAIL=$(git config --global user.email)
+if [[ -z "$EMAIL" ]]; then
+    read -p "Enter your email address: " EMAIL
+fi
+
+# Add key to allowed signers
+KEY_CONTENT=$(cat "$SELECTED_KEY")
+echo "$EMAIL $KEY_CONTENT" > "$ALLOWED_SIGNERS"
+git config --global gpg.ssh.allowedSignersFile "$ALLOWED_SIGNERS"
+
+echo ""
+echo -e "${GREEN}✅ Git commit signing configured!${NC}"
+echo ""
+echo "Your commits will now be automatically signed with:"
+echo "  Key: $SELECTED_KEY"
+echo "  Email: $EMAIL"
+echo ""
+echo "To verify a signed commit:"
+echo "  git log --show-signature"
+echo ""
+echo "To sign an existing commit:"
+echo "  git commit --amend --no-edit -S"
