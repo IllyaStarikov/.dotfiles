@@ -1071,18 +1071,18 @@ autocmd("BufNewFile", {
   end
 })
 
--- Markdown files
-autocmd("BufNewFile", {
-  group = skeleton_group,
-  pattern = {"*.md", "*.markdown"},
-  callback = function()
-    -- Only insert skeleton for truly new files, not existing ones
-    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    if #lines == 1 and lines[1] == "" then
-      insert_skeleton("markdown")
-    end
-  end
-})
+-- Markdown files - DISABLED due to display issues
+-- autocmd("BufNewFile", {
+--   group = skeleton_group,
+--   pattern = {"*.md", "*.markdown"},
+--   callback = function()
+--     -- Only insert skeleton for truly new files, not existing ones
+--     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+--     if #lines == 1 and lines[1] == "" then
+--       insert_skeleton("markdown")
+--     end
+--   end
+-- })
 
 -- C/C++ files
 autocmd("BufNewFile", {
