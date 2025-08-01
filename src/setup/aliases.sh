@@ -157,6 +157,7 @@ create_symlink "$DOTFILES_DIR/alacritty.toml" "$HOME/.config/alacritty/alacritty
 progress "Setting up Git configuration"
 create_symlink "$DOTFILES_DIR/gitignore" "$HOME/.gitignore" "Git ignore patterns"
 create_symlink "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "Git configuration"
+create_symlink "$DOTFILES_DIR/gitmessage" "$HOME/.gitmessage" "Git commit template"
 
 # LaTeX configuration
 progress "Setting up LaTeX configuration"
