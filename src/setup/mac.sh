@@ -110,7 +110,8 @@ brew install \
     tokei \
     xh \
     glow \
-    mdcat
+    mdcat \
+    starship
 
 # Install programming language tools
 echo "🛠️  Installing programming language tools..."
