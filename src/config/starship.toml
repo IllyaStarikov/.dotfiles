@@ -51,8 +51,8 @@ home_symbol = "~"
 
 # Git configuration - essential info only
 [git_branch]
-format = "[$symbol$branch(:$remote_branch)]($style) "
-symbol = " "
+format = "on [$symbol$branch(:$remote_branch)]($style) "
+symbol = "⎇ "
 style = "bold purple"
 truncation_length = 20
 truncation_symbol = "…"
@@ -66,7 +66,7 @@ behind = "⇣"
 diverged = "⇕"
 up_to_date = ""
 untracked = "?"
-stashed = "$"
+stashed = "\\$"
 modified = "!"
 staged = "+"
 renamed = "»"
@@ -97,7 +97,7 @@ trim_at = "."
 
 # Language/Framework modules - show only when relevant
 [python]
-format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
 symbol = "🐍 "
 style = "yellow bold"
 pyenv_version_name = false
@@ -108,8 +108,8 @@ detect_files = ["requirements.txt", "pyproject.toml", "Pipfile", "poetry.lock"]
 detect_folders = ["__pycache__", ".venv", "venv"]
 
 [nodejs]
-format = "[$symbol($version )]($style)"
-symbol = " "
+format = "via [$symbol($version )]($style)"
+symbol = "⬢ "
 style = "green bold"
 detect_extensions = ["js", "mjs", "cjs", "ts", "tsx", "jsx"]
 detect_files = ["package.json", ".node-version", ".nvmrc"]
@@ -117,7 +117,7 @@ detect_folders = ["node_modules"]
 version_format = "v${major}.${minor}"
 
 [rust]
-format = "[$symbol($version )]($style)"
+format = "via [$symbol($version )]($style)"
 symbol = "🦀 "
 style = "red bold"
 detect_extensions = ["rs"]
@@ -126,7 +126,7 @@ detect_folders = []
 version_format = "v${major}.${minor}"
 
 [golang]
-format = "[$symbol($version )]($style)"
+format = "via [$symbol($version )]($style)"
 symbol = "🐹 "
 style = "cyan bold"
 detect_extensions = ["go"]
@@ -136,7 +136,7 @@ version_format = "v${major}.${minor}"
 
 # Docker - show only when in use
 [docker_context]
-format = "[$symbol$context]($style) "
+format = "via [$symbol$context]($style) "
 symbol = "🐳 "
 style = "blue bold"
 only_with_files = true
@@ -146,7 +146,7 @@ disabled = false
 
 # Kubernetes - show only when not default
 [kubernetes]
-format = '[$symbol$context( \($namespace\))]($style) '
+format = 'on [$symbol$context( \($namespace\))]($style) '
 symbol = "☸ "
 style = "cyan bold"
 disabled = false
