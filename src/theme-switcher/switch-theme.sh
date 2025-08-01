@@ -38,11 +38,12 @@ mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR"
 cat > "$CONFIG_DIR/current-theme.sh" << EOF
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
+export MACOS_BACKGROUND="$VARIANT"
 EOF
 
 # Apply theme configs
 THEME_DIR="$(dirname "$0")/themes/$THEME"
-[[ -f "$THEME_DIR/alacritty.toml" ]] && cp "$THEME_DIR/alacritty.toml" "$ALACRITTY_DIR/theme.toml"
+[[ -f "$THEME_DIR/alacritty/theme.toml" ]] && cp "$THEME_DIR/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml"
 [[ -f "$THEME_DIR/tmux.conf" ]] && cp "$THEME_DIR/tmux.conf" "$TMUX_DIR/theme.conf"
 [[ -f "$THEME_DIR/starship.toml" ]] && cp "$THEME_DIR/starship.toml" "$STARSHIP_DIR/starship.toml"
 
