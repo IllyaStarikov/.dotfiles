@@ -5,6 +5,29 @@
 
 local M = {}
 
+-- Helper function to find Python interpreter
+local function get_python_path()
+  local cwd = vim.fn.getcwd()
+  
+  -- Check various Python paths in order of preference
+  local python_paths = {
+    vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV .. '/bin/python',
+    cwd .. '/venv/bin/python',
+    cwd .. '/.venv/bin/python',
+    vim.fn.exepath('python3'),
+    vim.fn.exepath('python'),
+  }
+  
+  for _, path in ipairs(python_paths) do
+    if path and vim.fn.executable(path) == 1 then
+      return path
+    end
+  end
+  
+  -- Fallback
+  return 'python3'
+end
+
 function M.setup()
   local dap = require('dap')
   local dapui = require('dapui')
@@ -163,19 +186,7 @@ function M.setup()
       -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
 
       program = "${file}", -- This configuration will launch the current file if used.
-      pythonPath = function()
-        -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
-        -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
-        -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
-        local cwd = vim.fn.getcwd()
-        if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-          return cwd .. '/venv/bin/python'
-        elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-          return cwd .. '/.venv/bin/python'
-        else
-          return '/usr/bin/python'
-        end
-      end,
+      pythonPath = get_python_path,
     },
     {
       type = 'python',
@@ -187,16 +198,7 @@ function M.setup()
         return vim.split(args_string, " +")
       end,
       console = 'integratedTerminal',
-      pythonPath = function()
-        local cwd = vim.fn.getcwd()
-        if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-          return cwd .. '/venv/bin/python'
-        elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-          return cwd .. '/.venv/bin/python'
-        else
-          return '/usr/bin/python'
-        end
-      end,
+      pythonPath = get_python_path,
     },
     {
       type = 'python',
@@ -284,11 +286,17 @@ function M.setup()
   }
 
   -- 🟨 JAVASCRIPT/TYPESCRIPT DEBUGGING
-  dap.adapters.node2 = {
-    type = 'executable',
-    command = 'node',
-    args = {vim.fn.stdpath("data") .. '/mason/packages/node-debug2-adapter/out/src/nodeDebug.js'},
-  }
+  -- Check if node-debug2-adapter is installed via Mason
+  local node_debug_path = vim.fn.stdpath("data") .. '/mason/packages/node-debug2-adapter/out/src/nodeDebug.js'
+  if vim.fn.filereadable(node_debug_path) == 1 then
+    dap.adapters.node2 = {
+      type = 'executable',
+      command = 'node',
+      args = {node_debug_path},
+    }
+  else
+    vim.notify("Node debug adapter not found. Install 'node-debug2-adapter' via Mason.", vim.log.levels.WARN)
+  end
 
   dap.configurations.javascript = {
     {
@@ -338,7 +346,7 @@ function M.setup()
   -- 🦀 RUST DEBUGGING CONFIGURATION
   dap.adapters.rust = {
     type = 'executable',
-    command = 'lldb-vscode',
+    command = lldb_cmd or 'lldb-vscode',
     name = 'rust_lldb'
   }
 
