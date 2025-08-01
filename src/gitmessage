@@ -1,0 +1,19 @@
+# <type>(<scope>): <subject>
+
+# <body>
+
+# <footer>
+
+# Type: feat, fix, docs, style, refactor, test, chore
+# Scope: component or file name
+# Subject: imperative mood, 50 chars max
+# Body: explain what and why, not how
+# Footer: breaking changes, issue references
+
+# Example:
+# feat(auth): add OAuth2 login support
+#
+# Implemented GitHub and Google OAuth2 providers
+# with proper error handling and token refresh.
+#
+# Closes #123
