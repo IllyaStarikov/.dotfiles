@@ -29,6 +29,9 @@ local function setup_lsp()
 			"ts_ls", -- TypeScript/JavaScript
 			"rust_analyzer", -- Rust
 			"gopls", -- Go
+			"dockerls", -- Docker
+			"yamlls", -- YAML
+			"jsonls", -- JSON
 		},
 		automatic_installation = true,
 		-- Disable automatic server setup to prevent duplicates
@@ -169,6 +172,38 @@ local function setup_lsp()
 						unusedparams = true,
 					},
 					staticcheck = true,
+				},
+			},
+		},
+		dockerls = {
+			settings = {
+				docker = {
+					languageserver = {
+						formatter = {
+							ignoreMultilineInstructions = true,
+						},
+					},
+				},
+			},
+		},
+		yamlls = {
+			settings = {
+				yaml = {
+					schemas = {
+						["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+						["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "docker-compose*.yml",
+					},
+					format = {
+						enable = true,
+					},
+				},
+			},
+		},
+		jsonls = {
+			settings = {
+				json = {
+					validate = { enable = true },
+					format = { enable = true },
 				},
 			},
 		},
