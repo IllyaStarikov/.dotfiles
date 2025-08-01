@@ -139,6 +139,9 @@ zstyle ':completion:*:warnings' format 'No matches for: %d'
 # Aliases - Only the Essential Ones
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Source comprehensive aliases file
+[[ -f "$HOME/.dotfiles/src/zsh/aliases.zsh" ]] && source "$HOME/.dotfiles/src/zsh/aliases.zsh"
+
 # Core shortcuts (with command checks)
 command -v eza &>/dev/null && alias l='eza -la --group-directories-first' || alias l='ls -la'
 command -v eza &>/dev/null && alias ls='eza --group-directories-first'
