@@ -218,9 +218,8 @@
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🌐 REMOTE REPOSITORIES
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-[url "git@github.com:"]
-    insteadOf = https://github.com/
+# Note: URL rewriting removed to prevent breaking environments expecting HTTPS
+# Use explicit git@github.com URLs when SSH is desired
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🚀 PERFORMANCE OPTIMIZATIONS
