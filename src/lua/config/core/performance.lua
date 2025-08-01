@@ -7,7 +7,7 @@ local g = vim.g
 opt.lazyredraw = false
 opt.updatecount = 100
 opt.redrawtime = 1500
-opt.ttimeoutlen = 0
+opt.ttimeoutlen = 10  -- Small delay for escape sequences
 
 -- Large file optimizations
 opt.synmaxcol = 1000
@@ -52,21 +52,7 @@ g.netrw_localrmdir = "rm -rf"
 -- Matchit is handled by Neovim's built-in runtime/plugin/matchit.vim
 -- No need to manually load it
 
--- Optimize clipboard on macOS
-if vim.fn.has("mac") == 1 then
-  g.clipboard = {
-    name = "macOS-clipboard",
-    copy = {
-      ["+"] = "pbcopy",
-      ["*"] = "pbcopy",
-    },
-    paste = {
-      ["+"] = "pbpaste",
-      ["*"] = "pbpaste",
-    },
-    cache_enabled = 1,
-  }
-end
+-- No clipboard integration for better performance
 
 -- Reduce LSP logging
 vim.lsp.set_log_level("ERROR")
