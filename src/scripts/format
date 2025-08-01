@@ -370,6 +370,12 @@ apply_formatters() {
 process_file() {
   local file=$1
   
+  # Validate file path to prevent directory traversal
+  if [[ "$file" =~ \.\. ]] || [[ "$file" =~ ^/ ]] && [[ ! "$file" =~ ^$PWD ]]; then
+    print_error "Invalid file path: $file"
+    return 1
+  fi
+  
   if [[ ! -f "$file" ]]; then
     print_error "File not found: $file"
     return 1
@@ -545,15 +551,14 @@ for file in "${FILES[@]}"; do
       fi
     fi
   else
-    # Try glob expansion safely
+    # Handle glob patterns safely
     shopt -s nullglob
-    # Quote to prevent command injection
-    expanded=( "$file" )
-    # Check if glob expanded
-    if [[ "${expanded[0]}" == "$file" ]] && [[ ! -e "$file" ]]; then
-      # Glob didn't expand, try actual expansion
-      expanded=( $file )
-    fi
+    # Use proper array assignment with glob
+    local -a expanded=()
+    # Safely expand glob pattern
+    while IFS= read -r -d '' matched_file; do
+      expanded+=("$matched_file")
+    done < <(find . -name "$file" -type f -print0 2>/dev/null)
     shopt -u nullglob
     
     if [[ ${#expanded[@]} -eq 0 ]]; then
