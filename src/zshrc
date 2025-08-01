@@ -234,9 +234,10 @@ source "$HOME/.dotfiles/src/zsh/aliases.zsh"
 
 # Load work-specific aliases if available (silent if private repo doesn't exist)
 if [[ -d "$HOME/.dotfiles/.dotfiles.private" && -f "$HOME/.dotfiles/.dotfiles.private/HOSTS" ]]; then
-  WORK_ALIASES=$(nvim --headless -c "lua print(require('config.work').get_profile().aliases_path or '')" -c quit 2>/dev/null)
-  if [[ -n "$WORK_ALIASES" && -f "$WORK_ALIASES" ]]; then
-    source "$WORK_ALIASES"
+  # Use a more secure approach - check for a static config file instead
+  WORK_CONFIG="$HOME/.dotfiles/.dotfiles.private/work-aliases.zsh"
+  if [[ -f "$WORK_CONFIG" ]]; then
+    source "$WORK_CONFIG"
   fi
 fi
 
@@ -368,8 +369,8 @@ export RIPGREP_CONFIG_PATH=~/.dotfiles/src/ripgreprc
 [[ -d "$HOME/.dotfiles/src/scripts" ]] && export PATH="$HOME/.dotfiles/src/scripts:$PATH"
 
 # Modern development tools path management
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+# PATH already set in zshenv, only add local bin if not present
+[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"
 
 # Format command alias
 alias fmt="format"
@@ -579,12 +580,19 @@ if command -v docker >/dev/null 2>&1; then
     fi
 fi
 
-# Kubernetes completion (if installed)
+# Kubernetes completion (lazy loaded for performance)
 if command -v kubectl >/dev/null 2>&1; then
-    source <(kubectl completion zsh)
+    # Create a lazy-loaded wrapper
+    kubectl() {
+        # Remove this function
+        unfunction kubectl
+        # Load completions
+        source <(command kubectl completion zsh)
+        # Execute the real kubectl
+        command kubectl "$@"
+    }
+    # Simple alias without compdef for now
     alias k=kubectl
-    # Use compdef for zsh completion
-    compdef k=kubectl
 fi
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -596,8 +604,8 @@ HISTSIZE=50000
 SAVEHIST=50000
 HISTFILE=~/.zsh_history
 
-# Deduplicate PATH
-typeset -U PATH
+# Deduplicate PATH to prevent it from growing in nested shells
+typeset -U path PATH
 
 # Load any additional local configurations
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
