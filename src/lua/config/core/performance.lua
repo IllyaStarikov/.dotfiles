@@ -46,12 +46,8 @@ g.netrw_winsize = 25
 g.netrw_liststyle = 3
 g.netrw_localrmdir = "rm -r"
 
--- Fix matchit loading
-vim.cmd([[
-  if !exists('g:loaded_matchit')
-    runtime! macros/matchit.vim
-  endif
-]])
+-- Matchit is handled by Neovim's built-in runtime/plugin/matchit.vim
+-- No need to manually load it
 
 -- Optimize clipboard on macOS
 if vim.fn.has("mac") == 1 then
@@ -72,12 +68,18 @@ end
 -- Reduce LSP logging
 vim.lsp.set_log_level("ERROR")
 
+-- Suppress startup messages
+vim.opt.verbose = 0
+vim.opt.verbosefile = ""
+
 -- Clear startup messages after VimEnter
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.defer_fn(function()
+      -- Clear messages and command line
       vim.cmd("silent! messages clear")
-    end, 50)
+      vim.cmd("echo ''")
+    end, 100)
   end,
   desc = "Clear startup messages"
 })
