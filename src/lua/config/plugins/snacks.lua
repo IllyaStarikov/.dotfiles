@@ -8,7 +8,13 @@ local M = {}
 
 function M.setup()
   -- Enable Snacks.nvim with file explorer support
-  require("snacks").setup({
+  local ok, snacks = pcall(require, "snacks")
+  if not ok then
+    vim.notify("Failed to load snacks.nvim", vim.log.levels.WARN)
+    return
+  end
+  
+  snacks.setup({
     -- Core modules
     bigfile = { enabled = true },
     picker = { enabled = true },   -- Required for explorer
