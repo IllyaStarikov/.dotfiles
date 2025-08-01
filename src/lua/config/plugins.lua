@@ -358,6 +358,12 @@ require("lazy").setup({
     },
     opts = {
       backends = { "treesitter", "lsp", "markdown", "man" },
+      
+      -- Markdown-specific settings
+      markdown = {
+        include_yaml_front_matter = false,
+      },
+      
       layout = {
         max_width = { 40, 0.2 },
         width = nil,
