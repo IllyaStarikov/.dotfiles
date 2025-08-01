@@ -1,0 +1,71 @@
+#!/bin/bash
+# Theme daemon - more robust theme watcher with auto-restart
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+THEME_SWITCHER="$SCRIPT_DIR/../theme-switcher/switch-theme.sh"
+LOG_FILE="/tmp/theme-daemon.log"
+
+# Function to log with timestamp
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+# Function to get current macOS appearance
+get_appearance() {
+    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        echo "dark"
+    else
+        echo "light"
+    fi
+}
+
+# Kill any existing theme watchers
+pkill -f "theme-watcher" 2>/dev/null
+pkill -f "theme-daemon" 2>/dev/null
+pkill -f "auto-theme-watcher" 2>/dev/null
+
+log "Theme daemon started"
+
+# Main loop with auto-restart
+while true; do
+    LAST_APPEARANCE=$(get_appearance)
+    log "Initial appearance: $LAST_APPEARANCE"
+    
+    # Inner monitoring loop
+    while true; do
+        CURRENT_APPEARANCE=$(get_appearance)
+        
+        if [[ "$CURRENT_APPEARANCE" != "$LAST_APPEARANCE" ]]; then
+            log "Appearance changed from $LAST_APPEARANCE to $CURRENT_APPEARANCE"
+            
+            # Run theme switcher
+            if [[ -x "$THEME_SWITCHER" ]]; then
+                OUTPUT=$("$THEME_SWITCHER" auto 2>&1)
+                log "Theme switch result: $OUTPUT"
+                
+                # Force terminal refresh
+                if command -v alacritty &>/dev/null; then
+                    # Send SIGUSR1 to Alacritty to force config reload
+                    pkill -USR1 alacritty 2>/dev/null
+                fi
+                
+                # Refresh tmux if running
+                if tmux info &>/dev/null; then
+                    tmux source-file ~/.tmux.conf 2>/dev/null || true
+                    tmux refresh-client -S 2>/dev/null || true
+                fi
+            else
+                log "ERROR: Theme switcher not found or not executable at $THEME_SWITCHER"
+            fi
+            
+            LAST_APPEARANCE=$CURRENT_APPEARANCE
+        fi
+        
+        # Check every second for better responsiveness
+        sleep 1
+    done
+    
+    # If inner loop exits, restart after 5 seconds
+    log "Theme daemon crashed, restarting in 5 seconds..."
+    sleep 5
+done

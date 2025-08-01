@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Testing theme switching..."
+echo ""
+echo "Current macOS appearance:"
+defaults read -g AppleInterfaceStyle 2>/dev/null && echo "Dark mode detected" || echo "Light mode detected"
+echo ""
+echo "To test automatic switching:"
+echo "1. Open System Settings → Appearance"
+echo "2. Switch between Light and Dark"
+echo "3. The terminal theme should change within 2 seconds"
+echo ""
+echo "Monitoring theme watcher log..."
+echo "Press Ctrl+C to stop"
+echo ""
+tail -f /tmp/theme-watcher.log

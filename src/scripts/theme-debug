@@ -1,0 +1,84 @@
+#!/bin/bash
+# Theme system debugging script
+
+echo "🔍 Theme System Debug Information"
+echo "================================="
+echo ""
+
+# Check macOS appearance
+echo "1. macOS Appearance:"
+if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+    echo "   ✓ Dark mode"
+else
+    echo "   ✓ Light mode"
+fi
+echo ""
+
+# Check theme config file
+echo "2. Theme Configuration:"
+CONFIG_FILE="$HOME/.config/theme-switcher/current-theme.sh"
+if [[ -f "$CONFIG_FILE" ]]; then
+    echo "   ✓ Config file exists"
+    echo "   Contents:"
+    cat "$CONFIG_FILE" | sed 's/^/     /'
+else
+    echo "   ✗ Config file missing at $CONFIG_FILE"
+fi
+echo ""
+
+# Check theme files
+echo "3. Theme Files:"
+for theme in tokyonight_day tokyonight_moon; do
+    echo "   $theme:"
+    THEME_DIR="$HOME/.dotfiles/src/theme-switcher/themes/$theme"
+    for file in alacritty.toml tmux.conf starship.toml; do
+        if [[ -f "$THEME_DIR/$file" ]]; then
+            echo "     ✓ $file"
+        else
+            echo "     ✗ $file missing"
+        fi
+    done
+done
+echo ""
+
+# Check applied themes
+echo "4. Applied Theme Files:"
+echo "   Alacritty: $(ls -la ~/.config/alacritty/theme.toml 2>&1 | head -1)"
+echo "   tmux:      $(ls -la ~/.config/tmux/theme.conf 2>&1 | head -1)"
+echo "   Starship:  $(ls -la ~/.config/starship.toml 2>&1 | head -1)"
+echo ""
+
+# Check running processes
+echo "5. Theme Processes:"
+PROCESSES=$(/bin/ps aux | grep -E "theme-(daemon|watcher|monitor)" | grep -v grep)
+if [[ -n "$PROCESSES" ]]; then
+    echo "$PROCESSES" | while read -r line; do
+        echo "   ✓ $line" | cut -c1-100
+    done
+else
+    echo "   ✗ No theme watchers running"
+fi
+echo ""
+
+# Test theme switching
+echo "6. Theme Switch Test:"
+echo "   Running 'theme auto'..."
+OUTPUT=$($HOME/.dotfiles/src/theme-switcher/switch-theme.sh auto 2>&1)
+echo "   Result: $OUTPUT"
+echo ""
+
+# Check logs
+echo "7. Recent Logs:"
+if [[ -f /tmp/theme-daemon.log ]]; then
+    echo "   Last 5 lines from theme-daemon.log:"
+    tail -5 /tmp/theme-daemon.log | sed 's/^/     /'
+else
+    echo "   No daemon log found"
+fi
+echo ""
+
+echo "8. Quick Actions:"
+echo "   • Start watcher:  theme-watch"
+echo "   • View logs:      theme-log"
+echo "   • Stop watcher:   theme-stop"
+echo "   • Manual switch:  theme auto"
