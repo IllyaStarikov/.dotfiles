@@ -190,7 +190,7 @@ y = 100
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [font]
-size = 16.0  # More reasonable default font size
+size = 18.0  # More reasonable default font size
 # Enable built-in font fallbacks for better symbol support
 builtin_box_drawing = true   # Enable for better box drawing character rendering
 
