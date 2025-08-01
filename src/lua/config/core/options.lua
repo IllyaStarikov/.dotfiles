@@ -8,7 +8,7 @@ opt.history = 1000                   -- Increased history size for better undo
 opt.scrolloff = 8                    -- More context lines around cursor
 opt.sidescrolloff = 8                -- Horizontal scroll context
 opt.regexpengine = 1                 -- Use old regex engine for better performance
-opt.clipboard = "unnamedplus"        -- Use system clipboard (modern approach)
+-- No automatic system clipboard integration for better performance
 opt.backspace = { "indent", "eol", "start" }  -- Proper backspace
 opt.autoread = true                  -- Auto-reload changed files
 opt.virtualedit = "block"            -- Freedom of movement in visual block mode
