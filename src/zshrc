@@ -52,20 +52,13 @@ fi
 # Spaceship theme with optimized settings
 ZSH_THEME="spaceship"
 
-# Spaceship prompt customization for better performance and aesthetics
+# Spaceship prompt - minimal configuration for performance
 SPACESHIP_PROMPT_ORDER=(
-  time          # Time stamps section
-  user          # Username section
   dir           # Current directory section
-  host          # Hostname section
   git           # Git section (git_branch + git_status)
-  package       # Package version
-  node          # Node.js section
-  # python        # Python section (disabled to prevent errors)
   exec_time     # Execution time
   line_sep      # Line break
   vi_mode       # Vi-mode indicator
-  jobs          # Background jobs indicator
   exit_code     # Exit code section
   char          # Prompt character
 )
@@ -82,15 +75,16 @@ SPACESHIP_VI_MODE_INSERT="[λ]"
 SPACESHIP_VI_MODE_NORMAL="[µ]"
 SPACESHIP_VI_MODE_SHOW=true
 
-# Performance optimizations
+# Performance optimizations - disable unnecessary features
 SPACESHIP_BATTERY_SHOW=false
-SPACESHIP_TIME_SHOW=true
-SPACESHIP_TIME_COLOR=242
-SPACESHIP_USER_SHOW=needed
+SPACESHIP_TIME_SHOW=false    # Disabled for performance
+SPACESHIP_USER_SHOW=false    # Disabled for performance
 SPACESHIP_HOST_SHOW=false
 SPACESHIP_HOST_SHOW_FULL=false
 SPACESHIP_DIR_TRUNC=3
 SPACESHIP_DIR_TRUNC_REPO=false
+SPACESHIP_PACKAGE_SHOW=false  # Disabled for performance
+SPACESHIP_NODE_SHOW=false     # Disabled for performance
 
 # Git optimizations with Nerd Font symbols
 SPACESHIP_GIT_STATUS_SHOW=true
@@ -112,32 +106,19 @@ SPACESHIP_GIT_SYMBOL=" "
 # 🔌 PLUGIN ECOSYSTEM - Carefully Selected for Performance
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Essential plugins in optimized loading order
-# Each plugin is chosen for maximum utility with minimal startup impact
+# Essential plugins - reduced for faster startup
 plugins=(
-  # Core functionality
-  vi-mode                    # Vim keybindings in command line
+  # Core functionality only
   git                        # Git aliases and functions
-  brew                       # Homebrew completions
+  vi-mode                    # Vim keybindings in command line
   
-  # Enhanced navigation and search
-  history-substring-search   # Search through history with up/down arrows
+  # Navigation
   z                         # Smart directory jumping
   
-  # Development tools
-  python                    # Python environment helpers
-  node                      # Node.js utilities
-  docker                    # Docker completions
-  
-  # macOS integration
-  macos                     # macOS-specific aliases and functions
-  
-  # Quality of life improvements
+  # Essential utilities
+  history-substring-search   # Search through history with up/down arrows
   colored-man-pages         # Colorized manual pages
-  command-not-found         # Suggest package installation for missing commands
   extract                   # Universal archive extraction
-  copypath                  # Copy current directory path
-  copyfile                  # Copy file contents to clipboard
 )
 
 # ──────────────────────────────────────────────────────────────────────────────────────────────────────────
