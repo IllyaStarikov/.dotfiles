@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail  # Exit on error, pipe failures (removed -u for array handling)
+set -euo pipefail  # Exit on error, undefined variables, pipe failures
 
 # Script directory for relative paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -37,7 +37,15 @@ show_help() {
                 # Special handling for Tokyo Night themes
                 if [[ "$theme_name" == tokyonight_* ]]; then
                     # Tokyo Night has its own variant system, treat each as standalone
-                    if [[ ! " ${theme_families[@]} " =~ " tokyonight " ]]; then
+                    # Safe array check for tokyonight
+                    local found=0
+                    for existing in "${theme_families[@]:-}"; do
+                        if [[ "$existing" == "tokyonight" ]]; then
+                            found=1
+                            break
+                        fi
+                    done
+                    if [[ $found -eq 0 ]]; then
                         theme_families+=("tokyonight")
                     fi
                 else
@@ -45,8 +53,15 @@ show_help() {
                     local family_name="${theme_name%_light}"
                     family_name="${family_name%_dark}"
                     
-                    # Add to families if not already present
-                    if [[ ! " ${theme_families[@]} " =~ " ${family_name} " ]]; then
+                    # Add to families if not already present (safe array check)
+                    local found=0
+                    for existing in "${theme_families[@]:-}"; do
+                        if [[ "$existing" == "$family_name" ]]; then
+                            found=1
+                            break
+                        fi
+                    done
+                    if [[ $found -eq 0 ]]; then
                         theme_families+=("$family_name")
                     fi
                 fi
