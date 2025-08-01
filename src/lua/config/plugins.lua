@@ -626,9 +626,11 @@ require("lazy").setup({
         ensure_installed = {
           "markdown", "markdown_inline", "python", "javascript", "typescript",
           "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
-          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex"
+          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex",
+          "comment", "vimdoc", "regex", "diff", "gitignore", "query"
         },
         auto_install = true,
+        sync_install = false,  -- Don't download parsers synchronously
         highlight = {
           enable = true,
           additional_vim_regex_highlighting = { "markdown" },
