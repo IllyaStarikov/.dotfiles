@@ -1,97 +1,66 @@
-# Starship Light Theme Configuration
+# Starship Light Theme Configuration - Tokyo Night Day
 # Optimized for light terminal backgrounds
 
-format = """
-$directory\
-$git_branch\
-$git_status\
-$python\
-$nodejs\
-$rust\
-$golang\
-$cmd_duration\
-$line_break\
-$character"""
-
-# Timeout for commands
-command_timeout = 500
-
-[directory]
-truncation_length = 3
-truncate_to_repo = true
-format = "[$path]($style) "
-style = "blue bold"  # Darker blue for light backgrounds
+# Use the main config as base, only override colors
+"$schema" = 'https://starship.rs/config-schema.json'
 
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
 vicmd_symbol = "[❮](bold green)"
 
+[directory]
+style = "blue bold"  # Darker blue for light backgrounds
+read_only = " 🔒"
+
 [git_branch]
-format = "[$symbol$branch]($style) "
-symbol = " "
 style = "bold purple"
 
 [git_status]
-format = "([$all_status$ahead_behind]($style) )"
 style = "bold red"
-conflicted = "="
-ahead = "⇡${count}"
-behind = "⇣${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-untracked = "?"
-stashed = "$"
-modified = "!"
-staged = "+"
-renamed = "»"
-deleted = "✘"
 
 [cmd_duration]
-min_time = 2000
-format = "took [$duration]($style) "
 style = "yellow bold"
 
 [python]
-format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
-symbol = "🐍 "
 style = "yellow bold"
-pyenv_version_name = false
-detect_extensions = ["py"]
-detect_files = ["requirements.txt", "pyproject.toml", "Pipfile"]
 
 [nodejs]
-format = "[$symbol($version )]($style)"
-symbol = " "
 style = "green bold"
-detect_extensions = ["js", "mjs", "cjs", "ts", "tsx"]
-detect_files = ["package.json", ".node-version"]
-not_capable_style = "dim red"
 
 [rust]
-format = "[$symbol($version )]($style)"
-symbol = "🦀 "
 style = "red bold"
 
 [golang]
-format = "[$symbol($version )]($style)"
-symbol = "🐹 "
 style = "cyan bold"
 
-# Disabled modules for performance
-[aws]
-disabled = true
-
-[gcloud]
-disabled = true
-
-[package]
-disabled = true
-
 [docker_context]
-disabled = true
+style = "blue bold"
 
-[helm]
-disabled = true
+[kubernetes]
+style = "cyan bold"
 
-[terraform]
-disabled = true
+[username]
+style_user = "green bold"
+style_root = "red bold"
+
+[hostname]
+style = "green dimmed"
+
+[jobs]
+style = "bold blue"
+
+[battery]
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[time]
+style = "yellow"
+
+[status]
+style = "bg:red"
