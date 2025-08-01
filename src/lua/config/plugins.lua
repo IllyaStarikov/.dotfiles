@@ -101,11 +101,20 @@ require("lazy").setup({
       },
     },
   },
-  { "tpope/vim-fugitive" },
+  { 
+    "tpope/vim-fugitive",
+    cmd = { "Git", "G", "Gstatus", "Gblame", "Gpush", "Gpull", "Gcommit", "Glog", "Gdiff" },
+    keys = {
+      { "<leader>gs", "<cmd>Git<cr>", desc = "Git status" },
+      { "<leader>gb", "<cmd>Git blame<cr>", desc = "Git blame" },
+      { "<leader>gd", "<cmd>Gdiff<cr>", desc = "Git diff" },
+    },
+  },
   -- Mini.nvim suite - Modern Neovim plugins
   {
     "echasnovski/mini.nvim",
     version = false,
+    event = "VeryLazy",
     config = function()
       local utils = require("config.utils")
       
@@ -285,11 +294,19 @@ require("lazy").setup({
   },
 
   -- Git integration
-  { "lewis6991/gitsigns.nvim", config = function() 
-    local utils = require("config.utils")
-    utils.load_config('config.gitsigns')
-  end },
-  { "sindrets/diffview.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+  { 
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function() 
+      local utils = require("config.utils")
+      utils.load_config('config.gitsigns')
+    end 
+  },
+  { 
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+    dependencies = { "nvim-lua/plenary.nvim" }
+  },
 
   -- UI enhancements
   {
@@ -858,6 +875,9 @@ require("lazy").setup({
 
 }, {
   -- Lazy.nvim options
+  defaults = {
+    lazy = false, -- Default to not lazy for now, until all plugins are properly configured
+  },
   ui = {
     icons = {
       cmd = "⌘",
@@ -877,14 +897,22 @@ require("lazy").setup({
     enabled = true,  -- check for plugin updates periodically
     notify = false,  -- don't notify on update (less intrusive)
   },
+  change_detection = {
+    notify = false, -- Don't notify about config changes
+  },
   performance = {
+    cache = {
+      enabled = true,
+    },
+    reset_packpath = true, -- reset the package path to improve startup time
     rtp = {
+      reset = true, -- reset the runtime path to improve startup time
       -- disable some rtp plugins for faster startup
       disabled_plugins = {
         "gzip",
-        -- "matchit",
-        -- "matchparen",
-        -- "netrwPlugin",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
         "tarPlugin",
         "tohtml",
         "tutor",
