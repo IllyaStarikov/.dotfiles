@@ -232,9 +232,9 @@
 
 [pack]
     threads = 0  # Use all available CPU cores
-    deltaCacheSize = 2g
-    packSizeLimit = 2g
-    windowMemory = 2g
+    deltaCacheSize = 512m   # More reasonable memory usage
+    packSizeLimit = 1g      # Reduced pack size limit
+    windowMemory = 512m     # Reduced window memory
     compression = 9  # Maximum compression
     writeBitmapHashCache = true  # Faster counting objects
 

@@ -146,7 +146,7 @@ LC_CTYPE = "en_US.UTF-8"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [scrolling]
-history = 100000     # Massive history for development work
+history = 10000      # Reasonable history size for better memory usage
 multiplier = 3       # Faster scrolling
 # auto_scroll = true   # Removed - not a valid config option in current version
 
@@ -165,7 +165,7 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 [window]
 decorations = "full"        # Required for macOS tabs to work
 dynamic_title = true
-opacity = 0.99              # Subtle transparency
+opacity = 1.0               # Full opacity for better performance
 startup_mode = "Windowed"
 resize_increments = true    # Resize by character grid
 option_as_alt = "Both"      # Proper Alt key behavior on macOS
@@ -190,7 +190,7 @@ y = 100
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [font]
-size = 18.0
+size = 16.0  # More reasonable default font size
 # Enable built-in font fallbacks for better symbol support
 builtin_box_drawing = false  # Disable to use font's own box drawing chars
 
