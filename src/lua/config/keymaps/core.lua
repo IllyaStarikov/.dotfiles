@@ -44,6 +44,22 @@ map("v", "<leader>d", '"_d', opts)
 map({"n", "v"}, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
 
+-- Fix visual mode yank to be instant (no waiting for additional keys)
+-- This must be set to override any plugin mappings
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.defer_fn(function()
+      -- Ensure visual mode 'y' is a direct yank
+      vim.keymap.set({'v', 'x'}, 'y', 'y', { 
+        noremap = true, 
+        silent = true,
+        desc = "Yank selection (instant)"
+      })
+    end, 100)
+  end,
+  desc = "Ensure visual yank is instant"
+})
+
 -- Better line joins
 map("n", "J", "mzJ`z", opts)
 

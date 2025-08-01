@@ -252,6 +252,31 @@ end, {
 })
 
 -- =============================================================================
+-- CLIPBOARD UTILITIES
+-- =============================================================================
+
+-- Debug clipboard settings
+api.nvim_create_user_command("ClipboardInfo", function()
+  print("Clipboard setting: " .. vim.o.clipboard)
+  print("Has clipboard: " .. tostring(vim.fn.has("clipboard") == 1))
+  print("Has unnamedplus: " .. tostring(vim.fn.has("unnamedplus") == 1))
+  print("Clipboard global: " .. tostring(vim.g.clipboard))
+  print("Loaded clipboard provider: " .. tostring(vim.g.loaded_clipboard_provider))
+end, { desc = "Show clipboard configuration info" })
+
+-- Debug yank performance
+api.nvim_create_user_command("YankDebug", function()
+  -- Test internal yank
+  local start = vim.loop.hrtime()
+  vim.cmd("normal! yy")
+  local internal_time = (vim.loop.hrtime() - start) / 1e6
+  
+  print(string.format("Internal yank took: %.2fms", internal_time))
+  print("Clipboard: " .. vim.o.clipboard)
+  print("Timeout settings: timeout=" .. tostring(vim.o.timeout) .. " timeoutlen=" .. vim.o.timeoutlen .. " ttimeoutlen=" .. vim.o.ttimeoutlen)
+end, { desc = "Debug yank performance" })
+
+-- =============================================================================
 -- CODE EXECUTION
 -- =============================================================================
 
