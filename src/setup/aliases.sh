@@ -213,6 +213,11 @@ create_symlink "$DOTFILES_DIR/clangd_config.yaml" "$HOME/.config/clangd/config.y
 progress "Setting up ripgrep configuration"
 create_symlink "$DOTFILES_DIR/ripgreprc" "$HOME/.ripgreprc" "Ripgrep config"
 
+# Starship configuration
+progress "Setting up Starship prompt configuration"
+ensure_dir "$HOME/.config"
+create_symlink "$DOTFILES_DIR/config/starship.toml" "$HOME/.config/starship.toml" "Starship prompt config"
+
 # Create backup directory for Neovim
 progress "Creating backup directories"
 ensure_dir "$HOME/.vim/undodir"
