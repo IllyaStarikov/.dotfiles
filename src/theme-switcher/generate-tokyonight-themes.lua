@@ -68,6 +68,12 @@ local variants = {"storm", "moon", "night", "day"}
 for _, variant in ipairs(variants) do
   print("Generating theme for: " .. variant)
   
+  -- Validate variant name (alphanumeric only for safety)
+  if not variant:match("^[%w_%-]+$") then
+    print("Error: Invalid variant name '" .. variant .. "'. Skipping for security.")
+    goto continue
+  end
+  
   -- Load colors
   local colors
   if variant == "day" then
@@ -86,7 +92,8 @@ for _, variant in ipairs(variants) do
   
   -- Write file
   local output_dir = "/Users/starikov/.dotfiles/src/theme-switcher/themes/tokyonight_" .. variant .. "/alacritty"
-  os.execute("mkdir -p " .. output_dir)
+  -- Use safer command with proper escaping
+  os.execute("mkdir -p '" .. output_dir:gsub("'", "'\"'\"'") .. "'")
   
   local file = io.open(output_dir .. "/theme.toml", "w")
   if file then
@@ -96,6 +103,8 @@ for _, variant in ipairs(variants) do
   else
     print("Error creating file for " .. variant)
   end
+  
+  ::continue::
 end
 
 print("Done!")
