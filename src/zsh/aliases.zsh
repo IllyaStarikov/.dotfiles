@@ -145,7 +145,8 @@ alias ps='procs'
 alias ip="curl -s icanhazip.com"
 alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
 alias ips="ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+# Install speedtest-cli safely: brew install speedtest-cli
+alias speedtest="speedtest-cli"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📂 NAVIGATION SHORTCUTS
