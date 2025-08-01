@@ -104,37 +104,7 @@ autocmd("FileType", {
       highlight markdownCodeBlockLang guifg=#ffa657 gui=bold,italic guibg=#161b22
     ]])
     
-    -- Add signs for code block borders (visual left border)
-    vim.fn.sign_define("CodeBlockBorder", { text = "│", texthl = "CodeBlockBorder" })
-    
-    -- Function to add visual borders to code blocks
-    local function add_code_block_borders()
-      local bufnr = vim.api.nvim_get_current_buf()
-      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-      local in_code_block = false
-      
-      for i, line in ipairs(lines) do
-        if line:match("^```") then
-          in_code_block = not in_code_block
-        elseif in_code_block then
-          -- Add sign for visual left border
-          vim.fn.sign_place(0, "CodeBlockBorderGroup", "CodeBlockBorder", bufnr, { lnum = i })
-        end
-      end
-    end
-    
-    -- Apply borders on buffer changes (with error handling)
-    local success, _ = pcall(function()
-      vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "InsertLeave" }, {
-        buffer = vim.api.nvim_get_current_buf(),
-        callback = function()
-          pcall(add_code_block_borders)
-        end
-      })
-    end)
-    
-    -- Initial border application
-    add_code_block_borders()
+    -- Removed code block border signs that were interfering with sign column
   end
 })
 
@@ -399,11 +369,7 @@ autocmd({ "BufNewFile", "BufRead" }, {
   command = "set syntax=tex"
 })
 
-autocmd({ "BufNewFile", "BufRead" }, {
-  group = syntax_group,
-  pattern = "*.md",
-  command = "set syntax=pandoc | set conceallevel=0"
-})
+-- Removed duplicate markdown settings - handled by markdown_settings above
 
 -- =============================================================================
 -- BIG FILE OPTIMIZATIONS
@@ -482,10 +448,10 @@ local markdown_settings = {
   "setlocal breakindent",             -- Indent wrapped lines
   "setlocal breakindentopt=shift:2,min:40",
   "setlocal spell",                   -- Enable spell check
-  "setlocal nonumber",                -- Hide line numbers
-  "setlocal norelativenumber",        -- Hide relative line numbers
+  "setlocal number",                  -- Show line numbers
+  "setlocal relativenumber",          -- Show relative line numbers
   "setlocal colorcolumn=",            -- Remove color column
-  "setlocal signcolumn=no"            -- Hide sign column
+  "setlocal signcolumn=yes"           -- Show sign column
 }
 
 autocmd("FileType", {

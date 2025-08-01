@@ -29,6 +29,14 @@ function M.setup()
     -- Preserve ligatures
     preserve_whitespace = true,
     
+    -- Disable all sign column modifications
+    signs = false,
+    
+    -- Disable gutter/sign column features entirely
+    buf_ignore = { "help", "nofile", "terminal" },
+    disable_signs = true,
+    disable_folds = true,
+    
     -- Preview configuration (moved deprecated options here)
     preview = {
       -- Mode configuration - render in normal mode only
