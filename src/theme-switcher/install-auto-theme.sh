@@ -2,7 +2,8 @@
 
 # Install Auto Theme Switching
 
-PLIST_FILE="$HOME/.dotfiles/src/theme-switcher/io.starikov.theme-watcher.plist"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+PLIST_TEMPLATE="$DOTFILES_DIR/src/theme-switcher/io.starikov.theme-watcher.plist.template"
 LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
 TARGET_PLIST="$LAUNCH_AGENTS_DIR/io.starikov.theme-watcher.plist"
 
@@ -11,8 +12,10 @@ echo "Installing auto theme switching..."
 # Create LaunchAgents directory if it doesn't exist
 mkdir -p "$LAUNCH_AGENTS_DIR"
 
-# Copy plist to LaunchAgents
-cp "$PLIST_FILE" "$TARGET_PLIST"
+# Generate plist from template
+sed -e "s|{{DOTFILES_DIR}}|$DOTFILES_DIR|g" \
+    -e "s|{{HOME}}|$HOME|g" \
+    "$PLIST_TEMPLATE" > "$TARGET_PLIST"
 
 # Load the launch agent
 launchctl load "$TARGET_PLIST"
