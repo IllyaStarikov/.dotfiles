@@ -185,7 +185,7 @@ autocmd("FileType", {
   callback = function()
     -- Enable treesitter highlighting for embedded code blocks
     vim.opt_local.conceallevel = 2
-    vim.opt_local.concealcursor = "nc"
+    vim.opt_local.concealcursor = ""
     
     -- Set up syntax highlighting for code blocks with enhanced visual borders
     vim.cmd([[
