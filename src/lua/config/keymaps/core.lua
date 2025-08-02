@@ -44,6 +44,12 @@ map("v", "<leader>d", '"_d', opts)
 map({"n", "v"}, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
 
+-- macOS-style copy/paste
+map({"n", "v"}, "<D-c>", [["+y]], { desc = "Copy (Cmd+C)" })
+map("n", "<D-v>", [["+p]], { desc = "Paste (Cmd+V)" })
+map("i", "<D-v>", "<C-r>+", { desc = "Paste (Cmd+V)" })
+map("c", "<D-v>", "<C-r>+", { desc = "Paste (Cmd+V)" })
+
 -- Fix visual mode yank to be instant (no waiting for additional keys)
 -- This must be set to override any plugin mappings
 vim.api.nvim_create_autocmd("VimEnter", {

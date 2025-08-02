@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Sample LaTeX Document for VimTeX Testing}
+\author{Test Author}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This is a sample document for testing VimTeX functionality including:
+\begin{itemize}
+    \item Syntax highlighting
+    \item Completion
+    \item Compilation
+    \item Error detection
+\end{itemize}
+
+\section{Mathematics}
+Here's an inline equation: $E = mc^2$.
+
+And a display equation:
+\begin{equation}
+    \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+\end{equation}
+
+% Test completion: \begin{
+
+\subsection{Matrices}
+\begin{equation}
+    A = \begin{bmatrix}
+        1 & 2 & 3 \\
+        4 & 5 & 6 \\
+        7 & 8 & 9
+    \end{bmatrix}
+\end{equation}
+
+% Intentional error: undefined command
+\someundefinedcommand{test}
+
+% Missing closing brace
+\textbf{Bold text
+
+\section{References and Citations}
+See Figure \ref{fig:example} for an example.
+
+% Missing figure environment will cause warning
+\label{fig:example}
+
+\section{Code Listings}
+\begin{verbatim}
+def hello_world():
+    print("Hello, LaTeX\!")
+\end{verbatim}
+
+% Test environment completion
+\begin{
+
+% Missing \end{document}
+EOF < /dev/null
