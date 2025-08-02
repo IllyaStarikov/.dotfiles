@@ -148,7 +148,6 @@ LC_CTYPE = "en_US.UTF-8"
 [scrolling]
 history = 10000      # Reasonable history size for better memory usage
 multiplier = 3       # Faster scrolling
-# auto_scroll = true   # Removed - not a valid config option in current version
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📝 TEXT SELECTION & CLIPBOARD

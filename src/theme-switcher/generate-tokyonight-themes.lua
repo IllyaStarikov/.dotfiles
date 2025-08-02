@@ -1,7 +1,9 @@
 #!/usr/bin/env lua
 
 -- Add Tokyo Night path
-package.path = package.path .. ";/Users/starikov/.dotfiles/tokyonight.nvim/lua/?.lua"
+local home = os.getenv("HOME") or ""
+local dotfiles_dir = os.getenv("DOTFILES_DIR") or (home .. "/.dotfiles")
+package.path = package.path .. ";" .. dotfiles_dir .. "/tokyonight.nvim/lua/?.lua"
 
 -- Function to create Alacritty theme content
 local function create_alacritty_theme(variant, colors)
@@ -91,7 +93,7 @@ for _, variant in ipairs(variants) do
   local theme_content = create_alacritty_theme(variant, colors)
   
   -- Write file
-  local output_dir = "/Users/starikov/.dotfiles/src/theme-switcher/themes/tokyonight_" .. variant .. "/alacritty"
+  local output_dir = dotfiles_dir .. "/src/theme-switcher/themes/tokyonight_" .. variant .. "/alacritty"
   -- Use safer command with proper escaping
   os.execute("mkdir -p '" .. output_dir:gsub("'", "'\"'\"'") .. "'")
   
