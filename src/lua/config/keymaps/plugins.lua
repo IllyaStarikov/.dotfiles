@@ -81,57 +81,77 @@ map("n", "<leader>g", telescope_builtin("live_grep"), { desc = "Live Grep" })
 -- ============================================================================
 -- SNACKS.NVIM
 -- ============================================================================
-local ok, snacks = pcall(require, "snacks")
+-- Defer loading to ensure snacks is fully initialized
+local function get_snacks()
+  local ok, snacks = pcall(require, "snacks")
+  if ok then
+    return snacks
+  end
+  return nil
+end
 
 -- Dashboard
-map("n", "<leader>sd", function() if ok and snacks then snacks.dashboard() end end, { desc = "Dashboard" })
+map("n", "<leader>sd", function() 
+  local snacks = get_snacks()
+  if snacks then snacks.dashboard() else vim.notify("Snacks not available", vim.log.levels.WARN) end 
+end, { desc = "Dashboard" })
 
 -- File Explorer
-map("n", "<leader>e", function() if ok and snacks then snacks.explorer() end end, { desc = "Explorer" })
-map("n", "<leader>E", function() if ok and snacks then snacks.explorer({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Explorer (file dir)" })
-map("n", "<leader>o", function() if ok and snacks then snacks.explorer() end end, { desc = "Open File Explorer" })
-map("n", "<leader>O", function() if ok and snacks then snacks.explorer({ float = true }) end end, { desc = "Open Explorer in Float" })
-map("n", "-", function() if ok and snacks then snacks.explorer() end end, { desc = "Open File Explorer" })
+map("n", "<leader>e", function() 
+  local snacks = get_snacks()
+  if snacks then 
+    local status, err = pcall(function() snacks.explorer() end)
+    if not status then
+      vim.notify("Snacks explorer error: " .. tostring(err), vim.log.levels.ERROR)
+    end
+  else
+    vim.notify("Snacks not loaded", vim.log.levels.ERROR)
+  end 
+end, { desc = "Explorer" })
+map("n", "<leader>E", function() local s = get_snacks(); if s then s.explorer({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Explorer (file dir)" })
+map("n", "<leader>o", function() local s = get_snacks(); if s then s.explorer() end end, { desc = "Open File Explorer" })
+map("n", "<leader>O", function() local s = get_snacks(); if s then s.explorer({ float = true }) end end, { desc = "Open Explorer in Float" })
+map("n", "-", function() local s = get_snacks(); if s then s.explorer() end end, { desc = "Open File Explorer" })
 
 -- Terminal
-map("n", "<leader>tt", function() if ok and snacks then snacks.terminal() end end, { desc = "Toggle Terminal" })
-map("n", "<leader>tf", function() if ok and snacks then snacks.terminal.float() end end, { desc = "Terminal (float)" })
-map("n", "<leader>ts", function() if ok and snacks then snacks.terminal.split() end end, { desc = "Terminal (split)" })
-map("n", "<leader>tv", function() if ok and snacks then snacks.terminal.split({ position = "right" }) end end, { desc = "Terminal (vsplit)" })
-map("n", "<leader>tg", function() if ok and snacks then snacks.terminal("git status") end end, { desc = "Git Status Terminal" })
-map("n", "<leader>tp", function() if ok and snacks then snacks.terminal("python3") end end, { desc = "Python Terminal" })
-map("n", "<leader>tn", function() if ok and snacks then snacks.terminal("node") end end, { desc = "Node Terminal" })
+map("n", "<leader>tt", function() local s = get_snacks(); if s then s.terminal() end end, { desc = "Toggle Terminal" })
+map("n", "<leader>tf", function() local s = get_snacks(); if s then s.terminal.float() end end, { desc = "Terminal (float)" })
+map("n", "<leader>ts", function() local s = get_snacks(); if s then s.terminal.split() end end, { desc = "Terminal (split)" })
+map("n", "<leader>tv", function() local s = get_snacks(); if s then s.terminal.split({ position = "right" }) end end, { desc = "Terminal (vsplit)" })
+map("n", "<leader>tg", function() local s = get_snacks(); if s then s.terminal("git status") end end, { desc = "Git Status Terminal" })
+map("n", "<leader>tp", function() local s = get_snacks(); if s then s.terminal("python3") end end, { desc = "Python Terminal" })
+map("n", "<leader>tn", function() local s = get_snacks(); if s then s.terminal("node") end end, { desc = "Node Terminal" })
 
 -- Git
-map("n", "<leader>gg", function() if ok and snacks then snacks.lazygit() end end, { desc = "Lazygit" })
-map("n", "<leader>gG", function() if ok and snacks then snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Lazygit (file dir)" })
-map("n", "<leader>gb", function() if ok and snacks then snacks.git.blame_line() end end, { desc = "Git Blame Line" })
-map("n", "<leader>gB", function() if ok and snacks then snacks.gitbrowse() end end, { desc = "Git Browse" })
+map("n", "<leader>gg", function() local s = get_snacks(); if s then s.lazygit() end end, { desc = "Lazygit" })
+map("n", "<leader>gG", function() local s = get_snacks(); if s then s.lazygit({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Lazygit (file dir)" })
+map("n", "<leader>gb", function() local s = get_snacks(); if s then s.git.blame_line() end end, { desc = "Git Blame Line" })
+map("n", "<leader>gB", function() local s = get_snacks(); if s then s.gitbrowse() end end, { desc = "Git Browse" })
 
 -- Scratch buffers
-map("n", "<leader>.", function() if ok and snacks then snacks.scratch() end end, { desc = "Toggle Scratch Buffer" })
-map("n", "<leader>S", function() if ok and snacks then snacks.scratch.select() end end, { desc = "Select Scratch Buffer" })
+map("n", "<leader>.", function() local s = get_snacks(); if s then s.scratch() end end, { desc = "Toggle Scratch Buffer" })
+map("n", "<leader>S", function() local s = get_snacks(); if s then s.scratch.select() end end, { desc = "Select Scratch Buffer" })
 
 -- Notifications
-map("n", "<leader>un", function() if ok and snacks then snacks.notifier.hide() end end, { desc = "Dismiss All Notifications" })
-map("n", "<leader>nh", function() if ok and snacks then snacks.notifier.show_history() end end, { desc = "Notification History" })
+map("n", "<leader>un", function() local s = get_snacks(); if s then s.notifier.hide() end end, { desc = "Dismiss All Notifications" })
+map("n", "<leader>nh", function() local s = get_snacks(); if s then s.notifier.show_history() end end, { desc = "Notification History" })
 
 -- Buffer management
-map("n", "<leader>bd", function() if ok and snacks then snacks.bufdelete() end end, { desc = "Delete Buffer" })
-map("n", "<leader>bD", function() if ok and snacks then snacks.bufdelete.all() end end, { desc = "Delete All Buffers" })
-map("n", "<leader>bo", function() if ok and snacks then snacks.bufdelete.other() end end, { desc = "Delete Other Buffers" })
+map("n", "<leader>bd", function() local s = get_snacks(); if s then s.bufdelete() end end, { desc = "Delete Buffer" })
+map("n", "<leader>bD", function() local s = get_snacks(); if s then s.bufdelete.all() end end, { desc = "Delete All Buffers" })
+map("n", "<leader>bo", function() local s = get_snacks(); if s then s.bufdelete.other() end end, { desc = "Delete Other Buffers" })
 
 -- Zen mode
-map("n", "<leader>z", function() if ok and snacks then snacks.zen() end end, { desc = "Toggle Zen Mode" })
-map("n", "<leader>Z", function() if ok and snacks then snacks.zen.zoom() end end, { desc = "Zen Zoom" })
+map("n", "<leader>z", function() local s = get_snacks(); if s then s.zen() end end, { desc = "Toggle Zen Mode" })
+map("n", "<leader>Z", function() local s = get_snacks(); if s then s.zen.zoom() end end, { desc = "Zen Zoom" })
 
 -- Toggle utilities
-map("n", "<leader>tw", function() if ok and snacks then snacks.toggle.option("wrap", { name = "Wrap" })() end end, { desc = "Toggle Wrap" })
-map("n", "<leader>tS", function() if ok and snacks then snacks.toggle.option("spell", { name = "Spell" })() end end, { desc = "Toggle Spell" })
-map("n", "<leader>tn", function() if ok and snacks then snacks.toggle.option("number", { name = "Number" })() end end, { desc = "Toggle Number" })
-map("n", "<leader>tr", function() if ok and snacks then snacks.toggle.option("relativenumber", { name = "Relative Number" })() end end, { desc = "Toggle Relative Number" })
-map("n", "<leader>th", function() if ok and snacks then snacks.toggle.option("hlsearch")() end end, { desc = "Toggle Highlight Search" })
-map("n", "<leader>tD", function() if ok and snacks then snacks.toggle.diagnostics() end end, { desc = "Toggle Diagnostics" })
+map("n", "<leader>tw", function() local s = get_snacks(); if s then s.toggle.option("wrap", { name = "Wrap" })() end end, { desc = "Toggle Wrap" })
+map("n", "<leader>tS", function() local s = get_snacks(); if s then s.toggle.option("spell", { name = "Spell" })() end end, { desc = "Toggle Spell" })
+map("n", "<leader>tn", function() local s = get_snacks(); if s then s.toggle.option("number", { name = "Number" })() end end, { desc = "Toggle Number" })
+map("n", "<leader>tr", function() local s = get_snacks(); if s then s.toggle.option("relativenumber", { name = "Relative Number" })() end end, { desc = "Toggle Relative Number" })
+map("n", "<leader>th", function() local s = get_snacks(); if s then s.toggle.option("hlsearch")() end end, { desc = "Toggle Highlight Search" })
+map("n", "<leader>tD", function() local s = get_snacks(); if s then s.toggle.diagnostics() end end, { desc = "Toggle Diagnostics" })
 
 -- ============================================================================
 -- CODECOMPANION
