@@ -84,54 +84,54 @@ map("n", "<leader>g", telescope_builtin("live_grep"), { desc = "Live Grep" })
 local snacks = safe_require("snacks")
 
 -- Dashboard
-map("n", "<leader>sd", function() snacks("dashboard") end, { desc = "Dashboard" })
+map("n", "<leader>sd", function() if snacks then snacks.dashboard() end end, { desc = "Dashboard" })
 
 -- File Explorer
-map("n", "<leader>e", function() snacks("explorer") end, { desc = "Explorer" })
-map("n", "<leader>E", function() snacks("explorer")({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Explorer (file dir)" })
-map("n", "<leader>o", function() snacks("explorer") end, { desc = "Open File Explorer" })
-map("n", "<leader>O", function() snacks("explorer")({ float = true }) end, { desc = "Open Explorer in Float" })
-map("n", "-", function() snacks("explorer") end, { desc = "Open File Explorer" })
+map("n", "<leader>e", function() if snacks then snacks.explorer() end end, { desc = "Explorer" })
+map("n", "<leader>E", function() if snacks then snacks.explorer({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Explorer (file dir)" })
+map("n", "<leader>o", function() if snacks then snacks.explorer() end end, { desc = "Open File Explorer" })
+map("n", "<leader>O", function() if snacks then snacks.explorer({ float = true }) end end, { desc = "Open Explorer in Float" })
+map("n", "-", function() if snacks then snacks.explorer() end end, { desc = "Open File Explorer" })
 
 -- Terminal
-map("n", "<leader>tt", function() snacks("terminal") end, { desc = "Toggle Terminal" })
-map("n", "<leader>tf", function() snacks("terminal.float") end, { desc = "Terminal (float)" })
-map("n", "<leader>ts", function() snacks("terminal.split") end, { desc = "Terminal (split)" })
-map("n", "<leader>tv", function() snacks("terminal.split")({ position = "right" }) end, { desc = "Terminal (vsplit)" })
-map("n", "<leader>tg", function() snacks("terminal")("git status") end, { desc = "Git Status Terminal" })
-map("n", "<leader>tp", function() snacks("terminal")("python3") end, { desc = "Python Terminal" })
-map("n", "<leader>tn", function() snacks("terminal")("node") end, { desc = "Node Terminal" })
+map("n", "<leader>tt", function() if snacks then snacks.terminal() end end, { desc = "Toggle Terminal" })
+map("n", "<leader>tf", function() if snacks then snacks.terminal.float() end end, { desc = "Terminal (float)" })
+map("n", "<leader>ts", function() if snacks then snacks.terminal.split() end end, { desc = "Terminal (split)" })
+map("n", "<leader>tv", function() if snacks then snacks.terminal.split({ position = "right" }) end end, { desc = "Terminal (vsplit)" })
+map("n", "<leader>tg", function() if snacks then snacks.terminal("git status") end end, { desc = "Git Status Terminal" })
+map("n", "<leader>tp", function() if snacks then snacks.terminal("python3") end end, { desc = "Python Terminal" })
+map("n", "<leader>tn", function() if snacks then snacks.terminal("node") end end, { desc = "Node Terminal" })
 
 -- Git
-map("n", "<leader>gg", function() snacks("lazygit") end, { desc = "Lazygit" })
-map("n", "<leader>gG", function() snacks("lazygit")({ cwd = vim.fn.expand("%:p:h") }) end, { desc = "Lazygit (file dir)" })
-map("n", "<leader>gb", function() snacks("git.blame_line") end, { desc = "Git Blame Line" })
-map("n", "<leader>gB", function() snacks("gitbrowse") end, { desc = "Git Browse" })
+map("n", "<leader>gg", function() if snacks then snacks.lazygit() end end, { desc = "Lazygit" })
+map("n", "<leader>gG", function() if snacks then snacks.lazygit({ cwd = vim.fn.expand("%:p:h") }) end end, { desc = "Lazygit (file dir)" })
+map("n", "<leader>gb", function() if snacks then snacks.git.blame_line() end end, { desc = "Git Blame Line" })
+map("n", "<leader>gB", function() if snacks then snacks.gitbrowse() end end, { desc = "Git Browse" })
 
 -- Scratch buffers
-map("n", "<leader>.", function() snacks("scratch") end, { desc = "Toggle Scratch Buffer" })
-map("n", "<leader>S", function() snacks("scratch.select") end, { desc = "Select Scratch Buffer" })
+map("n", "<leader>.", function() if snacks then snacks.scratch() end end, { desc = "Toggle Scratch Buffer" })
+map("n", "<leader>S", function() if snacks then snacks.scratch.select() end end, { desc = "Select Scratch Buffer" })
 
 -- Notifications
-map("n", "<leader>un", function() snacks("notifier.hide") end, { desc = "Dismiss All Notifications" })
-map("n", "<leader>nh", function() snacks("notifier.show_history") end, { desc = "Notification History" })
+map("n", "<leader>un", function() if snacks then snacks.notifier.hide() end end, { desc = "Dismiss All Notifications" })
+map("n", "<leader>nh", function() if snacks then snacks.notifier.show_history() end end, { desc = "Notification History" })
 
 -- Buffer management
-map("n", "<leader>bd", function() snacks("bufdelete") end, { desc = "Delete Buffer" })
-map("n", "<leader>bD", function() snacks("bufdelete.all") end, { desc = "Delete All Buffers" })
-map("n", "<leader>bo", function() snacks("bufdelete.other") end, { desc = "Delete Other Buffers" })
+map("n", "<leader>bd", function() if snacks then snacks.bufdelete() end end, { desc = "Delete Buffer" })
+map("n", "<leader>bD", function() if snacks then snacks.bufdelete.all() end end, { desc = "Delete All Buffers" })
+map("n", "<leader>bo", function() if snacks then snacks.bufdelete.other() end end, { desc = "Delete Other Buffers" })
 
 -- Zen mode
-map("n", "<leader>z", function() snacks("zen") end, { desc = "Toggle Zen Mode" })
-map("n", "<leader>Z", function() snacks("zen.zoom") end, { desc = "Zen Zoom" })
+map("n", "<leader>z", function() if snacks then snacks.zen() end end, { desc = "Toggle Zen Mode" })
+map("n", "<leader>Z", function() if snacks then snacks.zen.zoom() end end, { desc = "Zen Zoom" })
 
 -- Toggle utilities
-map("n", "<leader>tw", function() snacks("toggle.option")("wrap", { name = "Wrap" }) end, { desc = "Toggle Wrap" })
-map("n", "<leader>tS", function() snacks("toggle.option")("spell", { name = "Spell" }) end, { desc = "Toggle Spell" })
-map("n", "<leader>tn", function() snacks("toggle.option")("number", { name = "Number" }) end, { desc = "Toggle Number" })
-map("n", "<leader>tr", function() snacks("toggle.option")("relativenumber", { name = "Relative Number" }) end, { desc = "Toggle Relative Number" })
-map("n", "<leader>th", function() snacks("toggle.option")("hlsearch") end, { desc = "Toggle Highlight Search" })
-map("n", "<leader>tD", function() snacks("toggle.diagnostics")() end, { desc = "Toggle Diagnostics" })
+map("n", "<leader>tw", function() if snacks then snacks.toggle.option("wrap", { name = "Wrap" })() end end, { desc = "Toggle Wrap" })
+map("n", "<leader>tS", function() if snacks then snacks.toggle.option("spell", { name = "Spell" })() end end, { desc = "Toggle Spell" })
+map("n", "<leader>tn", function() if snacks then snacks.toggle.option("number", { name = "Number" })() end end, { desc = "Toggle Number" })
+map("n", "<leader>tr", function() if snacks then snacks.toggle.option("relativenumber", { name = "Relative Number" })() end end, { desc = "Toggle Relative Number" })
+map("n", "<leader>th", function() if snacks then snacks.toggle.option("hlsearch")() end end, { desc = "Toggle Highlight Search" })
+map("n", "<leader>tD", function() if snacks then snacks.toggle.diagnostics() end end, { desc = "Toggle Diagnostics" })
 
 -- ============================================================================
 -- CODECOMPANION
