@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Part 1: Core System Setup - Production Ready
-# Installs essential tools up to and including Zsh/Oh My Zsh
+# Installs essential tools up to and including Zsh/Zinit
 # This should be run first on a fresh macOS installation
 #
 # Features:
@@ -314,33 +314,23 @@ info "Creating configuration directories..."
 mkdir -p ~/.config/{nvim,alacritty,tmux,tmuxinator,theme-switcher}
 mkdir -p ~/.local/share/nvim/site/autoload
 
-# Step 8: Install Oh My Zsh
-progress "Installing Oh My Zsh"
-if [[ -d "$HOME/.oh-my-zsh" ]]; then
-    success "Oh My Zsh already installed"
+# Step 8: Install Zinit (Modern Zsh Plugin Manager)
+progress "Installing Zinit"
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ -d "$ZINIT_HOME" ]]; then
+    success "Zinit already installed"
 else
-    info "Installing Oh My Zsh..."
-    # Use unattended installation
-    if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 2>&1 | tee -a "$LOG_FILE"; then
-        success "Oh My Zsh installed"
+    info "Installing Zinit plugin manager..."
+    command mkdir -p "$(dirname $ZINIT_HOME)"
+    if git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME" 2>&1 | tee -a "$LOG_FILE"; then
+        success "Zinit installed"
     else
-        die "Failed to install Oh My Zsh"
+        die "Failed to install Zinit"
     fi
 fi
 
-# Install Spaceship Theme
-info "Installing Spaceship theme..."
-SPACESHIP_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt"
-if [[ ! -d "$SPACESHIP_DIR" ]]; then
-    if git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$SPACESHIP_DIR" --depth=1 2>&1 | tee -a "$LOG_FILE"; then
-        ln -sf "$SPACESHIP_DIR/spaceship.zsh-theme" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship.zsh-theme"
-        success "Spaceship theme installed"
-    else
-        warn "Failed to install Spaceship theme"
-    fi
-else
-    success "Spaceship theme already installed"
-fi
+# Note: Starship prompt is installed via Homebrew in Step 5
+# Zinit will auto-install Zsh plugins on first shell startup
 
 # Step 9: Install core packages
 progress "Installing core essential packages"
@@ -439,7 +429,7 @@ info "Installation Summary:"
 echo "  • Xcode Command Line Tools: ✅"
 echo "  • Homebrew: ✅"
 echo "  • Git: ✅"
-echo "  • Oh My Zsh: ✅"
+echo "  • Zinit: ✅"
 echo "  • Core packages: ✅"
 echo ""
 
