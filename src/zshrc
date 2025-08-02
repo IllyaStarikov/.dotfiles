@@ -164,7 +164,7 @@ alias ....='cd ../../..'
 # alias gl='git pull'
 
 # Safety
-alias rm='rm -i'
+alias rm='trash'  # Move files to trash instead of permanent deletion
 alias cp='cp -i'
 alias mv='mv -i'
 

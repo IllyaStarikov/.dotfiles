@@ -50,27 +50,33 @@ local function setup_theme()
     -- Apply colorscheme based on current theme
     if theme == "tokyonight_moon" then
       vim.opt.background = "dark"
-      require("tokyonight").setup({
-        style = "moon",
-        transparent = false,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
-      })
-      vim.cmd("colorscheme tokyonight-moon")
+      local ok, tokyonight = pcall(require, "tokyonight")
+      if ok then
+        tokyonight.setup({
+          style = "moon",
+          transparent = false,
+          styles = {
+            comments = { italic = true },
+            keywords = { italic = true },
+          },
+        })
+      end
+      pcall(vim.cmd, "colorscheme tokyonight-moon")
       -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_storm" then
       vim.opt.background = "dark"
-      require("tokyonight").setup({
-        style = "storm",
-        transparent = false,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
-      })
-      vim.cmd("colorscheme tokyonight-storm")
+      local ok, tokyonight = pcall(require, "tokyonight")
+      if ok then
+        tokyonight.setup({
+          style = "storm",
+          transparent = false,
+          styles = {
+            comments = { italic = true },
+            keywords = { italic = true },
+          },
+        })
+      end
+      pcall(vim.cmd, "colorscheme tokyonight-storm")
       -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_night" then
       vim.opt.background = "dark"
@@ -97,20 +103,41 @@ local function setup_theme()
       -- vim.g.airline_theme = 'base16'
     elseif theme == "tokyonight_day" then
       vim.opt.background = "light"
-      require("tokyonight").setup({
-        style = "day",
-        transparent = false,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
-      })
-      vim.cmd("colorscheme tokyonight-day")
+      local ok, tokyonight = pcall(require, "tokyonight")
+      if ok then
+        tokyonight.setup({
+          style = "day",
+          transparent = false,
+          styles = {
+            comments = { italic = true },
+            keywords = { italic = true },
+          },
+        })
+      end
+      pcall(vim.cmd, "colorscheme tokyonight-day")
       -- vim.g.airline_theme = 'base16'
     else
       -- Default fallback to Tokyo Night Moon
       vim.opt.background = "dark"
-      require("tokyonight").setup({
+      local ok, tokyonight = pcall(require, "tokyonight")
+      if ok then
+        tokyonight.setup({
+          style = "moon",
+          transparent = false,
+          styles = {
+            comments = { italic = true },
+            keywords = { italic = true },
+          },
+        })
+      end
+      pcall(vim.cmd, "colorscheme tokyonight-moon")
+    end
+  else
+    -- Default to dark theme if config file doesn't exist
+    vim.opt.background = "dark"
+    local ok, tokyonight = pcall(require, "tokyonight")
+    if ok then
+      tokyonight.setup({
         style = "moon",
         transparent = false,
         styles = {
@@ -118,19 +145,7 @@ local function setup_theme()
           keywords = { italic = true },
         },
       })
-      vim.cmd("colorscheme tokyonight-moon")
     end
-  else
-    -- Default to dark theme if config file doesn't exist
-    vim.opt.background = "dark"
-    require("tokyonight").setup({
-      style = "moon",
-      transparent = false,
-      styles = {
-        comments = { italic = true },
-        keywords = { italic = true },
-      },
-    })
     vim.cmd("colorscheme tokyonight-moon")
     -- vim.g.airline_theme = 'base16'
   end
