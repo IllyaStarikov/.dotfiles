@@ -47,14 +47,9 @@ brew upgrade && brew upgrade --cask && brew cleanup || echo "Homebrew update fai
 echo "Updating Neovim plugins..."
 nvim --headless -c "Lazy! sync" -c "qa" || echo "Neovim plugin update failed."
 
-# Oh My Zsh Updates
-if [[ -d "$HOME/.oh-my-zsh" ]]; then
-    echo "Updating Oh My Zsh..."
-    cd "$HOME/.oh-my-zsh" && git pull origin master || echo "Oh My Zsh update failed."
-    cd - > /dev/null
-else
-    echo "Oh My Zsh not found, skipping update."
-fi
+# Zinit Updates
+echo "Updating Zinit plugins..."
+zsh -ic "zinit update --all" 2>/dev/null || echo "Zinit update failed."
 
 # Node.js Global Package Updates (npm)
 if command -v npm &> /dev/null; then
