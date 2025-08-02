@@ -141,17 +141,17 @@ create_symlink "$DOTFILES_DIR/init.lua" "$HOME/.config/nvim/init.lua" "Neovim in
 create_symlink "$DOTFILES_DIR/lua" "$HOME/.config/nvim/lua" "Neovim Lua configs"
 
 
-# ZSH configuration
+# ZSH configuration - use universal version
 progress "Setting up ZSH configuration"
-create_symlink "$DOTFILES_DIR/zshrc" "$HOME/.zshrc" "ZSH configuration"
-create_symlink "$DOTFILES_DIR/zshenv" "$HOME/.zshenv" "ZSH environment"
+create_symlink "$DOTFILES_DIR/zshrc.universal" "$HOME/.zshrc" "ZSH configuration (universal)"
+create_symlink "$DOTFILES_DIR/zshenv.universal" "$HOME/.zshenv" "ZSH environment (universal)"
 ensure_dir "$HOME/.config/zsh"
 create_symlink "$DOTFILES_DIR/zsh" "$HOME/.config/zsh" "ZSH config directory"
 
-# Terminal configuration
+# Terminal configuration - use universal version
 progress "Setting up Alacritty configuration"
 ensure_dir "$HOME/.config/alacritty"
-create_symlink "$DOTFILES_DIR/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml" "Alacritty config"
+create_symlink "$DOTFILES_DIR/alacritty.toml.universal" "$HOME/.config/alacritty/alacritty.toml" "Alacritty config (universal)"
 
 # Git configuration
 progress "Setting up Git configuration"
@@ -159,13 +159,13 @@ create_symlink "$DOTFILES_DIR/gitignore" "$HOME/.gitignore" "Git ignore patterns
 create_symlink "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "Git configuration"
 create_symlink "$DOTFILES_DIR/gitmessage" "$HOME/.gitmessage" "Git commit template"
 
-# LaTeX configuration
+# LaTeX configuration - use universal version
 progress "Setting up LaTeX configuration"
-create_symlink "$DOTFILES_DIR/latexmkrc" "$HOME/.latexmkrc" "LaTeX build config"
+create_symlink "$DOTFILES_DIR/latexmkrc.universal" "$HOME/.latexmkrc" "LaTeX build config (universal)"
 
-# TMUX configuration
+# TMUX configuration - use universal version
 progress "Setting up tmux configuration"
-create_symlink "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux configuration"
+create_symlink "$DOTFILES_DIR/tmux.conf.universal" "$HOME/.tmux.conf" "tmux configuration (universal)"
 
 # Tmuxinator with private repo fallback
 progress "Setting up tmuxinator configuration"
@@ -192,6 +192,18 @@ fi
 progress "Setting up custom scripts"
 create_symlink "$DOTFILES_DIR/scripts" "$HOME/.scripts" "Utility scripts"
 
+# Link universal scripts
+ensure_dir "$HOME/bin"
+create_symlink "$DOTFILES_DIR/scripts/update-universal" "$HOME/bin/update" "Universal update script"
+create_symlink "$DOTFILES_DIR/theme-switcher/switch-theme-universal.sh" "$HOME/bin/theme" "Universal theme switcher"
+create_symlink "$DOTFILES_DIR/scripts/scratchpad-universal" "$HOME/bin/scratchpad" "Universal scratchpad"
+create_symlink "$DOTFILES_DIR/scripts/format-universal" "$HOME/bin/format" "Universal formatter"
+create_symlink "$DOTFILES_DIR/scripts/fetch-quotes-universal" "$HOME/bin/fetch-quotes" "Universal quote fetcher"
+create_symlink "$DOTFILES_DIR/scripts/install-git-hooks-universal" "$HOME/bin/install-git-hooks" "Universal git hooks installer"
+create_symlink "$DOTFILES_DIR/scripts/theme-watcher-universal" "$HOME/bin/theme-watcher" "Universal theme watcher"
+create_symlink "$DOTFILES_DIR/scripts/install-theme-watcher-universal" "$HOME/bin/install-theme-watcher" "Universal theme watcher installer"
+create_symlink "$DOTFILES_DIR/scripts/theme-debug-universal" "$HOME/bin/theme-debug" "Universal theme debugger"
+
 # Spell files for Neovim
 progress "Setting up spell files"
 create_symlink "$DOTFILES_DIR/spell" "$HOME/.config/nvim/spell" "Neovim spell files"
@@ -204,10 +216,10 @@ else
     warn "Google styleguide submodule not found. Run: git submodule update --init --recursive"
 fi
 
-# Clangd configuration
+# Clangd configuration - use universal version
 progress "Setting up clangd configuration"
 ensure_dir "$HOME/.config/clangd"
-create_symlink "$DOTFILES_DIR/clangd_config.yaml" "$HOME/.config/clangd/config.yaml" "Clangd LSP config"
+create_symlink "$DOTFILES_DIR/clangd_config.universal.yaml" "$HOME/.config/clangd/config.yaml" "Clangd LSP config (universal)"
 
 # Ripgrep configuration
 progress "Setting up ripgrep configuration"

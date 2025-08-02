@@ -1,0 +1,77 @@
+# Universal zshenv - Works on macOS and Linux
+# Loaded before zshrc for all zsh instances
+
+# Basic PATH setup - platform-aware
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+
+# Add platform-specific paths
+case "$OSTYPE" in
+    darwin*)
+        # macOS paths
+        [[ -d "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+        [[ -d "/opt/homebrew/bin" ]] && export PATH="/opt/homebrew/bin:$PATH"
+        ;;
+    linux*)
+        # Linux paths
+        [[ -d "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+        ;;
+esac
+
+# Ensure proper locale settings for UTF-8
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+# Zinit configuration
+export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Faster vim mode
+export KEYTIMEOUT=1
+
+# Editor configuration
+if [[ $SSH_CONNECTION ]]; then
+    # Use vim over SSH for better compatibility
+    export EDITOR='vim'
+    export VISUAL='vim'
+else
+    # Use nvim locally
+    export EDITOR='nvim'
+    export VISUAL='nvim'
+fi
+
+# Python configuration - use system python3
+if command -v python3 >/dev/null 2>&1; then
+    export PYTHON3_PATH="$(command -v python3)"
+fi
+
+# Rust configuration
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+
+# Go configuration
+[[ -d "$HOME/go" ]] && export GOPATH="$HOME/go"
+[[ -d "$HOME/go/bin" ]] && export PATH="$HOME/go/bin:$PATH"
+
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# FZF configuration
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
+
+# Ripgrep configuration
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
+# Less configuration
+export LESS='-R -S -M -i'
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+
+# Man pages with color
+export LESS_TERMCAP_mb=$'\E[01;31m'      # begin blinking
+export LESS_TERMCAP_md=$'\E[01;38;5;74m' # begin bold
+export LESS_TERMCAP_me=$'\E[0m'          # end mode
+export LESS_TERMCAP_se=$'\E[0m'          # end standout-mode
+export LESS_TERMCAP_so=$'\E[38;5;246m'   # begin standout-mode
+export LESS_TERMCAP_ue=$'\E[0m'          # end underline
+export LESS_TERMCAP_us=$'\E[04;38;5;146m' # begin underline
