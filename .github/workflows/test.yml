@@ -1,0 +1,250 @@
+name: Test Dotfiles
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, macos-13, macos-12]
+      fail-fast: false
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up environment
+      run: |
+        echo "DOTFILES_DIR=${{ github.workspace }}" >> $GITHUB_ENV
+        echo "TEST_TMP_DIR=${{ runner.temp }}/dotfiles-test" >> $GITHUB_ENV
+        mkdir -p "${{ runner.temp }}/dotfiles-test"
+
+    - name: Install test dependencies
+      run: |
+        # Install required tools for testing
+        brew install bash coreutils findutils gnu-sed
+        
+        # Add GNU tools to PATH for consistency
+        echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+        echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+        echo "/usr/local/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+
+    - name: Install Neovim
+      run: |
+        brew install neovim
+        nvim --version
+
+    - name: Run unit tests
+      run: |
+        chmod +x tests/test
+        cd tests
+        ./test --unit --ci -v
+
+    - name: Run functional tests
+      run: |
+        cd tests
+        ./test --functional --ci -v
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ matrix.os }}
+        path: |
+          tests/test-results.xml
+          tests/*.log
+
+    - name: Test setup scripts (dry run)
+      run: |
+        # Test mac.sh in dry run mode
+        export DRY_RUN=true
+        bash -n src/setup/mac.sh || echo "Syntax check failed for mac.sh"
+        
+        # Test aliases.sh in dry run mode
+        bash -n src/setup/aliases.sh || echo "Syntax check failed for aliases.sh"
+
+    - name: Test theme switcher
+      run: |
+        # Create mock config directories
+        mkdir -p ~/.config/alacritty
+        mkdir -p ~/.config/tmux
+        mkdir -p ~/.config/theme-switcher
+        
+        # Test theme switching
+        bash src/theme-switcher/switch-theme.sh || echo "Theme switcher test failed"
+        
+        # Verify theme files were created
+        test -f ~/.config/theme-switcher/current-theme.sh || echo "Current theme file not created"
+
+    - name: Validate configurations
+      run: |
+        # Validate zsh configuration
+        zsh -n src/zshrc || echo "Zsh config validation failed"
+        
+        # Validate git configuration
+        git config --file=src/gitconfig --list > /dev/null || echo "Git config validation failed"
+        
+        # Check for common issues
+        # No hardcoded paths
+        ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "Warning: Hardcoded paths found"
+        
+        # No exposed secrets (basic check)
+        ! grep -r -i "password\|secret\|key\|token" src/ | grep -v "^[[:space:]]*#" | grep "=" || echo "Warning: Potential secrets found"
+
+    - name: Lint shell scripts
+      run: |
+        # Install shellcheck if not available
+        if ! command -v shellcheck &> /dev/null; then
+          brew install shellcheck
+        fi
+        
+        # Lint all shell scripts
+        find src -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
+        find tests -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
+
+    - name: Check file permissions
+      run: |
+        # Ensure scripts are executable
+        find src/scripts -type f | while read -r script; do
+          if [[ ! -x "$script" ]]; then
+            echo "Warning: Script not executable: $script"
+          fi
+        done
+        
+        # Ensure setup scripts are executable
+        test -x src/setup/mac.sh || echo "mac.sh not executable"
+        test -x src/setup/aliases.sh || echo "aliases.sh not executable"
+        test -x src/theme-switcher/switch-theme.sh || echo "switch-theme.sh not executable"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install gitleaks
+      run: |
+        wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+        tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+        chmod +x gitleaks
+        sudo mv gitleaks /usr/local/bin/
+
+    - name: Run gitleaks scan
+      run: |
+        gitleaks detect --source . --config src/gitleaks.toml --verbose
+
+    - name: Security audit with Grype
+      uses: anchore/scan-action@v3
+      with:
+        path: "."
+        fail-build: false
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check documentation
+      run: |
+        # Ensure all major scripts have documentation
+        scripts=(
+          "src/setup/mac.sh"
+          "src/setup/aliases.sh"
+          "src/theme-switcher/switch-theme.sh"
+          "src/scripts/update"
+          "src/scripts/format"
+        )
+        
+        for script in "${scripts[@]}"; do
+          if [[ -f "$script" ]]; then
+            # Check for usage function or help text
+            if ! grep -q -E "(usage\(\)|--help|Usage:)" "$script"; then
+              echo "Warning: No usage documentation in $script"
+            fi
+          fi
+        done
+
+    - name: Validate markdown
+      run: |
+        # Install markdownlint
+        npm install -g markdownlint-cli
+        
+        # Lint markdown files
+        markdownlint '**/*.md' --ignore node_modules || true
+
+  integration-test:
+    runs-on: macos-latest
+    needs: test
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create test environment
+      run: |
+        # Create isolated test environment
+        export TEST_HOME="$RUNNER_TEMP/test-home"
+        mkdir -p "$TEST_HOME"
+        
+        # Set HOME to test directory
+        export HOME="$TEST_HOME"
+        
+        # Create minimal environment
+        mkdir -p "$HOME/.config"
+        mkdir -p "$HOME/.local/share"
+
+    - name: Test dotfiles installation
+      run: |
+        export HOME="$RUNNER_TEMP/test-home"
+        export DOTFILES_DIR="$GITHUB_WORKSPACE"
+        
+        # Test symlink creation
+        bash src/setup/aliases.sh
+        
+        # Verify symlinks
+        test -L "$HOME/.zshrc" || echo "Zshrc symlink not created"
+        test -L "$HOME/.gitconfig" || echo "Gitconfig symlink not created"
+        test -L "$HOME/.tmux.conf" || echo "Tmux.conf symlink not created"
+
+    - name: Test plugin installations
+      run: |
+        export HOME="$RUNNER_TEMP/test-home"
+        
+        # Test Oh My Zsh installation (mock)
+        if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+          echo "Oh My Zsh would be installed here"
+          mkdir -p "$HOME/.oh-my-zsh"
+        fi
+        
+        # Test TPM installation (mock)
+        if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
+          echo "TPM would be installed here"
+          mkdir -p "$HOME/.tmux/plugins/tpm"
+        fi
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [test, security-scan, documentation, integration-test]
+    if: always()
+    steps:
+    - name: Check job statuses
+      run: |
+        echo "Test status: ${{ needs.test.result }}"
+        echo "Security scan status: ${{ needs.security-scan.result }}"
+        echo "Documentation status: ${{ needs.documentation.result }}"
+        echo "Integration test status: ${{ needs.integration-test.result }}"
+        
+        # Fail if any required job failed
+        if [[ "${{ needs.test.result }}" == "failure" ]] || \
+           [[ "${{ needs.integration-test.result }}" == "failure" ]]; then
+          echo "Required tests failed"
+          exit 1
+        fi

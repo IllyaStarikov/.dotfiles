@@ -393,7 +393,7 @@ if command_exists ollama; then
     success "Ollama already installed"
 else
     info "Installing Ollama..."
-    if brew_install_formula "ollama" false; then
+    if brew install ollama 2>&1 | tee -a "$LOG_FILE"; then
         success "Ollama installed"
     else
         warn "Failed to install Ollama"
@@ -409,11 +409,12 @@ if command_exists ollama; then
     fi
     
     # Pull the model for CodeCompanion
-    info "Pulling llama3.2 model for CodeCompanion (this may take a while)..."
-    if ollama pull llama3.2:latest 2>&1 | tee -a "$LOG_FILE"; then
-        success "llama3.2 model downloaded"
+    info "Pulling Llama 3.1 70B model for CodeCompanion (this may take a while)..."
+    info "Note: This is a 42GB download and requires 64GB+ RAM"
+    if ollama pull llama3.1:70b 2>&1 | tee -a "$LOG_FILE"; then
+        success "llama3.1:70b model downloaded"
     else
-        warn "Failed to pull llama3.2 model"
+        warn "Failed to pull llama3.1:70b model - you can run 'ollama pull llama3.1:70b' manually later"
     fi
 fi
 

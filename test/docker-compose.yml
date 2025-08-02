@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  test-ubuntu:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    volumes:
+      - ..:/home/testuser/dotfiles:ro
+      - test-cache:/home/testuser/.cache
+      - test-local:/home/testuser/.local
+    environment:
+      - DOTFILES_DIR=/home/testuser/dotfiles
+      - CI=true
+    command: |
+      -c "cd /home/testuser/dotfiles/tests && ./test --full --ci -v"
+
+  test-unit:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    volumes:
+      - ..:/home/testuser/dotfiles:ro
+    environment:
+      - DOTFILES_DIR=/home/testuser/dotfiles
+      - CI=true
+    command: |
+      -c "cd /home/testuser/dotfiles/tests && ./test --unit --ci"
+
+  test-functional:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    volumes:
+      - ..:/home/testuser/dotfiles:ro
+      - test-cache:/home/testuser/.cache
+      - test-local:/home/testuser/.local
+    environment:
+      - DOTFILES_DIR=/home/testuser/dotfiles
+      - CI=true
+    command: |
+      -c "cd /home/testuser/dotfiles/tests && ./test --functional --ci"
+
+  test-integration:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    volumes:
+      - ..:/home/testuser/dotfiles:ro
+      - test-cache:/home/testuser/.cache
+      - test-local:/home/testuser/.local
+    environment:
+      - DOTFILES_DIR=/home/testuser/dotfiles
+      - CI=true
+    command: |
+      -c "cd /home/testuser/dotfiles/tests && ./test --integration --ci"
+
+  shell:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile
+    volumes:
+      - ..:/home/testuser/dotfiles:ro
+      - test-cache:/home/testuser/.cache
+      - test-local:/home/testuser/.local
+    environment:
+      - DOTFILES_DIR=/home/testuser/dotfiles
+    stdin_open: true
+    tty: true
+    command: |
+      -c "cd /home/testuser/dotfiles && exec zsh"
+
+volumes:
+  test-cache:
+  test-local:

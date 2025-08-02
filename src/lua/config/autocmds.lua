@@ -15,6 +15,23 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+-- Workaround for treesitter highlighter out of range errors
+-- This wraps the problematic function to handle invalid positions gracefully
+local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
+vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
+  local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
+  if not ok then
+    -- Silently ignore out of range errors from treesitter highlighter
+    if result:match("Invalid 'end_col': out of range") or result:match("Invalid 'col': out of range") then
+      return 0  -- Return a dummy extmark id
+    else
+      -- Re-throw other errors
+      error(result)
+    end
+  end
+  return result
+end
+
 -- Terminal cursor fix
 autocmd({ "TermEnter" }, {
   group = augroup("TerminalCursorFix", { clear = true }),

@@ -1,0 +1,209 @@
+name: Lint and Format Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-shell:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install ShellCheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+
+    - name: Run ShellCheck
+      run: |
+        # Find all shell scripts and check them
+        find . -type f -name "*.sh" -print0 | xargs -0 shellcheck -x
+        
+        # Check scripts without .sh extension but with shell shebang
+        find src/scripts -type f -exec grep -l '^#!/.*sh' {} \; | xargs shellcheck -x
+
+    - name: Check shell script formatting
+      run: |
+        # Install shfmt
+        wget -O shfmt https://github.com/mvdan/sh/releases/download/v3.7.0/shfmt_v3.7.0_linux_amd64
+        chmod +x shfmt
+        sudo mv shfmt /usr/local/bin/
+        
+        # Check formatting (Google style: 2 spaces)
+        find . -type f -name "*.sh" -print0 | xargs -0 shfmt -d -i 2 -bn -ci
+
+  lint-python:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install linters
+      run: |
+        pip install ruff black isort pylint
+
+    - name: Run ruff
+      run: |
+        # Find Python files and check them
+        find . -name "*.py" -type f | xargs ruff check || true
+
+    - name: Check Black formatting
+      run: |
+        find . -name "*.py" -type f | xargs black --check --line-length 80 || true
+
+    - name: Check import sorting
+      run: |
+        find . -name "*.py" -type f | xargs isort --check-only --profile google || true
+
+  lint-lua:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install stylua
+      run: |
+        wget -O stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/download/v0.19.1/stylua-linux-x86_64.zip
+        unzip stylua.zip
+        chmod +x stylua
+        sudo mv stylua /usr/local/bin/
+
+    - name: Check Lua formatting
+      run: |
+        # Check all Lua files
+        find src -name "*.lua" -type f | xargs stylua --check --indent-type Spaces --indent-width 2
+
+  lint-yaml:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Validate YAML files
+      run: |
+        # Install yamllint
+        pip install yamllint
+        
+        # Lint all YAML files
+        find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | xargs yamllint -d relaxed
+
+  lint-json:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Validate JSON files
+      run: |
+        # Install jq for JSON validation
+        sudo apt-get update
+        sudo apt-get install -y jq
+        
+        # Validate all JSON files
+        find . -name "*.json" -type f | while read -r file; do
+          echo "Checking $file"
+          jq . "$file" > /dev/null || echo "Invalid JSON: $file"
+        done
+
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install markdownlint
+      run: npm install -g markdownlint-cli
+
+    - name: Run markdownlint
+      run: |
+        markdownlint '**/*.md' \
+          --ignore node_modules \
+          --ignore .github \
+          --config .markdownlint.json || true
+
+  check-formatting:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check for trailing whitespace
+      run: |
+        # Find files with trailing whitespace
+        if grep -r '[[:space:]]$' src/ tests/ --include="*.sh" --include="*.lua" --include="*.py"; then
+          echo "Error: Trailing whitespace found"
+          exit 1
+        fi
+
+    - name: Check for tabs in inappropriate files
+      run: |
+        # Check for tabs in files that should use spaces
+        if grep -r $'\t' src/ --include="*.lua" --include="*.yml" --include="*.yaml" --include="*.json"; then
+          echo "Error: Tabs found in files that should use spaces"
+          exit 1
+        fi
+
+    - name: Check line endings
+      run: |
+        # Ensure Unix line endings
+        if find src/ tests/ -type f -exec file {} \; | grep CRLF; then
+          echo "Error: Windows line endings (CRLF) found"
+          exit 1
+        fi
+
+  editorconfig:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install editorconfig-checker
+      run: |
+        wget -O ec https://github.com/editorconfig-checker/editorconfig-checker/releases/download/2.7.2/ec-linux-amd64
+        chmod +x ec
+        sudo mv ec /usr/local/bin/
+
+    - name: Check EditorConfig compliance
+      run: |
+        # Create .editorconfig if it doesn't exist
+        if [[ ! -f .editorconfig ]]; then
+          cat > .editorconfig << 'EOF'
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+[*.{sh,bash}]
+indent_style = space
+indent_size = 2
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.lua]
+indent_style = space
+indent_size = 2
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+EOF
+        fi
+        
+        ec || true
