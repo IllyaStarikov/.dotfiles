@@ -97,11 +97,12 @@ check_prerequisites() {
         warn "Part 1 completion marker not found. Checking manually..."
     fi
     
-    # Check if Oh My Zsh is installed
-    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-        die "Oh My Zsh not found. Please run 1-core-system.sh first"
+    # Check if Zinit is installed
+    ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+    if [[ ! -d "$ZINIT_HOME" ]]; then
+        die "Zinit not found. Please run 1-core-system.sh first"
     fi
-    success "Oh My Zsh found"
+    success "Zinit found"
     
     # Check if Homebrew is available
     if ! command_exists brew; then
