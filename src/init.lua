@@ -1,6 +1,48 @@
 -- Disable verbose logging for normal operation
-vim.opt.verbose = 0
-vim.opt.verbosefile = ""
+-- Only disable if not already set via command line
+if vim.opt.verbose:get() == 0 then
+  vim.opt.verbose = 0
+  vim.opt.verbosefile = ""
+end
+
+-- Fix for treesitter markdown code fence errors
+-- This must be done very early before any plugins load
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "markdown.pandoc" },
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    
+    -- Set up autocmd to detect problematic edits
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+      buffer = bufnr,
+      callback = function()
+        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+        local fence_count = 0
+        
+        -- Count code fences
+        for _, line in ipairs(lines) do
+          if line:match("^```") then
+            fence_count = fence_count + 1
+          end
+        end
+        
+        -- If odd number of fences, temporarily disable treesitter
+        if fence_count % 2 == 1 then
+          vim.b[bufnr].ts_disable_markdown = true
+          -- Force treesitter to update
+          vim.cmd("silent! TSBufDisable highlight")
+          
+          -- Re-enable after a short delay
+          vim.defer_fn(function()
+            vim.b[bufnr].ts_disable_markdown = false
+            vim.cmd("silent! TSBufEnable highlight")
+          end, 200)
+        end
+      end,
+    })
+  end,
+  desc = "Workaround for treesitter markdown errors"
+})
 
 -- Enable automatic LSP detection
 -- This must be set before any plugins are loaded
