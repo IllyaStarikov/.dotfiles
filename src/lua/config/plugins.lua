@@ -163,6 +163,12 @@ require("lazy").setup({
     end,
   },
   
+  -- vim-kwbd - Keep window on buffer delete
+  {
+    'rgarver/Kwbd.vim',
+    cmd = 'Kwbd',
+  },
+
   -- Bufferline - Better buffer management
   {
     'akinsho/bufferline.nvim',
