@@ -303,20 +303,31 @@ function M.setup()
         }
       },
       
-      -- Tables with ASCII borders
+      -- Tables configuration
       tables = {
         enable = true,
         col_min_width = 10,
         block_decorator = true,
-        use_virt_lines = false,
+        use_virt_lines = true,
         
-        -- Table parts with modern box drawing
-        parts = {
-          top = { "┌", "─", "┬", "─", "┐" },
-          header = { "│", " ", "│", " ", "│" },
-          separator = { "├", "─", "┼", "─", "┤" },
-          row = { "│", " ", "│", " ", "│" },
-          bottom = { "└", "─", "┴", "─", "┘" },
+        -- Table borders
+        border = {
+          -- Corners
+          top_left = "┌",
+          top_right = "┐",
+          bottom_left = "└", 
+          bottom_right = "┘",
+          
+          -- Edges
+          horizontal = "─",
+          vertical = "│",
+          
+          -- Intersections
+          left_t = "├",
+          right_t = "┤",
+          top_t = "┬",
+          bottom_t = "┴",
+          cross = "┼",
         },
         
         -- Alignment
