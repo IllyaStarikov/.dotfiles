@@ -15,6 +15,77 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
+-- Fix for treesitter _range.lua get_offset errors when deleting code fences
+-- This is a known issue with treesitter parsing markdown with incomplete code blocks
+-- Solution: Override error handler to suppress these specific errors
+
+-- Global error handler for treesitter decoration provider errors
+_G.__treesitter_decoration_error_handler = function(err)
+  if err and type(err) == "string" and 
+     (err:match("Invalid 'index': Expected Lua number") or 
+      err:match("get_offset") or
+      err:match("treesitter/_range.lua")) then
+    -- Silently ignore these specific errors
+    return true
+  end
+  return false
+end
+
+-- Override vim.notify to catch and suppress these errors
+local original_notify = vim.notify
+vim.notify = function(msg, level, opts)
+  if type(msg) == "string" and 
+     msg:match("Error in decoration provider") and 
+     msg:match("nvim.treesitter.highlighter") then
+    -- Don't show this notification
+    return
+  end
+  return original_notify(msg, level, opts)
+end
+
+-- Safer markdown editing with code fences
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = { "markdown", "markdown.pandoc" },
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    
+    -- Create error-resistant wrapper for this buffer
+    vim.api.nvim_buf_attach(bufnr, false, {
+      on_lines = function(_, _, _, first_line, last_line, new_last_line)
+        -- Use vim.schedule to defer the check
+        vim.schedule(function()
+          -- Temporarily suppress errors during parsing
+          local ok, err = pcall(function()
+            local parser = vim.treesitter.get_parser(bufnr)
+            if parser then
+              parser:parse()
+            end
+          end)
+          
+          if not ok and err:match("Invalid 'index'") then
+            -- Restart treesitter to recover from error state
+            vim.treesitter.stop(bufnr)
+            vim.defer_fn(function()
+              pcall(vim.treesitter.start, bufnr)
+            end, 50)
+          end
+        end)
+      end
+    })
+  end,
+  desc = "Setup error-resistant markdown treesitter handling"
+})
+
+-- Add command to manually reset treesitter if needed
+vim.api.nvim_create_user_command('TSReset', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  vim.treesitter.stop(bufnr)
+  vim.defer_fn(function()
+    vim.treesitter.start(bufnr)
+    vim.notify("Treesitter reset for current buffer", vim.log.levels.INFO)
+  end, 100)
+end, { desc = "Reset treesitter for current buffer" })
+
 -- Workaround for treesitter highlighter out of range errors
 -- This wraps the problematic function to handle invalid positions gracefully
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
@@ -31,6 +102,66 @@ vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
   end
   return result
 end
+
+-- Workaround for treesitter get_offset errors when deleting code fences
+local ts_utils = vim.treesitter.get_node
+vim.treesitter.get_node = function(...)
+  local ok, result = pcall(ts_utils, ...)
+  if not ok then
+    return nil
+  end
+  return result
+end
+
+-- Additional protection for treesitter highlighter errors
+autocmd("FileType", {
+  pattern = { "markdown", "markdown.pandoc" },
+  group = augroup("TreesitterMarkdownFix", { clear = true }),
+  callback = function()
+    -- Defer to ensure treesitter is loaded
+    vim.defer_fn(function()
+      local bufnr = vim.api.nvim_get_current_buf()
+      
+      -- Wrap the decoration provider to catch errors
+      local ns = vim.api.nvim_get_namespaces()['nvim.treesitter.highlighter']
+      if ns then
+        -- Override the decoration provider
+        local orig_provider = vim.api.nvim_buf_get_extmarks
+        
+        -- Create a safe wrapper for get_offset
+        local ts = vim.treesitter
+        if ts._range and ts._range.get_range then
+          local orig_get_range = ts._range.get_range
+          ts._range.get_range = function(...)
+            local ok, result = pcall(orig_get_range, ...)
+            if not ok then
+              return nil
+            end
+            return result
+          end
+        end
+      end
+      
+      -- Also wrap the highlighter's on_line method
+      local highlighter = vim.treesitter.highlighter
+      if highlighter and highlighter.active and highlighter.active[bufnr] then
+        local hl = highlighter.active[bufnr]
+        if hl.on_line_impl then
+          local orig_on_line = hl.on_line_impl
+          hl.on_line_impl = function(self, ...)
+            local ok, result = pcall(orig_on_line, self, ...)
+            if not ok then
+              -- Silently ignore errors
+              return
+            end
+            return result
+          end
+        end
+      end
+    end, 100)
+  end,
+  desc = "Add error handling for treesitter in markdown files"
+})
 
 -- Terminal cursor fix
 autocmd({ "TermEnter" }, {
