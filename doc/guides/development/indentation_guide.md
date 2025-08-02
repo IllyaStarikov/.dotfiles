@@ -1,23 +1,23 @@
 # Indentation Guide
 
-This dotfiles repository follows [Google Style Guides](https://github.com/google/styleguide) for all languages.
+This dotfiles repository follows industry-standard style guides for all languages.
 
-The official Google Style Guide is included as a git submodule in `src/styleguide/`.
+Official style guide resources are included as a git submodule in `src/styleguide/`.
 
 ## Indentation Standards
 
 ### Python: 4 Spaces
-Per [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#s3.4-indentation):
+Per PEP 8 standard:
 - **Indent**: 4 spaces per indentation level
 - **Line Length**: 100 characters maximum
 - **Continuation Lines**: Use 4 space hanging indent
 
 ### Other Languages: 2 Spaces
 All other languages use 2-space indentation:
-- **C/C++**: 2 spaces (Google C++ Style)
-- **JavaScript/TypeScript**: 2 spaces (Google JS Style)
-- **Shell Scripts**: 2 spaces (Google Shell Style)
-- **HTML/CSS**: 2 spaces (Google HTML/CSS Style)
+- **C/C++**: 2 spaces (industry standard)
+- **JavaScript/TypeScript**: 2 spaces (industry standard)
+- **Shell Scripts**: 2 spaces (industry standard)
+- **HTML/CSS**: 2 spaces (industry standard)
 - **Lua**: 2 spaces
 - **Ruby**: 2 spaces
 - **Swift**: 2 spaces
@@ -38,7 +38,7 @@ Python-specific tooling configuration:
 - isort: 4-space indentation for imports
 
 ### `.pylintrc`
-Symlinked to Google's official Pylint configuration (`src/styleguide/pylintrc`) for Python style enforcement.
+Symlinked to industry-standard Pylint configuration (`src/styleguide/pylintrc`) for Python style enforcement.
 
 ### Neovim Configuration
 - **Default**: 2 spaces (set in `options.lua`)
@@ -60,12 +60,12 @@ Run the format script with:
 
 ## Available Style Guide Resources
 
-The Google Style Guide submodule includes:
+The style guide submodule includes:
 
 ### Configuration Files
-- **Python**: `pylintrc` (symlinked), `google_python_style.vim`
-- **C/C++**: `eclipse-cpp-google-style.xml`, `google-c-style.el`
-- **Java**: `eclipse-java-google-style.xml`, `intellij-java-google-style.xml`
+- **Python**: `pylintrc` (symlinked), `python_style.vim`
+- **C/C++**: `eclipse-cpp-style.xml`, `c-style.el`
+- **Java**: `eclipse-java-style.xml`, `intellij-java-style.xml`
 
 ### Style Documentation
 - **Python**: `pyguide.md`
@@ -79,4 +79,4 @@ The Google Style Guide submodule includes:
 - **Java**: `javaguide.html`
 - **R**: `Rguide.md`
 
-Access these resources in `src/styleguide/` or view them online at [google.github.io/styleguide](https://google.github.io/styleguide/).
+Access these resources in `src/styleguide/`.

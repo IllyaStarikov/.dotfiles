@@ -1,325 +1,179 @@
-# Dotfiles Usage Documentation
+# Usage Reference
 
-> **Complete reference guides for a modern development environment** - Everything you need to master this configuration.
+> **Quick reference documentation for daily development**
+
+## Purpose
+
+This section provides:
+
+- **Command references** - Quick lookup for aliases and shortcuts
+- **Keybinding maps** - Complete keyboard shortcuts across all tools
+- **Workflow guides** - Step-by-step procedures for common tasks
+
+For configuration details and customization, see [Guides](../guides/README.md).
+
+## Quick Start
+
+**[📋 Quick Reference Card](QUICK_REFERENCE.md)** One-page essential commands
 
 ## Quick Command Reference
 
-<details>
-<summary><strong>Click to expand the essential commands cheatsheet</strong></summary>
-
 ```bash
-# FILE NAVIGATION        GIT WORKFLOW           SYSTEM
-v file      # Edit      gs        # Status     update   # Update all
-z project   # Jump dir  gaa       # Add all    theme    # Switch theme
-fzf         # Find file gcmsg     # Commit     reload   # Reload shell
-ll          # List all  gp        # Push       c        # Clear
-cd -        # Go back   gl        # Pull       q        # Exit
+# NAVIGATION           # FILE OPERATIONS      # GIT WORKFLOW
+z project             ll                     gs
+cd -                  la                     gaa
+zi                    lt                     gcmsg "message"
+..                    ff                     gp
 
-# TMUX                   NEOVIM                 SEARCH
-tmux a      # Attach    :w        # Save       rg text  # Grep files
-C-a c       # New win   <leader>ff # Find      fd name  # Find files
-C-a |       # V-split   <leader>gg # LazyGit   ag text  # Alt grep
-C-a d       # Detach    <leader>cc # AI Chat   /pattern # In vim
-C-a [       # Copy mode gd        # Go to def  *        # Word search
+# SEARCH               # SYSTEM               # DEVELOPMENT
+rg "pattern"          htop                   v file.py
+fd name               duf                    tmux a
+fzf                   theme                  lazygit
 ```
-</details>
 
-## Complete Guides
-
-Each guide is optimized for daily reference with quick-access commands at the top.
-
-### [🚀 Daily Workflow](workflow.md)
-**Your Day-to-Day Development Guide**
-- **Morning to Evening**: Complete workflow patterns
-- Project navigation and file operations
-- AI-assisted development workflows
-- Git workflows from feature to deployment
-- Terminal multiplexing strategies
-- Speed shortcuts and pro tips
-- Emergency recovery commands
-
-### [⚡ Neovim](vim.md) 
-**The Hyperextensible Editor**
-- **Quick Start**: Daily command cheatsheet
-- AI-powered coding with CodeCompanion
-- LSP with intelligent code completion
-- DAP debugging support
-- LaTeX environment with VimTeX
-- Automatic theme switching
-- Menu system for discoverable commands
-
-<details>
-<summary>Popular Neovim Commands</summary>
+## Essential Keybindings
 
 ```vim
-<leader>ff  " Find files      <leader>cc  " AI chat
-<leader>fg  " Grep text       <leader>la  " Code actions
-<leader>gg  " Open LazyGit    gd         " Go to definition
-<leader>ca  " AI actions      K          " Show docs
+# NEOVIM               # TMUX                 # SHELL
+<leader>ff Find file   C-a c  New window     C-r  History search
+<leader>fg Grep text   C-a |  Split vert     C-t  File picker
+gd  Go to definition   C-a n  Next window    ESC  Vi mode
+K   Show hover docs    C-a [  Copy mode      TAB  Completion
 ```
-</details>
 
-### [🐚 Zsh + Oh My Zsh](zsh.md)
-**The Power User's Shell**
-- **Quick Start**: Essential aliases grid
-- 200+ productivity aliases
-- Modern CLI tool replacements
-- Smart directory navigation
-- Vi-mode with enhanced bindings
-- Fuzzy completion everywhere
-- Architecture-specific commands (Apple Silicon)
+## Reference Sections
 
-<details>
-<summary>Popular Shell Aliases</summary>
+### [Commands](commands/)
 
+Quick lookup for all command aliases:
+
+- **[Git Commands](commands/git.md)** - Version control aliases
+- **[Shell Commands](commands/shell.md)** - Zsh aliases and functions
+- **[Modern CLI](commands/modern-cli.md)** - Tool replacements
+
+### [Keybindings](keybindings/)
+
+Complete keyboard reference:
+
+- **[Neovim](keybindings/neovim.md)** - Editor shortcuts
+- **[tmux](keybindings/tmux.md)** - Multiplexer keys
+- **[Shell](keybindings/shell.md)** - Terminal shortcuts
+
+### [Workflows](workflows/)
+
+Step-by-step guides:
+
+- **[Daily Development](workflows/daily.md)** - Morning to evening workflow
+- **[Feature Development](workflows/features.md)** - Branch to deployment
+- **[Code Review](workflows/review.md)** - PR and review process
+- **[Debugging](workflows/debugging.md)** - Troubleshooting guide
+
+### [Tool References](tools/)
+
+Individual tool guides:
+
+- **[Neovim](tools/neovim.md)** - Editor reference
+- **[tmux](tools/tmux.md)** - Multiplexer reference
+- **[Git](tools/git.md)** - Version control reference
+- **[Alacritty](tools/alacritty.md)** - Terminal reference
+
+## Common Tasks
+
+### Find Files
 ```bash
-gs    # git status       ll    # eza long list
-gaa   # git add all      la    # list all
-gcmsg # git commit msg   lt    # tree view
-gp    # git push         z     # jump to dir
-gl    # git pull         ..    # go up
+ff                    # Interactive file finder
+fd -e py | fzf        # Find Python files
+<leader>ff            # In Neovim
 ```
-</details>
 
-### [🖥️ Tmux](tmux.md)
-**Terminal Multiplexer Supreme**
-- **Quick Start**: Session workflow examples
-- Persistent sessions across reboots
-- Intuitive window/pane management
-- Vi-style copy mode with clipboard
-- Seamless navigation with vim
-- Powerful plugin ecosystem
-- Automatic theme switching
-
-<details>
-<summary>Essential Tmux Keys</summary>
-
+### Search Text
 ```bash
-C-a c     # New window      C-a |    # Vertical split
-C-a n/p   # Next/prev       C-a -    # Horizontal split
-C-a d     # Detach          C-a z    # Zoom pane
-C-a s     # Sessions        C-a [    # Copy mode
+rg "TODO"             # Search for TODOs
+rg -t py "class"      # Search Python files
+<leader>fg            # In Neovim
 ```
-</details>
 
-### [🎨 Alacritty](alacritty.md)
-**GPU-Accelerated Terminal**
-- **Quick Start**: Keyboard shortcuts
-- Automatic theme integration
-- Blazing fast GPU rendering
-- Vi mode support
-- Platform optimizations
-- Pixel-perfect FiraCode Nerd Font
-- Mouse and keyboard driven
-
-### [🔀 Git](git.md)
-**Version Control Mastery**
-- **Quick Start**: Emergency commands
-- 50+ time-saving aliases
-- Common workflow patterns
-- Conflict resolution guide
-- Advanced operations
-- Recovery procedures
-- Commit type shortcuts
-- GitHub CLI integration
-
-<details>
-<summary>Git Power Aliases</summary>
-
+### Git Operations
 ```bash
-grhh   # reset --hard HEAD    grbi   # rebase interactive
-gsta   # stash                gstp   # stash pop
-gco    # checkout             gcb    # checkout -b
-gfa    # fetch --all          gpsup  # push set upstream
-```
-</details>
-
-### [🛠️ Tools](tools.md)
-**Modern CLI Arsenal**
-- **Quick Start**: Tool comparison table
-- Homebrew management
-- Modern replacements guide
-- Network utilities
-- System monitoring
-- Theme switcher details
-- delta, ranger, pyenv guides
-- Performance benchmarks
-
-## Power User Workflows
-
-### Daily Startup Routine
-```bash
-# 1. Open terminal (Alacritty starts instantly)
-# 2. Attach to yesterday's session
-tmux a                    # Resume exactly where you left off
-
-# 3. Update your tools
-update                    # Updates everything automatically
-
-# 4. Check project status
-z myproject && gs         # Jump to project and git status
+gaa && gcmsg "fix: bug" && gp  # Quick commit
+lazygit               # Visual Git UI
+<leader>gg            # In Neovim
 ```
 
-### Feature Development Flow
-```bash
-# 1. Create feature branch
-gco -b feature/awesome    # New branch
-
-# 2. Open editor with AI assist
-v .                       # Open Neovim
-<leader>cc                # Start AI chat for guidance
-
-# 3. Make changes with confidence
-<leader>ca                # AI suggests improvements
-<leader>lf                # Format code
-<leader>lt                # Run tests
-
-# 4. Commit and push
-gaa && gcmsg "feat: add awesome feature" && gp
+### AI Assistance
+```vim
+<leader>cc            # Open AI chat
+<leader>ca            # Show AI actions
+Select text + <leader>co  # Optimize code
 ```
 
-### Code Exploration
-```bash
-# Find any file instantly
-fd -e py | fzf            # Find Python files
-rg "TODO" --type py       # Find TODOs in Python
+## Navigation Tips
 
-# In Neovim
-<leader>fg                # Grep across project
-<leader>fs                # Search symbols
-gd                        # Jump to definition
-gr                        # Find references
-```
+1. **Need a command?** Check [Commands](commands/)
+2. **Forgot a shortcut?** See [Keybindings](keybindings/)
+3. **Starting a task?** Follow [Workflows](workflows/)
+4. **Tool-specific?** Browse [Tool References](tools/)
 
-### Theme Switching
-```bash
-# Automatic (detects system preference)
-theme
+## Performance Tips
 
-# Manual override
-dark                      # Force dark mode
-light                     # Force light mode
+### Fast Navigation
+Use `z` instead of `cd` - learns your habits
+Use `zi` for interactive directory jumping
+Use `ff` for fuzzy file finding
+Use `<C-r>` for command history search
 
-# Affects: Alacritty, Neovim, tmux, shell prompt
-```
+### Efficient Editing
+`gaa && gcmsg "message" && gp` for quick commits
+`<leader>f` to format code instantly
+`<leader>ca` for AI-powered suggestions
+Use snippets for boilerplate code
 
-## Architecture Overview
+### Tool Selection
+`rg` over `grep` - 10-100x faster
+`fd` over `find` - more intuitive
+`eza` over `ls` - git integration
+`bat` over `cat` - syntax highlighting
 
-### Integration Points
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Alacritty  │────▶│     Zsh     │────▶│    Tmux     │
-│   (GPU)     │     │  (200+ cmd) │     │  (Sessions) │
-└─────────────┘     └─────────────┘     └─────────────┘
-        │                    │                    │
-        └────────────────────┴────────────────────┘
-                             │
-                    ┌────────┴────────┐
-                    │     Neovim      │
-                    │  (AI + LSP)     │
-                    │   + Plugins     │
-                    └─────────────────┘
-                             │
-                    ┌────────┴────────┐
-                    │  Modern Tools   │
-                    │ eza, bat, rg... │
-                    └─────────────────┘
-```
+## Getting Help
 
-### Performance Optimizations
-- **Lazy Loading**: Shell plugins load on-demand
-- **GPU Rendering**: Alacritty uses GPU for 60+ FPS
-- **Smart Caching**: Tools cache results intelligently
-- **Async Operations**: Non-blocking UI everywhere
+### In-Tool Help
 
-## Customization Guide
+- **Neovim** - `:help keyword` or `K` on function
+- **tmux** - `C-a ?` for keybindings
+- **Shell** - `man command` or `tldr command`
+- **Git** - `git help command`
 
-### Quick Config Access
-```bash
-zshconfig    # Edit ~/.zshrc
-vimconfig    # Edit ~/.config/nvim/init.lua
-tmuxconfig   # Edit ~/.tmux.conf
-gitconfig    # Edit ~/.gitconfig
-```
+### Diagnostics
 
-### Key Files
+- **Neovim** - `:checkhealth`
+- **Shell** - `which command`
+- **System** - `brew doctor`
 
-| Config | Location | Purpose |
-|--------|----------|---------|
-| Shell | `~/.zshrc` | Aliases, functions, plugins |
-| Editor | `~/.config/nvim/` | Complete Neovim setup |
-| Terminal | `~/.config/alacritty/` | Terminal appearance |
-| Multiplexer | `~/.tmux.conf` | Tmux behavior |
-| Version Control | `~/.gitconfig` | Git settings |
+## Configuration Files
+
+| Tool | Config Location | Edit Command |
+|------|-----------------|--------------|
+| Zsh | `~/.zshrc` | `zshconfig` |
+| Neovim | `~/.config/nvim/` | `vimconfig` |
+| tmux | `~/.tmux.conf` | `tmuxconfig` |
+| Git | `~/.gitconfig` | `gitconfig` |
+| Alacritty | `~/.config/alacritty/` | `v ~/.config/alacritty/alacritty.toml` |
 
 ## Troubleshooting
 
-### Quick Fixes
+See [Setup Troubleshooting](../setup/troubleshooting.md) for solutions to common issues.
 
-| Problem | Solution |
-|---------|----------|
-| Icons broken | `brew install --cask font-fira-code-nerd-font` |
-| Command not found | `which command` or `brew install tool` |
-| Theme not updating | Run `theme` manually |
-| Slow startup | Check `zsh -xvf` for bottlenecks |
-| Neovim issues | `:checkhealth` for diagnostics |
+## Learning Resources
 
-### Getting Help
-- **In Neovim**: `:help keyword` or `K` on any function
-- **In Shell**: `man command` or `tldr command`
-- **In Tmux**: `C-a ?` for key bindings
-- **Anywhere**: Most tools support `--help`
-
-## Learning Path
-
-### Week 1: Foundation
-1. Master basic vim motions (`h`, `j`, `k`, `l`)
-2. Learn tmux session management
-3. Use core git aliases (`gs`, `gaa`, `gcmsg`, `gp`)
-
-### Week 2: Efficiency
-1. Learn vim text objects (`ciw`, `da{`, `yi"`)
-2. Use fuzzy finding (`fzf`, `<leader>ff`)
-3. Master directory jumping (`z`)
-
-### Week 3: Advanced
-1. Explore AI assistance in Neovim
-2. Create tmuxinator templates
-3. Customize your workflow
-
-### Week 4: Mastery
-1. Write custom functions
-2. Create your own aliases
-3. Contribute improvements back!
-
----
-
-## Quick Setup
-
-### Prerequisites
-- macOS (Apple Silicon or Intel)
-- Internet connection
-- Terminal access
-
-### One-Line Install
-```bash
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/mac.sh
-```
-
-## Support & Community
-
-- **Issues**: [GitHub Issues](https://github.com/IllyaStarikov/.dotfiles/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/IllyaStarikov/.dotfiles/discussions)
-- **Website**: [dotfiles.starikov.io](https://dotfiles.starikov.io)
+### Recommended Path
+1. Start with [Daily Workflow](workflows/daily.md)
+2. Learn [Essential Keybindings](keybindings/README.md)
+3. Master [Git Commands](commands/git.md)
+4. Explore [Tool References](tools/)
 
 ---
 
 <p align="center">
-  <strong>Welcome to a faster way of working!</strong><br>
-  <em>Remember: The best tool is the one you master.</em>
-</p>
-
-<p align="center">
-  <a href="https://github.com/IllyaStarikov/.dotfiles">← Back to Repository</a> •
-  <a href="https://dotfiles.starikov.io">Visit Website →</a>
+  <a href="../README.md">← Back to Documentation</a> •
+  <a href="../setup/README.md">Setup Guide →</a>
 </p>
