@@ -23,8 +23,8 @@ This directory contains three production-ready scripts for setting up a complete
 - Xcode Command Line Tools
 - Homebrew package manager
 - Git version control
-- Oh My Zsh shell framework
-- Spaceship theme for Zsh
+- Zinit plugin manager for Zsh
+- Starship cross-shell prompt
 - Basic directory structure
 - **Core essential packages:**
   - Terminal: alacritty, tmux, tmuxinator
@@ -239,7 +239,7 @@ All scripts:
 ## 📚 Additional Resources
 
 - [Homebrew Documentation](https://docs.brew.sh/)
-- [Oh My Zsh Documentation](https://ohmyz.sh/)
+- [Zinit Documentation](https://github.com/zdharma-continuum/zinit)
 - [Neovim Documentation](https://neovim.io/doc/)
 - [tmux Documentation](https://github.com/tmux/tmux/wiki)
 

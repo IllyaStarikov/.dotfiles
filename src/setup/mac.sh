@@ -199,43 +199,26 @@ if [[ -f "$HOME/.dotfiles/src/setup/aliases.sh" ]]; then
     bash "$HOME/.dotfiles/src/setup/aliases.sh"
 fi
 
-# Install Oh My Zsh with verification
-echo "🐚 Installing Oh My Zsh..."
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-    # Download installer for verification
-    OMZ_INSTALLER="/tmp/omz-installer-$$.sh"
-    info "Downloading Oh My Zsh installer..."
-    if ! curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o "$OMZ_INSTALLER"; then
-        error "Failed to download Oh My Zsh installer"
+# Install Zinit (modern Zsh plugin manager)
+echo "🐚 Installing Zinit..."
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+    info "Installing Zinit plugin manager..."
+    command mkdir -p "$(dirname $ZINIT_HOME)"
+    if ! git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"; then
+        error "Failed to install Zinit"
         exit 1
     fi
-    
-    # Verify installer size
-    INSTALLER_SIZE=$(stat -f%z "$OMZ_INSTALLER" 2>/dev/null || stat -c%s "$OMZ_INSTALLER" 2>/dev/null || echo 0)
-    if [[ $INSTALLER_SIZE -lt 1000 ]]; then
-        error "Downloaded installer is too small ($INSTALLER_SIZE bytes)"
-        rm -f "$OMZ_INSTALLER"
-        exit 1
-    fi
-    
-    # Basic verification
-    if ! grep -q "oh-my-zsh" "$OMZ_INSTALLER" || ! grep -q "#!/bin/sh" "$OMZ_INSTALLER"; then
-        error "Downloaded file doesn't appear to be valid Oh My Zsh installer"
-        rm -f "$OMZ_INSTALLER"
-        exit 1
-    fi
-    
-    # Run installer
-    RUNZSH=no sh "$OMZ_INSTALLER"
-    rm -f "$OMZ_INSTALLER"
+    success "Zinit installed successfully"
+else
+    info "Zinit already installed"
 fi
 
-# Install Spaceship theme
-echo "🚀 Installing Spaceship theme..."
-if [[ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt" ]]; then
-    git clone https://github.com/denysdovhan/spaceship-prompt.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt" --depth=1
-    ln -sf "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship-prompt/spaceship.zsh-theme" "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/spaceship.zsh-theme"
-fi
+# Note: Zinit will auto-install plugins on first shell startup
+# No need to pre-install them here
+
+# Note: We use Starship prompt instead of Spaceship theme
+# Starship is installed via Homebrew in the packages section
 
 # Python setup
 echo "🐍 Setting up Python environment..."
