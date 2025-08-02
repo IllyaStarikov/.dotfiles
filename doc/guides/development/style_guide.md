@@ -1,6 +1,6 @@
 # Neovim Style Guide Configuration
 
-This document summarizes the coding style standards configured in Neovim, following Google Style Guides where available.
+This document summarizes the coding style standards configured in Neovim, following industry-standard style guides.
 
 ## Language-Specific Settings
 
@@ -10,11 +10,11 @@ All settings are automatically applied when opening files of the corresponding t
 
 | Language | Style Guide | Column Limit | Notes |
 |----------|-------------|--------------|-------|
-| **C/C++** | [Google C++ Style](https://google.github.io/styleguide/cppguide.html) | 80 | Includes `.c`, `.cpp`, `.cc`, `.h`, `.hpp` |
-| **Shell/Bash** | [Google Shell Style](https://google.github.io/styleguide/shellguide.html) | 80 | Includes `sh`, `bash`, `zsh`, `fish` |
-| **JavaScript/TypeScript** | [Google JS Style](https://google.github.io/styleguide/jsguide.html) | 80 | Includes JSX/TSX, JSON |
-| **HTML/CSS** | [Google HTML/CSS Style](https://google.github.io/styleguide/htmlcssguide.html) | 80 | Includes SCSS, SASS, LESS |
-| **Swift** | Industry standard | 100 | Apple/Google convention |
+| **C/C++** | Industry standard | 80 | Includes `.c`, `.cpp`, `.cc`, `.h`, `.hpp` |
+| **Shell/Bash** | Industry standard | 80 | Includes `sh`, `bash`, `zsh`, `fish` |
+| **JavaScript/TypeScript** | Industry standard | 80 | Includes JSX/TSX, JSON |
+| **HTML/CSS** | Industry standard | 80 | Includes SCSS, SASS, LESS |
+| **Swift** | Industry standard | 100 | Common convention |
 | **Lua** | Industry standard | 80 | Common convention |
 | **LaTeX** | Industry standard | 80 | With word wrap enabled |
 | **Ruby** | Industry standard | 80 | Rails convention |
@@ -25,7 +25,7 @@ All settings are automatically applied when opening files of the corresponding t
 
 | Language | Style Guide | Column Limit | Notes |
 |----------|-------------|--------------|-------|
-| **Python** | [Google Python Style](https://google.github.io/styleguide/pyguide.html) | 80 | PEP 8 standard |
+| **Python** | PEP 8 standard | 80 | Industry convention |
 | **Rust** | [Official Rust Style](https://doc.rust-lang.org/1.0.0/style/) | 100 | rustfmt default |
 
 ### Languages with Tab Indentation
@@ -70,8 +70,8 @@ Use the `:Format` command or the `format` shell script to automatically format f
 
 ## Python Linting
 
-Google's official pylintrc is automatically configured at `~/.pylintrc`. This provides:
-- Google Python Style Guide compliance checking
+Industry-standard pylintrc is automatically configured at `~/.pylintrc`. This provides:
+- PEP 8 compliance checking
 - Consistent error and warning detection
 - Best practices enforcement
 
