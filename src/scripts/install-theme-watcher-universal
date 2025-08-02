@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# Universal theme watcher installer - Works on macOS and Linux
+
+set -euo pipefail
+
+# Color output
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m'
+
+info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macos"
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    OS="linux"
+else
+    echo "Unsupported OS: $OSTYPE"
+    exit 1
+fi
+
+info "Installing theme watcher for $OS..."
+
+# Ensure the universal theme watcher is executable
+WATCHER_SCRIPT="$HOME/.dotfiles/src/scripts/theme-watcher-universal"
+if [[ ! -f "$WATCHER_SCRIPT" ]]; then
+    echo "Error: theme-watcher-universal not found at $WATCHER_SCRIPT"
+    exit 1
+fi
+chmod +x "$WATCHER_SCRIPT"
+
+if [[ "$OS" == "macos" ]]; then
+    # macOS: Install as LaunchAgent
+    PLIST_DIR="$HOME/Library/LaunchAgents"
+    PLIST_FILE="com.starikov.theme-switcher.plist"
+    
+    mkdir -p "$PLIST_DIR"
+    
+    # Create plist file
+    cat > "$PLIST_DIR/$PLIST_FILE" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.starikov.theme-switcher</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$WATCHER_SCRIPT</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$HOME/.cache/theme-watcher.log</string>
+    <key>StandardErrorPath</key>
+    <string>$HOME/.cache/theme-watcher.error.log</string>
+</dict>
+</plist>
+EOF
+    
+    # Load the agent
+    launchctl load "$PLIST_DIR/$PLIST_FILE" 2>/dev/null || {
+        launchctl unload "$PLIST_DIR/$PLIST_FILE" 2>/dev/null
+        launchctl load "$PLIST_DIR/$PLIST_FILE"
+    }
+    
+    success "Theme watcher installed as LaunchAgent"
+    echo "   To stop: launchctl unload ~/Library/LaunchAgents/$PLIST_FILE"
+    
+elif [[ "$OS" == "linux" ]]; then
+    # Linux: Install as systemd user service
+    SERVICE_DIR="$HOME/.config/systemd/user"
+    SERVICE_FILE="theme-watcher.service"
+    
+    mkdir -p "$SERVICE_DIR"
+    
+    # Create service file
+    cat > "$SERVICE_DIR/$SERVICE_FILE" << EOF
+[Unit]
+Description=Universal Theme Watcher
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=$WATCHER_SCRIPT
+Restart=always
+RestartSec=10
+StandardOutput=append:$HOME/.cache/theme-watcher.log
+StandardError=append:$HOME/.cache/theme-watcher.error.log
+
+[Install]
+WantedBy=default.target
+EOF
+    
+    # Reload systemd and enable service
+    systemctl --user daemon-reload
+    systemctl --user enable theme-watcher.service
+    systemctl --user restart theme-watcher.service
+    
+    success "Theme watcher installed as systemd service"
+    echo "   To check status: systemctl --user status theme-watcher"
+    echo "   To stop: systemctl --user stop theme-watcher"
+    echo "   To disable: systemctl --user disable theme-watcher"
+    
+    # Fallback for non-systemd systems
+    if ! command -v systemctl >/dev/null 2>&1; then
+        warning "systemd not found. Add this to your shell startup:"
+        echo "   nohup $WATCHER_SCRIPT > ~/.cache/theme-watcher.log 2>&1 &"
+    fi
+fi
+
+info "Theme watcher will monitor system appearance changes and switch themes automatically"
