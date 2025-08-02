@@ -1,18 +1,27 @@
 # Setup Guide
 
+> **New!** This setup now supports both macOS and Linux. The installer automatically detects your operating system.
+
 ## Quick Install
 
 ```bash
-# One-liner installation
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/mac.sh
+# One-liner installation (works on macOS and Linux)
+git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/setup.sh
 ```
 
 ## Prerequisites
 
-**macOS** Intel or Apple Silicon (10.15 Catalina or later)
-**Administrator privileges** Required for Homebrew and system configurations
-**Internet connection** ~2GB download for all packages and tools
-**Git** Will be installed automatically if not present
+### macOS
+- **Version**: Intel or Apple Silicon (10.15 Catalina or later)
+- **Admin privileges**: Required for Homebrew
+- **Internet**: ~2GB download for packages
+- **Git**: Installed automatically if missing
+
+### Linux
+- **Distributions**: Ubuntu 20.04+, Fedora 35+, Arch, openSUSE
+- **Admin privileges**: Required for system packages
+- **Internet**: ~1.5GB download for packages
+- **Git**: Required (install with package manager)
 
 ## Installation Process
 
@@ -20,17 +29,28 @@ git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.do
 
 ```bash
 # Clone and run setup in one command
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/mac.sh
+git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.dotfiles && ./src/setup/setup.sh
 ```
 
 The setup script will:
-1. Install Xcode Command Line Tools (required for compilation)
-2. Install Homebrew package manager at `/opt/homebrew` (Apple Silicon) or `/usr/local` (Intel)
-3. Install ~50 packages including modern CLI tools, development environments, and LSP servers
+
+**On macOS:**
+1. Install Xcode Command Line Tools
+2. Install Homebrew package manager
+3. Install ~50 packages including modern CLI tools
 4. Install Zinit plugin manager for Zsh
-5. Install multiple Nerd Fonts for icons and ligatures
-6. Create symlinks for all configuration files
-7. Configure shell, editor, and terminal settings
+5. Install Nerd Fonts for icons and ligatures
+6. Create symlinks for all configurations
+7. Configure shell, editor, and terminal
+
+**On Linux:**
+1. Detect your distribution and package manager
+2. Install development tools and dependencies
+3. Install modern CLI tools (fd, ripgrep, etc.)
+4. Install Zinit plugin manager for Zsh
+5. Download and install Nerd Fonts
+6. Create symlinks for all configurations
+7. Configure shell, editor, and terminal
 
 ### Option 2: Manual Installation
 
@@ -39,8 +59,8 @@ The setup script will:
 git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
-# 2. Run the macOS setup script
-./src/setup/mac.sh
+# 2. Run the setup script (auto-detects OS)
+./src/setup/setup.sh
 # Note: Script is fully automated but may pause for confirmations
 
 # 3. Create configuration symlinks

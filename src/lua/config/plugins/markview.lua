@@ -431,6 +431,52 @@ function M.setup()
         enable = false,
       },
     },
+    
+    -- HTML configuration for details/summary elements
+    html = {
+      enable = true,
+      
+      -- HTML tags configuration
+      tags = {
+        enable = true,
+        
+        -- Configure details elements to be folded by default
+        default = {
+          conceal = true,
+        },
+        
+        -- Custom configurations for specific tags
+        configs = {
+          -- Details tag configuration
+          details = {
+            conceal = true,
+            
+            -- Render as a folded block
+            block = {
+              text = "▶ ",  -- Folded indicator
+              hl = "MarkviewListItemPlus",
+              
+              -- When expanded (not supported directly, but we can style it)
+              text_open = "▼ ",
+              hl_open = "MarkviewListItemMinus",
+            }
+          },
+          
+          -- Summary tag configuration  
+          summary = {
+            conceal = false,  -- Show summary content
+            hl = "MarkviewBold",
+          },
+          
+          -- Other common HTML tags
+          b = { hl = "MarkviewBold" },
+          strong = { hl = "MarkviewBold" },
+          i = { hl = "MarkviewItalic" },
+          em = { hl = "MarkviewItalic" },
+          code = { hl = "MarkviewInlineCode" },
+        }
+      }
+    },
   })
   
   -- Function to get theme-appropriate colors
@@ -599,6 +645,27 @@ function M.setup()
         desc = "Toggle between rich preview and ligatures" 
       })
       
+      -- Keybindings for details/summary folding
+      vim.keymap.set("n", "za", function()
+        -- Toggle fold under cursor
+        vim.cmd("normal! za")
+      end, { buffer = true, desc = "Toggle details fold" })
+      
+      vim.keymap.set("n", "zM", function()
+        -- Close all details folds
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        for i, line in ipairs(lines) do
+          if line:match("^<details>") then
+            vim.cmd(i .. "foldclose")
+          end
+        end
+      end, { buffer = true, desc = "Close all details folds" })
+      
+      vim.keymap.set("n", "zR", function()
+        -- Open all details folds
+        vim.cmd("normal! zR")
+      end, { buffer = true, desc = "Open all details folds" })
+      
     end
   })
   
@@ -639,6 +706,63 @@ function M.setup()
     end,
     group = vim.api.nvim_create_augroup("MarkviewThemeReload", { clear = true })
   })
+  
+  -- Custom handling for <details> elements
+  -- Create folds for details blocks
+  vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
+    pattern = { "*.md", "*.markdown" },
+    callback = function()
+      -- Set up folding for details elements
+      vim.opt_local.foldmethod = "expr"
+      vim.opt_local.foldexpr = "v:lua.markview_details_fold()"
+      vim.opt_local.foldtext = "v:lua.markview_details_foldtext()"
+      vim.opt_local.fillchars = "fold: "
+      vim.opt_local.foldlevel = 99  -- Start with all folds open
+      
+      -- Auto-close details blocks on load
+      vim.defer_fn(function()
+        -- Find and fold all <details> blocks
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        for i, line in ipairs(lines) do
+          if line:match("^<details>") then
+            vim.cmd(i .. "foldclose")
+          end
+        end
+      end, 100)
+    end,
+    group = vim.api.nvim_create_augroup("MarkviewDetailsFold", { clear = true })
+  })
+end
+
+-- Global functions for folding <details> elements
+function _G.markview_details_fold()
+  local line = vim.fn.getline(vim.v.lnum)
+  if line:match("^<details>") then
+    return "a1"  -- Start a fold
+  elseif line:match("^</details>") then
+    return "s1"  -- End a fold
+  else
+    return "="   -- Use previous fold level
+  end
+end
+
+function _G.markview_details_foldtext()
+  local line = vim.fn.getline(vim.v.foldstart)
+  local summary_line = vim.fn.getline(vim.v.foldstart + 1)
+  
+  -- Extract summary text if available
+  local summary_text = summary_line:match("<summary>(.-)</summary>") or 
+                      summary_line:match("<summary>%s*<b>(.-)</b>%s*</summary>") or
+                      "Details"
+  
+  -- Create fold text with arrow indicator
+  local fold_text = "▶ " .. summary_text .. " "
+  
+  -- Add fold size indicator
+  local fold_size = vim.v.foldend - vim.v.foldstart + 1
+  local suffix = " [" .. fold_size .. " lines]"
+  
+  return fold_text .. suffix
 end
 
 return M
