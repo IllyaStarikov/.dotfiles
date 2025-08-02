@@ -791,11 +791,15 @@ require("lazy").setup({
         highlight = {
           enable = true,
           additional_vim_regex_highlighting = { "markdown" },
-          -- Disable for large files
+          -- Disable for large files and to prevent markdown errors
           disable = function(lang, buf)
             local max_filesize = 100 * 1024 -- 100 KB
             local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
+              return true
+            end
+            -- Temporarily disable for markdown to prevent code fence errors
+            if lang == "markdown" and vim.b[buf].ts_disable_markdown then
               return true
             end
           end,
