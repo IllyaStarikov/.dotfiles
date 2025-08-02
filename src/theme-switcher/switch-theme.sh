@@ -189,13 +189,13 @@ atomic_update() {
 # Update other application themes
 update_app_themes() {
     local theme_dir="$(dirname "$0")/themes/$THEME"
-    local success=1
+    local success=0
     
     # Update Alacritty
     if [[ -f "$theme_dir/alacritty/theme.toml" ]]; then
-        update_alacritty_theme "$theme_dir/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml" || success=0
+        update_alacritty_theme "$theme_dir/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml" || success=1
     elif [[ -f "$theme_dir/alacritty.toml" ]]; then
-        update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=0
+        update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
     fi
     
     # Update tmux
@@ -204,7 +204,7 @@ update_app_themes() {
             log "Updated tmux theme"
         else
             log "Failed to update tmux theme" "ERROR"
-            success=0
+            success=1
         fi
     fi
     
@@ -214,7 +214,7 @@ update_app_themes() {
             log "Updated Starship theme"
         else
             log "Failed to update Starship theme" "ERROR"
-            success=0
+            success=1
         fi
     fi
     

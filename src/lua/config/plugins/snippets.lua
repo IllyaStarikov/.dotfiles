@@ -38,7 +38,7 @@ function M.setup()
     enable_autosnippets = true,
     
     -- Use Tab to expand and jump in snippets
-    region_check_events = "CursorMoved",
+    region_check_events = "CursorMoved"
   })
 
   -- Load snippets from friendly-snippets

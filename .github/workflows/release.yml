@@ -1,0 +1,315 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
+  create-release:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get version
+      id: get_version
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [[ -z "$LAST_TAG" ]]; then
+          COMMITS=$(git log --oneline)
+        else
+          COMMITS=$(git log --oneline "${LAST_TAG}..HEAD")
+        fi
+        
+        # Format changelog
+        cat > CHANGELOG_CURRENT.md << EOF
+## What's Changed
+
+### Features
+$(echo "$COMMITS" | grep -E "^[a-f0-9]+ feat(\(.*\))?:" | sed 's/^[a-f0-9]+ /- /' || echo "- No new features")
+
+### Bug Fixes
+$(echo "$COMMITS" | grep -E "^[a-f0-9]+ fix(\(.*\))?:" | sed 's/^[a-f0-9]+ /- /' || echo "- No bug fixes")
+
+### Documentation
+$(echo "$COMMITS" | grep -E "^[a-f0-9]+ docs(\(.*\))?:" | sed 's/^[a-f0-9]+ /- /' || echo "- No documentation updates")
+
+### Other Changes
+$(echo "$COMMITS" | grep -vE "^[a-f0-9]+ (feat|fix|docs)(\(.*\))?:" | sed 's/^[a-f0-9]+ /- /' || echo "- No other changes")
+
+**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...v${{ steps.get_version.outputs.version }}
+EOF
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        body_path: CHANGELOG_CURRENT.md
+        draft: false
+        prerelease: false
+
+  build-artifacts:
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        include:
+          - os: macos-latest
+            asset_name: dotfiles-macos
+          - os: ubuntu-latest
+            asset_name: dotfiles-linux
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create release archive
+      run: |
+        # Create a clean release directory
+        mkdir -p release/dotfiles
+        
+        # Copy essential files
+        cp -r src release/dotfiles/
+        cp -r template release/dotfiles/
+        cp README.md release/dotfiles/
+        cp CLAUDE.md release/dotfiles/
+        
+        # Copy test framework
+        mkdir -p release/dotfiles/tests
+        cp -r tests/lib release/dotfiles/tests/
+        cp tests/run_tests.sh release/dotfiles/tests/
+        
+        # Create installation script
+        cat > release/dotfiles/install.sh << 'EOF'
+#!/bin/bash
+set -euo pipefail
+
+echo "🚀 Dotfiles Installation Script"
+echo "================================"
+
+# Detect OS
+OS="$(uname -s)"
+case "$OS" in
+    Darwin*) OS_TYPE="macos" ;;
+    Linux*)  OS_TYPE="linux" ;;
+    *)       echo "Unsupported OS: $OS"; exit 1 ;;
+esac
+
+echo "Detected OS: $OS_TYPE"
+
+# Set dotfiles directory
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+echo "Installing to: $DOTFILES_DIR"
+
+# Create dotfiles directory
+mkdir -p "$DOTFILES_DIR"
+
+# Copy files
+echo "Copying files..."
+cp -r src "$DOTFILES_DIR/"
+cp -r template "$DOTFILES_DIR/"
+cp README.md "$DOTFILES_DIR/"
+cp CLAUDE.md "$DOTFILES_DIR/"
+
+# Make scripts executable
+find "$DOTFILES_DIR/src/scripts" -type f -exec chmod +x {} \;
+chmod +x "$DOTFILES_DIR/src/setup/mac.sh"
+chmod +x "$DOTFILES_DIR/src/setup/aliases.sh"
+chmod +x "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+
+# Run setup based on OS
+if [[ "$OS_TYPE" == "macos" ]]; then
+    echo "Running macOS setup..."
+    read -p "Install Homebrew packages? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        bash "$DOTFILES_DIR/src/setup/mac.sh"
+    fi
+fi
+
+# Create symlinks
+echo "Creating symlinks..."
+bash "$DOTFILES_DIR/src/setup/aliases.sh"
+
+echo "✅ Installation complete!"
+echo ""
+echo "Next steps:"
+echo "1. Restart your terminal"
+echo "2. Run 'tmux' to start tmux with plugins"
+echo "3. Open Neovim to install plugins"
+echo "4. Run 'theme' to switch between light/dark themes"
+EOF
+        chmod +x release/dotfiles/install.sh
+        
+        # Create uninstall script
+        cat > release/dotfiles/uninstall.sh << 'EOF'
+#!/bin/bash
+set -euo pipefail
+
+echo "🗑️  Dotfiles Uninstallation Script"
+echo "===================================="
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+
+# Remove symlinks
+echo "Removing symlinks..."
+SYMLINKS=(
+    "$HOME/.zshrc"
+    "$HOME/.zshenv"
+    "$HOME/.vimrc"
+    "$HOME/.config/nvim"
+    "$HOME/.gitconfig"
+    "$HOME/.gitignore_global"
+    "$HOME/.gitleaks.toml"
+    "$HOME/.tmux.conf"
+    "$HOME/.config/alacritty/alacritty.toml"
+)
+
+for link in "${SYMLINKS[@]}"; do
+    if [[ -L "$link" ]]; then
+        echo "Removing: $link"
+        rm "$link"
+    fi
+done
+
+# Ask about removing dotfiles directory
+read -p "Remove dotfiles directory at $DOTFILES_DIR? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf "$DOTFILES_DIR"
+    echo "Removed dotfiles directory"
+fi
+
+echo "✅ Uninstallation complete!"
+EOF
+        chmod +x release/dotfiles/uninstall.sh
+        
+        # Create archive
+        cd release
+        if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          tar -czf ${{ matrix.asset_name }}.tar.gz dotfiles
+          zip -r ${{ matrix.asset_name }}.zip dotfiles
+        else
+          tar -czf ${{ matrix.asset_name }}.tar.gz dotfiles
+        fi
+
+    - name: Upload tar.gz
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: release/${{ matrix.asset_name }}.tar.gz
+        asset_name: ${{ matrix.asset_name }}.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload zip (macOS only)
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: release/${{ matrix.asset_name }}.zip
+        asset_name: ${{ matrix.asset_name }}.zip
+        asset_content_type: application/zip
+
+  update-homebrew-tap:
+    needs: [create-release, build-artifacts]
+    runs-on: ubuntu-latest
+    if: github.repository == 'starikov/dotfiles'  # Only run on main repo
+    
+    steps:
+    - name: Checkout tap repository
+      uses: actions/checkout@v4
+      with:
+        repository: starikov/homebrew-dotfiles
+        token: ${{ secrets.TAP_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        path: homebrew-tap
+
+    - name: Update formula
+      run: |
+        VERSION="${{ needs.create-release.outputs.version }}"
+        VERSION_NO_V="${VERSION#v}"
+        
+        # Download release to calculate SHA256
+        wget -q "https://github.com/${{ github.repository }}/releases/download/${VERSION}/dotfiles-macos.tar.gz"
+        SHA256=$(sha256sum dotfiles-macos.tar.gz | cut -d' ' -f1)
+        
+        # Update formula
+        cat > homebrew-tap/Formula/dotfiles.rb << EOF
+class Dotfiles < Formula
+  desc "Personal dotfiles configuration"
+  homepage "https://github.com/${{ github.repository }}"
+  url "https://github.com/${{ github.repository }}/releases/download/${VERSION}/dotfiles-macos.tar.gz"
+  sha256 "${SHA256}"
+  version "${VERSION_NO_V}"
+
+  def install
+    prefix.install Dir["*"]
+    bin.install_symlink prefix/"install.sh" => "dotfiles-install"
+    bin.install_symlink prefix/"uninstall.sh" => "dotfiles-uninstall"
+  end
+
+  def caveats
+    <<~EOS
+      To install the dotfiles, run:
+        dotfiles-install
+
+      To uninstall, run:
+        dotfiles-uninstall
+    EOS
+  end
+
+  test do
+    assert_predicate prefix/"install.sh", :exist?
+    assert_predicate prefix/"src/zshrc", :exist?
+  end
+end
+EOF
+
+    - name: Commit and push formula update
+      run: |
+        cd homebrew-tap
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        git add Formula/dotfiles.rb
+        git commit -m "Update dotfiles to ${{ needs.create-release.outputs.version }}"
+        git push
