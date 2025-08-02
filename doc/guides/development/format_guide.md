@@ -14,14 +14,14 @@ Install the formatters you need:
 # C/C++ formatter
 brew install clang-format
 
-# Python formatters (Google standard: 4 spaces)
-pip install ruff      # Recommended - fast, modern, follows PEP8/Google style
+# Python formatters (industry standard: 4 spaces)
+pip install ruff      # Recommended - fast, modern, follows PEP8
 pip install black     # Popular alternative, opinionated formatter
-pip install yapf      # Google's formatter with explicit Google style support
+pip install yapf      # Configurable formatter with style support
 pip install autopep8  # Traditional PEP8 formatter
 
-# Python linter (Google style checking)
-pip install pylint    # Uses Google's official pylintrc automatically
+# Python linter (style checking)
+pip install pylint    # Uses industry-standard pylintrc automatically
 
 # Shell script formatter
 brew install shfmt
@@ -75,14 +75,14 @@ The `:Format` command now uses this shell script:
 
 ## Supported Languages
 
-All languages follow the official [Google Style Guides](https://google.github.io/styleguide/):
+All languages follow industry-standard style guides:
 
 | Language | Formatter | Style Guide |
 |----------|-----------|-------------|
-| C/C++ | clang-format | [Google C++ Style](https://google.github.io/styleguide/cppguide.html): 2 spaces, 80 column limit |
-| Python | ruff/black/yapf + pylint | [Google Python Style](https://google.github.io/styleguide/pyguide.html): 4 spaces, 80 column limit |
-| Shell | shfmt | [Google Shell Style](https://google.github.io/styleguide/shellguide.html): 2 spaces |
-| JavaScript/TypeScript | prettier/prettierd | [Google JS Style](https://google.github.io/styleguide/jsguide.html): 2 spaces, single quotes, 80 column |
+| C/C++ | clang-format | Industry standard: 2 spaces, 80 column limit |
+| Python | ruff/black/yapf + pylint | PEP 8: 4 spaces, 80 column limit |
+| Shell | shfmt | Industry standard: 2 spaces |
+| JavaScript/TypeScript | prettier/prettierd | Industry standard: 2 spaces, single quotes, 80 column |
 | Lua | stylua | 2 spaces, 80 column limit |
 | JSON/YAML | prettier/prettierd | 2 spaces |
 | HTML/CSS/SCSS | prettier/prettierd | 2 spaces |
@@ -105,8 +105,8 @@ Edit `~/.dotfiles/src/scripts/.formatrc` to customize formatter settings.
    - Suggests installation if formatter is missing
 
 3. **Smart Defaults**:
-   - Uses 4 spaces for Python (Google Python Style)
-   - Uses 2 spaces for all other languages (Google standard)
+   - Uses 4 spaces for Python (PEP 8 standard)
+   - Uses 2 spaces for all other languages (industry standard)
    - Skips binary files automatically
 
 4. **Git Integration**:
