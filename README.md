@@ -2,12 +2,15 @@
 
 [![Website](https://img.shields.io/badge/website-dotfiles.starikov.io-blue?style=for-the-badge&logo=safari)](https://dotfiles.starikov.io)
 [![GitHub stars](https://img.shields.io/github/stars/IllyaStarikov/.dotfiles?style=for-the-badge&logo=github)](https://github.com/IllyaStarikov/.dotfiles)
-[![Setup](https://img.shields.io/badge/setup-automated-brightgreen?style=for-the-badge&logo=gnu-bash)](./src/setup/mac.sh)
+[![Setup](https://img.shields.io/badge/setup-automated-brightgreen?style=for-the-badge&logo=gnu-bash)](./src/setup/setup.sh)
 [![macOS](https://img.shields.io/badge/macOS-14+-black?style=for-the-badge&logo=apple)](https://www.apple.com/macos/)
+[![Linux](https://img.shields.io/badge/Linux-Ubuntu%20|%20Fedora%20|%20Arch-orange?style=for-the-badge&logo=linux)](https://www.linux.org/)
 
 <script src="https://dotfiles.starikov.io/template/analytics.js"></script>
 
 > **A blazing-fast, AI-powered development environment that adapts to your workflow**
+> 
+> **Now with full cross-platform support for macOS and Linux!**
 
 <p align="center">
   <em>Neovim • Alacritty • tmux • Zsh • 200+ aliases • Auto theme switching • AI integration</em>
@@ -160,7 +163,7 @@ $ gaa && gcmsg "feat: add awesome feature" && gp
 ```bash
 git clone --recursive https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && \
 cd ~/.dotfiles && \
-./src/setup/mac.sh
+./src/setup/setup.sh  # Automatically detects macOS or Linux
 ```
 
 <details>
@@ -184,7 +187,7 @@ git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Run setup scripts
-./src/setup/mac.sh      # Install dependencies
+./src/setup/setup.sh    # Automatically detects OS and installs dependencies
 ./src/setup/aliases.sh  # Create symlinks
 
 # Install Neovim plugins (run inside Neovim)
