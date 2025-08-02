@@ -295,7 +295,10 @@ function M.setup()
       args = {node_debug_path},
     }
   else
-    vim.notify("Node debug adapter not found. Install 'node-debug2-adapter' via Mason.", vim.log.levels.WARN)
+    -- Defer notification to avoid startup noise
+    vim.defer_fn(function()
+      vim.notify("Node debug adapter not found. Run :Mason to install 'node-debug2-adapter'.", vim.log.levels.WARN)
+    end, 1000)
   end
 
   dap.configurations.javascript = {
@@ -406,7 +409,7 @@ function M.setup()
         -- Update this to ensure that you have the debuggers for the langs you want
         'python',
         'codelldb',  -- For C/C++/Rust
-        'node2',     -- For JavaScript/TypeScript
+        'node2',     -- For JavaScript/TypeScript (node-debug2-adapter)
       }
     })
   end
