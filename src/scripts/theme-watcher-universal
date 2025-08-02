@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""
+Universal theme watcher - monitors OS appearance changes and auto-switches themes
+Works on both macOS and Linux
+"""
+
+import subprocess
+import time
+import os
+import sys
+from pathlib import Path
+from datetime import datetime
+
+def log(message):
+    """Log message with timestamp"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{timestamp}] {message}", flush=True)
+
+def detect_os():
+    """Detect the operating system"""
+    if sys.platform == "darwin":
+        return "macos"
+    elif sys.platform.startswith("linux"):
+        return "linux"
+    else:
+        return "unknown"
+
+def get_appearance_macos():
+    """Get current macOS appearance (light/dark)"""
+    try:
+        result = subprocess.run(
+            ['defaults', 'read', '-g', 'AppleInterfaceStyle'],
+            capture_output=True,
+            text=True
+        )
+        return 'dark' if result.returncode == 0 and result.stdout.strip() == 'Dark' else 'light'
+    except:
+        return 'light'
+
+def get_appearance_linux():
+    """Get current Linux appearance (light/dark)"""
+    # Try GNOME
+    try:
+        result = subprocess.run(
+            ['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme'],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            theme = result.stdout.strip().strip("'")
+            if 'dark' in theme.lower():
+                return 'dark'
+            
+        # Check color-scheme (newer GNOME)
+        result = subprocess.run(
+            ['gsettings', 'get', 'org.gnome.desktop.interface', 'color-scheme'],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0 and 'dark' in result.stdout:
+            return 'dark'
+    except:
+        pass
+    
+    # Try KDE
+    try:
+        # This is a simplified check - KDE is complex
+        config_path = Path.home() / '.config/kdeglobals'
+        if config_path.exists():
+            with open(config_path, 'r') as f:
+                content = f.read()
+                if 'ColorScheme=' in content:
+                    # Simple heuristic
+                    return 'dark' if 'Dark' in content else 'light'
+    except:
+        pass
+    
+    # Time-based fallback
+    hour = datetime.now().hour
+    return 'light' if 6 <= hour < 18 else 'dark'
+
+def get_appearance():
+    """Get current appearance based on OS"""
+    os_type = detect_os()
+    if os_type == "macos":
+        return get_appearance_macos()
+    elif os_type == "linux":
+        return get_appearance_linux()
+    else:
+        return 'dark'  # Default
+
+def switch_theme():
+    """Run theme switcher script"""
+    script_path = Path.home() / '.dotfiles/src/theme-switcher/switch-theme-universal.sh'
+    if not script_path.exists():
+        script_path = Path.home() / 'bin/theme'
+    
+    if script_path.exists():
+        subprocess.run([str(script_path), 'auto'])
+        return True
+    else:
+        log(f"Theme switcher not found at {script_path}")
+        return False
+
+def main():
+    """Main monitoring loop"""
+    log("Starting universal theme watcher...")
+    log(f"Detected OS: {detect_os()}")
+    
+    last_appearance = get_appearance()
+    log(f"Initial appearance: {last_appearance}")
+    
+    # Switch to current theme on startup
+    switch_theme()
+    
+    try:
+        while True:
+            current_appearance = get_appearance()
+            
+            if current_appearance != last_appearance:
+                log(f"Appearance changed: {last_appearance} -> {current_appearance}")
+                if switch_theme():
+                    last_appearance = current_appearance
+                else:
+                    log("Failed to switch theme")
+            
+            # Check every 5 seconds on Linux, 10 on macOS
+            sleep_time = 10 if detect_os() == "macos" else 5
+            time.sleep(sleep_time)
+            
+    except KeyboardInterrupt:
+        log("Theme watcher stopped")
+        sys.exit(0)
+    except Exception as e:
+        log(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

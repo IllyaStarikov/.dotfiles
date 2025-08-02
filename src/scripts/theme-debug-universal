@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# Universal theme system debugging script
+
+echo "🔍 Theme System Debug Information"
+echo "================================="
+echo ""
+
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macOS"
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    OS="Linux"
+    # Detect distro
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        DISTRO="$NAME"
+    fi
+else
+    OS="Unknown"
+fi
+
+echo "1. Operating System:"
+echo "   OS: $OS"
+[[ -n "$DISTRO" ]] && echo "   Distribution: $DISTRO"
+echo ""
+
+# Check appearance based on OS
+echo "2. System Appearance:"
+if [[ "$OS" == "macOS" ]]; then
+    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        echo "   ✓ Dark mode (macOS)"
+    else
+        echo "   ✓ Light mode (macOS)"
+    fi
+elif [[ "$OS" == "Linux" ]]; then
+    # Check GNOME
+    if command -v gsettings >/dev/null 2>&1; then
+        theme=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo "unknown")
+        color_scheme=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || echo "unknown")
+        echo "   GNOME Theme: $theme"
+        echo "   GNOME Color Scheme: $color_scheme"
+    fi
+    
+    # Check KDE
+    if [[ -f "$HOME/.config/kdeglobals" ]]; then
+        echo "   KDE config found"
+    fi
+    
+    # Check XFCE
+    if command -v xfconf-query >/dev/null 2>&1; then
+        theme=$(xfconf-query -c xsettings -p /Net/ThemeName 2>/dev/null || echo "unknown")
+        echo "   XFCE Theme: $theme"
+    fi
+fi
+echo ""
+
+# Check theme config file
+echo "3. Theme Configuration:"
+CONFIG_FILE="$HOME/.config/theme-switcher/current-theme.sh"
+if [[ -f "$CONFIG_FILE" ]]; then
+    echo "   ✓ Config file exists"
+    source "$CONFIG_FILE"
+    echo "   MACOS_THEME: ${MACOS_THEME:-not set}"
+    echo "   MACOS_VARIANT: ${MACOS_VARIANT:-not set}"
+    echo "   THEME_MODE: ${THEME_MODE:-not set}"
+    echo "   CURRENT_THEME: ${CURRENT_THEME:-not set}"
+else
+    echo "   ✗ Config file not found at $CONFIG_FILE"
+fi
+echo ""
+
+# Check Alacritty theme
+echo "4. Alacritty Theme:"
+ALACRITTY_THEME="$HOME/.config/alacritty/theme.toml"
+if [[ -f "$ALACRITTY_THEME" ]]; then
+    echo "   ✓ Theme file exists"
+    # Try to detect theme from file
+    if grep -q "github_light" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: GitHub Light"
+    elif grep -q "tokyonight_day" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: Tokyo Night Day"
+    elif grep -q "tokyonight_moon" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: Tokyo Night Moon"
+    elif grep -q "dracula" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: Dracula"
+    fi
+else
+    echo "   ✗ Theme file not found"
+fi
+echo ""
+
+# Check tmux theme
+echo "5. tmux Theme:"
+TMUX_THEME="$HOME/.config/tmux/theme.conf"
+if [[ -f "$TMUX_THEME" ]]; then
+    echo "   ✓ Theme file exists"
+else
+    echo "   ✗ Theme file not found"
+fi
+echo ""
+
+# Check available themes
+echo "6. Available Themes:"
+THEME_DIR="$HOME/.dotfiles/src/theme-switcher/themes"
+if [[ -d "$THEME_DIR" ]]; then
+    for theme in "$THEME_DIR"/*; do
+        if [[ -d "$theme" ]]; then
+            echo "   - $(basename "$theme")"
+        fi
+    done
+else
+    echo "   ✗ Theme directory not found"
+fi
+echo ""
+
+# Check environment
+echo "7. Environment Variables:"
+echo "   PATH includes ~/bin: $(echo "$PATH" | grep -q "$HOME/bin" && echo "✓" || echo "✗")"
+echo "   EDITOR: ${EDITOR:-not set}"
+echo "   SHELL: ${SHELL:-not set}"
+echo ""
+
+# Check if theme switcher is available
+echo "8. Theme Switcher:"
+if command -v theme >/dev/null 2>&1; then
+    echo "   ✓ 'theme' command available"
+    echo "   Location: $(which theme)"
+else
+    echo "   ✗ 'theme' command not found"
+fi
+
+# Check for theme watcher
+echo ""
+echo "9. Theme Watcher:"
+if [[ "$OS" == "macOS" ]]; then
+    if launchctl list | grep -q "com.starikov.theme-switcher"; then
+        echo "   ✓ LaunchAgent is loaded"
+    else
+        echo "   ✗ LaunchAgent not loaded"
+    fi
+elif [[ "$OS" == "Linux" ]]; then
+    if systemctl --user is-active theme-watcher >/dev/null 2>&1; then
+        echo "   ✓ systemd service is active"
+    else
+        echo "   ✗ systemd service not active"
+    fi
+fi
