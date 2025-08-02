@@ -104,9 +104,8 @@ alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\\
 # Modern search tools
 alias find-file="fd"
 alias find-content="rg"
-# Don't override system grep - use explicit aliases instead
-# alias grep="rg"  # REMOVED: Can break scripts expecting standard grep
-alias rgrep="rg"  # Use rgrep for ripgrep
+# Modern ripgrep aliases (keeping 'grep' command for compatibility)
+alias rgrep="rg"
 alias search="rg -i --pretty --context=3"
 
 # Project-specific searches
