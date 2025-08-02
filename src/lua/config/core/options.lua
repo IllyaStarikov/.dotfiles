@@ -15,6 +15,30 @@ opt.virtualedit = "block"            -- Freedom of movement in visual block mode
 opt.updatetime = 300                 -- Faster completion (4s -> 300ms)
 opt.timeoutlen = 500                 -- Faster which-key trigger
 
+-- Fix for table/box drawing characters
+opt.fillchars = {
+  vert = '│',     -- Vertical separator
+  horiz = '─',    -- Horizontal separator  
+  horizup = '┴',  -- Horizontal with up
+  horizdown = '┬', -- Horizontal with down
+  vertleft = '┤',  -- Vertical with left
+  vertright = '├', -- Vertical with right
+  verthoriz = '┼', -- Cross
+}
+
+-- Ensure proper character width handling
+opt.ambiwidth = "single"  -- Treat ambiguous width chars as single width
+
+-- Force proper rendering of box-drawing characters
+if vim.fn.has('multi_byte') == 1 then
+  vim.opt.listchars = {
+    tab = '▸ ',
+    trail = '·',
+    extends = '❯',
+    precedes = '❮',
+  }
+end
+
 -- File handling
 opt.fileformats = { "unix", "dos", "mac" }
 opt.hidden = true
