@@ -151,7 +151,7 @@ generate_bars() {
         num_filled=1
     elif [ "$percent" -le 74 ]; then
         num_filled=2
-    elif [ "$percent" -le 90 ]; then
+    elif [ "$percent" -le 89 ]; then
         num_filled=3
     else
         num_filled=4
@@ -160,19 +160,21 @@ generate_bars() {
     # Determine color based on type and fill level
     local color
     if [ "$type" = "battery" ]; then
-        # Battery: green (3-4/4), yellow (2/4), red (0-1/4)
-        if [ "$num_filled" -ge 3 ]; then
-            color="#[fg=green]"
-        elif [ "$num_filled" -eq 2 ]; then
+        # Battery: red (0/4), yellow (1/4), green (2-4/4)
+        if [ "$num_filled" -eq 0 ]; then
+            color="#[fg=red]"
+        elif [ "$num_filled" -eq 1 ]; then
             color="#[fg=yellow]"
         else
-            color="#[fg=red]"
+            color="#[fg=green]"
         fi
     else
-        # CPU/Memory: green (0-1/4), yellow (2-3/4), red (4/4)
+        # CPU/Memory: green (0-1/4), green (2/4), yellow (3/4), red (4/4)
         if [ "$num_filled" -le 1 ]; then
             color="#[fg=green]"
-        elif [ "$num_filled" -le 3 ]; then
+        elif [ "$num_filled" -eq 2 ]; then
+            color="#[fg=green]"
+        elif [ "$num_filled" -eq 3 ]; then
             color="#[fg=yellow]"
         else
             color="#[fg=red]"
@@ -265,7 +267,7 @@ case "$1" in
         # Get color for text with bold
         if [ "$cpu_percent" -le 49 ]; then
             text_color="#[fg=green,bold]"
-        elif [ "$cpu_percent" -le 90 ]; then
+        elif [ "$cpu_percent" -le 89 ]; then
             text_color="#[fg=yellow,bold]"
         else
             text_color="#[fg=red,bold]"
@@ -277,9 +279,9 @@ case "$1" in
         read mem_percent mem_gb <<< "$(get_memory_usage)"
         bars=$(generate_bars "$mem_percent" "cpu_mem")
         # Get color for text with bold
-        if [ "$mem_percent" -le 49 ]; then
+        if [ "$mem_percent" -le 74 ]; then
             text_color="#[fg=green,bold]"
-        elif [ "$mem_percent" -le 90 ]; then
+        elif [ "$mem_percent" -le 89 ]; then
             text_color="#[fg=yellow,bold]"
         else
             text_color="#[fg=red,bold]"
