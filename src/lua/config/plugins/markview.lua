@@ -666,17 +666,62 @@ function M.setup()
         vim.cmd("normal! zR")
       end, { buffer = true, desc = "Open all details folds" })
       
+      -- Additional keybinding to toggle fold visibility globally
+      vim.keymap.set("n", "<leader>mf", function()
+        vim.opt_local.foldenable = not vim.opt_local.foldenable:get()
+        local state = vim.opt_local.foldenable:get() and "enabled" or "disabled"
+        vim.notify("Folding " .. state, vim.log.levels.INFO)
+      end, { buffer = true, desc = "Toggle folding on/off" })
+      
+      -- Auto-expand fold when cursor enters it
+      vim.keymap.set("n", "<leader>me", function()
+        if vim.b.auto_expand_folds == nil then
+          vim.b.auto_expand_folds = false
+        end
+        vim.b.auto_expand_folds = not vim.b.auto_expand_folds
+        
+        if vim.b.auto_expand_folds then
+          -- Enable auto-expand
+          vim.api.nvim_create_autocmd("CursorMoved", {
+            buffer = 0,
+            group = vim.api.nvim_create_augroup("MarkviewAutoExpand" .. vim.fn.bufnr(), { clear = true }),
+            callback = function()
+              -- Check if cursor is on a folded line
+              local fold_level = vim.fn.foldlevel(".")
+              if fold_level > 0 and vim.fn.foldclosed(".") ~= -1 then
+                vim.cmd("normal! zo")
+              end
+            end
+          })
+          vim.notify("Auto-expand folds enabled", vim.log.levels.INFO)
+        else
+          -- Disable auto-expand
+          vim.api.nvim_clear_autocmds({ 
+            group = "MarkviewAutoExpand" .. vim.fn.bufnr(),
+            buffer = 0 
+          })
+          vim.notify("Auto-expand folds disabled", vim.log.levels.INFO)
+        end
+      end, { buffer = true, desc = "Toggle auto-expand folds on cursor" })
+      
     end
   })
   
-  -- Disable markview in insert mode, re-enable in normal mode
-  -- Combined autocommand group to reduce overhead
+  -- Handle folding behavior for insert/normal mode transitions
   local augroup = vim.api.nvim_create_augroup("MarkviewInsertMode", { clear = true })
   
   vim.api.nvim_create_autocmd({"InsertEnter"}, {
     pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
     group = augroup,
     callback = function()
+      -- Store current fold state and unfold all when entering insert mode
+      vim.b.fold_state_before_insert = vim.opt_local.foldenable:get()
+      if vim.b.fold_state_before_insert then
+        -- Unfold all details blocks
+        vim.opt_local.foldenable = false
+      end
+      
+      -- Also disable markview in insert mode
       if vim.b.markview_enabled then
         vim.cmd("Markview disable")
         vim.b.markview_insert_disabled = true
@@ -688,6 +733,12 @@ function M.setup()
     pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
     group = augroup,
     callback = function()
+      -- Restore fold state when leaving insert mode
+      if vim.b.fold_state_before_insert then
+        vim.opt_local.foldenable = true
+      end
+      
+      -- Re-enable markview
       if vim.b.markview_insert_disabled then
         vim.cmd("Markview enable")
         vim.b.markview_insert_disabled = false
