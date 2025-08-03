@@ -263,5 +263,31 @@ fi
 # Theme integration
 [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
 
+# Theme switching function with proper reload
+# Unset the alias first if it exists
+unalias theme 2>/dev/null || true
+
+theme() {
+    local theme="${1:-auto}"
+    
+    # Run the theme switcher
+    ~/.dotfiles/src/theme-switcher/switch-theme.sh "$theme"
+    
+    # Reload theme environment variables
+    source "$HOME/.config/theme-switcher/current-theme.sh"
+    
+    # Reload tmux if we're in a tmux session
+    if [[ -n "$TMUX" ]]; then
+        tmux source-file ~/.tmux.conf
+    fi
+    
+    # Try to reload Alacritty by touching the config
+    if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
+        touch ~/.config/alacritty/alacritty.toml
+    elif [[ -f ~/.alacritty.toml ]]; then
+        touch ~/.alacritty.toml
+    fi
+}
+
 # Remove duplicates from PATH
 typeset -U PATH path
