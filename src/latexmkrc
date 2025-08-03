@@ -28,14 +28,22 @@ $xelatex = 'xelatex --interaction=nonstopmode --shell-escape --synctex=1 %O %S';
 # PDF VIEWER CONFIGURATION
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# macOS: Use Skim for better LaTeX integration
-$pdf_previewer = 'open -a Skim %S';
-
-# Alternative viewers (uncomment as needed):
-# $pdf_previewer = 'open -a Preview %S';        # macOS Preview
-# $pdf_previewer = 'zathura %S';                # Linux (Zathura)
-# $pdf_previewer = 'evince %S';                 # Linux (Evince)
-# $pdf_previewer = 'SumatraPDF.exe %S';         # Windows
+# Detect platform and set appropriate PDF viewer
+if ($^O eq 'darwin') {
+    # macOS: Use Skim for better LaTeX integration
+    $pdf_previewer = 'open -a Skim %S';
+} elsif ($^O eq 'linux') {
+    # Linux - try different viewers in order of preference
+    if (system("which zathura >/dev/null 2>&1") == 0) {
+        $pdf_previewer = 'zathura %S';
+    } elsif (system("which evince >/dev/null 2>&1") == 0) {
+        $pdf_previewer = 'evince %S';
+    } elsif (system("which okular >/dev/null 2>&1") == 0) {
+        $pdf_previewer = 'okular %S';
+    } else {
+        $pdf_previewer = 'xdg-open %S';  # Default system viewer
+    }
+}
 
 # Update PDF viewer after successful compilation
 $pdf_update_method = 2;  # 2 = force update
