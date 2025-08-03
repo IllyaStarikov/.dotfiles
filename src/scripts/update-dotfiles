@@ -19,8 +19,8 @@ FAILED_LIST=""
 
 # Source common library if available
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ -f "${SCRIPT_DIR}/../lib/common.sh" ]]; then
-    source "${SCRIPT_DIR}/../lib/common.sh"
+if [[ -f "${SCRIPT_DIR}/common.sh" ]]; then
+    source "${SCRIPT_DIR}/common.sh"
 else
     # Define minimal functions if common.sh not available
     print_color() {
