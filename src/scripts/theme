@@ -100,8 +100,12 @@ apply_theme() {
     # Update Alacritty
     if [[ -f "$theme_dir/alacritty.toml" ]]; then
         cp "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml"
-        # Touch main config to trigger reload
+        # Touch both theme and main config to trigger reload
+        touch "$ALACRITTY_DIR/theme.toml" 2>/dev/null || true
         touch "$ALACRITTY_DIR/alacritty.toml" 2>/dev/null || true
+        # Give Alacritty a moment to detect the change
+        sleep 0.1
+        echo "  Alacritty theme updated (may require window focus change to refresh)"
     fi
     
     # Update tmux
