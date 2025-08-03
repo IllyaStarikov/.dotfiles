@@ -263,48 +263,9 @@ fi
 # Theme integration
 [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
 
-# Theme switching function with proper reload
-# Unset the alias first if it exists
-unalias theme 2>/dev/null || true
-
-theme() {
-    local theme="${1:-}"
-    
-    if [[ -z "$theme" ]]; then
-        # Show current theme if no argument
-        if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
-            source "$HOME/.config/theme-switcher/current-theme.sh"
-            echo "Current theme: $(echo $MACOS_THEME | sed 's/tokyonight_//') ($MACOS_VARIANT mode)"
-        else
-            echo "No theme set. Use: theme dark/light/moon/storm/day"
-        fi
-        return
-    fi
-    
-    # Run the theme switcher
-    ~/.dotfiles/src/theme-switcher/switch-theme.sh "$theme"
-    
-    # Reload theme environment variables
-    source "$HOME/.config/theme-switcher/current-theme.sh"
-    
-    # Reload tmux for ALL sessions (not just current)
-    if command -v tmux &>/dev/null; then
-        # Get list of all tmux sessions
-        local tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
-        
-        if [[ -n "$tmux_sessions" ]]; then
-            # Reload config in all sessions
-            while IFS= read -r session; do
-                tmux source-file ~/.tmux.conf \; \
-                     refresh-client -t "$session" -S 2>/dev/null || true
-            done <<< "$tmux_sessions"
-        fi
-    fi
-    
-    # Note: Alacritty will need to be restarted to see theme changes
-    # since live_config_reload is disabled to prevent crashes
-    echo "✅ Theme switched to: $(echo $MACOS_THEME | sed 's/tokyonight_//')"
-}
+# Theme function removed - now using theme script directly from PATH
+# The theme command is available at ~/.dotfiles/src/scripts/theme
+# which provides all theme switching functionality without duplicates
 
 # Remove duplicates from PATH
 typeset -U PATH path
