@@ -268,7 +268,18 @@ fi
 unalias theme 2>/dev/null || true
 
 theme() {
-    local theme="${1:-auto}"
+    local theme="${1:-}"
+    
+    if [[ -z "$theme" ]]; then
+        # Show current theme if no argument
+        if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
+            source "$HOME/.config/theme-switcher/current-theme.sh"
+            echo "Current theme: $(echo $MACOS_THEME | sed 's/tokyonight_//') ($MACOS_VARIANT mode)"
+        else
+            echo "No theme set. Use: theme dark/light/moon/storm/day"
+        fi
+        return
+    fi
     
     # Run the theme switcher
     ~/.dotfiles/src/theme-switcher/switch-theme.sh "$theme"

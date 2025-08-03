@@ -50,7 +50,7 @@ fi
 # Test 2: Theme switching affects all tools
 test_case "Theme switching updates Neovim, tmux, and Alacritty"
 # Record initial states
-initial_alacritty=$(grep -E "github_dark|tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
+initial_alacritty=$(grep -E "tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
 initial_nvim=$(nvim --headless -c "lua print(vim.g.colors_name or 'default')" -c "qa!" 2>&1)
 initial_theme_var=$(source ~/.config/theme-switcher/current-theme.sh 2>/dev/null && echo $MACOS_THEME || echo "none")
 
@@ -67,7 +67,7 @@ fi
 "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" >/dev/null 2>&1
 
 # Check all components updated
-new_alacritty=$(grep -E "github_dark|tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
+new_alacritty=$(grep -E "tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
 new_nvim=$(nvim --headless -c "lua print(vim.g.colors_name or 'default')" -c "qa!" 2>&1)
 new_theme_var=$(source ~/.config/theme-switcher/current-theme.sh 2>/dev/null && echo $MACOS_THEME || echo "none")
 
