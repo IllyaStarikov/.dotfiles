@@ -5,24 +5,39 @@ set -euo pipefail
 
 echo "Preparing repository for CI build..."
 
-# Remove the private submodule from .gitmodules
+# Remove the private submodule entry from .gitmodules
 echo "Removing private submodule from .gitmodules..."
-git config --file=.gitmodules --remove-section submodule..dotfiles.private || true
+if git config --file=.gitmodules --get-regexp '^submodule\..*\.path$' | grep -q '.dotfiles.private'; then
+    git config --file=.gitmodules --remove-section 'submodule..dotfiles.private' || true
+fi
 
-# Remove the private submodule from .git/config
+# Remove the private submodule from .git/config if it exists
 echo "Removing private submodule from git config..."
-git config --remove-section submodule..dotfiles.private || true
+if git config --get-regexp '^submodule\..*\.path$' | grep -q '.dotfiles.private'; then
+    git config --remove-section 'submodule..dotfiles.private' || true
+fi
 
-# Remove the submodule directory
+# Remove the submodule directory if it exists
 echo "Removing private submodule directory..."
-rm -rf .dotfiles.private
+if [[ -d ".dotfiles.private" ]]; then
+    rm -rf .dotfiles.private
+fi
 
-# Remove from git index
+# Remove from git index if present
 echo "Removing from git index..."
-git rm --cached .dotfiles.private || true
+if git ls-files --error-unmatch .dotfiles.private &>/dev/null; then
+    git rm --cached .dotfiles.private || true
+fi
 
-# Now update the remaining submodules
-echo "Updating public submodules..."
-git submodule update --init --recursive
+# Clean up .git/modules if it exists
+if [[ -d ".git/modules/.dotfiles.private" ]]; then
+    echo "Cleaning up .git/modules..."
+    rm -rf ".git/modules/.dotfiles.private"
+fi
+
+# Now initialize and update only the public submodules
+echo "Initializing and updating public submodules..."
+git submodule init
+git submodule update --recursive
 
 echo "Repository prepared for CI build"

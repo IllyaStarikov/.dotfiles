@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: false
 
     - name: Setup repository for CI
       run: ./.github/workflows/setup-public-repo.sh
