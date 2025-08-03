@@ -9,7 +9,12 @@
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 alias vi="nvim"
-alias code="code ."
+# Platform-aware code command
+if command -v code >/dev/null 2>&1; then
+    alias code="code ."
+elif command -v codium >/dev/null 2>&1; then
+    alias code="codium ."
+fi
 alias edit="nvim"
 alias vimconfig="nvim ~/.config/nvim/init.lua"
 alias zshconfig="nvim ~/.zshrc"
@@ -19,15 +24,22 @@ alias tmuxconfig="nvim ~/.tmux.conf"
 # 📁 FILE MANAGEMENT - Modern ls with eza
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Enhanced eza-based file listing
-# Note: --icons temporarily disabled due to font glyph issues
-alias l="eza --group-directories-first --time-style=relative --git --icons --all --header --long"
-alias ls="eza --group-directories-first"
-alias lt="eza --tree --level=2"
-alias tree="eza --tree"
-alias l1="eza --tree --level=1"
-alias l2="eza --tree --level=2"
-alias l3="eza --tree --level=3"
+# Enhanced eza-based file listing (with fallback to ls)
+if command -v eza >/dev/null 2>&1; then
+    # Note: --icons temporarily disabled due to font glyph issues
+    alias l="eza --group-directories-first --time-style=relative --git --icons --all --header --long"
+    alias ls="eza --group-directories-first"
+    alias lt="eza --tree --level=2"
+    alias tree="eza --tree"
+    alias l1="eza --tree --level=1"
+    alias l2="eza --tree --level=2"
+    alias l3="eza --tree --level=3"
+else
+    # Fallback to standard ls
+    alias l="ls -laGh"
+    alias ls="ls -G"
+    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+fi
 
 # Aliases with icons (use when font issues are resolved)
 alias lsi="eza --group-directories-first --icons"

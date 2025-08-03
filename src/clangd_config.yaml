@@ -1,11 +1,13 @@
-# Global clangd configuration
+# Global clangd configuration - cross-platform
+# Platform-specific includes are auto-detected by clangd
 CompileFlags:
   Add: 
     - "-std=c++17"
-    - "-stdlib=libc++"
     - "-I/usr/local/include"
-    - "-I/opt/homebrew/include"
-    - "-I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+    - "-I/usr/include"
+  Remove:
+    # Remove any system-specific flags that might cause issues cross-platform
+    - "-stdlib=libc++"
 
 Diagnostics:
   ClangTidy:
