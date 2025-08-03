@@ -14,7 +14,7 @@ For configuration details and customization, see [Guides](../guides/README.md).
 
 ## Quick Start
 
-**[📋 Quick Reference Card](QUICK_REFERENCE.md)** One-page essential commands
+**[📋 Quick Reference Card](reference.md)** One-page essential commands
 
 ## Quick Command Reference
 

@@ -28,7 +28,7 @@ tmuxinator start main
 
 ```bash
 # Update all tools and packages
-update
+update-dotfiles
 
 # This updates:
 # - Homebrew packages

@@ -194,15 +194,12 @@ create_symlink "$DOTFILES_DIR/scripts" "$HOME/.scripts" "Utility scripts"
 
 # Link universal scripts
 ensure_dir "$HOME/bin"
-create_symlink "$DOTFILES_DIR/scripts/update-universal" "$HOME/bin/update" "Universal update script"
-create_symlink "$DOTFILES_DIR/theme-switcher/switch-theme-universal.sh" "$HOME/bin/theme" "Universal theme switcher"
-create_symlink "$DOTFILES_DIR/scripts/scratchpad-universal" "$HOME/bin/scratchpad" "Universal scratchpad"
-create_symlink "$DOTFILES_DIR/scripts/format-universal" "$HOME/bin/format" "Universal formatter"
-create_symlink "$DOTFILES_DIR/scripts/fetch-quotes-universal" "$HOME/bin/fetch-quotes" "Universal quote fetcher"
-create_symlink "$DOTFILES_DIR/scripts/install-git-hooks-universal" "$HOME/bin/install-git-hooks" "Universal git hooks installer"
-create_symlink "$DOTFILES_DIR/scripts/theme-watcher-universal" "$HOME/bin/theme-watcher" "Universal theme watcher"
-create_symlink "$DOTFILES_DIR/scripts/install-theme-watcher-universal" "$HOME/bin/install-theme-watcher" "Universal theme watcher installer"
-create_symlink "$DOTFILES_DIR/scripts/theme-debug-universal" "$HOME/bin/theme-debug" "Universal theme debugger"
+create_symlink "$DOTFILES_DIR/scripts/update-dotfiles" "$HOME/bin/update-dotfiles" "Universal update script"
+create_symlink "$DOTFILES_DIR/scripts/theme" "$HOME/bin/theme" "Universal theme switcher"
+create_symlink "$DOTFILES_DIR/scripts/scratchpad" "$HOME/bin/scratchpad" "Universal scratchpad"
+create_symlink "$DOTFILES_DIR/scripts/format" "$HOME/bin/format" "Universal formatter"
+create_symlink "$DOTFILES_DIR/scripts/fetch-quotes" "$HOME/bin/fetch-quotes" "Universal quote fetcher"
+create_symlink "$DOTFILES_DIR/setup/install-git-hooks" "$HOME/bin/install-git-hooks" "Universal git hooks installer"
 
 # Spell files for Neovim
 progress "Setting up spell files"

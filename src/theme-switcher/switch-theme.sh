@@ -377,12 +377,6 @@ main() {
         log "Theme switch completed successfully"
         echo "✅ Theme switched to $THEME ($VARIANT mode)"
         
-        # Note about Alacritty
-        if pgrep -x alacritty &>/dev/null; then
-            echo ""
-            echo "ℹ️  Note: Restart Alacritty to see theme changes"
-            echo "   Use: reload-alacritty or Cmd+Q and reopen"
-        fi
     else
         # Restore on failure
         restore_config "$backup_dir"

@@ -1,1 +1,39 @@
-$EDITOR $(mktemp $TMPDIR/$(uuidgen).$1)
+#!/usr/bin/env bash
+# Universal scratchpad - Create temporary files for quick editing
+# Works on both macOS and Linux
+
+# Source common library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+# Get file extension if provided
+EXT="${1:+.$1}"
+
+# Generate unique filename
+generate_filename() {
+  if has_command uuidgen; then
+    echo "$(uuidgen)"
+  else
+    # Fallback to timestamp + random
+    echo "scratch-$(date +%Y%m%d-%H%M%S)-$$-$RANDOM"
+  fi
+}
+
+# Create temp file path
+TEMP_DIR="${TMPDIR:-${TMP:-/tmp}}"
+FILENAME="$(generate_filename)${EXT}"
+TEMP_FILE="${TEMP_DIR}/${FILENAME}"
+
+# Determine editor
+EDITOR="${EDITOR:-$(platform_command 'vim' 'nano')}"
+
+# Create and open the file
+print_color blue "Opening scratchpad: ${TEMP_FILE}"
+"${EDITOR}" "${TEMP_FILE}"
+
+# Check if file was created and has content
+if [[ -f "${TEMP_FILE}" ]] && [[ -s "${TEMP_FILE}" ]]; then
+  print_color green "Scratchpad saved at: ${TEMP_FILE}"
+else
+  print_color yellow "Scratchpad was empty or not saved"
+fi

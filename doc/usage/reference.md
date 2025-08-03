@@ -38,7 +38,7 @@ code .          # Open VS Code
 htop            # System monitor
 duf             # Disk usage
 theme           # Switch light/dark
-update          # Update everything
+update-dotfiles # Update everything
 cleanup         # Clean caches
 ```
 
@@ -112,7 +112,7 @@ cleanup         # Clean caches
 v $(rg -l TODO | fzf)
 
 # Update and clean
-update && cleanup
+update-dotfiles && cleanup
 
 # Git sync
 gco main && gl && gco -
@@ -175,4 +175,4 @@ htop
 
 ---
 
-Print with: `bat doc/usage/QUICK_REFERENCE.md`
+Print with: `bat doc/usage/reference.md`
