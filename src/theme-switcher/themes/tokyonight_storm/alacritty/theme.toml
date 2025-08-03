@@ -1,29 +1,41 @@
-# TokyoNight Storm Alacritty Colors
+# -----------------------------------------------------------------------------
+# TokyoNight Alacritty Colors
+# Theme: Tokyo Night Storm
+# Upstream: https://github.com/folke/tokyonight.nvim/raw/main/extras/alacritty/tokyonight_storm.toml
+# -----------------------------------------------------------------------------
 
+# Default colors
 [colors.primary]
 background = '#24283b'
 foreground = '#c0caf5'
 
+#[colors.cursor]
+#cursor = '#c0caf5'
+#text = '#24283b'
+
+# Normal colors
 [colors.normal]
-black = '#414868'
+black = '#1d202f'
 red = '#f7768e'
 green = '#9ece6a'
 yellow = '#e0af68'
 blue = '#7aa2f7'
-magenta = '#9d7cd8'
+magenta = '#bb9af7'
 cyan = '#7dcfff'
-white = '#c0caf5'
-
-[colors.bright]
-black = '#545c7e'
-red = '#db4b4b'
-green = '#73daca'
-yellow = '#ff9e64'
-blue = '#2ac3de'
-magenta = '#ff007c'
-cyan = '#89ddff'
 white = '#a9b1d6'
 
+# Bright colors
+[colors.bright]
+black = '#414868'
+red = '#ff899d'
+green = '#9fe044'
+yellow = '#faba4a'
+blue = '#8db0ff'
+magenta = '#c7a9ff'
+cyan = '#a4daff'
+white = '#c0caf5'
+
+# Indexed Colors
 [[colors.indexed_colors]]
 index = 16
 color = '#ff9e64'
