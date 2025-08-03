@@ -281,12 +281,8 @@ theme() {
         tmux source-file ~/.tmux.conf
     fi
     
-    # Try to reload Alacritty by touching the config
-    if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
-        touch ~/.config/alacritty/alacritty.toml
-    elif [[ -f ~/.alacritty.toml ]]; then
-        touch ~/.alacritty.toml
-    fi
+    # Note: Alacritty will need to be restarted to see theme changes
+    # since live_config_reload is disabled to prevent crashes
 }
 
 # Remove duplicates from PATH

@@ -173,9 +173,10 @@ alias dotfiles="cd ~/.dotfiles"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh" # Replaced with function in .zshrc
-alias theme-watch="~/.dotfiles/src/scripts/theme-daemon > /tmp/theme-daemon.log 2>&1 & echo '✅ Theme daemon started (logs at /tmp/theme-daemon.log)'"
-alias theme-log="tail -f /tmp/theme-daemon.log"
-alias theme-stop="pkill -f 'theme-(daemon|watcher)' && echo '⏹ Theme watchers stopped'"
+alias theme-watch="~/.dotfiles/src/scripts/theme-watcher-safe.sh"
+alias theme-log="tail -f /tmp/theme-watcher.log"
+alias theme-stop="pkill -f 'theme-watcher' && echo '⏹ Theme watcher stopped'"
+alias reload-alacritty="~/.dotfiles/src/scripts/reload-alacritty.sh"
 alias theme-install="~/.dotfiles/src/scripts/install-theme-watcher"
 alias dark="theme dark"
 alias light="theme light"
