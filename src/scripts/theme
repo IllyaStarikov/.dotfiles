@@ -1,6 +1,6 @@
 #!/bin/bash
-# Consolidated theme management script for macOS
-# Handles theme switching and environment detection
+# Unified theme management script for macOS
+# Handles theme switching across Alacritty, tmux, and shell
 
 set -euo pipefail
 
@@ -37,28 +37,6 @@ get_current_theme() {
         source "$CONFIG_DIR/current-theme.sh"
         echo "${MACOS_THEME:-}"
     fi
-}
-
-# Function to detect theme from macOS and set environment
-detect_and_set_theme() {
-    local appearance=$(detect_macos_appearance)
-    local theme
-    
-    if [[ "$appearance" == "dark" ]]; then
-        theme="$DARK_THEME"
-    else
-        theme="$LIGHT_THEME"
-    fi
-    
-    # Save theme state
-    cat > "$CONFIG_DIR/current-theme.sh" << EOF
-#!/bin/bash
-# Current theme configuration
-export MACOS_THEME="$theme"
-export MACOS_APPEARANCE="$appearance"
-EOF
-    
-    echo "$theme"
 }
 
 # Function to list available themes
@@ -98,50 +76,65 @@ apply_theme() {
     echo "Applying theme: $theme ($variant mode)"
     
     # Update Alacritty
-    if [[ -f "$theme_dir/alacritty.toml" ]]; then
-        cp "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml"
-        # Touch both theme and main config to trigger reload
-        touch "$ALACRITTY_DIR/theme.toml" 2>/dev/null || true
+    if [[ -f "$theme_dir/alacritty.toml" ]] || [[ -f "$theme_dir/alacritty/theme.toml" ]]; then
+        local alacritty_theme=""
+        if [[ -f "$theme_dir/alacritty/theme.toml" ]]; then
+            alacritty_theme="$theme_dir/alacritty/theme.toml"
+        else
+            alacritty_theme="$theme_dir/alacritty.toml"
+        fi
+        
+        cp "$alacritty_theme" "$ALACRITTY_DIR/theme.toml"
+        # Touch config to trigger live reload
         touch "$ALACRITTY_DIR/alacritty.toml" 2>/dev/null || true
-        # Give Alacritty a moment to detect the change
-        sleep 0.1
-        echo "  Alacritty theme updated (may require window focus change to refresh)"
+        touch "$ALACRITTY_DIR/theme.toml" 2>/dev/null || true
+        echo "  ✓ Alacritty theme updated"
     fi
     
     # Update tmux
     if [[ -f "$theme_dir/tmux.conf" ]]; then
         cp "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"
-        # Reload tmux if running
-        if command -v tmux &> /dev/null && tmux info &> /dev/null; then
+        
+        # Force reload tmux configuration
+        if command -v tmux &>/dev/null && tmux info &>/dev/null; then
+            # First source the main config
             tmux source-file ~/.tmux.conf 2>/dev/null || true
-            # Refresh all clients
+            
+            # If we're inside tmux, also use run-shell to ensure it propagates
+            if [[ -n "${TMUX:-}" ]]; then
+                tmux run-shell "tmux source-file ~/.tmux.conf" 2>/dev/null || true
+            fi
+            
+            # Force refresh all clients
+            sleep 0.1  # Give tmux a moment to process the source command
             tmux list-clients -F '#{client_name}' 2>/dev/null | while read -r client; do
                 tmux refresh-client -t "$client" -S 2>/dev/null || true
             done
+            
+            echo "  ✓ Tmux theme updated and reloaded"
         fi
     fi
     
     # Update Starship
     if [[ -f "$theme_dir/starship.toml" ]]; then
         cp "$theme_dir/starship.toml" "$STARSHIP_DIR/starship-theme.toml"
+        echo "  ✓ Starship theme updated"
     fi
     
-    # Save theme state
+    # Save theme state - this is what zsh sources on startup
     cat > "$CONFIG_DIR/current-theme.sh" << EOF
-#!/bin/bash
 # Current theme configuration
 export MACOS_THEME="$theme"
-export MACOS_APPEARANCE="$variant"
+export MACOS_VARIANT="$variant"
 EOF
+    chmod 644 "$CONFIG_DIR/current-theme.sh"
+    
+    # Source it in current shell if in zsh
+    if [[ -n "${ZSH_VERSION:-}" ]]; then
+        source "$CONFIG_DIR/current-theme.sh"
+    fi
     
     echo "✅ Theme switched to: $theme"
-}
-
-# Function to reload Alacritty
-reload_alacritty() {
-    # Touch config to trigger live reload
-    touch "$ALACRITTY_DIR/alacritty.toml" 2>/dev/null || touch ~/.alacritty.toml 2>/dev/null
-    echo "✅ Alacritty config touched for reload"
 }
 
 # Main command handling
@@ -151,13 +144,12 @@ case "${1:-}" in
         cat << EOF
 Usage: theme [COMMAND|THEME]
 
-Theme Manager - Switch terminal themes across Alacritty, tmux, and Starship
+Theme Manager - Switch terminal themes across Alacritty, tmux, and shell
 
 COMMANDS:
-    detect              Detect current macOS appearance and set theme
+    detect              Auto-detect macOS appearance and apply theme
     current             Show current theme
     list                List all available themes
-    reload              Reload Alacritty configuration
     help                Show this help message
 
 THEMES:
@@ -169,9 +161,6 @@ THEMES:
     night               tokyonight_night (dark)
     moon                tokyonight_moon (dark)
     storm               tokyonight_storm (dark)
-    
-    Full theme names:
-    tokyonight_day, tokyonight_night, tokyonight_moon, tokyonight_storm
 
 EXAMPLES:
     theme dark          Switch to default dark theme
@@ -185,20 +174,21 @@ EOF
     
     # Commands
     detect)
-        theme=$(detect_and_set_theme)
-        echo "Detected macOS appearance: $(detect_macos_appearance)"
-        echo "Set theme to: $theme"
-        # Apply the detected theme
-        variant=$(detect_macos_appearance)
-        apply_theme "$theme" "$variant"
+        appearance=$(detect_macos_appearance)
+        if [[ "$appearance" == "dark" ]]; then
+            theme="$DARK_THEME"
+        else
+            theme="$LIGHT_THEME"
+        fi
+        echo "Detected macOS appearance: $appearance"
+        apply_theme "$theme" "$appearance"
         ;;
     
     current)
         current=$(get_current_theme)
         if [[ -n "$current" ]]; then
-            variant="dark"
-            [[ "$current" =~ day ]] && variant="light"
-            echo "Current theme: ${current##tokyonight_} ($variant mode)"
+            source "$CONFIG_DIR/current-theme.sh"
+            echo "Current theme: $current (${MACOS_VARIANT:-unknown} mode)"
         else
             echo "No theme currently set. Run 'theme detect' to auto-detect."
         fi
@@ -208,13 +198,9 @@ EOF
         list_themes
         ;;
     
-    reload)
-        reload_alacritty
-        ;;
-    
-    # No argument - show current theme
+    # No argument - detect and apply
     "")
-        exec "$0" current
+        exec "$0" detect
         ;;
     
     # Theme shortcuts and names

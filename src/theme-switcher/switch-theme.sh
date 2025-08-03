@@ -197,12 +197,12 @@ check_current_theme() {
 save_theme_state() {
     local theme_file_tmp="$CONFIG_DIR/current-theme.sh.tmp.$$"
     cat > "$theme_file_tmp" << EOF
+# Current theme configuration
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
-export MACOS_BACKGROUND="$VARIANT"
 EOF
     mv -f "$theme_file_tmp" "$CONFIG_DIR/current-theme.sh"
-    chmod 600 "$CONFIG_DIR/current-theme.sh"
+    chmod 644 "$CONFIG_DIR/current-theme.sh"
 }
 
 # Update Alacritty theme safely
@@ -301,16 +301,36 @@ update_app_themes() {
 # Reload tmux configuration for ALL sessions
 reload_tmux() {
     if command -v tmux &>/dev/null; then
-        # Get list of all tmux sessions
-        local tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+        # Check if tmux server is running
+        if ! tmux info &>/dev/null; then
+            log "No tmux server running"
+            return 0
+        fi
         
+        # Source the config file first
+        if [[ -n "${TMUX:-}" ]]; then
+            # We're inside tmux - reload directly
+            tmux source-file ~/.tmux.conf 2>/dev/null || true
+            log "Reloaded tmux configuration from inside tmux"
+        else
+            # We're outside tmux - send command to server
+            tmux source-file ~/.tmux.conf 2>/dev/null || true
+            log "Reloaded tmux configuration from outside tmux"
+        fi
+        
+        # Get list of all tmux sessions and refresh each client
+        local tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
         if [[ -n "$tmux_sessions" ]]; then
-            # Reload config in all sessions
             while IFS= read -r session; do
-                tmux source-file ~/.tmux.conf 2>/dev/null || true
-                tmux refresh-client -t "$session" -S 2>/dev/null || true
+                # Refresh all clients attached to this session
+                local clients=$(tmux list-clients -t "$session" -F '#{client_name}' 2>/dev/null || true)
+                if [[ -n "$clients" ]]; then
+                    while IFS= read -r client; do
+                        tmux refresh-client -t "$client" -S 2>/dev/null || true
+                    done <<< "$clients"
+                fi
             done <<< "$tmux_sessions"
-            log "Reloaded tmux configuration for all sessions"
+            log "Refreshed all tmux clients"
         fi
     fi
 }
