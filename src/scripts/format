@@ -1,17 +1,15 @@
-#!/bin/bash
-# Format - Universal code formatter and fixer script
-# Combines file operations with language-specific formatters
+#!/usr/bin/env bash
+# Universal code formatter and fixer script
+# Works on both macOS and Linux with Google style standards
 
+# Source common library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+# Strict mode
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Default values
+# Configuration
 DO_ALL=false
 DO_TRAILING=false
 DO_TABS=false
@@ -21,406 +19,281 @@ VERBOSE=false
 DRY_RUN=false
 FILES=()
 
-# Function to print colored output
-print_info() {
-  echo -e "${BLUE}[INFO]${NC} $1"
+# Check if a file is binary
+is_binary_file() {
+  local file="${1:?Error: file required}"
+  file "$file" | grep -q "binary\|data"
 }
 
-print_success() {
-  echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-  echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-  echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# Function to check if a command exists
-command_exists() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-# Function to install missing formatters
-suggest_install() {
-  local cmd=$1
-  local install_cmd=""
-  
-  case "$cmd" in
-    clang-format)
-      install_cmd="brew install clang-format"
-      ;;
-    black|isort|ruff)
-      install_cmd="pip install $cmd"
-      ;;
-    prettier|prettierd)
-      install_cmd="npm install -g $cmd"
-      ;;
-    stylua)
-      install_cmd="brew install stylua"
-      ;;
-    shfmt)
-      install_cmd="brew install shfmt"
-      ;;
-    *)
-      install_cmd="Please install $cmd manually"
-      ;;
-  esac
-  
-  print_warning "$cmd not found. Install with: $install_cmd"
-}
-
-# Function to remove trailing whitespace
+# Remove trailing whitespace
 remove_trailing_whitespace() {
-  local file=$1
-  if [[ "$DRY_RUN" == true ]]; then
-    print_info "[DRY RUN] Would remove trailing whitespace"
+  local file="${1:?Error: file required}"
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would remove trailing whitespace from: $file"
   else
     echo -n "  → Removing trailing whitespace... "
-    sed -i '' 's/[[:space:]]*$//' "$file"
-    echo -e "${GREEN}✓${NC}"
+    platform_command \
+      "sed -i '' 's/[[:space:]]*$//' '${file}'" \
+      "sed -i 's/[[:space:]]*$//' '${file}'"
+    print_color green "✓"
   fi
 }
 
-# Function to convert tabs to spaces
+# Convert tabs to spaces (Google style: 2 spaces default, 4 for Python)
 convert_tabs_to_spaces() {
-  local file=$1
-  # Google style guides: 4 spaces for Python, 2 for others
+  local file="${1:?Error: file required}"
   local tab_width=2
   
+  # Python uses 4 spaces per Google style guide
   if [[ "$file" =~ \.(py|pyw|pyi)$ ]]; then
-    tab_width=4  # Google Python Style Guide uses 4 spaces
+    tab_width=4
   fi
   
-  if [[ "$DRY_RUN" == true ]]; then
-    print_info "[DRY RUN] Would convert tabs to spaces (width: $tab_width)"
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would convert tabs to ${tab_width} spaces in: $file"
   else
-    echo -n "  → Converting tabs to spaces (width: $tab_width)... "
-    expand -t "$tab_width" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-    echo -e "${GREEN}✓${NC}"
+    echo -n "  → Converting tabs to ${tab_width} spaces... "
+    expand -t "${tab_width}" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+    print_color green "✓"
   fi
 }
 
-# Function to normalize quotes
+# Normalize smart quotes to regular quotes
 normalize_quotes() {
-  local file=$1
-  if [[ "$DRY_RUN" == true ]]; then
-    print_info "[DRY RUN] Would normalize smart quotes to regular quotes"
+  local file="${1:?Error: file required}"
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would normalize smart quotes in: $file"
   else
     echo -n "  → Normalizing smart quotes... "
-    # Use perl with hex codes for smart quotes to avoid shell escaping issues
+    # Use perl for reliable cross-platform Unicode handling
     perl -i -pe 's/\x{2018}/\x27/g; s/\x{2019}/\x27/g; s/\x{201C}/"/g; s/\x{201D}/"/g' "$file" 2>/dev/null || true
-    echo -e "${GREEN}✓${NC}"
+    print_color green "✓"
   fi
 }
 
-# Function to format C/C++ files
+# Format C/C++ files (Google style: 2 spaces, 80 column)
 format_cpp() {
-  local file=$1
-  if command_exists clang-format; then
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run clang-format (Google style, 2-space indent, 80 col limit)"
+  local file="${1:?Error: file required}"
+  
+  if has_command clang-format; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run clang-format (Google style) on: $file"
     else
-      echo -n "  → Running clang-format (Google style, 2 spaces)... "
-      # Google C++ style guide: 2 spaces, 80 column limit
+      echo -n "  → Running clang-format (Google style)... "
       clang-format -i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' "$file"
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
     fi
   else
-    echo -e "  ${YELLOW}⚠ Skipping C/C++ formatting${NC}"
-    suggest_install clang-format
+    print_color yellow "  ⚠ Skipping C/C++ formatting (clang-format not found)"
+    echo "    Install with: $(platform_command 'brew install clang-format' 'sudo apt install clang-format')"
   fi
 }
 
-# Function to format Python files
+# Format Python files (Google style: 4 spaces, 80 column)
 format_python() {
-  local file=$1
+  local file="${1:?Error: file required}"
   local formatted=false
   
-  # Prefer ruff as it's fast and follows PEP8/Google style with 4 spaces
-  if command_exists ruff; then
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run ruff (Google Python style, 4-space indent)"
+  # Prefer ruff (fast, modern, follows Google style)
+  if has_command ruff; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run ruff on: $file"
     else
       echo -n "  → Running ruff check --fix... "
       ruff check --fix "$file" 2>/dev/null || true
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
       
-      # Also run pylint if available with Google's config
-      if command_exists pylint && [[ -f "$HOME/.pylintrc" ]]; then
-        echo -n "  → Running pylint (Google style)... "
-        pylint --score=no "$file" 2>/dev/null || true
-        echo -e "${GREEN}✓${NC}"
-      fi
-      echo -n "  → Running ruff format (4-space indent)... "
+      echo -n "  → Running ruff format... "
       ruff format --line-length 80 "$file"
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
       formatted=true
     fi
-  elif command_exists black; then
-    # Black also uses 4 spaces by default (PEP8 standard)
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run black (Google Python style, 4-space indent)"
+  elif has_command black; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run black on: $file"
     else
-      echo -n "  → Running black (4-space indent)... "
+      echo -n "  → Running black... "
       black -q --line-length 80 "$file"
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
       formatted=true
       
-      # Also run isort if available for import sorting
-      if command_exists isort; then
-        echo -n "  → Running isort (import sorting)... "
+      # Also run isort if available
+      if has_command isort; then
+        echo -n "  → Running isort... "
         isort --profile google --line-length 80 "$file"
-        echo -e "${GREEN}✓${NC}"
+        print_color green "✓"
       fi
     fi
-  elif command_exists yapf; then
-    # YAPF with Google style
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run yapf (Google Python style, 4-space indent)"
+  elif has_command yapf; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run yapf on: $file"
     else
-      echo -n "  → Running yapf (Google style, 4 spaces)... "
+      echo -n "  → Running yapf (Google style)... "
       yapf -i --style=google "$file"
-      echo -e "${GREEN}✓${NC}"
-      formatted=true
-    fi
-  elif command_exists autopep8; then
-    # autopep8 as fallback
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run autopep8 (4-space indent)"
-    else
-      echo -n "  → Running autopep8 (4-space indent)... "
-      autopep8 --in-place --indent-size=4 --max-line-length=80 "$file"
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
       formatted=true
     fi
   fi
   
-  if [[ "$formatted" == false ]] && [[ "$DRY_RUN" == false ]]; then
-    echo -e "  ${YELLOW}⚠ No Python formatter available${NC}"
-    echo -e "  ${BLUE}ℹ Install one of these Python formatters:${NC}"
-    echo -e "    pip install ruff      # Recommended - fast, modern"
-    echo -e "    pip install black     # Popular, opinionated"
-    echo -e "    pip install yapf      # Configurable, Google style support"
+  if [[ "${formatted}" == false ]] && [[ "${DRY_RUN}" == false ]]; then
+    print_color yellow "  ⚠ No Python formatter available"
+    echo "    Install one of: pip install ruff (recommended) | pip install black | pip install yapf"
   fi
 }
 
-# Function to format shell scripts
+# Format shell scripts (Google style: 2 spaces)
 format_shell() {
-  local file=$1
-  if command_exists shfmt; then
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run shfmt (Google Shell style, 2-space indent)"
+  local file="${1:?Error: file required}"
+  
+  if has_command shfmt; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run shfmt on: $file"
     else
-      echo -n "  → Running shfmt (Google style, 2 spaces)... "
-      # Google Shell Style Guide: 2 spaces, binary operators on new line
+      echo -n "  → Running shfmt (2 spaces)... "
       shfmt -i 2 -bn -ci -w "$file"
-      echo -e "${GREEN}✓${NC}"
+      print_color green "✓"
     fi
   else
-    echo -e "  ${YELLOW}⚠ Skipping shell formatting${NC}"
-    suggest_install shfmt
+    print_color yellow "  ⚠ Skipping shell formatting (shfmt not found)"
+    echo "    Install with: $(platform_command 'brew install shfmt' 'go install mvdan.cc/sh/v3/cmd/shfmt@latest')"
   fi
 }
 
-# Function to format Lua files
+# Format Lua files (2 spaces)
 format_lua() {
-  local file=$1
-  if command_exists stylua; then
-    if [[ "$DRY_RUN" == true ]]; then
-      print_info "[DRY RUN] Would run stylua (2-space indent)"
+  local file="${1:?Error: file required}"
+  
+  if has_command stylua; then
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "[DRY RUN] Would run stylua on: $file"
     else
-      echo -n "  → Running stylua (2-space indent)... "
-      # Create temporary config for 2-space indentation
-      echo "indent_type = 'Spaces'
+      echo -n "  → Running stylua (2 spaces)... "
+      # Create temporary config
+      local tmp_config
+      tmp_config=$(create_temp_dir)/stylua.toml
+      cat > "${tmp_config}" << EOF
+indent_type = "Spaces"
 indent_width = 2
-column_width = 80" > /tmp/stylua.toml
-      stylua --config-path /tmp/stylua.toml "$file"
-      rm -f /tmp/stylua.toml
-      echo -e "${GREEN}✓${NC}"
+column_width = 80
+EOF
+      stylua --config-path "${tmp_config}" "$file"
+      rm -f "${tmp_config}"
+      print_color green "✓"
     fi
   else
-    echo -e "  ${YELLOW}⚠ Skipping Lua formatting${NC}"
-    suggest_install stylua
+    print_color yellow "  ⚠ Skipping Lua formatting (stylua not found)"
+    echo "    Install with: $(platform_command 'brew install stylua' 'cargo install stylua')"
   fi
 }
 
-# Function to format JavaScript/TypeScript/JSON/etc with prettier
+# Format with Prettier (Google style: 2 spaces, 80 column)
 format_prettier() {
-  local file=$1
+  local file="${1:?Error: file required}"
   local cmd=""
   
-  if command_exists prettierd; then
+  if has_command prettierd; then
     cmd="prettierd"
-  elif command_exists prettier; then
+  elif has_command prettier; then
     cmd="prettier"
   else
-    echo -e "  ${YELLOW}⚠ Skipping prettier formatting${NC}"
-    suggest_install prettier
+    print_color yellow "  ⚠ Skipping prettier formatting"
+    echo "    Install with: npm install -g prettier"
     return
   fi
   
-  if [[ "$DRY_RUN" == true ]]; then
-    print_info "[DRY RUN] Would run $cmd (Google style, 2-space indent)"
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would run ${cmd} on: $file"
   else
-    echo -n "  → Running $cmd (Google style, 2 spaces)... "
-    # Google JavaScript/TypeScript style: 2 spaces, single quotes, no trailing comma, 80 column
-    $cmd --write \
+    echo -n "  → Running ${cmd}... "
+    ${cmd} --write \
       --tab-width 2 \
       --print-width 80 \
       --single-quote \
       --trailing-comma none \
       --arrow-parens avoid \
       "$file" 2>/dev/null
-    echo -e "${GREEN}✓${NC}"
+    print_color green "✓"
   fi
 }
 
-# Function to determine file type and apply appropriate formatter
+# Apply formatters based on file type
 apply_formatters() {
-  local file=$1
+  local file="${1:?Error: file required}"
   local ext="${file##*.}"
-  local basename=$(basename "$file")
-  local file_type=""
+  local basename="$(basename "$file")"
   
-  # Skip binary files and common non-text files
-  if file "$file" | grep -q "binary\|data"; then
-    echo -e "  ${YELLOW}⚠ Skipping binary file${NC}"
+  # Skip binary files
+  if is_binary_file "$file"; then
+    print_color yellow "  ⚠ Skipping binary file"
     return
   fi
   
   # Determine file type and apply formatter
-  case "$ext" in
+  case "${ext}" in
     c|h)
-      file_type="C"
-      echo -e "  ${BLUE}ℹ Detected file type: C${NC}"
+      print_color blue "  ℹ Detected: C"
       format_cpp "$file"
       ;;
     cpp|cc|cxx|hpp|hxx)
-      file_type="C++"
-      echo -e "  ${BLUE}ℹ Detected file type: C++${NC}"
+      print_color blue "  ℹ Detected: C++"
       format_cpp "$file"
       ;;
-    py)
-      file_type="Python"
-      echo -e "  ${BLUE}ℹ Detected file type: Python${NC}"
+    py|pyw|pyi)
+      print_color blue "  ℹ Detected: Python"
       format_python "$file"
       ;;
     sh|bash)
-      file_type="Shell"
-      echo -e "  ${BLUE}ℹ Detected file type: Shell script${NC}"
+      print_color blue "  ℹ Detected: Shell"
       format_shell "$file"
       ;;
     lua)
-      file_type="Lua"
-      echo -e "  ${BLUE}ℹ Detected file type: Lua${NC}"
+      print_color blue "  ℹ Detected: Lua"
       format_lua "$file"
       ;;
-    js|jsx)
-      file_type="JavaScript"
-      echo -e "  ${BLUE}ℹ Detected file type: JavaScript${NC}"
-      format_prettier "$file"
-      ;;
-    ts|tsx)
-      file_type="TypeScript"
-      echo -e "  ${BLUE}ℹ Detected file type: TypeScript${NC}"
-      format_prettier "$file"
-      ;;
-    json)
-      file_type="JSON"
-      echo -e "  ${BLUE}ℹ Detected file type: JSON${NC}"
-      format_prettier "$file"
-      ;;
-    yaml|yml)
-      file_type="YAML"
-      echo -e "  ${BLUE}ℹ Detected file type: YAML${NC}"
-      format_prettier "$file"
-      ;;
-    html)
-      file_type="HTML"
-      echo -e "  ${BLUE}ℹ Detected file type: HTML${NC}"
-      format_prettier "$file"
-      ;;
-    css|scss)
-      file_type="CSS"
-      echo -e "  ${BLUE}ℹ Detected file type: CSS${NC}"
-      format_prettier "$file"
-      ;;
-    md)
-      file_type="Markdown"
-      echo -e "  ${BLUE}ℹ Detected file type: Markdown${NC}"
+    js|jsx|ts|tsx|json|yaml|yml|html|css|scss|md)
+      print_color blue "  ℹ Detected: ${ext} (Prettier)"
       format_prettier "$file"
       ;;
     *)
-      # Check shebang for shell scripts without extension
+      # Check shebang for shell scripts
       if [[ -x "$file" ]] && head -n1 "$file" | grep -q "^#!/.*sh"; then
-        file_type="Shell (shebang)"
-        echo -e "  ${BLUE}ℹ Detected file type: Shell script (from shebang)${NC}"
+        print_color blue "  ℹ Detected: Shell (shebang)"
         format_shell "$file"
       else
-        echo -e "  ${YELLOW}⚠ Unknown file type: .$ext${NC}"
+        print_color yellow "  ⚠ Unknown file type: .${ext}"
       fi
       ;;
   esac
 }
 
-# Function to process a single file
+# Process a single file
 process_file() {
-  local file=$1
-  
-  # Validate file path to prevent directory traversal
-  if [[ "$file" =~ \.\. ]] || [[ "$file" =~ ^/ ]] && [[ ! "$file" =~ ^$PWD ]]; then
-    print_error "Invalid file path: $file"
-    return 1
-  fi
+  local file="${1:?Error: file required}"
   
   if [[ ! -f "$file" ]]; then
-    print_error "File not found: $file"
+    print_color red "File not found: $file"
     return 1
   fi
   
-  echo -e "\n${BLUE}━━━ Processing: $file ━━━${NC}"
+  echo
+  print_color blue "━━━ Processing: $file ━━━"
   
-  # List what operations will be performed
-  local operations=()
-  if [[ "$DO_TRAILING" == true ]] || [[ "$DO_ALL" == true ]]; then
-    operations+=("Remove trailing whitespace")
-  fi
-  if [[ "$DO_TABS" == true ]] || [[ "$DO_ALL" == true ]]; then
-    operations+=("Convert tabs to spaces")
-  fi
-  if [[ "$DO_QUOTES" == true ]] || [[ "$DO_ALL" == true ]]; then
-    operations+=("Normalize smart quotes")
-  fi
-  if [[ "$DO_FORMATTERS" == true ]] || [[ "$DO_ALL" == true ]]; then
-    operations+=("Apply language-specific formatter")
-  fi
-  
-  if [[ ${#operations[@]} -gt 0 ]]; then
-    echo -e "${YELLOW}Operations to perform:${NC}"
-    for op in "${operations[@]}"; do
-      echo "  • $op"
-    done
-    echo
-  fi
-  
-  # Apply file operations
-  if [[ "$DO_TRAILING" == true ]] || [[ "$DO_ALL" == true ]]; then
+  # Apply operations
+  if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     remove_trailing_whitespace "$file"
   fi
   
-  if [[ "$DO_TABS" == true ]] || [[ "$DO_ALL" == true ]]; then
+  if [[ "${DO_TABS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     convert_tabs_to_spaces "$file"
   fi
   
-  if [[ "$DO_QUOTES" == true ]] || [[ "$DO_ALL" == true ]]; then
+  if [[ "${DO_QUOTES}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     normalize_quotes "$file"
   fi
   
-  # Apply language-specific formatters
-  if [[ "$DO_FORMATTERS" == true ]] || [[ "$DO_ALL" == true ]]; then
+  if [[ "${DO_FORMATTERS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     apply_formatters "$file"
   fi
 }
@@ -428,39 +301,38 @@ process_file() {
 # Show usage
 usage() {
   cat << EOF
-Usage: format [OPTIONS] [FILES...]
+Usage: $(basename "$0") [OPTIONS] [FILES...]
 
-Universal code formatter and fixer script. If no files are specified,
-operates on all tracked files in the current git repository.
+Universal code formatter with Google style standards.
+Works on both macOS and Linux.
 
 OPTIONS:
-  -h, --help          Show this help message
-  -a, --all           Apply all operations (default if no specific operation is selected)
+  -h, --help          Show this help
+  -a, --all           Apply all operations (default)
   -t, --trailing      Remove trailing whitespace
   -T, --tabs          Convert tabs to spaces
-  -q, --quotes        Normalize smart quotes to regular quotes
-  -f, --formatters    Apply language-specific formatters
-  -v, --verbose       Show detailed output
-  -n, --dry-run       Show what would be done without making changes
-  
+  -q, --quotes        Normalize smart quotes
+  -f, --formatters    Apply language formatters
+  -n, --dry-run       Show what would be done
+  -v, --verbose       Verbose output
+
 SUPPORTED LANGUAGES:
-  C/C++      : clang-format
-  Python     : ruff (or black + isort)
-  Shell      : shfmt
-  Lua        : stylua
-  Web/Config : prettier/prettierd (JS/TS/JSON/YAML/HTML/CSS/Markdown)
+  C/C++      : clang-format (Google style, 2 spaces)
+  Python     : ruff/black/yapf (Google style, 4 spaces)
+  Shell      : shfmt (Google style, 2 spaces)
+  Lua        : stylua (2 spaces)
+  Web/Config : prettier (Google style, 2 spaces)
 
 EXAMPLES:
-  format                    # Format all tracked files with all operations
-  format main.cpp           # Format a single C++ file
-  format -t *.py           # Remove trailing whitespace from Python files
-  format -f src/           # Apply formatters to all files in src/
-  format -n --all          # Dry run to see what would be changed
+  format                    # Format all tracked files
+  format main.cpp          # Format single file
+  format -t *.py          # Remove trailing whitespace
+  format -n --all         # Dry run
 
 EOF
 }
 
-# Parse command line arguments
+# Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     -h|--help)
@@ -493,11 +365,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -n|--dry-run)
       DRY_RUN=true
-      VERBOSE=true
       shift
       ;;
     -*)
-      print_error "Unknown option: $1"
+      print_color red "Unknown option: $1"
       usage
       exit 1
       ;;
@@ -508,90 +379,83 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# If no specific operation is selected, do all
-if [[ "$DO_TRAILING" == false ]] && [[ "$DO_TABS" == false ]] && \
-   [[ "$DO_QUOTES" == false ]] && [[ "$DO_FORMATTERS" == false ]]; then
+# Default to all operations if none specified
+if [[ "${DO_TRAILING}" == false ]] && [[ "${DO_TABS}" == false ]] && \
+   [[ "${DO_QUOTES}" == false ]] && [[ "${DO_FORMATTERS}" == false ]]; then
   DO_ALL=true
 fi
 
-# If no files specified, get all tracked files
+# If no files specified, use git tracked files
 if [[ ${#FILES[@]} -eq 0 ]]; then
   if git rev-parse --git-dir > /dev/null 2>&1; then
-    print_info "No files specified, formatting all tracked files..."
+    print_color blue "No files specified, formatting all tracked files..."
     mapfile -t FILES < <(git ls-files)
   else
-    print_error "No files specified and not in a git repository"
+    print_color red "No files specified and not in a git repository"
     exit 1
   fi
 fi
 
-# Process all files
-total_files=${#FILES[@]}
-processed=0
-failed=0
-
-for file in "${FILES[@]}"; do
-  # Handle glob patterns
-  if [[ -e "$file" ]]; then
-    if [[ -d "$file" ]]; then
-      # Process all files in directory recursively
-      while IFS= read -r -d '' f; do
-        if process_file "$f"; then
+# Main execution
+main() {
+  local processed=0
+  local failed=0
+  
+  for file in "${FILES[@]}"; do
+    if [[ -e "$file" ]]; then
+      if [[ -d "$file" ]]; then
+        # Process directory
+        while IFS= read -r -d '' f; do
+          if process_file "$f"; then
+            ((processed++))
+          else
+            ((failed++))
+          fi
+        done < <(find "$file" -type f -print0)
+      else
+        # Process file
+        if process_file "$file"; then
           ((processed++))
         else
           ((failed++))
         fi
-      done < <(find "$file" -type f -print0)
-    else
-      # Process single file
-      if process_file "$file"; then
-        ((processed++))
-      else
-        ((failed++))
       fi
-    fi
-  else
-    # Handle glob patterns safely
-    shopt -s nullglob
-    # Use proper array assignment with glob
-    local -a expanded=()
-    # Safely expand glob pattern
-    while IFS= read -r -d '' matched_file; do
-      expanded+=("$matched_file")
-    done < <(find . -name "$file" -type f -print0 2>/dev/null)
-    shopt -u nullglob
-    
-    if [[ ${#expanded[@]} -eq 0 ]]; then
-      print_warning "No files match pattern: $file"
     else
-      for f in "${expanded[@]}"; do
-        if process_file "$f"; then
-          ((processed++))
-        else
-          ((failed++))
+      # Handle glob patterns
+      local found=false
+      for f in $file; do
+        if [[ -f "$f" ]]; then
+          found=true
+          if process_file "$f"; then
+            ((processed++))
+          else
+            ((failed++))
+          fi
         fi
       done
+      
+      if [[ "${found}" == false ]]; then
+        print_color yellow "No files match: $file"
+      fi
     fi
+  done
+  
+  # Summary
+  echo
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "📋 DRY RUN COMPLETE"
+    echo "   Would process: ${processed} files"
+  else
+    print_color green "✅ FORMATTING COMPLETE"
+    echo "   Processed: ${processed} files"
   fi
-done
+  
+  if [[ ${failed} -gt 0 ]]; then
+    print_color red "   Failed: ${failed} files"
+    exit 1
+  fi
+}
 
-# Summary
-echo
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-if [[ "$DRY_RUN" == true ]]; then
-  echo -e "${BLUE}📋 DRY RUN SUMMARY${NC}"
-  echo -e "   Would have processed: $processed files"
-else
-  echo -e "${GREEN}✅ FORMATTING COMPLETE${NC}"
-  echo -e "   Successfully processed: $processed files"
-fi
-
-if [[ $failed -gt 0 ]]; then
-  echo -e "   ${RED}Failed to process: $failed files${NC}"
-fi
-
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-
-if [[ $failed -gt 0 ]]; then
-  exit 1
-fi
+main "$@"

@@ -88,7 +88,7 @@
 
 | Command | Description |
 |---------|-------------|
-| `update` | Update everything |
+| `update-dotfiles` | Update everything |
 | `reload` | Reload shell config |
 | `cleanup` | Clean .DS_Store files |
 | `brewup` | Update Homebrew |

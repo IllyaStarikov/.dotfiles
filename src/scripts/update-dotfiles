@@ -1,0 +1,603 @@
+#!/usr/bin/env bash
+# Universal system update script for macOS and Linux
+# Updates all package managers, plugins, and dependencies
+
+# Exit on error, but continue on individual command failures
+set -euo pipefail
+
+# Configuration
+VERBOSE=false
+DRY_RUN=false
+SKIP_SYSTEM=false
+SKIP_PACKAGES=false
+SKIP_LANGUAGES=false
+SKIP_TOOLS=false
+
+# Track what was updated
+UPDATED_LIST=""
+FAILED_LIST=""
+
+# Source common library if available
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -f "${SCRIPT_DIR}/../lib/common.sh" ]]; then
+    source "${SCRIPT_DIR}/../lib/common.sh"
+else
+    # Define minimal functions if common.sh not available
+    print_color() {
+        local color="$1"
+        shift
+        case "$color" in
+            red) echo -e "\033[31m$*\033[0m" ;;
+            green) echo -e "\033[32m$*\033[0m" ;;
+            yellow) echo -e "\033[33m$*\033[0m" ;;
+            blue) echo -e "\033[34m$*\033[0m" ;;
+            *) echo "$*" ;;
+        esac
+    }
+    has_command() { command -v "$1" &> /dev/null; }
+    is_macos() { [[ "$(uname)" == "Darwin" ]]; }
+    is_linux() { [[ "$(uname)" == "Linux" ]]; }
+    detect_os() { if is_macos; then echo "macOS"; elif is_linux; then echo "Linux"; else echo "Unknown"; fi; }
+    detect_package_manager() {
+        if has_command apt-get; then echo "apt"
+        elif has_command dnf; then echo "dnf"
+        elif has_command pacman; then echo "pacman"
+        else echo "unknown"; fi
+    }
+fi
+
+# Function to handle errors gracefully
+update_with_fallback() {
+    local description="$1"
+    shift
+    echo "$description"
+    
+    if [[ "${DRY_RUN}" == true ]]; then
+        echo "[DRY RUN] Would execute: $*"
+        return 0
+    fi
+    
+    if ! "$@"; then
+        echo "⚠️  $description failed, continuing..."
+        FAILED_LIST="${FAILED_LIST}$description\n"
+        return 1
+    fi
+    UPDATED_LIST="${UPDATED_LIST}$description\n"
+    return 0
+}
+
+# Cleanup function
+cleanup() {
+    echo "🧹 Performing cleanup..."
+    
+    # Clean tmux cache files
+    rm -f /tmp/.tmux_*_cache 2>/dev/null || true
+    
+    # Clean Neovim swap files and backups
+    rm -f ~/.local/state/nvim/swap/* 2>/dev/null || true
+    rm -f ~/.local/state/nvim/backup/* 2>/dev/null || true
+    
+    # Clean old Neovim log files (keep last 5)
+    if [[ -d ~/.local/state/nvim ]]; then
+        find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
+    fi
+    
+    # Clean zsh completion dump
+    rm -f ~/.zcompdump* 2>/dev/null || true
+    
+    # Clean old pip cache
+    if command -v pip3 &> /dev/null; then
+        pip3 cache purge 2>/dev/null || true
+    fi
+    
+    # Clean npm cache
+    if command -v npm &> /dev/null; then
+        npm cache clean --force 2>/dev/null || true
+    fi
+    
+    # Clean yarn cache
+    if command -v yarn &> /dev/null; then
+        yarn cache clean 2>/dev/null || true
+    fi
+    
+    # Clean pnpm store
+    if command -v pnpm &> /dev/null; then
+        pnpm store prune 2>/dev/null || true
+    fi
+    
+    # Clean macOS specific caches (non-sudo only)
+    echo "Cleaning macOS caches..."
+    
+    # Remove .DS_Store files from dotfiles directory
+    find ~/.dotfiles -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
+    
+    # Clean shell history duplicates
+    if [[ -f ~/.zsh_history ]]; then
+        # Create backup
+        cp ~/.zsh_history ~/.zsh_history.bak 2>/dev/null || true
+    fi
+}
+
+# Show usage
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Universal system update script. Works on macOS and Linux.
+Updates system packages, language package managers, and development tools.
+
+OPTIONS:
+  -h, --help         Show this help
+  -n, --dry-run      Show what would be updated
+  -v, --verbose      Verbose output
+  --skip-system      Skip system package updates
+  --skip-packages    Skip Homebrew updates
+  --skip-languages   Skip language package managers
+  --skip-tools       Skip development tools
+
+WHAT GETS UPDATED:
+  System:    OS packages, Mac App Store
+  Packages:  Homebrew formulae and casks
+  Languages: pip, npm, gem, cargo, go
+  Tools:     tmux, Neovim, Zsh plugins, dotfiles
+
+EXAMPLES:
+  update-dotfiles                    # Update everything
+  update-dotfiles --dry-run          # See what would be updated
+  update-dotfiles --skip-system      # Skip system updates
+
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -n|--dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    -v|--verbose)
+      VERBOSE=true
+      set -x
+      shift
+      ;;
+    --skip-system)
+      SKIP_SYSTEM=true
+      shift
+      ;;
+    --skip-packages)
+      SKIP_PACKAGES=true
+      shift
+      ;;
+    --skip-languages)
+      SKIP_LANGUAGES=true
+      shift
+      ;;
+    --skip-tools)
+      SKIP_TOOLS=true
+      shift
+      ;;
+    *)
+      print_color red "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+# Set trap to cleanup on exit
+trap cleanup EXIT INT TERM
+
+print_color green "🚀 Universal System Update"
+echo "OS: $(detect_os)"
+if is_linux; then
+    echo "Package Manager: $(detect_package_manager)"
+fi
+echo
+
+# Update system packages function
+update_system() {
+  print_color blue "🔄 Updating system packages..."
+  
+  if is_macos; then
+    # macOS System Updates
+    echo "Checking for macOS system updates..."
+    if softwareupdate -l 2>&1 | grep -q "No new software available"; then
+        echo "No macOS system updates available."
+    else
+        print_color yellow "macOS updates available. Use 'sudo softwareupdate -ia' to install."
+    fi
+    
+    # Mac App Store updates
+    if has_command mas; then
+        echo "Checking Mac App Store updates..."
+        if [[ "${DRY_RUN}" == true ]]; then
+            mas outdated
+        else
+            update_with_fallback "Mac App Store" mas upgrade
+        fi
+    fi
+  elif is_linux; then
+    local pm
+    pm="$(detect_package_manager)"
+    
+    case "${pm}" in
+      apt)
+        echo "Updating APT packages..."
+        if [[ "${DRY_RUN}" == true ]]; then
+            sudo apt-get update
+            apt list --upgradable
+        else
+            update_with_fallback "APT update" sudo apt-get update
+            update_with_fallback "APT upgrade" sudo apt-get upgrade -y
+            update_with_fallback "APT autoremove" sudo apt-get autoremove -y
+        fi
+        ;;
+      dnf)
+        echo "Updating DNF packages..."
+        if [[ "${DRY_RUN}" == true ]]; then
+            dnf check-update
+        else
+            update_with_fallback "DNF upgrade" sudo dnf upgrade -y
+            update_with_fallback "DNF autoremove" sudo dnf autoremove -y
+        fi
+        ;;
+      pacman)
+        echo "Updating Pacman packages..."
+        if [[ "${DRY_RUN}" == true ]]; then
+            pacman -Qu
+        else
+            update_with_fallback "Pacman sync" sudo pacman -Syu --noconfirm
+        fi
+        ;;
+      *)
+        print_color yellow "Unknown package manager: ${pm}"
+        ;;
+    esac
+  fi
+}
+
+# Update Homebrew function
+update_homebrew() {
+  if ! has_command brew; then
+    return
+  fi
+  
+  print_color blue "🍺 Updating Homebrew..."
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    brew update
+    brew outdated
+    brew outdated --cask
+  else
+    update_with_fallback "Homebrew update" brew update
+
+# Check for deprecated packages and remove them
+echo "Checking for deprecated packages..."
+# Use while read instead of mapfile for compatibility
+deprecated_packages=()
+while IFS= read -r pkg; do
+    if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+        deprecated_packages+=("$pkg")
+    fi
+done < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}')
+
+if [[ ${#deprecated_packages[@]} -gt 0 ]]; then
+    echo "Found deprecated packages: ${deprecated_packages[*]}"
+    echo "Removing deprecated packages..."
+    # Safely iterate through array with validated package names
+    for pkg in "${deprecated_packages[@]}"; do
+        # Double-check package name format before using
+        if [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+            update_with_fallback "Removing $pkg" brew uninstall --ignore-dependencies -- "$pkg"
+        else
+            echo "Skipping invalid package name: $pkg" >&2
+        fi
+    done
+fi
+
+    # Upgrade remaining packages
+    update_with_fallback "Homebrew formula upgrade" brew upgrade
+    update_with_fallback "Homebrew cask upgrade" brew upgrade --cask
+    
+    # Comprehensive Homebrew cleanup
+    echo "Performing Homebrew cleanup..."
+    update_with_fallback "Homebrew cleanup" brew cleanup -s
+    update_with_fallback "Homebrew doctor" brew doctor || true
+    update_with_fallback "Homebrew autoremove" brew autoremove || true
+  fi
+}
+
+# Update language-specific package managers function
+update_languages() {
+  print_color blue "📦 Updating language package managers..."
+  
+  # Python/pip
+  if has_command pip3; then
+    echo "Updating pip packages..."
+    if [[ "${DRY_RUN}" == true ]]; then
+        pip3 list --outdated
+    else
+        update_with_fallback "pip upgrade" pip3 install --upgrade pip setuptools wheel
+        # Update outdated packages
+        outdated_packages=()
+        while IFS= read -r pkg; do
+            if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+                outdated_packages+=("$pkg")
+            fi
+        done < <(pip3 list --outdated --format=json | jq -r '.[].name' 2>/dev/null || true)
+        
+        if [[ ${#outdated_packages[@]} -gt 0 ]]; then
+            for pkg in "${outdated_packages[@]}"; do
+                if [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+                    update_with_fallback "pip package: $pkg" pip3 install -U -- "$pkg"
+                fi
+            done
+        fi
+    fi
+  fi
+  
+  # Node.js/npm
+  if has_command npm; then
+    echo "Updating npm packages..."
+    if [[ "${DRY_RUN}" == true ]]; then
+        npm outdated -g
+    else
+        update_with_fallback "npm global update" npm update -g
+        update_with_fallback "npm self-update" npm install -g npm@latest
+    fi
+  fi
+  
+  # Ruby/gem
+  if has_command gem; then
+    echo "Updating Ruby gems..."
+    if [[ "${DRY_RUN}" == true ]]; then
+        gem outdated
+    else
+        update_with_fallback "gem system update" gem update --system
+        update_with_fallback "gem update" gem update --user-install
+        update_with_fallback "gem cleanup" gem cleanup
+    fi
+  fi
+  
+  # Rust/cargo
+  if has_command rustup; then
+    echo "Updating Rust toolchain..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "rustup update" rustup update
+    fi
+  fi
+  
+  if has_command cargo; then
+    echo "Updating global Cargo packages..."
+    # Install cargo-update if not present
+    if ! has_command cargo-install-update; then
+        echo "Installing cargo-update for better Cargo package management..."
+        update_with_fallback "cargo-update installation" cargo install cargo-update
+    fi
+    
+    # Use cargo-update if available
+    if has_command cargo-install-update; then
+        if [[ "${DRY_RUN}" == false ]]; then
+            update_with_fallback "Cargo package update" cargo install-update -a
+        fi
+    else
+        # Fallback to manual method
+        cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install --force 2>/dev/null || true
+    fi
+  fi
+  
+  # Go modules
+  if has_command go; then
+    echo "Updating Go tools..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "gopls update" go install golang.org/x/tools/gopls@latest
+        update_with_fallback "gofumpt update" go install mvdan.cc/gofumpt@latest
+        update_with_fallback "Go cache clean" go clean -modcache
+    fi
+  fi
+}
+
+# Update development tools function
+update_tools() {
+  print_color blue "🛠️  Updating development tools..."
+  
+  # tmux plugins (TPM)
+  if [[ -d "${HOME}/.tmux/plugins/tpm" ]]; then
+    echo "Updating tmux plugins..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "tmux plugins" "${HOME}/.tmux/plugins/tpm/bin/update_plugins" all
+    fi
+  fi
+  
+  # Neovim plugins
+  if has_command nvim; then
+    echo "Updating Neovim plugins..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "Neovim plugin sync" nvim --headless +"Lazy! sync" +qa
+        update_with_fallback "Lazy clean" nvim --headless +"Lazy! clean" +qa
+        update_with_fallback "Mason LSP update" nvim --headless +"MasonUpdate" +qa
+        # Clear old Neovim plugin data
+        echo "Cleaning Neovim caches..."
+        rm -rf ~/.local/share/nvim/lazy/readme 2>/dev/null || true
+        rm -rf ~/.cache/nvim/luac 2>/dev/null || true
+    fi
+  fi
+  
+  # Oh My Zsh
+  if [[ -d "${HOME}/.oh-my-zsh" ]]; then
+    echo "Updating Oh My Zsh..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "Oh My Zsh" sh -c "cd ${HOME}/.oh-my-zsh && git pull --rebase"
+    fi
+  fi
+
+  # Zinit
+  if [[ -d "${HOME}/.local/share/zinit" ]]; then
+    echo "Updating Zinit..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        zsh -ic "zinit self-update" 2>/dev/null || true
+        update_with_fallback "Zinit plugins" zsh -ic "zinit update --all" 2>/dev/null
+    fi
+  fi
+  
+  # dotfiles repository
+  if [[ -d "${HOME}/.dotfiles/.git" ]]; then
+    echo "Updating dotfiles..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "dotfiles" sh -c "cd ${HOME}/.dotfiles && git pull --rebase"
+    fi
+  fi
+
+  # Additional Node.js package managers
+  if has_command yarn; then
+    echo "Updating global Yarn packages..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "Yarn global upgrade" yarn global upgrade
+    fi
+  fi
+  
+  if has_command pnpm; then
+    echo "Updating global pnpm packages..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "pnpm global update" pnpm update -g
+    fi
+  fi
+  
+  # TeX Live Manager Updates (tlmgr)
+  if has_command tlmgr; then
+    echo "Checking TeX Live packages (tlmgr)..."
+    tlmgr update --list 2>/dev/null | grep -q "update available" && echo "TeX Live updates available. Run 'sudo tlmgr update --all' manually." || echo "No TeX Live updates available."
+  fi
+  
+  # fnm (Fast Node Manager) Updates
+  if has_command fnm; then
+    echo "Updating Node.js via fnm to latest LTS..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "fnm Node.js update" fnm install --lts
+        update_with_fallback "Setting default Node.js version" fnm default lts-latest
+    fi
+  fi
+  
+  # pyenv Python Updates
+  if has_command pyenv; then
+    echo "Checking for new Python versions..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        # Update pyenv itself first
+        if is_macos && has_command brew; then
+            update_with_fallback "pyenv update" brew upgrade pyenv
+        fi
+        # List available Python versions
+        echo "Latest stable Python versions available:"
+        pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -5
+        
+        # Clean up old Python versions (keep current and system)
+        echo "Installed Python versions:"
+        pyenv versions
+        echo ""
+        echo "To remove old versions, run: pyenv uninstall <version>"
+        
+        # Clean pyenv shims
+        update_with_fallback "Rehashing pyenv shims" pyenv rehash
+    fi
+  fi
+  
+  # Starship Prompt Config Check
+  if has_command starship; then
+    echo "Checking Starship configuration..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "Starship config check" starship config
+    fi
+  fi
+  
+  # FZF Updates (if installed via git)
+  if [[ -d "$HOME/.fzf" ]]; then
+    echo "Updating fzf..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        (cd "$HOME/.fzf" && update_with_fallback "fzf update" git pull && update_with_fallback "fzf install" ./install --all)
+    fi
+  fi
+}
+
+# Disk space report
+echo ""
+echo "💾 Disk Space Report:"
+echo "===================="
+# Show disk usage
+df -h ~ | grep -E "Filesystem|$HOME" || df -h / | head -2
+
+echo ""
+echo "📦 Large directories in home:"
+du -sh ~/Library/Caches ~/.Trash ~/Downloads ~/.cache ~/.local/share/nvim ~/.npm ~/.yarn ~/.cargo ~/.rustup 2>/dev/null | sort -hr | head -10 || true
+
+echo ""
+echo "🧹 Cleanup suggestions:"
+echo "   - Clear DNS cache: sudo dscacheutil -flushcache"
+echo "   - Clear font cache: sudo atsutil databases -remove"
+echo "   - Empty trash: rm -rf ~/.Trash/*"
+echo "   - Remove old downloads: find ~/Downloads -type f -mtime +30 -delete"
+echo "   - Clear macOS caches: rm -rf ~/Library/Caches/*"
+
+# Show summary
+show_summary() {
+  echo
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color yellow "DRY RUN COMPLETE"
+    echo "Run without --dry-run to apply updates"
+  else
+    print_color green "✅ UPDATE COMPLETE"
+    
+    if [[ -n "${UPDATED_LIST}" ]]; then
+      echo
+      echo "Successfully updated:"
+      echo -e "${UPDATED_LIST}" | grep -v '^$' | sed 's/^/  ✓ /' | sort -u
+    fi
+    
+    if [[ -n "${FAILED_LIST}" ]]; then
+      echo
+      print_color red "Failed to update:"
+      echo -e "${FAILED_LIST}" | grep -v '^$' | sed 's/^/  ✗ /' | sort -u
+    fi
+  fi
+  
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  
+  echo ""
+  echo "📝 Manual updates may be required for:"
+  echo "   - macOS system updates (if available)"
+  echo "   - TeX Live packages (sudo tlmgr update --all)"
+  echo "   - Python versions via pyenv (pyenv install x.x.x)"
+  echo "   - Old Python versions cleanup (pyenv uninstall x.x.x)"
+  echo ""
+}
+
+# Main execution
+main() {
+  # Run updates based on flags
+  if [[ "${SKIP_SYSTEM}" != true ]]; then
+    update_system
+  fi
+  
+  if [[ "${SKIP_PACKAGES}" != true ]]; then
+    update_homebrew
+  fi
+  
+  if [[ "${SKIP_LANGUAGES}" != true ]]; then
+    update_languages
+  fi
+  
+  if [[ "${SKIP_TOOLS}" != true ]]; then
+    update_tools
+  fi
+  
+  # Show summary
+  show_summary
+}
+
+main "$@"
