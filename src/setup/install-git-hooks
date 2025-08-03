@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# Universal Git hooks installer
+# Works on both macOS and Linux
+
+# Source common library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../lib/common.sh"
+
+# Configuration
+DOTFILES_DIR="${HOME}/.dotfiles"
+HOOKS_SRC_DIR="${DOTFILES_DIR}/src/hooks"
+GIT_HOOKS_DIR="${DOTFILES_DIR}/.git/hooks"
+
+# Main execution
+main() {
+  print_color blue "🪝 Installing Git Hooks"
+  print_color blue "====================="
+  echo
+  
+  # Check if we're in a git repository
+  if [[ ! -d "${DOTFILES_DIR}/.git" ]]; then
+    print_color red "Error: ${DOTFILES_DIR} is not a git repository"
+    exit 1
+  fi
+  
+  # Create hooks directory
+  mkdir -p "${GIT_HOOKS_DIR}"
+  
+  # Install hooks from src/hooks directory
+  if [[ -d "${HOOKS_SRC_DIR}" ]]; then
+    local installed=0
+    
+    for hook in "${HOOKS_SRC_DIR}"/*; do
+      if [[ -f "${hook}" ]]; then
+        local hook_name="$(basename "${hook}")"
+        local dest="${GIT_HOOKS_DIR}/${hook_name}"
+        
+        echo -n "Installing ${hook_name}... "
+        
+        # Copy hook and make executable
+        cp "${hook}" "${dest}"
+        chmod +x "${dest}"
+        
+        print_color green "✓"
+        ((installed++))
+      fi
+    done
+    
+    if [[ ${installed} -eq 0 ]]; then
+      print_color yellow "No hooks found in ${HOOKS_SRC_DIR}"
+      create_default_hooks
+    else
+      echo
+      print_color green "✅ Installed ${installed} git hooks"
+    fi
+  else
+    print_color yellow "Hooks directory not found: ${HOOKS_SRC_DIR}"
+    create_default_hooks
+  fi
+}
+
+# Create default hooks if none exist
+create_default_hooks() {
+  print_color blue "Creating default hooks..."
+  
+  # Pre-commit hook
+  cat > "${GIT_HOOKS_DIR}/pre-commit" << 'EOF'
+#!/usr/bin/env bash
+# Pre-commit hook for dotfiles
+
+set -euo pipefail
+
+# Check for trailing whitespace
+if git diff --cached --check --diff-filter=ACMRTUXB; then
+  :
+else
+  echo "❌ Trailing whitespace detected. Please fix before committing."
+  echo "   Run: git diff --cached --name-only | xargs sed -i '' 's/[[:space:]]*$//'"
+  exit 1
+fi
+
+# Check shell scripts
+check_shell_scripts() {
+  local files
+  files=$(git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '\.(sh|bash)$|^[^.]+$' | xargs -I {} sh -c 'head -n1 {} | grep -q "^#!.*sh" && echo {}' 2>/dev/null || true)
+  
+  if [[ -n "${files}" ]]; then
+    echo "🔍 Checking shell scripts..."
+    
+    # Check with shellcheck if available
+    if command -v shellcheck >/dev/null 2>&1; then
+      echo "${files}" | xargs shellcheck || {
+        echo "❌ ShellCheck found issues. Please fix before committing."
+        exit 1
+      }
+    fi
+    
+    # Basic syntax check
+    echo "${files}" | while read -r file; do
+      bash -n "${file}" || {
+        echo "❌ Syntax error in ${file}"
+        exit 1
+      }
+    done
+  fi
+}
+
+check_shell_scripts
+
+echo "✅ Pre-commit checks passed"
+EOF
+  
+  chmod +x "${GIT_HOOKS_DIR}/pre-commit"
+  
+  # Post-merge hook
+  cat > "${GIT_HOOKS_DIR}/post-merge" << 'EOF'
+#!/usr/bin/env bash
+# Post-merge hook - Update symlinks after merge
+
+set -euo pipefail
+
+echo "🔄 Updating symlinks after merge..."
+
+# Run aliases script if it exists
+if [[ -x "${HOME}/.dotfiles/src/setup/aliases.sh" ]]; then
+  "${HOME}/.dotfiles/src/setup/aliases.sh"
+else
+  echo "⚠️  Could not find aliases.sh to update symlinks"
+fi
+EOF
+  
+  chmod +x "${GIT_HOOKS_DIR}/post-merge"
+  
+  print_color green "✅ Created default hooks"
+}
+
+# Show usage
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Install git hooks for the dotfiles repository.
+Works on both macOS and Linux.
+
+OPTIONS:
+  -h, --help    Show this help
+  -d, --dir     Git directory (default: ~/.dotfiles)
+
+HOOKS INSTALLED:
+  - pre-commit: Check for trailing whitespace and shell syntax
+  - post-merge: Update symlinks after git pull
+
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -d|--dir)
+      DOTFILES_DIR="$2"
+      GIT_HOOKS_DIR="${DOTFILES_DIR}/.git/hooks"
+      HOOKS_SRC_DIR="${DOTFILES_DIR}/src/hooks"
+      shift 2
+      ;;
+    *)
+      print_color red "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+main "$@"

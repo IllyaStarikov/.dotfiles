@@ -11,7 +11,7 @@
 - [Troubleshooting](setup/troubleshooting.md)
 
 ### 📋 Daily Reference
-- [Quick Reference Card](usage/QUICK_REFERENCE.md)
+- [Quick Reference Card](usage/reference.md)
 - [Essential Commands](usage/README.md#essential-keybindings)
 - [Common Tasks](usage/README.md#common-tasks)
 
@@ -123,7 +123,7 @@
 ## Quick Links
 
 ### Most Used
-- [Quick Reference Card](usage/QUICK_REFERENCE.md)
+- [Quick Reference Card](usage/reference.md)
 - [Git Aliases](usage/commands/git.md)
 - [Neovim Keybindings](usage/keybindings/neovim.md)
 - [Troubleshooting](setup/troubleshooting.md)
