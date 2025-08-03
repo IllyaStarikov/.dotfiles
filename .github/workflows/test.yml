@@ -19,8 +19,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Checkout public submodules
-      run: ./.github/workflows/checkout-public-submodules.sh
+    - name: Setup repository for CI
+      run: ./.github/workflows/setup-public-repo.sh
 
     - name: Set up environment
       run: |
