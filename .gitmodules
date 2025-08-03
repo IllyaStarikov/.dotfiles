@@ -5,3 +5,7 @@
 	path = styleguide
 	url = https://github.com/google/styleguide.git
 	branch = gh-pages
+[submodule "src/submodules/google-styleguide"]
+	path = src/submodules/google-styleguide
+	url = https://github.com/google/styleguide.git
+	branch = gh-pages
