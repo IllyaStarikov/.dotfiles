@@ -75,14 +75,14 @@ ALACRITTY_THEME="$HOME/.config/alacritty/theme.toml"
 if [[ -f "$ALACRITTY_THEME" ]]; then
     echo "   ✓ Theme file exists"
     # Try to detect theme from file
-    if grep -q "github_light" "$ALACRITTY_THEME" 2>/dev/null; then
-        echo "   Detected: GitHub Light"
-    elif grep -q "tokyonight_day" "$ALACRITTY_THEME" 2>/dev/null; then
+    if grep -q "tokyonight_day" "$ALACRITTY_THEME" 2>/dev/null; then
         echo "   Detected: Tokyo Night Day"
     elif grep -q "tokyonight_moon" "$ALACRITTY_THEME" 2>/dev/null; then
         echo "   Detected: Tokyo Night Moon"
-    elif grep -q "dracula" "$ALACRITTY_THEME" 2>/dev/null; then
-        echo "   Detected: Dracula"
+    elif grep -q "tokyonight_night" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: Tokyo Night Night"
+    elif grep -q "tokyonight_storm" "$ALACRITTY_THEME" 2>/dev/null; then
+        echo "   Detected: Tokyo Night Storm"
     fi
 else
     echo "   ✗ Theme file not found"

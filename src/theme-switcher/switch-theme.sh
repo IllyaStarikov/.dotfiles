@@ -16,7 +16,6 @@ OPTIONS:
     -l, --list          List all available themes
 
 THEMES:
-    auto, default       Auto-detect based on macOS appearance (default)
     light              Use default light theme (tokyonight_day)
     dark               Use default dark theme (tokyonight_storm)
     
@@ -28,12 +27,11 @@ THEMES:
     
     Full theme names:
     tokyonight_day, tokyonight_night, tokyonight_moon, tokyonight_storm
-    github_light, github_dark, github_dark_*
 
 EXAMPLES:
-    $(basename "$0")           # Auto-detect based on macOS appearance
     $(basename "$0") dark      # Use default dark theme (storm)
     $(basename "$0") moon      # Use TokyoNight Moon theme
+    $(basename "$0") day       # Use TokyoNight Day theme (light)
     $(basename "$0") --list    # List all available themes
 
 EOF
@@ -54,16 +52,6 @@ list_themes() {
         fi
     done
     echo ""
-    echo "GitHub themes:"
-    for theme in "$theme_dir"/github_*; do
-        if [[ -d "$theme" ]]; then
-            local name=$(basename "$theme")
-            local variant="dark"
-            [[ "$name" =~ light ]] && variant="light"
-            echo "  $name ($variant)"
-        fi
-    done
-    echo ""
     echo "Use any theme name with: $(basename "$0") THEME_NAME"
 }
 
@@ -80,7 +68,13 @@ case "${1:-}" in
 esac
 
 # Configuration
-THEME="${1:-auto}"
+THEME="${1:-}"
+if [[ -z "$THEME" ]]; then
+    echo "Error: No theme specified"
+    echo "Usage: $(basename "$0") [THEME|OPTION]"
+    echo "Try '$(basename "$0") --help' for more information"
+    exit 1
+fi
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme-switcher"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/theme-switcher"
 ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
@@ -152,15 +146,6 @@ trap release_lock EXIT
 # Determine theme based on input
 determine_theme() {
     case "$THEME" in
-        auto|default)
-            if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
-                THEME="$DARK_THEME"
-                VARIANT="dark"
-            else
-                THEME="$LIGHT_THEME"
-                VARIANT="light"
-            fi
-            ;;
         light)
             THEME="$LIGHT_THEME"
             VARIANT="light"
@@ -313,12 +298,20 @@ update_app_themes() {
     return $success
 }
 
-# Reload tmux configuration
+# Reload tmux configuration for ALL sessions
 reload_tmux() {
-    if command -v tmux &>/dev/null && tmux info &>/dev/null; then
-        tmux source-file ~/.tmux.conf 2>/dev/null || true
-        tmux refresh-client -S 2>/dev/null || true
-        log "Reloaded tmux configuration"
+    if command -v tmux &>/dev/null; then
+        # Get list of all tmux sessions
+        local tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+        
+        if [[ -n "$tmux_sessions" ]]; then
+            # Reload config in all sessions
+            while IFS= read -r session; do
+                tmux source-file ~/.tmux.conf 2>/dev/null || true
+                tmux refresh-client -t "$session" -S 2>/dev/null || true
+            done <<< "$tmux_sessions"
+            log "Reloaded tmux configuration for all sessions"
+        fi
     fi
 }
 
@@ -383,6 +376,13 @@ main() {
         
         log "Theme switch completed successfully"
         echo "✅ Theme switched to $THEME ($VARIANT mode)"
+        
+        # Note about Alacritty
+        if pgrep -x alacritty &>/dev/null; then
+            echo ""
+            echo "ℹ️  Note: Restart Alacritty to see theme changes"
+            echo "   Use: reload-alacritty or Cmd+Q and reopen"
+        fi
     else
         # Restore on failure
         restore_config "$backup_dir"

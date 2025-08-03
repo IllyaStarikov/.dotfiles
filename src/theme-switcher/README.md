@@ -1,103 +1,58 @@
 # Theme Switcher
 
-Automatic theme synchronization for macOS appearance changes. Keeps Alacritty, tmux, and Starship themes in sync with the system's light/dark mode.
+Theme synchronization for terminal applications. Keeps Alacritty, tmux, and Starship themes in sync.
 
 ## Features
 
-- **Automatic synchronization** with macOS appearance changes
-- **Crash-proof design** with atomic file operations
-- **Multi-application support**: Alacritty, tmux, Starship
-- **Configurable timing** and behavior via environment variables
+- **Manual theme switching** with simple command
+- **Multi-application support**: Alacritty, tmux, Starship  
+- **Atomic file operations** for crash-proof switching
+- **Theme validation** script included
 - **Secure operation** with proper file permissions
-- **Automatic log rotation** to prevent disk space issues
-
-## Installation
-
-### Manual Start
-
-```bash
-# Switch theme manually
-./switch-theme.sh [auto|light|dark|theme-name]
-
-# Start the automatic watcher
-./auto-theme-watcher.sh
-```
-
-### Install as LaunchAgent (Recommended)
-
-```bash
-# Install the launch agent
-./install-auto-theme.sh
-
-# Or manually:
-cp io.starikov.theme-watcher.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
-```
 
 ## Usage
 
 ### Manual Theme Switching
 
 ```bash
-# Auto-detect based on macOS appearance
-./switch-theme.sh
+# Switch to light theme
+theme light
 
-# Force light theme
-./switch-theme.sh light
-
-# Force dark theme
-./switch-theme.sh dark
+# Switch to dark theme  
+theme dark
 
 # Use specific theme
-./switch-theme.sh tokyonight_storm
+theme tokyonight_storm
+
+# Theme shortcuts
+theme day    # tokyonight_day (light)
+theme night  # tokyonight_night (dark)
+theme moon   # tokyonight_moon (dark)
+theme storm  # tokyonight_storm (dark, default)
+
+# List available themes
+theme --list
+
+# Show help
+theme --help
 ```
 
 ### Environment Variables
 
-Configure behavior through environment variables:
+Configure default themes through environment variables:
 
 ```bash
-# Check interval in seconds (default: 3)
-export THEME_CHECK_INTERVAL=5
-
-# Debounce period in seconds (default: 5)
-export THEME_DEBOUNCE=10
-
-# Maximum failures before exit (default: 3)
-export THEME_MAX_FAILURES=5
-
-# Custom theme names
+# Custom default theme names
 export THEME_LIGHT=tokyonight_day
-export THEME_DARK=tokyonight_moon
+export THEME_DARK=tokyonight_storm
 ```
 
 ## File Locations
 
-- **Config**: `~/.config/theme-switcher/`
+- **Config**: `~/.config/theme-switcher/current-theme.sh`
 - **Cache**: `~/.cache/theme-switcher/`
-- **Logs**: `~/.cache/theme-switcher/*.log`
+- **Logs**: `~/.cache/theme-switcher/theme-switch.log`
 - **Themes**: `./themes/`
-
-## Troubleshooting
-
-### Check if watcher is running
-
-```bash
-ps aux | grep theme-watcher
-```
-
-### View logs
-
-```bash
-tail -f ~/.cache/theme-switcher/theme-watcher.log
-```
-
-### Reset state
-
-```bash
-rm -rf ~/.cache/theme-switcher
-rm -rf ~/.config/theme-switcher
-```
 
 ## Theme Structure
 
@@ -110,26 +65,55 @@ themes/
 │   │   └── theme.toml
 │   ├── tmux.conf
 │   └── starship.toml
-└── tokyonight_moon/
+├── tokyonight_moon/
+│   ├── alacritty/
+│   │   └── theme.toml
+│   ├── tmux.conf
+│   └── starship.toml
+├── tokyonight_night/
+│   ├── alacritty/
+│   │   └── theme.toml
+│   └── tmux.conf
+└── tokyonight_storm/
     ├── alacritty/
     │   └── theme.toml
-    ├── tmux.conf
-    └── starship.toml
+    └── tmux.conf
+```
+
+## Validation
+
+Check theme integrity:
+
+```bash
+./validate-themes.sh
+```
+
+## Troubleshooting
+
+### View logs
+
+```bash
+tail -f ~/.cache/theme-switcher/theme-switch.log
+```
+
+### Reset state
+
+```bash
+rm -rf ~/.cache/theme-switcher
+rm -rf ~/.config/theme-switcher
+```
+
+### Check current theme
+
+```bash
+cat ~/.config/theme-switcher/current-theme.sh
 ```
 
 ## Security
 
 - All cache files are created with mode 600 (user-only access)
 - Cache directory is created with mode 700
-- PID files prevent multiple instances
 - Lock files prevent concurrent theme switches
-
-## Performance
-
-- Efficient polling with configurable intervals
-- Debouncing prevents rapid switching
-- Automatic log rotation prevents disk space issues
-- Minimal resource usage (~0.1% CPU)
 
 ## License
 
