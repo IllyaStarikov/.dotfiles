@@ -1,39 +1,28 @@
 #!/bin/bash
-# Script to prepare repository for CI by removing private submodule references
+# Script to prepare repository for CI by using public-only gitmodules
 
 set -euo pipefail
 
 echo "Preparing repository for CI build..."
 
-# Remove the private submodule entry from .gitmodules
-echo "Removing private submodule from .gitmodules..."
-if git config --file=.gitmodules --get-regexp '^submodule\..*\.path$' | grep -q '.dotfiles.private'; then
-    git config --file=.gitmodules --remove-section 'submodule..dotfiles.private' || true
+# Replace .gitmodules with the public-only version
+echo "Replacing .gitmodules with public-only version..."
+if [[ -f ".gitmodules.public" ]]; then
+    cp .gitmodules.public .gitmodules
+    echo "Using public-only .gitmodules"
+else
+    echo "ERROR: .gitmodules.public not found!"
+    exit 1
 fi
 
-# Remove the private submodule from .git/config if it exists
-echo "Removing private submodule from git config..."
-if git config --get-regexp '^submodule\..*\.path$' | grep -q '.dotfiles.private'; then
-    git config --remove-section 'submodule..dotfiles.private' || true
-fi
+# Remove any existing git submodule configuration
+echo "Cleaning git submodule configuration..."
+rm -rf .git/modules/
+git config --local --remove-section submodule..dotfiles.private 2>/dev/null || true
 
-# Remove the submodule directory if it exists
+# Remove the private submodule directory if it exists
 echo "Removing private submodule directory..."
-if [[ -d ".dotfiles.private" ]]; then
-    rm -rf .dotfiles.private
-fi
-
-# Remove from git index if present
-echo "Removing from git index..."
-if git ls-files --error-unmatch .dotfiles.private &>/dev/null; then
-    git rm --cached .dotfiles.private || true
-fi
-
-# Clean up .git/modules if it exists
-if [[ -d ".git/modules/.dotfiles.private" ]]; then
-    echo "Cleaning up .git/modules..."
-    rm -rf ".git/modules/.dotfiles.private"
-fi
+rm -rf .dotfiles.private
 
 # Now initialize and update only the public submodules
 echo "Initializing and updating public submodules..."
