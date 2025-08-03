@@ -229,6 +229,9 @@ fi
 # Rust
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
+# Add dotfiles scripts to PATH
+export PATH="$HOME/.dotfiles/src/scripts:$PATH"
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Starship Prompt
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
