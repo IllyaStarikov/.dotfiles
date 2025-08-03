@@ -230,7 +230,7 @@ fi
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # Add dotfiles scripts to PATH
-export PATH="$HOME/.dotfiles/src/scripts:$PATH"
+export PATH="$HOME/.dotfiles/src/scripts:$HOME/.dotfiles/src/setup:$PATH"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Starship Prompt
