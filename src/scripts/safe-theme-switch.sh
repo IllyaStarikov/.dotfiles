@@ -16,10 +16,28 @@ echo "📝 Updating theme files..."
 # 2. Small delay to ensure files are written
 sleep "$DELAY"
 
-# 3. Update tmux if in session (this is usually safe)
-if [[ -n "${TMUX:-}" ]]; then
-    echo "🔄 Updating tmux theme..."
-    tmux source-file ~/.tmux.conf 2>/dev/null || true
+# 3. Reload tmux for ALL sessions
+echo "🔄 Updating tmux theme..."
+if command -v tmux &>/dev/null; then
+    # Get list of all tmux sessions
+    tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+    
+    if [[ -n "$tmux_sessions" ]]; then
+        # Reload config in all sessions
+        while IFS= read -r session; do
+            tmux source-file ~/.tmux.conf \; \
+                 refresh-client -t "$session" -S 2>/dev/null || true
+        done <<< "$tmux_sessions"
+        echo "✅ Updated all tmux sessions"
+    else
+        echo "ℹ️  No tmux sessions found"
+    fi
+fi
+
+# 4. Reload environment variables in current shell
+if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
+    source "$HOME/.config/theme-switcher/current-theme.sh"
+    echo "✅ Environment variables updated"
 fi
 
 echo ""
