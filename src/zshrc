@@ -263,9 +263,16 @@ fi
 # Theme integration
 [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
 
-# Theme function removed - now using theme script directly from PATH
-# The theme command is available at ~/.dotfiles/src/scripts/theme
-# which provides all theme switching functionality without duplicates
+# Theme wrapper function to ensure environment is updated in current shell
+theme() {
+    # Run the actual theme script
+    command theme "$@"
+    
+    # Source the updated theme environment in current shell
+    if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
+        source "$HOME/.config/theme-switcher/current-theme.sh"
+    fi
+}
 
 # Remove duplicates from PATH
 typeset -U PATH path

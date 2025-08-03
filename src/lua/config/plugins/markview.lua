@@ -486,7 +486,7 @@ function M.setup()
     
     if vim.fn.filereadable(config_file) == 1 then
       local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
-      local background_cmd = "source " .. config_file .. " && echo $MACOS_BACKGROUND"
+      local background_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
       local theme = vim.fn.system(theme_cmd):gsub('\n', '')
       local background = vim.fn.system(background_cmd):gsub('\n', '')
       

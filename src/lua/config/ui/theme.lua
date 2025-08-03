@@ -23,25 +23,22 @@ local function setup_theme()
     -- Source the theme config and get environment variables
     local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
     local variant_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
-    local background_cmd = "source " .. config_file .. " && echo $MACOS_BACKGROUND"
+    -- MACOS_VARIANT is the single source of truth for light/dark
     
     local theme = vim.fn.system(theme_cmd):gsub('\n', '')
     local variant = vim.fn.system(variant_cmd):gsub('\n', '')
-    local background = vim.fn.system(background_cmd):gsub('\n', '')
     
     -- Handle legacy format where theme is just "light" or "dark"
     if theme == "light" then
       theme = "tokyonight_day"
       variant = "light"
-      background = "light"
     elseif theme == "dark" then
       theme = "tokyonight_moon"
       variant = "dark"
-      background = "dark"
     end
     
-    -- Set background
-    if background == "dark" then
+    -- Set background based on variant
+    if variant == "dark" then
       vim.opt.background = "dark"
     else
       vim.opt.background = "light"
