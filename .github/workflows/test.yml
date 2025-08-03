@@ -18,8 +18,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
+
+    - name: Checkout public submodules
+      run: ./.github/workflows/checkout-public-submodules.sh
 
     - name: Set up environment
       run: |
