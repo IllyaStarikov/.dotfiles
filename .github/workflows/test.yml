@@ -132,6 +132,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: false
 
     - name: Install gitleaks
       run: |
@@ -155,6 +157,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: false
 
     - name: Check documentation
       run: |
@@ -190,6 +194,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: false
 
     - name: Create test environment
       run: |
