@@ -47,8 +47,8 @@ Our theme system provides automatic synchronization across all tools based on ma
 | Neovim | Auto-detected | Auto-detected | Via `$MACOS_THEME` |
 | tmux | Custom light | Custom dark | `~/.config/tmux/theme.conf` |
 | Starship | Minimal | Vibrant | Via environment |
-| bat | GitHub | Dracula | Via `$BAT_THEME` |
-| delta | GitHub | Dracula | In `.gitconfig` |
+| bat | TokyoNight Day | TokyoNight Storm | Via `$BAT_THEME` |
+| delta | TokyoNight Day | TokyoNight Storm | In `.gitconfig` |
 
 ## Clipboard Integration
 

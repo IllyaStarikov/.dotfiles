@@ -60,13 +60,11 @@ theme tokyonight_moon
 
 **Light Variants:**
 - `tokyonight_day` - Bright, high contrast
-- `github_light` - GitHub-inspired light theme
 
 **Dark Variants:**
 - `tokyonight_night` - Deep blue darkness
-- `tokyonight_storm` - Softer dark variant
+- `tokyonight_storm` - Softer dark variant (default)
 - `tokyonight_moon` - Purple-tinted darkness
-- `github_dark` - GitHub-inspired dark theme
 
 ### In Neovim
 
@@ -248,8 +246,8 @@ fi
 ```bash
 # In ~/.dotfiles.private/work/theme.zsh
 if [[ "$PWD" == *"/work/"* ]]; then
-    export THEME_LIGHT="github_light"
-    export THEME_DARK="github_dark"
+    export THEME_LIGHT="tokyonight_day"
+    export THEME_DARK="tokyonight_storm"
 fi
 ```
 

@@ -296,8 +296,7 @@ Your entire environment adapts to macOS appearance settings:
 
 | Dark Mode | Light Mode |
 |-----------|------------|
-| Tokyo Night Moon | Tokyo Night Day |
-| Dracula (bat/delta) | GitHub (bat/delta) |
+| Tokyo Night Storm | Tokyo Night Day |
 | Dark tmux theme | Light tmux theme |
 | Dark Starship | Light Starship |
 
