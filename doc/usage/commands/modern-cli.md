@@ -58,7 +58,7 @@ alias lt='eza --tree'
 
 ```bash
 # Environment
-export BAT_THEME="Dracula"  # or "GitHub" for light
+export BAT_THEME="tokyonight_storm"  # or "tokyonight_day" for light
 
 # Aliases
 alias cat='bat'
@@ -239,11 +239,11 @@ Most tools respect terminal colors or have theme support:
 
 ```bash
 # Dark mode
-export BAT_THEME="Dracula"
+export BAT_THEME="tokyonight_storm"
 export EZA_COLORS="di=34:ln=35:ex=31"
 
 # Light mode
-export BAT_THEME="GitHub"
+export BAT_THEME="tokyonight_day"
 export EZA_COLORS="di=94:ln=95:ex=91"
 ```
 

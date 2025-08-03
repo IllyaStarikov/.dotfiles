@@ -31,7 +31,7 @@ fi
 test_case "Supports both light and dark themes"
 if [[ -f "$script" ]]; then
     has_dark=$(grep -q "Dark\|dark\|tokyonight_moon" "$script" && echo 1 || echo 0)
-    has_light=$(grep -q "Light\|light\|github_light" "$script" && echo 1 || echo 0)
+    has_light=$(grep -q "Light\|light\|tokyonight_day" "$script" && echo 1 || echo 0)
     
     if [[ $has_dark -eq 1 ]] && [[ $has_light -eq 1 ]]; then
         pass
