@@ -1,0 +1,332 @@
+#!/bin/bash
+
+# Exit on error, but continue on individual command failures
+set -euo pipefail
+
+# Function to handle errors gracefully
+update_with_fallback() {
+    local description="$1"
+    shift
+    echo "$description"
+    if ! "$@"; then
+        echo "⚠️  $description failed, continuing..."
+        return 1
+    fi
+    return 0
+}
+
+# Cleanup function
+cleanup() {
+    echo "🧹 Performing cleanup..."
+    
+    # Clean tmux cache files
+    rm -f /tmp/.tmux_*_cache 2>/dev/null || true
+    
+    # Clean Neovim swap files and backups
+    rm -f ~/.local/state/nvim/swap/* 2>/dev/null || true
+    rm -f ~/.local/state/nvim/backup/* 2>/dev/null || true
+    
+    # Clean old Neovim log files (keep last 5)
+    if [[ -d ~/.local/state/nvim ]]; then
+        find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
+    fi
+    
+    # Clean zsh completion dump
+    rm -f ~/.zcompdump* 2>/dev/null || true
+    
+    # Clean old pip cache
+    if command -v pip3 &> /dev/null; then
+        pip3 cache purge 2>/dev/null || true
+    fi
+    
+    # Clean npm cache
+    if command -v npm &> /dev/null; then
+        npm cache clean --force 2>/dev/null || true
+    fi
+    
+    # Clean yarn cache
+    if command -v yarn &> /dev/null; then
+        yarn cache clean 2>/dev/null || true
+    fi
+    
+    # Clean pnpm store
+    if command -v pnpm &> /dev/null; then
+        pnpm store prune 2>/dev/null || true
+    fi
+    
+    # Clean macOS specific caches (non-sudo only)
+    echo "Cleaning macOS caches..."
+    
+    # Remove .DS_Store files from dotfiles directory
+    find ~/.dotfiles -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
+    
+    # Clean shell history duplicates
+    if [[ -f ~/.zsh_history ]]; then
+        # Create backup
+        cp ~/.zsh_history ~/.zsh_history.bak 2>/dev/null || true
+    fi
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT INT TERM
+
+echo "🚀 Starting system update process..."
+
+# macOS System Updates
+echo "Checking for macOS system updates..."
+if softwareupdate -l 2>&1 | grep -q "No new software available"; then
+    echo "No macOS system updates available."
+else
+    echo "macOS updates available. Use 'sudo softwareupdate -ia' to install manually."
+fi
+
+# Mac App Store Updates (requires 'mas' CLI tool)
+if command -v mas &> /dev/null; then
+    echo "Updating Mac App Store applications..."
+    mas upgrade || echo "No Mac App Store updates or failed to install."
+else
+    echo "Skipping Mac App Store updates: 'mas' CLI tool not found. Install with 'brew install mas' if desired."
+fi
+
+# Homebrew Updates
+echo "Updating Homebrew packages..."
+update_with_fallback "Homebrew update" brew update
+
+# Check for deprecated packages and remove them
+echo "Checking for deprecated packages..."
+# Use while read instead of mapfile for compatibility
+deprecated_packages=()
+while IFS= read -r pkg; do
+    if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+        deprecated_packages+=("$pkg")
+    fi
+done < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}')
+
+if [[ ${#deprecated_packages[@]} -gt 0 ]]; then
+    echo "Found deprecated packages: ${deprecated_packages[*]}"
+    echo "Removing deprecated packages..."
+    # Safely iterate through array with validated package names
+    for pkg in "${deprecated_packages[@]}"; do
+        # Double-check package name format before using
+        if [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+            update_with_fallback "Removing $pkg" brew uninstall --ignore-dependencies -- "$pkg"
+        else
+            echo "Skipping invalid package name: $pkg" >&2
+        fi
+    done
+fi
+
+# Upgrade remaining packages
+update_with_fallback "Homebrew formula upgrade" brew upgrade
+update_with_fallback "Homebrew cask upgrade" brew upgrade --cask
+
+# Comprehensive Homebrew cleanup
+echo "Performing Homebrew cleanup..."
+update_with_fallback "Removing old versions" brew cleanup --prune=all
+update_with_fallback "Removing broken symlinks" brew cleanup -s
+update_with_fallback "Removing cache" brew cleanup --prune=0
+
+# Check and fix any issues
+echo "Checking Homebrew for issues..."
+update_with_fallback "Homebrew doctor" brew doctor
+
+# Neovim Plugin Updates (lazy.nvim)
+echo "Updating Neovim plugins..."
+update_with_fallback "Neovim plugin sync" nvim --headless +"Lazy! sync" +qa
+
+# Clean unused Neovim plugins
+echo "Cleaning unused Neovim plugins..."
+update_with_fallback "Lazy clean" nvim --headless +"Lazy! clean" +qa
+
+# Clear old Neovim plugin data
+echo "Cleaning Neovim caches..."
+rm -rf ~/.local/share/nvim/lazy/readme 2>/dev/null || true
+rm -rf ~/.cache/nvim/luac 2>/dev/null || true
+
+# Zinit Updates
+echo "Updating Zinit plugins..."
+zsh -ic "zinit update --all" 2>/dev/null || echo "Zinit update failed."
+
+# Node.js Global Package Updates (npm)
+if command -v npm &> /dev/null; then
+    echo "Updating global npm packages..."
+    npm update -g || echo "npm global package update failed."
+fi
+
+# Node.js Global Package Updates (yarn)
+if command -v yarn &> /dev/null; then
+    echo "Updating global Yarn packages..."
+    yarn global upgrade || echo "Yarn global package update failed."
+fi
+
+# Node.js Global Package Updates (pnpm)
+if command -v pnpm &> /dev/null; then
+    echo "Updating global pnpm packages..."
+    pnpm update -g || echo "pnpm global package update failed."
+fi
+
+# Python Package Updates (pip3)
+if command -v pip3 &> /dev/null; then
+    echo "Updating Python packages (pip3)..."
+    pip3 install --upgrade pip setuptools wheel || echo "Failed to upgrade pip components."
+    # Use while read for compatibility
+    outdated_packages=()
+    while IFS= read -r pkg; do
+        if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            outdated_packages+=("$pkg")
+        fi
+    done < <(pip3 list --outdated --format=json | jq -r '.[].name' 2>/dev/null || true)
+    
+    if [[ ${#outdated_packages[@]} -gt 0 ]]; then
+        for pkg in "${outdated_packages[@]}"; do
+            # Validate package name format
+            if [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+                pip3 install -U -- "$pkg" || echo "Failed to update: $pkg"
+            else
+                echo "Skipping invalid package name: $pkg" >&2
+            fi
+        done
+    fi
+fi
+
+# RubyGems Updates (gem) - skip system gems to avoid permission issues
+if command -v gem &> /dev/null; then
+    echo "Updating RubyGems (user gems only)..."
+    gem update --user-install || echo "RubyGems update failed or no user gems to update."
+fi
+
+# Rust Toolchain and Cargo Package Updates
+if command -v rustup &> /dev/null; then
+    echo "Updating Rust toolchain..."
+    rustup update || echo "Rust toolchain update failed."
+fi
+if command -v cargo &> /dev/null; then
+    echo "Updating global Cargo packages..."
+    # This command attempts to update all globally installed cargo packages.
+    # It lists them, extracts names, and tries to install them again with --force.
+    # This is a common way to update them as cargo doesn't have a direct 'update all' for installed binaries.
+    cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install --force || echo "Cargo global package update failed."
+fi
+
+# TeX Live Manager Updates (tlmgr)
+if command -v tlmgr &> /dev/null; then
+    echo "Checking TeX Live packages (tlmgr)..."
+    tlmgr update --list 2>/dev/null | grep -q "update available" && echo "TeX Live updates available. Run 'sudo tlmgr update --all' manually." || echo "No TeX Live updates available."
+fi
+
+# fnm (Fast Node Manager) Updates
+if command -v fnm &> /dev/null; then
+    echo "Updating Node.js via fnm to latest LTS..."
+    update_with_fallback "fnm Node.js update" fnm install --lts
+    update_with_fallback "Setting default Node.js version" fnm default lts-latest
+fi
+
+# pyenv Python Updates
+if command -v pyenv &> /dev/null; then
+    echo "Checking for new Python versions..."
+    # Update pyenv itself first
+    update_with_fallback "pyenv update" brew upgrade pyenv
+    # List available Python versions
+    echo "Latest stable Python versions available:"
+    pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -5
+    
+    # Clean up old Python versions (keep current and system)
+    echo "Installed Python versions:"
+    pyenv versions
+    echo ""
+    echo "To remove old versions, run: pyenv uninstall <version>"
+    
+    # Clean pyenv shims
+    update_with_fallback "Rehashing pyenv shims" pyenv rehash
+fi
+
+# Mason.nvim LSP Server Updates
+if command -v nvim &> /dev/null; then
+    echo "Updating Mason LSP servers..."
+    update_with_fallback "Mason LSP update" nvim --headless +"MasonUpdate" +qa
+fi
+
+# tmux Plugin Manager Updates (if installed)
+if [[ -d "$HOME/.tmux/plugins/tpm" ]]; then
+    echo "Updating tmux plugins..."
+    update_with_fallback "TPM plugin update" "$HOME/.tmux/plugins/tpm/bin/update_plugins" all
+fi
+
+# Improved Cargo Updates
+if command -v cargo &> /dev/null; then
+    # Install cargo-update if not present
+    if ! command -v cargo-install-update &> /dev/null; then
+        echo "Installing cargo-update for better Cargo package management..."
+        update_with_fallback "cargo-update installation" cargo install cargo-update
+    fi
+    
+    # Use cargo-update if available, fallback to manual method
+    if command -v cargo-install-update &> /dev/null; then
+        echo "Updating global Cargo packages with cargo-update..."
+        update_with_fallback "Cargo package update" cargo install-update -a
+    else
+        echo "Updating global Cargo packages (manual method)..."
+        cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install --force || echo "Cargo global package update failed."
+    fi
+fi
+
+# Starship Prompt Config Check
+if command -v starship &> /dev/null; then
+    echo "Checking Starship configuration..."
+    update_with_fallback "Starship config check" starship config
+fi
+
+# FZF Updates (if installed via git)
+if [[ -d "$HOME/.fzf" ]]; then
+    echo "Updating fzf..."
+    (cd "$HOME/.fzf" && update_with_fallback "fzf update" git pull && update_with_fallback "fzf install" ./install --all)
+fi
+
+# Go Module Updates (for Go projects)
+if command -v go &> /dev/null; then
+    echo "Checking Go tools..."
+    # Update common Go development tools
+    update_with_fallback "gopls update" go install golang.org/x/tools/gopls@latest
+    update_with_fallback "gofumpt update" go install mvdan.cc/gofumpt@latest
+    
+    # Clean Go module cache
+    echo "Cleaning Go module cache..."
+    update_with_fallback "Go cache clean" go clean -modcache
+    
+    # If in a Go project directory, offer to update modules
+    if [[ -f "go.mod" ]]; then
+        echo "Go module found in current directory. Run 'go get -u ./...' to update dependencies."
+        # Clean up go.sum
+        update_with_fallback "Tidying go.mod" go mod tidy
+    fi
+fi
+
+# Disk space report
+echo ""
+echo "💾 Disk Space Report:"
+echo "===================="
+# Show disk usage
+df -h ~ | grep -E "Filesystem|$HOME" || df -h / | head -2
+
+echo ""
+echo "📦 Large directories in home:"
+du -sh ~/Library/Caches ~/.Trash ~/Downloads ~/.cache ~/.local/share/nvim ~/.npm ~/.yarn ~/.cargo ~/.rustup 2>/dev/null | sort -hr | head -10 || true
+
+echo ""
+echo "🧹 Cleanup suggestions:"
+echo "   - Clear DNS cache: sudo dscacheutil -flushcache"
+echo "   - Clear font cache: sudo atsutil databases -remove"
+echo "   - Empty trash: rm -rf ~/.Trash/*"
+echo "   - Remove old downloads: find ~/Downloads -type f -mtime +30 -delete"
+echo "   - Clear macOS caches: rm -rf ~/Library/Caches/*"
+
+# Summary
+echo ""
+echo "✅ System update process completed!"
+echo ""
+echo "📝 Manual updates may be required for:"
+echo "   - macOS system updates (if available)"
+echo "   - TeX Live packages (sudo tlmgr update --all)"
+echo "   - Python versions via pyenv (pyenv install x.x.x)"
+echo "   - Old Python versions cleanup (pyenv uninstall x.x.x)"
+echo ""
