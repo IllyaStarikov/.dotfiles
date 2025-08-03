@@ -1,0 +1,7 @@
+#!/bin/bash
+# Force Alacritty to reload by touching the main config file
+# This works because live_config_reload monitors the main file
+
+touch ~/.config/alacritty/alacritty.toml 2>/dev/null || touch ~/.alacritty.toml 2>/dev/null
+
+echo "✅ Alacritty config touched for reload"
