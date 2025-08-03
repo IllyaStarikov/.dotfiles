@@ -1,0 +1,25 @@
+name: 'Checkout Public'
+description: 'Checkout repository without private submodules'
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout without submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: false
+        
+    - name: Setup public repository
+      shell: bash
+      run: |
+        # Use the public gitmodules file
+        if [[ -f ".gitmodules.public" ]]; then
+          cp .gitmodules.public .gitmodules
+        fi
+        
+        # Clean up any private submodule references
+        rm -rf .dotfiles.private
+        git config --local --remove-section submodule..dotfiles.private 2>/dev/null || true
+        
+        # Initialize only public submodules
+        git submodule init
+        git submodule update --recursive
