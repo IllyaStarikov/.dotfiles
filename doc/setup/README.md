@@ -208,7 +208,7 @@ zinit update
 
 ```bash
 # Update everything with one command
-update
+update-dotfiles
 
 # This intelligently updates:
 # - Homebrew packages and casks
@@ -320,7 +320,7 @@ vim ~/.dotfiles/src/theme-switcher/switch-theme.sh
 
 **[Migration Guide](migration.md)** Coming from VS Code, Vim, or other environments
 **[Troubleshooting Guide](troubleshooting.md)** Solutions to common issues  
-**[Quick Reference](../usage/QUICK_REFERENCE.md)** Essential commands on one page
+**[Quick Reference](../usage/reference.md)** Essential commands on one page
 
 ## Troubleshooting
 

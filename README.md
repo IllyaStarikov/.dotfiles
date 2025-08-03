@@ -202,7 +202,7 @@ cd ~/.dotfiles
 
 ### 🚀 Getting Started
 - [**Setup Guide**](doc/setup/README.md) - Installation & configuration
-- [**Quick Reference**](doc/usage/QUICK_REFERENCE.md) - Commands cheatsheet
+- [**Quick Reference**](doc/usage/reference.md) - Commands cheatsheet
 - [**Migration Guide**](doc/setup/migration.md) - Coming from other setups
 
 ### 📖 Usage Guides

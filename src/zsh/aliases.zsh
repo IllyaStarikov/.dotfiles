@@ -173,8 +173,7 @@ alias dotfiles="cd ~/.dotfiles"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # alias theme="~/.dotfiles/src/theme-switcher/switch-theme.sh" # Replaced with function in .zshrc
-alias reload-alacritty="~/.dotfiles/src/scripts/reload-alacritty.sh"
-alias reload-themes="~/.dotfiles/src/scripts/reload-all-themes.sh"
+alias reload-alacritty="theme reload"
 alias dark="theme dark"
 alias light="theme light"
 
