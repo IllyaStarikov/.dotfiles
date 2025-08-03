@@ -4,6 +4,81 @@
 
 set -euo pipefail
 
+# Show usage/help
+show_usage() {
+    cat << EOF
+Usage: $(basename "$0") [THEME|OPTION]
+
+Theme Switcher - Synchronize terminal themes with macOS appearance
+
+OPTIONS:
+    -h, --help, help    Show this help message
+    -l, --list          List all available themes
+
+THEMES:
+    auto, default       Auto-detect based on macOS appearance (default)
+    light              Use default light theme (tokyonight_day)
+    dark               Use default dark theme (tokyonight_storm)
+    
+    Shortcuts:
+    day                tokyonight_day (light)
+    night              tokyonight_night (dark)
+    moon               tokyonight_moon (dark)
+    storm              tokyonight_storm (dark) [default dark]
+    
+    Full theme names:
+    tokyonight_day, tokyonight_night, tokyonight_moon, tokyonight_storm
+    github_light, github_dark, github_dark_*
+
+EXAMPLES:
+    $(basename "$0")           # Auto-detect based on macOS appearance
+    $(basename "$0") dark      # Use default dark theme (storm)
+    $(basename "$0") moon      # Use TokyoNight Moon theme
+    $(basename "$0") --list    # List all available themes
+
+EOF
+}
+
+# List available themes
+list_themes() {
+    local theme_dir="$(dirname "$0")/themes"
+    echo "Available themes:"
+    echo ""
+    echo "TokyoNight themes:"
+    for theme in "$theme_dir"/tokyonight_*; do
+        if [[ -d "$theme" ]]; then
+            local name=$(basename "$theme")
+            local variant="dark"
+            [[ "$name" =~ day ]] && variant="light"
+            echo "  $name ($variant)"
+        fi
+    done
+    echo ""
+    echo "GitHub themes:"
+    for theme in "$theme_dir"/github_*; do
+        if [[ -d "$theme" ]]; then
+            local name=$(basename "$theme")
+            local variant="dark"
+            [[ "$name" =~ light ]] && variant="light"
+            echo "  $name ($variant)"
+        fi
+    done
+    echo ""
+    echo "Use any theme name with: $(basename "$0") THEME_NAME"
+}
+
+# Check for help or list options
+case "${1:-}" in
+    -h|--help|help)
+        show_usage
+        exit 0
+        ;;
+    -l|--list)
+        list_themes
+        exit 0
+        ;;
+esac
+
 # Configuration
 THEME="${1:-auto}"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme-switcher"
@@ -14,7 +89,7 @@ STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 # Default themes
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
-DARK_THEME="${THEME_DARK:-tokyonight_moon}"
+DARK_THEME="${THEME_DARK:-tokyonight_storm}"
 
 # Lock and log configuration
 LOCK_FILE="$CACHE_DIR/theme-switch.lock"
@@ -94,6 +169,23 @@ determine_theme() {
             THEME="$DARK_THEME"
             VARIANT="dark"
             ;;
+        # Handle short theme names
+        moon)
+            THEME="tokyonight_moon"
+            VARIANT="dark"
+            ;;
+        night)
+            THEME="tokyonight_night"
+            VARIANT="dark"
+            ;;
+        storm)
+            THEME="tokyonight_storm"
+            VARIANT="dark"
+            ;;
+        day)
+            THEME="tokyonight_day"
+            VARIANT="light"
+            ;;
         *)
             # Detect variant from theme name
             if [[ "$THEME" =~ (day|light)$ ]]; then
@@ -110,8 +202,8 @@ check_current_theme() {
     if [[ -f "$CONFIG_DIR/current-theme.sh" ]]; then
         source "$CONFIG_DIR/current-theme.sh"
         if [[ "${MACOS_THEME:-}" == "$THEME" ]]; then
-            echo "Already using theme: $THEME"
-            exit 0
+            echo "Already using theme: $THEME (reapplying)"
+            # Continue to reapply the theme instead of exiting
         fi
     fi
 }
@@ -259,9 +351,20 @@ restore_config() {
     fi
 }
 
+# Validate theme exists
+validate_theme() {
+    local theme_dir="$(dirname "$0")/themes/$THEME"
+    if [[ ! -d "$theme_dir" ]]; then
+        echo "Error: Theme '$THEME' not found" >&2
+        echo "Use '$(basename "$0") --list' to see available themes" >&2
+        exit 1
+    fi
+}
+
 # Main execution
 main() {
     determine_theme
+    validate_theme
     log "Switching to theme: $THEME ($VARIANT)"
     
     acquire_lock
