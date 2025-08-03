@@ -130,13 +130,13 @@ get_battery_status() {
     # Generate bars for battery
     bars=$(generate_bars "$battery_percent" "battery")
     
-    # Get color for battery text (inverse logic)
+    # Get color for battery text (inverse logic) with bold
     if [ "$battery_percent" -ge 75 ]; then
-        text_color="#[fg=green]"
+        text_color="#[fg=green,bold]"
     elif [ "$battery_percent" -ge 50 ]; then
-        text_color="#[fg=yellow]"
+        text_color="#[fg=yellow,bold]"
     else
-        text_color="#[fg=red]"
+        text_color="#[fg=red,bold]"
     fi
     
     # Format output
@@ -218,13 +218,13 @@ case "$1" in
     cpu)
         cpu_percent=$(get_cpu_usage)
         bars=$(generate_bars "$cpu_percent" "cpu_mem")
-        # Get color for text
+        # Get color for text with bold
         if [ "$cpu_percent" -le 49 ]; then
-            text_color="#[fg=green]"
+            text_color="#[fg=green,bold]"
         elif [ "$cpu_percent" -le 90 ]; then
-            text_color="#[fg=yellow]"
+            text_color="#[fg=yellow,bold]"
         else
-            text_color="#[fg=red]"
+            text_color="#[fg=red,bold]"
         fi
         # Brain emoji for CPU
         echo "🧠 $bars ${text_color}${cpu_percent}%#[default]"
@@ -232,13 +232,13 @@ case "$1" in
     memory)
         read mem_percent mem_gb <<< "$(get_memory_usage)"
         bars=$(generate_bars "$mem_percent" "cpu_mem")
-        # Get color for text
+        # Get color for text with bold
         if [ "$mem_percent" -le 49 ]; then
-            text_color="#[fg=green]"
+            text_color="#[fg=green,bold]"
         elif [ "$mem_percent" -le 90 ]; then
-            text_color="#[fg=yellow]"
+            text_color="#[fg=yellow,bold]"
         else
-            text_color="#[fg=red]"
+            text_color="#[fg=red,bold]"
         fi
         # Floppy disk emoji for memory (save icon)
         echo "💾 $bars ${text_color}${mem_gb}GB#[default]"
@@ -251,24 +251,24 @@ case "$1" in
         # Default: show both CPU and memory
         cpu_percent=$(get_cpu_usage)
         cpu_bars=$(generate_bars "$cpu_percent" "cpu_mem")
-        # Get CPU color
+        # Get CPU color with bold
         if [ "$cpu_percent" -le 49 ]; then
-            cpu_color="#[fg=green]"
+            cpu_color="#[fg=green,bold]"
         elif [ "$cpu_percent" -le 90 ]; then
-            cpu_color="#[fg=yellow]"
+            cpu_color="#[fg=yellow,bold]"
         else
-            cpu_color="#[fg=red]"
+            cpu_color="#[fg=red,bold]"
         fi
         
         read mem_percent mem_gb <<< "$(get_memory_usage)"
         mem_bars=$(generate_bars "$mem_percent" "cpu_mem")
-        # Get memory color
+        # Get memory color with bold
         if [ "$mem_percent" -le 49 ]; then
-            mem_color="#[fg=green]"
+            mem_color="#[fg=green,bold]"
         elif [ "$mem_percent" -le 90 ]; then
-            mem_color="#[fg=yellow]"
+            mem_color="#[fg=yellow,bold]"
         else
-            mem_color="#[fg=red]"
+            mem_color="#[fg=red,bold]"
         fi
         
         echo "🧠 $cpu_bars ${cpu_color}${cpu_percent}%#[default] │ 💾 $mem_bars ${mem_color}${mem_gb}GB#[default]"
