@@ -1,4 +1,18 @@
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+# Basic PATH setup
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+
+# Add platform-specific paths
+case "$OSTYPE" in
+    darwin*)
+        # macOS paths
+        [[ -d "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+        [[ -d "/opt/homebrew/bin" ]] && export PATH="/opt/homebrew/bin:$PATH"
+        ;;
+    linux*)
+        # Linux paths
+        [[ -d "/usr/local/bin" ]] && export PATH="/usr/local/bin:$PATH"
+        ;;
+esac
 
 # Ensure proper locale settings for UTF-8
 export LANG="en_US.UTF-8"
@@ -16,9 +30,13 @@ if [[ $SSH_CONNECTION ]]; then
    export EDITOR='vim'
 fi
 
-export python3="/usr/local/bin/python3"
+# Python configuration - use system python3
+if command -v python3 >/dev/null 2>&1; then
+    export PYTHON3_PATH="$(command -v python3)"
+fi
 
 # If not on SSH, still use vim
 export VISUAL=nvim
 export EDITOR="$VISUAL"
-. "$HOME/.cargo/env"
+# Rust configuration
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
