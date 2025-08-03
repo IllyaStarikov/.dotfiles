@@ -188,18 +188,11 @@ else
     ((ERROR_COUNT++))
 fi
 
-# Custom scripts
+# Custom scripts directory (will be added to PATH)
 progress "Setting up custom scripts"
-create_symlink "$DOTFILES_DIR/scripts" "$HOME/.scripts" "Utility scripts"
-
-# Link universal scripts
-ensure_dir "$HOME/bin"
-create_symlink "$DOTFILES_DIR/scripts/update-dotfiles" "$HOME/bin/update-dotfiles" "Universal update script"
-create_symlink "$DOTFILES_DIR/scripts/theme" "$HOME/bin/theme" "Universal theme switcher"
-create_symlink "$DOTFILES_DIR/scripts/scratchpad" "$HOME/bin/scratchpad" "Universal scratchpad"
-create_symlink "$DOTFILES_DIR/scripts/format" "$HOME/bin/format" "Universal formatter"
-create_symlink "$DOTFILES_DIR/scripts/fetch-quotes" "$HOME/bin/fetch-quotes" "Universal quote fetcher"
-create_symlink "$DOTFILES_DIR/setup/install-git-hooks" "$HOME/bin/install-git-hooks" "Universal git hooks installer"
+success "Scripts directory: $DOTFILES_DIR/scripts"
+success "Setup scripts directory: $DOTFILES_DIR/setup"
+info "These directories will be added to PATH for direct script execution"
 
 # Spell files for Neovim
 progress "Setting up spell files"
