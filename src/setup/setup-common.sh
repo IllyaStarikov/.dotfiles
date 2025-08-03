@@ -47,29 +47,29 @@ create_symlinks() {
         ["$DOTFILES_DIR/src/lua"]="$HOME/.config/nvim/lua"
         ["$DOTFILES_DIR/src/lazy-lock.json"]="$HOME/.config/nvim/lazy-lock.json"
         
-        # Shell - use universal versions
-        ["$DOTFILES_DIR/src/zshrc.universal"]="$HOME/.zshrc"
-        ["$DOTFILES_DIR/src/zshenv.universal"]="$HOME/.zshenv"
+        # Shell
+        ["$DOTFILES_DIR/src/zshrc"]="$HOME/.zshrc"
+        ["$DOTFILES_DIR/src/zshenv"]="$HOME/.zshenv"
         ["$DOTFILES_DIR/src/zsh"]="$HOME/.config/zsh"
         
-        # Terminal - use universal version
-        ["$DOTFILES_DIR/src/alacritty.toml.universal"]="$HOME/.config/alacritty/alacritty.toml"
+        # Terminal
+        ["$DOTFILES_DIR/src/alacritty.toml"]="$HOME/.config/alacritty/alacritty.toml"
         
         # Git
         ["$DOTFILES_DIR/src/gitconfig"]="$HOME/.gitconfig"
         ["$DOTFILES_DIR/src/gitignore"]="$HOME/.gitignore"
         
-        # tmux - use universal version
-        ["$DOTFILES_DIR/src/tmux.conf.universal"]="$HOME/.tmux.conf"
+        # tmux
+        ["$DOTFILES_DIR/src/tmux.conf"]="$HOME/.tmux.conf"
         
         # Scripts
         ["$DOTFILES_DIR/src/scripts"]="$HOME/.scripts"
         
-        # LaTeX - use universal version
-        ["$DOTFILES_DIR/src/latexmkrc.universal"]="$HOME/.latexmkrc"
+        # LaTeX
+        ["$DOTFILES_DIR/src/latexmkrc"]="$HOME/.latexmkrc"
         
-        # Clangd - use universal version
-        ["$DOTFILES_DIR/src/clangd_config.universal.yaml"]="$HOME/.config/clangd/config.yaml"
+        # Clangd
+        ["$DOTFILES_DIR/src/clangd_config.yaml"]="$HOME/.config/clangd/config.yaml"
     )
     
     # Create symlinks
