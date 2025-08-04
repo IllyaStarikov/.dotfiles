@@ -1,1 +1,1 @@
-/Users/starikov/.dotfiles/src/snippets/html.lua
+../../snippets/html.lua
