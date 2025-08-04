@@ -1,6 +1,6 @@
-[submodule ".dotfiles.private"]
-	path = .dotfiles.private
-	url = git@github.com:IllyaStarikov/.dotfiles.private.git
+# [submodule ".dotfiles.private"]
+# 	path = .dotfiles.private
+# 	url = git@github.com:IllyaStarikov/.dotfiles.private.git
 [submodule "styleguide"]
 	path = styleguide
 	url = https://github.com/google/styleguide.git
