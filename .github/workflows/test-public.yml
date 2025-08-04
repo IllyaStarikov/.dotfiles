@@ -1,0 +1,104 @@
+name: Test Dotfiles (Public)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, macos-13, macos-12]
+      fail-fast: false
+
+    steps:
+    - name: Manual checkout
+      run: |
+        # Clone without submodules
+        git clone --depth 1 --branch main https://github.com/${{ github.repository }}.git .
+        
+        # Use public gitmodules
+        if [[ -f .gitmodules.public ]]; then
+          mv .gitmodules.public .gitmodules
+        fi
+        
+        # Initialize only public submodules
+        git submodule init
+        git submodule update --recursive
+
+    - name: Set up environment
+      run: |
+        echo "DOTFILES_DIR=${{ github.workspace }}" >> $GITHUB_ENV
+        echo "TEST_TMP_DIR=${{ runner.temp }}/dotfiles-test" >> $GITHUB_ENV
+        mkdir -p "${{ runner.temp }}/dotfiles-test"
+
+    - name: Install test dependencies
+      run: |
+        # Install required tools for testing
+        brew install bash coreutils findutils gnu-sed
+        
+        # Add GNU tools to PATH for consistency
+        echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+        echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+        echo "/usr/local/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
+
+    - name: Install Neovim
+      run: |
+        brew install neovim
+        nvim --version
+
+    - name: Run setup tests
+      run: |
+        echo "Testing setup scripts..."
+        bash -n src/setup/*.sh || exit 1
+        
+    - name: Run shell tests
+      run: |
+        echo "Testing shell configurations..."
+        zsh -n src/zshrc || exit 1
+        bash -n src/bashrc || exit 1
+        
+    - name: Run Neovim tests
+      run: |
+        echo "Testing Neovim configuration..."
+        nvim --headless -c 'quit' || exit 1
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Manual checkout
+      run: |
+        git clone --depth 1 --branch main https://github.com/${{ github.repository }}.git .
+        
+    - name: Install gitleaks
+      run: |
+        wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+        tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+        chmod +x gitleaks
+        
+    - name: Run security scan
+      run: |
+        ./gitleaks detect --source . --verbose
+
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Manual checkout
+      run: |
+        git clone --depth 1 --branch main https://github.com/${{ github.repository }}.git .
+        
+    - name: Check documentation
+      run: |
+        # Check for required documentation files
+        for file in README.md LICENSE; do
+          if [[ ! -f "$file" ]]; then
+            echo "ERROR: Required file $file is missing"
+            exit 1
+          fi
+        done
+        
+        echo "✓ All required documentation files present"
