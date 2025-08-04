@@ -105,12 +105,10 @@ get_battery_status() {
     
     # Choose battery icon based on percentage
     local icon
-    if [ "$battery_percent" -ge 80 ]; then
-        icon="🔋"
-    elif [ "$battery_percent" -ge 20 ]; then
-        icon="🔋"
+    if [ "$battery_percent" -le 24 ]; then
+        icon="🪫"  # battery drain emoji for 0-24%
     else
-        icon="🪫"
+        icon="🔋"
     fi
     
     # Generate bars for battery
@@ -118,9 +116,9 @@ get_battery_status() {
     
     # Get color for battery text with bold
     local text_color
-    if [ "$battery_percent" -ge 75 ]; then
+    if [ "$battery_percent" -ge 50 ]; then
         text_color="#[fg=green,bold]"
-    elif [ "$battery_percent" -ge 50 ]; then
+    elif [ "$battery_percent" -ge 25 ]; then
         text_color="#[fg=yellow,bold]"
     else
         text_color="#[fg=red,bold]"
@@ -145,39 +143,65 @@ generate_bars() {
     
     # Calculate how many bars to fill (out of 4)
     local num_filled=0
-    if [ "$percent" -le 24 ]; then
-        num_filled=0
-    elif [ "$percent" -le 49 ]; then
-        num_filled=1
-    elif [ "$percent" -le 74 ]; then
-        num_filled=2
-    elif [ "$percent" -le 89 ]; then
-        num_filled=3
+    if [ "$type" = "battery" ]; then
+        # Battery: different thresholds
+        if [ "$percent" -le 10 ]; then
+            num_filled=0
+        elif [ "$percent" -le 24 ]; then
+            num_filled=1
+        elif [ "$percent" -le 49 ]; then
+            num_filled=2
+        elif [ "$percent" -le 74 ]; then
+            num_filled=3
+        else
+            num_filled=4
+        fi
     else
-        num_filled=4
+        # CPU/Memory: standard thresholds
+        if [ "$percent" -le 24 ]; then
+            num_filled=0
+        elif [ "$percent" -le 49 ]; then
+            num_filled=1
+        elif [ "$percent" -le 74 ]; then
+            num_filled=2
+        elif [ "$percent" -le 89 ]; then
+            num_filled=3
+        else
+            num_filled=4
+        fi
     fi
     
     # Determine color based on type and fill level
     local color
     if [ "$type" = "battery" ]; then
-        # Battery: red (0/4), yellow (1/4), green (2-4/4)
-        if [ "$num_filled" -eq 0 ]; then
+        # Battery: 0-1 bars red, 2 bars yellow, 3-4 bars green
+        if [ "$num_filled" -le 1 ]; then
             color="#[fg=red]"
-        elif [ "$num_filled" -eq 1 ]; then
+        elif [ "$num_filled" -eq 2 ]; then
             color="#[fg=yellow]"
         else
             color="#[fg=green]"
         fi
     else
-        # CPU/Memory: green (0-1/4), green (2/4), yellow (3/4), red (4/4)
-        if [ "$num_filled" -le 1 ]; then
-            color="#[fg=green]"
-        elif [ "$num_filled" -eq 2 ]; then
-            color="#[fg=green]"
-        elif [ "$num_filled" -eq 3 ]; then
-            color="#[fg=yellow]"
-        else
-            color="#[fg=red]"
+        # CPU/Memory: 0-1 bars green, 2 bars yellow (for CPU) or green (for memory), 3 bars yellow, 4 bars red
+        if [ "$type" = "cpu_mem" ]; then
+            if [ "$num_filled" -le 1 ]; then
+                color="#[fg=green]"
+            elif [ "$num_filled" -eq 2 ]; then
+                color="#[fg=yellow]"
+            elif [ "$num_filled" -eq 3 ]; then
+                color="#[fg=yellow]"
+            else
+                color="#[fg=red]"
+            fi
+        else  # memory specific
+            if [ "$num_filled" -le 2 ]; then
+                color="#[fg=green]"
+            elif [ "$num_filled" -eq 3 ]; then
+                color="#[fg=yellow]"
+            else
+                color="#[fg=red]"
+            fi
         fi
     fi
     
@@ -277,7 +301,7 @@ case "$1" in
         
     memory)
         read mem_percent mem_gb <<< "$(get_memory_usage)"
-        bars=$(generate_bars "$mem_percent" "cpu_mem")
+        bars=$(generate_bars "$mem_percent" "memory")
         # Get color for text with bold
         if [ "$mem_percent" -le 74 ]; then
             text_color="#[fg=green,bold]"
