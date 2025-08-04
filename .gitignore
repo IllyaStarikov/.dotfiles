@@ -14,3 +14,6 @@ Session.vim
 CLAUDE.md
 
 vimlog.txt
+
+# Private dotfiles (now untracked)
+.dotfiles.private/
