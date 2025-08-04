@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Install ShellCheck
       run: |
@@ -44,7 +44,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -74,7 +74,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Install stylua
       run: |
@@ -94,7 +94,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Validate YAML files
       run: |
@@ -110,7 +110,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Validate JSON files
       run: |
@@ -130,7 +130,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Install markdownlint
       run: npm install -g markdownlint-cli
@@ -148,7 +148,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Check for trailing whitespace
       run: |
@@ -180,7 +180,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: false
+        submodules: true
 
     - name: Install editorconfig-checker
       run: |
