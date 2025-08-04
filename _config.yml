@@ -1,5 +1,15 @@
 # Jekyll configuration for dotfiles website
 
+# Site settings
+title: "Illya Starikov's Dotfiles"
+description: "Lightning-fast developer environment with AI-powered coding and automatic theme switching"
+url: "https://dotfiles.starikov.io"
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+theme: null  # We're using custom HTML
+
 # Exclude directories that shouldn't be processed by Jekyll
 exclude:
   - src/
@@ -12,17 +22,33 @@ exclude:
   - "*.sh"
   - .gitmodules
   - .gitignore
+  - LICENSE
+  - .claude/
 
 # Include only the directories needed for the website
 include:
   - README.md
-  - docs/
+  - index.html
+  - 404.html
+  - robots.txt
+  - sitemap.xml
+  - doc/
   - template/
+  - CNAME
 
 # GitHub Pages settings
 plugins:
   - jekyll-relative-links
+  - jekyll-sitemap
+  - jekyll-seo-tag
 
 relative_links:
   enabled: true
   collections: true
+
+# Permalink structure
+permalink: pretty
+
+# Assets
+sass:
+  style: compressed
