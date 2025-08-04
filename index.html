@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Illya Starikov's Dotfiles - Lightning-Fast Developer Environment</title>
+    <meta name="description" content="Lightning-fast developer environment with 50ms Neovim startup, AI-powered coding with Claude/GPT-4, and automatic theme switching for macOS">
+    <meta name="keywords" content="dotfiles, neovim, vim, tmux, alacritty, zsh, macos, developer tools, AI coding, claude, gpt-4">
+    <meta name="author" content="Illya Starikov">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dotfiles.starikov.io/">
+    <meta property="og:title" content="Illya Starikov's Dotfiles">
+    <meta property="og:description" content="50ms Neovim startup • AI-powered coding • Automatic theme switching">
+    <meta property="og:image" content="https://dotfiles.starikov.io/template/dotfiles.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://dotfiles.starikov.io/">
+    <meta property="twitter:title" content="Illya Starikov's Dotfiles">
+    <meta property="twitter:description" content="50ms Neovim startup • AI-powered coding • Automatic theme switching">
+    <meta property="twitter:image" content="https://dotfiles.starikov.io/template/dotfiles.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/template/dotfiles.png">
+    
+    <!-- Analytics -->
+    <script src="/template/analytics.js"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --accent-color: #3b82f6;
+            --secondary-color: #8b5cf6;
+            --border-color: #e5e5e5;
+            --code-bg: #f5f5f5;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0a0a0a;
+                --text-color: #f5f5f5;
+                --accent-color: #60a5fa;
+                --secondary-color: #a78bfa;
+                --border-color: #262626;
+                --code-bg: #1a1a1a;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card p {
+            opacity: 0.8;
+            font-size: 0.95rem;
+        }
+        
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .quick-start {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        code {
+            font-family: 'SF Mono', Monaco, monospace;
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .config-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .config-link {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s;
+        }
+        
+        .config-link:hover {
+            background: var(--accent-color);
+            color: white;
+            text-decoration: none;
+        }
+        
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚡ Lightning-Fast Developer Environment</h1>
+    <p class="tagline">50ms Neovim startup • AI-powered coding • Automatic theme switching</p>
+    
+    <div class="badges">
+        <a href="https://github.com/IllyaStarikov/.dotfiles">
+            <img src="https://img.shields.io/github/stars/IllyaStarikov/.dotfiles?style=for-the-badge&logo=github&color=8b5cf6&logoColor=white" alt="GitHub stars">
+        </a>
+        <img src="https://img.shields.io/badge/INSTALL-Quick_Start-10b981?style=for-the-badge&logo=apple&logoColor=white" alt="Quick Start">
+    </div>
+    
+    <div class="quick-start section">
+        <h2>🛠 Quick Start</h2>
+        <code>git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles</code><br>
+        <code>cd ~/.dotfiles && ./src/setup/mac.sh</code>
+    </div>
+    
+    <div class="section">
+        <h2>✨ Features</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>🚀 Blazing Fast</h3>
+                <p>Neovim loads in under 50ms with 80+ plugins. Optimized shell startup in 80ms.</p>
+            </div>
+            <div class="card">
+                <h3>🤖 AI-First</h3>
+                <p>Claude, GPT-4, and Copilot integrated directly into your editor workflow.</p>
+            </div>
+            <div class="card">
+                <h3>🎨 Smart Themes</h3>
+                <p>Automatically syncs with macOS light/dark mode across all applications.</p>
+            </div>
+            <div class="card">
+                <h3>📦 Zero Friction</h3>
+                <p>One command installs everything. Cross-platform support for macOS and Linux.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>📁 Configuration Files</h2>
+        <p>Browse the actual configuration files that power this setup:</p>
+        <div class="config-links">
+            <a href="/template/nvim.html" class="config-link">📝 Neovim</a>
+            <a href="/template/alacritty.html" class="config-link">🖥️ Alacritty</a>
+            <a href="/template/tmux.html" class="config-link">🪟 tmux</a>
+            <a href="/template/zshrc.html" class="config-link">🐚 Zsh</a>
+            <a href="/template/gitconfig.html" class="config-link">📦 Git</a>
+            <a href="/template/keymaps.html" class="config-link">⌨️ Keymaps</a>
+            <a href="/template/plugins.html" class="config-link">🔌 Plugins</a>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>📚 Documentation</h2>
+        <div class="grid">
+            <div class="card">
+                <h3><a href="/doc/">📖 Full Documentation</a></h3>
+                <p>Complete guides for installation, configuration, and customization.</p>
+            </div>
+            <div class="card">
+                <h3><a href="/doc/usage/reference.md">⚡ Quick Reference</a></h3>
+                <p>Essential commands and keybindings for daily use.</p>
+            </div>
+            <div class="card">
+                <h3><a href="/doc/guides/terminal/theme-system.md">🎨 Theme Guide</a></h3>
+                <p>Configure automatic light/dark mode switching.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Built with ❤️ in San Francisco • <a href="https://github.com/IllyaStarikov/.dotfiles">View on GitHub</a></p>
+    </footer>
+</body>
+</html>
