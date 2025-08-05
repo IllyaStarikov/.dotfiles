@@ -10,26 +10,26 @@ BATTERY_CACHE_FILE="$CACHE_DIR/.tmux_battery_cache"
 # Function to get CPU usage percentage on macOS
 get_cpu_usage() {
     local current_time=$(date +%s)
-    
+
     # Check if cache exists and is less than 10 seconds old
     if [ -f "$CPU_CACHE_FILE" ]; then
         local cache_time=$(stat -f %m "$CPU_CACHE_FILE" 2>/dev/null || echo 0)
         local age=$((current_time - cache_time))
-        
+
         if [ "$age" -lt 10 ]; then
             cat "$CPU_CACHE_FILE"
             return
         fi
     fi
-    
+
     # Use ps to calculate CPU usage (faster than iostat)
     local cpu_sum=$(ps aux | awk 'NR>1 {sum+=$3} END {print sum}')
     local cpu_cores=$(sysctl -n hw.ncpu)
     local cpu_percent=$(echo "scale=0; $cpu_sum / $cpu_cores" | bc | cut -d. -f1)
-    
+
     # Ensure it's not negative
     [ "$cpu_percent" -lt 0 ] && cpu_percent=0
-    
+
     # Save to cache
     echo "$cpu_percent" > "$CPU_CACHE_FILE"
     echo "$cpu_percent"
@@ -38,21 +38,21 @@ get_cpu_usage() {
 # Function to get memory usage on macOS
 get_memory_usage() {
     local current_time=$(date +%s)
-    
+
     # Check if cache exists and is less than 5 seconds old
     if [ -f "$MEM_CACHE_FILE" ]; then
         local cache_time=$(stat -f %m "$MEM_CACHE_FILE" 2>/dev/null || echo 0)
         local age=$((current_time - cache_time))
-        
+
         if [ "$age" -lt 5 ]; then
             cat "$MEM_CACHE_FILE"
             return
         fi
     fi
-    
+
     # Get memory stats using vm_stat (native macOS command)
     local vm_stat=$(vm_stat)
-    
+
     # Extract values with default values to handle missing fields
     local pages_free=$(echo "$vm_stat" | grep "Pages free" | awk '{print $3}' | tr -d '.' || echo "0")
     local pages_active=$(echo "$vm_stat" | grep "Pages active" | awk '{print $3}' | tr -d '.' || echo "0")
@@ -60,18 +60,18 @@ get_memory_usage() {
     local pages_speculative=$(echo "$vm_stat" | grep "Pages speculative" | awk '{print $3}' | tr -d '.' || echo "0")
     local pages_wired=$(echo "$vm_stat" | grep "Pages wired down" | awk '{print $4}' | tr -d '.' || echo "0")
     local pages_compressed=$(echo "$vm_stat" | grep "Pages occupied by compressor" | awk '{print $5}' | tr -d '.' || echo "0")
-    
+
     # Calculate used pages (active + wired + compressed)
     local pages_used=$((pages_active + pages_wired + pages_compressed))
     local pages_total=$((pages_free + pages_active + pages_inactive + pages_speculative + pages_wired + pages_compressed))
-    
+
     # Convert to GB (page size is 16384 bytes on modern macOS)
     local memory_used_gb=$(echo "scale=0; $pages_used * 16384 / 1024 / 1024 / 1024" | bc)
     local memory_total_gb=$(echo "scale=0; $pages_total * 16384 / 1024 / 1024 / 1024" | bc)
-    
+
     # Calculate percentage
     local memory_percent=$(echo "scale=0; $pages_used * 100 / $pages_total" | bc)
-    
+
     # Save to cache
     echo "$memory_percent $memory_used_gb" > "$MEM_CACHE_FILE"
     echo "$memory_percent $memory_used_gb"
@@ -80,29 +80,29 @@ get_memory_usage() {
 # Function to get battery status on macOS
 get_battery_status() {
     local current_time=$(date +%s)
-    
+
     # Check if cache exists and is less than 30 seconds old
     if [ -f "$BATTERY_CACHE_FILE" ]; then
         local cache_time=$(stat -f %m "$BATTERY_CACHE_FILE" 2>/dev/null || echo 0)
         local age=$((current_time - cache_time))
-        
+
         if [ "$age" -lt 30 ]; then
             cat "$BATTERY_CACHE_FILE"
             return
         fi
     fi
-    
+
     # Get battery info using pmset
     local battery_info=$(pmset -g batt | grep -E "[0-9]+%")
-    
+
     if [ -z "$battery_info" ]; then
         echo "No battery"
         return
     fi
-    
+
     # Extract percentage
     local battery_percent=$(echo "$battery_info" | grep -o "[0-9]\+%" | tr -d '%')
-    
+
     # Choose battery icon based on percentage
     local icon
     if [ "$battery_percent" -le 24 ]; then
@@ -110,10 +110,10 @@ get_battery_status() {
     else
         icon="🔋"
     fi
-    
+
     # Generate bars for battery
     local bars=$(generate_bars "$battery_percent" "battery")
-    
+
     # Get color for battery text with bold
     local text_color
     if [ "$battery_percent" -ge 50 ]; then
@@ -123,10 +123,10 @@ get_battery_status() {
     else
         text_color="#[fg=red,bold]"
     fi
-    
+
     # Format output
     local battery_output="${icon} ${bars} ${text_color}${battery_percent}%#[default]"
-    
+
     # Save to cache
     echo "$battery_output" > "$BATTERY_CACHE_FILE"
     echo "$battery_output"
@@ -136,11 +136,11 @@ get_battery_status() {
 generate_bars() {
     local percent=$1
     local type=$2  # "cpu_mem" or "battery"
-    
+
     # Unicode box drawing characters
     local empty="□"
     local filled="■"
-    
+
     # Calculate how many bars to fill (out of 4)
     local num_filled=0
     if [ "$type" = "battery" ]; then
@@ -170,7 +170,7 @@ generate_bars() {
             num_filled=4
         fi
     fi
-    
+
     # Determine color based on type and fill level
     local color
     if [ "$type" = "battery" ]; then
@@ -204,7 +204,7 @@ generate_bars() {
             fi
         fi
     fi
-    
+
     # Build the bar string with colors
     local bars="${color}"
     for i in 1 2 3 4; do
@@ -215,7 +215,7 @@ generate_bars() {
         fi
     done
     bars="${bars}#[default]"
-    
+
     echo "$bars"
 }
 
@@ -224,7 +224,7 @@ get_clock() {
     local hour=$(date +%I | sed 's/^0//')  # 12-hour format without leading zero
     local minute=$(date +%M)
     local clock
-    
+
     # Determine if it's closer to the hour or half-hour
     if [ "$minute" -lt 15 ]; then
         # Use hour clock
@@ -279,7 +279,7 @@ get_clock() {
             *)  clock="🕐" ;;
         esac
     fi
-    
+
     echo "${clock} $(date +%H:%M)"
 }
 
@@ -298,7 +298,7 @@ case "$1" in
         fi
         echo "🧠 $bars ${text_color}${cpu_percent}%#[default]"
         ;;
-        
+
     memory)
         read mem_percent mem_gb <<< "$(get_memory_usage)"
         bars=$(generate_bars "$mem_percent" "memory")
@@ -310,21 +310,21 @@ case "$1" in
         else
             text_color="#[fg=red,bold]"
         fi
-        echo "💾 $bars ${text_color}${mem_gb}GB#[default]"
+        echo "🐏 $bars ${text_color}${mem_gb}GB#[default]"
         ;;
-        
+
     battery)
         get_battery_status
         ;;
-        
+
     clock)
         get_clock
         ;;
-        
+
     clock-simple)
         echo "$(date +%H:%M)"
         ;;
-        
+
     *)
         echo "Usage: $0 {cpu|memory|battery|clock|clock-simple}"
         echo "  cpu         - Show CPU usage with bars and percentage"

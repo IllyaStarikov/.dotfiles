@@ -104,7 +104,24 @@ function M.setup()
           ["<C-c>"] = actions.close,
           ["<Esc>"] = actions.close,
           
-          ["<CR>"] = actions.select_default,
+          ["<CR>"] = function(prompt_bufnr)
+            local picker = action_state.get_current_picker(prompt_bufnr)
+            local multi_selections = picker:get_multi_selection()
+            
+            if #multi_selections > 0 then
+              -- Open all selected files
+              actions.close(prompt_bufnr)
+              for _, entry in ipairs(multi_selections) do
+                local filename = entry[1] or entry.path or entry.filename
+                if filename then
+                  vim.cmd(string.format("edit %s", vim.fn.fnameescape(filename)))
+                end
+              end
+            else
+              -- Fall back to default action for single selection
+              actions.select_default(prompt_bufnr)
+            end
+          end,
           ["<C-x>"] = actions.select_horizontal,
           ["<C-v>"] = actions.select_vertical,
           ["<C-t>"] = actions.select_tab,
@@ -127,7 +144,24 @@ function M.setup()
         n = {
           -- Normal mode mappings
           ["<Esc>"] = actions.close,
-          ["<CR>"] = actions.select_default,
+          ["<CR>"] = function(prompt_bufnr)
+            local picker = action_state.get_current_picker(prompt_bufnr)
+            local multi_selections = picker:get_multi_selection()
+            
+            if #multi_selections > 0 then
+              -- Open all selected files
+              actions.close(prompt_bufnr)
+              for _, entry in ipairs(multi_selections) do
+                local filename = entry[1] or entry.path or entry.filename
+                if filename then
+                  vim.cmd(string.format("edit %s", vim.fn.fnameescape(filename)))
+                end
+              end
+            else
+              -- Fall back to default action for single selection
+              actions.select_default(prompt_bufnr)
+            end
+          end,
           ["<C-x>"] = actions.select_horizontal,
           ["<C-v>"] = actions.select_vertical,
           ["<C-t>"] = actions.select_tab,
