@@ -148,7 +148,6 @@ command -v eza &>/dev/null && alias ls='eza --group-directories-first'
 command -v eza &>/dev/null && alias tree='eza --tree' || alias tree='tree'
 command -v bat &>/dev/null && alias cat='bat'
 command -v rg &>/dev/null && alias grep='rg'
-command -v fd &>/dev/null && alias find='fd'
 
 # Directory navigation
 alias ..='cd ..'
