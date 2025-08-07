@@ -302,18 +302,19 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
     fi
     
     test_case "Theme switcher works correctly"
+    # Save original theme state
     original_theme=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light")
     
-    # Switch to opposite theme
+    # Switch to opposite theme for testing
     if [[ "$original_theme" == "Dark" ]]; then
         defaults delete -g AppleInterfaceStyle 2>/dev/null
+        "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" light >/dev/null 2>&1
         expected_nvim_theme="default"
     else
         defaults write -g AppleInterfaceStyle Dark
+        "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark >/dev/null 2>&1
         expected_nvim_theme="tokyonight"
     fi
-    
-    "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" >/dev/null 2>&1
     
     # Verify all components updated
     theme_ok=1
@@ -333,22 +334,24 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
     if [[ -f ~/.config/theme-switcher/current-theme.sh ]]; then
         source ~/.config/theme-switcher/current-theme.sh
         if [[ "$expected_nvim_theme" == "tokyonight" ]]; then
-            [[ "$MACOS_VARIANT" == "dark" ]] || [[ "$MACOS_BACKGROUND" == "dark" ]] || theme_ok=0
+            [[ "$MACOS_VARIANT" == "dark" ]] || theme_ok=0
         else
-            [[ "$MACOS_VARIANT" == "light" ]] || [[ "$MACOS_BACKGROUND" == "light" ]] || theme_ok=0
+            [[ "$MACOS_VARIANT" == "light" ]] || theme_ok=0
         fi
     else
         theme_ok=0
     fi
     
-    # Restore original theme
+    # ALWAYS restore original theme, regardless of test result
     if [[ "$original_theme" == "Dark" ]]; then
         defaults write -g AppleInterfaceStyle Dark
+        "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark >/dev/null 2>&1
     else
         defaults delete -g AppleInterfaceStyle 2>/dev/null
+        "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" light >/dev/null 2>&1
     fi
-    "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" >/dev/null 2>&1
     
+    # Report test result after restoration
     if [[ $theme_ok -eq 1 ]]; then
         pass
     else
