@@ -27,13 +27,12 @@ exclude:
 
 # Include only the directories needed for the website
 include:
-  - README.md
+  - ../README.md
   - index.html
   - 404.html
   - robots.txt
   - sitemap.xml
-  - doc/
-  - template/
+  - ../docs/
   - CNAME
 
 # GitHub Pages settings
