@@ -79,14 +79,14 @@ declare -a DOTFILES=(
     "src/tmux.conf|tmux|tmux.conf"
     "src/zshrc|zshrc|zshrc"
     "src/zshenv|zshenv|zshenv"
-    "src/vim/init.lua|nvim|init.lua"
+    "src/neovim/init.lua|nvim|init.lua"
     "src/latexmkrc|latexmkrc|latexmkrc"
     "src/i3_config|i3_config|i3_config"
     "src/vimrc|vimrc|vimrc"
     "src/starship.toml|starship|starship.toml"
-    "src/vim/config/plugins.lua|plugins|plugins.lua"
-    "src/vim/config/keymaps.lua|keymaps|keymaps.lua"
-    "src/vim/config/lsp.lua|lsp|lsp.lua"
+    "src/neovim/config/plugins.lua|plugins|plugins.lua"
+    "src/neovim/config/keymaps.lua|keymaps|keymaps.lua"
+    "src/neovim/config/lsp.lua|lsp|lsp.lua"
 )
 
 # Process each dotfile

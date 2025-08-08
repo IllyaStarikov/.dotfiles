@@ -298,7 +298,7 @@ end
 
 - [CodeCompanion.nvim Documentation](https://github.com/olimorris/codecompanion.nvim)
 - [Ollama Documentation](https://ollama.ai/docs)
-- [Our AI prompts configuration](https://github.com/starikov/.dotfiles/blob/main/src/vim/config/plugins/ai.lua)
+- [Our AI prompts configuration](https://github.com/starikov/.dotfiles/blob/main/src/neovim/config/plugins/ai.lua)
 
 ---
 

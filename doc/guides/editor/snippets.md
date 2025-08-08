@@ -446,7 +446,7 @@ def function_name(args):
 
 **Snippet file location**:
 ```
-~/.dotfiles/src/vim/snippets/[filetype].lua
+~/.dotfiles/src/neovim/snippets/[filetype].lua
 ```
 
 **Basic snippet structure**:
@@ -465,7 +465,7 @@ s("trigger", {
 
 1. **Create/edit snippet file**:
    ```bash
-   nvim ~/.dotfiles/src/vim/snippets/python.lua  # For Python snippets
+   nvim ~/.dotfiles/src/neovim/snippets/python.lua  # For Python snippets
    ```
 
 2. **Add your snippet**:
