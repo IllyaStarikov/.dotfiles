@@ -89,8 +89,8 @@ main() {
     
     # Neovim
     mkdir -p "$HOME/.config/nvim"
-    create_link "$DOTFILES_DIR/vim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
-    create_link "$DOTFILES_DIR/vim" "$HOME/.config/nvim/lua" "Neovim Lua configs"
+    create_link "$DOTFILES_DIR/neovim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
+    create_link "$DOTFILES_DIR/neovim" "$HOME/.config/nvim/lua" "Neovim Lua configs"
     
     # Neovim spell files
     mkdir -p "$HOME/.config/nvim/spell"

@@ -193,7 +193,7 @@ window = {
 ## References
 
 - [Official Blink.cmp Documentation](https://cmp.saghen.dev/)
-- [Our full configuration](https://github.com/starikov/.dotfiles/blob/main/src/vim/config/plugins/completion.lua)
+- [Our full configuration](https://github.com/starikov/.dotfiles/blob/main/src/neovim/config/plugins/completion.lua)
 - [Performance benchmarks](https://github.com/Saghen/blink.cmp#benchmarks)
 
 ---
