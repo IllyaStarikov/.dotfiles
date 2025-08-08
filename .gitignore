@@ -17,3 +17,4 @@ vimlog.txt
 
 # Private dotfiles (now untracked)
 .dotfiles.private/
+template/public/
