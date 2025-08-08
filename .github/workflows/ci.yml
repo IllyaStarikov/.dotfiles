@@ -170,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, macos-13]
+        os: [ubuntu-latest, macos-latest, macos-14]  # Linux, macOS latest, and Sonoma
     
     env:
       TEST_TMP_DIR: ${{ runner.temp }}/dotfiles-test
@@ -214,6 +214,10 @@ jobs:
             brew bundle --file=/tmp/Brewfile --no-lock
             echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
             echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            # Install dependencies for Linux
+            sudo apt-get update -qq
+            sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
           fi
           echo "::endgroup::"
       
@@ -285,8 +289,13 @@ jobs:
   integration:
     name: 🔗 Integration Tests
     needs: test-matrix
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]  # Test integration on both Linux and macOS
     
     steps:
       - name: 📥 Checkout Code
