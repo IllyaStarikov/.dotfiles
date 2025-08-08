@@ -44,13 +44,13 @@ jobs:
 
     - name: Run unit tests
       run: |
-        chmod +x tests/test
-        cd tests
+        chmod +x test/test
+        cd test
         ./test --unit --ci -v
 
     - name: Run functional tests
       run: |
-        cd tests
+        cd test
         ./test --functional --ci -v
 
     - name: Upload test results
@@ -59,8 +59,8 @@ jobs:
       with:
         name: test-results-${{ matrix.os }}
         path: |
-          tests/test-results.xml
-          tests/*.log
+          test/test-results.xml
+          test/*.log
 
     - name: Test setup scripts (dry run)
       run: |
@@ -108,7 +108,7 @@ jobs:
         
         # Lint all shell scripts
         find src -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
-        find tests -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
+        find test -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
 
     - name: Check file permissions
       run: |
