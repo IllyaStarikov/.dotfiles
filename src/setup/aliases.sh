@@ -159,6 +159,15 @@ create_symlink "$DOTFILES_DIR/gitignore" "$HOME/.gitignore" "Git ignore patterns
 create_symlink "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "Git configuration"
 create_symlink "$DOTFILES_DIR/gitmessage" "$HOME/.gitmessage" "Git commit template"
 
+# Set global gitignore
+info "Configuring global gitignore"
+if git config --global core.excludesfile "$HOME/.gitignore"; then
+    success "Global gitignore configured"
+else
+    error "Failed to configure global gitignore"
+    ((ERROR_COUNT++))
+fi
+
 # LaTeX configuration
 progress "Setting up LaTeX configuration"
 create_symlink "$DOTFILES_DIR/latexmkrc" "$HOME/.latexmkrc" "LaTeX build config"
