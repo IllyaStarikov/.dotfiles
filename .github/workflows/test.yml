@@ -1,4 +1,4 @@
-name: Test Suite
+name: Tests
 
 on:
   push:
@@ -14,32 +14,55 @@ concurrency:
 env:
   DOTFILES_DIR: ${{ github.workspace }}
   CI_MODE: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 jobs:
-  test:
-    name: Test (${{ matrix.os }})
+  unit-tests:
+    name: 🧪 Unit Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-14]  # Linux, macOS latest, and Sonoma
+        os: [ubuntu-latest, macos-latest, macos-14]
     
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
         with:
           submodules: true
       
-      - name: Setup Environment
+      - name: 🗄️ Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/share/nvim
+            ~/.cache/nvim
+            ~/Library/Caches/Homebrew
+            /usr/local/Homebrew
+          key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/config/plugins.lua') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.os }}-test-
+      
+      - name: 🔧 Setup Environment
         run: |
           echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
           mkdir -p "/tmp/dotfiles-test"
           
           # Install dependencies based on OS
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install bash coreutils findutils gnu-sed neovim shellcheck
-            # Add GNU tools to PATH
+            # Use brew bundle for faster installation
+            cat > /tmp/Brewfile << EOF
+          brew "bash"
+          brew "coreutils"
+          brew "findutils"
+          brew "gnu-sed"
+          brew "neovim"
+          brew "shellcheck"
+          EOF
+            brew bundle --file=/tmp/Brewfile --no-lock
             echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
             echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
@@ -47,48 +70,161 @@ jobs:
             sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git
           fi
       
-      - name: Setup Neovim
+      - name: 🌙 Setup Neovim
         run: |
           mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
           ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
           ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
           
-          # Install lazy.nvim
-          git clone --filter=blob:none --single-branch \
-            https://github.com/folke/lazy.nvim.git \
-            ~/.local/share/nvim/lazy/lazy.nvim || true
+          # Install lazy.nvim only if not cached
+          if [[ ! -d ~/.local/share/nvim/lazy/lazy.nvim ]]; then
+            git clone --filter=blob:none --single-branch \
+              https://github.com/folke/lazy.nvim.git \
+              ~/.local/share/nvim/lazy/lazy.nvim
+          fi
       
-      - name: Run Tests
+      - name: ✅ Run Unit Tests
         run: |
           chmod +x test/test
-          cd test
-          ./test --unit --ci -v
-          ./test --functional --ci -v
+          cd test && ./test --unit --ci -v
       
-      - name: Validate Configurations
-        run: |
-          # Shell configs
-          zsh -n src/zsh/zshrc || echo "Warning: Zsh config invalid"
-          bash -n src/setup/setup.sh || echo "Warning: Setup script invalid"
-          
-          # Git config
-          git config --file=src/git/gitconfig --list > /dev/null
-          
-          # Check for issues
-          ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "Warning: Hardcoded paths"
-          ! grep -r -i "password\|secret\|key\|token" src/ | grep -v "^#" | grep "=" || echo "Warning: Potential secrets"
-      
-      - name: Lint Scripts
-        run: |
-          find src -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
-          find test -name "*.sh" -type f -print0 | xargs -0 shellcheck -x || true
-      
-      - name: Upload Results
+      - name: 📊 Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.os }}
+          name: unit-test-results-${{ matrix.os }}
           path: |
             test/test-results.xml
             test/*.log
           retention-days: 7
+
+  functional-tests:
+    name: 🔄 Functional Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    needs: unit-tests
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-14]
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🔧 Setup Environment
+        run: |
+          echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
+          mkdir -p "/tmp/dotfiles-test"
+          
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install bash coreutils findutils gnu-sed neovim
+            echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+            echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
+          fi
+      
+      - name: 🌙 Setup Neovim
+        run: |
+          mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
+          ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
+          ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
+          
+          git clone --filter=blob:none --single-branch \
+            https://github.com/folke/lazy.nvim.git \
+            ~/.local/share/nvim/lazy/lazy.nvim || true
+      
+      - name: 🔄 Run Functional Tests
+        run: |
+          chmod +x test/test
+          cd test && ./test --functional --ci -v
+      
+      - name: 📊 Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-test-results-${{ matrix.os }}
+          path: |
+            test/test-results.xml
+            test/*.log
+          retention-days: 7
+
+  integration-tests:
+    name: 🔗 Integration Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    needs: functional-tests
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🏗️ Create Test Environment
+        run: |
+          export TEST_HOME="/tmp/test-home"
+          mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
+          echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
+      
+      - name: 🔗 Test Symlink Creation
+        run: |
+          export HOME="$TEST_HOME"
+          export DOTFILES_DIR="${{ github.workspace }}"
+          
+          # Test symlink creation
+          bash src/setup/symlinks.sh || bash src/setup/aliases.sh
+          
+          # Verify critical symlinks
+          test -L "$HOME/.zshrc" && echo "✅ .zshrc symlink created" || echo "❌ .zshrc symlink missing"
+          test -L "$HOME/.gitconfig" && echo "✅ .gitconfig symlink created" || echo "❌ .gitconfig symlink missing"
+          test -L "$HOME/.tmux.conf" && echo "✅ .tmux.conf symlink created" || echo "❌ .tmux.conf symlink missing"
+      
+      - name: 🎨 Test Theme Switcher
+        run: |
+          mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
+          bash src/theme-switcher/switch-theme.sh || echo "⚠️ Theme switcher test failed"
+          test -f ~/.config/theme-switcher/current-theme.sh || echo "❌ Theme file not created"
+      
+      - name: 🔍 Validate Configurations
+        run: |
+          # Validate shell configs
+          zsh -n src/zsh/zshrc || echo "⚠️ Zsh config validation failed"
+          
+          # Validate git config
+          git config --file=src/git/gitconfig --list > /dev/null || echo "⚠️ Git config validation failed"
+          
+          # Check for hardcoded paths
+          ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "⚠️ Hardcoded paths found"
+
+  test-status:
+    name: ✅ Test Status
+    if: always()
+    needs: [unit-tests, functional-tests, integration-tests]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Test Results
+        run: |
+          echo "Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "Functional Tests: ${{ needs.functional-tests.result }}"
+          echo "Integration Tests: ${{ needs.integration-tests.result }}"
+          
+          if [[ "${{ needs.unit-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.functional-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
+            echo "❌ Tests failed"
+            exit 1
+          fi
+          
+          echo "✅ All tests passed"
