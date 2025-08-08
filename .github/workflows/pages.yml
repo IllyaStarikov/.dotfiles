@@ -7,21 +7,20 @@ on:
       - 'template/**'
       - 'README.md'
       - 'docs/**'
+      - 'src/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: 📄 Build Pages
+  build-and-deploy:
+    name: 📄 Build & Deploy Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
     
@@ -30,9 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      
-      - name: 🔧 Setup Pages
-        uses: actions/configure-pages@v4
+          fetch-depth: 0
       
       - name: 🏗️ Generate Site Content
         run: |
@@ -52,61 +49,19 @@ jobs:
             cp -r docs/* _site/docs/
           fi
           
-          # Copy README as index if no index.html exists
-          if [[ ! -f _site/index.html ]] && [[ -f README.md ]]; then
-            # Convert README.md to HTML (basic conversion)
-            cat > _site/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Dotfiles - starikov.io</title>
-              <style>
-                  body { 
-                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-                      line-height: 1.6;
-                      color: #333;
-                      max-width: 900px;
-                      margin: 0 auto;
-                      padding: 2rem;
-                  }
-                  pre { 
-                      background: #f4f4f4;
-                      padding: 1rem;
-                      overflow-x: auto;
-                      border-radius: 5px;
-                  }
-                  code {
-                      background: #f4f4f4;
-                      padding: 0.2rem 0.4rem;
-                      border-radius: 3px;
-                  }
-                  a { color: #0366d6; }
-                  h1, h2, h3 { margin-top: 2rem; }
-              </style>
-          </head>
-          <body>
-          EOF
-            
-            # Basic markdown to HTML conversion using sed
-            sed -e 's/^# \(.*\)/<h1>\1<\/h1>/' \
-                -e 's/^## \(.*\)/<h2>\1<\/h2>/' \
-                -e 's/^### \(.*\)/<h3>\1<\/h3>/' \
-                -e 's/\*\*\([^*]*\)\*\*/<strong>\1<\/strong>/g' \
-                -e 's/\*\([^*]*\)\*/<em>\1<\/em>/g' \
-                -e 's/`\([^`]*\)`/<code>\1<\/code>/g' \
-                -e 's/^\- \(.*\)/<li>\1<\/li>/' \
-                -e 's/^[0-9]\+\. \(.*\)/<li>\1<\/li>/' \
-                README.md >> _site/index.html
-            
-            echo "</body></html>" >> _site/index.html
-          fi
-          
-          # Generate file listing if mirror.sh exists
+          # Generate mirror of source files if mirror.sh exists
           if [[ -f template/mirror.sh ]]; then
             echo "Running mirror.sh to generate file listings..."
             bash template/mirror.sh || true
+            # Copy generated mirror to site
+            if [[ -d template/mirror ]]; then
+              cp -r template/mirror _site/
+            fi
+          fi
+          
+          # Copy README as index if no index.html exists
+          if [[ ! -f _site/index.html ]] && [[ -f README.md ]]; then
+            cp README.md _site/
           fi
           
           # Create 404 page
@@ -143,26 +98,52 @@ jobs:
           </html>
           EOF
           
+          # Create .nojekyll file to prevent Jekyll processing
+          touch _site/.nojekyll
+          
           # List generated files
           echo "Generated site structure:"
           ls -la _site/
           
           echo "::endgroup::"
       
-      - name: 📤 Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  deploy:
-    name: 🚀 Deploy to Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
       - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        run: |
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if gh-pages branch exists
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            echo "gh-pages branch exists, fetching..."
+            git fetch origin gh-pages
+          else
+            echo "Creating orphan gh-pages branch..."
+            git checkout --orphan gh-pages
+            git reset --hard
+            git commit --allow-empty -m "Initial gh-pages commit"
+            git push origin gh-pages
+            git checkout main
+          fi
+          
+          # Clone just the gh-pages branch into a temp directory
+          cd /tmp
+          git clone --single-branch --branch gh-pages "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          cd gh-pages
+          
+          # Remove old files
+          git rm -rf . || true
+          
+          # Copy new files
+          cp -r "${{ github.workspace }}/_site/"* .
+          cp "${{ github.workspace }}/_site/.nojekyll" . 2>/dev/null || true
+          
+          # Commit and push if there are changes
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Deploy to GitHub Pages from ${{ github.sha }}"
+            git push origin gh-pages
+            echo "✅ Deployed to GitHub Pages"
+          fi
