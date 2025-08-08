@@ -1,3 +1,15 @@
+-- Add the config directory to the Lua package path
+local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")
+-- Support both regular nvim config and dotfiles structure
+local dotfiles_config = vim.fn.expand("~/.dotfiles/src/neovim")
+if vim.fn.isdirectory(dotfiles_config) == 1 then
+  package.path = package.path .. ";" .. dotfiles_config .. "/?.lua"
+  package.path = package.path .. ";" .. dotfiles_config .. "/?/init.lua"
+elseif vim.fn.isdirectory(config_path) == 1 then
+  package.path = package.path .. ";" .. config_path .. "/?.lua"
+  package.path = package.path .. ";" .. config_path .. "/?/init.lua"
+end
+
 -- Disable verbose logging for normal operation
 -- Only disable if not already set via command line
 if vim.opt.verbose:get() == 0 then
@@ -48,11 +60,18 @@ vim.api.nvim_create_autocmd("FileType", {
 -- This must be set before any plugins are loaded
 vim.g.lsp_autostart = true
 
--- Initialize error handling first
-require("config.error-handler").init()
+-- Initialize error handling first (with pcall for safety)
+local ok, error_handler = pcall(require, "config.error-handler")
+if ok then
+  error_handler.init()
+end
 
 -- Load utils for protected requires
-local utils = require("config.utils")
+local utils_ok, utils = pcall(require, "config.utils")
+if not utils_ok then
+  -- Fallback if utils not available
+  utils = { safe_require = function(module) return pcall(require, module) end }
+end
 
 -- Load core configuration modules with error protection and fallback
 local modules = {
