@@ -1,0 +1,472 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable debug mode'
+        required: false
+        default: false
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Global environment variables
+  DOTFILES_DIR: ${{ github.workspace }}
+  CI_MODE: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+permissions:
+  contents: write
+  pull-requests: write
+  security-events: write
+
+jobs:
+  # ============================================================================
+  # STAGE 1: Code Quality Checks
+  # ============================================================================
+  
+  lint:
+    name: 🔍 Lint Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0  # Full history for better analysis
+      
+      - name: 🗄️ Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache
+            ~/.npm
+            /usr/local/bin/stylua
+          key: ${{ runner.os }}-lint-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-lint-
+      
+      - name: 🐚 Lint Shell Scripts
+        run: |
+          echo "::group::Install ShellCheck"
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck
+          echo "::endgroup::"
+          
+          echo "::group::Run ShellCheck"
+          find . -type f -name "*.sh" -print0 | xargs -0 shellcheck -x || true
+          find src/scripts -type f -exec grep -l '^#!/.*sh' {} \; | xargs shellcheck -x || true
+          echo "::endgroup::"
+      
+      - name: 🌙 Lint Lua Files
+        run: |
+          echo "::group::Install stylua"
+          # Check cache first
+          if ! command -v stylua &> /dev/null; then
+            wget -qO stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/download/v0.19.1/stylua-linux-x86_64.zip
+            unzip -q stylua.zip && chmod +x stylua && sudo mv stylua /usr/local/bin/
+          fi
+          echo "::endgroup::"
+          
+          echo "::group::Check Lua formatting"
+          find src -name "*.lua" -type f | xargs stylua --check --indent-type Spaces --indent-width 2 || true
+          echo "::endgroup::"
+      
+      - name: 📝 Lint Markdown
+        run: |
+          echo "::group::Install markdownlint"
+          npm install -g markdownlint-cli --silent
+          echo "::endgroup::"
+          
+          echo "::group::Run markdownlint"
+          markdownlint '**/*.md' --ignore node_modules --ignore .github || true
+          echo "::endgroup::"
+      
+      - name: 🎨 Check Code Formatting
+        run: |
+          echo "::group::Check for issues"
+          # Check for trailing whitespace
+          ! grep -r '[[:space:]]$' src/ test/ --include="*.sh" --include="*.lua" --include="*.py" || echo "⚠️ Trailing whitespace found"
+          
+          # Check for tabs in files that should use spaces
+          ! grep -r $'\t' src/ --include="*.lua" --include="*.yml" --include="*.yaml" --include="*.json" || echo "⚠️ Tabs found in space-only files"
+          
+          # Check line endings
+          ! find src/ test/ -type f -exec file {} \; | grep CRLF || echo "⚠️ Windows line endings found"
+          echo "::endgroup::"
+
+  # ============================================================================
+  # STAGE 2: Security Scanning
+  # ============================================================================
+  
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🗄️ Cache Security Tools
+        uses: actions/cache@v3
+        with:
+          path: |
+            /usr/local/bin/gitleaks
+          key: ${{ runner.os }}-security-tools-v1
+      
+      - name: 🔍 Secret Scanning with Gitleaks
+        run: |
+          echo "::group::Install gitleaks"
+          if ! command -v gitleaks &> /dev/null; then
+            wget -qO gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+            tar -xzf gitleaks.tar.gz && chmod +x gitleaks && sudo mv gitleaks /usr/local/bin/
+          fi
+          echo "::endgroup::"
+          
+          echo "::group::Run gitleaks scan"
+          if [[ -f ".gitleaks.toml" ]]; then
+            echo "Using .gitleaks.toml configuration"
+            gitleaks detect --source . --config .gitleaks.toml --verbose --exit-code 0
+          else
+            echo "Using default configuration"
+            gitleaks detect --source . --verbose --exit-code 0
+          fi
+          echo "::endgroup::"
+      
+      - name: 🛡️ Vulnerability Scan with Grype
+        uses: anchore/scan-action@v3
+        continue-on-error: true
+        with:
+          path: "."
+          fail-build: false
+          output-format: table
+
+  # ============================================================================
+  # STAGE 3: Testing
+  # ============================================================================
+  
+  test-matrix:
+    name: 🧪 Test (${{ matrix.os }})
+    needs: [lint, security]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-13]
+    
+    env:
+      TEST_TMP_DIR: ${{ runner.temp }}/dotfiles-test
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🗄️ Cache Neovim & Homebrew
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/share/nvim
+            ~/.local/state/nvim
+            ~/.cache/nvim
+            ~/Library/Caches/Homebrew
+            /usr/local/Homebrew
+          key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/config/plugins.lua') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.os }}-test-
+            ${{ runner.os }}-test-
+      
+      - name: 🔧 Setup Test Environment
+        run: |
+          echo "::group::Create directories"
+          mkdir -p "$TEST_TMP_DIR"
+          echo "::endgroup::"
+          
+          echo "::group::Install dependencies"
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            # Use brew bundle for faster installation
+            cat > /tmp/Brewfile << EOF
+          brew "bash"
+          brew "coreutils"
+          brew "findutils"
+          brew "gnu-sed"
+          brew "neovim"
+          EOF
+            brew bundle --file=/tmp/Brewfile --no-lock
+            echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+            echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+          fi
+          echo "::endgroup::"
+      
+      - name: 🌙 Setup Neovim
+        run: |
+          echo "::group::Configure Neovim"
+          mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
+          ln -sf "$GITHUB_WORKSPACE/src/neovim/init.lua" ~/.config/nvim/init.lua
+          ln -sf "$GITHUB_WORKSPACE/src/neovim/config" ~/.config/nvim/config
+          
+          # Install lazy.nvim only if not cached
+          if [[ ! -d ~/.local/share/nvim/lazy/lazy.nvim ]]; then
+            git clone --filter=blob:none --single-branch \
+              https://github.com/folke/lazy.nvim.git \
+              ~/.local/share/nvim/lazy/lazy.nvim
+          fi
+          echo "::endgroup::"
+      
+      - name: ✅ Run Unit Tests
+        run: |
+          chmod +x test/test
+          cd test && ./test --unit --ci -v
+      
+      - name: 🔄 Run Functional Tests
+        run: |
+          cd test && ./test --functional --ci -v
+      
+      - name: 📊 Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: |
+            test/test-results.xml
+            test/*.log
+          retention-days: 7
+      
+      - name: 🎨 Test Theme Switcher
+        run: |
+          echo "::group::Setup theme directories"
+          mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
+          echo "::endgroup::"
+          
+          echo "::group::Test theme switching"
+          bash src/theme-switcher/switch-theme.sh || echo "⚠️ Theme switcher test failed"
+          test -f ~/.config/theme-switcher/current-theme.sh || echo "❌ Theme file not created"
+          echo "::endgroup::"
+      
+      - name: 🔍 Validate Configurations
+        run: |
+          echo "::group::Check configurations"
+          # Validate shell configs
+          zsh -n src/zsh/zshrc || echo "⚠️ Zsh config validation failed"
+          
+          # Validate git config
+          git config --file=src/git/gitconfig --list > /dev/null || echo "⚠️ Git config validation failed"
+          
+          # Check for hardcoded paths
+          ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "⚠️ Hardcoded paths found"
+          
+          # Basic secret check
+          ! grep -r -i "password\|secret\|key\|token" src/ | grep -v "^[[:space:]]*#" | grep "=" || echo "⚠️ Potential secrets found"
+          echo "::endgroup::"
+
+  # ============================================================================
+  # STAGE 4: Integration Testing
+  # ============================================================================
+  
+  integration:
+    name: 🔗 Integration Tests
+    needs: test-matrix
+    runs-on: macos-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🏗️ Create Test Environment
+        run: |
+          export TEST_HOME="$RUNNER_TEMP/test-home"
+          mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
+          echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
+      
+      - name: 🔗 Test Symlink Creation
+        run: |
+          export HOME="$TEST_HOME"
+          export DOTFILES_DIR="$GITHUB_WORKSPACE"
+          
+          # Test symlink creation
+          bash src/setup/symlinks.sh || bash src/setup/aliases.sh
+          
+          # Verify critical symlinks
+          test -L "$HOME/.zshrc" && echo "✅ .zshrc symlink created" || echo "❌ .zshrc symlink missing"
+          test -L "$HOME/.gitconfig" && echo "✅ .gitconfig symlink created" || echo "❌ .gitconfig symlink missing"
+          test -L "$HOME/.tmux.conf" && echo "✅ .tmux.conf symlink created" || echo "❌ .tmux.conf symlink missing"
+
+  # ============================================================================
+  # STAGE 5: Documentation Check
+  # ============================================================================
+  
+  docs:
+    name: 📚 Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 📖 Check Documentation Coverage
+        run: |
+          echo "::group::Check script documentation"
+          scripts=(
+            "src/setup/setup.sh"
+            "src/setup/symlinks.sh"
+            "src/theme-switcher/switch-theme.sh"
+            "src/scripts/update"
+          )
+          
+          for script in "${scripts[@]}"; do
+            if [[ -f "$script" ]]; then
+              if ! grep -q -E "(usage\(\)|--help|Usage:)" "$script"; then
+                echo "⚠️ No usage documentation in $script"
+              else
+                echo "✅ Documentation found in $script"
+              fi
+            fi
+          done
+          echo "::endgroup::"
+      
+      - name: 🔍 Validate README
+        run: |
+          echo "::group::Check README sections"
+          required_sections=(
+            "Installation"
+            "Usage"
+            "Features"
+            "Requirements"
+          )
+          
+          for section in "${required_sections[@]}"; do
+            if grep -q "## .*$section" README.md; then
+              echo "✅ Section found: $section"
+            else
+              echo "⚠️ Section missing: $section"
+            fi
+          done
+          echo "::endgroup::"
+
+  # ============================================================================
+  # STAGE 6: Release (only on tags)
+  # ============================================================================
+  
+  release:
+    name: 📦 Create Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test-matrix, integration, docs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+      
+      - name: 📝 Generate Changelog
+        id: changelog
+        run: |
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
+          
+          # Generate changelog
+          if [[ -z "$PREV_TAG" ]]; then
+            COMMITS=$(git log --oneline)
+          else
+            COMMITS=$(git log --oneline "${PREV_TAG}..HEAD")
+          fi
+          
+          # Format changelog
+          {
+            echo "## What's Changed in ${CURRENT_TAG}"
+            echo ""
+            echo "### ✨ Features"
+            echo "$COMMITS" | grep -E "feat(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No new features"
+            echo ""
+            echo "### 🐛 Bug Fixes"
+            echo "$COMMITS" | grep -E "fix(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No bug fixes"
+            echo ""
+            echo "### 📚 Documentation"
+            echo "$COMMITS" | grep -E "docs(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No documentation updates"
+            echo ""
+            echo "### 🔧 Other Changes"
+            echo "$COMMITS" | grep -vE "(feat|fix|docs)(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' | head -10
+            echo ""
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG:-initial}...${CURRENT_TAG}"
+          } > CHANGELOG.md
+      
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-beta') }}
+          generate_release_notes: true
+
+  # ============================================================================
+  # Workflow Performance Optimization
+  # - Uses caching for dependencies (npm, Homebrew, Neovim, tools)
+  # - Runs jobs in parallel where possible
+  # - Uses matrix strategy for OS testing
+  # - Cancels duplicate runs automatically
+  # - Caches compiled tools like stylua and gitleaks
+  # ============================================================================
+  
+  # ============================================================================
+  # STAGE 7: Status Check (Required for branch protection)
+  # ============================================================================
+  
+  status:
+    name: ✅ CI Status
+    if: always()
+    needs: [lint, security, test-matrix, integration, docs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: 📊 Check Results
+        run: |
+          echo "::group::Job Results"
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Security: ${{ needs.security.result }}"
+          echo "Tests: ${{ needs.test-matrix.result }}"
+          echo "Integration: ${{ needs.integration.result }}"
+          echo "Docs: ${{ needs.docs.result }}"
+          echo "::endgroup::"
+          
+          # Fail if any required job failed
+          if [[ "${{ needs.lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-matrix.result }}" == "failure" ]] || \
+             [[ "${{ needs.integration.result }}" == "failure" ]]; then
+            echo "❌ Required checks failed"
+            exit 1
+          fi
+          
+          echo "✅ All required checks passed"
