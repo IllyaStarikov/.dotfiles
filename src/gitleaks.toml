@@ -1,0 +1,119 @@
+# Gitleaks Configuration File
+# Documentation: https://github.com/gitleaks/gitleaks
+
+title = "Dotfiles Gitleaks Configuration"
+
+# Extend the base configuration
+[extend]
+useDefault = true
+
+# Additional rules for dotfiles-specific patterns
+[[rules]]
+id = "dotfiles-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_\-\s]?key|apikey)['\"\s]*[:=]['\"\s]*([a-zA-Z0-9_\-]{20,})'''
+tags = ["api", "key"]
+
+[[rules]]
+id = "dotfiles-token"
+description = "Generic Token"
+regex = '''(?i)(token|bearer|auth)['\"\s]*[:=]['\"\s]*([a-zA-Z0-9_\-\.]{20,})'''
+tags = ["token", "auth"]
+
+# Allowlist - patterns to ignore
+[allowlist]
+description = "Allowlisted files and patterns"
+
+# Allow example/template configurations
+paths = [
+    '''template/.*''',
+    '''test/.*''',
+    '''docs/.*''',
+    '''README\.md''',
+    '''CLAUDE\.md''',
+]
+
+# Allow common false positives in dotfiles
+regexes = [
+    # Vim/Neovim plugin configurations (often have example API keys)
+    '''(?i)example[_\-]?api[_\-]?key''',
+    '''(?i)your[_\-]?api[_\-]?key''',
+    '''(?i)placeholder''',
+    '''(?i)sample[_\-]?token''',
+    '''(?i)demo[_\-]?key''',
+    
+    # GitHub Actions and CI/CD variables
+    '''\$\{\{.*secrets\..*\}\}''',
+    '''\$\{.*SECRET.*\}''',
+    '''process\.env\..*''',
+    
+    # Common environment variable references
+    '''os\.getenv\(.*\)''',
+    '''ENV\[.*\]''',
+    '''\$[A-Z_]+_KEY''',
+    '''\$[A-Z_]+_TOKEN''',
+    
+    # LSP and language server configs
+    '''lsp[_\-]?server[_\-]?token''',
+    '''language[_\-]?server[_\-]?key''',
+    
+    # Package manager lock files
+    '''yarn\.lock''',
+    '''package-lock\.json''',
+    '''Cargo\.lock''',
+    '''poetry\.lock''',
+    
+    # Shell prompt configurations
+    '''STARSHIP_.*''',
+    '''PROMPT_.*''',
+    '''PS1.*''',
+    
+    # Common dotfile patterns that are not secrets
+    '''export\s+[A-Z_]+=\"\$\{.*\}\"''',
+    '''alias\s+.*=.*''',
+    '''function\s+.*\(\)''',
+]
+
+# Files to completely skip
+[[allowlist.files]]
+regex = '''(^|/)\.git/.*'''
+
+[[allowlist.files]]
+regex = '''(^|/)\.env\.example$'''
+
+[[allowlist.files]]
+regex = '''(^|/)\.env\.template$'''
+
+[[allowlist.files]]
+regex = '''.*\.(jpg|jpeg|png|gif|ico|svg|pdf|zip|tar|gz|exe|dmg|iso)$'''
+
+[[allowlist.files]]
+regex = '''.*\.(woff|woff2|ttf|otf|eot)$'''
+
+# Commits to ignore (initial commits, documentation updates, etc.)
+[[allowlist.commits]]
+description = "Ignore specific commits"
+commits = [
+    # Add any specific commit SHAs to ignore here if needed
+]
+
+# Additional entropy checks
+[allowlist.stopwords]
+# Common non-secret strings that might trigger false positives
+stopwords = [
+    "example",
+    "test",
+    "demo",
+    "sample",
+    "placeholder",
+    "todo",
+    "fixme",
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "username",
+    "password",
+    "admin",
+    "root",
+    "user",
+]
