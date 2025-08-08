@@ -3,256 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Illya Starikov's Dotfiles - Lightning-Fast Developer Environment</title>
-    <meta name="description" content="Lightning-fast developer environment with 50ms Neovim startup, AI-powered coding with Claude/GPT-4, and automatic theme switching for macOS">
-    <meta name="keywords" content="dotfiles, neovim, vim, tmux, alacritty, zsh, macos, developer tools, AI coding, claude, gpt-4">
-    <meta name="author" content="Illya Starikov">
+    <meta name="description" content="Modern dotfiles for developers - Neovim, tmux, Zsh configurations with automatic theme switching and AI integration">
+    <title>Dotfiles - Development Environment Configuration</title>
     
-    <!-- Open Graph / Social Media -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://dotfiles.starikov.io/">
-    <meta property="og:title" content="Illya Starikov's Dotfiles">
-    <meta property="og:description" content="50ms Neovim startup • AI-powered coding • Automatic theme switching">
-    <meta property="og:image" content="https://dotfiles.starikov.io/template/dotfiles.png">
+    <meta property="og:title" content="Modern Dotfiles Configuration">
+    <meta property="og:description" content="Fast, efficient development environment with Neovim, tmux, and modern CLI tools">
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://dotfiles.starikov.io/">
-    <meta property="twitter:title" content="Illya Starikov's Dotfiles">
-    <meta property="twitter:description" content="50ms Neovim startup • AI-powered coding • Automatic theme switching">
-    <meta property="twitter:image" content="https://dotfiles.starikov.io/template/dotfiles.png">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/template/dotfiles.png">
-    
-    <!-- Analytics -->
-    <script src="/template/analytics.js"></script>
-    <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #1a1a1a;
-            --accent-color: #3b82f6;
-            --secondary-color: #8b5cf6;
-            --border-color: #e5e5e5;
-            --code-bg: #f5f5f5;
-        }
-        
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #0a0a0a;
-                --text-color: #f5f5f5;
-                --accent-color: #60a5fa;
-                --secondary-color: #a78bfa;
-                --border-color: #262626;
-                --code-bg: #1a1a1a;
-            }
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background: var(--bg-color);
-            padding: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .tagline {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            margin-bottom: 2rem;
-        }
-        
-        .badges {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-        
-        .section {
-            margin-bottom: 3rem;
-        }
-        
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            color: var(--accent-color);
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .card p {
-            opacity: 0.8;
-            font-size: 0.95rem;
-        }
-        
-        a {
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-        
-        a:hover {
-            text-decoration: underline;
-        }
-        
-        .quick-start {
-            background: var(--code-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        code {
-            font-family: 'SF Mono', Monaco, monospace;
-            background: var(--code-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-        
-        .config-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .config-link {
-            background: var(--code-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            transition: all 0.2s;
-        }
-        
-        .config-link:hover {
-            background: var(--accent-color);
-            color: white;
-            text-decoration: none;
-        }
-        
-        footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            opacity: 0.8;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
-    <h1>⚡ Lightning-Fast Developer Environment</h1>
-    <p class="tagline">50ms Neovim startup • AI-powered coding • Automatic theme switching</p>
-    
-    <div class="badges">
-        <a href="https://github.com/IllyaStarikov/.dotfiles">
-            <img src="https://img.shields.io/github/stars/IllyaStarikov/.dotfiles?style=for-the-badge&logo=github&color=8b5cf6&logoColor=white" alt="GitHub stars">
-        </a>
-        <img src="https://img.shields.io/badge/INSTALL-Quick_Start-10b981?style=for-the-badge&logo=apple&logoColor=white" alt="Quick Start">
-    </div>
-    
-    <div class="quick-start section">
-        <h2>🛠 Quick Start</h2>
-        <code>git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles</code><br>
-        <code>cd ~/.dotfiles && ./src/setup/mac.sh</code>
-    </div>
-    
-    <div class="section">
-        <h2>✨ Features</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>🚀 Blazing Fast</h3>
-                <p>Neovim loads in under 50ms with 80+ plugins. Optimized shell startup in 80ms.</p>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">~/.dotfiles</a>
+            <ul class="nav-menu">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#configs">Configs</a></li>
+                <li><a href="#install">Install</a></li>
+                <li><a href="https://github.com/IllyaStarikov/.dotfiles" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Modern Development Environment</h1>
+            <p class="hero-subtitle">Fast, efficient, and beautiful configurations for Neovim, tmux, and Zsh</p>
+            <div class="hero-actions">
+                <a href="#install" class="btn btn-primary">Get Started</a>
+                <a href="https://github.com/IllyaStarikov/.dotfiles" class="btn btn-secondary">View on GitHub</a>
             </div>
-            <div class="card">
-                <h3>🤖 AI-First</h3>
-                <p>Claude, GPT-4, and Copilot integrated directly into your editor workflow.</p>
-            </div>
-            <div class="card">
-                <h3>🎨 Smart Themes</h3>
-                <p>Automatically syncs with macOS light/dark mode across all applications.</p>
-            </div>
-            <div class="card">
-                <h3>📦 Zero Friction</h3>
-                <p>One command installs everything. Cross-platform support for macOS and Linux.</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">~50ms</span>
+                    <span class="stat-label">Neovim Startup</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">80+</span>
+                    <span class="stat-label">Plugins</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">8+</span>
+                    <span class="stat-label">Languages</span>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="section">
-        <h2>📁 Configuration Files</h2>
-        <p>Browse the actual configuration files that power this setup:</p>
-        <div class="config-links">
-            <a href="/template/nvim.html" class="config-link">📝 Neovim</a>
-            <a href="/template/alacritty.html" class="config-link">🖥️ Alacritty</a>
-            <a href="/template/tmux.html" class="config-link">🪟 tmux</a>
-            <a href="/template/zshrc.html" class="config-link">🐚 Zsh</a>
-            <a href="/template/gitconfig.html" class="config-link">📦 Git</a>
-            <a href="/template/keymaps.html" class="config-link">⌨️ Keymaps</a>
-            <a href="/template/plugins.html" class="config-link">🔌 Plugins</a>
+    </header>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Neovim starts in ~50ms with 80+ plugins. Optimized for performance without sacrificing functionality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Integration</h3>
+                    <p>Built-in support for Claude, GPT-4, and GitHub Copilot. AI-powered coding at your fingertips.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Smart Themes</h3>
+                    <p>Automatic theme switching that syncs with your system's dark/light mode across all applications.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Modern Tools</h3>
+                    <p>Rust-based CLI tools like ripgrep, fd, and eza for blazing fast file operations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Easy Setup</h3>
+                    <p>One-command installation that sets up everything automatically. Works on macOS and Linux.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧪</div>
+                    <h3>Well Tested</h3>
+                    <p>Comprehensive test suite ensures everything works as expected. Continuous integration ready.</p>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <div class="section">
-        <h2>📚 Documentation</h2>
-        <div class="grid">
-            <div class="card">
-                <h3><a href="/doc/">📖 Full Documentation</a></h3>
-                <p>Complete guides for installation, configuration, and customization.</p>
-            </div>
-            <div class="card">
-                <h3><a href="/doc/usage/reference.md">⚡ Quick Reference</a></h3>
-                <p>Essential commands and keybindings for daily use.</p>
-            </div>
-            <div class="card">
-                <h3><a href="/doc/guides/terminal/theme-system.md">🎨 Theme Guide</a></h3>
-                <p>Configure automatic light/dark mode switching.</p>
+    </section>
+
+    <section id="configs" class="configs">
+        <div class="container">
+            <h2>Configuration Files</h2>
+            <p class="section-subtitle">Browse the actual configuration files with syntax highlighting</p>
+            
+            <div class="config-grid">
+                <div class="config-category">
+                    <h3>🎯 Editor</h3>
+                    <ul class="config-list">
+                        <li><a href="nvim_init.html">Neovim Init</a></li>
+                        <li><a href="nvim_plugins.html">Plugin Configuration</a></li>
+                        <li><a href="nvim_keymaps.html">Keybindings</a></li>
+                        <li><a href="nvim_lsp.html">LSP Settings</a></li>
+                    </ul>
+                </div>
+                
+                <div class="config-category">
+                    <h3>💻 Terminal</h3>
+                    <ul class="config-list">
+                        <li><a href="alacritty.html">Alacritty</a></li>
+                        <li><a href="tmux.html">Tmux</a></li>
+                        <li><a href="zshrc.html">Zsh Configuration</a></li>
+                        <li><a href="starship.html">Starship Prompt</a></li>
+                    </ul>
+                </div>
+                
+                <div class="config-category">
+                    <h3>🛠 Development</h3>
+                    <ul class="config-list">
+                        <li><a href="gitconfig.html">Git Configuration</a></li>
+                        <li><a href="gitignore.html">Global Gitignore</a></li>
+                        <li><a href="vimrc.html">Vim (Legacy)</a></li>
+                        <li><a href="latexmkrc.html">LaTeX Settings</a></li>
+                    </ul>
+                </div>
+
+                <div class="config-category">
+                    <h3>🎨 Themes</h3>
+                    <ul class="config-list">
+                        <li><a href="themes.html">Theme System</a></li>
+                        <li><a href="tokyonight.html">TokyoNight Variants</a></li>
+                        <li><a href="theme-switcher.html">Auto Switcher</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <footer>
-        <p>Built with ❤️ in San Francisco • <a href="https://github.com/IllyaStarikov/.dotfiles">View on GitHub</a></p>
+    </section>
+
+    <section id="install" class="install">
+        <div class="container">
+            <h2>Installation</h2>
+            
+            <div class="install-tabs">
+                <button class="tab-btn active" onclick="showTab('quick')">Quick Install</button>
+                <button class="tab-btn" onclick="showTab('manual')">Manual Install</button>
+                <button class="tab-btn" onclick="showTab('docker')">Docker</button>
+            </div>
+            
+            <div id="quick" class="install-content active">
+                <h3>One-Command Setup</h3>
+                <pre><code class="language-bash">git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+cd ~/.dotfiles && ./src/setup/setup.sh</code></pre>
+                <p>This will install all dependencies and create necessary symlinks automatically.</p>
+            </div>
+            
+            <div id="manual" class="install-content">
+                <h3>Step-by-Step Installation</h3>
+                <pre><code class="language-bash"># 1. Clone the repository
+git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+
+# 2. Install core dependencies (macOS)
+brew install neovim tmux ripgrep fd eza bat delta
+
+# 3. Create symlinks
+~/.dotfiles/src/setup/symlinks.sh
+
+# 4. Install Neovim plugins
+nvim --headless "+Lazy! sync" +qa
+
+# 5. Install tmux plugins
+~/.tmux/plugins/tpm/bin/install_plugins</code></pre>
+            </div>
+            
+            <div id="docker" class="install-content">
+                <h3>Try with Docker</h3>
+                <pre><code class="language-bash"># Build the Docker image
+docker build -t dotfiles https://github.com/IllyaStarikov/.dotfiles.git
+
+# Run interactive shell
+docker run -it dotfiles</code></pre>
+                <p>Perfect for testing without affecting your system.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="compatibility">
+        <div class="container">
+            <h2>Compatibility</h2>
+            <div class="compat-grid">
+                <div class="compat-card">
+                    <h3>Operating Systems</h3>
+                    <ul>
+                        <li>✅ macOS 12+ (Monterey and later)</li>
+                        <li>✅ Ubuntu 20.04+</li>
+                        <li>✅ Fedora 35+</li>
+                        <li>✅ Arch Linux</li>
+                        <li>✅ WSL2</li>
+                    </ul>
+                </div>
+                <div class="compat-card">
+                    <h3>Requirements</h3>
+                    <ul>
+                        <li>Neovim 0.9.0+</li>
+                        <li>Git 2.30+</li>
+                        <li>Python 3.8+</li>
+                        <li>Node.js 16+</li>
+                        <li>Nerd Font (recommended)</li>
+                    </ul>
+                </div>
+                <div class="compat-card">
+                    <h3>Terminals</h3>
+                    <ul>
+                        <li>✅ Alacritty (recommended)</li>
+                        <li>✅ iTerm2</li>
+                        <li>✅ Kitty</li>
+                        <li>✅ WezTerm</li>
+                        <li>✅ Terminal.app</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Project</h4>
+                    <ul>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles">GitHub Repository</a></li>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles/issues">Report Issues</a></li>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles/blob/main/LICENSE">MIT License</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Documentation</h4>
+                    <ul>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles/tree/main/doc">Full Docs</a></li>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles/tree/main/doc/usage/keybindings">Keybindings</a></li>
+                        <li><a href="https://github.com/IllyaStarikov/.dotfiles/tree/main/doc/troubleshooting">Troubleshooting</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Credits</h4>
+                    <ul>
+                        <li><a href="https://neovim.io">Neovim</a></li>
+                        <li><a href="https://github.com/tmux/tmux">tmux</a></li>
+                        <li><a href="https://starship.rs">Starship</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 • Built with care in San Francisco</p>
+            </div>
+        </div>
     </footer>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
