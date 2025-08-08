@@ -473,19 +473,8 @@ require("lazy").setup({
   -- Formatting
   {
     'stevearc/conform.nvim',
-    event = { "BufWritePre" },
-    cmd = { "ConformInfo" },
-    keys = {
-      {
-        -- Add a format command
-        "<leader>f",
-        function()
-          require("conform").format({ async = true, lsp_fallback = true })
-        end,
-        mode = "",
-        desc = "Format buffer",
-      },
-    },
+    lazy = true,
+    cmd = { "ConformInfo", "Format" },
     -- Everything in opts will be passed to setup()
     opts = {
       -- Define your formatters
