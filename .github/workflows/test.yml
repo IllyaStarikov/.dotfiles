@@ -53,16 +53,8 @@ jobs:
           
           # Install dependencies based on OS
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            # Use brew bundle for faster installation
-            cat > /tmp/Brewfile << EOF
-          brew "bash"
-          brew "coreutils"
-          brew "findutils"
-          brew "gnu-sed"
-          brew "neovim"
-          brew "shellcheck"
-          EOF
-            brew bundle --file=/tmp/Brewfile --no-lock
+            # Install required tools
+            brew install bash coreutils findutils gnu-sed neovim shellcheck
             echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
             echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
@@ -121,6 +113,7 @@ jobs:
           mkdir -p "/tmp/dotfiles-test"
           
           if [[ "$RUNNER_OS" == "macOS" ]]; then
+            # Install required tools
             brew install bash coreutils findutils gnu-sed neovim
             echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
             echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
