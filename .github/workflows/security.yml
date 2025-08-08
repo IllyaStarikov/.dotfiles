@@ -1,0 +1,120 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: Secret Detection
+        run: |
+          echo "::group::Install and run gitleaks"
+          # Install gitleaks
+          wget -qO gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          tar -xzf gitleaks.tar.gz
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/
+          
+          # Run scan
+          if [[ -f ".gitleaks.toml" ]]; then
+            echo "Using custom gitleaks configuration"
+            gitleaks detect --source . --config .gitleaks.toml --verbose --exit-code 1 || {
+              echo "⚠️ Potential secrets detected. Please review."
+              exit 0  # Don't fail the build, just warn
+            }
+          else
+            echo "Using default gitleaks configuration"
+            gitleaks detect --source . --verbose --exit-code 1 || {
+              echo "⚠️ Potential secrets detected. Please review."
+              exit 0
+            }
+          fi
+          echo "::endgroup::"
+      
+      - name: Dependency Scan
+        uses: anchore/scan-action@v3
+        continue-on-error: true
+        with:
+          path: "."
+          fail-build: false
+          severity-cutoff: high
+      
+      - name: SAST Scan
+        run: |
+          echo "::group::Static Analysis"
+          # Check for common security issues in scripts
+          
+          # Check for unsafe bash practices
+          echo "Checking for unsafe bash practices..."
+          ! grep -r 'eval.*\$' src/ --include="*.sh" || echo "⚠️ Unsafe eval usage found"
+          ! grep -r 'curl.*\|.*bash' src/ --include="*.sh" || echo "⚠️ Curl pipe to bash found"
+          ! grep -r 'wget.*\|.*sh' src/ --include="*.sh" || echo "⚠️ Wget pipe to shell found"
+          
+          # Check for hardcoded credentials patterns
+          echo "Checking for hardcoded credentials..."
+          ! grep -rE '(password|passwd|pwd|secret|api_key|apikey|token).*=.*["\x27][^"\x27]+["\x27]' src/ \
+            --include="*.sh" --include="*.lua" --include="*.py" | \
+            grep -v -E '(example|sample|test|placeholder|your_|<.*>|\$\{.*\})' || \
+            echo "⚠️ Potential hardcoded credentials found"
+          
+          # Check for unsafe file permissions
+          echo "Checking file permissions..."
+          find src/ -type f -name "*.sh" -exec ls -l {} \; | grep -E '^-rwxrwxrwx' && \
+            echo "⚠️ World-writable scripts found" || echo "✅ No world-writable scripts"
+          
+          echo "::endgroup::"
+      
+      - name: License Scan
+        run: |
+          echo "::group::License Compliance"
+          # Basic license check
+          if [[ -f "LICENSE" ]]; then
+            echo "✅ LICENSE file exists"
+            head -n 1 LICENSE
+          else
+            echo "⚠️ No LICENSE file found"
+          fi
+          
+          # Check for license headers in key files
+          for file in src/setup/*.sh src/scripts/*; do
+            if [[ -f "$file" ]]; then
+              if head -n 10 "$file" | grep -qi "license\|copyright"; then
+                echo "✅ License header found in $(basename $file)"
+              else
+                echo "ℹ️ No license header in $(basename $file)"
+              fi
+            fi
+          done
+          echo "::endgroup::"
+      
+      - name: Security Report
+        if: always()
+        run: |
+          echo "## 🔒 Security Scan Summary"
+          echo ""
+          echo "| Check | Status |"
+          echo "|-------|--------|"
+          echo "| Secret Detection | ✅ Completed |"
+          echo "| Dependency Scan | ✅ Completed |"
+          echo "| SAST Scan | ✅ Completed |"
+          echo "| License Check | ✅ Completed |"
+          echo ""
+          echo "Review any warnings above for potential security issues."
