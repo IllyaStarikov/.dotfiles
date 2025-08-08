@@ -566,8 +566,8 @@ main() {
             git config --global core.excludesfile '~/.gitignore' || true
             
             # Install git hooks
-            if [[ -f "$SCRIPT_DIR/install-git-hooks" ]]; then
-                bash "$SCRIPT_DIR/install-git-hooks"
+            if [[ -f "$DOTFILES_DIR/git/install-git-hooks" ]]; then
+                bash "$DOTFILES_DIR/git/install-git-hooks"
             fi
             ;;
 
