@@ -68,7 +68,6 @@ build/
 *.synctex.gz
 *.synctex.gz(busy)
 *.pdfsync
-*.pdf
 *.ps
 *.eps
 *.alg
@@ -99,7 +98,6 @@ pythontex-files-*/
 *.md5
 *.auxlock
 *.figlist
-*.makefile
 *.fdb_latexmk
 *.latexmain
 *.lpz
@@ -240,7 +238,6 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
