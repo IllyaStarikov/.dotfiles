@@ -3,7 +3,7 @@
 
 test_case "Plugin manager (lazy.nvim) is bootstrapped"
 lazy_path="$HOME/.local/share/nvim/lazy/lazy.nvim"
-if [[ -d "$lazy_path" ]] || [[ -f "$DOTFILES_DIR/src/lua/config/plugins.lua" ]]; then
+if [[ -d "$lazy_path" ]] || [[ -f "$DOTFILES_DIR/src/vim/config/plugins.lua" ]]; then
     pass
 else
     fail "lazy.nvim not found and no bootstrap config"
@@ -20,7 +20,7 @@ plugin_files=(
 
 missing=()
 for file in "${plugin_files[@]}"; do
-    if [[ ! -f "$DOTFILES_DIR/src/lua/config/$file" ]]; then
+    if [[ ! -f "$DOTFILES_DIR/src/vim/config/$file" ]]; then
         missing+=("$file")
     fi
 done
@@ -41,8 +41,8 @@ critical_plugins=(
 
 found=0
 for plugin in "${critical_plugins[@]}"; do
-    if grep -q "$plugin" "$DOTFILES_DIR/src/lua/config/plugins.lua" 2>/dev/null || \
-       grep -q "$plugin" "$DOTFILES_DIR/src/lua/config/plugins/"*.lua 2>/dev/null; then
+    if grep -q "$plugin" "$DOTFILES_DIR/src/vim/config/plugins.lua" 2>/dev/null || \
+       grep -q "$plugin" "$DOTFILES_DIR/src/vim/config/plugins/"*.lua 2>/dev/null; then
         ((found++))
     fi
 done
