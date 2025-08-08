@@ -48,7 +48,7 @@ function M.setup()
   })
   
   -- Load custom snippets
-  local snippet_path = vim.fn.stdpath("config") .. "/snippets"
+  local snippet_path = vim.fn.stdpath("config") .. "/lua/snippets"
   
   -- Load Lua snippets (these take priority over VSCode snippets)
   require("luasnip.loaders.from_lua").lazy_load({
