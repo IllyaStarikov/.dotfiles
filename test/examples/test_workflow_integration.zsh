@@ -14,8 +14,8 @@ git config user.name "Test User"
 git config user.email "test@example.com"
 
 # Setup pre-commit hook if available
-if [[ -f "$DOTFILES_DIR/src/hooks/pre-commit" ]]; then
-    cp "$DOTFILES_DIR/src/hooks/pre-commit" .git/hooks/
+if [[ -f "$DOTFILES_DIR/src/git/pre-commit-hook" ]]; then
+    cp "$DOTFILES_DIR/src/git/pre-commit-hook" .git/hooks/pre-commit
     chmod +x .git/hooks/pre-commit
 fi
 
