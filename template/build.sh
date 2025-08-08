@@ -79,7 +79,7 @@ declare -a DOTFILES=(
     "src/tmux.conf|tmux|tmux.conf"
     "src/zshrc|zshrc|zshrc"
     "src/zshenv|zshenv|zshenv"
-    "src/init.lua|nvim|init.lua"
+    "src/lua/init.lua|nvim|init.lua"
     "src/latexmkrc|latexmkrc|latexmkrc"
     "src/i3_config|i3_config|i3_config"
     "src/vimrc|vimrc|vimrc"

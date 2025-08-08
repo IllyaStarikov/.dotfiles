@@ -153,7 +153,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LE
     fi
     
     test_case "Lazy.nvim plugin specs are valid"
-    output=$(timeout 10s nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(timeout 10s nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function() 
             local ok, lazy = pcall(require, 'lazy')
             if ok then
@@ -209,7 +209,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         plugin="${plugin_spec%%:*}"
         module="${plugin_spec#*:}"
         
-        result=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+        result=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 local ok, _ = pcall(require, '$module')
                 print('$plugin:', ok and 'loaded' or 'failed')
@@ -240,7 +240,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
     for binding in "${keybindings[@]}"; do
         key="${binding%%:*}"
         
-        result=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+        result=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 local map = vim.fn.maparg('$key', 'n')
                 print(map ~= '' and 'mapped' or 'unmapped')
@@ -269,7 +269,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         "rust_analyzer"
     )
     
-    output=$(timeout 10s nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(timeout 10s nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             local ok, lspconfig = pcall(require, 'lspconfig')
             if not ok then
@@ -378,7 +378,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         echo "test log" > debug.log
         
         # Test Telescope file finding
-        output=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+        output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 local found_files = {}
                 local ok, builtin = pcall(require, 'telescope.builtin')
@@ -462,7 +462,7 @@ return M
 EOF
         
         # Test gitsigns functionality
-        output=$(nvim --headless test_file.lua -u "$DOTFILES_DIR/src/init.lua" \
+        output=$(nvim --headless test_file.lua -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 -- Wait for gitsigns to load
                 local ok, gitsigns = pcall(require, 'gitsigns')
@@ -511,7 +511,7 @@ def calculate_fibonacci(n: int) -> list[int]:
     return sequence
 EOF
         
-        output=$(nvim --headless "$TEST_TMP_DIR/syntax_test.py" -u "$DOTFILES_DIR/src/init.lua" \
+        output=$(nvim --headless "$TEST_TMP_DIR/syntax_test.py" -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 -- Check if treesitter is loaded
                 local ok, ts = pcall(require, 'nvim-treesitter')
@@ -813,7 +813,7 @@ if [[ $PERFORMANCE -eq 1 ]] || [[ "$TEST_LEVEL" == "full" ]]; then
     fi
     
     test_case "Plugin load times are acceptable"
-    output=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             local stats = require('lazy').stats()
             print('startup-time:', stats.startuptime)
@@ -844,7 +844,7 @@ if [[ $PERFORMANCE -eq 1 ]] || [[ "$TEST_LEVEL" == "full" ]]; then
     fi
     
     test_case "Memory usage stays reasonable"
-    nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             collectgarbage('collect')
             collectgarbage('collect')
@@ -888,7 +888,7 @@ if [[ $PERFORMANCE -eq 1 ]] || [[ "$TEST_LEVEL" == "full" ]]; then
     
     # Test operations on smallest and largest
     for size in 1000 50000; do
-        output=$(nvim --headless "$TEST_TMP_DIR/perf_${size}.js" -u "$DOTFILES_DIR/src/init.lua" \
+        output=$(nvim --headless "$TEST_TMP_DIR/perf_${size}.js" -u "$DOTFILES_DIR/src/lua/init.lua" \
             -c "lua vim.defer_fn(function()
                 local start = vim.loop.hrtime()
                 
@@ -913,7 +913,7 @@ if [[ $PERFORMANCE -eq 1 ]] || [[ "$TEST_LEVEL" == "full" ]]; then
     pass  # If we got here, performance is acceptable
     
     test_case "Memory leak detection"
-    output=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             collectgarbage('collect')
             local initial_mem = collectgarbage('count')
@@ -1001,7 +1001,7 @@ export default App;
 EOF
     
     # Test the workflow
-    output=$(nvim --headless backend/app.py -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless backend/app.py -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             -- Check if LSP attached
             local py_lsp = vim.wait(5000, function()
@@ -1094,7 +1094,7 @@ EOF
 EOF
     
     # Test ML workflow
-    output=$(nvim --headless src/train_model.py -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless src/train_model.py -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             -- Check Python LSP with type hints
             local py_lsp = vim.wait(5000, function()
@@ -1141,7 +1141,7 @@ if [[ "$QUICK" -eq 1 ]]; then
     fi
     
     test_case "Critical plugins load"
-    output=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             local critical = {'telescope', 'gitsigns', 'blink.cmp', 'snacks'}
             local loaded = 0
@@ -1229,7 +1229,7 @@ EOF
     
     test_case "Plugin commands remain available after reload"
     # First get baseline
-    baseline=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    baseline=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             local cmds = {'Telescope', 'Git', 'TroubleToggle', 'AerialToggle'}
             local available = 0
@@ -1243,7 +1243,7 @@ EOF
         end, 2000)" 2>&1)
     
     # Simulate config reload
-    after_reload=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    after_reload=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function()
             -- Force reload
             vim.cmd('Lazy reload')
