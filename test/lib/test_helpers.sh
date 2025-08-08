@@ -12,7 +12,7 @@ nvim_test() {
     local timeout="${4:-5000}"
     
     local output
-    output=$(nvim --headless -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "lua vim.defer_fn(function() $lua_code end, 100)" \
         -c "qa!" 2>&1)
     
