@@ -1,83 +1,242 @@
-# ⚡ Lightning-Fast Developer Environment
+# Dotfiles
 
-<p align="center">
-  <strong>50ms Neovim startup • AI-powered coding • Automatic theme switching</strong>
-</p>
+A comprehensive development environment configuration for macOS and Linux, featuring Neovim, tmux, Zsh, and modern CLI tools.
 
-<p align="center">
-  <a href="https://github.com/IllyaStarikov/.dotfiles"><img src="https://img.shields.io/github/stars/IllyaStarikov/.dotfiles?style=for-the-badge&logo=github&color=8b5cf6&logoColor=white" alt="GitHub stars"></a>
-  <a href="https://dotfiles.starikov.io"><img src="https://img.shields.io/badge/WEBSITE-dotfiles.starikov.io-3b82f6?style=for-the-badge&logo=safari&logoColor=white" alt="Website"></a>
-  <a href="#-quick-start"><img src="https://img.shields.io/badge/INSTALL-Quick_Start-10b981?style=for-the-badge&logo=apple&logoColor=white" alt="Quick Start"></a>
-</p>
+## Overview
 
-<p align="center">
-  <strong>🌐 Visit <a href="https://dotfiles.starikov.io">dotfiles.starikov.io</a> for the full interactive experience</strong>
-</p>
+This repository contains my personal dotfiles and system configuration. It provides a complete, reproducible development environment with an emphasis on:
 
-## 🎯 Why These Dotfiles?
+- **Editor efficiency** - Highly optimized Neovim configuration with LSP support
+- **Terminal productivity** - Zsh with custom functions, tmux for session management
+- **Modern tooling** - Rust-based CLI replacements for better performance
+- **Automation** - Automatic theme switching, smart aliases, and helper scripts
 
-**🚀 Blazing Fast** • Neovim loads in under 50ms with 80+ plugins  
-**🤖 AI-First** • Claude, GPT-4, and Copilot integrated into your editor  
-**🎨 Smart Themes** • Automatically syncs with macOS light/dark mode  
-**📦 Zero Friction** • One command installs everything you need  
+## Installation
 
-## 🛠 Quick Start
+### Quick Start (macOS)
 
 ```bash
 git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
-cd ~/.dotfiles && ./src/setup/mac.sh
+cd ~/.dotfiles
+./src/setup/setup.sh
 ```
 
-That's it. Seriously.
+### Manual Installation
 
-## ✨ What's Inside
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+   ```
 
-**Editor** → Neovim with LSP for 8+ languages, Blink.cmp completion, 1000+ snippets  
-**Terminal** → Alacritty (GPU-accelerated) + tmux + Zsh with Starship prompt  
-**AI Tools** → CodeCompanion.nvim with custom prompts and workflows  
-**CLI** → Modern Rust alternatives: `ripgrep`, `fd`, `eza`, `bat`, `delta`  
-**Themes** → TokyoNight variants that sync across all tools
+2. Run the setup script for your system:
+   ```bash
+   # macOS
+   ./src/setup/setup.sh
+   
+   # Linux
+   ./src/setup/setup.sh --linux
+   ```
 
-## 🔥 Key Features
+3. Create symlinks:
+   ```bash
+   ./src/setup/symlinks.sh
+   ```
 
-<details>
-<summary><strong>🎹 Keybindings That Make Sense</strong></summary>
+## Components
 
-- `<leader>` = Space (like modern editors)
-- `<leader>ff` → Find files
-- `<leader>fg` → Live grep
-- `<leader>ca` → Code actions
-- `<leader>ai` → Open AI assistant
-- [Full keybinding reference →](doc/usage/keybindings/neovim.md)
-</details>
+### Neovim
 
-<details>
-<summary><strong>🤖 AI-Powered Development</strong></summary>
+- **Framework**: Lazy.nvim for plugin management
+- **Completion**: Blink.cmp with LSP integration
+- **Languages**: Configured LSP for Python, JavaScript/TypeScript, Go, Rust, C/C++, Lua
+- **AI Integration**: CodeCompanion.nvim for Claude/GPT assistance
+- **File Navigation**: Telescope with ripgrep backend
+- **Git Integration**: Gitsigns, fugitive, and git-conflict
+- **Startup Time**: ~50ms with 80+ plugins
 
-- **Inline AI** → `<leader>ai` opens AI chat in your editor
-- **Code Generation** → Generate functions, tests, documentation
-- **Smart Refactoring** → AI-assisted code improvements
-- **Multiple Models** → Claude, GPT-4, Copilot all configured
-</details>
+Key files:
+- `src/neovim/init.lua` - Main configuration entry point
+- `src/neovim/config/` - Modular configuration files
+- `src/neovim/snippets/` - Custom snippets for various languages
 
-<details>
-<summary><strong>⚡ Performance Stats</strong></summary>
+### Terminal
 
-- **Neovim startup**: 45-50ms with 80+ plugins
-- **Shell startup**: 80ms with full feature set
-- **File search**: Instant with 100k+ files (ripgrep)
-- **Completion**: < 5ms latency (Blink.cmp)
-</details>
+#### Alacritty
+- GPU-accelerated terminal emulator
+- Custom keybindings for tmux integration
+- Automatic theme switching based on system appearance
 
-## 📖 Learn More
+#### Tmux
+- Custom prefix key (Ctrl-a)
+- Vi-mode navigation
+- Session management with tmuxinator
+- Status bar with system monitoring
 
-**[📚 Full Documentation](doc/)** • **[⚡ Quick Reference](doc/usage/reference.md)** • **[🎨 Theme Guide](doc/guides/terminal/theme-system.md)**
+#### Zsh
+- **Plugin Manager**: Zinit for fast loading
+- **Prompt**: Starship with custom configuration
+- **Completions**: Fast, context-aware completions
+- **Aliases**: Extensive git aliases and shortcuts
 
-## 🏆 Credits
+### CLI Tools
 
-Built with amazing tools from the open source community.
+Modern replacements for common Unix tools:
 
-<p align="center">
-  <strong><a href="https://dotfiles.starikov.io">dotfiles.starikov.io</a></strong><br>
-  <sub>MIT Licensed • Made with ❤️ in San Francisco</sub>
-</p>
+| Traditional | Modern | Purpose |
+|------------|---------|---------|
+| `find` | `fd` | File search |
+| `grep` | `ripgrep` (`rg`) | Text search |
+| `ls` | `eza` | Directory listing |
+| `cat` | `bat` | File viewing |
+| `diff` | `delta` | Diff viewing |
+| `ps` | `procs` | Process viewing |
+| `top` | `btop` | System monitoring |
+
+### Theme System
+
+Automatic theme switching that syncs across all applications:
+
+- Detects macOS appearance (light/dark mode)
+- Updates Alacritty, Neovim, tmux, and bat colors
+- Themes: TokyoNight (variants: night, storm, moon, day)
+
+Usage:
+```bash
+# Automatic switching based on system
+theme
+
+# Manual switching
+theme dark
+theme light
+```
+
+## Directory Structure
+
+```
+~/.dotfiles/
+├── src/
+│   ├── neovim/          # Neovim configuration
+│   ├── alacritty/       # Terminal configuration
+│   ├── git/             # Git configuration and hooks
+│   ├── scripts/         # Utility scripts
+│   ├── setup/           # Installation scripts
+│   ├── spell/           # Custom dictionary
+│   ├── theme-switcher/  # Theme management
+│   ├── tmuxinator/      # Tmux session templates
+│   ├── zsh/             # Shell configuration
+│   └── *.conf/rc        # Other config files
+├── doc/                 # Documentation
+├── test/                # Test suite
+└── template/            # Web documentation templates
+```
+
+## Key Features
+
+### Development Workflow
+
+- **LSP Support**: Auto-completion, diagnostics, and code actions for multiple languages
+- **Snippet System**: 1000+ snippets across languages with smart expansion
+- **Git Integration**: Inline git blame, conflict resolution, and GitHub CLI
+- **Testing**: Test runners integrated for Python, JavaScript, and more
+
+### Productivity Tools
+
+- **File Navigation**: Fuzzy finding with Telescope and fzf
+- **Session Management**: Tmuxinator templates for project layouts
+- **Task Running**: AsyncRun for background compilation and testing
+- **Note Taking**: Markdown support with live preview
+
+### Performance Optimizations
+
+- Lazy loading of plugins for fast startup
+- Compiled Lua modules for Neovim
+- Minimal shell prompt with async git status
+- Efficient file operations with Rust-based tools
+
+## Customization
+
+### Local Configuration
+
+Create local overrides that won't be tracked by git:
+
+- `~/.config/nvim/lua/local.lua` - Neovim local settings
+- `~/.zshrc.local` - Shell local configuration
+- `~/.gitconfig.local` - Git local settings
+
+### Work Profiles
+
+The configuration supports work-specific settings:
+
+```lua
+-- In ~/.config/nvim/lua/local.lua
+return {
+  work = {
+    profile = "company-name",
+    lsp_servers = { "custom_lsp" },
+    snippets_path = "~/work/snippets"
+  }
+}
+```
+
+## Documentation
+
+Detailed documentation is available in the `doc/` directory:
+
+- [Setup Guide](doc/setup/README.md) - Installation and configuration
+- [Usage Guide](doc/usage/README.md) - Daily usage and workflows
+- [Keybindings](doc/usage/keybindings/README.md) - Complete keybinding reference
+- [Troubleshooting](doc/troubleshooting/README.md) - Common issues and solutions
+
+## Testing
+
+The repository includes a comprehensive test suite:
+
+```bash
+# Run all tests
+./test/test
+
+# Run specific test category
+./test/test --unit
+./test/test --integration
+```
+
+## Requirements
+
+### System Requirements
+
+- **OS**: macOS 12+ or Linux (Ubuntu 20.04+, Fedora 35+, Arch)
+- **Neovim**: 0.9.0 or higher
+- **Git**: 2.30 or higher
+- **Python**: 3.8+ (for Python development)
+- **Node.js**: 16+ (for JavaScript development)
+
+### Dependencies
+
+Core dependencies are installed automatically by the setup script:
+
+- Homebrew (macOS) or system package manager (Linux)
+- Neovim and dependencies
+- Terminal tools (tmux, ripgrep, fd, etc.)
+- Language servers and formatters
+- Fonts (Nerd Fonts for icons)
+
+## Contributing
+
+While this is a personal configuration, suggestions and improvements are welcome:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+MIT License - See [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+This configuration builds upon the work of many excellent projects in the open source community. Special thanks to the maintainers of Neovim, tmux, and all the plugins and tools that make this setup possible.
+
+---
+
+For questions or issues, please open an issue on [GitHub](https://github.com/IllyaStarikov/.dotfiles/issues).
