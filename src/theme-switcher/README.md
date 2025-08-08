@@ -61,22 +61,18 @@ Themes are organized in the `themes/` directory:
 ```
 themes/
 ├── tokyonight_day/
-│   ├── alacritty/
-│   │   └── theme.toml
+│   ├── alacritty.toml
 │   ├── tmux.conf
 │   └── starship.toml
 ├── tokyonight_moon/
-│   ├── alacritty/
-│   │   └── theme.toml
+│   ├── alacritty.toml
 │   ├── tmux.conf
 │   └── starship.toml
 ├── tokyonight_night/
-│   ├── alacritty/
-│   │   └── theme.toml
+│   ├── alacritty.toml
 │   └── tmux.conf
 └── tokyonight_storm/
-    ├── alacritty/
-    │   └── theme.toml
+    ├── alacritty.toml
     └── tmux.conf
 ```
 

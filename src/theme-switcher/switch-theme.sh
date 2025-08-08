@@ -269,9 +269,7 @@ update_app_themes() {
     local success=0
     
     # Update Alacritty
-    if [[ -f "$theme_dir/alacritty/theme.toml" ]]; then
-        update_alacritty_theme "$theme_dir/alacritty/theme.toml" "$ALACRITTY_DIR/theme.toml" || success=1
-    elif [[ -f "$theme_dir/alacritty.toml" ]]; then
+    if [[ -f "$theme_dir/alacritty.toml" ]]; then
         update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
     fi
     
