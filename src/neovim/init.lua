@@ -1,13 +1,26 @@
 -- Add the config directory to the Lua package path
+-- This ensures modules can be found regardless of how nvim is invoked
 local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")
--- Support both regular nvim config and dotfiles structure
-local dotfiles_config = vim.fn.expand("~/.dotfiles/src/neovim")
-if vim.fn.isdirectory(dotfiles_config) == 1 then
-  package.path = package.path .. ";" .. dotfiles_config .. "/?.lua"
-  package.path = package.path .. ";" .. dotfiles_config .. "/?/init.lua"
-elseif vim.fn.isdirectory(config_path) == 1 then
+
+-- Detect if we're running from dotfiles or standard config
+local init_file = debug.getinfo(1, "S").source:sub(2)  -- Remove @ prefix
+local init_dir = vim.fn.fnamemodify(init_file, ":h")
+
+-- Add the directory containing init.lua to the package path
+package.path = package.path .. ";" .. init_dir .. "/?.lua"
+package.path = package.path .. ";" .. init_dir .. "/?/init.lua"
+
+-- Also add standard config path if different
+if init_dir ~= config_path then
   package.path = package.path .. ";" .. config_path .. "/?.lua"
   package.path = package.path .. ";" .. config_path .. "/?/init.lua"
+end
+
+-- Support dotfiles structure explicitly
+local dotfiles_config = vim.fn.expand("~/.dotfiles/src/neovim")
+if vim.fn.isdirectory(dotfiles_config) == 1 and dotfiles_config ~= init_dir then
+  package.path = package.path .. ";" .. dotfiles_config .. "/?.lua"
+  package.path = package.path .. ";" .. dotfiles_config .. "/?/init.lua"
 end
 
 -- Disable verbose logging for normal operation
