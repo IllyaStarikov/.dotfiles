@@ -15,10 +15,8 @@ function M.setup()
       yaml = { "prettier" },
       markdown = { "prettier" },
     },
-    format_on_save = {
-      timeout_ms = 500,
-      lsp_fallback = true,
-    },
+    -- Disable format on save - only manual formatting via :Format or <leader>f
+    format_on_save = false,
   })
 end
 
