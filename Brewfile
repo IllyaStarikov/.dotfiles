@@ -4,6 +4,7 @@
 # Taps
 tap "homebrew/bundle"
 tap "homebrew/services"
+tap "vladdoster/formulae"
 
 # Core Tools
 brew "git"
@@ -46,6 +47,7 @@ brew "hyperfine" # Benchmarking
 
 # Casks (GUI Apps)
 cask "alacritty" # Terminal emulator
+cask "vladdoster/formulae/vimari" # Safari extension for Vim keybindings
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
