@@ -176,7 +176,7 @@ jobs:
           export DOTFILES_DIR="${{ github.workspace }}"
           
           # Test symlink creation
-          bash src/setup/symlinks.sh || bash src/setup/aliases.sh
+          bash src/setup/symlinks.sh
           
           # Verify critical symlinks
           test -L "$HOME/.zshrc" && echo "✅ .zshrc symlink created" || echo "❌ .zshrc symlink missing"
