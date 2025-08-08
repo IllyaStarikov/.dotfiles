@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Continuous Integration
 
 on:
   push:
@@ -173,7 +173,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, macos-14]  # Linux, macOS latest, and Sonoma
     
     env:
-      TEST_TMP_DIR: ${{ runner.temp }}/dotfiles-test
+      TEST_TMP_DIR: /tmp/dotfiles-test
     
     steps:
       - name: 📥 Checkout Code
@@ -305,7 +305,7 @@ jobs:
       
       - name: 🏗️ Create Test Environment
         run: |
-          export TEST_HOME="$RUNNER_TEMP/test-home"
+          export TEST_HOME="/tmp/test-home"
           mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
           echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
       
