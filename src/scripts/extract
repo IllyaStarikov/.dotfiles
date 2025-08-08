@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Extract various archive formats with a single command
+
+if [[ -z "$1" ]]; then
+    echo "Usage: extract <archive>"
+    echo "Supported formats: tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz"
+    exit 1
+fi
+
+if [[ ! -f "$1" ]]; then
+    echo "Error: '$1' is not a valid file"
+    exit 1
+fi
+
+case "$1" in
+    *.tar.bz2) tar xjf "$1" ;;
+    *.tar.gz)  tar xzf "$1" ;;
+    *.tar.xz)  tar xJf "$1" ;;
+    *.bz2)     bunzip2 "$1" ;;
+    *.rar)     unrar x "$1" ;;
+    *.gz)      gunzip "$1" ;;
+    *.tar)     tar xf "$1" ;;
+    *.tbz2)    tar xjf "$1" ;;
+    *.tgz)     tar xzf "$1" ;;
+    *.zip)     unzip "$1" ;;
+    *.Z)       uncompress "$1" ;;
+    *.7z)      7z x "$1" ;;
+    *.xz)      xz -d "$1" ;;
+    *)         
+        echo "Error: '$1' cannot be extracted via extract"
+        echo "Unknown archive format"
+        exit 1
+        ;;
+esac
+
+echo "✓ Extracted: $1"
