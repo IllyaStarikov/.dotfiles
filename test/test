@@ -391,6 +391,10 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         echo -e "\n${YELLOW}Deep Plugin Functionality Tests${NC}"
         
         test_case "Telescope finds files and respects gitignore"
+        # Skip in CI where plugins aren't installed
+        if [[ "$CI_MODE" -eq 1 ]]; then
+            skip "Telescope testing skipped in CI (plugin not installed)"
+        else
         cd "$TEST_TMP_DIR"
         mkdir -p project/{src,test,node_modules,build,.git}
         cd project
@@ -402,8 +406,8 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         echo -e "node_modules/\nbuild/\n*.log" > .gitignore
         echo "test log" > debug.log
         
-        # Test Telescope file finding
-        output=$(nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
+        # Test Telescope file finding WITH TIMEOUT
+        output=$(timeout 5 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
             -c "lua vim.defer_fn(function()
                 local found_files = {}
                 local ok, builtin = pcall(require, 'telescope.builtin')
@@ -449,8 +453,13 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
         else
             fail "Telescope not respecting gitignore or not finding files"
         fi
+        fi  # End of CI check
         
         test_case "Gitsigns shows accurate diff information"
+        # Skip in CI where plugins aren't installed
+        if [[ "$CI_MODE" -eq 1 ]]; then
+            skip "Gitsigns testing skipped in CI (plugin not installed)"
+        else
         cd "$TEST_TMP_DIR"
         rm -rf gitsigns_test
         mkdir gitsigns_test && cd gitsigns_test
@@ -486,8 +495,8 @@ end
 return M
 EOF
         
-        # Test gitsigns functionality
-        output=$(nvim --headless test_file.lua -u "$DOTFILES_DIR/src/neovim/init.lua" \
+        # Test gitsigns functionality WITH TIMEOUT
+        output=$(timeout 5 nvim --headless test_file.lua -u "$DOTFILES_DIR/src/neovim/init.lua" \
             -c "lua vim.defer_fn(function()
                 -- Wait for gitsigns to load
                 local ok, gitsigns = pcall(require, 'gitsigns')
@@ -521,8 +530,13 @@ EOF
         else
             skip "Gitsigns needs git repository context"
         fi
+        fi  # End of CI check
         
         test_case "Treesitter provides syntax highlighting"
+        # Skip in CI where plugins aren't installed
+        if [[ "$CI_MODE" -eq 1 ]]; then
+            skip "Treesitter testing skipped in CI (plugin not installed)"
+        else
         cat > "$TEST_TMP_DIR/syntax_test.py" << 'EOF'
 def calculate_fibonacci(n: int) -> list[int]:
     """Calculate Fibonacci sequence up to n terms."""
@@ -536,7 +550,7 @@ def calculate_fibonacci(n: int) -> list[int]:
     return sequence
 EOF
         
-        output=$(nvim --headless "$TEST_TMP_DIR/syntax_test.py" -u "$DOTFILES_DIR/src/neovim/init.lua" \
+        output=$(timeout 5 nvim --headless "$TEST_TMP_DIR/syntax_test.py" -u "$DOTFILES_DIR/src/neovim/init.lua" \
             -c "lua vim.defer_fn(function()
                 -- Check if treesitter is loaded
                 local ok, ts = pcall(require, 'nvim-treesitter')
@@ -582,6 +596,7 @@ EOF
         else
             skip "Treesitter parsers need to be installed"
         fi
+        fi  # End of CI check
     fi
 fi
 
