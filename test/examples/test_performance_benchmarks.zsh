@@ -49,7 +49,7 @@ fi
 
 # Test 2: Plugin loading performance
 test_case "Plugin loading times"
-output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+output=$(nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
     -c "lua vim.defer_fn(function()
         local stats = require('lazy').stats()
         print('total-time:', stats.times.LazyDone)
@@ -147,7 +147,7 @@ fi
 # Test 4: Memory usage
 test_case "Memory usage stays reasonable"
 # Start Neovim and let it fully load
-nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
     -c "lua vim.defer_fn(function()
         -- Force garbage collection
         collectgarbage('collect')

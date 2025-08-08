@@ -9,7 +9,7 @@ echo "━━━ Plugin Loading Tests ━━━"
 
 # Test 1: All plugins from config actually load
 test_case "All configured plugins load successfully"
-output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+output=$(nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
     -c "lua vim.defer_fn(function()
         local lazy = require('lazy')
         local failed = {}
@@ -48,7 +48,7 @@ commands=(
 )
 
 for cmd in "${commands[@]}"; do
-    result=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+    result=$(nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
         -c "lua vim.defer_fn(function()
             print(vim.fn.exists(':$cmd') > 0 and 'exists' or 'missing')
             vim.cmd('qa!')
@@ -100,7 +100,7 @@ fi
 
 # Test 4: Snacks.nvim features
 test_case "Snacks.nvim dashboard and picker work"
-output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+output=$(nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
     -c "lua vim.defer_fn(function()
         local ok1, snacks = pcall(require, 'snacks')
         if not ok1 then
@@ -130,7 +130,7 @@ lsp_servers=(
     "marksman"
 )
 
-output=$(nvim --headless -u "$DOTFILES_DIR/src/lua/init.lua" \
+output=$(nvim --headless -u "$DOTFILES_DIR/src/vim/init.lua" \
     -c "lua vim.defer_fn(function()
         local mason_registry = require('mason-registry')
         local missing = {}
