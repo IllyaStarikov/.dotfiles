@@ -2,9 +2,9 @@
 # Test: Neovim init.lua configuration
 
 test_case "init.lua exists and is valid"
-if [[ -f "$DOTFILES_DIR/src/vim/init.lua" ]]; then
+if [[ -f "$DOTFILES_DIR/src/neovim/init.lua" ]]; then
     # Check if it's valid Lua
-    output=$(nvim --headless -c "luafile $DOTFILES_DIR/src/vim/init.lua" -c "qa" 2>&1)
+    output=$(nvim --headless -c "luafile $DOTFILES_DIR/src/neovim/init.lua" -c "qa" 2>&1)
     if [[ -z "$output" ]] || [[ "$output" != *"Error"* ]]; then
         pass
     else
