@@ -28,7 +28,7 @@ is_binary_file() {
 # Remove trailing whitespace
 remove_trailing_whitespace() {
   local file="${1:?Error: file required}"
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     print_color blue "[DRY RUN] Would remove trailing whitespace from: $file"
   else
@@ -44,12 +44,12 @@ remove_trailing_whitespace() {
 convert_tabs_to_spaces() {
   local file="${1:?Error: file required}"
   local tab_width=2
-  
+
   # Python uses 4 spaces per Google style guide
   if [[ "$file" =~ \.(py|pyw|pyi)$ ]]; then
     tab_width=4
   fi
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     print_color blue "[DRY RUN] Would convert tabs to ${tab_width} spaces in: $file"
   else
@@ -62,7 +62,7 @@ convert_tabs_to_spaces() {
 # Normalize smart quotes to regular quotes
 normalize_quotes() {
   local file="${1:?Error: file required}"
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     print_color blue "[DRY RUN] Would normalize smart quotes in: $file"
   else
@@ -76,7 +76,7 @@ normalize_quotes() {
 # Format C/C++ files (Google style: 2 spaces, 80 column)
 format_cpp() {
   local file="${1:?Error: file required}"
-  
+
   if has_command clang-format; then
     if [[ "${DRY_RUN}" == true ]]; then
       print_color blue "[DRY RUN] Would run clang-format (Google style) on: $file"
@@ -95,7 +95,7 @@ format_cpp() {
 format_python() {
   local file="${1:?Error: file required}"
   local formatted=false
-  
+
   # Prefer ruff (fast, modern, follows Google style)
   if has_command ruff; then
     if [[ "${DRY_RUN}" == true ]]; then
@@ -104,7 +104,7 @@ format_python() {
       echo -n "  → Running ruff check --fix... "
       ruff check --fix "$file" 2>/dev/null || true
       print_color green "✓"
-      
+
       echo -n "  → Running ruff format... "
       ruff format --line-length 80 "$file"
       print_color green "✓"
@@ -118,7 +118,7 @@ format_python() {
       black -q --line-length 80 "$file"
       print_color green "✓"
       formatted=true
-      
+
       # Also run isort if available
       if has_command isort; then
         echo -n "  → Running isort... "
@@ -136,7 +136,7 @@ format_python() {
       formatted=true
     fi
   fi
-  
+
   if [[ "${formatted}" == false ]] && [[ "${DRY_RUN}" == false ]]; then
     print_color yellow "  ⚠ No Python formatter available"
     echo "    Install one of: pip install ruff (recommended) | pip install black | pip install yapf"
@@ -146,7 +146,7 @@ format_python() {
 # Format shell scripts (Google style: 2 spaces)
 format_shell() {
   local file="${1:?Error: file required}"
-  
+
   if has_command shfmt; then
     if [[ "${DRY_RUN}" == true ]]; then
       print_color blue "[DRY RUN] Would run shfmt on: $file"
@@ -164,7 +164,7 @@ format_shell() {
 # Format Lua files (2 spaces)
 format_lua() {
   local file="${1:?Error: file required}"
-  
+
   if has_command stylua; then
     if [[ "${DRY_RUN}" == true ]]; then
       print_color blue "[DRY RUN] Would run stylua on: $file"
@@ -192,7 +192,7 @@ EOF
 format_prettier() {
   local file="${1:?Error: file required}"
   local cmd=""
-  
+
   if has_command prettierd; then
     cmd="prettierd"
   elif has_command prettier; then
@@ -202,7 +202,7 @@ format_prettier() {
     echo "    Install with: npm install -g prettier"
     return
   fi
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     print_color blue "[DRY RUN] Would run ${cmd} on: $file"
   else
@@ -223,13 +223,13 @@ apply_formatters() {
   local file="${1:?Error: file required}"
   local ext="${file##*.}"
   local basename="$(basename "$file")"
-  
+
   # Skip binary files
   if is_binary_file "$file"; then
     print_color yellow "  ⚠ Skipping binary file"
     return
   fi
-  
+
   # Determine file type and apply formatter
   case "${ext}" in
     c|h)
@@ -271,28 +271,28 @@ apply_formatters() {
 # Process a single file
 process_file() {
   local file="${1:?Error: file required}"
-  
+
   if [[ ! -f "$file" ]]; then
     print_color red "File not found: $file"
     return 1
   fi
-  
+
   echo
   print_color blue "━━━ Processing: $file ━━━"
-  
+
   # Apply operations
   if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     remove_trailing_whitespace "$file"
   fi
-  
+
   if [[ "${DO_TABS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     convert_tabs_to_spaces "$file"
   fi
-  
+
   if [[ "${DO_QUOTES}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     normalize_quotes "$file"
   fi
-  
+
   if [[ "${DO_FORMATTERS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     apply_formatters "$file"
   fi
@@ -400,7 +400,7 @@ fi
 main() {
   local processed=0
   local failed=0
-  
+
   for file in "${FILES[@]}"; do
     if [[ -e "$file" ]]; then
       if [[ -d "$file" ]]; then
@@ -433,17 +433,17 @@ main() {
           fi
         fi
       done
-      
+
       if [[ "${found}" == false ]]; then
         print_color yellow "No files match: $file"
       fi
     fi
   done
-  
+
   # Summary
   echo
   print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     print_color blue "📋 DRY RUN COMPLETE"
     echo "   Would process: ${processed} files"
@@ -451,7 +451,7 @@ main() {
     print_color green "✅ FORMATTING COMPLETE"
     echo "   Processed: ${processed} files"
   fi
-  
+
   if [[ ${failed} -gt 0 ]]; then
     print_color red "   Failed: ${failed} files"
     exit 1
