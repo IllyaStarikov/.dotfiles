@@ -8,7 +8,7 @@ local M = {}
 -- Helper function to find Python interpreter
 local function get_python_path()
   local cwd = vim.fn.getcwd()
-  
+
   -- Check various Python paths in order of preference
   local python_paths = {
     vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV .. '/bin/python',
@@ -17,13 +17,13 @@ local function get_python_path()
     vim.fn.exepath('python3'),
     vim.fn.exepath('python'),
   }
-  
+
   for _, path in ipairs(python_paths) do
     if path and vim.fn.executable(path) == 1 then
       return path
     end
   end
-  
+
   -- Fallback
   return 'python3'
 end
@@ -32,12 +32,12 @@ function M.setup()
   local dap = require('dap')
   local dapui = require('dapui')
   local dap_virtual_text = require('nvim-dap-virtual-text')
-  
+
   -- ⚡ PERFORMANCE & UI SETTINGS
   -- Configure DAP UI for optimal experience
   dapui.setup({
-    icons = { 
-      expanded = "▾", 
+    icons = {
+      expanded = "▾",
       collapsed = "▸",
       current_frame = "▸"
     },
@@ -497,7 +497,7 @@ end
 
 function M.debug_method()
   local dap = require('dap')
-  -- This would need to be customized per language  
+  -- This would need to be customized per language
   vim.notify("Debug method not implemented for this language", vim.log.levels.WARN)
 end
 
