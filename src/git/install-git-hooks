@@ -9,7 +9,7 @@ source "${DOTFILES_ROOT}/src/scripts/common.sh"
 
 # Configuration
 DOTFILES_DIR="${HOME}/.dotfiles"
-HOOKS_SRC_DIR="${DOTFILES_DIR}/src/hooks"
+HOOKS_SRC_DIR="${DOTFILES_DIR}/src/git"
 GIT_HOOKS_DIR="${DOTFILES_DIR}/.git/hooks"
 
 # Main execution
@@ -31,9 +31,9 @@ main() {
   if [[ -d "${HOOKS_SRC_DIR}" ]]; then
     local installed=0
     
-    for hook in "${HOOKS_SRC_DIR}"/*; do
+    for hook in "${HOOKS_SRC_DIR}"/*-hook; do
       if [[ -f "${hook}" ]]; then
-        local hook_name="$(basename "${hook}")"
+        local hook_name="$(basename "${hook}" -hook)"
         local dest="${GIT_HOOKS_DIR}/${hook_name}"
         
         echo -n "Installing ${hook_name}... "
@@ -164,7 +164,7 @@ while [[ $# -gt 0 ]]; do
     -d|--dir)
       DOTFILES_DIR="$2"
       GIT_HOOKS_DIR="${DOTFILES_DIR}/.git/hooks"
-      HOOKS_SRC_DIR="${DOTFILES_DIR}/src/hooks"
+      HOOKS_SRC_DIR="${DOTFILES_DIR}/src/git"
       shift 2
       ;;
     *)
