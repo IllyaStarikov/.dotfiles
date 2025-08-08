@@ -91,7 +91,13 @@ main() {
     mkdir -p "$HOME/.config/nvim"
     create_link "$DOTFILES_DIR/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
     create_link "$DOTFILES_DIR/lua" "$HOME/.config/nvim/lua" "Neovim Lua configs"
-    create_link "$DOTFILES_DIR/spell" "$HOME/.config/nvim/spell" "Neovim spell files"
+    
+    # Neovim spell files
+    mkdir -p "$HOME/.config/nvim/spell"
+    create_link "$DOTFILES_DIR/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
+    if [[ -f "$DOTFILES_DIR/spell.txt.spl" ]]; then
+        create_link "$DOTFILES_DIR/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
+    fi
     
     # Starship
     create_link "$DOTFILES_DIR/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
