@@ -74,32 +74,12 @@ regexes = [
     '''function\s+.*\(\)''',
 ]
 
-# Files to completely skip
-[[allowlist.files]]
-regex = '''(^|/)\.git/.*'''
-
-[[allowlist.files]]
-regex = '''(^|/)\.env\.example$'''
-
-[[allowlist.files]]
-regex = '''(^|/)\.env\.template$'''
-
-[[allowlist.files]]
-regex = '''.*\.(jpg|jpeg|png|gif|ico|svg|pdf|zip|tar|gz|exe|dmg|iso)$'''
-
-[[allowlist.files]]
-regex = '''.*\.(woff|woff2|ttf|otf|eot)$'''
-
-# Commits to ignore (initial commits, documentation updates, etc.)
-[[allowlist.commits]]
-description = "Ignore specific commits"
+# Commits to ignore - direct array of commit SHAs
 commits = [
     # Add any specific commit SHAs to ignore here if needed
 ]
 
-# Additional entropy checks
-[allowlist.stopwords]
-# Common non-secret strings that might trigger false positives
+# Stopwords - common non-secret strings that might trigger false positives
 stopwords = [
     "example",
     "test",
@@ -117,3 +97,19 @@ stopwords = [
     "root",
     "user",
 ]
+
+# Files to completely skip
+[[allowlist.files]]
+regex = '''(^|/)\.git/.*'''
+
+[[allowlist.files]]
+regex = '''(^|/)\.env\.example$'''
+
+[[allowlist.files]]
+regex = '''(^|/)\.env\.template$'''
+
+[[allowlist.files]]
+regex = '''.*\.(jpg|jpeg|png|gif|ico|svg|pdf|zip|tar|gz|exe|dmg|iso)$'''
+
+[[allowlist.files]]
+regex = '''.*\.(woff|woff2|ttf|otf|eot)$'''
