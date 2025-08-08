@@ -37,8 +37,8 @@ Python-specific tooling configuration:
 - Black: 4-space indentation, 100 char line length
 - isort: 4-space indentation for imports
 
-### `.pylintrc`
-Symlinked to industry-standard Pylint configuration (`src/styleguide/pylintrc`) for Python style enforcement.
+### `pylintrc`
+Google's Python Style Guide Pylint configuration is available at `styleguide/pylintrc` for Python style enforcement.
 
 ### Neovim Configuration
 - **Default**: 2 spaces (set in `options.lua`)
@@ -63,7 +63,7 @@ Run the format script with:
 The style guide submodule includes:
 
 ### Configuration Files
-- **Python**: `pylintrc` (symlinked), `python_style.vim`
+- **Python**: `pylintrc`, `python_style.vim`
 - **C/C++**: `eclipse-cpp-style.xml`, `c-style.el`
 - **Java**: `eclipse-java-style.xml`, `intellij-java-style.xml`
 

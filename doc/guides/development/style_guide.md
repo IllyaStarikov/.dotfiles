@@ -70,14 +70,14 @@ Use the `:Format` command or the `format` shell script to automatically format f
 
 ## Python Linting
 
-Industry-standard pylintrc is automatically configured at `~/.pylintrc`. This provides:
+The Google Python Style Guide pylintrc is available at `styleguide/pylintrc`. This provides:
 - PEP 8 compliance checking
 - Consistent error and warning detection
 - Best practices enforcement
 
-Run pylint on any Python file:
+Run pylint using the Google style guide:
 ```bash
-pylint myfile.py
+pylint --rcfile=~/.dotfiles/styleguide/pylintrc myfile.py
 ```
 
 The format script will automatically run pylint if it's installed.

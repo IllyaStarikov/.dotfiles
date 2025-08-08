@@ -21,7 +21,7 @@ pip install yapf      # Configurable formatter with style support
 pip install autopep8  # Traditional PEP8 formatter
 
 # Python linter (style checking)
-pip install pylint    # Uses industry-standard pylintrc automatically
+pip install pylint    # Use with --rcfile=~/.dotfiles/styleguide/pylintrc
 
 # Shell script formatter
 brew install shfmt
