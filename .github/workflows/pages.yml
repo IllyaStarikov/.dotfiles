@@ -1,0 +1,168 @@
+name: Pages Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'template/**'
+      - 'README.md'
+      - 'docs/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 📄 Build Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: 🔧 Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: 🏗️ Generate Site Content
+        run: |
+          echo "::group::Creating site structure"
+          
+          # Create output directory
+          mkdir -p _site
+          
+          # Copy template files (HTML versions of configs)
+          if [[ -d template ]]; then
+            cp -r template/* _site/
+          fi
+          
+          # Copy documentation
+          if [[ -d docs ]]; then
+            mkdir -p _site/docs
+            cp -r docs/* _site/docs/
+          fi
+          
+          # Copy README as index if no index.html exists
+          if [[ ! -f _site/index.html ]] && [[ -f README.md ]]; then
+            # Convert README.md to HTML (basic conversion)
+            cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Dotfiles - starikov.io</title>
+              <style>
+                  body { 
+                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                      line-height: 1.6;
+                      color: #333;
+                      max-width: 900px;
+                      margin: 0 auto;
+                      padding: 2rem;
+                  }
+                  pre { 
+                      background: #f4f4f4;
+                      padding: 1rem;
+                      overflow-x: auto;
+                      border-radius: 5px;
+                  }
+                  code {
+                      background: #f4f4f4;
+                      padding: 0.2rem 0.4rem;
+                      border-radius: 3px;
+                  }
+                  a { color: #0366d6; }
+                  h1, h2, h3 { margin-top: 2rem; }
+              </style>
+          </head>
+          <body>
+          EOF
+            
+            # Basic markdown to HTML conversion using sed
+            sed -e 's/^# \(.*\)/<h1>\1<\/h1>/' \
+                -e 's/^## \(.*\)/<h2>\1<\/h2>/' \
+                -e 's/^### \(.*\)/<h3>\1<\/h3>/' \
+                -e 's/\*\*\([^*]*\)\*\*/<strong>\1<\/strong>/g' \
+                -e 's/\*\([^*]*\)\*/<em>\1<\/em>/g' \
+                -e 's/`\([^`]*\)`/<code>\1<\/code>/g' \
+                -e 's/^\- \(.*\)/<li>\1<\/li>/' \
+                -e 's/^[0-9]\+\. \(.*\)/<li>\1<\/li>/' \
+                README.md >> _site/index.html
+            
+            echo "</body></html>" >> _site/index.html
+          fi
+          
+          # Generate file listing if mirror.sh exists
+          if [[ -f template/mirror.sh ]]; then
+            echo "Running mirror.sh to generate file listings..."
+            bash template/mirror.sh || true
+          fi
+          
+          # Create 404 page
+          cat > _site/404.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <title>404 - Page Not Found</title>
+              <style>
+                  body { 
+                      font-family: monospace;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100vh;
+                      margin: 0;
+                      background: #1e1e1e;
+                      color: #d4d4d4;
+                  }
+                  .container { text-align: center; }
+                  h1 { font-size: 4rem; margin: 0; }
+                  p { font-size: 1.2rem; }
+                  a { color: #569cd6; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>404</h1>
+                  <p>Page not found</p>
+                  <p><a href="/">← Back to home</a></p>
+              </div>
+          </body>
+          </html>
+          EOF
+          
+          # List generated files
+          echo "Generated site structure:"
+          ls -la _site/
+          
+          echo "::endgroup::"
+      
+      - name: 📤 Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: 🚀 Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
