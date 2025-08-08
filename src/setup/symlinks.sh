@@ -72,7 +72,8 @@ main() {
     echo ""
     
     # Core dotfiles
-    create_link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc" "Zsh config"
+    create_link "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc" "Zsh config"
+    create_link "$DOTFILES_DIR/zsh/zshenv" "$HOME/.zshenv" "Zsh environment"
     create_link "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux config"
     
     # Git configurations
@@ -93,7 +94,7 @@ main() {
     create_link "$DOTFILES_DIR/spell" "$HOME/.config/nvim/spell" "Neovim spell files"
     
     # Starship
-    create_link "$DOTFILES_DIR/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
+    create_link "$DOTFILES_DIR/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
     
     # WezTerm
     create_link "$DOTFILES_DIR/wezterm" "$HOME/.config/wezterm" "WezTerm config"
