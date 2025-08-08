@@ -2,8 +2,8 @@
 # Test: LSP configuration
 
 test_case "LSP configuration exists"
-if [[ -f "$DOTFILES_DIR/src/lua/config/lsp/servers.lua" ]] || \
-   [[ -f "$DOTFILES_DIR/src/lua/config/lsp/init.lua" ]]; then
+if [[ -f "$DOTFILES_DIR/src/vim/config/lsp/servers.lua" ]] || \
+   [[ -f "$DOTFILES_DIR/src/vim/config/lsp/init.lua" ]]; then
     pass
 else
     fail "No LSP configuration found"
@@ -17,7 +17,7 @@ expected_servers=(
     "rust_analyzer"
 )
 
-config_file="$DOTFILES_DIR/src/lua/config/lsp/servers.lua"
+config_file="$DOTFILES_DIR/src/vim/config/lsp/servers.lua"
 if [[ -f "$config_file" ]]; then
     found=0
     for server in "${expected_servers[@]}"; do
@@ -36,8 +36,8 @@ else
 fi
 
 test_case "Mason LSP installer is configured"
-if grep -q "mason" "$DOTFILES_DIR/src/lua/config/plugins.lua" 2>/dev/null || \
-   grep -q "mason-lspconfig" "$DOTFILES_DIR/src/lua/config/lsp/"*.lua 2>/dev/null; then
+if grep -q "mason" "$DOTFILES_DIR/src/vim/config/plugins.lua" 2>/dev/null || \
+   grep -q "mason-lspconfig" "$DOTFILES_DIR/src/vim/config/lsp/"*.lua 2>/dev/null; then
     pass
 else
     fail "Mason LSP installer not configured"

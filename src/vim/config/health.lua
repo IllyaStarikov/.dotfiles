@@ -18,7 +18,7 @@ end
 
 function M.check()
   vim.health.start("Dotfiles Configuration")
-  
+
   -- Check core modules
   vim.health.info("Checking core modules...")
   local core_modules = {
@@ -29,9 +29,9 @@ function M.check()
     "config.keymaps",
     "config.autocmds",
     "config.plugins",
-    "config.commands"
+    "config.commands",
   }
-  
+
   local all_core_ok = true
   for _, module in ipairs(core_modules) do
     if check_module(module) then
@@ -41,11 +41,11 @@ function M.check()
       all_core_ok = false
     end
   end
-  
+
   if all_core_ok then
     vim.health.ok("All core modules loaded successfully")
   end
-  
+
   -- Check external dependencies
   vim.health.info("Checking external dependencies...")
   local dependencies = {
@@ -57,7 +57,7 @@ function M.check()
     { cmd = "python3", required = false },
     { cmd = "pip3", required = false },
   }
-  
+
   for _, dep in ipairs(dependencies) do
     local name = dep.name or dep.cmd
     if check_command(dep.cmd) then
@@ -68,13 +68,13 @@ function M.check()
       vim.health.warn(name .. " not found (optional)")
     end
   end
-  
+
   -- Check plugin manager
   vim.health.info("Checking plugin manager...")
   local lazy_ok = check_module("lazy")
   if lazy_ok then
     vim.health.ok("lazy.nvim is installed")
-    
+
     -- Check for common plugin issues
     local lazy = require("lazy")
     local stats = lazy.stats()
@@ -86,12 +86,12 @@ function M.check()
   else
     vim.health.error("lazy.nvim not found")
   end
-  
+
   -- Check LSP setup
   vim.health.info("Checking LSP configuration...")
   if check_module("lspconfig") then
     vim.health.ok("nvim-lspconfig is available")
-    
+
     -- Check for active LSP clients
     local clients = vim.lsp.get_active_clients()
     if #clients > 0 then
@@ -105,7 +105,7 @@ function M.check()
   else
     vim.health.warn("nvim-lspconfig not available")
   end
-  
+
   -- Check completion
   vim.health.info("Checking completion setup...")
   if check_module("blink.cmp") then
@@ -115,7 +115,7 @@ function M.check()
   else
     vim.health.warn("No completion plugin found")
   end
-  
+
   -- Check critical keymaps
   vim.health.info("Checking critical keymaps...")
   local keymaps_to_check = {
@@ -123,7 +123,7 @@ function M.check()
     { mode = "n", lhs = "<C-p>", desc = "File finder" },
     { mode = "n", lhs = "<leader>T", desc = "Aerial toggle" },
   }
-  
+
   for _, keymap in ipairs(keymaps_to_check) do
     local mapping = vim.fn.maparg(keymap.lhs, keymap.mode)
     if mapping ~= "" then
@@ -132,7 +132,7 @@ function M.check()
       vim.health.warn(keymap.desc .. " is not mapped")
     end
   end
-  
+
   -- Check work profile
   vim.health.info("Checking work profile...")
   local work = require("config.work")
@@ -142,7 +142,7 @@ function M.check()
   else
     vim.health.info("No work profile active")
   end
-  
+
   -- Check for startup errors
   local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
   if vim.fn.filereadable(error_file) == 1 then
