@@ -49,6 +49,124 @@ measure_time_ms() {
     echo $(( (end - start) / 1000000 ))
 }
 
+# Test suite functions for organization
+describe() {
+    echo -e "\n${CYAN}━━━ $1 ━━━${NC}"
+}
+
+it() {
+    test_case "$1"
+    return 0
+}
+
+# Assertion helpers
+assert_file_exists() {
+    if [[ -f "$1" ]]; then
+        return 0
+    else
+        fail "File does not exist: $1"
+        return 1
+    fi
+}
+
+assert_file_executable() {
+    if [[ -x "$1" ]]; then
+        return 0
+    else
+        fail "File is not executable: $1"
+        return 1
+    fi
+}
+
+assert_directory_exists() {
+    if [[ -d "$1" ]]; then
+        return 0
+    else
+        fail "Directory does not exist: $1"
+        return 1
+    fi
+}
+
+assert_command_exists() {
+    if command -v "$1" &>/dev/null; then
+        return 0
+    else
+        fail "Command not found: $1"
+        return 1
+    fi
+}
+
+assert_contains() {
+    if [[ "$1" == *"$2"* ]]; then
+        return 0
+    else
+        fail "String does not contain expected text"
+        return 1
+    fi
+}
+
+assert_not_contains() {
+    if [[ "$1" != *"$2"* ]]; then
+        return 0
+    else
+        fail "String contains unexpected text"
+        return 1
+    fi
+}
+
+assert_equals() {
+    local actual="$1"
+    local expected="$2"
+    local tolerance="${3:-0}"
+    
+    if [[ "$tolerance" -gt 0 ]]; then
+        # Numeric comparison with tolerance
+        local diff=$((actual - expected))
+        [[ ${diff#-} -le $tolerance ]] && return 0
+        fail "Values differ by more than $tolerance"
+    else
+        # String comparison
+        [[ "$actual" == "$expected" ]] && return 0
+        fail "Expected '$expected' but got '$actual'"
+    fi
+    return 1
+}
+
+assert_greater_than() {
+    if [[ "$1" -gt "$2" ]]; then
+        return 0
+    else
+        fail "$1 is not greater than $2"
+        return 1
+    fi
+}
+
+assert_success() {
+    if [[ "$1" -eq 0 ]]; then
+        return 0
+    else
+        fail "Command did not succeed (exit code: $1)"
+        return 1
+    fi
+}
+
+# Run all test functions
+run_tests() {
+    local total=$((PASSED + FAILED + SKIPPED))
+    echo -e "\n${CYAN}━━━ Test Results ━━━${NC}"
+    echo -e "${GREEN}Passed: $PASSED${NC}"
+    [[ $FAILED -gt 0 ]] && echo -e "${RED}Failed: $FAILED${NC}"
+    [[ $SKIPPED -gt 0 ]] && echo -e "${YELLOW}Skipped: $SKIPPED${NC}"
+    echo -e "Total: $total"
+    
+    [[ $FAILED -eq 0 ]] && return 0 || return 1
+}
+
+# Neovim headless test helper
+nvim_headless() {
+    nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -c "$1" -c "qa!" 2>&1
+}
+
 # Headless Neovim helper with better error handling
 nvim_headless() {
     local timeout=${2:-5000}

@@ -99,9 +99,12 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LE
     
     test_case "Essential files exist"
     missing_files=()
-    for file in init.lua zshrc tmux.conf alacritty.toml gitconfig; do
-        [[ ! -f "$DOTFILES_DIR/src/$file" ]] && missing_files+=("$file")
-    done
+    # Check for files in their actual locations
+    [[ ! -f "$DOTFILES_DIR/src/neovim/init.lua" ]] && missing_files+=("init.lua")
+    [[ ! -f "$DOTFILES_DIR/src/zsh/zshrc" ]] && missing_files+=("zshrc")
+    [[ ! -f "$DOTFILES_DIR/src/tmux.conf" ]] && missing_files+=("tmux.conf")
+    [[ ! -f "$DOTFILES_DIR/src/alacritty.toml" ]] && missing_files+=("alacritty.toml")
+    [[ ! -f "$DOTFILES_DIR/src/git/gitconfig" ]] && missing_files+=("gitconfig")
     if [[ ${#missing_files[@]} -eq 0 ]]; then
         pass
     else
