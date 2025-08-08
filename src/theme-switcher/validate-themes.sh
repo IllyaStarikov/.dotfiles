@@ -17,12 +17,12 @@ THEMES_DIR="$SCRIPT_DIR/themes"
 REQUIRED_FILES=(
     "alacritty.toml"
     "tmux.conf"
+    "starship.toml"
 )
 
 # Optional files
 OPTIONAL_FILES=(
     "vim.vim"
-    "starship.toml"
 )
 
 echo "🔍 Validating theme configurations..."

@@ -1,0 +1,63 @@
+# Starship Dark Theme Configuration - Tokyo Night Night
+# Optimized for dark terminal backgrounds
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vicmd_symbol = "[❮](bold green)"
+
+[directory]
+style = "cyan bold"  # Brighter cyan for dark backgrounds
+read_only = " 🔒"
+
+[git_branch]
+style = "bold purple"
+
+[git_status]
+style = "bold red"
+
+[cmd_duration]
+style = "yellow bold"
+
+[python]
+style = "yellow bold"
+
+[nodejs]
+style = "green bold"
+
+[rust]
+style = "red bold"
+
+[golang]
+style = "cyan bold"
+
+[docker_context]
+style = "blue bold"
+
+[kubernetes]
+style = "cyan bold"
+
+[username]
+style_user = "green bold"
+style_root = "red bold"
+
+[hostname]
+style = "green dimmed"
+
+[jobs]
+style = "bold blue"
+
+[battery]
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[time]
+style = "yellow"
+
+[status]
+style = "bg:red"
