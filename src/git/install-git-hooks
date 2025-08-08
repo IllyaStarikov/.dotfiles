@@ -4,7 +4,8 @@
 
 # Source common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/../scripts/common.sh"
+DOTFILES_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+source "${DOTFILES_ROOT}/src/scripts/common.sh"
 
 # Configuration
 DOTFILES_DIR="${HOME}/.dotfiles"

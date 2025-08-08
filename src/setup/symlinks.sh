@@ -74,8 +74,11 @@ main() {
     # Core dotfiles
     create_link "$DOTFILES_DIR/zshrc" "$HOME/.zshrc" "Zsh config"
     create_link "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux config"
-    create_link "$DOTFILES_DIR/gitconfig" "$HOME/.gitconfig" "Git config"
-    create_link "$DOTFILES_DIR/gitignore_global" "$HOME/.gitignore" "Global gitignore"
+    
+    # Git configurations
+    create_link "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig" "Git config"
+    create_link "$DOTFILES_DIR/git/gitignore" "$HOME/.gitignore" "Global gitignore"
+    create_link "$DOTFILES_DIR/git/gitmessage" "$HOME/.gitmessage" "Git commit template"
     
     # Config directory items
     mkdir -p "$HOME/.config"
