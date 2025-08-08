@@ -94,9 +94,9 @@ main() {
     
     # Neovim spell files
     mkdir -p "$HOME/.config/nvim/spell"
-    create_link "$DOTFILES_DIR/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
-    if [[ -f "$DOTFILES_DIR/spell.txt.spl" ]]; then
-        create_link "$DOTFILES_DIR/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
+    create_link "$DOTFILES_DIR/spell/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
+    if [[ -f "$DOTFILES_DIR/spell/spell.txt.spl" ]]; then
+        create_link "$DOTFILES_DIR/spell/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
     fi
     
     # Starship
