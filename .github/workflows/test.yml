@@ -42,6 +42,25 @@ jobs:
         brew install neovim
         nvim --version
 
+    - name: Setup Neovim minimal config
+      run: |
+        # Create minimal config directory structure for CI testing
+        mkdir -p ~/.config/nvim
+        mkdir -p ~/.local/share/nvim
+        mkdir -p ~/.local/state/nvim
+        
+        # Link the dotfiles neovim config for testing
+        ln -sf ${{ github.workspace }}/src/neovim/init.lua ~/.config/nvim/init.lua
+        ln -sf ${{ github.workspace }}/src/neovim/config ~/.config/nvim/config
+        
+        # Install lazy.nvim (plugin manager) for basic plugin infrastructure
+        git clone --filter=blob:none --single-branch \
+          https://github.com/folke/lazy.nvim.git \
+          ~/.local/share/nvim/lazy/lazy.nvim || true
+        
+        # Note: We're NOT installing all plugins to keep CI fast
+        # Tests should handle missing plugins gracefully
+
     - name: Run unit tests
       run: |
         chmod +x test/test
