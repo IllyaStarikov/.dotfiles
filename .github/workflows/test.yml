@@ -160,7 +160,17 @@ jobs:
 
     - name: Run gitleaks scan
       run: |
-        gitleaks detect --source . --config src/gitleaks.toml --verbose
+        # Check for gitleaks config in multiple locations
+        if [ -f ".gitleaks.toml" ]; then
+          echo "Using .gitleaks.toml from repository root"
+          gitleaks detect --source . --config .gitleaks.toml --verbose
+        elif [ -f "src/gitleaks.toml" ]; then
+          echo "Using src/gitleaks.toml"
+          gitleaks detect --source . --config src/gitleaks.toml --verbose
+        else
+          echo "Warning: No gitleaks config found, using defaults"
+          gitleaks detect --source . --verbose
+        fi
 
     - name: Security audit with Grype
       uses: anchore/scan-action@v3
