@@ -9,7 +9,7 @@ set -euo pipefail
 
 # Configuration
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly BACKUP_DIR="$HOME/.dotfiles.backups/$(date +%Y%m%d_%H%M%S)"
 
 # Colors
@@ -72,57 +72,66 @@ main() {
     echo ""
     
     # Core dotfiles
-    create_link "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc" "Zsh config"
-    create_link "$DOTFILES_DIR/zsh/zshenv" "$HOME/.zshenv" "Zsh environment"
-    create_link "$DOTFILES_DIR/tmux.conf" "$HOME/.tmux.conf" "tmux config"
+    create_link "$DOTFILES_DIR/src/zsh/zshrc" "$HOME/.zshrc" "Zsh config"
+    create_link "$DOTFILES_DIR/src/zsh/zshenv" "$HOME/.zshenv" "Zsh environment"
+    create_link "$DOTFILES_DIR/src/tmux.conf" "$HOME/.tmux.conf" "tmux config"
     
     # Git configurations
-    create_link "$DOTFILES_DIR/git/gitconfig" "$HOME/.gitconfig" "Git config"
-    create_link "$DOTFILES_DIR/git/gitignore" "$HOME/.gitignore" "Global gitignore"
-    create_link "$DOTFILES_DIR/git/gitmessage" "$HOME/.gitmessage" "Git commit template"
+    create_link "$DOTFILES_DIR/src/git/gitconfig" "$HOME/.gitconfig" "Git config"
+    create_link "$DOTFILES_DIR/src/git/gitignore" "$HOME/.gitignore" "Global gitignore"
+    create_link "$DOTFILES_DIR/src/git/gitmessage" "$HOME/.gitmessage" "Git commit template"
     
     # Config directory items
     mkdir -p "$HOME/.config"
     
     # Alacritty
-    create_link "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty" "Alacritty config"
+    mkdir -p "$HOME/.config/alacritty"
+    create_link "$DOTFILES_DIR/src/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml" "Alacritty config"
     
     # Neovim
     mkdir -p "$HOME/.config/nvim"
-    create_link "$DOTFILES_DIR/neovim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
-    create_link "$DOTFILES_DIR/neovim" "$HOME/.config/nvim/lua" "Neovim Lua configs"
+    create_link "$DOTFILES_DIR/src/neovim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
+    create_link "$DOTFILES_DIR/src/neovim" "$HOME/.config/nvim/lua" "Neovim Lua configs"
     
     # Neovim spell files
     mkdir -p "$HOME/.config/nvim/spell"
-    create_link "$DOTFILES_DIR/spell/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
-    if [[ -f "$DOTFILES_DIR/spell/spell.txt.spl" ]]; then
-        create_link "$DOTFILES_DIR/spell/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
+    create_link "$DOTFILES_DIR/src/spell/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
+    if [[ -f "$DOTFILES_DIR/src/spell/spell.txt.spl" ]]; then
+        create_link "$DOTFILES_DIR/src/spell/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
     fi
     
     # Starship
-    create_link "$DOTFILES_DIR/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
+    create_link "$DOTFILES_DIR/src/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
     
-    # WezTerm
-    create_link "$DOTFILES_DIR/wezterm" "$HOME/.config/wezterm" "WezTerm config"
+    # WezTerm (if exists)
+    if [[ -d "$DOTFILES_DIR/src/wezterm" ]]; then
+        create_link "$DOTFILES_DIR/src/wezterm" "$HOME/.config/wezterm" "WezTerm config"
+    fi
     
     # LaTeX
-    create_link "$DOTFILES_DIR/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
+    create_link "$DOTFILES_DIR/src/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
     
     # Scripts
     mkdir -p "$HOME/.local/bin"
-    for script in "$DOTFILES_DIR/scripts"/*; do
+    for script in "$DOTFILES_DIR/src/scripts"/*; do
         if [[ -f "$script" && -x "$script" ]]; then
             name=$(basename "$script")
             create_link "$script" "$HOME/.local/bin/$name" "Script: $name"
         fi
     done
     
-    # Tmuxinator
-    create_link "$DOTFILES_DIR/tmuxinator" "$HOME/.config/tmuxinator" "Tmuxinator templates"
+    # Tmuxinator (if exists)
+    if [[ -d "$DOTFILES_DIR/src/tmuxinator" ]]; then
+        create_link "$DOTFILES_DIR/src/tmuxinator" "$HOME/.config/tmuxinator" "Tmuxinator templates"
+    fi
     
-    # Legacy Vim support
-    create_link "$DOTFILES_DIR/vimrc" "$HOME/.vimrc" "Vim config"
-    create_link "$DOTFILES_DIR/vim" "$HOME/.vim" "Vim directory"
+    # Legacy Vim support (if exists)
+    if [[ -f "$DOTFILES_DIR/src/vimrc" ]]; then
+        create_link "$DOTFILES_DIR/src/vimrc" "$HOME/.vimrc" "Vim config"
+    fi
+    if [[ -d "$DOTFILES_DIR/src/vim" ]]; then
+        create_link "$DOTFILES_DIR/src/vim" "$HOME/.vim" "Vim directory"
+    fi
     
     # Summary
     echo ""
