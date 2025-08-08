@@ -54,7 +54,7 @@ nvim_headless() {
     local timeout=${2:-5000}
     local output
     
-    output=$(timeout 10s nvim --headless --noplugin -u "$DOTFILES_DIR/src/init.lua" \
+    output=$(timeout 10s nvim --headless --noplugin -u "$DOTFILES_DIR/src/lua/init.lua" \
         -c "set noswapfile" \
         -c "$1" \
         -c "qa!" 2>&1)
