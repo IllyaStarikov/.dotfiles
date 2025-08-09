@@ -66,6 +66,9 @@ zinit wait lucid for \
 # Environment Setup
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Dotfiles directory
+export DOTFILES="$HOME/.dotfiles"
+
 # Homebrew (only if not in PATH)
 if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]]; then
     [[ -x "/opt/homebrew/bin/brew" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
