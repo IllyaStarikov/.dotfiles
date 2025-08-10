@@ -17,8 +17,6 @@ exclude:
   - .github/
   - .dotfiles.private/
   - styleguide/
-  - Brewfile
-  - Brewfile.lock.json
   - "*.sh"
   - .gitmodules
   - .gitignore
