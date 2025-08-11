@@ -50,7 +50,7 @@ jobs:
           echo "::endgroup::"
       
       - name: Dependency Scan
-        uses: anchore/scan-action@v3
+        uses: anchore/scan-action@v6
         continue-on-error: true
         with:
           path: "."
