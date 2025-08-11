@@ -349,6 +349,7 @@ function M.setup()
       skipFiles = {'<node_internals>/**', 'node_modules/**'},
     },
   }
+  --]]
 
   -- 🦀 RUST DEBUGGING CONFIGURATION
   dap.adapters.rust = {
@@ -413,7 +414,7 @@ function M.setup()
         -- Update this to ensure that you have the debuggers for the langs you want
         'python',
         'codelldb',  -- For C/C++/Rust
-        'node2',     -- For JavaScript/TypeScript (node-debug2-adapter)
+        -- 'node2',     -- Disabled: For JavaScript/TypeScript (node-debug2-adapter)
       }
     })
   end
