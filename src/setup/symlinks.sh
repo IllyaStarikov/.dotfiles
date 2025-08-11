@@ -36,7 +36,8 @@ create_link() {
     
     # Check if source exists
     if [[ ! -e "$source" ]]; then
-        error "Source not found: $source"
+        warn "Source not found: $source (skipping $name)"
+        ((skipped++))
         return 1
     fi
     
@@ -90,8 +91,18 @@ main() {
     
     # Neovim
     mkdir -p "$HOME/.config/nvim"
+    mkdir -p "$HOME/.config/nvim/lua"
+    
+    # Main init.lua
     create_link "$DOTFILES_DIR/src/neovim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
-    create_link "$DOTFILES_DIR/src/neovim" "$HOME/.config/nvim/lua" "Neovim Lua configs"
+    
+    # Lua config directory
+    create_link "$DOTFILES_DIR/src/neovim/config" "$HOME/.config/nvim/lua/config" "Neovim config"
+    
+    # Neovim snippets
+    if [[ -d "$DOTFILES_DIR/src/neovim/snippets" ]]; then
+        create_link "$DOTFILES_DIR/src/neovim/snippets" "$HOME/.config/nvim/lua/snippets" "Neovim snippets"
+    fi
     
     # Neovim spell files
     mkdir -p "$HOME/.config/nvim/spell"
