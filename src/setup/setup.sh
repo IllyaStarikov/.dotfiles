@@ -79,8 +79,8 @@ detect_system() {
         # Detect distribution
         if [[ -f /etc/os-release ]]; then
             . /etc/os-release
-            DISTRO=$ID
-            DISTRO_VERSION=$VERSION_ID
+            DISTRO=${ID:-unknown}
+            DISTRO_VERSION=${VERSION_ID:-unknown}
             info "Detected $DISTRO $DISTRO_VERSION"
         fi
 
