@@ -45,7 +45,7 @@ jobs:
           submodules: true
       
       - name: 🗄️ Cache Tools
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /usr/local/bin/stylua
           key: ${{ runner.os }}-stylua-v0.19.1
