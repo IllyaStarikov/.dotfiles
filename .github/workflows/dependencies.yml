@@ -37,7 +37,7 @@ jobs:
           echo "::endgroup::"
       
       - name: Update GitHub Actions
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         continue-on-error: true
         with:
           warn-only: true
