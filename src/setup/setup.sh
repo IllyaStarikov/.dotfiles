@@ -298,7 +298,12 @@ install_linux_packages() {
     progress "Installing packages for Linux..."
 
     # Update package manager
-    eval "$PKG_UPDATE"
+    case "$PKG_MANAGER" in
+        apt) sudo apt-get update ;;
+        dnf|yum) sudo dnf upgrade -y ;;
+        pacman) sudo pacman -Syu --noconfirm ;;
+        *) warn "Cannot update unknown package manager" ;;
+    esac
 
     # Core packages (varies by distro)
     local packages=()
@@ -371,7 +376,19 @@ install_linux_packages() {
 
     # Install packages
     if [[ ${#packages[@]} -gt 0 ]]; then
-        eval "$PKG_INSTALL ${packages[*]}"
+        info "Installing packages: ${packages[*]}"
+        # Install all packages at once, properly handling the command
+        case "$PKG_MANAGER" in
+            apt)
+                sudo apt-get install -y "${packages[@]}" || warn "Some packages failed to install"
+                ;;
+            dnf|yum)
+                sudo dnf install -y "${packages[@]}" || warn "Some packages failed to install"
+                ;;
+            pacman)
+                sudo pacman -S --noconfirm "${packages[@]}" || warn "Some packages failed to install"
+                ;;
+        esac
     fi
 
     # Install Starship
@@ -414,7 +431,12 @@ setup_shell() {
         if [[ "$OS" == "macos" ]]; then
             brew install zsh
         else
-            eval "$PKG_INSTALL zsh"
+            case "$PKG_MANAGER" in
+                apt) sudo apt-get install -y zsh ;;
+                dnf|yum) sudo dnf install -y zsh ;;
+                pacman) sudo pacman -S --noconfirm zsh ;;
+                *) warn "Cannot install zsh with unknown package manager" ;;
+            esac
         fi
     fi
 
