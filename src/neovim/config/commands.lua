@@ -414,4 +414,150 @@ api.nvim_create_user_command("BufferLineRefresh", function()
   end
 end, { desc = "Refresh bufferline with current theme colors" })
 
+-- =============================================================================
+-- AI MODEL COMMANDS
+-- =============================================================================
+
+-- CodeCompanion AI Model Commands
+local function setup_ai_commands()
+  local ok, ai_config = pcall(require, "config.plugins.ai")
+  if not ok then
+    return
+  end
+  
+  -- Model size commands
+  api.nvim_create_user_command("AISmall", function()
+    ai_config.use_small_model()
+  end, { desc = "Use small AI model (1-3B)" })
+  
+  api.nvim_create_user_command("AIMedium", function()
+    ai_config.use_medium_model()
+  end, { desc = "Use medium AI model (7B)" })
+  
+  api.nvim_create_user_command("AILarge", function()
+    ai_config.use_large_model()
+  end, { desc = "Use large AI model (32B/70B)" })
+  
+  -- List models command
+  api.nvim_create_user_command("AIModels", function()
+    ai_config.list_models()
+  end, { desc = "List available AI models" })
+  
+  -- Custom model command with completion
+  api.nvim_create_user_command("AIModel", function(opts)
+    local model = opts.args
+    if model and model ~= "" then
+      ai_config.switch_model(model)
+    else
+      ai_config.list_models()
+    end
+  end, { 
+    nargs = "?",
+    desc = "Switch to specific AI model",
+    complete = function()
+      local is_macos = vim.fn.has('mac') == 1
+      if is_macos then
+        return {
+          -- MLX models (American companies)
+          "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit",
+          "mlx-community/Meta-Llama-3.1-70B-Instruct-4bit",
+          "mlx-community/Meta-Llama-3-8B-Instruct-4bit",
+          "mlx-community/Phi-3.5-mini-instruct-4bit",
+          "mlx-community/Phi-3-mini-4k-instruct-4bit",
+          "mlx-community/Phi-3-medium-4k-instruct-4bit",
+          "mlx-community/codellama-7b-instruct-4bit",
+          "mlx-community/codellama-13b-instruct-4bit",
+          "mlx-community/codellama-34b-instruct-4bit",
+          "mlx-community/gemma-2b-it-4bit",
+          "mlx-community/gemma-7b-it-4bit",
+          "mlx-community/Mistral-7B-Instruct-v0.3-4bit",
+          -- Ollama models (fallback)
+          "llama3.2:latest",
+          "llama3.1:70b",
+        }
+      else
+        return {
+          -- Ollama models (American companies)
+          "llama3.2:latest",
+          "llama3.1:8b",
+          "llama3.1:70b",
+          "llama3:8b",
+          "codellama:7b",
+          "codellama:34b",
+          "codellama:70b",
+          "phi3:mini",
+          "phi3:medium",
+          "phi3.5:latest",
+          "gemma2:2b",
+          "gemma2:9b",
+          "gemma2:27b",
+          "mistral:7b",
+          "mixtral:8x7b",
+          "starcoder2:3b",
+        }
+      end
+    end
+  })
+  
+  -- macOS specific commands
+  if vim.fn.has('mac') == 1 then
+    api.nvim_create_user_command("AIMLX", function()
+      ai_config.use_mlx()
+    end, { desc = "Switch to MLX adapter (macOS)" })
+    
+    api.nvim_create_user_command("AIOllama", function()
+      ai_config.use_ollama()
+    end, { desc = "Switch to Ollama adapter" })
+    
+    api.nvim_create_user_command("AIMLXStart", function()
+      ai_config.start_mlx_server()
+    end, { desc = "Start MLX server" })
+  end
+  
+  -- Quick info command
+  api.nvim_create_user_command("AIInfo", function()
+    local adapter = vim.g.codecompanion_adapter or "unknown"
+    local model = vim.g.codecompanion_model or "unknown"
+    local is_macos = vim.fn.has('mac') == 1
+    
+    local info = {
+      "CodeCompanion AI Configuration:",
+      "================================",
+      "OS: " .. (is_macos and "macOS" or "Linux"),
+      "Adapter: " .. adapter,
+      "Model: " .. model,
+      "",
+      "Quick Commands:",
+      "  :AISmall    - Use small model (fast)",
+      "  :AIMedium   - Use medium model (balanced)",
+      "  :AILarge    - Use large model (best quality)",
+      "  :AIModels   - List all available models",
+      "  :AIModel <name> - Switch to specific model",
+    }
+    
+    if is_macos then
+      table.insert(info, "  :AIMLX      - Use MLX (Apple Silicon optimized)")
+      table.insert(info, "  :AIOllama   - Use Ollama")
+      table.insert(info, "  :AIMLXStart - Start MLX server")
+    end
+    
+    table.insert(info, "")
+    table.insert(info, "Keybindings:")
+    table.insert(info, "  <leader>c1  - Small model")
+    table.insert(info, "  <leader>c2  - Medium model")
+    table.insert(info, "  <leader>c3  - Large model")
+    table.insert(info, "  <leader>c?  - List models")
+    table.insert(info, "  <leader>cc  - Open chat")
+    table.insert(info, "  <leader>ca  - Code actions (visual mode)")
+    
+    vim.notify(table.concat(info, "\n"), vim.log.levels.INFO)
+  end, { desc = "Show AI configuration info" })
+end
+
+-- Set up AI commands after plugins are loaded
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VeryLazy",
+  callback = setup_ai_commands,
+})
+
 -- Load this module from init.lua with: require('config.commands')
