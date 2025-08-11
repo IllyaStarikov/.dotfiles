@@ -145,7 +145,14 @@ setup_homebrew() {
 
     # Update Homebrew
     brew update
-    brew upgrade
+    # Only upgrade if not running under Rosetta or wrong architecture
+    if [[ "$ARCH" == "arm64" && -d "/opt/homebrew" ]] || [[ "$ARCH" == "x86_64" && -d "/usr/local/Homebrew" ]]; then
+        info "Upgrading Homebrew packages for $ARCH architecture..."
+        brew upgrade || warn "Some packages failed to upgrade"
+    else
+        warn "Skipping brew upgrade due to architecture mismatch"
+        info "Run 'arch -$(uname -m) brew upgrade' to upgrade packages for your architecture"
+    fi
 }
 
 install_macos_packages() {
@@ -326,6 +333,7 @@ install_linux_packages() {
                 "unzip"
                 "python3-pip"
                 "python3-venv"
+                "cargo"  # For installing tree-sitter
             )
             ;;
         dnf|yum)
@@ -400,6 +408,19 @@ install_linux_packages() {
     if ! command -v rustup &>/dev/null && [[ "$INSTALL_MODE" == "full" ]]; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
         source "$HOME/.cargo/env"
+    fi
+
+    # Install tree-sitter CLI via cargo
+    if command -v cargo &>/dev/null; then
+        if ! command -v tree-sitter &>/dev/null; then
+            info "Installing tree-sitter CLI..."
+            cargo install tree-sitter-cli || warn "Failed to install tree-sitter CLI"
+        else
+            success "tree-sitter CLI already installed"
+        fi
+    else
+        warn "Cargo not found, cannot install tree-sitter CLI"
+        warn "Install Rust/Cargo and run: cargo install tree-sitter-cli"
     fi
 
     success "Linux packages installed"
