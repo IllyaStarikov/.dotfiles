@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+# Cortex AI Model Management System
+
+# Add the cortex module to Python path
+export PYTHONPATH="$HOME/.dotfiles/src/cortex:$PYTHONPATH"
+
+# Run cortex with all arguments
+exec python -m cortex.cli "$@"
