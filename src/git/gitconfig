@@ -81,7 +81,7 @@
 
 [user]
     # Point to your SSH key for signing (update path as needed)
-    # signingkey = ~/.ssh/id_ed25519.pub
+	signingkey = /Users/starikov/.ssh/id_rsa.pub
 
 [transfer]
     fsckobjects = true
