@@ -408,15 +408,9 @@ install_linux_packages() {
 setup_linux() {
     install_linux_packages
 
-    # Install Homebrew on Linux if requested
-    if [[ "$INSTALL_MODE" == "full" ]] && ! command -v brew &>/dev/null; then
-        warning "Install Homebrew on Linux? (y/n)"
-        read -r response
-        if [[ "$response" == "y" ]]; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        fi
-    fi
+    # Skip Homebrew on Linux - use native package managers instead
+    # Homebrew on Linux is optional and often not needed with good native package managers
+    info "Using native package manager for Linux (Homebrew not required)"
 }
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -466,11 +460,27 @@ setup_python() {
 
     if [[ "$OS" == "macos" ]]; then
         if command -v pyenv &>/dev/null; then
-            # Install latest Python 3.12
-            PYTHON_VERSION="3.12.0"
+            # Install compatible Python version for current OS
+            # macOS 15.6+ requires Python 3.13.6 or newer
+            PYTHON_VERSION="3.13.6"
+            
+            # Check if the version is already installed
             if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
-                pyenv install "$PYTHON_VERSION"
+                info "Installing Python $PYTHON_VERSION (compatible with macOS 15.6+)..."
+                pyenv install "$PYTHON_VERSION" || {
+                    warn "Failed to install Python $PYTHON_VERSION"
+                    warn "Trying to find latest available version..."
+                    PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs)
+                    if [[ -n "$PYTHON_VERSION" ]]; then
+                        pyenv install "$PYTHON_VERSION"
+                    fi
+                }
+            fi
+            
+            # Set as global if installation succeeded
+            if pyenv versions | grep -q "$PYTHON_VERSION"; then
                 pyenv global "$PYTHON_VERSION"
+                success "Python $PYTHON_VERSION configured"
             fi
         fi
     fi
