@@ -301,9 +301,10 @@ install_linux_packages() {
     eval "$PKG_UPDATE"
 
     # Core packages (varies by distro)
+    local packages=()
     case "$PKG_MANAGER" in
         apt)
-            local packages=(
+            packages=(
                 "build-essential"
                 "git"
                 "curl"
@@ -323,7 +324,7 @@ install_linux_packages() {
             )
             ;;
         dnf|yum)
-            local packages=(
+            packages=(
                 "gcc"
                 "gcc-c++"
                 "make"
@@ -344,7 +345,7 @@ install_linux_packages() {
             )
             ;;
         pacman)
-            local packages=(
+            packages=(
                 "base-devel"
                 "git"
                 "curl"
@@ -362,9 +363,16 @@ install_linux_packages() {
                 "python-pip"
             )
             ;;
+        *)
+            warn "Unknown package manager: $PKG_MANAGER"
+            return 1
+            ;;
     esac
 
-    eval "$PKG_INSTALL ${packages[*]}"
+    # Install packages
+    if [[ ${#packages[@]} -gt 0 ]]; then
+        eval "$PKG_INSTALL ${packages[*]}"
+    fi
 
     # Install Starship
     if ! command -v starship &>/dev/null; then
