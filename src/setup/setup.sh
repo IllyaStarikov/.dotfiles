@@ -148,9 +148,9 @@ setup_homebrew() {
     # Only upgrade if not running under Rosetta or wrong architecture
     if [[ "$ARCH" == "arm64" && -d "/opt/homebrew" ]] || [[ "$ARCH" == "x86_64" && -d "/usr/local/Homebrew" ]]; then
         info "Upgrading Homebrew packages for $ARCH architecture..."
-        brew upgrade || warn "Some packages failed to upgrade"
+        brew upgrade || warning "Some packages failed to upgrade"
     else
-        warn "Skipping brew upgrade due to architecture mismatch"
+        warning "Skipping brew upgrade due to architecture mismatch"
         info "Run 'arch -$(uname -m) brew upgrade' to upgrade packages for your architecture"
     fi
 }
@@ -508,8 +508,25 @@ setup_python() {
 
     # Install global Python packages
     if command -v pip3 &>/dev/null; then
-        pip3 install --user --upgrade pip
-        pip3 install --user pynvim black ruff mypy ipython
+        # Try to install Python packages, but don't fail if externally managed
+        pip3 install --user --upgrade pip 2>/dev/null || {
+            warn "pip upgrade failed (may be externally managed)"
+            info "Consider using pipx or virtual environments for Python packages"
+        }
+        
+        # Try to install essential packages, continue on failure
+        for pkg in pynvim black ruff mypy ipython; do
+            pip3 install --user "$pkg" 2>/dev/null || {
+                info "Could not install $pkg with pip, trying system package manager..."
+                if [[ "$OS" == "linux" ]]; then
+                    case "$PKG_MANAGER" in
+                        apt) sudo apt-get install -y "python3-$pkg" 2>/dev/null || true ;;
+                        dnf|yum) sudo dnf install -y "python3-$pkg" 2>/dev/null || true ;;
+                        *) true ;;
+                    esac
+                fi
+            }
+        done
     fi
     
     success "Python environment configured"
