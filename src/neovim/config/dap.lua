@@ -286,7 +286,11 @@ function M.setup()
   }
 
   -- 🟨 JAVASCRIPT/TYPESCRIPT DEBUGGING
-  -- Check if node-debug2-adapter is installed via Mason
+  -- Disabled due to node-debug2-adapter compatibility issues
+  -- To re-enable:
+  -- 1. Install node-debug2-adapter via Mason
+  -- 2. Uncomment the configuration below
+  --[[
   local node_debug_path = vim.fn.stdpath("data") .. '/mason/packages/node-debug2-adapter/out/src/nodeDebug.js'
   if vim.fn.filereadable(node_debug_path) == 1 then
     dap.adapters.node2 = {
