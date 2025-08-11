@@ -1,0 +1,33 @@
+version: 0.1.0
+mode: offline
+providers:
+  mlx:
+    enabled: true
+    models_dir: ~/.cache/mlx_models
+    port: 8080
+  ollama:
+    enabled: true
+    models_dir: ~/.ollama/models
+    port: 11434
+  claude:
+    enabled: true
+    api_key_env: ANTHROPIC_API_KEY
+  openai:
+    enabled: true
+    api_key_env: OPENAI_API_KEY
+  gemini:
+    enabled: true
+    api_key_env: GEMINI_API_KEY
+preferences:
+  auto_download: false
+  verbose_default: false
+  theme: dark
+current_model:
+  id: mlx-community/Qwen2.5-Coder-7B-Instruct-4bit
+  name: mlx-community/Qwen2.5-Coder-7B-Instruct-4bit
+  provider: mlx
+  online: false
+  capability: chat
+ensemble:
+  enabled: false
+  models: []
