@@ -108,43 +108,42 @@ main() {
     mkdir -p "$HOME/.config/alacritty"
     create_link "$DOTFILES_DIR/src/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml" "Alacritty config"
     
-    # Neovim
-    mkdir -p "$HOME/.config/nvim"
-    mkdir -p "$HOME/.config/nvim/lua"
-    
-    # Check if Neovim config exists in the expected location
-    if [[ ! -d "$DOTFILES_DIR/src/neovim/config" ]]; then
-        warn "Neovim config directory not found at $DOTFILES_DIR/src/neovim/config"
-        warn "Attempting to restore from git..."
-        (cd "$DOTFILES_DIR" && git restore src/neovim/config/ 2>/dev/null) || warn "Could not restore config from git"
-    fi
-    
-    # Main init.lua
-    if [[ -f "$DOTFILES_DIR/src/neovim/init.lua" ]]; then
-        create_link "$DOTFILES_DIR/src/neovim/init.lua" "$HOME/.config/nvim/init.lua" "Neovim init"
+    # Neovim - Link the entire neovim directory
+    # This preserves the exact structure needed by the config
+    if [[ -d "$DOTFILES_DIR/src/neovim" ]]; then
+        # Check if Neovim config exists and is not a broken symlink
+        if [[ -L "$DOTFILES_DIR/src/neovim/config" ]]; then
+            warn "Found symlink at $DOTFILES_DIR/src/neovim/config - this should be a directory!"
+            warn "Attempting to restore from git..."
+            rm -f "$DOTFILES_DIR/src/neovim/config" 2>/dev/null
+            (cd "$DOTFILES_DIR" && git checkout HEAD -- src/neovim/config/) || {
+                error "Could not restore config from git"
+                error "Please run manually: cd $DOTFILES_DIR && git checkout HEAD -- src/neovim/"
+            }
+        fi
+        
+        # Remove old symlinks if they exist (clean slate approach)
+        if [[ -L "$HOME/.config/nvim" ]]; then
+            rm -f "$HOME/.config/nvim"
+        elif [[ -d "$HOME/.config/nvim" ]]; then
+            # Backup existing nvim config if it's not a symlink
+            if [[ ! -L "$HOME/.config/nvim/init.lua" ]] || [[ ! -L "$HOME/.config/nvim/lua" ]]; then
+                mkdir -p "$BACKUP_DIR"
+                mv "$HOME/.config/nvim" "$BACKUP_DIR/nvim" 2>/dev/null
+                warn "Backed up existing nvim config to $BACKUP_DIR/nvim"
+            else
+                # Remove individual symlinks from old setup
+                rm -rf "$HOME/.config/nvim"
+            fi
+        fi
+        
+        # Create the symlink for the entire nvim directory
+        create_link "$DOTFILES_DIR/src/neovim" "$HOME/.config/nvim" "Neovim config (entire directory)"
     else
-        warn "Neovim init.lua not found at $DOTFILES_DIR/src/neovim/init.lua"
+        error "Neovim directory not found at $DOTFILES_DIR/src/neovim"
     fi
     
-    # Lua config directory
-    if [[ -d "$DOTFILES_DIR/src/neovim/config" ]]; then
-        create_link "$DOTFILES_DIR/src/neovim/config" "$HOME/.config/nvim/lua/config" "Neovim config"
-    else
-        error "Neovim config directory still missing after restore attempt"
-        error "Please run: cd $DOTFILES_DIR && git checkout HEAD -- src/neovim/config/"
-    fi
-    
-    # Neovim snippets
-    if [[ -d "$DOTFILES_DIR/src/neovim/snippets" ]]; then
-        create_link "$DOTFILES_DIR/src/neovim/snippets" "$HOME/.config/nvim/lua/snippets" "Neovim snippets"
-    fi
-    
-    # Neovim spell files
-    mkdir -p "$HOME/.config/nvim/spell"
-    create_link "$DOTFILES_DIR/src/spell/spell.txt" "$HOME/.config/nvim/spell/en.utf-8.add" "Custom dictionary"
-    if [[ -f "$DOTFILES_DIR/src/spell/spell.txt.spl" ]]; then
-        create_link "$DOTFILES_DIR/src/spell/spell.txt.spl" "$HOME/.config/nvim/spell/en.utf-8.add.spl" "Dictionary index"
-    fi
+    # Spell files are now handled via the neovim directory symlink above
     
     # Starship
     create_link "$DOTFILES_DIR/src/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
