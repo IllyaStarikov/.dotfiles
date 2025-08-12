@@ -30,8 +30,42 @@ local function load_hosts_config()
   return hosts
 end
 
+-- Check devices.txt for work machine detection
+local function is_work_machine_from_devices()
+  local devices_file = WORK_CONFIG_PATH .. "/google/devices.txt"
+  if vim.fn.filereadable(devices_file) == 0 then
+    return false
+  end
+  
+  local hostname = vim.fn.hostname()
+  local ok, lines = pcall(vim.fn.readfile, devices_file)
+  if not ok then
+    return false
+  end
+  
+  for _, line in ipairs(lines) do
+    -- Skip comments and empty lines
+    if not line:match("^#") and line ~= "" then
+      -- Trim whitespace
+      line = line:gsub("^%s+", ""):gsub("%s+$", "")
+      if hostname == line then
+        return true
+      end
+    end
+  end
+  
+  return false
+end
+
 -- Get work profile based on hostname
 local function get_work_profile()
+  -- First check devices.txt for simple work machine detection
+  if is_work_machine_from_devices() then
+    -- Return "google" profile for machines in devices.txt
+    return "google"
+  end
+  
+  -- Then check HOSTS file for more complex profiles
   local hosts = load_hosts_config()
   if not hosts then
     return nil
@@ -78,6 +112,17 @@ local function load_work_vimrc(profile)
   
   if type(profile) == "string" then
     -- Simple string profile - load from profile directory
+    -- First try work_nvim.lua (new naming)
+    local work_nvim_path = WORK_CONFIG_PATH .. "/" .. profile .. "/work_nvim.lua"
+    if vim.fn.filereadable(work_nvim_path) == 1 then
+      local ok, work_config = pcall(dofile, work_nvim_path)
+      if ok and work_config and work_config.setup then
+        work_config.setup()
+        return
+      end
+    end
+    
+    -- Fall back to vimrc.lua (old naming)
     local vimrc_path = WORK_CONFIG_PATH .. "/" .. profile .. "/vimrc.lua"
     safe_dofile(vimrc_path)
   elseif type(profile) == "table" then
