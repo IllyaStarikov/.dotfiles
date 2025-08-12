@@ -150,14 +150,20 @@ setup_homebrew() {
     # Update Homebrew
     brew update
     # Check if Homebrew architecture matches system architecture
-    local brew_arch=$(file "$(which brew)" | grep -o 'arm64\|x86_64' | head -1)
-    if [[ "$brew_arch" != "$ARCH" ]]; then
-        warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch"
-        warning "Skipping brew upgrade to avoid architecture conflicts"
-        info "Consider reinstalling Homebrew for $ARCH architecture"
+    local brew_binary="$(which brew)"
+    if [[ -f "$brew_binary" ]]; then
+        local brew_arch=$(file "$brew_binary" | grep -o 'arm64\|x86_64' | head -1)
+        if [[ "$brew_arch" != "$ARCH" ]]; then
+            warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch"
+            warning "Skipping brew upgrade to avoid architecture conflicts"
+            info "Consider reinstalling Homebrew for $ARCH architecture"
+            info "Or use: arch -$brew_arch brew install <package> for compatibility"
+        else
+            info "Upgrading Homebrew packages for $ARCH architecture..."
+            brew upgrade || warning "Some packages failed to upgrade"
+        fi
     else
-        info "Upgrading Homebrew packages for $ARCH architecture..."
-        brew upgrade || warning "Some packages failed to upgrade"
+        warning "Could not determine Homebrew architecture"
     fi
 }
 
@@ -253,10 +259,18 @@ install_macos_packages() {
         for pkg in "${core_packages[@]}"; do
             if brew list --formula "$pkg" &>/dev/null; then
                 info "✓ $pkg already installed"
-            elif brew install "$pkg" 2>/dev/null; then
-                success "✓ $pkg installed successfully"
             else
-                warning "✗ $pkg installation failed"
+                # Try to install, handling architecture issues
+                output=$(brew install "$pkg" 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    success "✓ $pkg installed successfully"
+                elif echo "$output" | grep -q "already installed"; then
+                    info "✓ $pkg already installed"
+                elif echo "$output" | grep -q "Rosetta 2"; then
+                    warning "✗ $pkg skipped (architecture mismatch - reinstall Homebrew for x86_64)"
+                else
+                    warning "✗ $pkg installation failed"
+                fi
             fi
         done
         
@@ -264,10 +278,17 @@ install_macos_packages() {
         for pkg in "${dev_packages[@]}"; do
             if brew list --formula "$pkg" &>/dev/null; then
                 info "✓ $pkg already installed"
-            elif brew install "$pkg" 2>/dev/null; then
-                success "✓ $pkg installed successfully"
             else
-                warning "✗ $pkg installation failed"
+                output=$(brew install "$pkg" 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    success "✓ $pkg installed successfully"
+                elif echo "$output" | grep -q "already installed"; then
+                    info "✓ $pkg already installed"
+                elif echo "$output" | grep -q "Rosetta 2"; then
+                    warning "✗ $pkg skipped (architecture mismatch)"
+                else
+                    warning "✗ $pkg installation failed"
+                fi
             fi
         done
         
@@ -275,10 +296,17 @@ install_macos_packages() {
         for pkg in "${lsp_packages[@]}"; do
             if brew list --formula "$pkg" &>/dev/null; then
                 info "✓ $pkg already installed"
-            elif brew install "$pkg" 2>/dev/null; then
-                success "✓ $pkg installed successfully"
             else
-                warning "✗ $pkg installation failed"
+                output=$(brew install "$pkg" 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    success "✓ $pkg installed successfully"
+                elif echo "$output" | grep -q "already installed"; then
+                    info "✓ $pkg already installed"
+                elif echo "$output" | grep -q "Rosetta 2"; then
+                    warning "✗ $pkg skipped (architecture mismatch)"
+                else
+                    warning "✗ $pkg installation failed"
+                fi
             fi
         done
 
@@ -340,6 +368,20 @@ install_macos_packages() {
     fi
 
     success "Package installation complete"
+    
+    # Ensure Starship is installed (critical for prompt)
+    if ! command -v starship &>/dev/null; then
+        info "Installing Starship via official installer..."
+        curl -sS https://starship.rs/install.sh | sh -s -- -y || {
+            warning "Starship installation failed, trying alternative method..."
+            # Try cargo if available
+            if command -v cargo &>/dev/null; then
+                cargo install starship --locked || warning "Could not install Starship"
+            fi
+        }
+    else
+        success "Starship already installed"
+    fi
 }
 
 setup_macos() {
@@ -568,7 +610,21 @@ setup_python() {
             # Check if the version is already installed
             if [[ -n "$PYTHON_VERSION" ]] && ! pyenv versions | grep -q "$PYTHON_VERSION"; then
                 info "Installing Python $PYTHON_VERSION..."
-                pyenv install "$PYTHON_VERSION" || warning "Failed to install Python $PYTHON_VERSION"
+                pyenv install "$PYTHON_VERSION" 2>/dev/null || {
+                    warning "Failed to install Python $PYTHON_VERSION (may be blocked by corporate security)"
+                    info "Checking for existing Python installations..."
+                    
+                    # Try to use any existing Python 3.10+ version
+                    EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+                    if [[ -n "$EXISTING_PYTHON" ]]; then
+                        info "Using existing Python $EXISTING_PYTHON"
+                        pyenv global "$EXISTING_PYTHON"
+                        PYTHON_VERSION="$EXISTING_PYTHON"
+                    elif command -v python3 &>/dev/null; then
+                        info "Using system Python $(python3 --version)"
+                        PYTHON_VERSION="system"
+                    fi
+                }
             fi
             
             # Set as global if installation succeeded
