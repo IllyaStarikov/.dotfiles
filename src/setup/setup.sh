@@ -240,8 +240,8 @@ setup_homebrew() {
     fi
     
     # Fix HOMEBREW_CELLAR issue on work machines
-    if [[ "$IS_WORK_MACHINE" == true ]] && [[ -n "$HOMEBREW_CELLAR" ]]; then
-        if [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+    if [[ "$IS_WORK_MACHINE" == true ]] && [[ -n "${HOMEBREW_CELLAR:-}" ]]; then
+        if [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
             warning "Non-standard HOMEBREW_CELLAR detected on work machine"
             info "Attempting to fix Homebrew environment..."
             export HOMEBREW_CELLAR="/usr/local/Cellar"
@@ -288,7 +288,7 @@ install_macos_packages() {
     
     # Auto-skip on work machines with Homebrew issues unless forced
     if [[ "$IS_WORK_MACHINE" == true ]] && [[ "$FORCE_BREW" != "true" ]]; then
-        if [[ -n "$HOMEBREW_CELLAR" ]] && [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+        if [[ -n "${HOMEBREW_CELLAR:-}" ]] && [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
             warning "Detected Homebrew configuration issues on work machine"
             warning "Skipping package installation to prevent hangs"
             info "Use --force-brew to override or fix Homebrew configuration"
@@ -1008,7 +1008,7 @@ main() {
         echo ""
         
         # Check for problematic Homebrew configuration
-        if [[ -n "$HOMEBREW_CELLAR" ]] && [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+        if [[ -n "${HOMEBREW_CELLAR:-}" ]] && [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
             error "HOMEBREW_CELLAR misconfiguration detected!"
             warning "This will cause package installation to fail or hang"
             info "Recommended: Run with --skip-brew flag"
