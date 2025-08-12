@@ -1,3 +1,7 @@
+# Unset HOMEBREW_CELLAR to prevent issues with non-standard Homebrew installations
+# on corporate machines. This allows Homebrew to use its default Cellar location.
+unset HOMEBREW_CELLAR
+
 # Basic PATH setup
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
