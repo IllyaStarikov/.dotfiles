@@ -372,7 +372,6 @@ install_macos_packages() {
     local dev_packages=(
         "pyenv"
         "pyenv-virtualenv"
-        "nvm"
         "node"
         "ruby"
         "rust"
@@ -926,52 +925,52 @@ setup_python() {
 setup_node() {
     progress "Setting up Node.js environment..."
 
-    # Install nvm if not present
-    if [[ ! -d "$HOME/.nvm" ]]; then
-        info "Installing nvm..."
-        # Temporarily disable strict mode for nvm installation
-        set +u
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash || {
-            warning "NVM installation had warnings, continuing..."
-        }
-        set -u
-        
-        # Load nvm for current session
-        export NVM_DIR="$HOME/.nvm"
-        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-            # Disable strict mode while sourcing nvm
-            set +u
-            source "$NVM_DIR/nvm.sh"
-            set -u
+    if [[ "$OS" == "macos" ]]; then
+        info "Installing Node.js via Homebrew for macOS..."
+        if brew list node &>/dev/null || true; then
+            info "✓ Node.js already installed"
+        elif brew install node; then
+            success "✓ Node.js installed successfully"
+        else
+            warning "✗ Node.js installation failed via Homebrew"
         fi
     else
-        success "NVM already installed"
-        export NVM_DIR="$HOME/.nvm"
-        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+        # Keep original nvm logic for Linux
+        if [[ ! -d "$HOME/.nvm" ]]; then
+            info "Installing nvm for Linux..."
             set +u
-            source "$NVM_DIR/nvm.sh"
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash || {
+                warning "NVM installation had warnings, continuing..."
+            }
             set -u
+            export NVM_DIR="$HOME/.nvm"
+            [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+        else
+            success "NVM already installed"
+            export NVM_DIR="$HOME/.nvm"
+            [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+        fi
+
+        if command -v nvm &>/dev/null; then
+            info "Installing latest LTS Node.js via nvm..."
+            set +u
+            nvm install --lts &>/dev/null || warning "Node.js LTS installation via nvm failed"
+            nvm use --lts &>/dev/null || warning "Failed to use Node.js LTS via nvm"
+            set -u
+        else
+            warning "nvm command not found, skipping Node.js installation."
         fi
     fi
 
-    # Install latest LTS Node if nvm is available
-    if command -v nvm &>/dev/null; then
-        info "Installing latest LTS Node.js..."
-        set +u  # Disable strict mode for nvm commands
-        nvm install --lts 2>/dev/null || warning "Node installation had issues"
-        nvm use --lts 2>/dev/null || warning "Could not switch to LTS Node"
-        
-        # Install global npm packages
-        if command -v npm &>/dev/null; then
-            info "Installing global npm packages..."
-            npm install -g neovim typescript prettier eslint 2>/dev/null || warning "Some npm packages failed to install"
-        fi
-        set -u  # Re-enable strict mode
-        
-        success "Node.js environment configured"
+    # Install global npm packages for Neovim, regardless of OS
+    if command -v npm &>/dev/null; then
+        info "Installing global npm packages for Neovim..."
+        npm install -g neovim &>/dev/null || warning "Failed to install neovim npm package"
     else
-        warning "NVM not available, skipping Node.js setup"
+        warning "npm not found, skipping global package installation for Neovim."
     fi
+
+    success "Node.js environment configured"
 }
 
 create_symlinks() {
