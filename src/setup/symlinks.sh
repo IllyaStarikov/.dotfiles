@@ -165,10 +165,12 @@ main() {
         fi
     done
     
-    # Tmuxinator (if exists)
+    # Tmuxinator (if exists in src/)
     if [[ -d "$DOTFILES_DIR/src/tmuxinator" ]]; then
         create_link "$DOTFILES_DIR/src/tmuxinator" "$HOME/.config/tmuxinator" "Tmuxinator templates"
     fi
+    
+    # Note: Private tmuxinator configs should be handled by private setup script
     
     # Legacy Vim support (if exists)
     if [[ -f "$DOTFILES_DIR/src/vimrc" ]]; then

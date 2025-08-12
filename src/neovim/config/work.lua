@@ -30,42 +30,9 @@ local function load_hosts_config()
   return hosts
 end
 
--- Check devices.txt for work machine detection
-local function is_work_machine_from_devices()
-  local devices_file = WORK_CONFIG_PATH .. "/google/devices.txt"
-  if vim.fn.filereadable(devices_file) == 0 then
-    return false
-  end
-  
-  local hostname = vim.fn.hostname()
-  local ok, lines = pcall(vim.fn.readfile, devices_file)
-  if not ok then
-    return false
-  end
-  
-  for _, line in ipairs(lines) do
-    -- Skip comments and empty lines
-    if not line:match("^#") and line ~= "" then
-      -- Trim whitespace
-      line = line:gsub("^%s+", ""):gsub("%s+$", "")
-      if hostname == line then
-        return true
-      end
-    end
-  end
-  
-  return false
-end
-
 -- Get work profile based on hostname
 local function get_work_profile()
-  -- First check devices.txt for simple work machine detection
-  if is_work_machine_from_devices() then
-    -- Return "google" profile for machines in devices.txt
-    return "google"
-  end
-  
-  -- Then check HOSTS file for more complex profiles
+  -- Check HOSTS file for profile mapping
   local hosts = load_hosts_config()
   if not hosts then
     return nil
