@@ -23,7 +23,7 @@ $status\
 $character"""
 
 # Global timeout for external commands (ms)
-command_timeout = 500
+command_timeout = 2000
 
 # Prompt character configuration
 [character]
