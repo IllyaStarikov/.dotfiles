@@ -121,6 +121,45 @@ detect_system() {
     fi
 
     success "System: $OS_NAME ($ARCH)"
+    
+    # Detect if we're on a work machine
+    detect_work_environment
+}
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 🏢 WORK ENVIRONMENT DETECTION
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+detect_work_environment() {
+    IS_WORK_MACHINE=false
+    WORK_HOSTNAME_FILE="$DOTFILES_DIR/.dotfiles.private/google/devices.txt"
+    
+    # Get current hostname
+    CURRENT_HOSTNAME=$(hostname -f 2>/dev/null || hostname)
+    
+    # Check if devices.txt exists
+    if [[ -f "$WORK_HOSTNAME_FILE" ]]; then
+        # Read work hostnames and check if current matches
+        while IFS= read -r line; do
+            # Skip comments and empty lines
+            [[ "$line" =~ ^#.*$ ]] && continue
+            [[ -z "$line" ]] && continue
+            
+            # Check if current hostname matches
+            if [[ "$CURRENT_HOSTNAME" == "$line" ]]; then
+                IS_WORK_MACHINE=true
+                info "Detected work machine: $CURRENT_HOSTNAME"
+                info "Will use work-specific configurations"
+                break
+            fi
+        done < "$WORK_HOSTNAME_FILE"
+    fi
+    
+    if [[ "$IS_WORK_MACHINE" == false ]]; then
+        info "Personal machine detected: $CURRENT_HOSTNAME"
+    fi
+    
+    export IS_WORK_MACHINE
 }
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -604,6 +643,41 @@ setup_shell() {
 setup_python() {
     progress "Setting up Python environment..."
 
+    # Use PyPy on work machines to avoid compilation issues
+    if [[ "$IS_WORK_MACHINE" == true ]]; then
+        info "Work machine detected - using PyPy to avoid compilation"
+        
+        if command -v pypy3 &>/dev/null; then
+            info "PyPy3 already installed: $(pypy3 --version)"
+            success "Python environment configured (PyPy)"
+            return 0
+        fi
+        
+        # Install PyPy via Homebrew
+        if [[ "$OS" == "macos" ]] && command -v brew &>/dev/null; then
+            info "Installing PyPy3 via Homebrew..."
+            brew install pypy3 || warning "Failed to install PyPy3"
+            
+            # Create python3 symlink to pypy3 for compatibility
+            if command -v pypy3 &>/dev/null; then
+                info "Creating python3 -> pypy3 symlink for compatibility"
+                mkdir -p "$HOME/.local/bin"
+                ln -sf "$(which pypy3)" "$HOME/.local/bin/python3"
+                success "PyPy3 configured for work environment"
+                return 0
+            fi
+        fi
+        
+        # Fall back to system Python if PyPy installation fails
+        if command -v python3 &>/dev/null; then
+            warning "PyPy installation failed, using system Python"
+            info "System Python: $(python3 --version)"
+            success "Python environment configured (system)"
+            return 0
+        fi
+    fi
+    
+    # Personal machine - use regular Python setup
     if [[ "$OS" == "macos" ]]; then
         if command -v pyenv &>/dev/null; then
             # Check if we already have a good Python version installed
