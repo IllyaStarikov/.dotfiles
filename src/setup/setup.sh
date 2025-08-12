@@ -67,13 +67,23 @@ detect_system() {
         # Detect actual Homebrew location (not just based on architecture)
         if command -v brew &>/dev/null; then
             BREW_PREFIX="$(brew --prefix)"
-            info "Detected $ARCH Mac with Homebrew at $BREW_PREFIX"
+            local brew_binary="$(which brew)"
+            if [[ -f "$brew_binary" ]]; then
+                local brew_arch=$(file "$brew_binary" | grep -o 'arm64\|x86_64' | head -1)
+                if [[ -n "$brew_arch" ]]; then
+                    info "Detected $ARCH Mac with $brew_arch Homebrew at $BREW_PREFIX"
+                else
+                    info "Detected $ARCH Mac with Homebrew at $BREW_PREFIX"
+                fi
+            else
+                info "Detected $ARCH Mac with Homebrew at $BREW_PREFIX"
+            fi
         elif [[ "$ARCH" == "arm64" ]]; then
             BREW_PREFIX="/opt/homebrew"
-            info "Detected Apple Silicon Mac"
+            info "Detected Apple Silicon Mac (no Homebrew found)"
         else
             BREW_PREFIX="/usr/local"
-            info "Detected Intel Mac"
+            info "Detected Intel Mac (no Homebrew found)"
         fi
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         OS="linux"
@@ -153,7 +163,10 @@ setup_homebrew() {
     local brew_binary="$(which brew)"
     if [[ -f "$brew_binary" ]]; then
         local brew_arch=$(file "$brew_binary" | grep -o 'arm64\|x86_64' | head -1)
-        if [[ "$brew_arch" != "$ARCH" ]]; then
+        if [[ -z "$brew_arch" ]]; then
+            warning "Could not determine Homebrew architecture"
+            brew upgrade || warning "Some packages failed to upgrade"
+        elif [[ "$brew_arch" != "$ARCH" ]]; then
             warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch"
             warning "Skipping brew upgrade to avoid architecture conflicts"
             info "Consider reinstalling Homebrew for $ARCH architecture"
@@ -163,7 +176,8 @@ setup_homebrew() {
             brew upgrade || warning "Some packages failed to upgrade"
         fi
     else
-        warning "Could not determine Homebrew architecture"
+        warning "Could not determine Homebrew binary location"
+        brew upgrade || warning "Some packages failed to upgrade"
     fi
 }
 
@@ -592,6 +606,30 @@ setup_python() {
 
     if [[ "$OS" == "macos" ]]; then
         if command -v pyenv &>/dev/null; then
+            # Check if we already have a good Python version installed
+            EXISTING_PYTHON=$(pyenv versions 2>/dev/null | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+            if [[ -n "$EXISTING_PYTHON" ]]; then
+                info "Found existing Python $EXISTING_PYTHON, using it"
+                pyenv global "$EXISTING_PYTHON"
+                success "Python environment configured"
+                return 0
+            fi
+            
+            # Check system Python version
+            if command -v python3 &>/dev/null; then
+                SYSTEM_PYTHON_VERSION=$(python3 --version | grep -oE '[0-9]+\.[0-9]+')
+                if [[ "${SYSTEM_PYTHON_VERSION%%.*}" -ge 3 ]] && [[ "${SYSTEM_PYTHON_VERSION#*.}" -ge 10 ]]; then
+                    info "System Python $(python3 --version) is sufficient, using it"
+                    success "Python environment configured"
+                    return 0
+                fi
+            fi
+            
+            # Only try to install new Python if really needed
+            warning "No suitable Python found, will attempt installation"
+            info "Press Ctrl+C within 5 seconds to skip Python installation..."
+            sleep 5
+            
             # First update pyenv to get latest Python versions
             info "Updating pyenv to get latest Python versions..."
             brew update && brew upgrade pyenv 2>/dev/null || true
@@ -609,22 +647,47 @@ setup_python() {
             
             # Check if the version is already installed
             if [[ -n "$PYTHON_VERSION" ]] && ! pyenv versions | grep -q "$PYTHON_VERSION"; then
-                info "Installing Python $PYTHON_VERSION..."
-                pyenv install "$PYTHON_VERSION" 2>/dev/null || {
-                    warning "Failed to install Python $PYTHON_VERSION (may be blocked by corporate security)"
-                    info "Checking for existing Python installations..."
-                    
-                    # Try to use any existing Python 3.10+ version
-                    EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
-                    if [[ -n "$EXISTING_PYTHON" ]]; then
-                        info "Using existing Python $EXISTING_PYTHON"
-                        pyenv global "$EXISTING_PYTHON"
-                        PYTHON_VERSION="$EXISTING_PYTHON"
-                    elif command -v python3 &>/dev/null; then
-                        info "Using system Python $(python3 --version)"
-                        PYTHON_VERSION="system"
-                    fi
-                }
+                info "Installing Python $PYTHON_VERSION (this may take 5-10 minutes)..."
+                warning "Python is being compiled from source. This is normal but can be slow."
+                info "To speed up future installs, consider using python-build with precompiled binaries"
+                
+                # Use verbose mode so user sees progress, and add a timeout
+                if command -v timeout &>/dev/null; then
+                    # Use timeout command if available (10 minutes)
+                    timeout 600 pyenv install -v "$PYTHON_VERSION" || {
+                        warning "Python installation timed out or failed"
+                        info "This can happen due to corporate security or network issues"
+                        info "Checking for existing Python installations..."
+                        
+                        # Try to use any existing Python 3.10+ version
+                        EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+                        if [[ -n "$EXISTING_PYTHON" ]]; then
+                            info "Using existing Python $EXISTING_PYTHON"
+                            pyenv global "$EXISTING_PYTHON"
+                            PYTHON_VERSION="$EXISTING_PYTHON"
+                        elif command -v python3 &>/dev/null; then
+                            info "Using system Python $(python3 --version)"
+                            PYTHON_VERSION="system"
+                        fi
+                    }
+                else
+                    # No timeout command, run with verbose output
+                    pyenv install -v "$PYTHON_VERSION" || {
+                        warning "Failed to install Python $PYTHON_VERSION"
+                        info "Checking for existing Python installations..."
+                        
+                        # Try to use any existing Python 3.10+ version
+                        EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+                        if [[ -n "$EXISTING_PYTHON" ]]; then
+                            info "Using existing Python $EXISTING_PYTHON"
+                            pyenv global "$EXISTING_PYTHON"
+                            PYTHON_VERSION="$EXISTING_PYTHON"
+                        elif command -v python3 &>/dev/null; then
+                            info "Using system Python $(python3 --version)"
+                            PYTHON_VERSION="system"
+                        fi
+                    }
+                fi
             fi
             
             # Set as global if installation succeeded
@@ -745,18 +808,12 @@ setup_neovim() {
 setup_tmux() {
     progress "Setting up tmux..."
 
-    # Install TPM (Tmux Plugin Manager)
-    if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-        info "Installing Tmux Plugin Manager..."
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-    else
-        success "TPM already installed"
-    fi
-
-    # Install tmux plugins
-    if [[ -f "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]]; then
-        "$HOME/.tmux/plugins/tpm/bin/install_plugins" || true
-    fi
+    # The tmux configuration is minimal and doesn't use plugins
+    # Just ensure tmux config is linked
+    info "Using minimal tmux configuration (no plugins)"
+    
+    # Create tmux config directory if needed
+    [[ ! -d "$HOME/.config/tmux" ]] && mkdir -p "$HOME/.config/tmux"
 
     success "tmux configured"
 }
