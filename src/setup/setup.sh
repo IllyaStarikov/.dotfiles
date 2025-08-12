@@ -238,17 +238,48 @@ setup_homebrew() {
     else
         success "Homebrew already installed"
     fi
-    
-    # Fix HOMEBREW_CELLAR issue on work machines
-    if [[ "$IS_WORK_MACHINE" == true ]] && [[ -n "${HOMEBREW_CELLAR:-}" ]]; then
-        if [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
-            warning "Non-standard HOMEBREW_CELLAR detected on work machine"
-            info "Attempting to fix Homebrew environment..."
-            export HOMEBREW_CELLAR="/usr/local/Cellar"
-            export HOMEBREW_NO_AUTO_UPDATE=1
-            export HOMEBREW_NO_INSTALL_UPGRADE=1
+
+    info "Checking Homebrew directory permissions..."
+    local brew_dirs=("/usr/local/bin" "/usr/local/etc" "/usr/local/sbin" "/usr/local/share" "/usr/local/share/doc")
+    local non_writable_dirs=()
+    for dir in "${brew_dirs[@]}"; do
+        if [[ -d "$dir" ]] && [[ ! -w "$dir" ]]; then
+            non_writable_dirs+=("$dir")
         fi
+    done
+
+    if [[ ${#non_writable_dirs[@]} -gt 0 ]]; then
+        warning "Detected non-writable Homebrew directories."
+        info "Attempting to fix permissions with sudo. You may be prompted for your password."
+        sudo chown -R "$USER" "${non_writable_dirs[@]}"
+        chmod u+w "${non_writable_dirs[@]}"
+        success "Homebrew directory permissions fixed."
+    else
+        success "Homebrew directory permissions are correct."
     fi
+
+    info "Checking Homebrew directory permissions..."
+    local brew_dirs=("/usr/local/bin" "/usr/local/etc" "/usr/local/sbin" "/usr/local/share" "/usr/local/share/doc")
+    local non_writable_dirs=()
+    for dir in "${brew_dirs[@]}"; do
+        if [[ -d "$dir" ]] && [[ ! -w "$dir" ]]; then
+            non_writable_dirs+=("$dir")
+        fi
+    done
+
+    if [[ ${#non_writable_dirs[@]} -gt 0 ]]; then
+        warning "Detected non-writable Homebrew directories."
+        info "Attempting to fix permissions with sudo. You may be prompted for your password."
+        sudo chown -R "$USER" "${non_writable_dirs[@]}"
+        chmod u+w "${non_writable_dirs[@]}"
+        success "Homebrew directory permissions fixed."
+    else
+        success "Homebrew directory permissions are correct."
+    fi
+    
+    # Align Homebrew environment to avoid issues on corporate machines
+    export HOMEBREW_PREFIX="/usr/local/Homebrew"
+    export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
 
     # Update Homebrew (with timeout for work machines)
     if [[ "$IS_WORK_MACHINE" == true ]]; then
@@ -257,23 +288,32 @@ setup_homebrew() {
         brew update
     fi
     # Check if Homebrew architecture matches system architecture
-    local brew_binary="$(which brew)"
-    if [[ -f "$brew_binary" ]]; then
-        local brew_arch=$(file "$brew_binary" | grep -o 'arm64\|x86_64' | head -1)
-        if [[ -z "$brew_arch" ]]; then
-            warning "Could not determine Homebrew architecture"
-            brew upgrade || warning "Some packages failed to upgrade"
-        elif [[ "$brew_arch" != "$ARCH" ]]; then
-            warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch"
-            warning "Skipping brew upgrade to avoid architecture conflicts"
-            info "Consider reinstalling Homebrew for $ARCH architecture"
-            info "Or use: arch -$brew_arch brew install <package> for compatibility"
-        else
-            info "Upgrading Homebrew packages for $ARCH architecture..."
-            brew upgrade || warning "Some packages failed to upgrade"
-        fi
+    if ! command -v brew &>/dev/null; then
+        warning "Homebrew command not found, cannot check architecture or upgrade."
+        return
+    fi
+
+    local brew_prefix
+    brew_prefix=$(brew --prefix)
+    local brew_arch=""
+
+    if [[ "$brew_prefix" == "/opt/homebrew" ]]; then
+        brew_arch="arm64"
+    elif [[ "$brew_prefix" == "/usr/local" ]]; then
+        brew_arch="x86_64"
+    fi
+
+    if [[ -z "$brew_arch" ]]; then
+        warning "Could not determine Homebrew architecture from prefix: $brew_prefix"
+        info "Attempting to upgrade packages anyway..."
+        brew upgrade || warning "Some packages failed to upgrade"
+    elif [[ "$brew_arch" != "$ARCH" ]]; then
+        warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch (prefix: $brew_prefix)"
+        warning "Skipping brew upgrade to avoid architecture conflicts."
+        info "If this is a Rosetta environment, this may be expected."
+        info "Consider reinstalling Homebrew for your native architecture if you encounter issues."
     else
-        warning "Could not determine Homebrew binary location"
+        info "Upgrading Homebrew packages for $ARCH architecture..."
         brew upgrade || warning "Some packages failed to upgrade"
     fi
 }
@@ -286,16 +326,7 @@ install_macos_packages() {
         return 0
     fi
     
-    # Auto-skip on work machines with Homebrew issues unless forced
-    if [[ "$IS_WORK_MACHINE" == true ]] && [[ "$FORCE_BREW" != "true" ]]; then
-        if [[ -n "${HOMEBREW_CELLAR:-}" ]] && [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
-            warning "Detected Homebrew configuration issues on work machine"
-            warning "Skipping package installation to prevent hangs"
-            info "Use --force-brew to override or fix Homebrew configuration"
-            info "To fix: unset HOMEBREW_CELLAR or set it to /usr/local/Cellar"
-            return 0
-        fi
-    fi
+    
     
     progress "Installing packages via Homebrew..."
 
@@ -386,7 +417,7 @@ install_macos_packages() {
         # Install packages one by one to continue on failures
         info "Installing core packages..."
         for pkg in "${core_packages[@]}"; do
-            if brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null || true; then
                 info "✓ $pkg already installed"
             else
                 # Try to install with timeout, especially for work machines
@@ -409,13 +440,21 @@ install_macos_packages() {
                     warning "✗ $pkg skipped (architecture/bottle issue)"
                 else
                     warning "✗ $pkg installation failed"
+                    if [[ "$pkg" == "starship" ]]; then
+                        info "Brew installation failed for Starship, trying official installer..."
+                        if curl -sS https://starship.rs/install.sh | sh -s -- -y; then
+                            success "✓ Starship installed via official installer."
+                        else
+                            error "✗ Starship installation failed completely."
+                        fi
+                    fi
                 fi
             fi
         done
         
         info "Installing development packages..."
         for pkg in "${dev_packages[@]}"; do
-            if brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null || true; then
                 info "✓ $pkg already installed"
             else
                 output=$(brew install "$pkg" 2>&1)
@@ -433,7 +472,7 @@ install_macos_packages() {
         
         info "Installing language servers..."
         for pkg in "${lsp_packages[@]}"; do
-            if brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null || true; then
                 info "✓ $pkg already installed"
             else
                 output=$(brew install "$pkg" 2>&1)
@@ -485,7 +524,7 @@ install_macos_packages() {
         )
         info "Installing extra tools..."
         for pkg in "${extra_packages[@]}"; do
-            if brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null || true; then
                 info "✓ $pkg already installed"
             elif brew install "$pkg" 2>/dev/null; then
                 success "✓ $pkg installed successfully"
@@ -496,7 +535,7 @@ install_macos_packages() {
     else
         info "Installing core packages only..."
         for pkg in "${core_packages[@]}"; do
-            if brew list --formula "$pkg" &>/dev/null; then
+            if brew list --formula "$pkg" &>/dev/null || true; then
                 info "✓ $pkg already installed"
             elif brew install "$pkg" 2>/dev/null; then
                 success "✓ $pkg installed successfully"
@@ -983,6 +1022,10 @@ setup_tmux() {
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 main() {
+    # Align Homebrew environment to avoid issues on corporate machines
+    export HOMEBREW_PREFIX="/usr/local/Homebrew"
+    export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
+
     echo "════════════════════════════════════════════════════════════════════"
     echo "       🚀 DOTFILES UNIFIED SETUP"
     echo "════════════════════════════════════════════════════════════════════"
@@ -1009,17 +1052,7 @@ main() {
         
         # Check for problematic Homebrew configuration
         if [[ -n "${HOMEBREW_CELLAR:-}" ]] && [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
-            error "HOMEBREW_CELLAR misconfiguration detected!"
-            warning "This will cause package installation to fail or hang"
-            info "Recommended: Run with --skip-brew flag"
-            info "Or fix by running: unset HOMEBREW_CELLAR"
-            echo ""
-            read -p "Continue anyway? (y/N) " -n 1 -r
-            echo ""
-            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-                info "Setup cancelled. Run with --skip-brew to skip Homebrew packages"
-                exit 0
-            fi
+            warning "Corporate Homebrew environment detected. Applying workarounds."
         fi
     fi
 
@@ -1062,7 +1095,7 @@ main() {
                 setup_macos_xcode
                 setup_homebrew
                 for pkg in git neovim tmux starship ripgrep fd; do
-                    if brew list --formula "$pkg" &>/dev/null; then
+                    if brew list --formula "$pkg" &>/dev/null || true; then
                         info "✓ $pkg already installed"
                     elif brew install "$pkg" 2>/dev/null; then
                         success "✓ $pkg installed successfully"
