@@ -251,31 +251,60 @@ install_macos_packages() {
         # Install packages one by one to continue on failures
         info "Installing core packages..."
         for pkg in "${core_packages[@]}"; do
-            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+            if brew list --formula "$pkg" &>/dev/null; then
+                info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+                success "✓ $pkg installed successfully"
+            else
+                warning "✗ $pkg installation failed"
+            fi
         done
         
         info "Installing development packages..."
         for pkg in "${dev_packages[@]}"; do
-            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+            if brew list --formula "$pkg" &>/dev/null; then
+                info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+                success "✓ $pkg installed successfully"
+            else
+                warning "✗ $pkg installation failed"
+            fi
         done
         
         info "Installing language servers..."
         for pkg in "${lsp_packages[@]}"; do
-            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+            if brew list --formula "$pkg" &>/dev/null; then
+                info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+                success "✓ $pkg installed successfully"
+            else
+                warning "✗ $pkg installation failed"
+            fi
         done
 
         # Nerd Fonts (check if already installed first)
         info "Installing Nerd Fonts..."
-        brew list --cask font-jetbrains-mono-nerd-font &>/dev/null || brew install --cask font-jetbrains-mono-nerd-font 2>/dev/null || warning "JetBrains font skipped"
-        brew list --cask font-hack-nerd-font &>/dev/null || brew install --cask font-hack-nerd-font 2>/dev/null || warning "Hack font skipped"
-        brew list --cask font-ibm-plex-mono &>/dev/null || brew install --cask font-ibm-plex-mono 2>/dev/null || warning "IBM Plex font skipped"
+        for font in font-jetbrains-mono-nerd-font font-hack-nerd-font font-ibm-plex-mono; do
+            if brew list --cask "$font" &>/dev/null; then
+                info "✓ $font already installed"
+            elif brew install --cask "$font" 2>/dev/null; then
+                success "✓ $font installed successfully"
+            else
+                warning "✗ $font installation failed"
+            fi
+        done
         
         # GUI Applications (check if already installed first)
         info "Installing GUI applications..."
-        brew list --cask wezterm &>/dev/null || brew install --cask wezterm 2>/dev/null || warning "WezTerm skipped"
-        brew list --cask raycast &>/dev/null || brew install --cask raycast 2>/dev/null || warning "Raycast skipped"
-        brew list --cask amethyst &>/dev/null || brew install --cask amethyst 2>/dev/null || warning "Amethyst skipped"
-        brew list --cask docker &>/dev/null || brew install --cask docker 2>/dev/null || warning "Docker skipped"
+        for app in wezterm raycast amethyst docker; do
+            if brew list --cask "$app" &>/dev/null; then
+                info "✓ $app already installed"
+            elif brew install --cask "$app" 2>/dev/null; then
+                success "✓ $app installed successfully"
+            else
+                warning "✗ $app installation failed"
+            fi
+        done
         
         # Additional tools (from 3-tooling.sh)
         local extra_packages=(
@@ -289,12 +318,24 @@ install_macos_packages() {
         )
         info "Installing extra tools..."
         for pkg in "${extra_packages[@]}"; do
-            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+            if brew list --formula "$pkg" &>/dev/null; then
+                info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+                success "✓ $pkg installed successfully"
+            else
+                warning "✗ $pkg installation failed"
+            fi
         done
     else
         info "Installing core packages only..."
         for pkg in "${core_packages[@]}"; do
-            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+            if brew list --formula "$pkg" &>/dev/null; then
+                info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+                success "✓ $pkg installed successfully"
+            else
+                warning "✗ $pkg installation failed"
+            fi
         done
     fi
 
@@ -689,7 +730,13 @@ main() {
                 setup_macos_xcode
                 setup_homebrew
                 for pkg in git neovim tmux starship ripgrep fd; do
-                    brew install "$pkg" 2>/dev/null || warning "Skipped $pkg"
+                    if brew list --formula "$pkg" &>/dev/null; then
+                        info "✓ $pkg already installed"
+                    elif brew install "$pkg" 2>/dev/null; then
+                        success "✓ $pkg installed successfully"
+                    else
+                        warning "✗ $pkg installation failed"
+                    fi
                 done
             else
                 install_linux_packages
