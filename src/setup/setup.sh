@@ -26,9 +26,58 @@ readonly MAGENTA='\033[0;35m'
 readonly CYAN='\033[0;36m'
 readonly NC='\033[0m'
 
-# Installation modes
-INSTALL_MODE="${1:-full}"  # full, core, symlinks
+# Parse command line arguments
+INSTALL_MODE="full"  # full, core, symlinks
 VERBOSE="${VERBOSE:-false}"
+SKIP_BREW_PACKAGES=""
+FORCE_BREW=""
+
+# Process arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        core|--core)
+            INSTALL_MODE="core"
+            shift
+            ;;
+        symlinks|--symlinks)
+            INSTALL_MODE="symlinks"
+            shift
+            ;;
+        --skip-brew)
+            SKIP_BREW_PACKAGES="true"
+            shift
+            ;;
+        --force-brew)
+            FORCE_BREW="true"
+            SKIP_BREW_PACKAGES=""
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  core, --core       Install core packages only"
+            echo "  symlinks, --symlinks  Create symlinks only"
+            echo "  --skip-brew        Skip Homebrew package installation (for work machines)"
+            echo "  --force-brew       Force Homebrew packages even on work machines"
+            echo "  --help, -h         Show this help message"
+            echo ""
+            echo "Examples:"
+            echo "  $0                 Full installation"
+            echo "  $0 core            Core packages only"
+            echo "  $0 symlinks        Symlinks only"
+            echo "  $0 --skip-brew     Full setup but skip Homebrew packages"
+            exit 0
+            ;;
+        *)
+            # Support legacy positional argument
+            if [[ -z "$INSTALL_MODE" ]] || [[ "$INSTALL_MODE" == "full" ]]; then
+                INSTALL_MODE="$1"
+            fi
+            shift
+            ;;
+    esac
+done
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📝 LOGGING
@@ -189,9 +238,24 @@ setup_homebrew() {
     else
         success "Homebrew already installed"
     fi
+    
+    # Fix HOMEBREW_CELLAR issue on work machines
+    if [[ "$IS_WORK_MACHINE" == true ]] && [[ -n "$HOMEBREW_CELLAR" ]]; then
+        if [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+            warning "Non-standard HOMEBREW_CELLAR detected on work machine"
+            info "Attempting to fix Homebrew environment..."
+            export HOMEBREW_CELLAR="/usr/local/Cellar"
+            export HOMEBREW_NO_AUTO_UPDATE=1
+            export HOMEBREW_NO_INSTALL_UPGRADE=1
+        fi
+    fi
 
-    # Update Homebrew
-    brew update
+    # Update Homebrew (with timeout for work machines)
+    if [[ "$IS_WORK_MACHINE" == true ]]; then
+        timeout 30 brew update 2>/dev/null || info "Brew update skipped (timeout or restricted)"
+    else
+        brew update
+    fi
     # Check if Homebrew architecture matches system architecture
     local brew_binary="$(which brew)"
     if [[ -f "$brew_binary" ]]; then
@@ -215,6 +279,24 @@ setup_homebrew() {
 }
 
 install_macos_packages() {
+    # Check if we should skip Homebrew packages
+    if [[ "$SKIP_BREW_PACKAGES" == "true" ]]; then
+        warning "Skipping Homebrew package installation (--skip-brew flag set)"
+        info "You can manually install packages later or use --force-brew to override"
+        return 0
+    fi
+    
+    # Auto-skip on work machines with Homebrew issues unless forced
+    if [[ "$IS_WORK_MACHINE" == true ]] && [[ "$FORCE_BREW" != "true" ]]; then
+        if [[ -n "$HOMEBREW_CELLAR" ]] && [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+            warning "Detected Homebrew configuration issues on work machine"
+            warning "Skipping package installation to prevent hangs"
+            info "Use --force-brew to override or fix Homebrew configuration"
+            info "To fix: unset HOMEBREW_CELLAR or set it to /usr/local/Cellar"
+            return 0
+        fi
+    fi
+    
     progress "Installing packages via Homebrew..."
 
     # Core packages
@@ -307,14 +389,24 @@ install_macos_packages() {
             if brew list --formula "$pkg" &>/dev/null; then
                 info "✓ $pkg already installed"
             else
-                # Try to install, handling architecture issues
-                output=$(brew install "$pkg" 2>&1)
-                if [[ $? -eq 0 ]]; then
+                # Try to install with timeout, especially for work machines
+                if [[ "$IS_WORK_MACHINE" == true ]]; then
+                    # Use timeout and skip bottle downloads on work machines with issues
+                    output=$(timeout 60 brew install --build-from-source "$pkg" 2>&1 || timeout 60 brew install "$pkg" 2>&1)
+                    exit_code=$?
+                else
+                    output=$(brew install "$pkg" 2>&1)
+                    exit_code=$?
+                fi
+                
+                if [[ $exit_code -eq 0 ]]; then
                     success "✓ $pkg installed successfully"
+                elif [[ $exit_code -eq 124 ]]; then
+                    warning "✗ $pkg installation timed out (corporate restrictions?)"
                 elif echo "$output" | grep -q "already installed"; then
                     info "✓ $pkg already installed"
-                elif echo "$output" | grep -q "Rosetta 2"; then
-                    warning "✗ $pkg skipped (architecture mismatch - reinstall Homebrew for x86_64)"
+                elif echo "$output" | grep -q "Rosetta 2\|no bottle available"; then
+                    warning "✗ $pkg skipped (architecture/bottle issue)"
                 else
                     warning "✗ $pkg installation failed"
                 fi
@@ -902,6 +994,34 @@ main() {
 
     # Detect system
     detect_system
+    
+    # Show work machine warning if applicable
+    if [[ "$IS_WORK_MACHINE" == true ]]; then
+        echo ""
+        warning "═══════════════════════════════════════════════════════════════"
+        warning "   WORK MACHINE DETECTED: Corporate Environment Settings Active"
+        warning "═══════════════════════════════════════════════════════════════"
+        info "• Homebrew packages may timeout or fail due to corporate policies"
+        info "• Use --skip-brew to skip package installation if it hangs"
+        info "• PyPy will be used instead of compiling Python from source"
+        info "• Work-specific configurations will be applied"
+        echo ""
+        
+        # Check for problematic Homebrew configuration
+        if [[ -n "$HOMEBREW_CELLAR" ]] && [[ "$HOMEBREW_CELLAR" == "/usr/local/Homebrew/Cellar" ]]; then
+            error "HOMEBREW_CELLAR misconfiguration detected!"
+            warning "This will cause package installation to fail or hang"
+            info "Recommended: Run with --skip-brew flag"
+            info "Or fix by running: unset HOMEBREW_CELLAR"
+            echo ""
+            read -p "Continue anyway? (y/N) " -n 1 -r
+            echo ""
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                info "Setup cancelled. Run with --skip-brew to skip Homebrew packages"
+                exit 0
+            fi
+        fi
+    fi
 
     # Create necessary directories
     mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.cache"
