@@ -37,8 +37,6 @@ check_requirements() {
 get_timeout_cmd() {
   if has_command timeout; then
     echo "timeout ${TIMEOUT_DURATION}"
-  elif has_command gtimeout; then
-    echo "gtimeout ${TIMEOUT_DURATION}"
   else
     # No timeout available, just use cat to pass through
     echo "cat"
