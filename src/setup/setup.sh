@@ -309,7 +309,7 @@ install_linux_packages() {
         apt) sudo apt-get update ;;
         dnf|yum) sudo dnf upgrade -y ;;
         pacman) sudo pacman -Syu --noconfirm ;;
-        *) warn "Cannot update unknown package manager" ;;
+        *) warning "Cannot update unknown package manager" ;;
     esac
 
     # Core packages (varies by distro)
@@ -377,7 +377,7 @@ install_linux_packages() {
             )
             ;;
         *)
-            warn "Unknown package manager: $PKG_MANAGER"
+            warning "Unknown package manager: $PKG_MANAGER"
             return 1
             ;;
     esac
@@ -388,13 +388,13 @@ install_linux_packages() {
         # Install all packages at once, properly handling the command
         case "$PKG_MANAGER" in
             apt)
-                sudo apt-get install -y "${packages[@]}" || warn "Some packages failed to install"
+                sudo apt-get install -y "${packages[@]}" || warning "Some packages failed to install"
                 ;;
             dnf|yum)
-                sudo dnf install -y "${packages[@]}" || warn "Some packages failed to install"
+                sudo dnf install -y "${packages[@]}" || warning "Some packages failed to install"
                 ;;
             pacman)
-                sudo pacman -S --noconfirm "${packages[@]}" || warn "Some packages failed to install"
+                sudo pacman -S --noconfirm "${packages[@]}" || warning "Some packages failed to install"
                 ;;
         esac
     fi
@@ -414,13 +414,13 @@ install_linux_packages() {
     if command -v cargo &>/dev/null; then
         if ! command -v tree-sitter &>/dev/null; then
             info "Installing tree-sitter CLI..."
-            cargo install tree-sitter-cli || warn "Failed to install tree-sitter CLI"
+            cargo install tree-sitter-cli || warning "Failed to install tree-sitter CLI"
         else
             success "tree-sitter CLI already installed"
         fi
     else
-        warn "Cargo not found, cannot install tree-sitter CLI"
-        warn "Install Rust/Cargo and run: cargo install tree-sitter-cli"
+        warning "Cargo not found, cannot install tree-sitter CLI"
+        warning "Install Rust/Cargo and run: cargo install tree-sitter-cli"
     fi
 
     success "Linux packages installed"
@@ -450,7 +450,7 @@ setup_shell() {
                 apt) sudo apt-get install -y zsh ;;
                 dnf|yum) sudo dnf install -y zsh ;;
                 pacman) sudo pacman -S --noconfirm zsh ;;
-                *) warn "Cannot install zsh with unknown package manager" ;;
+                *) warning "Cannot install zsh with unknown package manager" ;;
             esac
         fi
     fi
@@ -489,8 +489,8 @@ setup_python() {
             if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
                 info "Installing Python $PYTHON_VERSION (compatible with macOS 15.6+)..."
                 pyenv install "$PYTHON_VERSION" || {
-                    warn "Failed to install Python $PYTHON_VERSION"
-                    warn "Trying to find latest available version..."
+                    warning "Failed to install Python $PYTHON_VERSION"
+                    warning "Trying to find latest available version..."
                     PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs)
                     if [[ -n "$PYTHON_VERSION" ]]; then
                         pyenv install "$PYTHON_VERSION"
@@ -510,7 +510,7 @@ setup_python() {
     if command -v pip3 &>/dev/null; then
         # Try to install Python packages, but don't fail if externally managed
         pip3 install --user --upgrade pip 2>/dev/null || {
-            warn "pip upgrade failed (may be externally managed)"
+            warning "pip upgrade failed (may be externally managed)"
             info "Consider using pipx or virtual environments for Python packages"
         }
         
