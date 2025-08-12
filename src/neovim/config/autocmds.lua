@@ -667,6 +667,65 @@ autocmd("FileType", {
 
 
 -- =============================================================================
+-- AUTO-RELOAD FILES
+-- =============================================================================
+-- Automatically reload files when they change on disk
+local autoreload_group = augroup("auto_reload", { clear = true })
+
+-- Enable autoread and set up auto-reload
+vim.opt.autoread = true
+
+-- Check for file changes when focusing vim or entering a buffer
+autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  group = autoreload_group,
+  pattern = "*",
+  callback = function()
+    if vim.fn.mode() ~= "c" and vim.fn.getcmdwintype() == "" then
+      vim.cmd("checktime")
+    end
+  end,
+  desc = "Check for file changes on disk"
+})
+
+-- Notification when file changes
+autocmd("FileChangedShellPost", {
+  group = autoreload_group,
+  pattern = "*",
+  callback = function()
+    vim.notify("File reloaded from disk", vim.log.levels.INFO)
+  end,
+  desc = "Notify when file is reloaded"
+})
+
+-- Auto reload for specific file types (immediate reload without prompt)
+autocmd({ "FileChangedShell" }, {
+  group = autoreload_group,
+  pattern = "*",
+  callback = function()
+    -- Auto reload if file wasn't modified in vim
+    if not vim.bo.modified then
+      vim.cmd("edit!")
+      vim.notify("File auto-reloaded (external change detected)", vim.log.levels.INFO)
+    end
+  end,
+  desc = "Auto reload unmodified files"
+})
+
+-- More aggressive checking for terminal users
+if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM_PROGRAM == "WezTerm" or vim.env.TERM then
+  -- Check more frequently in terminal
+  vim.opt.updatetime = 1000  -- Trigger CursorHold after 1 second
+  
+  -- Watch for changes using timer (checks every 2 seconds)
+  local timer = vim.loop.new_timer()
+  timer:start(2000, 2000, vim.schedule_wrap(function()
+    if vim.fn.mode() ~= "c" and vim.fn.getcmdwintype() == "" then
+      vim.cmd("silent! checktime")
+    end
+  end))
+end
+
+-- =============================================================================
 -- SPELL CHECKING CONFIGURATION
 -- =============================================================================
 -- Enable spell checking only for text-heavy file types to avoid performance issues
