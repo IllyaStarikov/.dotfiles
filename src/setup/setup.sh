@@ -610,19 +610,50 @@ setup_node() {
 
     # Install nvm if not present
     if [[ ! -d "$HOME/.nvm" ]]; then
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        info "Installing nvm..."
+        # Temporarily disable strict mode for nvm installation
+        set +u
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash || {
+            warning "NVM installation had warnings, continuing..."
+        }
+        set -u
+        
+        # Load nvm for current session
         export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            # Disable strict mode while sourcing nvm
+            set +u
+            source "$NVM_DIR/nvm.sh"
+            set -u
+        fi
+    else
+        success "NVM already installed"
+        export NVM_DIR="$HOME/.nvm"
+        if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+            set +u
+            source "$NVM_DIR/nvm.sh"
+            set -u
+        fi
     fi
 
-    # Install latest LTS Node
+    # Install latest LTS Node if nvm is available
     if command -v nvm &>/dev/null; then
-        nvm install --lts
-        nvm use --lts
-        npm install -g neovim typescript prettier eslint
+        info "Installing latest LTS Node.js..."
+        set +u  # Disable strict mode for nvm commands
+        nvm install --lts 2>/dev/null || warning "Node installation had issues"
+        nvm use --lts 2>/dev/null || warning "Could not switch to LTS Node"
+        
+        # Install global npm packages
+        if command -v npm &>/dev/null; then
+            info "Installing global npm packages..."
+            npm install -g neovim typescript prettier eslint 2>/dev/null || warning "Some npm packages failed to install"
+        fi
+        set -u  # Re-enable strict mode
+        
+        success "Node.js environment configured"
+    else
+        warning "NVM not available, skipping Node.js setup"
     fi
-
-    success "Node.js environment configured"
 }
 
 create_symlinks() {
