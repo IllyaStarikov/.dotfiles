@@ -61,13 +61,17 @@ detect_system() {
         OS="macos"
         OS_NAME="macOS"
 
-        # Detect architecture
-        if [[ $(uname -m) == "arm64" ]]; then
-            ARCH="arm64"
+        # Detect architecture and actual Homebrew location
+        ARCH=$(uname -m)
+        
+        # Detect actual Homebrew location (not just based on architecture)
+        if command -v brew &>/dev/null; then
+            BREW_PREFIX="$(brew --prefix)"
+            info "Detected $ARCH Mac with Homebrew at $BREW_PREFIX"
+        elif [[ "$ARCH" == "arm64" ]]; then
             BREW_PREFIX="/opt/homebrew"
             info "Detected Apple Silicon Mac"
         else
-            ARCH="x86_64"
             BREW_PREFIX="/usr/local"
             info "Detected Intel Mac"
         fi
@@ -145,13 +149,15 @@ setup_homebrew() {
 
     # Update Homebrew
     brew update
-    # Only upgrade if not running under Rosetta or wrong architecture
-    if [[ "$ARCH" == "arm64" && -d "/opt/homebrew" ]] || [[ "$ARCH" == "x86_64" && -d "/usr/local/Homebrew" ]]; then
+    # Check if Homebrew architecture matches system architecture
+    local brew_arch=$(file "$(which brew)" | grep -o 'arm64\|x86_64' | head -1)
+    if [[ "$brew_arch" != "$ARCH" ]]; then
+        warning "Architecture mismatch: System is $ARCH but Homebrew is $brew_arch"
+        warning "Skipping brew upgrade to avoid architecture conflicts"
+        info "Consider reinstalling Homebrew for $ARCH architecture"
+    else
         info "Upgrading Homebrew packages for $ARCH architecture..."
         brew upgrade || warning "Some packages failed to upgrade"
-    else
-        warning "Skipping brew upgrade due to architecture mismatch"
-        info "Run 'arch -$(uname -m) brew upgrade' to upgrade packages for your architecture"
     fi
 }
 
@@ -242,18 +248,34 @@ install_macos_packages() {
 
     # Install based on mode
     if [[ "$INSTALL_MODE" == "full" ]]; then
-        brew install "${core_packages[@]}" "${dev_packages[@]}" "${lsp_packages[@]}" || true
-
-        # Nerd Fonts
-        brew install --cask font-jetbrains-mono-nerd-font || true
-        brew install --cask font-hack-nerd-font || true
-        brew install --cask font-ibm-plex-mono || true
+        # Install packages one by one to continue on failures
+        info "Installing core packages..."
+        for pkg in "${core_packages[@]}"; do
+            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+        done
         
-        # GUI Applications
-        brew install --cask wezterm || true
-        brew install --cask raycast || true
-        brew install --cask amethyst || true
-        brew install --cask docker || true
+        info "Installing development packages..."
+        for pkg in "${dev_packages[@]}"; do
+            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+        done
+        
+        info "Installing language servers..."
+        for pkg in "${lsp_packages[@]}"; do
+            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+        done
+
+        # Nerd Fonts (check if already installed first)
+        info "Installing Nerd Fonts..."
+        brew list --cask font-jetbrains-mono-nerd-font &>/dev/null || brew install --cask font-jetbrains-mono-nerd-font 2>/dev/null || warning "JetBrains font skipped"
+        brew list --cask font-hack-nerd-font &>/dev/null || brew install --cask font-hack-nerd-font 2>/dev/null || warning "Hack font skipped"
+        brew list --cask font-ibm-plex-mono &>/dev/null || brew install --cask font-ibm-plex-mono 2>/dev/null || warning "IBM Plex font skipped"
+        
+        # GUI Applications (check if already installed first)
+        info "Installing GUI applications..."
+        brew list --cask wezterm &>/dev/null || brew install --cask wezterm 2>/dev/null || warning "WezTerm skipped"
+        brew list --cask raycast &>/dev/null || brew install --cask raycast 2>/dev/null || warning "Raycast skipped"
+        brew list --cask amethyst &>/dev/null || brew install --cask amethyst 2>/dev/null || warning "Amethyst skipped"
+        brew list --cask docker &>/dev/null || brew install --cask docker 2>/dev/null || warning "Docker skipped"
         
         # Additional tools (from 3-tooling.sh)
         local extra_packages=(
@@ -265,9 +287,15 @@ install_macos_packages() {
             "yt-dlp"
             "tesseract"
         )
-        brew install "${extra_packages[@]}" || true
+        info "Installing extra tools..."
+        for pkg in "${extra_packages[@]}"; do
+            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+        done
     else
-        brew install "${core_packages[@]}" || true
+        info "Installing core packages only..."
+        for pkg in "${core_packages[@]}"; do
+            brew install "$pkg" 2>/dev/null || warning "Skipped $pkg (already installed or failed)"
+        done
     fi
 
     success "Package installation complete"
@@ -481,21 +509,25 @@ setup_python() {
 
     if [[ "$OS" == "macos" ]]; then
         if command -v pyenv &>/dev/null; then
-            # Install compatible Python version for current OS
-            # macOS 15.6+ requires Python 3.13.6 or newer
-            PYTHON_VERSION="3.13.6"
+            # First update pyenv to get latest Python versions
+            info "Updating pyenv to get latest Python versions..."
+            brew update && brew upgrade pyenv 2>/dev/null || true
+            
+            # Try to find an available Python 3.13.x version
+            AVAILABLE_PYTHON=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs)
+            if [[ -n "$AVAILABLE_PYTHON" ]]; then
+                PYTHON_VERSION="$AVAILABLE_PYTHON"
+                info "Found Python $PYTHON_VERSION available"
+            else
+                # Fall back to latest Python 3.12.x if 3.13 not available
+                PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.12\.[0-9]+$" | tail -1 | xargs)
+                info "Using Python $PYTHON_VERSION (3.13 not available)"
+            fi
             
             # Check if the version is already installed
-            if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
-                info "Installing Python $PYTHON_VERSION (compatible with macOS 15.6+)..."
-                pyenv install "$PYTHON_VERSION" || {
-                    warning "Failed to install Python $PYTHON_VERSION"
-                    warning "Trying to find latest available version..."
-                    PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs)
-                    if [[ -n "$PYTHON_VERSION" ]]; then
-                        pyenv install "$PYTHON_VERSION"
-                    fi
-                }
+            if [[ -n "$PYTHON_VERSION" ]] && ! pyenv versions | grep -q "$PYTHON_VERSION"; then
+                info "Installing Python $PYTHON_VERSION..."
+                pyenv install "$PYTHON_VERSION" || warning "Failed to install Python $PYTHON_VERSION"
             fi
             
             # Set as global if installation succeeded
@@ -656,7 +688,9 @@ main() {
             if [[ "$OS" == "macos" ]]; then
                 setup_macos_xcode
                 setup_homebrew
-                brew install git neovim tmux starship ripgrep fd
+                for pkg in git neovim tmux starship ripgrep fd; do
+                    brew install "$pkg" 2>/dev/null || warning "Skipped $pkg"
+                done
             else
                 install_linux_packages
             fi
