@@ -30,7 +30,7 @@ alias vimrc='$EDITOR ~/.config/nvim/init.lua'
 
 # Enhanced eza-based file listing (with fallback to ls)
 if command -v eza >/dev/null 2>&1; then
-    alias l='eza -la --group-directories-first'
+    alias l='eza --group-directories-first --time-style=relative --git --icons --all --header --long'
     alias ls='eza --group-directories-first'
     alias lt="eza --tree --level=2"
     alias tree="eza --tree"
@@ -41,7 +41,7 @@ else
     # Fallback to standard ls
     alias l='ls -la'
     alias ls="ls -G"
-    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g''
 fi
 
 # Aliases with icons (use when font issues are resolved)
