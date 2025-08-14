@@ -114,10 +114,10 @@ vim.api.nvim_create_autocmd("User", {
 
 -- Apply work-specific overrides if available
 -- This should happen after base config but before LSP setup
-local work = utils.safe_require("config.work")
-if work and work.apply_overrides then
-  work.apply_overrides()
-end
+-- local work = utils.safe_require("config.work")
+-- if work and work.apply_overrides then
+--   work.apply_overrides()
+-- end
 
 -- LSP setup is now handled by lazy.nvim after all plugins are loaded
 -- See plugins.lua for the setup timing
