@@ -152,7 +152,7 @@ alias c="bat --style=header,grid,numbers"
 alias preview="bat --style=header,grid,numbers --color=always"
 
 # Safety aliases
-alias rm='trash'  # Move files to trash instead of permanent deletion
+alias rn='trash'  # Move files to trash instead of permanent deletion
 alias cp='cp -i'
 alias mv='mv -i'
 
