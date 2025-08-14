@@ -8,7 +8,6 @@ local M = {}
 function M.setup()
   local telescope_ok, telescope = pcall(require, 'telescope')
   if not telescope_ok then
-    vim.notify("Failed to load telescope", vim.log.levels.ERROR)
     return
   end
   
@@ -16,7 +15,6 @@ function M.setup()
   local state_ok, action_state = pcall(require, 'telescope.actions.state')
   
   if not actions_ok or not state_ok then
-    vim.notify("Failed to load telescope actions", vim.log.levels.ERROR)
     return
   end
   
@@ -214,7 +212,7 @@ function M.setup()
         theme = "dropdown",
         previewer = false,
         hidden = false,
-        find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".git" },
+        find_command = { "find", ".", "-type", "f", "-not", "-path", "./.git/*" },
       },
       
       live_grep = {
@@ -462,30 +460,30 @@ function M.setup()
   
   -- 🎨 THEME INTEGRATION
   -- Integrate with existing theme switching system
-  vim.api.nvim_create_autocmd("ColorScheme", {
-    callback = function()
-      -- Update telescope highlights to match current theme
-      local colors = {
-        TelescopeNormal = { link = "Normal" },
-        TelescopeBorder = { link = "FloatBorder" },
-        TelescopePromptBorder = { link = "FloatBorder" },
-        TelescopeResultsBorder = { link = "FloatBorder" },
-        TelescopePreviewBorder = { link = "FloatBorder" },
-        TelescopeSelection = { link = "Visual" },
-        TelescopeSelectionCaret = { link = "WarningMsg" },
-        TelescopeMultiSelection = { link = "Type" },
-        TelescopeMatching = { link = "Search" },
-        TelescopePromptPrefix = { link = "Identifier" },
-      }
-      
-      for group, opts in pairs(colors) do
-        vim.api.nvim_set_hl(0, group, opts)
-      end
-    end,
-  })
-  
-  -- Apply highlights immediately
-  vim.cmd("doautocmd ColorScheme")
+  -- vim.api.nvim_create_autocmd("ColorScheme", {
+  --   callback = function()
+  --     -- Update telescope highlights to match current theme
+  --     local colors = {
+  --       TelescopeNormal = { link = "Normal" },
+  --       TelescopeBorder = { link = "FloatBorder" },
+  --       TelescopePromptBorder = { link = "FloatBorder" },
+  --       TelescopeResultsBorder = { link = "FloatBorder" },
+  --       TelescopePreviewBorder = { link = "FloatBorder" },
+  --       TelescopeSelection = { link = "Visual" },
+  --       TelescopeSelectionCaret = { link = "WarningMsg" },
+  --       TelescopeMultiSelection = { link = "Type" },
+  --       TelescopeMatching = { link = "Search" },
+  --       TelescopePromptPrefix = { link = "Identifier" },
+  --     }
+  --     
+  --     for group, opts in pairs(colors) do
+  --       vim.api.nvim_set_hl(0, group, opts)
+  --     end
+  --   end,
+  -- })
+  -- 
+  -- -- Apply highlights immediately
+  -- vim.cmd("doautocmd ColorScheme")
 end
 
 -- 🚀 UTILITY FUNCTIONS

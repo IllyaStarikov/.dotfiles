@@ -29,9 +29,6 @@ map("n", "<leader><leader>", "v$h", opts)
 -- Code execution
 map("n", "<leader>r", "<cmd>RunFile<cr>", { desc = "Run current file" })
 
--- Formatting
-map("n", "<leader>f", "<cmd>Format<cr>", { desc = "Format buffer" })
-map("n", "<leader>F", "<cmd>Format all<cr>", { desc = "Format buffer (all fixes)" })
 
 -- Python specific run command (F5)
 map("n", "<F5>", function()
