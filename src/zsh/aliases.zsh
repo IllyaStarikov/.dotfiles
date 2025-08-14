@@ -41,7 +41,7 @@ else
     # Fallback to standard ls
     alias l='ls -la'
     alias ls="ls -G"
-    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g''
+    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 fi
 
 # Aliases with icons (use when font issues are resolved)
@@ -110,7 +110,7 @@ alias gclean="git clean -fd"
 alias gwip="git add -A && git commit -m 'WIP: work in progress'"
 alias gunwip="git log -n 1 | grep -q -c 'WIP' && git reset HEAD~1"
 alias gundo="git reset --soft HEAD~1"
-alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 git branch -d"
+alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\*\|main\|master' | xargs -n 1 git branch -d"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔍 SEARCH & FIND UTILITIES
@@ -166,12 +166,12 @@ alias ps='procs'
 # Network utilities
 alias ip="curl -s icanhazip.com"
 alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
-alias ips="ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(\\([0-9]\\+\\.\\)\\{3\\}[0-9]\\+\\)\\|[a-fA-F0-9:]\\+\\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, ""); print }'"
 # Install speedtest-cli safely: brew install speedtest-cli
 alias speedtest="speedtest-cli"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-# 📂 NAVIGATION SHORTCUTS
+# 📂NAVIGATION SHORTCUTS
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 # Directory navigation
@@ -213,14 +213,17 @@ alias pip="pip3"
 # Node/npm/yarn are handled by NVM lazy loading - no aliases needed
 
 # Docker shortcuts
-alias d="docker"
-alias dc="docker-compose"
-alias dps="docker ps"
-alias di="docker images"
-alias dex="docker exec -it"
-alias dlog="docker logs"
-alias dstop="docker stop \$(docker ps -q)"
-alias dclean="docker system prune -af"
+if command -v docker &>/dev/null; then
+    alias d="docker"
+    alias dc="docker-compose"
+    alias dps="docker ps"
+    alias di="docker images"
+    alias dex="docker exec -it"
+    alias dlog="docker logs"
+    alias dstop="docker stop \
+$(docker ps -q)"
+    alias dclean="docker system prune -af"
+fi
 
 # Kubernetes shortcuts
 alias k="kubectl"
@@ -324,7 +327,7 @@ alias ripgrepconfig="nvim ~/.dotfiles/src/ripgreprc"
 # Time savers
 alias h="history"
 alias j="jobs"
-alias path='echo -e ${PATH//:/\\n}'
+alias path='echo -e ${PATH//:/\n}'
 alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
@@ -385,16 +388,19 @@ alias share="python3 -m http.server 8000"
 alias lg="lazygit"
 
 # Better df with duf if available
-if command -v duf &> /dev/null; then
+if command -v duf &> /dev/null;
+then
     alias df='duf'
 fi
 
 # Better du with dust if available
-if command -v dust &> /dev/null; then
+if command -v dust &> /dev/null;
+then
     alias du='dust'
 fi
 
 # Better ping with gping if available
-if command -v gping &> /dev/null; then
+if command -v gping &> /dev/null;
+then
     alias ping='gping'
 fi
