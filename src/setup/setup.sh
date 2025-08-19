@@ -381,8 +381,6 @@ install_macos_packages() {
         "ninja"
         "llvm"
         "gcc"
-        "docker"
-        "docker-compose"
         "colima"
         "lima"
         "cloc"
@@ -501,7 +499,7 @@ install_macos_packages() {
         
         # GUI Applications (check if already installed first)
         info "Installing GUI applications..."
-        for app in wezterm raycast amethyst docker; do
+        for app in wezterm raycast amethyst; do
             if brew list --cask "$app" &>/dev/null; then
                 info "✓ $app already installed"
             elif brew install --cask "$app" 2>/dev/null; then
