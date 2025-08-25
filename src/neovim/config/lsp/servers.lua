@@ -5,6 +5,20 @@
 
 -- LSP Setup with blink.cmp
 local function setup_lsp()
+	-- Check for private work-specific LSP overrides
+	-- The override file handles machine detection and routing to company configs
+	local override_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/lsp-override.lua")
+	if vim.fn.filereadable(override_path) == 1 then
+		local override = dofile(override_path)
+		if override and override.setup then
+			local result = override.setup()
+			-- If override returns non-nil, use that configuration
+			if result ~= nil then
+				return result
+			end
+		end
+	end
+
 	local lspconfig = require("lspconfig")
 	-- 1. Setup Mason for LSP management
 	require("mason").setup({
