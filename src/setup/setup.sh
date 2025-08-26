@@ -1,9 +1,44 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════════════════════════════════════════
-# 🚀 UNIFIED DOTFILES SETUP - All-in-One Installation Script
+# setup.sh - Unified dotfiles installation and configuration script
 # ════════════════════════════════════════════════════════════════════════════════════════════════════════════
-# Single entry point for complete development environment setup
-# Supports: macOS (Intel/Apple Silicon), Linux (Ubuntu/Debian/Fedora/Arch)
+#
+# DESCRIPTION:
+#   Complete development environment setup for macOS and Linux. Installs packages,
+#   creates symlinks, configures shells, and initializes all development tools.
+#
+# USAGE:
+#   ./setup.sh [MODE] [OPTIONS]
+#   
+#   ./setup.sh                # Full installation (interactive)
+#   ./setup.sh --core        # Core packages only
+#   ./setup.sh --symlinks    # Create symlinks only
+#   
+# MODES:
+#   full      - Complete setup with all packages and configurations (default)
+#   --core    - Essential packages only (git, vim, tmux, zsh)
+#   --symlinks - Create/update dotfile symlinks only
+#
+# OPTIONS:
+#   --skip-brew   - Skip Homebrew package installation
+#   --force-brew  - Force reinstall all Homebrew packages
+#   --verbose     - Show detailed output
+#   --help        - Display this help message
+#
+# PLATFORMS:
+#   macOS: Intel and Apple Silicon
+#   Linux: Ubuntu, Debian, Fedora, Arch
+#
+# EXAMPLES:
+#   ./setup.sh                     # Full interactive setup
+#   ./setup.sh --core             # Quick essential setup
+#   ./setup.sh --symlinks         # Update symlinks after changes
+#   VERBOSE=true ./setup.sh       # Debug mode with detailed output
+#
+# FILES:
+#   Log: ~/.dotfiles-setup-YYYYMMDD_HHMMSS.log
+#   Backup: ~/.dotfiles-backup/ (if files exist)
+#
 # ════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
