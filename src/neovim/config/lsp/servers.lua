@@ -1,9 +1,47 @@
+--------------------------------------------------------------------------------
+-- config/lsp/servers.lua - Language Server Protocol configuration
 --
--- config/lsp.lua
--- LSP configuration with blink.cmp integration
+-- DESCRIPTION:
+--   Configures LSP servers for various programming languages. Integrates with
+--   blink.cmp for completion and Mason for server management. Supports work-
+--   specific overrides for Google and Garmin environments.
 --
+-- SERVERS:
+--   Python:     pyright
+--   C/C++:      clangd
+--   Lua:        lua_ls
+--   JavaScript: ts_ls
+--   Rust:       rust_analyzer
+--   Go:         gopls
+--   LaTeX:      texlab
+--   And more...
+--
+-- FEATURES:
+--   - Automatic server installation via Mason
+--   - Work-specific override support
+--   - Blink.cmp completion integration
+--   - Consistent keybindings across servers
+--   - Format on save for supported languages
+--
+-- USAGE:
+--   Called automatically from plugins configuration:
+--   require("config.lsp.servers").setup()
+--
+-- KEYBINDINGS (when LSP attached):
+--   gd         - Go to definition
+--   gr         - Find references
+--   K          - Hover documentation
+--   <F2>       - Rename symbol
+--   <F4>       - Code actions
+--   gl         - Show diagnostics
+--
+-- WORK OVERRIDES:
+--   Google machines: Uses CiderLSP instead of standard servers
+--   Garmin machines: Uses clangd with Whitesmiths style
+--------------------------------------------------------------------------------
 
--- LSP Setup with blink.cmp
+-- LSP Setup with blink.cmp integration
+-- Returns: nil (modifies global LSP configuration)
 local function setup_lsp()
 	-- Check for private work-specific LSP overrides
 	-- The override file handles machine detection and routing to company configs

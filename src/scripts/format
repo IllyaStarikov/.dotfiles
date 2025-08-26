@@ -1,8 +1,38 @@
 #!/usr/bin/env bash
-# Universal code formatter and fixer script
-# Works on both macOS and Linux with Google style standards
+# format - Universal code formatter with priority-based selection
+#
+# DESCRIPTION:
+#   Formats code files using the best available formatter from a prioritized
+#   list. Supports 20+ languages with automatic fallback. Can also perform
+#   text normalizations like removing trailing whitespace and converting tabs.
+#
+# USAGE:
+#   format [OPTIONS] FILE [FILE...]
+#   
+#   format file.py                    # Format Python file
+#   format --all file.js             # All normalizations + formatting
+#   format --dry-run file.cpp        # Preview changes without applying
+#   format --trailing-whitespace *.sh # Only remove trailing whitespace
+#
+# OPTIONS:
+#   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format
+#   -t, --trailing-whitespace Remove trailing whitespace only
+#   -T, --tabs-to-spaces     Convert tabs to spaces only
+#   -q, --smart-quotes       Normalize smart quotes to ASCII only
+#   -f, --formatters         Run language formatters only (default)
+#   -d, --dry-run           Show what would be done without making changes
+#   -v, --verbose           Show detailed output
+#   -h, --help              Show this help message
+#
+# CONFIG:
+#   Uses ~/.dotfiles/config/format-script.json for formatter priorities
+#
+# EXAMPLES:
+#   format src/*.py          # Format all Python files
+#   format --all README.md   # Clean and format markdown
+#   format -tv script.sh     # Remove trailing spaces with verbose output
 
-# Source common library
+# Source common library for cross-platform support
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
@@ -18,14 +48,19 @@ DO_FORMATTERS=false
 VERBOSE=false
 DRY_RUN=false
 FILES=()
+CONFIG_FILE="${HOME}/.dotfiles/config/format-script.json"
 
-# Check if a file is binary
+# Check if a file is binary (not text)
+# Args: $1 - File path to check
+# Returns: 0 if binary, 1 if text
 is_binary_file() {
   local file="${1:?Error: file required}"
   file "$file" | grep -q "binary\|data"
 }
 
-# Remove trailing whitespace
+# Remove trailing whitespace from file
+# Args: $1 - File path to process
+# Uses platform-appropriate sed command
 remove_trailing_whitespace() {
   local file="${1:?Error: file required}"
 
@@ -40,7 +75,9 @@ remove_trailing_whitespace() {
   fi
 }
 
-# Convert tabs to spaces (Google style: 2 spaces default, 4 for Python)
+# Convert tabs to spaces using language-appropriate width
+# Args: $1 - File path to process
+# Python: 4 spaces, Others: 2 spaces (Google style)
 convert_tabs_to_spaces() {
   local file="${1:?Error: file required}"
   local tab_width=2
@@ -73,149 +110,364 @@ normalize_quotes() {
   fi
 }
 
-# Format C/C++ files (Google style: 2 spaces, 80 column)
-format_cpp() {
-  local file="${1:?Error: file required}"
-
-  if has_command clang-format; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run clang-format (Google style) on: $file"
-    else
-      echo -n "  → Running clang-format (Google style)... "
-      clang-format -i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' "$file"
-      print_color green "✓"
+# Load configuration from JSON file
+load_config() {
+  if [[ ! -f "${CONFIG_FILE}" ]]; then
+    if [[ "${VERBOSE}" == true ]]; then
+      print_color yellow "Config file not found: ${CONFIG_FILE}"
+      print_color yellow "Using built-in defaults"
     fi
+    return 1
+  fi
+  return 0
+}
+
+# Get formatters for an extension from config
+get_formatters_from_config() {
+  local ext="${1}"
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+import sys
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        ext_config = config.get('extensions', {}).get('${ext}', {})
+        if ext_config:
+            formatters = ext_config.get('formatters', [])
+            print(' '.join(formatters))
+except:
+    pass
+" 2>/dev/null || echo ""
   else
-    print_color yellow "  ⚠ Skipping C/C++ formatting (clang-format not found)"
-    echo "    Install with: $(platform_command 'brew install clang-format' 'sudo apt install clang-format')"
+    echo ""
   fi
 }
 
-# Format Python files (Google style: 4 spaces, 80 column)
-format_python() {
-  local file="${1:?Error: file required}"
-  local formatted=false
+# Get formatter command from config
+get_formatter_command() {
+  local formatter="${1}"
+  local file="${2}"
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+import sys
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        fmt = config.get('formatters', {}).get('${formatter}', {})
+        if fmt:
+            cmd = fmt.get('command', '')
+            args = fmt.get('format_args', '')
+            if cmd and args:
+                args = args.replace('{file}', '${file}')
+                if cmd == 'internal':
+                    print(args)
+                else:
+                    print(f'{cmd} {args}')
+except:
+    pass
+" 2>/dev/null || echo ""
+  else
+    echo ""
+  fi
+}
 
-  # Prefer ruff (fast, modern, follows Google style)
-  if has_command ruff; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run ruff on: $file"
-    else
-      echo -n "  → Running ruff check --fix... "
-      ruff check --fix "$file" 2>/dev/null || true
-      print_color green "✓"
+# Get additional formatters for an extension
+get_additional_formatters() {
+  local ext="${1}"
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        ext_config = config.get('extensions', {}).get('${ext}', {})
+        if ext_config:
+            additional = ext_config.get('additional', [])
+            print(' '.join(additional))
+except:
+    pass
+" 2>/dev/null || echo ""
+  else
+    echo ""
+  fi
+}
 
-      echo -n "  → Running ruff format... "
-      ruff format --line-length 80 "$file"
-      print_color green "✓"
-      formatted=true
+# Get language name for extension
+get_language_name() {
+  local ext="${1}"
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        ext_config = config.get('extensions', {}).get('${ext}', {})
+        print(ext_config.get('language', ''))
+except:
+    pass
+" 2>/dev/null || echo ""
+  else
+    echo ""
+  fi
+}
+
+# Get list of allowed extensions from config or fallback
+get_allowed_extensions() {
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        extensions = list(config.get('extensions', {}).keys())
+        print(' '.join(sorted(extensions)))
+except:
+    pass
+" 2>/dev/null || echo "py pyw pyi c h cpp cc cxx hpp hxx sh bash zsh lua js jsx ts tsx json yaml yml html css scss md txt text log csv"
+  else
+    echo "py pyw pyi c h cpp cc cxx hpp hxx sh bash zsh lua js jsx ts tsx json yaml yml html css scss md txt text log csv"
+  fi
+}
+
+# Check if extension is allowed
+is_extension_allowed() {
+  local ext="${1}"
+  local allowed
+  allowed=$(get_allowed_extensions)
+  
+  for allowed_ext in $allowed; do
+    if [[ "$ext" == "$allowed_ext" ]]; then
+      return 0
     fi
-  elif has_command black; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run black on: $file"
-    else
-      echo -n "  → Running black... "
-      black -q --line-length 80 "$file"
-      print_color green "✓"
-      formatted=true
+  done
+  return 1
+}
 
-      # Also run isort if available
-      if has_command isort; then
-        echo -n "  → Running isort... "
-        isort --profile google --line-length 80 "$file"
+# Run formatter with priority queue
+run_formatter_with_priority() {
+  local file="${1:?Error: file required}"
+  local ext="${file##*.}"
+  local formatted=false
+  
+  # Get formatters for this extension
+  local formatters
+  formatters=$(get_formatters_from_config "$ext")
+  
+  if [[ -z "$formatters" ]]; then
+    return 1
+  fi
+  
+  # Try formatters in priority order
+  for formatter in $formatters; do
+    # Check if formatter is available
+    local check_cmd
+    if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+      check_cmd=$(python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        fmt = config.get('formatters', {}).get('${formatter}', {})
+        cmd = fmt.get('command', '')
+        if cmd == 'internal':
+            print('internal')
+        elif cmd:
+            print(cmd)
+except:
+    pass
+" 2>/dev/null)
+    fi
+    
+    if [[ "$check_cmd" == "internal" ]]; then
+      # Internal formatter (text files)
+      if [[ "${DRY_RUN}" == true ]]; then
+        print_color blue "[DRY RUN] Would run internal text formatter on: $file"
+      else
+        echo -n "  → Running text formatter... "
+        # Remove trailing whitespace
+        platform_command \
+          "sed -i '' 's/[[:space:]]*$//' '${file}'" \
+          "sed -i 's/[[:space:]]*$//' '${file}'"
+        # Normalize smart quotes
+        perl -i -pe 's/\x{2018}/\x27/g; s/\x{2019}/\x27/g; s/\x{201C}/"/g; s/\x{201D}/"/g' "$file" 2>/dev/null || true
         print_color green "✓"
       fi
-    fi
-  elif has_command yapf; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run yapf on: $file"
-    else
-      echo -n "  → Running yapf (Google style)... "
-      yapf -i --style=google "$file"
-      print_color green "✓"
       formatted=true
+      break
+    elif [[ -n "$check_cmd" ]] && has_command "$check_cmd"; then
+      # External formatter
+      local format_cmd
+      format_cmd=$(get_formatter_command "$formatter" "$file")
+      
+      if [[ -n "$format_cmd" ]]; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run $formatter on: $file"
+          if [[ "${VERBOSE}" == true ]]; then
+            echo "    Command: $format_cmd"
+          fi
+        else
+          echo -n "  → Running $formatter... "
+          if [[ "$formatter" == "ruff" ]]; then
+            # Special handling for ruff (run check first)
+            ruff check --fix --line-length 100 "$file" 2>/dev/null || true
+          fi
+          eval "$format_cmd" 2>/dev/null || true
+          print_color green "✓"
+        fi
+        formatted=true
+        break
+      fi
+    elif [[ "${VERBOSE}" == true ]]; then
+      print_color yellow "    $formatter not available"
     fi
+  done
+  
+  # Run additional formatters if configured
+  local additional
+  additional=$(get_additional_formatters "$ext")
+  if [[ -n "$additional" ]] && [[ "$formatted" == true ]]; then
+    for formatter in $additional; do
+      local check_cmd
+      if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+        check_cmd=$(python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        fmt = config.get('formatters', {}).get('${formatter}', {})
+        print(fmt.get('command', ''))
+except:
+    pass
+" 2>/dev/null)
+      fi
+      
+      if [[ -n "$check_cmd" ]] && has_command "$check_cmd"; then
+        local format_cmd
+        format_cmd=$(get_formatter_command "$formatter" "$file")
+        if [[ -n "$format_cmd" ]]; then
+          if [[ "${DRY_RUN}" == false ]]; then
+            echo -n "  → Running $formatter (additional)... "
+            eval "$format_cmd" 2>/dev/null || true
+            print_color green "✓"
+          fi
+        fi
+      fi
+    done
   fi
-
-  if [[ "${formatted}" == false ]] && [[ "${DRY_RUN}" == false ]]; then
-    print_color yellow "  ⚠ No Python formatter available"
-    echo "    Install one of: pip install ruff (recommended) | pip install black | pip install yapf"
+  
+  if [[ "$formatted" == true ]]; then
+    return 0
   fi
+  return 1
 }
 
-# Format shell scripts (Google style: 2 spaces)
-format_shell() {
+# Fallback formatters for when config is not available
+format_fallback() {
   local file="${1:?Error: file required}"
-
-  if has_command shfmt; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run shfmt on: $file"
-    else
-      echo -n "  → Running shfmt (2 spaces)... "
-      shfmt -i 2 -bn -ci -w "$file"
-      print_color green "✓"
-    fi
-  else
-    print_color yellow "  ⚠ Skipping shell formatting (shfmt not found)"
-    echo "    Install with: $(platform_command 'brew install shfmt' 'go install mvdan.cc/sh/v3/cmd/shfmt@latest')"
-  fi
-}
-
-# Format Lua files (2 spaces)
-format_lua() {
-  local file="${1:?Error: file required}"
-
-  if has_command stylua; then
-    if [[ "${DRY_RUN}" == true ]]; then
-      print_color blue "[DRY RUN] Would run stylua on: $file"
-    else
-      echo -n "  → Running stylua (2 spaces)... "
-      # Create temporary config
-      local tmp_config
-      tmp_config=$(create_temp_dir)/stylua.toml
-      cat > "${tmp_config}" << EOF
-indent_type = "Spaces"
-indent_width = 2
-column_width = 80
-EOF
-      stylua --config-path "${tmp_config}" "$file"
-      rm -f "${tmp_config}"
-      print_color green "✓"
-    fi
-  else
-    print_color yellow "  ⚠ Skipping Lua formatting (stylua not found)"
-    echo "    Install with: $(platform_command 'brew install stylua' 'cargo install stylua')"
-  fi
-}
-
-# Format with Prettier (Google style: 2 spaces, 80 column)
-format_prettier() {
-  local file="${1:?Error: file required}"
-  local cmd=""
-
-  if has_command prettierd; then
-    cmd="prettierd"
-  elif has_command prettier; then
-    cmd="prettier"
-  else
-    print_color yellow "  ⚠ Skipping prettier formatting"
-    echo "    Install with: npm install -g prettier"
-    return
-  fi
-
-  if [[ "${DRY_RUN}" == true ]]; then
-    print_color blue "[DRY RUN] Would run ${cmd} on: $file"
-  else
-    echo -n "  → Running ${cmd}... "
-    ${cmd} --write \
-      --tab-width 2 \
-      --print-width 80 \
-      --single-quote \
-      --trailing-comma none \
-      --arrow-parens avoid \
-      "$file" 2>/dev/null
-    print_color green "✓"
-  fi
+  local ext="${file##*.}"
+  
+  case "${ext}" in
+    py|pyw|pyi)
+      # Python fallback
+      if has_command ruff; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run ruff (fallback) on: $file"
+        else
+          echo -n "  → Running ruff (fallback)... "
+          ruff check --fix --line-length 100 "$file" 2>/dev/null || true
+          ruff format --line-length 100 "$file" 2>/dev/null || true
+          print_color green "✓"
+        fi
+        return 0
+      elif has_command black; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run black (fallback) on: $file"
+        else
+          echo -n "  → Running black (fallback)... "
+          black -q --line-length 100 --skip-string-normalization "$file"
+          print_color green "✓"
+        fi
+        return 0
+      fi
+      ;;
+    c|h|cpp|cc|cxx|hpp|hxx)
+      # C/C++ fallback
+      if has_command clang-format; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run clang-format (fallback) on: $file"
+        else
+          echo -n "  → Running clang-format (fallback)... "
+          clang-format -i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' "$file"
+          print_color green "✓"
+        fi
+        return 0
+      fi
+      ;;
+    sh|bash|zsh)
+      # Shell fallback
+      if has_command shfmt; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run shfmt (fallback) on: $file"
+        else
+          echo -n "  → Running shfmt (fallback)... "
+          shfmt -i 2 -bn -ci -w "$file"
+          print_color green "✓"
+        fi
+        return 0
+      fi
+      ;;
+    lua)
+      # Lua fallback
+      if has_command stylua; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run stylua (fallback) on: $file"
+        else
+          echo -n "  → Running stylua (fallback)... "
+          stylua --indent-type Spaces --indent-width 2 --column-width 80 "$file"
+          print_color green "✓"
+        fi
+        return 0
+      fi
+      ;;
+    js|jsx|ts|tsx|json|yaml|yml|html|css|scss|md)
+      # Web fallback
+      local cmd=""
+      if has_command prettierd; then
+        cmd="prettierd"
+      elif has_command prettier; then
+        cmd="prettier"
+      fi
+      
+      if [[ -n "$cmd" ]]; then
+        if [[ "${DRY_RUN}" == true ]]; then
+          print_color blue "[DRY RUN] Would run $cmd (fallback) on: $file"
+        else
+          echo -n "  → Running $cmd (fallback)... "
+          $cmd --write --tab-width 2 --print-width 80 --single-quote --trailing-comma none --arrow-parens avoid "$file" 2>/dev/null
+          print_color green "✓"
+        fi
+        return 0
+      fi
+      ;;
+    txt|text|log|csv)
+      # Text fallback
+      if [[ "${DRY_RUN}" == true ]]; then
+        print_color blue "[DRY RUN] Would format text file (fallback): $file"
+      else
+        echo -n "  → Formatting text file (fallback)... "
+        platform_command \
+          "sed -i '' 's/[[:space:]]*$//' '${file}'" \
+          "sed -i 's/[[:space:]]*$//' '${file}'"
+        perl -i -pe 's/\x{2018}/\x27/g; s/\x{2019}/\x27/g; s/\x{201C}/"/g; s/\x{201D}/"/g' "$file" 2>/dev/null || true
+        print_color green "✓"
+      fi
+      return 0
+      ;;
+  esac
+  
+  return 1
 }
 
 # Apply formatters based on file type
@@ -224,63 +476,76 @@ apply_formatters() {
   local ext="${file##*.}"
   local basename="$(basename "$file")"
 
-  # Skip binary files
-  if is_binary_file "$file"; then
-    print_color yellow "  ⚠ Skipping binary file"
+  # Extension should already be validated by process_file
+  # This is just a safety check
+  if ! is_extension_allowed "$ext"; then
     return
   fi
-
-  # Determine file type and apply formatter
-  case "${ext}" in
-    c|h)
-      print_color blue "  ℹ Detected: C"
-      format_cpp "$file"
-      ;;
-    cpp|cc|cxx|hpp|hxx)
-      print_color blue "  ℹ Detected: C++"
-      format_cpp "$file"
-      ;;
-    py|pyw|pyi)
-      print_color blue "  ℹ Detected: Python"
-      format_python "$file"
-      ;;
-    sh|bash)
-      print_color blue "  ℹ Detected: Shell"
-      format_shell "$file"
-      ;;
-    lua)
-      print_color blue "  ℹ Detected: Lua"
-      format_lua "$file"
-      ;;
-    js|jsx|ts|tsx|json|yaml|yml|html|css|scss|md)
-      print_color blue "  ℹ Detected: ${ext} (Prettier)"
-      format_prettier "$file"
-      ;;
-    *)
-      # Check shebang for shell scripts
-      if [[ -x "$file" ]] && head -n1 "$file" | grep -q "^#!/.*sh"; then
-        print_color blue "  ℹ Detected: Shell (shebang)"
-        format_shell "$file"
-      else
-        print_color yellow "  ⚠ Unknown file type: .${ext}"
+  
+  # Get language name from config
+  local language
+  language=$(get_language_name "$ext")
+  
+  if [[ -n "$language" ]]; then
+    print_color blue "  ℹ Detected: ${language} (.${ext})"
+  else
+    print_color blue "  ℹ Detected: .${ext}"
+  fi
+  
+  # Try config-based formatting first
+  if ! run_formatter_with_priority "$file"; then
+    # Fallback to built-in formatters if config fails
+    if [[ "${VERBOSE}" == true ]]; then
+      print_color yellow "  ⚠ Config-based formatting unavailable, trying fallback"
+    fi
+    if ! format_fallback "$file"; then
+      print_color yellow "  ⚠ No formatter available for .${ext}"
+      local formatters
+      formatters=$(get_formatters_from_config "$ext")
+      if [[ -n "$formatters" ]]; then
+        echo "    Install one of: $formatters"
       fi
-      ;;
-  esac
+    fi
+  fi
 }
 
 # Process a single file
 process_file() {
   local file="${1:?Error: file required}"
+  local ext="${file##*.}"
+  local basename="$(basename "$file")"
 
   if [[ ! -f "$file" ]]; then
     print_color red "File not found: $file"
     return 1
   fi
 
+  # Skip binary files early
+  if is_binary_file "$file"; then
+    if [[ "${VERBOSE}" == true ]]; then
+      print_color yellow "Skipping binary file: $file"
+    fi
+    return 2  # Return 2 for skipped files
+  fi
+
+  # Check if extension is allowed BEFORE any processing
+  if ! is_extension_allowed "$ext"; then
+    # Check shebang for shell scripts without extension
+    if [[ -x "$file" ]] && [[ -z "$ext" || "$ext" == "$basename" ]] && head -n1 "$file" 2>/dev/null | grep -q "^#!/.*sh"; then
+      # Shell script with shebang - allow processing
+      ext="sh"
+    else
+      if [[ "${VERBOSE}" == true ]]; then
+        print_color yellow "Skipping unsupported file type: $file (.${ext})"
+      fi
+      return 2  # Return 2 for skipped files
+    fi
+  fi
+
   echo
   print_color blue "━━━ Processing: $file ━━━"
 
-  # Apply operations
+  # Apply operations only to allowed files
   if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     remove_trailing_whitespace "$file"
   fi
@@ -296,6 +561,8 @@ process_file() {
   if [[ "${DO_FORMATTERS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     apply_formatters "$file"
   fi
+  
+  return 0  # Return 0 for successfully processed files
 }
 
 # Show usage
@@ -303,8 +570,8 @@ usage() {
   cat << EOF
 Usage: $(basename "$0") [OPTIONS] [FILES...]
 
-Universal code formatter with Google style standards.
-Works on both macOS and Linux.
+Universal code formatter with configuration-based formatter selection.
+Reads formatter configuration from: ${CONFIG_FILE}
 
 OPTIONS:
   -h, --help          Show this help
@@ -315,19 +582,24 @@ OPTIONS:
   -f, --formatters    Apply language formatters
   -n, --dry-run       Show what would be done
   -v, --verbose       Verbose output
+  -c, --config FILE   Use alternate config file
 
-SUPPORTED LANGUAGES:
-  C/C++      : clang-format (Google style, 2 spaces)
-  Python     : ruff/black/yapf (Google style, 4 spaces)
-  Shell      : shfmt (Google style, 2 spaces)
-  Lua        : stylua (2 spaces)
-  Web/Config : prettier (Google style, 2 spaces)
+CONFIGURATION:
+  The formatter uses a priority queue system where:
+  - Each file extension maps to a list of formatters in priority order
+  - The first available formatter in the list is used
+  - Additional formatters (like isort for Python) run after the main formatter
+  - Config file: ~/.dotfiles/config/format-script.json
+
+SUPPORTED EXTENSIONS:
+$(get_allowed_extensions | tr ' ' '\n' | sort | column -c 80)
 
 EXAMPLES:
   format                    # Format all tracked files
   format main.cpp          # Format single file
   format -t *.py          # Remove trailing whitespace
   format -n --all         # Dry run
+  format -v *.py          # Verbose output
 
 EOF
 }
@@ -367,6 +639,10 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=true
       shift
       ;;
+    -c|--config)
+      CONFIG_FILE="$2"
+      shift 2
+      ;;
     -*)
       print_color red "Unknown option: $1"
       usage
@@ -385,6 +661,9 @@ if [[ "${DO_TRAILING}" == false ]] && [[ "${DO_TABS}" == false ]] && \
   DO_ALL=true
 fi
 
+# Load configuration
+load_config
+
 # If no files specified, use git tracked files
 if [[ ${#FILES[@]} -eq 0 ]]; then
   if git rev-parse --git-dir > /dev/null 2>&1; then
@@ -399,6 +678,7 @@ fi
 # Main execution
 main() {
   local processed=0
+  local skipped=0
   local failed=0
 
   for file in "${FILES[@]}"; do
@@ -406,16 +686,25 @@ main() {
       if [[ -d "$file" ]]; then
         # Process directory
         while IFS= read -r -d '' f; do
-          if process_file "$f"; then
+          local result
+          process_file "$f" || result=$?
+          if [[ ${result:-0} -eq 0 ]]; then
             ((processed++))
+          elif [[ ${result:-0} -eq 2 ]]; then
+            ((skipped++))
           else
             ((failed++))
           fi
+          result=0  # Reset for next iteration
         done < <(find "$file" -type f -print0)
       else
         # Process file
-        if process_file "$file"; then
+        local result
+        process_file "$file" || result=$?
+        if [[ ${result:-0} -eq 0 ]]; then
           ((processed++))
+        elif [[ ${result:-0} -eq 2 ]]; then
+          ((skipped++))
         else
           ((failed++))
         fi
@@ -426,8 +715,12 @@ main() {
       for f in $file; do
         if [[ -f "$f" ]]; then
           found=true
-          if process_file "$f"; then
+          local result
+          process_file "$f" || result=$?
+          if [[ ${result:-0} -eq 0 ]]; then
             ((processed++))
+          elif [[ ${result:-0} -eq 2 ]]; then
+            ((skipped++))
           else
             ((failed++))
           fi
@@ -450,6 +743,10 @@ main() {
   else
     print_color green "✅ FORMATTING COMPLETE"
     echo "   Processed: ${processed} files"
+  fi
+  
+  if [[ ${skipped} -gt 0 ]]; then
+    echo "   Skipped: ${skipped} files"
   fi
 
   if [[ ${failed} -gt 0 ]]; then
