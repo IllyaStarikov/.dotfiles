@@ -1,6 +1,47 @@
 #!/bin/bash
-# Theme switcher for macOS appearance synchronization
-# Handles Alacritty, tmux, and Starship theme switching
+# ════════════════════════════════════════════════════════════════════════════════
+# switch-theme.sh - Dynamic theme switcher for terminal applications
+# ════════════════════════════════════════════════════════════════════════════════
+#
+# DESCRIPTION:
+#   Synchronizes terminal application themes with macOS appearance settings.
+#   Changes Alacritty, tmux, Starship, and Neovim themes atomically to prevent
+#   visual inconsistencies during switching.
+#
+# USAGE:
+#   switch-theme.sh [THEME|auto]
+#   
+#   switch-theme.sh         # Auto-detect from macOS appearance
+#   switch-theme.sh day     # TokyoNight Day (light)
+#   switch-theme.sh night   # TokyoNight Night (dark)
+#   switch-theme.sh moon    # TokyoNight Moon (dark)
+#   switch-theme.sh storm   # TokyoNight Storm (dark)
+#
+# THEMES:
+#   light/day   - TokyoNight Day (light theme)
+#   dark/storm  - TokyoNight Storm (default dark)
+#   night       - TokyoNight Night (bluish dark)
+#   moon        - TokyoNight Moon (darker variant)
+#
+# FEATURES:
+#   - Atomic switching (all apps change together)
+#   - macOS appearance detection
+#   - tmux session preservation
+#   - Crash-proof with proper locking
+#   - Configuration generation in ~/.config/
+#
+# FILES MODIFIED:
+#   ~/.config/alacritty/theme.toml     - Alacritty colors
+#   ~/.config/tmux/theme.conf          - tmux status bar
+#   ~/.config/starship/theme.toml      - Starship prompt
+#   ~/.config/theme-switcher/current-theme.sh - Shell environment
+#
+# EXAMPLES:
+#   switch-theme.sh              # Auto-detect based on macOS
+#   switch-theme.sh light        # Force light theme
+#   switch-theme.sh moon         # Use moon variant
+#   theme day                    # Using shell alias
+# ════════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
 
