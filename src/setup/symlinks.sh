@@ -1,8 +1,43 @@
 #!/usr/bin/env bash
 # ════════════════════════════════════════════════════════════════════════════════
-# 🔗 DOTFILES SYMLINK CREATOR
+# symlinks.sh - Create and manage dotfile symbolic links
 # ════════════════════════════════════════════════════════════════════════════════
-# Creates all necessary symlinks from the dotfiles repository to home directory
+#
+# DESCRIPTION:
+#   Creates symbolic links from dotfiles repository to proper system locations.
+#   Backs up existing files before replacing. Safe to run multiple times.
+#
+# USAGE:
+#   ./symlinks.sh [OPTIONS]
+#   
+#   ./symlinks.sh           # Create all symlinks
+#   ./symlinks.sh --force   # Overwrite without prompting
+#   ./symlinks.sh --dry-run # Preview changes without applying
+#
+# OPTIONS:
+#   --force    - Overwrite existing files without confirmation
+#   --dry-run  - Show what would be done without making changes
+#   --verbose  - Show detailed output for each operation
+#
+# SYMLINKS CREATED:
+#   Shell:     ~/.zshrc, ~/.bashrc, ~/.zshenv
+#   Editor:    ~/.config/nvim/, ~/.vimrc
+#   Terminal:  ~/.config/alacritty/, ~/.tmux.conf
+#   Git:       ~/.gitconfig, ~/.gitignore_global
+#   Tools:     ~/.ripgreprc, ~/.config/starship.toml
+#
+# BACKUP:
+#   Existing files backed up to: ~/.dotfiles.backups/YYYYMMDD_HHMMSS/
+#
+# EXAMPLES:
+#   ./symlinks.sh                  # Interactive setup
+#   ./symlinks.sh --force          # Non-interactive replacement
+#   ./symlinks.sh --dry-run        # Preview mode
+#
+# SAFETY:
+#   - Backs up existing files before replacing
+#   - Checks if symlinks already point to correct location
+#   - Reports all actions taken
 # ════════════════════════════════════════════════════════════════════════════════
 
 set -uo pipefail  # Don't exit on error, continue creating other symlinks
