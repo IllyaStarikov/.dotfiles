@@ -12,46 +12,49 @@ local function setup_lsp()
 		local override = dofile(override_path)
 		if override and override.setup then
 			local result = override.setup()
-			-- If override returns non-nil, use that configuration
-			if result ~= nil then
-				return result
+			-- If override returns true, it means a work config is handling everything
+			if result == true then
+				return -- Exit early, work config handles all LSP setup
 			end
 		end
 	end
 
 	local lspconfig = require("lspconfig")
-	-- 1. Setup Mason for LSP management
-	require("mason").setup({
-		ui = {
-			border = "rounded",
-			icons = {
-				package_installed = "✓",
-				package_pending = "➜",
-				package_uninstalled = "✗",
+	
+	-- 1. Setup Mason for LSP management (skip if work override is active)
+	if not vim.g.work_lsp_override then
+		require("mason").setup({
+			ui = {
+				border = "rounded",
+				icons = {
+					package_installed = "✓",
+					package_pending = "➜",
+					package_uninstalled = "✗",
+				},
 			},
-		},
-	})
+		})
 
-	require("mason-lspconfig").setup({
-		-- Ensure these servers are installed
-		ensure_installed = {
-			"pyright", -- Python
-			"clangd", -- C/C++
-			"lua_ls", -- Lua
-			"marksman", -- Markdown
-			"texlab", -- LaTeX
-			"ts_ls", -- TypeScript/JavaScript
-			"rust_analyzer", -- Rust
-			"gopls", -- Go
-			"dockerls", -- Docker
-			"yamlls", -- YAML
-			"jsonls", -- JSON
-		},
-		automatic_installation = true,
-		-- Disable automatic server setup to prevent duplicates
-		automatic_enable = false,
-		handlers = nil,
-	})
+		require("mason-lspconfig").setup({
+			-- Ensure these servers are installed
+			ensure_installed = {
+				"pyright", -- Python
+				"clangd", -- C/C++
+				"lua_ls", -- Lua
+				"marksman", -- Markdown
+				"texlab", -- LaTeX
+				"ts_ls", -- TypeScript/JavaScript
+				"rust_analyzer", -- Rust
+				"gopls", -- Go
+				"dockerls", -- Docker
+				"yamlls", -- YAML
+				"jsonls", -- JSON
+			},
+			automatic_installation = true,
+			-- Disable automatic server setup to prevent duplicates
+			automatic_enable = false,
+			handlers = nil,
+		})
+	end
 
 	-- 2. LSP server configurations
 	-- lspconfig already required above
@@ -223,16 +226,18 @@ local function setup_lsp()
 		},
 	}
 
-	-- Setup all configured servers
-	for server, config in pairs(servers) do
-		-- Setup the server
-		config.capabilities = capabilities
-		config.on_attach = on_attach
+	-- Setup all configured servers (skip if work override is active)
+	if not vim.g.work_lsp_override then
+		for server, config in pairs(servers) do
+			-- Setup the server
+			config.capabilities = capabilities
+			config.on_attach = on_attach
 
-		-- Use pcall to handle servers that might not be installed
-		local ok, err = pcall(function()
-			lspconfig[server].setup(config)
-		end)
+			-- Use pcall to handle servers that might not be installed
+			local ok, err = pcall(function()
+				lspconfig[server].setup(config)
+			end)
+		end
 	end
 
 	-- For clangd, we need to manually start it to avoid duplicates
