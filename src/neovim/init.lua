@@ -59,11 +59,11 @@ end
 
 -- Load work-specific early initialization if available
 -- This must happen before ANY other configuration
-local early_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/early-init.lua")
-if vim.fn.filereadable(early_init_path) == 1 then
-	local early_init = dofile(early_init_path)
-	if early_init and early_init.init then
-		early_init.init()
+local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
+if vim.fn.filereadable(private_init_path) == 1 then
+	local private_init = dofile(private_init_path)
+	if private_init and private_init.init then
+		private_init.init()
 	end
 end
 
