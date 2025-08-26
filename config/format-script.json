@@ -1,0 +1,287 @@
+{
+  "formatters": {
+    "ruff": {
+      "command": "ruff",
+      "check_command": "ruff --version",
+      "format_args": "format --line-length 100 {file}",
+      "fix_args": "check --fix --line-length 100 {file}",
+      "description": "Fast Python linter and formatter (Rust-based)"
+    },
+    "black": {
+      "command": "black",
+      "check_command": "black --version",
+      "format_args": "-q --line-length 100 --skip-string-normalization {file}",
+      "description": "Python code formatter"
+    },
+    "yapf": {
+      "command": "yapf",
+      "check_command": "yapf --version",
+      "format_args": "-i --style=google {file}",
+      "description": "Google's Python formatter"
+    },
+    "autopep8": {
+      "command": "autopep8",
+      "check_command": "autopep8 --version",
+      "format_args": "-i --max-line-length 100 {file}",
+      "description": "Python PEP8 formatter"
+    },
+    "isort": {
+      "command": "isort",
+      "check_command": "isort --version",
+      "format_args": "--profile google --line-length 100 {file}",
+      "description": "Python import sorter"
+    },
+    "clang-format": {
+      "command": "clang-format",
+      "check_command": "clang-format --version",
+      "format_args": "-i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' {file}",
+      "description": "C/C++ formatter"
+    },
+    "astyle": {
+      "command": "astyle",
+      "check_command": "astyle --version",
+      "format_args": "--style=google --indent=spaces=2 {file}",
+      "description": "Artistic Style C/C++ formatter"
+    },
+    "shfmt": {
+      "command": "shfmt",
+      "check_command": "shfmt -version",
+      "format_args": "-i 2 -bn -ci -w {file}",
+      "description": "Shell script formatter"
+    },
+    "beautysh": {
+      "command": "beautysh",
+      "check_command": "beautysh --version",
+      "format_args": "-i 2 {file}",
+      "description": "Bash beautifier"
+    },
+    "stylua": {
+      "command": "stylua",
+      "check_command": "stylua --version",
+      "format_args": "--indent-type Spaces --indent-width 2 --column-width 80 {file}",
+      "description": "Lua formatter"
+    },
+    "lua-format": {
+      "command": "lua-format",
+      "check_command": "lua-format --version",
+      "format_args": "-i --indent-width=2 {file}",
+      "description": "Lua code formatter"
+    },
+    "prettier": {
+      "command": "prettier",
+      "check_command": "prettier --version",
+      "format_args": "--write --tab-width 2 --print-width 80 --single-quote --trailing-comma none --arrow-parens avoid {file}",
+      "description": "Web code formatter"
+    },
+    "prettierd": {
+      "command": "prettierd",
+      "check_command": "prettierd --version",
+      "format_args": "--write --tab-width 2 --print-width 80 --single-quote --trailing-comma none --arrow-parens avoid {file}",
+      "description": "Prettier daemon (faster)"
+    },
+    "eslint": {
+      "command": "eslint",
+      "check_command": "eslint --version",
+      "format_args": "--fix {file}",
+      "description": "JavaScript linter and formatter"
+    },
+    "rustfmt": {
+      "command": "rustfmt",
+      "check_command": "rustfmt --version",
+      "format_args": "--edition 2021 {file}",
+      "description": "Rust formatter"
+    },
+    "gofmt": {
+      "command": "gofmt",
+      "check_command": "gofmt -h",
+      "format_args": "-w {file}",
+      "description": "Go formatter"
+    },
+    "goimports": {
+      "command": "goimports",
+      "check_command": "goimports -h",
+      "format_args": "-w {file}",
+      "description": "Go imports formatter"
+    },
+    "text-formatter": {
+      "command": "internal",
+      "format_args": "normalize_whitespace",
+      "description": "Built-in text file formatter"
+    }
+  },
+  "extensions": {
+    "py": {
+      "language": "Python",
+      "formatters": ["ruff", "black", "yapf", "autopep8"],
+      "additional": ["isort"]
+    },
+    "pyw": {
+      "language": "Python",
+      "formatters": ["ruff", "black", "yapf", "autopep8"],
+      "additional": ["isort"]
+    },
+    "pyi": {
+      "language": "Python",
+      "formatters": ["ruff", "black", "yapf", "autopep8"],
+      "additional": ["isort"]
+    },
+    "c": {
+      "language": "C",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "h": {
+      "language": "C",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "cpp": {
+      "language": "C++",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "cc": {
+      "language": "C++",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "cxx": {
+      "language": "C++",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "hpp": {
+      "language": "C++",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "hxx": {
+      "language": "C++",
+      "formatters": ["clang-format", "astyle"]
+    },
+    "sh": {
+      "language": "Shell",
+      "formatters": ["shfmt", "beautysh"]
+    },
+    "bash": {
+      "language": "Bash",
+      "formatters": ["shfmt", "beautysh"]
+    },
+    "zsh": {
+      "language": "Zsh",
+      "formatters": ["shfmt", "beautysh"]
+    },
+    "lua": {
+      "language": "Lua",
+      "formatters": ["stylua", "lua-format"]
+    },
+    "js": {
+      "language": "JavaScript",
+      "formatters": ["prettierd", "prettier", "eslint"]
+    },
+    "jsx": {
+      "language": "JavaScript",
+      "formatters": ["prettierd", "prettier", "eslint"]
+    },
+    "ts": {
+      "language": "TypeScript",
+      "formatters": ["prettierd", "prettier", "eslint"]
+    },
+    "tsx": {
+      "language": "TypeScript",
+      "formatters": ["prettierd", "prettier", "eslint"]
+    },
+    "json": {
+      "language": "JSON",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "yaml": {
+      "language": "YAML",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "yml": {
+      "language": "YAML",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "html": {
+      "language": "HTML",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "css": {
+      "language": "CSS",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "scss": {
+      "language": "SCSS",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "sass": {
+      "language": "Sass",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "less": {
+      "language": "Less",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "md": {
+      "language": "Markdown",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "mdx": {
+      "language": "MDX",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "rs": {
+      "language": "Rust",
+      "formatters": ["rustfmt"]
+    },
+    "go": {
+      "language": "Go",
+      "formatters": ["goimports", "gofmt"]
+    },
+    "txt": {
+      "language": "Text",
+      "formatters": ["text-formatter"]
+    },
+    "text": {
+      "language": "Text",
+      "formatters": ["text-formatter"]
+    },
+    "log": {
+      "language": "Text",
+      "formatters": ["text-formatter"]
+    },
+    "csv": {
+      "language": "CSV",
+      "formatters": ["text-formatter"]
+    },
+    "tsv": {
+      "language": "TSV",
+      "formatters": ["text-formatter"]
+    },
+    "xml": {
+      "language": "XML",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "svg": {
+      "language": "SVG",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "graphql": {
+      "language": "GraphQL",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "gql": {
+      "language": "GraphQL",
+      "formatters": ["prettierd", "prettier"]
+    },
+    "vue": {
+      "language": "Vue",
+      "formatters": ["prettierd", "prettier", "eslint"]
+    },
+    "svelte": {
+      "language": "Svelte",
+      "formatters": ["prettierd", "prettier"]
+    }
+  },
+  "settings": {
+    "show_formatter_fallback": true,
+    "run_additional_formatters": true,
+    "verbose": false,
+    "default_operations": ["trailing_whitespace", "tabs_to_spaces", "smart_quotes", "formatters"]
+  }
+}
