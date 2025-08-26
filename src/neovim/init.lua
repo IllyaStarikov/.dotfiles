@@ -1,3 +1,37 @@
+--------------------------------------------------------------------------------
+-- init.lua - Neovim configuration entry point
+--
+-- DESCRIPTION:
+--   Main entry point for Neovim configuration. Sets up module paths,
+--   loads work-specific overrides, and initializes the configuration system.
+--
+-- LOADING ORDER:
+--   1. Package path setup (support dotfiles structure)
+--   2. Work-specific early initialization (if present)
+--   3. Core configuration (lazy.nvim, options, keymaps)
+--   4. Plugin loading
+--   5. Work-specific late overrides
+--
+-- STRUCTURE:
+--   config/           - Configuration modules
+--   ├── core/        - Core settings (options, performance)
+--   ├── keymaps/     - Key bindings by category
+--   ├── lsp/         - Language server configurations
+--   ├── plugins/     - Plugin specifications
+--   └── ui/          - UI and theme settings
+--
+-- USAGE:
+--   Symlinked to ~/.config/nvim/init.lua
+--   or loaded directly from ~/.dotfiles/src/neovim/
+--
+-- FEATURES:
+--   - Supports running from dotfiles or standard location
+--   - Work-specific overrides for Google/Garmin environments
+--   - Lazy loading with lazy.nvim
+--   - Modern Lua configuration
+--   - Comprehensive error handling
+--------------------------------------------------------------------------------
+
 -- Add the config directory to the Lua package path
 -- This ensures modules can be found regardless of how nvim is invoked
 local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")

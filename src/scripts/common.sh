@@ -1,8 +1,40 @@
 #!/usr/bin/env bash
-# Common library for cross-platform dotfiles scripts
-# Provides utilities for OS detection and platform-specific command execution
+# common.sh - Shared library for dotfiles scripts
+#
+# DESCRIPTION:
+#   Provides cross-platform utilities for OS detection, command execution,
+#   colored output, and error handling. All dotfiles scripts source this
+#   library for consistent functionality across macOS and Linux.
+#
+# USAGE:
+#   source "${SCRIPT_DIR}/common.sh"
+#   
+#   # OS detection
+#   if is_macos; then
+#     brew install package
+#   elif is_linux; then
+#     apt install package
+#   fi
+#   
+#   # Colored output
+#   print_color green "✓ Success"
+#   print_color red "✗ Failed"
+#   
+#   # Platform-specific commands
+#   platform_command "brew install git" "apt install git"
+#
+# FUNCTIONS:
+#   detect_os()         - Returns "macos", "linux", or "unknown"
+#   is_macos()          - Returns 0 if running on macOS
+#   is_linux()          - Returns 0 if running on Linux
+#   platform_command()  - Execute platform-specific commands
+#   get_cpu_count()     - Get number of CPU cores
+#   get_memory_gb()     - Get total memory in GB
+#   print_color()       - Print colored text to stdout
+#   check_command()     - Check if command exists
+#   error_exit()        - Exit with error message
 
-# Strict mode
+# Strict mode - exit on error, undefined vars, pipe failures
 set -euo pipefail
 
 # ============================================================================
@@ -11,6 +43,7 @@ set -euo pipefail
 
 # Detect the operating system
 # Returns: "macos", "linux", or "unknown"
+# Example: os="$(detect_os)"; echo "Running on $os"
 detect_os() {
   local os="unknown"
   
@@ -41,12 +74,14 @@ detect_os() {
 
 # Check if running on macOS
 # Returns: 0 if macOS, 1 otherwise
+# Example: if is_macos; then echo "On Mac"; fi
 is_macos() {
   [[ "$(detect_os)" == "macos" ]]
 }
 
 # Check if running on Linux
 # Returns: 0 if Linux, 1 otherwise
+# Example: if is_linux; then echo "On Linux"; fi
 is_linux() {
   [[ "$(detect_os)" == "linux" ]]
 }
@@ -57,7 +92,12 @@ is_linux() {
 
 # Execute platform-specific commands
 # Usage: platform_command "macos_command" "linux_command" [fallback_command]
+# Args:
+#   $1 - Command to run on macOS
+#   $2 - Command to run on Linux
+#   $3 - Optional fallback command for unknown systems
 # Returns: Exit code of the executed command
+# Example: platform_command "brew install jq" "apt install jq" "echo 'Please install jq'"
 platform_command() {
   local macos_cmd="${1:-}"
   local linux_cmd="${2:-}"
@@ -91,16 +131,18 @@ platform_command() {
 # Platform-Specific Utilities
 # ============================================================================
 
-# Get number of CPU cores
-# Returns: Number of CPU cores
+# Get number of CPU cores across platforms
+# Returns: Number of CPU cores (minimum 1)
+# Example: cores="$(get_cpu_count)"; make -j"$cores"
 get_cpu_count() {
   platform_command \
     "sysctl -n hw.ncpu 2>/dev/null || echo 1" \
     "nproc 2>/dev/null || grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 1"
 }
 
-# Get total memory in MB
+# Get total memory in MB across platforms
 # Returns: Total memory in megabytes
+# Example: mem="$(get_memory_mb)"; echo "${mem}MB available"
 get_memory_mb() {
   platform_command \
     "echo \$(($(sysctl -n hw.memsize) / 1024 / 1024))" \
@@ -109,6 +151,9 @@ get_memory_mb() {
 
 # Open URL or file in default application
 # Usage: open_in_default "url_or_file"
+# Args:
+#   $1 - URL or file path to open
+# Example: open_in_default "https://github.com" || open_in_default "README.md"
 open_in_default() {
   local target="${1:?Error: target required}"
   
@@ -117,16 +162,18 @@ open_in_default() {
     "xdg-open '${target}' 2>/dev/null || sensible-browser '${target}' 2>/dev/null"
 }
 
-# Copy to clipboard
+# Copy text to system clipboard
 # Usage: echo "text" | copy_to_clipboard
+# Example: git remote -v | copy_to_clipboard
 copy_to_clipboard() {
   platform_command \
     "pbcopy" \
     "xclip -selection clipboard 2>/dev/null || xsel --clipboard --input 2>/dev/null"
 }
 
-# Paste from clipboard
-# Returns: Clipboard contents
+# Paste text from system clipboard
+# Returns: Clipboard contents to stdout
+# Example: paste_from_clipboard | grep "pattern"
 paste_from_clipboard() {
   platform_command \
     "pbpaste" \
@@ -137,15 +184,19 @@ paste_from_clipboard() {
 # Package Manager Detection
 # ============================================================================
 
-# Check if a command exists
+# Check if a command exists in PATH
 # Usage: has_command "command_name"
+# Args:
+#   $1 - Name of command to check
 # Returns: 0 if command exists, 1 otherwise
+# Example: if has_command "docker"; then docker ps; fi
 has_command() {
   command -v "${1}" &>/dev/null
 }
 
-# Detect package manager
-# Returns: Package manager name or "unknown"
+# Detect system package manager
+# Returns: "brew", "apt", "dnf", "yum", "pacman", "zypper", or "unknown"
+# Example: pm="$(detect_package_manager)"; echo "Using $pm"
 detect_package_manager() {
   if is_macos && has_command brew; then
     echo "brew"
@@ -166,8 +217,14 @@ detect_package_manager() {
   fi
 }
 
-# Install package using appropriate package manager
+# Install package using system package manager
 # Usage: install_package "package_name" ["brew_name"] ["apt_name"]
+# Args:
+#   $1 - Default package name
+#   $2 - Optional brew-specific package name
+#   $3 - Optional apt-specific package name
+# Example: install_package "ripgrep" "ripgrep" "ripgrep"
+#          install_package "node" "node" "nodejs"
 install_package() {
   local package="${1:?Error: package name required}"
   local brew_name="${2:-${package}}"
@@ -206,8 +263,12 @@ install_package() {
 # File System Utilities
 # ============================================================================
 
-# Get real path (resolving symlinks)
+# Get real path (resolving symlinks) - portable version
 # Usage: realpath_portable "path"
+# Args:
+#   $1 - Path to resolve
+# Returns: Absolute path with symlinks resolved
+# Example: real="$(realpath_portable ~/.vimrc)"; echo "Actual location: $real"
 realpath_portable() {
   local path="${1:?Error: path required}"
   
@@ -234,8 +295,9 @@ realpath_portable() {
   fi
 }
 
-# Create temporary directory
+# Create temporary directory with platform-appropriate command
 # Returns: Path to created temporary directory
+# Example: tmpdir="$(create_temp_dir)"; echo "Working in $tmpdir"
 create_temp_dir() {
   platform_command \
     "mktemp -d -t 'tmp.XXXXXX'" \
@@ -246,8 +308,12 @@ create_temp_dir() {
 # Process Management
 # ============================================================================
 
-# Check if process is running
+# Check if process is running by exact name
 # Usage: is_process_running "process_name"
+# Args:
+#   $1 - Exact process name to check
+# Returns: 0 if running, 1 if not
+# Example: if is_process_running "tmux"; then echo "tmux is running"; fi
 is_process_running() {
   local process="${1:?Error: process name required}"
   
@@ -256,8 +322,12 @@ is_process_running() {
     "pgrep -x '${process}' &>/dev/null"
 }
 
-# Kill process by name
+# Kill process by exact name
 # Usage: kill_process "process_name" [signal]
+# Args:
+#   $1 - Exact process name to kill
+#   $2 - Optional signal (default: -TERM)
+# Example: kill_process "node" || kill_process "firefox" "-KILL"
 kill_process() {
   local process="${1:?Error: process name required}"
   local signal="${2:--TERM}"
@@ -271,8 +341,9 @@ kill_process() {
 # System Information
 # ============================================================================
 
-# Get current user's shell
-# Returns: Path to user's shell
+# Get current user's default shell
+# Returns: Path to user's shell (e.g., /bin/zsh)
+# Example: shell="$(get_user_shell)"; echo "Using $shell"
 get_user_shell() {
   local shell
   
@@ -292,8 +363,9 @@ get_user_shell() {
   echo "${shell}"
 }
 
-# Get home directory
+# Get user's home directory portably
 # Returns: Path to home directory
+# Example: home="$(get_home_dir)"; cd "$home/Documents"
 get_home_dir() {
   echo "${HOME:-$(eval echo ~)}"
 }
@@ -302,8 +374,9 @@ get_home_dir() {
 # Display Utilities
 # ============================================================================
 
-# Check if terminal supports colors
+# Check if terminal supports ANSI color codes
 # Returns: 0 if colors supported, 1 otherwise
+# Example: if supports_colors; then echo -e "\033[32mGreen\033[0m"; fi
 supports_colors() {
   local term="${TERM:-}"
   
@@ -316,9 +389,12 @@ supports_colors() {
   fi
 }
 
-# Print colored output
+# Print colored output to stdout
 # Usage: print_color "color_name" "message"
-# Colors: red, green, yellow, blue, magenta, cyan
+# Args:
+#   $1 - Color name: red, green, yellow, blue, magenta, cyan
+#   $2 - Message to print
+# Example: print_color green "✓ Success" || print_color red "✗ Failed"
 print_color() {
   local color="${1:?Error: color required}"
   local message="${2:?Error: message required}"
