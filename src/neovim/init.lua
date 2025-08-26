@@ -23,6 +23,16 @@ if vim.fn.isdirectory(dotfiles_config) == 1 and dotfiles_config ~= init_dir then
   package.path = package.path .. ";" .. dotfiles_config .. "/?/init.lua"
 end
 
+-- Load work-specific early initialization if available
+-- This must happen before ANY other configuration
+local early_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/early-init.lua")
+if vim.fn.filereadable(early_init_path) == 1 then
+	local early_init = dofile(early_init_path)
+	if early_init and early_init.init then
+		early_init.init()
+	end
+end
+
 -- Disable verbose logging for normal operation
 -- Only disable if not already set via command line
 if vim.opt.verbose:get() == 0 then
