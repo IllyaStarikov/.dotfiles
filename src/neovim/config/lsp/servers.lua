@@ -198,19 +198,12 @@ local function setup_lsp()
 			client.server_capabilities.semanticTokensProvider = nil
 		end
 		
-		-- Safely handle inlay hints (compatible with different Neovim versions)
+		-- Safely handle inlay hints (Neovim 0.10+ API only)
 		if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
 			pcall(function()
-				-- Try new API first (Neovim 0.10+)
-				if vim.lsp.inlay_hint.enable then
-					local enable_func = vim.lsp.inlay_hint.enable
-					-- Check if the function expects boolean as first argument
-					local ok = pcall(enable_func, false, { bufnr = bufnr })
-					if not ok then
-						-- Try old API (bufnr, boolean)
-						pcall(enable_func, bufnr, false)
-					end
-				end
+				-- Neovim 0.10+ API: enable(boolean, filter_table)
+				-- Disable inlay hints by default
+				vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
 			end)
 		end
 
