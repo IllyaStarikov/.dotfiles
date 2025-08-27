@@ -157,8 +157,11 @@ main() {
             }
         fi
         
-        # Remove existing symlinks for clean installation
+        # Backup existing symlinks for clean installation
         if [[ -L "$HOME/.config/nvim" ]]; then
+            mkdir -p "$BACKUP_DIR"
+            # Save symlink target for reference
+            readlink "$HOME/.config/nvim" > "$BACKUP_DIR/nvim-symlink-target-$(date +%Y%m%d_%H%M%S).txt"
             rm -f "$HOME/.config/nvim"
         elif [[ -d "$HOME/.config/nvim" ]]; then
             # Backup existing nvim config if it's not a symlink
@@ -167,8 +170,10 @@ main() {
                 mv "$HOME/.config/nvim" "$BACKUP_DIR/nvim" 2>/dev/null
                 warn "Backed up existing nvim config to $BACKUP_DIR/nvim"
             else
-                # Remove individual symlinks from previous setup
-                rm -rf "$HOME/.config/nvim"
+                # Backup directory with symlinks from previous setup
+                mkdir -p "$BACKUP_DIR"
+                mv "$HOME/.config/nvim" "$BACKUP_DIR/nvim-symlinks-$(date +%Y%m%d_%H%M%S)" 2>/dev/null
+                warn "Backed up nvim symlinks directory to $BACKUP_DIR/"
             fi
         fi
         
