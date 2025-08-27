@@ -20,12 +20,6 @@ vim.api.nvim_create_user_command("W", "w", {})
 vim.api.nvim_create_user_command("Q", "q", {})
 vim.api.nvim_create_user_command("Wq", "wq", {})
 
--- Essential leader mappings
-map("n", "<leader>w", ":w<cr>", { desc = "Save file" })
-map("n", "<leader>q", ":confirm q<cr>", { desc = "Quit" })
-map("n", "<leader>x", ":x<cr>", { desc = "Save and quit" })
-map("n", "<leader>W", ":wa<cr>", { desc = "Save all" })
-
 -- Quick save
 map("n", "<C-s>", ":w<CR>", opts)
 map("i", "<C-s>", "<Esc>:w<CR>a", opts)
