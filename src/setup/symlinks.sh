@@ -157,7 +157,7 @@ main() {
             }
         fi
         
-        # Remove old symlinks if they exist (clean slate approach)
+        # Remove existing symlinks for clean installation
         if [[ -L "$HOME/.config/nvim" ]]; then
             rm -f "$HOME/.config/nvim"
         elif [[ -d "$HOME/.config/nvim" ]]; then
@@ -167,7 +167,7 @@ main() {
                 mv "$HOME/.config/nvim" "$BACKUP_DIR/nvim" 2>/dev/null
                 warn "Backed up existing nvim config to $BACKUP_DIR/nvim"
             else
-                # Remove individual symlinks from old setup
+                # Remove individual symlinks from previous setup
                 rm -rf "$HOME/.config/nvim"
             fi
         fi

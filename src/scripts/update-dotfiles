@@ -13,7 +13,7 @@ SKIP_PACKAGES=false
 SKIP_LANGUAGES=false
 SKIP_TOOLS=false
 
-# Track what was updated
+# Track update status
 UPDATED_LIST=""
 FAILED_LIST=""
 
@@ -77,7 +77,7 @@ cleanup() {
     rm -f ~/.local/state/nvim/swap/* 2>/dev/null || true
     rm -f ~/.local/state/nvim/backup/* 2>/dev/null || true
     
-    # Clean old Neovim log files (keep last 5)
+    # Clean Neovim log files (keep last 5)
     if [[ -d ~/.local/state/nvim ]]; then
         find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
     fi
@@ -85,7 +85,7 @@ cleanup() {
     # Clean zsh completion dump
     rm -f ~/.zcompdump* 2>/dev/null || true
     
-    # Clean old pip cache
+    # Clean pip cache
     if command -v pip3 &> /dev/null; then
         pip3 cache purge 2>/dev/null || true
     fi
@@ -421,7 +421,7 @@ update_tools() {
         update_with_fallback "Neovim plugin sync" nvim --headless +"Lazy! sync" +qa
         update_with_fallback "Lazy clean" nvim --headless +"Lazy! clean" +qa
         update_with_fallback "Mason LSP update" nvim --headless +"MasonUpdate" +qa
-        # Clear old Neovim plugin data
+        # Clear Neovim plugin caches
         echo "Cleaning Neovim caches..."
         rm -rf ~/.local/share/nvim/lazy/readme 2>/dev/null || true
         rm -rf ~/.cache/nvim/luac 2>/dev/null || true
@@ -495,11 +495,11 @@ update_tools() {
         echo "Latest stable Python versions available:"
         pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -5
         
-        # Clean up old Python versions (keep current and system)
+        # List Python versions for manual cleanup
         echo "Installed Python versions:"
         pyenv versions
         echo ""
-        echo "To remove old versions, run: pyenv uninstall <version>"
+        echo "To remove unused versions, run: pyenv uninstall <version>"
         
         # Clean pyenv shims
         update_with_fallback "Rehashing pyenv shims" pyenv rehash
@@ -539,7 +539,7 @@ echo "🧹 Cleanup suggestions:"
 echo "   - Clear DNS cache: sudo dscacheutil -flushcache"
 echo "   - Clear font cache: sudo atsutil databases -remove"
 echo "   - Empty trash: rm -rf ~/.Trash/*"
-echo "   - Remove old downloads: find ~/Downloads -type f -mtime +30 -delete"
+echo "   - Remove downloads older than 30 days: find ~/Downloads -type f -mtime +30 -delete"
 echo "   - Clear macOS caches: rm -rf ~/Library/Caches/*"
 
 # Show summary
