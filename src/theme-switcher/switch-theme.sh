@@ -398,8 +398,11 @@ restore_config() {
         [[ -f "$backup_dir/theme.conf" ]] && cp "$backup_dir/theme.conf" "$TMUX_DIR/"
         [[ -f "$backup_dir/starship.toml" ]] && cp "$backup_dir/starship.toml" "$STARSHIP_DIR/"
         
-        rm -rf "$backup_dir"
-        log "Restored previous configuration"
+        # Archive the backup instead of deleting
+        local archive_dir="$HOME/.dotfiles-theme-backups/$(date +%Y%m%d_%H%M%S)"
+        mkdir -p "$archive_dir"
+        mv "$backup_dir" "$archive_dir/restored-backup" 2>/dev/null || true
+        log "Restored previous configuration (backup archived to $archive_dir)"
     fi
 }
 
@@ -430,8 +433,10 @@ main() {
         reload_tmux
         release_lock
         
-        # Clean up backup on success
-        rm -rf "$backup_dir"
+        # Archive backup on success instead of deleting
+        local archive_dir="$HOME/.dotfiles-theme-backups/$(date +%Y%m%d_%H%M%S)"
+        mkdir -p "$archive_dir"
+        mv "$backup_dir" "$archive_dir/success-backup" 2>/dev/null || true
         
         log "Theme switch completed successfully"
         echo "✅ Theme switched to $THEME ($VARIANT mode)"
