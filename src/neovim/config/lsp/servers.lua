@@ -98,31 +98,89 @@ local function setup_lsp()
 	-- lspconfig already required above
 
 	-- Configure diagnostics with virtual text (inline error messages)
-	-- The signs configuration is now done directly in vim.diagnostic.config
-	vim.diagnostic.config({
-		virtual_text = {
-			source = "always",  -- Show source in diagnostic virtual text
-			prefix = "●",       -- Icon to show before the diagnostic
-			spacing = 4,        -- Spacing between code and virtual text
-		},
-		signs = {
-			text = {
-				[vim.diagnostic.severity.ERROR] = " ",
-				[vim.diagnostic.severity.WARN] = " ",
-				[vim.diagnostic.severity.HINT] = "󰌵 ",
-				[vim.diagnostic.severity.INFO] = " ",
+	-- Only configure once to prevent duplicates
+	if not vim.g.diagnostics_configured then
+		vim.g.diagnostics_configured = true
+		
+		-- First, disable virtual text to prevent default display
+		vim.diagnostic.config({
+			virtual_text = false,
+			signs = {
+				text = {
+					[vim.diagnostic.severity.ERROR] = " ",
+					[vim.diagnostic.severity.WARN] = " ",
+					[vim.diagnostic.severity.HINT] = "󰌵 ",
+					[vim.diagnostic.severity.INFO] = " ",
+				},
 			},
-		},
-		underline = true,       -- Underline diagnostic locations
-		update_in_insert = false, -- Don't update diagnostics in insert mode
-		severity_sort = true,   -- Sort diagnostics by severity
-		float = {
-			border = "rounded",
-			source = "always",
-			header = "",
-			prefix = "",
-		},
-	})
+			underline = true,       -- Underline diagnostic locations
+			update_in_insert = false, -- Don't update diagnostics in insert mode
+			severity_sort = true,   -- Sort diagnostics by severity
+			float = {
+				border = "rounded",
+				source = "always",
+				header = "",
+				prefix = "",
+			},
+		})
+		
+		-- Create a namespace for our custom virtual text
+		local ns = vim.api.nvim_create_namespace("custom_diagnostic_vtext")
+		
+		-- Custom handler that shows only one diagnostic per line
+		local function show_diagnostic_virtual_text()
+			-- Clear previous virtual text
+			for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+				if vim.api.nvim_buf_is_loaded(buf) then
+					vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
+				end
+			end
+			
+			-- Get diagnostics for current buffer
+			local bufnr = vim.api.nvim_get_current_buf()
+			local diagnostics = vim.diagnostic.get(bufnr)
+			
+			-- Group diagnostics by line
+			local line_diagnostics = {}
+			for _, diagnostic in ipairs(diagnostics) do
+				local line = diagnostic.lnum
+				if not line_diagnostics[line] or 
+				   diagnostic.severity < line_diagnostics[line].severity then
+					line_diagnostics[line] = diagnostic
+				end
+			end
+			
+			-- Display virtual text for the most severe diagnostic on each line
+			for line, diagnostic in pairs(line_diagnostics) do
+				local msg = diagnostic.message
+				-- Truncate long messages
+				if #msg > 80 then
+					msg = msg:sub(1, 77) .. "..."
+				end
+				
+				-- Add virtual text with extra spacing
+				pcall(vim.api.nvim_buf_set_extmark, bufnr, ns, line, 0, {
+					virt_text = {{"  ● " .. msg, "DiagnosticVirtualText" .. vim.diagnostic.severity[diagnostic.severity]}},
+					virt_text_pos = "eol",
+					hl_mode = "combine",
+				})
+			end
+		end
+		
+		-- Set up autocommand to update virtual text
+		vim.api.nvim_create_autocmd("DiagnosticChanged", {
+			callback = function()
+				show_diagnostic_virtual_text()
+			end,
+		})
+		
+		-- Also update on buffer enter/win enter
+		vim.api.nvim_create_autocmd({"BufEnter", "WinEnter"}, {
+			callback = function()
+				show_diagnostic_virtual_text()
+			end,
+		})
+	end
 
 	-- Capabilities for blink.cmp integration
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
