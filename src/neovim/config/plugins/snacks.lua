@@ -48,7 +48,7 @@ function M.setup()
                 vim.notify("Snacks not loaded", vim.log.levels.WARN) 
               end 
             end },
-            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+            { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
           },
         },
         { section = "startup" },
