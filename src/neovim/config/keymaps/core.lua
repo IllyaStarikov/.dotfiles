@@ -8,7 +8,8 @@ local opts = { noremap = true, silent = true }
 
 -- Ensure VIMRUNTIME is properly set (fix for checkhealth)
 if not vim.env.VIMRUNTIME or vim.env.VIMRUNTIME == "" then
-  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h") .. "/share/nvim/runtime"
+  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h")
+    .. "/share/nvim/runtime"
   if vim.fn.isdirectory(runtime_path) == 1 then
     vim.env.VIMRUNTIME = runtime_path
   end
@@ -21,7 +22,7 @@ vim.api.nvim_create_user_command("Wq", "wq", {})
 
 -- Essential leader mappings
 map("n", "<leader>w", ":w<cr>", { desc = "Save file" })
-map("n", "<leader>q", ":q<cr>", { desc = "Quit" })
+map("n", "<leader>q", ":confirm q<cr>", { desc = "Quit" })
 map("n", "<leader>x", ":x<cr>", { desc = "Save and quit" })
 map("n", "<leader>W", ":wa<cr>", { desc = "Save all" })
 
@@ -41,11 +42,11 @@ map("n", "<leader>d", '"_d', opts)
 map("v", "<leader>d", '"_d', opts)
 
 -- System clipboard
-map({"n", "v"}, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
 
 -- macOS-style copy/paste
-map({"n", "v"}, "<D-c>", [["+y]], { desc = "Copy (Cmd+C)" })
+map({ "n", "v" }, "<D-c>", [["+y]], { desc = "Copy (Cmd+C)" })
 map("n", "<D-v>", [["+p]], { desc = "Paste (Cmd+V)" })
 map("i", "<D-v>", "<C-r>+", { desc = "Paste (Cmd+V)" })
 map("c", "<D-v>", "<C-r>+", { desc = "Paste (Cmd+V)" })
@@ -56,14 +57,14 @@ vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.defer_fn(function()
       -- Ensure visual mode 'y' is a direct yank
-      vim.keymap.set({'v', 'x'}, 'y', 'y', { 
-        noremap = true, 
+      vim.keymap.set({ "v", "x" }, "y", "y", {
+        noremap = true,
         silent = true,
-        desc = "Yank selection (instant)"
+        desc = "Yank selection (instant)",
       })
     end, 100)
   end,
-  desc = "Ensure visual yank is instant"
+  desc = "Ensure visual yank is instant",
 })
 
 -- Better line joins
@@ -88,4 +89,9 @@ map("n", ",cl", ":let @+=expand('%:p')<CR>", { desc = "Copy absolute path" })
 map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", { desc = "Copy full path" })
 
 -- Replace word under cursor
-map("n", "<leader>sw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })
+map(
+  "n",
+  "<leader>sw",
+  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Replace word under cursor" }
+)
