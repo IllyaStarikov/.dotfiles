@@ -79,7 +79,7 @@ local function load_work_vimrc(profile)
   
   if type(profile) == "string" then
     -- Simple string profile - load from profile directory
-    -- First try work_nvim.lua (new naming)
+    -- Try work_nvim.lua first (preferred naming)
     local work_nvim_path = WORK_CONFIG_PATH .. "/" .. profile .. "/work_nvim.lua"
     if vim.fn.filereadable(work_nvim_path) == 1 then
       local ok, work_config = pcall(dofile, work_nvim_path)
@@ -89,7 +89,7 @@ local function load_work_vimrc(profile)
       end
     end
     
-    -- Fall back to vimrc.lua (old naming)
+    -- Fall back to vimrc.lua (legacy naming)
     local vimrc_path = WORK_CONFIG_PATH .. "/" .. profile .. "/vimrc.lua"
     safe_dofile(vimrc_path)
   elseif type(profile) == "table" then

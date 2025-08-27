@@ -185,7 +185,7 @@ local function setup_lsp()
 	-- Capabilities for blink.cmp integration
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-	-- Get blink.cmp capabilities using the correct API
+	-- Enhance capabilities with blink.cmp if available
 	local blink_ok, blink = pcall(require, "blink.cmp")
 	if blink_ok then
 		capabilities = blink.get_lsp_capabilities()
@@ -198,11 +198,11 @@ local function setup_lsp()
 			client.server_capabilities.semanticTokensProvider = nil
 		end
 		
-		-- Safely handle inlay hints (Neovim 0.10+ API only)
+		-- Configure inlay hints if supported
 		if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
 			pcall(function()
-				-- Neovim 0.10+ API: enable(boolean, filter_table)
 				-- Disable inlay hints by default
+				-- Parameters: enable(boolean, filter_table)
 				vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
 			end)
 		end

@@ -31,7 +31,7 @@ EDITOR="${EDITOR:-$(platform_command 'vim' 'nano')}"
 print_color blue "Opening scratchpad: ${TEMP_FILE}"
 "${EDITOR}" "${TEMP_FILE}"
 
-# Check if file was created and has content
+# Check if file has content
 if [[ -f "${TEMP_FILE}" ]] && [[ -s "${TEMP_FILE}" ]]; then
   print_color green "Scratchpad saved at: ${TEMP_FILE}"
 else

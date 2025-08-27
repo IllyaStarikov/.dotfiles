@@ -1,7 +1,7 @@
 --
 -- config/snacks.lua
 -- HIGH-PERFORMANCE snacks.nvim configuration
--- Fixed to use proper snacks.nvim API without format field conflicts
+-- Comprehensive productivity and quality-of-life features
 --
 
 local M = {}

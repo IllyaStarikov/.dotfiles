@@ -6,7 +6,7 @@
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
--- Ensure VIMRUNTIME is properly set (fix for checkhealth)
+-- Ensure VIMRUNTIME is properly set for health checks
 if not vim.env.VIMRUNTIME or vim.env.VIMRUNTIME == "" then
   local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h")
     .. "/share/nvim/runtime"

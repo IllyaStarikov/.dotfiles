@@ -163,9 +163,9 @@ autocmd("FileType", {
   desc = "Add error handling for treesitter in markdown files"
 })
 
--- Terminal cursor fix
+-- Ensure terminal cursor visibility
 autocmd({ "TermEnter" }, {
-  group = augroup("TerminalCursorFix", { clear = true }),
+  group = augroup("TerminalCursor", { clear = true }),
   callback = function()
     vim.opt.guicursor = "a:ver25-blinkon1"
   end,
