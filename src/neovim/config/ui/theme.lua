@@ -196,7 +196,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 -- Convenient commands for manual theme management
 vim.api.nvim_create_user_command("ReloadTheme", setup_theme, {
-  desc = "Reload the current theme and fix comment colors"
+  desc = "Reload the current theme and adjust colors"
 })
 
 vim.api.nvim_create_user_command("FixComments", function()
