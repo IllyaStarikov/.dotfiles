@@ -215,7 +215,14 @@ local function setup_lsp()
 			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 				buffer = bufnr,
 				group = group,
-				callback = vim.lsp.buf.document_highlight,
+				callback = function()
+					-- Wrap in pcall to handle servers that might temporarily not support the method
+					local ok, _ = pcall(vim.lsp.buf.document_highlight)
+					if not ok then
+						-- Silently ignore errors - server might be busy or temporarily unavailable
+						return
+					end
+				end,
 			})
 			
 			vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
