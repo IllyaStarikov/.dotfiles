@@ -726,6 +726,30 @@ if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM_PROGRAM == "WezTerm" or v
 end
 
 -- =============================================================================
+-- LSP DOCUMENT HIGHLIGHT CONFIGURATION
+-- =============================================================================
+
+-- Configure LSP highlight groups for better visibility
+local lsp_highlight_group = augroup("LspDocumentHighlight", { clear = true })
+
+autocmd("ColorScheme", {
+  group = lsp_highlight_group,
+  pattern = "*",
+  callback = function()
+    -- Make LSP references more visible with a subtle background highlight
+    vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
+  end,
+  desc = "Set LSP reference highlight colors"
+})
+
+-- Apply highlight groups immediately
+vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
+vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
+vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
+
+-- =============================================================================
 -- SPELL CHECKING CONFIGURATION
 -- =============================================================================
 -- Enable spell checking only for text-heavy file types to avoid performance issues
