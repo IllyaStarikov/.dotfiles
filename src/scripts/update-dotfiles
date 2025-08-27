@@ -70,20 +70,40 @@ update_with_fallback() {
 cleanup() {
     echo "🧹 Performing cleanup..."
     
-    # Clean tmux cache files
-    rm -f /tmp/.tmux_*_cache 2>/dev/null || true
+    # Create backup directory with timestamp
+    local CLEANUP_BACKUP_DIR="$HOME/.dotfiles-cleanup-backups/$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$CLEANUP_BACKUP_DIR"
     
-    # Clean Neovim swap files and backups
-    rm -f ~/.local/state/nvim/swap/* 2>/dev/null || true
-    rm -f ~/.local/state/nvim/backup/* 2>/dev/null || true
-    
-    # Clean Neovim log files (keep last 5)
-    if [[ -d ~/.local/state/nvim ]]; then
-        find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
+    # Backup and clean tmux cache files
+    if ls /tmp/.tmux_*_cache 2>/dev/null; then
+        mkdir -p "$CLEANUP_BACKUP_DIR/tmux-cache"
+        mv /tmp/.tmux_*_cache "$CLEANUP_BACKUP_DIR/tmux-cache/" 2>/dev/null || true
     fi
     
-    # Clean zsh completion dump
-    rm -f ~/.zcompdump* 2>/dev/null || true
+    # Backup and clean Neovim swap files and backups
+    if [[ -d ~/.local/state/nvim/swap ]] && ls ~/.local/state/nvim/swap/* 2>/dev/null; then
+        mkdir -p "$CLEANUP_BACKUP_DIR/nvim-swap"
+        mv ~/.local/state/nvim/swap/* "$CLEANUP_BACKUP_DIR/nvim-swap/" 2>/dev/null || true
+    fi
+    if [[ -d ~/.local/state/nvim/backup ]] && ls ~/.local/state/nvim/backup/* 2>/dev/null; then
+        mkdir -p "$CLEANUP_BACKUP_DIR/nvim-backup"
+        mv ~/.local/state/nvim/backup/* "$CLEANUP_BACKUP_DIR/nvim-backup/" 2>/dev/null || true
+    fi
+    
+    # Archive old Neovim log files (keep last 5 active)
+    if [[ -d ~/.local/state/nvim ]]; then
+        local old_logs=$(find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6)
+        if [[ -n "$old_logs" ]]; then
+            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-logs"
+            echo "$old_logs" | xargs -I {} mv {} "$CLEANUP_BACKUP_DIR/nvim-logs/" 2>/dev/null || true
+        fi
+    fi
+    
+    # Backup zsh completion dump for regeneration
+    if ls ~/.zcompdump* 2>/dev/null; then
+        mkdir -p "$CLEANUP_BACKUP_DIR/zsh"
+        mv ~/.zcompdump* "$CLEANUP_BACKUP_DIR/zsh/" 2>/dev/null || true
+    fi
     
     # Clean pip cache
     if command -v pip3 &> /dev/null; then
@@ -421,10 +441,17 @@ update_tools() {
         update_with_fallback "Neovim plugin sync" nvim --headless +"Lazy! sync" +qa
         update_with_fallback "Lazy clean" nvim --headless +"Lazy! clean" +qa
         update_with_fallback "Mason LSP update" nvim --headless +"MasonUpdate" +qa
-        # Clear Neovim plugin caches
-        echo "Cleaning Neovim caches..."
-        rm -rf ~/.local/share/nvim/lazy/readme 2>/dev/null || true
-        rm -rf ~/.cache/nvim/luac 2>/dev/null || true
+        # Archive Neovim plugin caches for rebuild
+        echo "Archiving Neovim caches..."
+        local NVIM_CACHE_BACKUP="$HOME/.dotfiles-cleanup-backups/nvim-cache-$(date +%Y%m%d_%H%M%S)"
+        if [[ -d ~/.local/share/nvim/lazy/readme ]]; then
+            mkdir -p "$NVIM_CACHE_BACKUP"
+            mv ~/.local/share/nvim/lazy/readme "$NVIM_CACHE_BACKUP/lazy-readme" 2>/dev/null || true
+        fi
+        if [[ -d ~/.cache/nvim/luac ]]; then
+            mkdir -p "$NVIM_CACHE_BACKUP"
+            mv ~/.cache/nvim/luac "$NVIM_CACHE_BACKUP/luac" 2>/dev/null || true
+        fi
     fi
   fi
   
@@ -538,9 +565,9 @@ echo ""
 echo "🧹 Cleanup suggestions:"
 echo "   - Clear DNS cache: sudo dscacheutil -flushcache"
 echo "   - Clear font cache: sudo atsutil databases -remove"
-echo "   - Empty trash: rm -rf ~/.Trash/*"
-echo "   - Remove downloads older than 30 days: find ~/Downloads -type f -mtime +30 -delete"
-echo "   - Clear macOS caches: rm -rf ~/Library/Caches/*"
+echo "   - Archive trash items: mv ~/.Trash/* ~/Archive/Trash-$(date +%Y%m%d)/"
+echo "   - Archive old downloads: find ~/Downloads -type f -mtime +30 -exec mv {} ~/Archive/Downloads-$(date +%Y%m%d)/ \;"
+echo "   - Archive macOS caches: mv ~/Library/Caches/* ~/Archive/Caches-$(date +%Y%m%d)/"
 
 # Show summary
 show_summary() {
