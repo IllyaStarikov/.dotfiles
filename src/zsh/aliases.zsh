@@ -220,9 +220,19 @@ if command -v docker &>/dev/null; then
     alias di="docker images"
     alias dex="docker exec -it"
     alias dlog="docker logs"
-    alias dstop="docker stop \
-$(docker ps -q)"
+    # Use single quotes to prevent command substitution at alias definition time
+    alias dstop='docker stop $(docker ps -q 2>/dev/null)'
     alias dclean="docker system prune -af"
+    
+    # Function to safely run docker commands only when daemon is running
+    docker_safe() {
+        if docker info &>/dev/null; then
+            docker "$@"
+        else
+            echo "Docker daemon is not running. Start Docker or Colima first."
+            return 1
+        fi
+    }
 fi
 
 # Kubernetes shortcuts
