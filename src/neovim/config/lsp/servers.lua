@@ -97,6 +97,33 @@ local function setup_lsp()
 	-- 2. LSP server configurations
 	-- lspconfig already required above
 
+	-- Configure diagnostics with virtual text (inline error messages)
+	-- The signs configuration is now done directly in vim.diagnostic.config
+	vim.diagnostic.config({
+		virtual_text = {
+			source = "always",  -- Show source in diagnostic virtual text
+			prefix = "●",       -- Icon to show before the diagnostic
+			spacing = 4,        -- Spacing between code and virtual text
+		},
+		signs = {
+			text = {
+				[vim.diagnostic.severity.ERROR] = " ",
+				[vim.diagnostic.severity.WARN] = " ",
+				[vim.diagnostic.severity.HINT] = "󰌵 ",
+				[vim.diagnostic.severity.INFO] = " ",
+			},
+		},
+		underline = true,       -- Underline diagnostic locations
+		update_in_insert = false, -- Don't update diagnostics in insert mode
+		severity_sort = true,   -- Sort diagnostics by severity
+		float = {
+			border = "rounded",
+			source = "always",
+			header = "",
+			prefix = "",
+		},
+	})
+
 	-- Capabilities for blink.cmp integration
 	local capabilities = vim.lsp.protocol.make_client_capabilities()
 
