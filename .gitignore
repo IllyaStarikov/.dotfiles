@@ -1,5 +1,7 @@
 # Generated Vim spell files
 *.spl
+# Spell directory (moved to private dotfiles)
+src/neovim/spell/
 
 # Neovim plugin lock files
 lazy-lock.json

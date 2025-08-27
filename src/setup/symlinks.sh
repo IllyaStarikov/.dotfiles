@@ -174,6 +174,11 @@ main() {
         
         # Create the symlink for the entire nvim directory
         create_link "$DOTFILES_DIR/src/neovim" "$HOME/.config/nvim" "Neovim config (entire directory)"
+        
+        # Link spell files from private dotfiles if they exist
+        if [[ -d "$HOME/.dotfiles/.dotfiles.private/neovim/spell" ]]; then
+            create_link "$HOME/.dotfiles/.dotfiles.private/neovim/spell" "$HOME/.config/nvim/spell" "Neovim spell files (private)"
+        fi
     else
         error "Neovim directory not found at $DOTFILES_DIR/src/neovim"
     fi
