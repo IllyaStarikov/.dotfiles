@@ -856,7 +856,7 @@ setup_python() {
                 fi
             fi
             
-            # Only try to install new Python if really needed
+            # Attempt Python installation if needed
             warning "No suitable Python found, will attempt installation"
             info "Press Ctrl+C within 5 seconds to skip Python installation..."
             sleep 5

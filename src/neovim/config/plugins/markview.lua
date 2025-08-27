@@ -752,7 +752,7 @@ function M.setup()
   vim.api.nvim_create_autocmd("BufWritePost", {
     pattern = vim.fn.expand("~/.config/theme-switcher/current-theme.sh"),
     callback = function()
-      -- Reapply markview colors with new theme
+      -- Reapply markview colors when theme changes
       vim.defer_fn(apply_markview_highlights, 100)
     end,
     group = vim.api.nvim_create_augroup("MarkviewThemeReload", { clear = true })
