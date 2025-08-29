@@ -11,7 +11,7 @@ function M.setup()
   
   -- Ensure font is set before markview loads
   if vim.fn.has('gui_running') == 1 or vim.g.neovide then
-    vim.opt.guifont = "Lilex Nerd Font:h18"
+    vim.opt.guifont = "JetBrainsMono Nerd Font:h18"
   end
   
   -- Ensure UTF-8 encoding
@@ -604,11 +604,11 @@ function M.setup()
   -- Apply initial highlights
   vim.defer_fn(apply_markview_highlights, 50)
   
-  -- Configure Lilex Nerd Font ligatures for markview
+  -- Configure JetBrainsMono Nerd Font ligatures for markview
   -- This ensures ligatures render properly in markdown preview
-  vim.opt.guifont = "Lilex Nerd Font:h18"
+  vim.opt.guifont = "JetBrainsMono Nerd Font:h18"
   
-  -- Lilex Nerd Font has excellent ligature support!
+  -- JetBrainsMono Nerd Font has excellent ligature support!
   
   -- Auto-enable for markdown files
   local markdown_augroup = vim.api.nvim_create_augroup("MarkviewMarkdown", { clear = true })
