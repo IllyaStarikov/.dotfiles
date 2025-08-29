@@ -10,9 +10,13 @@ opt.textwidth = 0
 opt.wrapmargin = 0
 opt.formatoptions:remove("t")
 
--- GUI font settings
+-- GUI font settings with ligature support
 if vim.fn.has("gui_running") == 1 or vim.g.neovide then
-  opt.guifont = "Lilex Nerd Font:h18"
+  opt.guifont = "JetBrainsMono Nerd Font:h18"
+  -- Enable ligatures in Neovide
+  if vim.g.neovide then
+    vim.g.neovide_ligatures = true
+  end
 end
 
 -- Unicode and encoding
