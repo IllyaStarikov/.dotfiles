@@ -96,6 +96,35 @@ map("n", "<leader>B", telescope_builtin("buffers"), { desc = "Buffers" })
 map("n", "<leader>g", telescope_builtin("live_grep"), { desc = "Live Grep" })
 
 -- ============================================================================
+-- AERIAL.NVIM (Symbol Outline)
+-- ============================================================================
+-- Toggle symbol outline
+map("n", "<leader>a", "<cmd>AerialToggle<CR>", { desc = "Toggle Symbol Outline" })
+map("n", "<leader>A", "<cmd>AerialNavToggle<CR>", { desc = "Toggle Symbol Navigator" })
+
+-- Navigation
+map("n", "<leader>an", "<cmd>AerialNext<CR>", { desc = "Next Symbol" })
+map("n", "<leader>ap", "<cmd>AerialPrev<CR>", { desc = "Previous Symbol" })
+map("n", "<leader>aN", "<cmd>AerialNextUp<CR>", { desc = "Next Symbol (Parent Level)" })
+map("n", "<leader>aP", "<cmd>AerialPrevUp<CR>", { desc = "Previous Symbol (Parent Level)" })
+
+-- Go to symbol
+map("n", "<leader>ag", "<cmd>AerialGo<CR>", { desc = "Go to Symbol (Interactive)" })
+
+-- Telescope integration for Aerial
+map("n", "<leader>fa", function()
+  local ok, telescope = pcall(require, 'telescope')
+  if ok then
+    telescope.extensions.aerial.aerial()
+  else
+    vim.notify("Telescope aerial extension not available", vim.log.levels.WARN)
+  end
+end, { desc = "Find Symbols (Aerial)" })
+
+-- Alternative binding that's more discoverable
+map("n", "<leader>so", "<cmd>AerialToggle<CR>", { desc = "Symbol Outline" })
+
+-- ============================================================================
 -- SNACKS.NVIM
 -- ============================================================================
 -- Defer loading to ensure snacks is fully initialized
