@@ -4,7 +4,8 @@
 # DESCRIPTION:
 #   Formats code files using the best available formatter from a prioritized
 #   list. Supports 20+ languages with automatic fallback. Can also perform
-#   text normalizations like removing trailing whitespace and converting tabs.
+#   text normalizations like removing trailing whitespace, converting tabs,
+#   and keeping marked sections sorted with Google's keep-sorted tool.
 #
 # USAGE:
 #   format [OPTIONS] FILE [FILE...]
@@ -15,11 +16,12 @@
 #   format --trailing-whitespace *.sh # Only remove trailing whitespace
 #
 # OPTIONS:
-#   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format
+#   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format, sort
 #   -t, --trailing-whitespace Remove trailing whitespace only
 #   -T, --tabs-to-spaces     Convert tabs to spaces only
 #   -q, --smart-quotes       Normalize smart quotes to ASCII only
 #   -f, --formatters         Run language formatters only (default)
+#   -s, --sorted            Run keep-sorted on marked sections
 #   -d, --dry-run           Show what would be done without making changes
 #   -v, --verbose           Show detailed output
 #   -h, --help              Show this help message
@@ -31,6 +33,7 @@
 #   format src/*.py          # Format all Python files
 #   format --all README.md   # Clean and format markdown
 #   format -tv script.sh     # Remove trailing spaces with verbose output
+#   format -s config.yaml    # Sort marked sections with keep-sorted
 
 # Source common library for cross-platform support
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -45,10 +48,12 @@ DO_TRAILING=false
 DO_TABS=false
 DO_QUOTES=false
 DO_FORMATTERS=false
+DO_SORTED=false
 VERBOSE=false
 DRY_RUN=false
 FILES=()
 CONFIG_FILE="${HOME}/.dotfiles/config/format-script.json"
+KEEP_SORTED_BIN="${HOME}/go/bin/keep-sorted"
 
 # Check if a file is binary (not text)
 # Args: $1 - File path to check
@@ -93,6 +98,44 @@ convert_tabs_to_spaces() {
     echo -n "  → Converting tabs to ${tab_width} spaces... "
     expand -t "${tab_width}" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
     print_color green "✓"
+  fi
+}
+
+# Run keep-sorted on file to sort marked sections
+# Args: $1 - File path to process
+run_keep_sorted() {
+  local file="${1:?Error: file required}"
+  
+  # Check if keep-sorted is available
+  if [[ ! -x "${KEEP_SORTED_BIN}" ]]; then
+    if [[ "${VERBOSE}" == true ]]; then
+      print_color yellow "  → keep-sorted not found, skipping..."
+    fi
+    return 1
+  fi
+  
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would run keep-sorted on: $file"
+    # Show what would be sorted
+    if [[ "${VERBOSE}" == true ]]; then
+      "${KEEP_SORTED_BIN}" --mode=lint "$file" 2>/dev/null || true
+    fi
+  else
+    echo -n "  → Running keep-sorted... "
+    # Create a backup in case something goes wrong
+    local temp_file="${file}.keep-sorted-tmp"
+    cp "$file" "$temp_file"
+    
+    # Run keep-sorted
+    if "${KEEP_SORTED_BIN}" "$file" 2>/dev/null; then
+      rm -f "$temp_file"
+      print_color green "✓"
+    else
+      # Restore backup if keep-sorted failed
+      mv "$temp_file" "$file"
+      print_color yellow "skipped (no sortable sections)"
+      return 1
+    fi
   fi
 }
 
@@ -562,6 +605,10 @@ process_file() {
     apply_formatters "$file"
   fi
   
+  if [[ "${DO_SORTED}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+    run_keep_sorted "$file"
+  fi
+  
   return 0  # Return 0 for successfully processed files
 }
 
@@ -580,6 +627,7 @@ OPTIONS:
   -T, --tabs          Convert tabs to spaces
   -q, --quotes        Normalize smart quotes
   -f, --formatters    Apply language formatters
+  -s, --sorted        Apply keep-sorted to marked sections
   -n, --dry-run       Show what would be done
   -v, --verbose       Verbose output
   -c, --config FILE   Use alternate config file
@@ -629,6 +677,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -f|--formatters)
       DO_FORMATTERS=true
+      shift
+      ;;
+    -s|--sorted|--keep-sorted)
+      DO_SORTED=true
       shift
       ;;
     -v|--verbose)
