@@ -78,6 +78,16 @@ require("lazy").setup({
     },
   },
 
+  -- Telescope symbols extension for inserting emoji/symbols
+  {
+    "nvim-telescope/telescope-symbols.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    config = function()
+      -- No specific setup needed, but we can add custom symbol sources here if needed
+      -- The plugin provides emoji, kaomoji, gitmoji, math, and latex symbols
+    end,
+  },
+
   -- snacks.nvim - Modern QoL suite for Neovim
   {
     "folke/snacks.nvim",

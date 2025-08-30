@@ -73,6 +73,23 @@ map("v", "<leader>fg", function()
   telescope_builtin("grep_string")({ search = table.concat(selection, "\n") })
 end, { desc = "Grep Selection" })
 
+-- LSP Symbol search
+map("n", "<leader>fs", telescope_builtin("lsp_document_symbols"), { desc = "Document Symbols" })
+map("n", "<leader>fS", telescope_builtin("lsp_workspace_symbols"), { desc = "Workspace Symbols" })
+map("n", "<leader>fws", telescope_builtin("lsp_dynamic_workspace_symbols"), { desc = "Dynamic Workspace Symbols" })
+
+-- Alternative symbol keybindings (more discoverable)
+map("n", "<leader>ss", telescope_builtin("lsp_document_symbols"), { desc = "Search Symbols (Document)" })
+map("n", "<leader>sS", telescope_builtin("lsp_workspace_symbols"), { desc = "Search Symbols (Workspace)" })
+map("n", "<leader>sW", telescope_builtin("lsp_dynamic_workspace_symbols"), { desc = "Search Symbols (Dynamic)" })
+
+-- Insert symbols (emoji, math, etc.)
+map("n", "<leader>se", telescope_builtin("symbols", { sources = {"emoji"} }), { desc = "Insert Emoji" })
+map("n", "<leader>sm", telescope_builtin("symbols", { sources = {"math", "latex"} }), { desc = "Insert Math Symbol" })
+map("n", "<leader>si", telescope_builtin("symbols"), { desc = "Insert Symbol (All)" })
+map("n", "<leader>sk", telescope_builtin("symbols", { sources = {"kaomoji"} }), { desc = "Insert Kaomoji" })
+map("n", "<leader>sg", telescope_builtin("symbols", { sources = {"gitmoji"} }), { desc = "Insert Gitmoji" })
+
 -- Legacy mappings for compatibility
 map("n", "<leader>F", telescope_builtin("find_files"), { desc = "Find Files" })
 map("n", "<leader>B", telescope_builtin("buffers"), { desc = "Buffers" })
