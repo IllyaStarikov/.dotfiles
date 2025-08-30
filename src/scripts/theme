@@ -13,13 +13,14 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme-switcher"
 ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+WEZTERM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm"
 
 # Default themes
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
 DARK_THEME="${THEME_DARK:-tokyonight_storm}"
 
 # Ensure directories exist
-mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR"
+mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR"
 
 # Function to detect macOS appearance
 detect_macos_appearance() {
@@ -120,6 +121,24 @@ apply_theme() {
         cp "$theme_dir/starship.toml" "$STARSHIP_DIR/starship-theme.toml"
         echo "  ✓ Starship theme updated"
     fi
+    
+    # Update WezTerm
+    local wezterm_theme_file="$WEZTERM_DIR/theme.lua"
+    cat > "$wezterm_theme_file" << EOF
+-- Auto-generated WezTerm theme configuration
+-- Theme: $theme
+-- Generated: $(date)
+
+-- Load the theme module from dotfiles
+local home = os.getenv("HOME")
+package.path = package.path .. ";" .. home .. "/.dotfiles/src/wezterm/themes/?.lua"
+local theme = require('$theme')
+
+-- Return the theme for use in wezterm.lua
+return theme
+EOF
+    chmod 644 "$wezterm_theme_file"
+    echo "  ✓ WezTerm theme updated"
     
     # Save theme state - this is what zsh sources on startup
     cat > "$CONFIG_DIR/current-theme.sh" << EOF
