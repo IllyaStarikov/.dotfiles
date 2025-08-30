@@ -193,23 +193,27 @@ size = 18.0  # More reasonable default font size
 # Enable built-in font fallbacks for better symbol support
 builtin_box_drawing = true   # Enable for better box drawing character rendering
 
+# Enable ligatures for JetBrainsMono
+# IMPORTANT: Use "JetBrainsMono Nerd Font" (NOT "Mono" variant) for ligatures!
+# The "Mono" variant specifically disables ligatures
+
 
 
 [font.normal]
-# JetBrainsMono Nerd Font
+# JetBrainsMono Nerd Font with ligatures enabled
 family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono Nerd Font"  # Ligatures work here too
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono Nerd Font"  # Ligatures work here too
 style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono Nerd Font"  # Ligatures work here too
 style = "Bold Italic"
 
 # Font rendering optimizations
