@@ -145,6 +145,24 @@ require("lazy").setup({
         },
       })
       
+      -- mini.pairs - Auto pairs and bracket highlighting
+      utils.setup_plugin('mini.pairs', {
+        modes = { insert = true, command = false, terminal = false },
+        mappings = {
+          ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].' },
+          ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\].' },
+          ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\].' },
+          
+          [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
+          [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
+          ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].' },
+          
+          ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\].', register = { cr = false } },
+          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^%a\\].', register = { cr = false } },
+          ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\].', register = { cr = false } },
+        },
+      })
+      
       -- mini.ai - Enhanced text objects
       local ai_ok, ai = pcall(require, 'mini.ai')
       if ai_ok then
@@ -167,6 +185,35 @@ require("lazy").setup({
   {
     'rgarver/Kwbd.vim',
     cmd = 'Kwbd',
+  },
+
+  -- Rainbow delimiters for better bracket visualization
+  {
+    'HiPhish/rainbow-delimiters.nvim',
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local rainbow_delimiters = require('rainbow-delimiters')
+      
+      require('rainbow-delimiters.setup').setup {
+        strategy = {
+          [''] = rainbow_delimiters.strategy['global'],
+          vim = rainbow_delimiters.strategy['local'],
+        },
+        query = {
+          [''] = 'rainbow-delimiters',
+          lua = 'rainbow-blocks',
+        },
+        highlight = {
+          'RainbowDelimiterRed',
+          'RainbowDelimiterYellow',
+          'RainbowDelimiterBlue',
+          'RainbowDelimiterOrange',
+          'RainbowDelimiterGreen',
+          'RainbowDelimiterViolet',
+          'RainbowDelimiterCyan',
+        },
+      }
+    end,
   },
 
   -- Bufferline - Better buffer management
@@ -910,7 +957,7 @@ require("lazy").setup({
       disabled_plugins = {
         "gzip",
         "matchit",
-        "matchparen",
+        -- "matchparen", -- Re-enable for bracket matching
         "netrwPlugin",
         "tarPlugin",
         "tohtml",
