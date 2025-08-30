@@ -27,7 +27,7 @@
 #   -h, --help              Show this help message
 #
 # CONFIG:
-#   Uses ~/.dotfiles/config/format-script.json for formatter priorities
+#   Uses ~/.dotfiles/config/fixy.json for formatter priorities
 #
 # EXAMPLES:
 #   fixy src/*.py          # Format all Python files
@@ -52,7 +52,7 @@ DO_SORTED=false
 VERBOSE=false
 DRY_RUN=false
 FILES=()
-CONFIG_FILE="${HOME}/.dotfiles/config/format-script.json"
+CONFIG_FILE="${HOME}/.dotfiles/config/fixy.json"
 KEEP_SORTED_BIN="${HOME}/go/bin/keep-sorted"
 
 # Check if a file is binary (not text)
@@ -637,7 +637,7 @@ CONFIGURATION:
   - Each file extension maps to a list of formatters in priority order
   - The first available formatter in the list is used
   - Additional formatters (like isort for Python) run after the main formatter
-  - Config file: ~/.dotfiles/config/format-script.json
+  - Config file: ~/.dotfiles/config/fixy.json
 
 SUPPORTED EXTENSIONS:
 $(get_allowed_extensions | tr ' ' '\n' | sort | column -c 80)
