@@ -465,8 +465,10 @@ require("lazy").setup({
       signs = true,
       sign_priority = 8,
       keywords = {
-        FIX = { icon = " ", color = "error", alt = { "FIXME", "BUG", "FIXIT", "ISSUE" } },
+        FIX = { icon = " ", color = "error", alt = { "BUG", "FIXIT", "ISSUE" } },
         TODO = { icon = " ", color = "info" },
+        FIXME = { icon = " ", color = "fixme" },  -- Personal notes, complementary to TODO
+        MARK = { icon = " ", color = "mark" },  -- Special code area marker
         HACK = { icon = " ", color = "warning" },
         WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
         PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
@@ -485,7 +487,7 @@ require("lazy").setup({
         before = "",
         keyword = "wide",
         after = "fg",
-        pattern = [[.*<(KEYWORDS)\s*:]],
+        pattern = [[.*<(KEYWORDS)\s*:?]],  -- Optional colon for flexibility
         comments_only = true,
         max_line_len = 400,
         exclude = {},
@@ -496,7 +498,9 @@ require("lazy").setup({
         info = { "DiagnosticInfo", "#2563EB" },
         hint = { "DiagnosticHint", "#10B981" },
         default = { "Identifier", "#7C3AED" },
-        test = { "Identifier", "#FF00FF" }
+        test = { "Identifier", "#FF00FF" },
+        fixme = { "DiagnosticHint", "#00CED1" },  -- Dark Turquoise - complementary to TODO's blue
+        mark = { "DiagnosticWarn", "#FFD700" }     -- Gold - stands out for special areas
       },
       search = {
         command = "rg",
@@ -507,7 +511,7 @@ require("lazy").setup({
           "--line-number",
           "--column",
         },
-        pattern = [[\b(KEYWORDS):]],
+        pattern = [[\b(KEYWORDS):?]],  -- Optional colon to support both "MARK:" and "MARK"
       },
     },
     keys = {
