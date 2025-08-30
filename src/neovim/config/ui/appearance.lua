@@ -62,6 +62,10 @@ opt.listchars = {
   eol = "¬"
 }
 
+-- Bracket/parenthesis matching
+opt.showmatch = true                  -- Highlight matching brackets
+opt.matchtime = 2                     -- Tenths of a second to show match
+
 -- Cursor behavior
 opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
   .. ",a:blinkwait700-blinkoff400-blinkon250"
