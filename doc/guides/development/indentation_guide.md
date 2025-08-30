@@ -47,15 +47,16 @@ Google's Python Style Guide Pylint configuration is available at `styleguide/pyl
 
 ## Automatic Formatting
 
-The repository includes format scripts that automatically apply these standards:
+The repository includes the fixy script that automatically applies these standards:
 - Python: `black` and `isort`
 - JavaScript/TypeScript: `prettier`
 - Shell: `shfmt`
 - Lua: `stylua`
 
-Run the format script with:
+Run the fixy script with:
 ```bash
-./src/scripts/fixy
+fixy [file]  # Format specific file
+fixy --all [file]  # All operations including formatting
 ```
 
 ## Available Style Guide Resources
