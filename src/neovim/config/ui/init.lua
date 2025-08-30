@@ -5,5 +5,6 @@ local utils = require("config.utils")
 
 -- Load all UI modules with error protection
 utils.safe_require("config.ui.appearance")
+utils.safe_require("config.ui.ligatures")
 
 -- Theme is loaded after plugins in init.lua
