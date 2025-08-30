@@ -40,11 +40,23 @@ config.font_rules = {
 config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
--- 🎨 COLOR SCHEME - TokyoNight (matching theme system)
+-- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-config.color_scheme = 'tokyonight_night'
-config.bold_brightens_ansi_colors = true
+-- Load the dynamic theme configuration
+local home = os.getenv("HOME")
+local theme_path = home .. "/.config/wezterm/theme.lua"
+local theme_ok, theme = pcall(dofile, theme_path)
+
+if theme_ok and theme then
+  -- Apply the colors from the theme
+  config.colors = theme.colors
+  config.bold_brightens_ansi_colors = true
+else
+  -- Fallback to default theme if theme file doesn't exist
+  config.color_scheme = 'tokyonight_storm'
+  config.bold_brightens_ansi_colors = true
+end
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 🖼️ WINDOW CONFIGURATION
