@@ -68,13 +68,13 @@ fetch-quotes --json    # JSON format
 fetch-quotes --cache   # Use cached quotes
 ```
 
-### format
+### fixy
 
 Universal code formatter with configuration-based priority system.
 
 **Purpose**: Format code files using the best available formatter, with automatic fallback to alternatives.
 
-**Configuration**: Uses `~/.dotfiles/config/format-script.json` for formatter priorities.
+**Configuration**: Uses `~/.dotfiles/config/fixy.json` for formatter priorities.
 
 **Features**:
 - 20+ language support
@@ -85,10 +85,10 @@ Universal code formatter with configuration-based priority system.
 
 **Usage**:
 ```bash
-format file.py                    # Format Python file
-format --all file.js             # All normalizations + formatting
-format --dry-run file.cpp        # Preview changes
-format --trailing-whitespace *.sh # Only remove trailing whitespace
+fixy file.py                    # Format Python file
+fixy --all file.js             # All normalizations + formatting
+fixy --dry-run file.cpp        # Preview changes
+fixy --trailing-whitespace *.sh # Only remove trailing whitespace
 ```
 
 **Operations**:
@@ -232,9 +232,9 @@ print_color blue "Info"
 
 ## Configuration Files
 
-### format-script.json
+### fixy.json
 
-Located at: `~/.dotfiles/config/format-script.json`
+Located at: `~/.dotfiles/config/fixy.json`
 
 Defines:
 - Formatter commands and arguments
@@ -264,7 +264,7 @@ export PATH="$HOME/.dotfiles/src/scripts:$PATH"
 Common aliases defined:
 ```bash
 alias update='update-dotfiles'
-alias fmt='format'
+alias fmt='fixy'
 alias scratch='scratchpad'
 alias extract='extract'
 ```
@@ -281,8 +281,8 @@ alias extract='extract'
 
 Test individual scripts:
 ```bash
-# Test format script
-format --dry-run test.py
+# Test fixy script
+fixy --dry-run test.py
 
 # Test tmux utils
 tmux-utils battery
@@ -304,7 +304,7 @@ Part of test suite:
 
 Most scripts support debug output:
 ```bash
-DEBUG=1 format file.py
+DEBUG=1 fixy file.py
 VERBOSE=1 update-dotfiles
 ```
 
@@ -387,6 +387,6 @@ Tool-specific dependencies:
 ## See Also
 
 - Common Library: [common.sh](common.sh)
-- Format Config: `~/.dotfiles/config/format-script.json`
+- Format Config: `~/.dotfiles/config/fixy.json`
 - Theme Switcher: `~/.dotfiles/src/theme-switcher/`
 - Main README: `~/.dotfiles/README.md`
