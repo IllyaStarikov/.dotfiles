@@ -374,7 +374,7 @@ install_macos_packages() {
         "vim"
         "tmux"
         "tmuxinator"
-        "alacritty"
+        "alacritty"  # Terminal emulator 1
         "starship"
         "ripgrep"
         "fd"
@@ -534,7 +534,7 @@ install_macos_packages() {
         
         # GUI Applications (check if already installed first)
         info "Installing GUI applications..."
-        for app in wezterm raycast amethyst; do
+        for app in wezterm raycast amethyst; do  # wezterm is Terminal emulator 2
             if brew list --cask "$app" &>/dev/null; then
                 info "✓ $app already installed"
             elif brew install --cask "$app" 2>/dev/null; then
@@ -723,6 +723,75 @@ install_linux_packages() {
     # Install Starship
     if ! command -v starship &>/dev/null; then
         curl -sS https://starship.rs/install.sh | sh -s -- -y
+    fi
+
+    # Install Terminal Emulators (Linux) - Both Alacritty and WezTerm
+    if [[ "$INSTALL_MODE" == "full" ]]; then
+        # Install Alacritty
+        if ! command -v alacritty &>/dev/null; then
+            info "Installing Alacritty..."
+            case "$PKG_MANAGER" in
+                apt)
+                    # For Ubuntu/Debian - using cargo for latest version
+                    if command -v cargo &>/dev/null; then
+                        sudo apt-get install -y cmake pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev libxkbcommon-dev python3
+                        cargo install alacritty || warning "Failed to install Alacritty via cargo"
+                    else
+                        # Try snap as fallback
+                        sudo snap install alacritty --classic 2>/dev/null || warning "Failed to install Alacritty"
+                    fi
+                    ;;
+                dnf|yum)
+                    # For Fedora/RHEL
+                    sudo dnf install -y alacritty || warning "Failed to install Alacritty"
+                    ;;
+                pacman)
+                    # For Arch Linux
+                    sudo pacman -S --noconfirm alacritty || warning "Failed to install Alacritty"
+                    ;;
+                *)
+                    warning "Cannot install Alacritty for unknown package manager"
+                    ;;
+            esac
+        else
+            success "Alacritty already installed"
+        fi
+
+        # Install WezTerm
+        if ! command -v wezterm &>/dev/null; then
+            info "Installing WezTerm..."
+            case "$PKG_MANAGER" in
+                apt)
+                    # For Ubuntu/Debian
+                    curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+                    echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+                    sudo apt update
+                    sudo apt install -y wezterm || warning "Failed to install WezTerm"
+                    ;;
+                dnf|yum)
+                    # For Fedora/RHEL
+                    sudo dnf copr enable -y wezfurlong/wezterm-nightly
+                    sudo dnf install -y wezterm || warning "Failed to install WezTerm"
+                    ;;
+                pacman)
+                    # For Arch Linux
+                    sudo pacman -S --noconfirm wezterm || {
+                        # Try AUR if not in official repos
+                        if command -v yay &>/dev/null; then
+                            yay -S --noconfirm wezterm || warning "Failed to install WezTerm"
+                        else
+                            warning "WezTerm not in official repos, install from AUR"
+                        fi
+                    }
+                    ;;
+                *)
+                    warning "Cannot install WezTerm for unknown package manager"
+                    info "Visit https://wezfurlong.org/wezterm/install/linux.html for manual installation"
+                    ;;
+            esac
+        else
+            success "WezTerm already installed"
+        fi
     fi
 
     # Install Rust

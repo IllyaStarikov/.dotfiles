@@ -55,6 +55,14 @@ alias lS="eza -laS --group-directories-first --time-style=relative --git"  # Sor
 alias lt_size="eza --tree --level=2 -s size"
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# 💻 TERMINAL EMULATORS
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+# Terminal shortcuts are now handled by auto-install functions in .zshrc
+# Using: wezterm, alacritty, wz, al
+# These will auto-install if missing and then launch the terminal
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔧 TMUX & SESSION MANAGEMENT
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -300,8 +308,14 @@ alias reload="source ~/.zshrc"
 alias reloadzsh="source ~/.zshrc"
 
 # System maintenance
-alias update="brew update && brew upgrade && brew cleanup"
+alias update="~/.dotfiles/src/scripts/update"  # Use the comprehensive update script
 alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
+alias update-dotfiles="~/.dotfiles/src/scripts/update-dotfiles"  # Pull latest dotfiles changes
+alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"  # Re-run setup
+alias dotfiles-symlinks="~/.dotfiles/src/setup/symlinks.sh"  # Re-create symlinks
+alias dotfiles-install="~/.dotfiles/src/setup/setup.sh --full"  # Full installation
+alias dotfiles-core="~/.dotfiles/src/setup/setup.sh --core"  # Core packages only
+alias dotfiles-test="~/.dotfiles/test/test"  # Run test suite
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📊 MONITORING & DIAGNOSTICS
@@ -332,7 +346,14 @@ alias tmuxconfig="nvim ~/.tmux.conf"
 alias gitconfig="nvim ~/.gitconfig"
 alias sshconfig="nvim ~/.ssh/config"
 alias alacrittyconfig="nvim ~/.dotfiles/src/alacritty.toml"
+alias weztermconfig="nvim ~/.dotfiles/src/wezterm/wezterm.lua"
 alias ripgrepconfig="nvim ~/.dotfiles/src/ripgreprc"
+
+# Neovim plugin management
+alias nvim-update="nvim --headless '+Lazy! sync' +qa"  # Update all Neovim plugins
+alias nvim-plugins="nvim '+Lazy'"  # Open Lazy plugin manager
+alias nvim-health="nvim '+checkhealth'"  # Check Neovim health
+alias nvim-clean="rm -rf ~/.local/share/nvim ~/.cache/nvim"  # Clean Neovim cache (use with caution)
 
 # Time savers
 alias h="history"
