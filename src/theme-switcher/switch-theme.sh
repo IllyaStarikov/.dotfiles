@@ -32,6 +32,7 @@
 #
 # FILES MODIFIED:
 #   ~/.config/alacritty/theme.toml     - Alacritty colors
+#   ~/.config/wezterm/theme.lua        - WezTerm colors
 #   ~/.config/tmux/theme.conf          - tmux status bar
 #   ~/.config/starship/theme.toml      - Starship prompt
 #   ~/.config/theme-switcher/current-theme.sh - Shell environment
@@ -121,6 +122,7 @@ CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/theme-switcher"
 ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+WEZTERM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm"
 
 # Default themes
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
@@ -133,7 +135,7 @@ LOG_FILE="$CACHE_DIR/theme-switch.log"
 MAX_LOG_SIZE=1048576  # 1MB
 
 # Ensure secure directories exist
-mkdir -p "$CONFIG_DIR" "$CACHE_DIR" "$ALACRITTY_DIR" "$TMUX_DIR"
+mkdir -p "$CONFIG_DIR" "$CACHE_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR"
 chmod 700 "$CACHE_DIR"
 
 # Function to log messages
@@ -270,6 +272,38 @@ update_alacritty_theme() {
     return 0
 }
 
+# Update WezTerm theme
+update_wezterm_theme() {
+    local wezterm_theme_file="$WEZTERM_DIR/theme.lua"
+    local temp_file="${wezterm_theme_file}.tmp.$$"
+    local home="\$HOME"
+    
+    # Create the WezTerm theme configuration
+    cat > "$temp_file" << EOF
+-- Auto-generated WezTerm theme configuration
+-- Theme: $THEME
+-- Generated: $(date)
+
+-- Load the theme module from dotfiles
+local home = os.getenv("HOME")
+package.path = package.path .. ";" .. home .. "/.dotfiles/src/wezterm/themes/?.lua"
+local theme = require('${THEME}')
+
+-- Return the theme for use in wezterm.lua
+return theme
+EOF
+    
+    # Atomic replacement
+    mv -f "$temp_file" "$wezterm_theme_file"
+    chmod 644 "$wezterm_theme_file"
+    
+    # Clean up any leftover temp files
+    rm -f "${wezterm_theme_file}.tmp."* 2>/dev/null || true
+    
+    log "Updated WezTerm theme"
+    return 0
+}
+
 # Atomic file update helper
 atomic_update() {
     local source="$1"
@@ -313,6 +347,9 @@ update_app_themes() {
     if [[ -f "$theme_dir/alacritty.toml" ]]; then
         update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
     fi
+    
+    # Update WezTerm
+    update_wezterm_theme || success=1
     
     # Update tmux
     if [[ -f "$theme_dir/tmux.conf" ]]; then
@@ -382,6 +419,7 @@ backup_config() {
     # Backup current files
     [[ -f "$CONFIG_DIR/current-theme.sh" ]] && cp "$CONFIG_DIR/current-theme.sh" "$backup_dir/"
     [[ -f "$ALACRITTY_DIR/theme.toml" ]] && cp "$ALACRITTY_DIR/theme.toml" "$backup_dir/"
+    [[ -f "$WEZTERM_DIR/theme.lua" ]] && cp "$WEZTERM_DIR/theme.lua" "$backup_dir/"
     [[ -f "$TMUX_DIR/theme.conf" ]] && cp "$TMUX_DIR/theme.conf" "$backup_dir/"
     [[ -f "$STARSHIP_DIR/starship.toml" ]] && cp "$STARSHIP_DIR/starship.toml" "$backup_dir/"
     
@@ -395,6 +433,7 @@ restore_config() {
     if [[ -d "$backup_dir" ]]; then
         [[ -f "$backup_dir/current-theme.sh" ]] && cp "$backup_dir/current-theme.sh" "$CONFIG_DIR/"
         [[ -f "$backup_dir/theme.toml" ]] && cp "$backup_dir/theme.toml" "$ALACRITTY_DIR/"
+        [[ -f "$backup_dir/theme.lua" ]] && cp "$backup_dir/theme.lua" "$WEZTERM_DIR/"
         [[ -f "$backup_dir/theme.conf" ]] && cp "$backup_dir/theme.conf" "$TMUX_DIR/"
         [[ -f "$backup_dir/starship.toml" ]] && cp "$backup_dir/starship.toml" "$STARSHIP_DIR/"
         

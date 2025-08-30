@@ -22,7 +22,7 @@
 # SYMLINKS CREATED:
 #   Shell:     ~/.zshrc, ~/.bashrc, ~/.zshenv
 #   Editor:    ~/.config/nvim/, ~/.vimrc
-#   Terminal:  ~/.config/alacritty/, ~/.tmux.conf
+#   Terminal:  ~/.config/alacritty/, ~/.config/wezterm/, ~/.tmux.conf
 #   Git:       ~/.gitconfig, ~/.gitignore_global
 #   Tools:     ~/.ripgreprc, ~/.config/starship.toml
 #
@@ -142,6 +142,10 @@ main() {
     # Alacritty
     mkdir -p "$HOME/.config/alacritty"
     create_link "$DOTFILES_DIR/src/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml" "Alacritty config"
+    
+    # WezTerm
+    mkdir -p "$HOME/.config/wezterm"
+    create_link "$DOTFILES_DIR/src/wezterm/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua" "WezTerm config"
     
     # Neovim - Link the entire neovim directory
     # This preserves the exact structure needed by the config
