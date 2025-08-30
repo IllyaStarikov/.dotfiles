@@ -15,7 +15,20 @@ Session.vim
 .claude/
 CLAUDE.md
 
+# Debug and log files
 vimlog.txt
+debug-neovim-config.sh
+*.log
+
+# Backup and temporary files
+*.backup
+*.orig
+*.swp
+*~
+.DS_Store
+
+# WezTerm debug files
+wezterm_*.txt
 
 # Private dotfiles (now untracked)
 .dotfiles.private/

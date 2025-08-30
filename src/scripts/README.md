@@ -271,7 +271,7 @@ alias extract='extract'
 
 ### With Editors
 
-- Neovim: Can call format script via keybinding
+- Neovim: Can call fixy script via keybinding
 - VSCode: Task runner integration
 - Tmux: Status bar components
 

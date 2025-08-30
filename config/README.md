@@ -125,7 +125,7 @@ Example:
 
 ### Format Script Integration
 
-The format script reads this configuration:
+The fixy script reads this configuration:
 ```bash
 # Format a file using configured priority
 ~/. dotfiles/src/scripts/fixy myfile.py
@@ -178,13 +178,13 @@ Change formatter order to adjust priorities:
 
 ### With Editors
 
-- Neovim: Can trigger format script via keybinding
-- VSCode: tasks.json can reference format script
+- Neovim: Can trigger fixy script via keybinding
+- VSCode: tasks.json can reference fixy script
 - Other editors: External formatter command
 
 ### With CI/CD
 
-- GitHub Actions: Uses format script for consistency checks
+- GitHub Actions: Uses fixy script for consistency checks
 - Pre-commit hooks: Enforces formatting before commits
 - Linting workflows: Validates code style
 
