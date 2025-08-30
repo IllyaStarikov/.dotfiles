@@ -443,6 +443,21 @@ install_macos_packages() {
         "gopls"
         "pyright"
     )
+    
+    # Code formatters and linters
+    local formatter_packages=(
+        "prettier"
+        "shfmt"
+        "stylua"
+        "clang-format"
+        "swiftformat"
+        "taplo"
+        "shellcheck"
+        "yamllint"
+        "xmlstarlet"
+        "perl"
+        "postgresql@14"
+    )
 
     # Install based on mode
     if [[ "$INSTALL_MODE" == "full" ]]; then
@@ -514,6 +529,22 @@ install_macos_packages() {
                     info "✓ $pkg already installed"
                 elif echo "$output" | grep -q "Rosetta 2"; then
                     warning "✗ $pkg skipped (architecture mismatch)"
+                else
+                    warning "✗ $pkg installation failed"
+                fi
+            fi
+        done
+        
+        info "Installing code formatters and linters..."
+        for pkg in "${formatter_packages[@]}"; do
+            if brew list --formula "$pkg" &>/dev/null || true; then
+                info "✓ $pkg already installed"
+            else
+                output=$(brew install "$pkg" 2>&1)
+                if [[ $? -eq 0 ]]; then
+                    success "✓ $pkg installed successfully"
+                elif echo "$output" | grep -q "already installed"; then
+                    info "✓ $pkg already installed"
                 else
                     warning "✗ $pkg installation failed"
                 fi
@@ -1007,7 +1038,7 @@ setup_python() {
         }
         
         # Try to install essential packages, continue on failure
-        for pkg in pynvim black ruff mypy ipython; do
+        for pkg in pynvim black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort; do
             pip3 install --user "$pkg" 2>/dev/null || {
                 info "Could not install $pkg with pip, trying system package manager..."
                 if [[ "$OS" == "linux" ]]; then
@@ -1022,6 +1053,41 @@ setup_python() {
     fi
     
     success "Python environment configured"
+}
+
+setup_go_tools() {
+    progress "Setting up Go tools and formatters..."
+    
+    if command -v go &>/dev/null; then
+        info "Installing Go tools..."
+        
+        # Install goimports
+        go install golang.org/x/tools/cmd/goimports@latest 2>/dev/null || warning "Failed to install goimports"
+        
+        # Install keep-sorted
+        go install github.com/google/keep-sorted@latest 2>/dev/null || warning "Failed to install keep-sorted"
+        
+        success "Go tools installed"
+    else
+        warning "Go not found, skipping Go tools installation"
+        info "Install Go and re-run setup to get Go tools"
+    fi
+}
+
+setup_ruby_tools() {
+    progress "Setting up Ruby tools and formatters..."
+    
+    if command -v gem &>/dev/null; then
+        info "Installing Ruby gems..."
+        
+        # Try to install Ruby formatters
+        gem install rubocop 2>/dev/null || warning "Failed to install rubocop (may need newer Ruby)"
+        gem install rufo 2>/dev/null || warning "Failed to install rufo (may need newer Ruby)"
+        
+        success "Ruby tools installed"
+    else
+        warning "Ruby/gem not found, skipping Ruby tools installation"
+    fi
 }
 
 setup_node() {
@@ -1175,6 +1241,8 @@ main() {
             setup_shell
             create_symlinks
             setup_python
+            setup_go_tools
+            setup_ruby_tools
             setup_node
             setup_neovim
             setup_tmux
