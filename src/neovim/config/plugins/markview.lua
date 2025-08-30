@@ -14,9 +14,12 @@ function M.setup()
     vim.opt.guifont = "JetBrainsMono Nerd Font:h18"
   end
   
-  -- Ensure UTF-8 encoding
-  vim.opt.encoding = "utf-8"
-  vim.opt.fileencoding = "utf-8"
+  -- Defer setting encoding options to avoid modifiable errors
+  vim.schedule(function()
+    -- Ensure UTF-8 encoding
+    pcall(function() vim.opt.encoding = "utf-8" end)
+    pcall(function() vim.opt.fileencoding = "utf-8" end)
+  end)
   
   -- Tell Neovim we have nerd fonts
   vim.g.have_nerd_font = true
@@ -603,10 +606,6 @@ function M.setup()
   
   -- Apply initial highlights
   vim.defer_fn(apply_markview_highlights, 50)
-  
-  -- Configure JetBrainsMono Nerd Font ligatures for markview
-  -- This ensures ligatures render properly in markdown preview
-  vim.opt.guifont = "JetBrainsMono Nerd Font:h18"
   
   -- JetBrainsMono Nerd Font has excellent ligature support!
   
