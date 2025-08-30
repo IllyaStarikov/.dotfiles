@@ -107,181 +107,526 @@
       "command": "internal",
       "format_args": "normalize_whitespace",
       "description": "Built-in text file formatter"
+    },
+    "swiftformat": {
+      "command": "swiftformat",
+      "check_command": "swiftformat --version",
+      "format_args": "--indent 2 --maxwidth 100 {file}",
+      "description": "Swift formatter"
+    },
+    "sqlformat": {
+      "command": "sqlformat",
+      "check_command": "sqlformat --version",
+      "format_args": "-r -k upper --indent_width 2 --output {file} {file}",
+      "description": "SQL formatter"
+    },
+    "pg_format": {
+      "command": "pg_format",
+      "check_command": "pg_format --version",
+      "format_args": "-i {file}",
+      "description": "PostgreSQL formatter"
+    },
+    "latexindent": {
+      "command": "latexindent",
+      "check_command": "latexindent --version",
+      "format_args": "-w -s {file}",
+      "description": "LaTeX formatter"
+    },
+    "xmlformatter": {
+      "command": "xmlformatter",
+      "check_command": "xmlformatter --version",
+      "format_args": "-i 2 {file}",
+      "description": "XML formatter"
+    },
+    "xmllint": {
+      "command": "xmllint",
+      "check_command": "xmllint --version",
+      "format_args": "--format --output {file} {file}",
+      "description": "XML linter and formatter"
+    },
+    "cmake-format": {
+      "command": "cmake-format",
+      "check_command": "cmake-format --version",
+      "format_args": "-i {file}",
+      "description": "CMake formatter"
+    },
+    "rubocop": {
+      "command": "rubocop",
+      "check_command": "rubocop --version",
+      "format_args": "-A {file}",
+      "description": "Ruby linter and formatter"
+    },
+    "rufo": {
+      "command": "rufo",
+      "check_command": "rufo --version",
+      "format_args": "{file}",
+      "description": "Ruby formatter"
+    },
+    "taplo": {
+      "command": "taplo",
+      "check_command": "taplo --version",
+      "format_args": "format {file}",
+      "description": "TOML formatter"
+    },
+    "toml-sort": {
+      "command": "toml-sort",
+      "check_command": "toml-sort --version",
+      "format_args": "-i {file}",
+      "description": "TOML sorter"
+    },
+    "perltidy": {
+      "command": "perltidy",
+      "check_command": "perltidy --version",
+      "format_args": "-b {file}",
+      "description": "Perl formatter"
+    },
+    "asmfmt": {
+      "command": "asmfmt",
+      "check_command": "asmfmt -h",
+      "format_args": "-w {file}",
+      "description": "Assembly formatter"
+    },
+    "nasm": {
+      "command": "nasm",
+      "check_command": "nasm --version",
+      "format_args": "-f elf64 {file}",
+      "description": "NASM assembler"
     }
   },
   "extensions": {
     "py": {
       "language": "Python",
-      "formatters": ["ruff", "black", "yapf", "autopep8"],
-      "additional": ["isort"]
+      "formatters": [
+        "ruff",
+        "black",
+        "yapf",
+        "autopep8"
+      ],
+      "additional": [
+        "isort"
+      ]
     },
     "pyw": {
       "language": "Python",
-      "formatters": ["ruff", "black", "yapf", "autopep8"],
-      "additional": ["isort"]
+      "formatters": [
+        "ruff",
+        "black",
+        "yapf",
+        "autopep8"
+      ],
+      "additional": [
+        "isort"
+      ]
     },
     "pyi": {
       "language": "Python",
-      "formatters": ["ruff", "black", "yapf", "autopep8"],
-      "additional": ["isort"]
+      "formatters": [
+        "ruff",
+        "black",
+        "yapf",
+        "autopep8"
+      ],
+      "additional": [
+        "isort"
+      ]
     },
     "c": {
       "language": "C",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "h": {
       "language": "C",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "cpp": {
       "language": "C++",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "cc": {
       "language": "C++",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "cxx": {
       "language": "C++",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "hpp": {
       "language": "C++",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "hxx": {
       "language": "C++",
-      "formatters": ["clang-format", "astyle"]
+      "formatters": [
+        "clang-format",
+        "astyle"
+      ]
     },
     "sh": {
       "language": "Shell",
-      "formatters": ["shfmt", "beautysh"]
+      "formatters": [
+        "shfmt",
+        "beautysh"
+      ]
     },
     "bash": {
       "language": "Bash",
-      "formatters": ["shfmt", "beautysh"]
+      "formatters": [
+        "shfmt",
+        "beautysh"
+      ]
     },
     "zsh": {
       "language": "Zsh",
-      "formatters": ["shfmt", "beautysh"]
+      "formatters": [
+        "shfmt",
+        "beautysh"
+      ]
     },
     "lua": {
       "language": "Lua",
-      "formatters": ["stylua", "lua-format"]
+      "formatters": [
+        "stylua",
+        "lua-format"
+      ]
     },
     "js": {
       "language": "JavaScript",
-      "formatters": ["prettierd", "prettier", "eslint"]
+      "formatters": [
+        "prettierd",
+        "prettier",
+        "eslint"
+      ]
     },
     "jsx": {
       "language": "JavaScript",
-      "formatters": ["prettierd", "prettier", "eslint"]
+      "formatters": [
+        "prettierd",
+        "prettier",
+        "eslint"
+      ]
     },
     "ts": {
       "language": "TypeScript",
-      "formatters": ["prettierd", "prettier", "eslint"]
+      "formatters": [
+        "prettierd",
+        "prettier",
+        "eslint"
+      ]
     },
     "tsx": {
       "language": "TypeScript",
-      "formatters": ["prettierd", "prettier", "eslint"]
+      "formatters": [
+        "prettierd",
+        "prettier",
+        "eslint"
+      ]
     },
     "json": {
       "language": "JSON",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "yaml": {
       "language": "YAML",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "yml": {
       "language": "YAML",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "html": {
       "language": "HTML",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "css": {
       "language": "CSS",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "scss": {
       "language": "SCSS",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "sass": {
       "language": "Sass",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "less": {
       "language": "Less",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "md": {
       "language": "Markdown",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "mdx": {
       "language": "MDX",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "rs": {
       "language": "Rust",
-      "formatters": ["rustfmt"]
+      "formatters": [
+        "rustfmt"
+      ]
     },
     "go": {
       "language": "Go",
-      "formatters": ["goimports", "gofmt"]
+      "formatters": [
+        "goimports",
+        "gofmt"
+      ]
     },
     "txt": {
       "language": "Text",
-      "formatters": ["text-formatter"]
+      "formatters": [
+        "text-formatter"
+      ]
     },
     "text": {
       "language": "Text",
-      "formatters": ["text-formatter"]
+      "formatters": [
+        "text-formatter"
+      ]
     },
     "log": {
       "language": "Text",
-      "formatters": ["text-formatter"]
+      "formatters": [
+        "text-formatter"
+      ]
     },
     "csv": {
       "language": "CSV",
-      "formatters": ["text-formatter"]
+      "formatters": [
+        "text-formatter"
+      ]
     },
     "tsv": {
       "language": "TSV",
-      "formatters": ["text-formatter"]
+      "formatters": [
+        "text-formatter"
+      ]
     },
     "xml": {
       "language": "XML",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "svg": {
       "language": "SVG",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "graphql": {
       "language": "GraphQL",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "gql": {
       "language": "GraphQL",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
     },
     "vue": {
       "language": "Vue",
-      "formatters": ["prettierd", "prettier", "eslint"]
+      "formatters": [
+        "prettierd",
+        "prettier",
+        "eslint"
+      ]
     },
     "svelte": {
       "language": "Svelte",
-      "formatters": ["prettierd", "prettier"]
+      "formatters": [
+        "prettierd",
+        "prettier"
+      ]
+    },
+    "swift": {
+      "language": "Swift",
+      "formatters": [
+        "swiftformat"
+      ]
+    },
+    "sql": {
+      "language": "SQL",
+      "formatters": [
+        "sqlformat",
+        "pg_format"
+      ]
+    },
+    "tex": {
+      "language": "LaTeX",
+      "formatters": [
+        "latexindent"
+      ]
+    },
+    "latex": {
+      "language": "LaTeX",
+      "formatters": [
+        "latexindent"
+      ]
+    },
+    "bib": {
+      "language": "BibTeX",
+      "formatters": [
+        "latexindent"
+      ]
+    },
+    "cmake": {
+      "language": "CMake",
+      "formatters": [
+        "cmake-format"
+      ]
+    },
+    "CMakeLists.txt": {
+      "language": "CMake",
+      "formatters": [
+        "cmake-format"
+      ]
+    },
+    "rb": {
+      "language": "Ruby",
+      "formatters": [
+        "rubocop",
+        "rufo"
+      ]
+    },
+    "rake": {
+      "language": "Ruby",
+      "formatters": [
+        "rubocop",
+        "rufo"
+      ]
+    },
+    "gemspec": {
+      "language": "Ruby",
+      "formatters": [
+        "rubocop",
+        "rufo"
+      ]
+    },
+    "toml": {
+      "language": "TOML",
+      "formatters": [
+        "taplo",
+        "toml-sort"
+      ]
+    },
+    "pl": {
+      "language": "Perl",
+      "formatters": [
+        "perltidy"
+      ]
+    },
+    "pm": {
+      "language": "Perl",
+      "formatters": [
+        "perltidy"
+      ]
+    },
+    "asm": {
+      "language": "Assembly",
+      "formatters": [
+        "asmfmt",
+        "nasm"
+      ]
+    },
+    "s": {
+      "language": "Assembly",
+      "formatters": [
+        "asmfmt",
+        "nasm"
+      ]
+    },
+    "S": {
+      "language": "Assembly",
+      "formatters": [
+        "asmfmt",
+        "nasm"
+      ]
+    },
+    "mk": {
+      "language": "Makefile",
+      "formatters": [
+        "text-formatter"
+      ]
+    },
+    "makefile": {
+      "language": "Makefile",
+      "formatters": [
+        "text-formatter"
+      ]
+    },
+    "Makefile": {
+      "language": "Makefile",
+      "formatters": [
+        "text-formatter"
+      ]
     }
   },
   "settings": {
     "show_formatter_fallback": true,
     "run_additional_formatters": true,
     "verbose": false,
-    "default_operations": ["trailing_whitespace", "tabs_to_spaces", "smart_quotes", "formatters"]
+    "default_operations": [
+      "trailing_whitespace",
+      "tabs_to_spaces",
+      "smart_quotes",
+      "formatters"
+    ]
   }
 }
