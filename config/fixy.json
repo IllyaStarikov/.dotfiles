@@ -58,7 +58,7 @@
     "stylua": {
       "command": "stylua",
       "check_command": "stylua --version",
-      "format_args": "--indent-type Spaces --indent-width 2 --column-width 80 {file}",
+      "format_args": "--config-path ~/.dotfiles/.stylua.toml {file}",
       "description": "Lua formatter"
     },
     "lua-format": {

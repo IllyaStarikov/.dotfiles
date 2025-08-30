@@ -1,0 +1,18 @@
+# Stylua configuration for dotfiles
+# This ensures consistent Lua formatting across the project
+
+indent_type = "Spaces"
+indent_width = 2
+column_width = 100
+line_endings = "Unix"
+quote_style = "AutoPreferDouble"
+
+# Allow expressions to collapse to single line if they fit
+collapse_simple_statement = "Never"
+
+# Call chain formatting
+call_parentheses = "Always"
+
+# Table formatting
+[sort_requires]
+enabled = false
