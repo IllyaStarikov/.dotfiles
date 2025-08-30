@@ -74,6 +74,8 @@ local function setup_lsp()
 
 		require("mason-lspconfig").setup({
 			-- Ensure these servers are installed
+			-- Note: sourcekit (Swift) must be installed via Xcode, not Mason
+			-- Note: solargraph (Ruby) may fail if system Ruby is too old
 			ensure_installed = {
 				"pyright", -- Python
 				"clangd", -- C/C++
@@ -93,11 +95,11 @@ local function setup_lsp()
 				"cmake", -- CMake
 				"bashls", -- Bash/Shell
 				"zls", -- Zig (can be used for assembly)
-				"solargraph", -- Ruby
+				-- "solargraph", -- Ruby (commented out - install via gem install solargraph instead)
 				"taplo", -- TOML
 				"perlnavigator", -- Perl
 				"sqlls", -- SQL
-				"sourcekit", -- Swift (macOS only)
+				-- sourcekit removed - not available in Mason, configured separately below
 			},
 			automatic_installation = true,
 			-- Disable automatic server setup to prevent duplicates
@@ -453,6 +455,25 @@ local function setup_lsp()
 		},
 		zls = {}, -- Zig/Assembly
 		solargraph = {
+			-- Try to use system solargraph if available (via rbenv/rvm)
+			cmd = function()
+				-- Check for rbenv shim first
+				local rbenv_shim = vim.fn.expand("~/.rbenv/shims/solargraph")
+				if vim.fn.executable(rbenv_shim) == 1 then
+					return { rbenv_shim, "stdio" }
+				end
+				-- Check for rvm shim
+				local rvm_shim = vim.fn.expand("~/.rvm/shims/solargraph")
+				if vim.fn.executable(rvm_shim) == 1 then
+					return { rvm_shim, "stdio" }
+				end
+				-- Check for system solargraph
+				if vim.fn.executable("solargraph") == 1 then
+					return { "solargraph", "stdio" }
+				end
+				-- Fall back to Mason's installation if available
+				return { "solargraph", "stdio" }
+			end,
 			settings = {
 				solargraph = {
 					diagnostics = true,
@@ -473,28 +494,33 @@ local function setup_lsp()
 			cmd = { "sql-language-server", "up", "--method", "stdio" },
 			filetypes = { "sql", "mysql", "postgresql" },
 		},
-		sourcekit = {
-			cmd = { "sourcekit-lsp" },
-			filetypes = { "swift", "c", "cpp", "objc", "objcpp" },
+		-- sourcekit must be installed via Xcode, not Mason
+		-- Only configure if on macOS with Xcode installed
+		sourcekit = vim.fn.has("mac") == 1 and {
+			cmd = { "xcrun", "sourcekit-lsp" },
+			filetypes = { "swift", "objc", "objcpp" },
 			root_dir = function(fname)
 				return lspconfig.util.root_pattern("Package.swift", ".git", "*.xcodeproj", "*.xcworkspace")(fname)
 					or lspconfig.util.find_git_ancestor(fname)
 					or vim.fn.getcwd()
 			end,
-		},
+		} or nil,
 	}
 
 	-- Setup all configured servers (skip if work override is active)
 	if not vim.g.work_lsp_override then
 		for server, config in pairs(servers) do
-			-- Setup the server
-			config.capabilities = capabilities
-			config.on_attach = on_attach
+			-- Skip nil configurations (e.g., sourcekit on non-Mac systems)
+			if config then
+				-- Setup the server
+				config.capabilities = capabilities
+				config.on_attach = on_attach
 
-			-- Use pcall to handle servers that might not be installed
-			local ok, err = pcall(function()
-				lspconfig[server].setup(config)
-			end)
+				-- Use pcall to handle servers that might not be installed
+				local ok, err = pcall(function()
+					lspconfig[server].setup(config)
+				end)
+			end
 		end
 	end
 
