@@ -380,6 +380,42 @@ function M.setup()
     end
   end
   
+  -- LSP Symbol search functions
+  M.lsp_document_symbols = function()
+    require('telescope.builtin').lsp_document_symbols({
+      symbols = {
+        'Class', 'Function', 'Method', 'Constructor', 'Interface',
+        'Module', 'Struct', 'Trait', 'Field', 'Property', 'Enum',
+        'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object',
+        'Key', 'Null', 'EnumMember', 'Event', 'Operator', 'TypeParameter'
+      }
+    })
+  end
+  
+  M.lsp_workspace_symbols = function(query)
+    require('telescope.builtin').lsp_workspace_symbols({
+      query = query or vim.fn.input("Symbol Query: "),
+      symbols = {
+        'Class', 'Function', 'Method', 'Constructor', 'Interface',
+        'Module', 'Struct', 'Trait', 'Field', 'Property', 'Enum',
+        'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object',
+        'Key', 'Null', 'EnumMember', 'Event', 'Operator', 'TypeParameter'
+      }
+    })
+  end
+  
+  -- Dynamic symbol search with fallback
+  M.lsp_dynamic_workspace_symbols = function()
+    require('telescope.builtin').lsp_dynamic_workspace_symbols({
+      symbols = {
+        'Class', 'Function', 'Method', 'Constructor', 'Interface',
+        'Module', 'Struct', 'Trait', 'Field', 'Property', 'Enum',
+        'Constant', 'String', 'Number', 'Boolean', 'Array', 'Object',
+        'Key', 'Null', 'EnumMember', 'Event', 'Operator', 'TypeParameter'
+      }
+    })
+  end
+  
   -- 📊 INTEGRATION WITH EXISTING WORKFLOW
   -- Set up integration points for existing keybindings and menu system
   
@@ -410,6 +446,18 @@ function M.setup()
   
   _G.telescope_git_files = function()
     require('telescope.builtin').git_files()
+  end
+  
+  _G.telescope_lsp_document_symbols = function()
+    M.lsp_document_symbols()
+  end
+  
+  _G.telescope_lsp_workspace_symbols = function()
+    M.lsp_workspace_symbols()
+  end
+  
+  _G.telescope_lsp_dynamic_workspace_symbols = function()
+    M.lsp_dynamic_workspace_symbols()
   end
   
   -- 🎨 THEME INTEGRATION
