@@ -9,35 +9,114 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
--- 🖋️ FONT CONFIGURATION - JetBrainsMono with ligatures (matching Alacritty)
+-- 🖋️ FONT CONFIGURATION - JetBrainsMono with full ligature and variant support
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-config.font = wezterm.font('JetBrainsMono Nerd Font', { weight = 'Regular' })
+-- Primary font with fallbacks for better glyph coverage
+config.font = wezterm.font_with_fallback({
+  {
+    family = 'JetBrainsMono Nerd Font',
+    weight = 'Regular',
+    stretch = 'Normal',
+    style = 'Normal',
+  },
+  'JetBrains Mono',  -- Fallback to non-Nerd Font version
+  'Symbols Nerd Font',  -- Extra symbol coverage
+  'Apple Color Emoji',  -- Emoji support
+})
+
 config.font_size = 18.0  -- Matching Alacritty
 config.line_height = 1.0
 config.cell_width = 1.0
 
--- Bold font
+-- Comprehensive font rules for all text styles
 config.font_rules = {
+  -- Regular text (base style)
+  {
+    intensity = 'Normal',
+    italic = false,
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', weight = 'Regular' },
+      'JetBrains Mono',
+    }),
+  },
+  
+  -- Bold text
   {
     intensity = 'Bold',
     italic = false,
-    font = wezterm.font('JetBrainsMono Nerd Font', { weight = 'Bold' }),
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', weight = 'Bold' },
+      'JetBrains Mono',
+    }),
   },
+  
+  -- Italic text
   {
     intensity = 'Normal',
     italic = true,
-    font = wezterm.font('JetBrainsMono Nerd Font', { style = 'Italic' }),
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', style = 'Italic' },
+      'JetBrains Mono',
+    }),
   },
+  
+  -- Bold italic text
   {
     intensity = 'Bold',
     italic = true,
-    font = wezterm.font('JetBrainsMono Nerd Font', { weight = 'Bold', style = 'Italic' }),
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', weight = 'Bold', style = 'Italic' },
+      'JetBrains Mono',
+    }),
+  },
+  
+  -- Half-bright/dim text (often used in terminal apps)
+  {
+    intensity = 'Half',
+    italic = false,
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', weight = 'Light' },
+      'JetBrains Mono',
+    }),
+  },
+  
+  -- Half-bright italic
+  {
+    intensity = 'Half',
+    italic = true,
+    font = wezterm.font_with_fallback({
+      { family = 'JetBrainsMono Nerd Font', weight = 'Light', style = 'Italic' },
+      'JetBrains Mono',
+    }),
   },
 }
 
--- Enable ligatures (PopClip was the issue, not ligatures)
-config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
+-- Enable ALL ligature features for JetBrainsMono
+-- JetBrainsMono supports 142 code ligatures
+config.harfbuzz_features = {
+  'calt=1',  -- Contextual alternates (main ligature feature)
+  'clig=1',  -- Contextual ligatures
+  'liga=1',  -- Standard ligatures
+  'dlig=1',  -- Discretionary ligatures
+  'ss01=1',  -- Stylistic set 01 (alternative style)
+  'ss02=1',  -- Stylistic set 02 (alternative style)
+  'ss03=1',  -- Stylistic set 03 (alternative style)
+  'ss04=1',  -- Stylistic set 04 (alternative style)
+  'ss05=1',  -- Stylistic set 05 (alternative style)
+  'ss06=1',  -- Stylistic set 06 (alternative style)
+  'ss07=1',  -- Stylistic set 07 (alternative style)
+  'ss19=1',  -- Stylistic set 19 (slashed zero)
+  'ss20=1',  -- Stylistic set 20 (graphical control characters)
+  'zero=1',  -- Slashed zero
+  'onum=1',  -- Oldstyle numbers
+}
+
+-- Additional font configuration
+config.allow_square_glyphs_to_overflow_width = 'WhenFollowedBySpace'
+config.custom_block_glyphs = true  -- Better box drawing characters
+config.anti_alias_custom_block_glyphs = true
+config.treat_east_asian_ambiguous_width_as_wide = false
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading
