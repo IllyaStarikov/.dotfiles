@@ -86,6 +86,18 @@ local function setup_lsp()
 				"dockerls", -- Docker
 				"yamlls", -- YAML
 				"jsonls", -- JSON
+				"html", -- HTML
+				"cssls", -- CSS
+				"emmet_ls", -- Emmet for HTML/CSS
+				"lemminx", -- XML
+				"cmake", -- CMake
+				"bashls", -- Bash/Shell
+				"zls", -- Zig (can be used for assembly)
+				"solargraph", -- Ruby
+				"taplo", -- TOML
+				"perlnavigator", -- Perl
+				"sqlls", -- SQL
+				"sourcekit", -- Swift (macOS only)
 			},
 			automatic_installation = true,
 			-- Disable automatic server setup to prevent duplicates
@@ -378,8 +390,97 @@ local function setup_lsp()
 				json = {
 					validate = { enable = true },
 					format = { enable = true },
+					schemas = {
+						["https://json.schemastore.org/package.json"] = "package.json",
+						["https://json.schemastore.org/tsconfig.json"] = "tsconfig*.json",
+						["https://json.schemastore.org/eslintrc.json"] = ".eslintrc*",
+					},
 				},
 			},
+		},
+		html = {
+			settings = {
+				html = {
+					format = {
+						enable = true,
+						wrapLineLength = 100,
+						unformatted = "wbr",
+					},
+					validate = {
+						scripts = true,
+						styles = true,
+					},
+				},
+			},
+		},
+		cssls = {
+			settings = {
+				css = {
+					validate = true,
+					lint = {
+						unknownAtRules = "ignore",
+					},
+				},
+				scss = {
+					validate = true,
+					lint = {
+						unknownAtRules = "ignore",
+					},
+				},
+				less = {
+					validate = true,
+					lint = {
+						unknownAtRules = "ignore",
+					},
+				},
+			},
+		},
+		emmet_ls = {
+			filetypes = { "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "haml", "xml", "xsl", "pug", "slim", "sass", "less" },
+		},
+		lemminx = {}, -- XML
+		cmake = {
+			settings = {
+				cmake = {
+					configProvider = {
+						enableSnippets = true,
+					},
+				},
+			},
+		},
+		bashls = {
+			filetypes = { "sh", "bash", "zsh" },
+		},
+		zls = {}, -- Zig/Assembly
+		solargraph = {
+			settings = {
+				solargraph = {
+					diagnostics = true,
+					formatting = true,
+				},
+			},
+		},
+		taplo = {}, -- TOML
+		perlnavigator = {
+			settings = {
+				perlnavigator = {
+					perlPath = "perl",
+					enableWarnings = true,
+				},
+			},
+		},
+		sqlls = {
+			cmd = { "sql-language-server", "up", "--method", "stdio" },
+			filetypes = { "sql", "mysql", "postgresql" },
+		},
+		sourcekit = {
+			cmd = { "sourcekit-lsp" },
+			filetypes = { "swift", "c", "cpp", "objc", "objcpp" },
+			root_dir = function(fname)
+				return lspconfig.util.root_pattern("Package.swift", ".git", "*.xcodeproj", "*.xcworkspace")(fname)
+					or lspconfig.util.find_git_ancestor(fname)
+					or vim.fn.getcwd()
+			end,
 		},
 	}
 
