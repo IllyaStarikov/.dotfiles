@@ -55,7 +55,7 @@ The repository includes format scripts that automatically apply these standards:
 
 Run the format script with:
 ```bash
-./src/scripts/format
+./src/scripts/fixy
 ```
 
 ## Available Style Guide Resources
