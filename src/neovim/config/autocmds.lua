@@ -610,9 +610,9 @@ autocmd("FileType", {
       vim.cmd(setting)
     end
     
-    -- Font settings for GUI vim
+    -- Font settings for GUI vim (JetBrainsMono has better Haskell ligatures than Hasklug)
     if vim.fn.has("gui_running") == 1 then
-      vim.cmd("setlocal guifont=Hasklug\\ Nerd\\ Font:h14")
+      vim.cmd("setlocal guifont=JetBrainsMono\\ Nerd\\ Font:h14")
     end
     
     -- Improved navigation for wrapped lines
@@ -712,7 +712,7 @@ autocmd({ "FileChangedShell" }, {
 })
 
 -- More aggressive checking for terminal users
-if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM_PROGRAM == "WezTerm" or vim.env.TERM then
+if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM then
   -- Check more frequently in terminal
   vim.opt.updatetime = 1000  -- Trigger CursorHold after 1 second
   
@@ -723,6 +723,10 @@ if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM_PROGRAM == "WezTerm" or v
       vim.cmd("silent! checktime")
     end
   end))
+elseif vim.env.TERM_PROGRAM == "WezTerm" then
+  -- WezTerm-specific settings to prevent hangs
+  vim.opt.updatetime = 4000  -- Much less aggressive for WezTerm
+  -- No automatic redraws or timers for WezTerm
 end
 
 -- =============================================================================
