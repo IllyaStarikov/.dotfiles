@@ -12,12 +12,12 @@ This directory contains configuration files that control the behavior of various
 config/
 ├── brain/              # AI assistant configuration
 │   └── logs/          # Runtime logs for brain AI system
-└── format-script.json  # Universal code formatter configuration
+└── fixy.json  # Universal code formatter configuration
 ```
 
 ## Files
 
-### format-script.json
+### fixy.json
 
 Comprehensive configuration for the universal code formatting script (`~/. dotfiles/src/scripts/fixy`).
 
@@ -78,7 +78,7 @@ brain/
 
 ### Supported Languages
 
-The format-script.json supports the following languages with priority-based formatters:
+The fixy.json supports the following languages with priority-based formatters:
 
 **Python**: ruff → black → yapf → autopep8 (+ isort)
 **C/C++**: clang-format → astyle
@@ -131,7 +131,7 @@ The format script reads this configuration:
 ~/. dotfiles/src/scripts/fixy myfile.py
 
 # The script will:
-# 1. Read config/format-script.json
+# 1. Read config/fixy.json
 # 2. Identify file as Python
 # 3. Try formatters in order: ruff, black, yapf, autopep8
 # 4. Run isort if available
@@ -172,7 +172,7 @@ Change formatter order to adjust priorities:
 
 ### With Scripts
 
-- `src/scripts/fixy`: Primary consumer of format-script.json
+- `src/scripts/fixy`: Primary consumer of fixy.json
 - `src/scripts/fixy-all`: Batch formatting using configuration
 - Git hooks: Pre-commit formatting
 
@@ -199,7 +199,7 @@ Change formatter order to adjust priorities:
 
 ### Configuration Management
 
-1. **Version Control**: Track format-script.json changes
+1. **Version Control**: Track fixy.json changes
 2. **Documentation**: Document custom formatter configs
 3. **Testing**: Verify formatters work as expected
 4. **Fallbacks**: Always provide alternatives
@@ -231,7 +231,7 @@ brew install ruff
 
 Debug with verbose mode:
 ```bash
-# Edit config/format-script.json
+# Edit config/fixy.json
 "verbose": true
 
 # Run formatter
@@ -243,7 +243,7 @@ Debug with verbose mode:
 Check priority order:
 ```bash
 # View configuration
-jq '.extensions.py' config/format-script.json
+jq '.extensions.py' config/fixy.json
 ```
 
 ### Performance Issues
