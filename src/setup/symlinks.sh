@@ -183,6 +183,9 @@ main() {
         # Link spell files from private dotfiles if they exist
         if [[ -d "$HOME/.dotfiles/.dotfiles.private/neovim/spell" ]]; then
             create_link "$HOME/.dotfiles/.dotfiles.private/neovim/spell" "$HOME/.config/nvim/spell" "Neovim spell files (private)"
+        elif [[ -d "$HOME/.dotfiles/.dotfiles.private/spell" ]]; then
+            # Fallback to general spell directory in private repo
+            create_link "$HOME/.dotfiles/.dotfiles.private/spell" "$HOME/.config/nvim/spell" "Spell files (private)"
         fi
     else
         error "Neovim directory not found at $DOTFILES_DIR/src/neovim"
