@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Install Ruby LSP tools (solargraph, rubocop)
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "Installing Ruby LSP tools..."
+
+# Check Ruby version
+RUBY_VERSION=$(ruby -v | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+echo "Ruby version: $RUBY_VERSION"
+
+# Check if Ruby is 3.0 or newer
+if [[ $(echo "$RUBY_VERSION" | cut -d. -f1) -lt 3 ]]; then
+    echo -e "${YELLOW}Warning: Ruby $RUBY_VERSION is installed. Ruby 3.0+ is recommended for best compatibility.${NC}"
+    echo "Consider using rbenv or rvm to install a newer Ruby version."
+    echo ""
+    read -p "Continue anyway? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+# Install solargraph
+echo "Installing solargraph..."
+if gem install solargraph; then
+    echo -e "${GREEN}✓ solargraph installed successfully${NC}"
+else
+    echo -e "${RED}✗ Failed to install solargraph${NC}"
+    echo "Try: gem install solargraph --user-install"
+fi
+
+# Install rubocop (optional but recommended)
+echo "Installing rubocop..."
+if gem install rubocop; then
+    echo -e "${GREEN}✓ rubocop installed successfully${NC}"
+else
+    echo -e "${YELLOW}⚠ Failed to install rubocop (optional)${NC}"
+fi
+
+# Install rufo (optional formatter)
+echo "Installing rufo..."
+if gem install rufo; then
+    echo -e "${GREEN}✓ rufo installed successfully${NC}"
+else
+    echo -e "${YELLOW}⚠ Failed to install rufo (optional)${NC}"
+fi
+
+# Verify installation
+echo ""
+echo "Verification:"
+if command -v solargraph &> /dev/null; then
+    echo -e "${GREEN}✓ solargraph is available: $(which solargraph)${NC}"
+else
+    echo -e "${RED}✗ solargraph not found in PATH${NC}"
+fi
+
+if command -v rubocop &> /dev/null; then
+    echo -e "${GREEN}✓ rubocop is available: $(which rubocop)${NC}"
+else
+    echo -e "${YELLOW}⚠ rubocop not found in PATH (optional)${NC}"
+fi
+
+echo ""
+echo "Ruby LSP setup complete!"
+echo "Restart Neovim for changes to take effect."
