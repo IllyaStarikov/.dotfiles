@@ -19,7 +19,7 @@ config/
 
 ### format-script.json
 
-Comprehensive configuration for the universal code formatting script (`~/. dotfiles/src/scripts/format`).
+Comprehensive configuration for the universal code formatting script (`~/. dotfiles/src/scripts/fixy`).
 
 **Purpose**: Defines formatter priorities, commands, and language mappings for automatic code formatting across 20+ programming languages.
 
@@ -128,7 +128,7 @@ Example:
 The format script reads this configuration:
 ```bash
 # Format a file using configured priority
-~/. dotfiles/src/scripts/format myfile.py
+~/. dotfiles/src/scripts/fixy myfile.py
 
 # The script will:
 # 1. Read config/format-script.json
@@ -172,8 +172,8 @@ Change formatter order to adjust priorities:
 
 ### With Scripts
 
-- `src/scripts/format`: Primary consumer of format-script.json
-- `src/scripts/format-all`: Batch formatting using configuration
+- `src/scripts/fixy`: Primary consumer of format-script.json
+- `src/scripts/fixy-all`: Batch formatting using configuration
 - Git hooks: Pre-commit formatting
 
 ### With Editors
@@ -235,7 +235,7 @@ Debug with verbose mode:
 "verbose": true
 
 # Run formatter
-~/. dotfiles/src/scripts/format --verbose myfile.py
+~/. dotfiles/src/scripts/fixy --verbose myfile.py
 ```
 
 ### Wrong Formatter Used
@@ -271,6 +271,6 @@ Planned improvements:
 
 ## See Also
 
-- Format Script: `src/scripts/format`
+- Format Script: `src/scripts/fixy`
 - Script Documentation: `src/scripts/README.md`
 - Main README: `~/.dotfiles/README.md`

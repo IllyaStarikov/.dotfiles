@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# format - Universal code formatter with priority-based selection
+# fixy - Universal code formatter with priority-based selection
 #
 # DESCRIPTION:
 #   Formats code files using the best available formatter from a prioritized
@@ -8,12 +8,12 @@
 #   and keeping marked sections sorted with Google's keep-sorted tool.
 #
 # USAGE:
-#   format [OPTIONS] FILE [FILE...]
+#   fixy [OPTIONS] FILE [FILE...]
 #   
-#   format file.py                    # Format Python file
-#   format --all file.js             # All normalizations + formatting
-#   format --dry-run file.cpp        # Preview changes without applying
-#   format --trailing-whitespace *.sh # Only remove trailing whitespace
+#   fixy file.py                    # Format Python file
+#   fixy --all file.js             # All normalizations + formatting
+#   fixy --dry-run file.cpp        # Preview changes without applying
+#   fixy --trailing-whitespace *.sh # Only remove trailing whitespace
 #
 # OPTIONS:
 #   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format, sort
@@ -30,10 +30,10 @@
 #   Uses ~/.dotfiles/config/format-script.json for formatter priorities
 #
 # EXAMPLES:
-#   format src/*.py          # Format all Python files
-#   format --all README.md   # Clean and format markdown
-#   format -tv script.sh     # Remove trailing spaces with verbose output
-#   format -s config.yaml    # Sort marked sections with keep-sorted
+#   fixy src/*.py          # Format all Python files
+#   fixy --all README.md   # Clean and format markdown
+#   fixy -tv script.sh     # Remove trailing spaces with verbose output
+#   fixy -s config.yaml    # Sort marked sections with keep-sorted
 
 # Source common library for cross-platform support
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -643,11 +643,11 @@ SUPPORTED EXTENSIONS:
 $(get_allowed_extensions | tr ' ' '\n' | sort | column -c 80)
 
 EXAMPLES:
-  format                    # Format all tracked files
-  format main.cpp          # Format single file
-  format -t *.py          # Remove trailing whitespace
-  format -n --all         # Dry run
-  format -v *.py          # Verbose output
+  fixy                    # Format all tracked files
+  fixy main.cpp          # Format single file
+  fixy -t *.py          # Remove trailing whitespace
+  fixy -n --all         # Dry run
+  fixy -v *.py          # Verbose output
 
 EOF
 }
