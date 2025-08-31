@@ -25,13 +25,15 @@ tags = ["token", "auth"]
 description = "Allowlisted files and patterns"
 
 # Allow example/template configurations
+# keep-sorted start
 paths = [
-    '''template/.*''',
-    '''test/.*''',
+    '''CLAUDE\.md''',
     '''docs/.*''',
     '''README\.md''',
-    '''CLAUDE\.md''',
+    '''template/.*''',
+    '''test/.*''',
 ]
+# keep-sorted end
 
 # Allow common false positives in dotfiles
 regexes = [
@@ -80,23 +82,25 @@ commits = [
 ]
 
 # Stopwords - common non-secret strings that might trigger false positives
+# keep-sorted start
 stopwords = [
-    "example",
-    "test",
+    "0.0.0.0",
+    "127.0.0.1",
+    "admin",
     "demo",
-    "sample",
-    "placeholder",
-    "todo",
+    "example",
     "fixme",
     "localhost",
-    "127.0.0.1",
-    "0.0.0.0",
-    "username",
     "password",
-    "admin",
+    "placeholder",
     "root",
+    "sample",
+    "test",
+    "todo",
     "user",
+    "username",
 ]
+# keep-sorted end
 
 # Files to completely skip
 [[allowlist.files]]

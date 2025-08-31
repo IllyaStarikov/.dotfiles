@@ -2,52 +2,68 @@
 # Install with: brew bundle
 
 # Taps
+# keep-sorted start
 tap "homebrew/bundle"
 tap "homebrew/services"
 tap "vladdoster/formulae"
+# keep-sorted end
 
 # Core Tools
+# keep-sorted start
 brew "git"
 brew "neovim"
-brew "tmux"
 brew "starship"  # Fast prompt
+brew "tmux"
+# keep-sorted end
 
 # Modern Shell Tools
-brew "eza"       # Better ls
+# keep-sorted start
 brew "bat"       # Better cat
-brew "fd"        # Better find
-brew "ripgrep"   # Better grep
-brew "fzf"       # Fuzzy finder
-brew "zoxide"    # Better cd
 brew "delta"     # Better git diff
+brew "eza"       # Better ls
+brew "fd"        # Better find
+brew "fzf"       # Fuzzy finder
+brew "ripgrep"   # Better grep
+brew "zoxide"    # Better cd
+# keep-sorted end
 
 # Development Tools
+# keep-sorted start
 brew "fnm"       # Fast Node.js manager
+brew "go"        # Go language
 brew "pyenv"     # Python version manager
 brew "rustup"    # Rust toolchain
-brew "go"        # Go language
+# keep-sorted end
 
 # Language Servers
-brew "lua-language-server"
-brew "yaml-language-server"
-brew "typescript-language-server"
+# keep-sorted start
 brew "gopls"
+brew "lua-language-server"
+brew "typescript-language-server"
+brew "yaml-language-server"
+# keep-sorted end
 
 # Utilities
-brew "jq"        # JSON processor
+# keep-sorted start
+brew "gh"        # GitHub CLI
 brew "htop"      # Process viewer
+brew "jq"        # JSON processor
 brew "tree"      # Directory viewer
 brew "wget"      # Downloader
-brew "gh"        # GitHub CLI
+# keep-sorted end
 
 # Optional but useful
-brew "lazygit"   # Git UI
+# keep-sorted start
 brew "glow"      # Markdown viewer
 brew "hyperfine" # Benchmarking
+brew "lazygit"   # Git UI
+# keep-sorted end
 
 # Casks (GUI Apps)
+# keep-sorted start
 cask "alacritty" # Terminal emulator
 cask "vladdoster/formulae/vimari" # Safari extension for Vim keybindings
+# keep-sorted end
 
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
