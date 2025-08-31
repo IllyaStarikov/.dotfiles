@@ -122,10 +122,11 @@ git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.do
 
 | Feature | Description |
 |---------|------------|
-| **🤖 AI Integration** | Built-in Claude, GPT-4, and GitHub Copilot support |
+| **🤖 AI Integration** | Built-in Claude, GPT-4, Copilot, and local Ollama support |
 | **🎨 Smart Themes** | Automatic theme switching based on system appearance |
 | **🔍 Instant Search** | Telescope + ripgrep for sub-millisecond file search |
-| **📝 Language Support** | Pre-configured LSP for 15+ languages |
+| **📝 Language Support** | Pre-configured LSP for 25+ languages with formatters |
+| **🎯 Universal Formatter** | fixy script with priority-based formatter selection |
 | **📦 Package Management** | Automated dependency installation and updates |
 | **🧪 Test Suite** | Comprehensive testing for all configurations |
 | **📊 Performance Monitoring** | Built-in profiling and optimization tools |
@@ -348,14 +349,21 @@ git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && cd ~/.do
 - Custom hooks and workflows
 - GitHub CLI integration
 
-#### Language Support
+#### Language Support (25+ Languages)
 | Language | LSP | Formatter | Linter | Debugger |
 |----------|-----|-----------|--------|----------|
-| Python | Pyright | Black | Ruff | debugpy |
-| JavaScript | tsserver | Prettier | ESLint | node-debug2 |
-| Go | gopls | gofmt | golangci | dlv |
+| Python | Pyright | Ruff/Black/yapf | Ruff | debugpy |
+| JavaScript/TS | ts_ls | Prettier | ESLint | node-debug2 |
+| Go | gopls | gofmt/goimports | golangci | dlv |
 | Rust | rust-analyzer | rustfmt | clippy | lldb |
 | C/C++ | clangd | clang-format | clang-tidy | lldb |
+| Ruby | solargraph | rubocop/rufo | rubocop | - |
+| Lua | lua_ls | stylua | - | - |
+| Shell/Bash | bashls | shfmt | shellcheck | - |
+| Swift | sourcekit | swiftformat | - | - |
+| SQL | sqlls | sqlformat/pg_format | - | - |
+
+**Additional Languages**: HTML, CSS, XML, YAML, TOML, JSON, Markdown, LaTeX, CMake, Perl, Assembly, Zig, and more. See [Language Support Guide](docs/language_support.md) for complete list.
 
 </details>
 
@@ -485,6 +493,11 @@ ft                    # find text
 update                # update everything
 clean                 # cleanup
 backup ~/important    # backup directory
+
+# Code Formatting
+fixy file.py          # format any file
+fixy --all *.js       # format with normalizations
+fixy --dry-run file   # preview changes
 ```
 
 </details>
