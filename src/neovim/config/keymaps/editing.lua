@@ -16,6 +16,10 @@ map("n", "<A-k>", ":m .-2<CR>==", opts)
 map("v", "<A-j>", ":m '>+1<CR>gv=gv", opts)
 map("v", "<A-k>", ":m '<-2<CR>gv=gv", opts)
 
+-- Move lines with J and K in visual mode
+map("v", "J", ":m '>+1<CR>gv=gv", opts)
+map("v", "K", ":m '<-2<CR>gv=gv", opts)
+
 -- Paste without yanking in visual mode
 map("v", "p", '"_dP', opts)
 map("v", "<leader>p", [["_dP]], { desc = "Paste without yank" })
