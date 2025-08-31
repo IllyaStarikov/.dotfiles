@@ -23,6 +23,7 @@
 #   -f, --formatters         Run language formatters only (default)
 #   -s, --sorted            Run keep-sorted on marked sections
 #   -N, --newline           Ensure exactly one trailing newline at EOF
+#   -p, --parallel [jobs]   Process files in parallel (default: CPU cores)
 #   -n, --dry-run           Show what would be done without making changes
 #   -v, --verbose           Show detailed output
 #   -h, --help              Show this help message
@@ -53,9 +54,26 @@ DO_SORTED=false
 DO_NEWLINE=false
 VERBOSE=false
 DRY_RUN=false
+PARALLEL=false
+# Default to number of CPU cores, fallback to 8
+if command -v nproc >/dev/null 2>&1; then
+  MAX_JOBS=$(nproc)
+elif command -v sysctl >/dev/null 2>&1; then
+  MAX_JOBS=$(sysctl -n hw.ncpu 2>/dev/null || echo 8)
+else
+  MAX_JOBS=8
+fi
 FILES=()
 CONFIG_FILE="${HOME}/.dotfiles/config/fixy.json"
 KEEP_SORTED_BIN="${HOME}/go/bin/keep-sorted"
+
+# Output helper that suppresses output in parallel mode
+# Args: $@ - Arguments to print
+print_if_not_parallel() {
+  if [[ "${PARALLEL}" != true ]]; then
+    "$@"
+  fi
+}
 
 # Check if a file is binary (not text)
 # Args: $1 - File path to check
@@ -72,13 +90,13 @@ remove_trailing_whitespace() {
   local file="${1:?Error: file required}"
 
   if [[ "${DRY_RUN}" == true ]]; then
-    print_color blue "[DRY RUN] Would remove trailing whitespace from: $file"
+    [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would remove trailing whitespace from: $file"
   else
-    echo -n "  → Removing trailing whitespace... "
+    [[ "${PARALLEL}" != true ]] && echo -n "  → Removing trailing whitespace... "
     platform_command \
       "sed -i '' 's/[[:space:]]*$//' '${file}'" \
       "sed -i 's/[[:space:]]*$//' '${file}'"
-    print_color green "✓"
+    [[ "${PARALLEL}" != true ]] && print_color green "✓"
   fi
 }
 
@@ -95,11 +113,11 @@ convert_tabs_to_spaces() {
   fi
 
   if [[ "${DRY_RUN}" == true ]]; then
-    print_color blue "[DRY RUN] Would convert tabs to ${tab_width} spaces in: $file"
+    [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would convert tabs to ${tab_width} spaces in: $file"
   else
-    echo -n "  → Converting tabs to ${tab_width} spaces... "
+    [[ "${PARALLEL}" != true ]] && echo -n "  → Converting tabs to ${tab_width} spaces... "
     expand -t "${tab_width}" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
-    print_color green "✓"
+    [[ "${PARALLEL}" != true ]] && print_color green "✓"
   fi
 }
 
@@ -110,12 +128,12 @@ ensure_trailing_newline() {
   local file="${1:?Error: file required}"
 
   if [[ "${DRY_RUN}" == true ]]; then
-    print_color blue "[DRY RUN] Would ensure single trailing newline in: $file"
+    [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would ensure single trailing newline in: $file"
   else
-    echo -n "  → Ensuring single trailing newline... "
+    [[ "${PARALLEL}" != true ]] && echo -n "  → Ensuring single trailing newline... "
     # First, check if file is empty
     if [[ ! -s "$file" ]]; then
-      print_color yellow "empty file, skipping"
+      [[ "${PARALLEL}" != true ]] && print_color yellow "empty file, skipping"
       return 0
     fi
     
@@ -136,7 +154,7 @@ ensure_trailing_newline() {
       echo >> "$tmpfile" && mv "$tmpfile" "$file"
     fi
     
-    print_color green "✓"
+    [[ "${PARALLEL}" != true ]] && print_color green "✓"
   fi
 }
 
@@ -604,7 +622,7 @@ process_file() {
 
   # Skip binary files early
   if is_binary_file "$file"; then
-    if [[ "${VERBOSE}" == true ]]; then
+    if [[ "${VERBOSE}" == true ]] && [[ "${PARALLEL}" != true ]]; then
       print_color yellow "Skipping binary file: $file"
     fi
     return 2  # Return 2 for skipped files
@@ -617,15 +635,18 @@ process_file() {
       # Shell script with shebang - allow processing
       ext="sh"
     else
-      if [[ "${VERBOSE}" == true ]]; then
+      if [[ "${VERBOSE}" == true ]] && [[ "${PARALLEL}" != true ]]; then
         print_color yellow "Skipping unsupported file type: $file (.${ext})"
       fi
       return 2  # Return 2 for skipped files
     fi
   fi
 
-  echo
-  print_color blue "━━━ Processing: $file ━━━"
+  # Only show individual file headers in non-parallel mode
+  if [[ "${PARALLEL}" != true ]]; then
+    echo
+    print_color blue "━━━ Processing: $file ━━━"
+  fi
 
   # Apply operations only to allowed files
   if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" == true ]]; then
@@ -672,6 +693,7 @@ OPTIONS:
   -f, --formatters    Apply language formatters
   -s, --sorted        Apply keep-sorted to marked sections
   -N, --newline       Ensure exactly one trailing newline at EOF
+  -p, --parallel [N]  Process files in parallel (default: ${MAX_JOBS} jobs)
   -n, --dry-run       Show what would be done
   -v, --verbose       Verbose output
   -c, --config FILE   Use alternate config file
@@ -731,6 +753,16 @@ while [[ $# -gt 0 ]]; do
       DO_NEWLINE=true
       shift
       ;;
+    -p|--parallel)
+      PARALLEL=true
+      # Check if next argument is a number
+      if [[ ${2:-} =~ ^[0-9]+$ ]]; then
+        MAX_JOBS=$2
+        shift 2
+      else
+        shift
+      fi
+      ;;
     -v|--verbose)
       VERBOSE=true
       shift
@@ -776,39 +808,129 @@ if [[ ${#FILES[@]} -eq 0 ]]; then
   fi
 fi
 
-# Main execution
-main() {
+# Process a single file in background
+# Args: $1 - File path
+# Returns: Exit code via temp file
+process_file_parallel() {
+  local file="$1"
+  local tmpdir="$2"
+  local index="$3"
+  
+  # Create a unique result file for this job
+  local result_file="${tmpdir}/result_${index}"
+  
+  # Process the file and capture the result
+  if process_file "$file"; then
+    echo "0" > "$result_file"
+  else
+    local result=$?
+    echo "$result" > "$result_file"
+  fi
+}
+
+# Process files in parallel
+# Args: Array of files to process
+# Returns: Summary of processed/skipped/failed
+process_files_parallel() {
+  local tmpdir
+  tmpdir=$(mktemp -d) || {
+    print_color red "Failed to create temp directory for parallel processing"
+    return 1
+  }
+  
+  # Ensure cleanup on exit
+  trap "rm -rf '$tmpdir'" EXIT
+  
+  local job_count=0
+  local file_index=0
+  local total_files=$#
+  
+  # Arrays to track results
   local processed=0
   local skipped=0
   local failed=0
+  
+  print_color blue "Processing ${total_files} files with up to ${MAX_JOBS} parallel jobs..."
+  echo
+  
+  # Process all files
+  for file in "$@"; do
+    # Wait if we've reached max parallel jobs
+    while (( $(jobs -r | wc -l) >= MAX_JOBS )); do
+      sleep 0.1
+    done
+    
+    # Launch background job
+    (
+      process_file_parallel "$file" "$tmpdir" "$file_index"
+    ) &
+    
+    ((file_index++))
+    
+    # Show progress every 10 files in non-verbose mode
+    if [[ "${VERBOSE}" != true ]] && (( file_index % 10 == 0 )); then
+      echo -ne "\r  Progress: ${file_index}/${total_files} files..."
+    fi
+  done
+  
+  # Wait for all background jobs to complete
+  wait
+  
+  # Clear progress line
+  if [[ "${VERBOSE}" != true ]]; then
+    echo -ne "\r                                        \r"
+  fi
+  
+  # Collect results
+  for ((i=0; i<file_index; i++)); do
+    local result_file="${tmpdir}/result_${i}"
+    if [[ -f "$result_file" ]]; then
+      local result=$(cat "$result_file")
+      case "$result" in
+        0) ((processed++)) ;;
+        2) ((skipped++)) ;;
+        *) ((failed++)) ;;
+      esac
+    else
+      ((failed++))
+    fi
+  done
+  
+  # Clean up temp directory
+  rm -rf "$tmpdir"
+  
+  # Display summary
+  echo
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "📋 DRY RUN COMPLETE (PARALLEL)"
+  else
+    print_color green "✅ FORMATTING COMPLETE (PARALLEL)"
+  fi
+  echo "   Processed: ${processed} files"
+  if [[ $skipped -gt 0 ]]; then
+    echo "   Skipped: ${skipped} files"
+  fi
+  if [[ $failed -gt 0 ]]; then
+    print_color red "   Failed: ${failed} files"
+  fi
+}
 
+# Main execution
+main() {
+  # Collect all files to process
+  local all_files=()
+  
   for file in "${FILES[@]}"; do
     if [[ -e "$file" ]]; then
       if [[ -d "$file" ]]; then
-        # Process directory
+        # Add all files from directory
         while IFS= read -r -d '' f; do
-          local result
-          process_file "$f" || result=$?
-          if [[ ${result:-0} -eq 0 ]]; then
-            ((processed++))
-          elif [[ ${result:-0} -eq 2 ]]; then
-            ((skipped++))
-          else
-            ((failed++))
-          fi
-          result=0  # Reset for next iteration
+          all_files+=("$f")
         done < <(find "$file" -type f -print0)
       else
-        # Process file
-        local result
-        process_file "$file" || result=$?
-        if [[ ${result:-0} -eq 0 ]]; then
-          ((processed++))
-        elif [[ ${result:-0} -eq 2 ]]; then
-          ((skipped++))
-        else
-          ((failed++))
-        fi
+        # Add single file
+        all_files+=("$file")
       fi
     else
       # Handle glob patterns
@@ -816,43 +938,64 @@ main() {
       for f in $file; do
         if [[ -f "$f" ]]; then
           found=true
-          local result
-          process_file "$f" || result=$?
-          if [[ ${result:-0} -eq 0 ]]; then
-            ((processed++))
-          elif [[ ${result:-0} -eq 2 ]]; then
-            ((skipped++))
-          else
-            ((failed++))
-          fi
+          all_files+=("$f")
         fi
       done
-
+      
       if [[ "${found}" == false ]]; then
         print_color yellow "No files match: $file"
       fi
     fi
   done
-
-  # Summary
-  echo
-  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-  if [[ "${DRY_RUN}" == true ]]; then
-    print_color blue "📋 DRY RUN COMPLETE"
-    echo "   Would process: ${processed} files"
-  else
-    print_color green "✅ FORMATTING COMPLETE"
-    echo "   Processed: ${processed} files"
+  
+  # Check if we have any files to process
+  if [[ ${#all_files[@]} -eq 0 ]]; then
+    print_color yellow "No files to process"
+    return 0
   fi
   
-  if [[ ${skipped} -gt 0 ]]; then
-    echo "   Skipped: ${skipped} files"
-  fi
-
-  if [[ ${failed} -gt 0 ]]; then
-    print_color red "   Failed: ${failed} files"
-    exit 1
+  # Process files either in parallel or sequentially
+  if [[ "${PARALLEL}" == true ]]; then
+    # Process in parallel
+    process_files_parallel "${all_files[@]}"
+  else
+    # Process sequentially (original behavior)
+    local processed=0
+    local skipped=0
+    local failed=0
+    
+    for file in "${all_files[@]}"; do
+      local result
+      process_file "$file" || result=$?
+      if [[ ${result:-0} -eq 0 ]]; then
+        ((processed++))
+      elif [[ ${result:-0} -eq 2 ]]; then
+        ((skipped++))
+      else
+        ((failed++))
+      fi
+    done
+    
+    # Summary for sequential processing
+    echo
+    print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    if [[ "${DRY_RUN}" == true ]]; then
+      print_color blue "📋 DRY RUN COMPLETE"
+      echo "   Would process: ${processed} files"
+    else
+      print_color green "✅ FORMATTING COMPLETE"
+      echo "   Processed: ${processed} files"
+    fi
+    
+    if [[ ${skipped} -gt 0 ]]; then
+      echo "   Skipped: ${skipped} files"
+    fi
+    
+    if [[ ${failed} -gt 0 ]]; then
+      print_color red "   Failed: ${failed} files"
+      exit 1
+    fi
   fi
 }
 
