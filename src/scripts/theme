@@ -14,13 +14,14 @@ ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 WEZTERM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm"
+KITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
 
 # Default themes
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
 DARK_THEME="${THEME_DARK:-tokyonight_storm}"
 
 # Ensure directories exist
-mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR"
+mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR" "$KITTY_DIR"
 
 # Function to detect macOS appearance
 detect_macos_appearance() {
@@ -139,6 +140,23 @@ return theme
 EOF
     chmod 644 "$wezterm_theme_file"
     echo "  ✓ WezTerm theme updated"
+    
+    # Update Kitty
+    if [[ -f "$theme_dir/kitty.conf" ]]; then
+        cp "$theme_dir/kitty.conf" "$KITTY_DIR/theme.conf"
+        # Reload Kitty configuration if it's running
+        if pgrep -x "kitty" > /dev/null; then
+            # Find Kitty socket and reload config
+            local kitty_socket=$(ls /tmp/kitty-* 2>/dev/null | head -1)
+            if [[ -n "$kitty_socket" ]]; then
+                kitty @ --to unix:"$kitty_socket" load-config 2>/dev/null || true
+            else
+                # Fallback: try without socket specification
+                kitty @ load-config 2>/dev/null || true
+            fi
+        fi
+        echo "  ✓ Kitty theme updated"
+    fi
     
     # Save theme state - this is what zsh sources on startup
     cat > "$CONFIG_DIR/current-theme.sh" << EOF
