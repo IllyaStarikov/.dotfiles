@@ -1,339 +1,354 @@
 # macOS
+# keep-sorted start
 .DS_Store
 .DS_Store?
-._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
+._*
 Thumbs.db
+ehthumbs.db
+# keep-sorted end
 
 # Editor artifacts
-tags
-tags.temp
-tags.lock
-.vscode/
-*.swp
+# keep-sorted start
 *.swo
+*.swp
+*.un~
 *~
 .netrwhist
-Session.vim
-*.un~
 .vim/
+.vscode/
+Session.vim
+tags
+tags.lock
+tags.temp
+# keep-sorted end
 
 # Build artifacts
-node_modules/
+# keep-sorted start
+*.log
+.next/
 .npm
+.pnp.*
 .pnpm-store/
 .yarn/
-.pnp.*
-.next/
-dist/
 build/
-*.log
+dist/
+node_modules/
+# keep-sorted end
 
 # Environment files
+# keep-sorted start
 .env
-.env.local
 .env.*.local
+.env.local
+# keep-sorted end
 
 # IDE
-.idea/
+# keep-sorted start
 *.iml
+.idea/
+# keep-sorted end
 
 # LaTeX
-*.aux
-*.lof
-*.log
-*.lot
-*.fls
-*.out
-*.toc
-*.fmt
-*.fot
-*.cb
-*.cb2
-.*.lb
-*.dvi
-*.xdv
+# keep-sorted start
+*-blx.aux
+*-blx.bib
 *-converted-to.*
+.*.lb
+*.acn
+*.acr
+*.alg
+*.aux
+*.auxlock
 *.bbl
 *.bcf
 *.blg
-*-blx.aux
-*-blx.bib
-*.run.xml
-*.fdb_latexmk
-*.synctex
-*.synctex(busy)
-*.synctex.gz
-*.synctex.gz(busy)
-*.pdfsync
-*.ps
+*.cb
+*.cb2
+*.dpth
+*.dvi
 *.eps
-*.alg
-*.loa
-*.nav
-*.snm
-*.vrb
-*.xcp
-*.xsp
-*.acn
-*.acr
+*.fdb_latexmk
+*.figlist
+*.fls
+*.fmt
+*.fot
 *.glg
 *.glo
 *.gls
 *.glsdefs
 *.ist
+*.latexmain
+*.loa
+*.loe
+*.lof
+*.log
+*.lot
+*.lpz
+*.lzs
+*.lzo
 *.maf
+*.md5
 *.mlf
 *.mlt
 *.mtc[0-9]*
+*.nav
+*.out
+*.pdfsync
+*.ps
+*.pytxcode
+*.run.xml
 *.slf[0-9]*
 *.slt[0-9]*
-*.stc[0-9]*
-*.pytxcode
-pythontex-files-*/
-*.loe
-*.dpth
-*.md5
-*.auxlock
-*.figlist
-*.fdb_latexmk
-*.latexmain
-*.lpz
-*.lzo
-*.lzs
+*.snm
 *.sta
+*.stc[0-9]*
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.toc
 *.upa
 *.upb
+*.vrb
+*.xcp
+*.xdv
+*.xsp
+pythontex-files-*/
+# keep-sorted end
 
 # Python
-__pycache__/
-*.py[cod]
+# keep-sorted start
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-*.manifest
-*.spec
-pip-log.txt
-pip-delete-this-directory.txt
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
 *.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+*.egg
+*.egg-info/
+*.log
+*.manifest
 *.mo
 *.pot
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-instance/
-.webassets-cache
-.scrapy
-docs/_build/
-.pybuilder/
-target/
-.ipynb_checkpoints
-profile_default/
-ipython_config.py
-__pypackages__/
-celerybeat-schedule
-celerybeat.pid
+*.py,cover
+*.py[cod]
 *.sage.py
+*.so
+*.spec
+.cache
+.coverage
+.coverage.*
+.dmypy.json
+.eggs/
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+.hypothesis/
+.installed.cfg
+.ipynb_checkpoints
+.mypy_cache/
+.nox/
+.pdm-build/
+.pdm-python
+.pdm.toml
+.pyre/
+.pybuilder/
+.pytest_cache/
+.Python
+.pytype/
+.ropeproject
+.ruff_cache/
+.scrapy
 .spyderproject
 .spyproject
-.ropeproject
-/site
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-.pytype/
-cython_debug/
-.pdm.toml
-.pdm-python
-.pdm-build/
-.ruff_cache/
+.tox/
 .uv/
+.venv
+.webassets-cache
+/site
+__pycache__/
+__pypackages__/
+build/
+celerybeat-schedule
+celerybeat.pid
+cover/
+coverage.xml
+cython_debug/
+db.sqlite3
+db.sqlite3-journal
+develop-eggs/
+dist/
+dmypy.json
+docs/_build/
+downloads/
+eggs/
+ENV/
+env.bak/
+env/
+htmlcov/
+instance/
+ipython_config.py
+lib/
+lib64/
+local_settings.py
+MANIFEST
+nosetests.xml
+parts/
+pip-delete-this-directory.txt
+pip-log.txt
+profile_default/
+sdist/
+share/python-wheels/
+target/
+var/
+venv.bak/
+venv/
+wheels/
+# keep-sorted end
 
 # C++
+# keep-sorted start
+*.a
+*.app
+*.aps
+*.cachefile
+*.cbp
+*.cmd
 *.d
-*.o
-*.obj
-*.ko
+*.dll
+*.dSYM/
+*.dylib
 *.elf
-*.ilk
-*.map
+*.exe
 *.exp
 *.gch
-*.pch
-*.lib
-*.a
-*.la
-*.lo
-*.dll
-*.so
-*.so.*
-*.dylib
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
 *.hex
-*.dSYM/
-*.su
+*.i*86
 *.idb
-*.pdb
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-*.slo
-*.lai
+*.ilk
+*.ko
 *.la
-*.a
+*.lai
 *.lib
-*.exe
-*.out
-*.app
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-build/
-build-*/
-*.cbp
-.cproject
-.project
-.settings/
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.sln
-*.suo
-*.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-*.VC.VC.opendb
-ipch/
-*.aps
+*.lo
+*.map
+*.mod*
 *.ncb
+*.o
+*.obj
 *.opendb
 *.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-*.VC.VC.opendb
-.vs/
-x64/
-x86/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
+*.out
+*.pch
+*.pdb
 *.rsuser
+*.sdf
+*.sln
+*.sln.docstates
+*.slo
+*.so
+*.so.*
+*.su
 *.suo
 *.user
 *.userosscache
-*.sln.docstates
-.vscode/
+*.VC.db
+*.VC.VC.opendb
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.x86_64
 .cache/
 .ccls-cache/
+.cproject
+.project
+.settings/
+.tmp_versions/
+.vs/
+.vscode/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Bb]in/
+[Ll]og/
+[Ll]ogs/
+[Oo]bj/
+_deps
+bld/
+build-*/
+build/
+CMakeCache.txt
+CMakeFiles
+CMakeLists.txt.user
+CMakeScripts
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+dkms.conf
+install_manifest.txt
+ipch/
+Mkfile.old
+Module.symvers
+modules.order
+Testing
+x64/
+x86/
+# keep-sorted end
 
 # Rust
-/target/
+# keep-sorted start
 **/*.rs.bk
 *.pdb
+/target/
+# keep-sorted end
 
 # Ruby
+# keep-sorted start
 *.gem
 .bundle/
-Gemfile.lock
-vendor/bundle/
 .rbenv-version
 .ruby-version
 .rvmrc
+Gemfile.lock
+vendor/bundle/
+# keep-sorted end
 
 # Lua
 luac.out
 
 # Backup and temp files
-*.bak
-*.tmp
-*.temp
-*.orig
-*.old
+# keep-sorted start
 *.backup
+*.bak
+*.old
+*.orig
+*.temp
+*.tmp
+# keep-sorted end
 
 # Secrets and credentials
-*.pem
-*.key
+# keep-sorted start
 *.crt
+*.key
 *.p12
+*.pem
 *.pfx
-id_rsa*
-id_ed25519*
-id_dsa*
 .dotfiles.private/
-secrets/
 credentials/
+id_dsa*
+id_ed25519*
+id_rsa*
+secrets/
+# keep-sorted end
 
 # tmux
+# keep-sorted start
 tmux-client-*.log
 tmux-server-*.log
+# keep-sorted end
 
 # Miscellaneous
-*.lock
-!package-lock.json
-!yarn.lock
-!pnpm-lock.yaml
+# keep-sorted start
 !Cargo.lock
+!package-lock.json
+!pnpm-lock.yaml
+!yarn.lock
+*.lock
 .history/
 .localhistory/
+# keep-sorted end
