@@ -24,6 +24,7 @@
 #   -s, --sorted            Run keep-sorted on marked sections
 #   -N, --newline           Ensure exactly one trailing newline at EOF
 #   -p, --parallel [jobs]   Process files in parallel (default: CPU cores)
+#   --type TYPE             Override file type detection (see --help for types)
 #   -n, --dry-run           Show what would be done without making changes
 #   -v, --verbose           Show detailed output
 #   -h, --help              Show this help message
@@ -55,6 +56,7 @@ DO_NEWLINE=false
 VERBOSE=false
 DRY_RUN=false
 PARALLEL=false
+FORCE_TYPE=""  # Override file type detection
 # Default to number of CPU cores, fallback to 8
 if command -v nproc >/dev/null 2>&1; then
   MAX_JOBS=$(nproc)
@@ -108,7 +110,12 @@ convert_tabs_to_spaces() {
   local tab_width=2
 
   # Python uses 4 spaces per Google style guide
-  if [[ "$file" =~ \.(py|pyw|pyi)$ ]]; then
+  if [[ -n "${FORCE_TYPE}" ]]; then
+    local ext=$(map_type_to_extension "${FORCE_TYPE}")
+    if [[ "$ext" =~ ^(py|pyw|pyi)$ ]]; then
+      tab_width=4
+    fi
+  elif [[ "$file" =~ \.(py|pyw|pyi)$ ]]; then
     tab_width=4
   fi
 
@@ -331,6 +338,110 @@ except:
   fi
 }
 
+# Map a type name to an extension
+# Args: $1 - Type name (e.g., "python", "shell", "cpp")
+# Returns: The primary extension for that type
+map_type_to_extension() {
+  local type_name="$(echo "$1" | tr '[:upper:]' '[:lower:]')"  # Convert to lowercase
+  
+  case "$type_name" in
+    python|py) echo "py" ;;
+    c) echo "c" ;;
+    cpp|c++|cplusplus) echo "cpp" ;;
+    shell|sh|bash|zsh) echo "sh" ;;
+    lua) echo "lua" ;;
+    javascript|js) echo "js" ;;
+    typescript|ts) echo "ts" ;;
+    json) echo "json" ;;
+    yaml|yml) echo "yaml" ;;
+    html) echo "html" ;;
+    css) echo "css" ;;
+    scss) echo "scss" ;;
+    sass) echo "sass" ;;
+    less) echo "less" ;;
+    markdown|md) echo "md" ;;
+    rust|rs) echo "rs" ;;
+    go|golang) echo "go" ;;
+    text|txt) echo "txt" ;;
+    xml) echo "xml" ;;
+    svg) echo "svg" ;;
+    graphql|gql) echo "graphql" ;;
+    vue) echo "vue" ;;
+    svelte) echo "svelte" ;;
+    swift) echo "swift" ;;
+    sql) echo "sql" ;;
+    latex|tex) echo "tex" ;;
+    bibtex|bib) echo "bib" ;;
+    cmake) echo "cmake" ;;
+    ruby|rb) echo "rb" ;;
+    toml) echo "toml" ;;
+    perl|pl) echo "pl" ;;
+    assembly|asm) echo "asm" ;;
+    makefile|mk|make) echo "makefile" ;;
+    *)
+      # Try to use the type name directly as an extension
+      echo "$type_name"
+      ;;
+  esac
+}
+
+# Get list of supported languages (types) from config
+# Returns human-readable list of supported types with descriptions
+get_supported_types() {
+  if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
+    python3 -c "
+import json
+try:
+    with open('${CONFIG_FILE}') as f:
+        config = json.load(f)
+        extensions = config.get('extensions', {})
+        
+        # Create mapping of language to extensions
+        lang_to_exts = {}
+        for ext, info in extensions.items():
+            lang = info.get('language', ext.upper())
+            if lang not in lang_to_exts:
+                lang_to_exts[lang] = []
+            lang_to_exts[lang].append(ext)
+        
+        # Sort and format output
+        for lang in sorted(lang_to_exts.keys()):
+            exts = ', '.join(sorted(lang_to_exts[lang])[:5])  # Show first 5 extensions
+            if len(lang_to_exts[lang]) > 5:
+                exts += ', ...'
+            print(f'  {lang.lower():<15} # {lang} files ({exts})')
+except Exception as e:
+    print(f'Error loading config: {e}')
+"
+  else
+    # Fallback type list
+    cat << 'EOF'
+  python          # Python files (py, pyw, pyi)
+  c               # C files (c, h)
+  cpp             # C++ files (cpp, cc, cxx, hpp, hxx)
+  shell,sh        # Shell scripts (sh, bash, zsh)
+  lua             # Lua files (lua)
+  javascript,js   # JavaScript files (js, jsx)
+  typescript,ts   # TypeScript files (ts, tsx)
+  json            # JSON files (json)
+  yaml            # YAML files (yaml, yml)
+  html            # HTML files (html)
+  css             # CSS files (css, scss, sass, less)
+  markdown,md     # Markdown files (md, mdx)
+  rust,rs         # Rust files (rs)
+  go              # Go files (go)
+  text,txt        # Text files (txt, text, log, csv, tsv)
+  xml             # XML files (xml, svg)
+  sql             # SQL files (sql)
+  ruby,rb         # Ruby files (rb, rake, gemspec)
+  toml            # TOML files (toml)
+  perl,pl         # Perl files (pl, pm)
+  assembly,asm    # Assembly files (asm, s, S)
+  makefile,mk     # Makefiles (mk, makefile, Makefile)
+EOF
+  fi
+}
+
 # Check if extension is allowed
 is_extension_allowed() {
   local ext="${1}"
@@ -348,7 +459,15 @@ is_extension_allowed() {
 # Run formatter with priority queue
 run_formatter_with_priority() {
   local file="${1:?Error: file required}"
-  local ext="${file##*.}"
+  local ext
+  
+  # Use forced type if specified, otherwise extract from filename
+  if [[ -n "${FORCE_TYPE}" ]]; then
+    ext=$(map_type_to_extension "${FORCE_TYPE}")
+  else
+    ext="${file##*.}"
+  fi
+  
   local formatted=false
   
   # Get formatters for this extension
@@ -466,7 +585,14 @@ except:
 # Fallback formatters for when config is not available
 format_fallback() {
   local file="${1:?Error: file required}"
-  local ext="${file##*.}"
+  local ext
+  
+  # Use forced type if specified, otherwise extract from filename
+  if [[ -n "${FORCE_TYPE}" ]]; then
+    ext=$(map_type_to_extension "${FORCE_TYPE}")
+  else
+    ext="${file##*.}"
+  fi
   
   case "${ext}" in
     py|pyw|pyi)
@@ -573,7 +699,15 @@ format_fallback() {
 # Apply formatters based on file type
 apply_formatters() {
   local file="${1:?Error: file required}"
-  local ext="${file##*.}"
+  local ext
+  
+  # Use forced type if specified, otherwise extract from filename
+  if [[ -n "${FORCE_TYPE}" ]]; then
+    ext=$(map_type_to_extension "${FORCE_TYPE}")
+  else
+    ext="${file##*.}"
+  fi
+  
   local basename="$(basename "$file")"
 
   # Extension should already be validated by process_file
@@ -612,7 +746,16 @@ apply_formatters() {
 # Process a single file
 process_file() {
   local file="${1:?Error: file required}"
-  local ext="${file##*.}"
+  local ext
+  
+  # Use forced type if specified, otherwise extract from filename
+  if [[ -n "${FORCE_TYPE}" ]]; then
+    # Map the type name to an extension
+    ext=$(map_type_to_extension "${FORCE_TYPE}")
+  else
+    ext="${file##*.}"
+  fi
+  
   local basename="$(basename "$file")"
 
   if [[ ! -f "$file" ]]; then
@@ -694,6 +837,7 @@ OPTIONS:
   -s, --sorted        Apply keep-sorted to marked sections
   -N, --newline       Ensure exactly one trailing newline at EOF
   -p, --parallel [N]  Process files in parallel (default: ${MAX_JOBS} jobs)
+  --type TYPE         Override file type detection (see supported types below)
   -n, --dry-run       Show what would be done
   -v, --verbose       Verbose output
   -c, --config FILE   Use alternate config file
@@ -708,12 +852,17 @@ CONFIGURATION:
 SUPPORTED EXTENSIONS:
 $(get_allowed_extensions | tr ' ' '\n' | sort | column -c 80)
 
+SUPPORTED TYPES (for --type option):
+$(get_supported_types)
+
 EXAMPLES:
-  fixy                    # Format all tracked files
-  fixy main.cpp          # Format single file
-  fixy -t *.py          # Remove trailing whitespace
-  fixy -n --all         # Dry run
-  fixy -v *.py          # Verbose output
+  fixy                           # Format all tracked files
+  fixy main.cpp                  # Format single file
+  fixy -t *.py                   # Remove trailing whitespace
+  fixy --type python script      # Format script as Python
+  fixy --type sh Dockerfile      # Format Dockerfile as shell script
+  fixy -n --all                  # Dry run
+  fixy -v *.py                   # Verbose output
 
 EOF
 }
@@ -773,6 +922,15 @@ while [[ $# -gt 0 ]]; do
       ;;
     -c|--config)
       CONFIG_FILE="$2"
+      shift 2
+      ;;
+    --type)
+      if [[ -z "${2:-}" ]]; then
+        print_color red "Error: --type requires an argument"
+        usage
+        exit 1
+      fi
+      FORCE_TYPE="$2"
       shift 2
       ;;
     -*)
