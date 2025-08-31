@@ -119,20 +119,37 @@ config.anti_alias_custom_block_glyphs = true
 config.treat_east_asian_ambiguous_width_as_wide = false
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
--- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading
+-- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading with error handling
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- Load the dynamic theme configuration
-local home = os.getenv("HOME")
-local theme_path = home .. "/.config/wezterm/theme.lua"
-local theme_ok, theme = pcall(dofile, theme_path)
+-- Load the dynamic theme configuration with better error handling
+local function load_theme_safe()
+  local home = os.getenv("HOME")
+  local theme_path = home .. "/.config/wezterm/theme.lua"
+  
+  -- Use pcall to safely load the theme
+  local theme_ok, theme_result = pcall(function()
+    local f = loadfile(theme_path)
+    if f then
+      return f()
+    end
+    return nil
+  end)
+  
+  if theme_ok and theme_result and theme_result.colors then
+    return theme_result
+  end
+  
+  -- Return nil if theme loading fails
+  return nil
+end
 
-if theme_ok and theme then
-  -- Apply the colors from the theme
+local theme = load_theme_safe()
+if theme and theme.colors then
   config.colors = theme.colors
   config.bold_brightens_ansi_colors = true
 else
-  -- Fallback to default theme if theme file doesn't exist
+  -- Fallback to built-in theme if custom theme fails
   config.color_scheme = 'tokyonight_storm'
   config.bold_brightens_ansi_colors = true
 end
@@ -154,6 +171,9 @@ config.window_close_confirmation = 'NeverPrompt'
 config.window_background_opacity = 1.0
 config.macos_window_background_blur = 0
 
+-- Disable native fullscreen to prevent hangs
+config.native_macos_fullscreen_mode = false
+
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 📜 SCROLLING & HISTORY
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -168,19 +188,14 @@ config.enable_scroll_bar = false
 config.mouse_wheel_scrolls_tabs = false
 config.hide_mouse_cursor_when_typing = true
 
--- Mouse bindings matching Alacritty
+-- Simplified mouse bindings to prevent event conflicts
 config.mouse_bindings = {
   -- Paste with middle click
   {
     event = { Down = { streak = 1, button = 'Middle' } },
     action = wezterm.action.PasteFrom 'PrimarySelection',
   },
-  -- Right click to extend selection
-  {
-    event = { Down = { streak = 1, button = 'Right' } },
-    action = wezterm.action.ExtendSelectionToMouseCursor 'Word',
-  },
-  -- CMD+Click to open links
+  -- CMD+Click to open links (simplified)
   {
     event = { Up = { streak = 1, button = 'Left' } },
     mods = 'CMD',
@@ -270,9 +285,8 @@ config.keys = {
   
   -- Search
   { key = 'f', mods = 'CMD', action = wezterm.action.Search { CaseSensitiveString = '' } },
-  { key = 'b', mods = 'CMD|SHIFT', action = wezterm.action.Search { CaseSensitiveString = '' } },
   
-  -- Tab management (WezTerm native tabs, better than tmux for this)
+  -- Tab management with proper confirmation
   { key = 't', mods = 'CMD', action = wezterm.action.SpawnTab 'CurrentPaneDomain' },
   { key = 'w', mods = 'CMD', action = wezterm.action.CloseCurrentTab { confirm = false } },
   { key = '[', mods = 'CMD', action = wezterm.action.ActivateTabRelative(-1) },
