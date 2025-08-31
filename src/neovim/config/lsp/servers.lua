@@ -77,29 +77,31 @@ local function setup_lsp()
 			-- Note: sourcekit (Swift) must be installed via Xcode, not Mason
 			-- Note: solargraph (Ruby) may fail if system Ruby is too old
 			ensure_installed = {
-				"pyright", -- Python
+				-- keep-sorted start
+				"bashls", -- Bash/Shell
 				"clangd", -- C/C++
+				"cmake", -- CMake
+				"cssls", -- CSS
+				"dockerls", -- Docker
+				"emmet_ls", -- Emmet for HTML/CSS
+				"gopls", -- Go
+				"html", -- HTML
+				"jsonls", -- JSON
+				"lemminx", -- XML
 				"lua_ls", -- Lua
 				"marksman", -- Markdown
+				"perlnavigator", -- Perl
+				"pyright", -- Python
+				"rust_analyzer", -- Rust
+				-- "solargraph", -- Ruby (commented out - install via gem install solargraph instead)
+				-- sourcekit removed - not available in Mason, configured separately below
+				"sqlls", -- SQL
+				"taplo", -- TOML
 				"texlab", -- LaTeX
 				"ts_ls", -- TypeScript/JavaScript
-				"rust_analyzer", -- Rust
-				"gopls", -- Go
-				"dockerls", -- Docker
 				"yamlls", -- YAML
-				"jsonls", -- JSON
-				"html", -- HTML
-				"cssls", -- CSS
-				"emmet_ls", -- Emmet for HTML/CSS
-				"lemminx", -- XML
-				"cmake", -- CMake
-				"bashls", -- Bash/Shell
 				"zls", -- Zig (can be used for assembly)
-				-- "solargraph", -- Ruby (commented out - install via gem install solargraph instead)
-				"taplo", -- TOML
-				"perlnavigator", -- Perl
-				"sqlls", -- SQL
-				-- sourcekit removed - not available in Mason, configured separately below
+				-- keep-sorted end
 			},
 			automatic_installation = true,
 			-- Disable automatic server setup to prevent duplicates

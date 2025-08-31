@@ -13,12 +13,14 @@ line-ending = "auto"
 
 # Lint configuration
 [lint]
+# keep-sorted start
 select = [
     "E",  # pycodestyle errors
     "F",  # pyflakes
     "I",  # isort
     "W",  # pycodestyle warnings
 ]
+# keep-sorted end
 ignore = []
 
 # Allow autofix for all enabled rules
@@ -26,6 +28,7 @@ fixable = ["ALL"]
 unfixable = []
 
 # Exclude common directories
+# keep-sorted start
 exclude = [
     ".bzr",
     ".direnv",
@@ -49,6 +52,7 @@ exclude = [
     "node_modules",
     "venv",
 ]
+# keep-sorted end
 
 # Python version target
 target-version = "py39"
