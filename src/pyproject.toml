@@ -29,4 +29,6 @@ strict = true
 
 [tool.pycodestyle]
 max-line-length = 100
+# keep-sorted start
 ignore = ["E203", "W503"]
+# keep-sorted end

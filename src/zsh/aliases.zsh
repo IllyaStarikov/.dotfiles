@@ -74,51 +74,51 @@ alias txn="tmuxinator new"
 alias ranger="source ranger"
 
 # Tmux shortcuts
+# keep-sorted start
 alias tm="tmux"
 alias tma="tmux attach"
-alias tmn="tmux new-session"
-alias tml="tmux list-sessions"
 alias tmk="tmux kill-session"
+alias tml="tmux list-sessions"
+alias tmn="tmux new-session"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🌐 GIT WORKFLOW ENHANCEMENT
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-# Beautiful git log
-alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-alias gll="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
-alias glo="git log --oneline --graph --decorate --all"
-
-# Git shortcuts
+# Git shortcuts and workflows
+# keep-sorted start
 alias g="git"
 alias ga="git add"
 alias gaa="git add --all"
+alias gb="git branch"
+alias gba="git branch -a"
 alias gc="git commit"
-alias gcm="git commit -m"
 alias gca="git commit --amend"
-alias gco="git checkout"
 alias gcb="git checkout -b"
+alias gclean="git clean -fd"
+alias gcm="git commit -m"
+alias gco="git checkout"
 alias gd="git diff"
 alias gdc="git diff --cached"
 alias gf="git fetch"
+alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\*\|main\|master' | xargs -n 1 git branch -d"
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gll="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
+alias glo="git log --oneline --graph --decorate --all"
+alias gm="git merge"
 alias gp="git push"
 alias gpl="git pull"
+alias gr="git rebase"
+alias greset="git reset --hard HEAD"
+alias gri="git rebase -i"
 alias gs="git status"
 alias gst="git stash"
 alias gstp="git stash pop"
-alias gb="git branch"
-alias gba="git branch -a"
-alias gm="git merge"
-alias gr="git rebase"
-alias gri="git rebase -i"
-alias greset="git reset --hard HEAD"
-alias gclean="git clean -fd"
-
-# Advanced git workflows
-alias gwip="git add -A && git commit -m 'WIP: work in progress'"
-alias gunwip="git log -n 1 | grep -q -c 'WIP' && git reset HEAD~1"
 alias gundo="git reset --soft HEAD~1"
-alias gfresh="git checkout main && git pull && git branch --merged | grep -v '\*\|main\|master' | xargs -n 1 git branch -d"
+alias gunwip="git log -n 1 | grep -q -c 'WIP' && git reset HEAD~1"
+alias gwip="git add -A && git commit -m 'WIP: work in progress'"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🔍 SEARCH & FIND UTILITIES
@@ -137,13 +137,15 @@ alias fixmes="rg -n --no-heading '(FIXME|FIX)'"
 alias notes="rg -n --no-heading '(NOTE|NOTES)'"
 
 # File type specific searches
-alias pygrep="rg --type py"
-alias jsgrep="rg --type js"
-alias tsgrep="rg --type ts"
+# keep-sorted start
 alias cssgrep="rg --type css"
 alias htmlgrep="rg --type html"
-alias mdgrep="rg --type md"
+alias jsgrep="rg --type js"
 alias luagrep="rg --type lua"
+alias mdgrep="rg --type md"
+alias pygrep="rg --type py"
+alias tsgrep="rg --type ts"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🌈 ENHANCED SYSTEM UTILITIES
@@ -192,12 +194,14 @@ alias .4="cd ../../../../"
 alias .5="cd ../../../../.."
 
 # Quick directory access
-alias home="cd ~"
+# keep-sorted start
 alias desktop="cd ~/Desktop"
-alias downloads="cd ~/Downloads"
 alias documents="cd ~/Documents"
-alias projects="cd ~/Projects"
 alias dotfiles="cd ~/.dotfiles"
+alias downloads="cd ~/Downloads"
+alias home="cd ~"
+alias projects="cd ~/Projects"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🎨 THEME & APPEARANCE
@@ -222,15 +226,17 @@ alias pip="pip3"
 
 # Docker shortcuts
 if command -v docker &>/dev/null; then
+    # keep-sorted start
     alias d="docker"
     alias dc="docker-compose"
-    alias dps="docker ps"
-    alias di="docker images"
+    alias dclean="docker system prune -af"
     alias dex="docker exec -it"
+    alias di="docker images"
     alias dlog="docker logs"
+    alias dps="docker ps"
     # Use single quotes to prevent command substitution at alias definition time
     alias dstop='docker stop $(docker ps -q 2>/dev/null)'
-    alias dclean="docker system prune -af"
+    # keep-sorted end
     
     # Function to safely run docker commands only when daemon is running
     docker_safe() {
@@ -244,22 +250,26 @@ if command -v docker &>/dev/null; then
 fi
 
 # Kubernetes shortcuts
+# keep-sorted start
 alias k="kubectl"
+alias kdesc="kubectl describe"
+alias kexec="kubectl exec -it"
+alias kgd="kubectl get deployments"
 alias kgp="kubectl get pods"
 alias kgs="kubectl get services"
-alias kgd="kubectl get deployments"
-alias kdesc="kubectl describe"
 alias klogs="kubectl logs"
-alias kexec="kubectl exec -it"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📄 DOCUMENT PROCESSING
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-alias pandoc="pandoc --wrap=none --listings"
-alias md2pdf="pandoc --pdf-engine=xelatex -o"
-alias md2html="pandoc -t html5 -o"
+# keep-sorted start
 alias md2docx="pandoc -o"
+alias md2html="pandoc -t html5 -o"
+alias md2pdf="pandoc --pdf-engine=xelatex -o"
+alias pandoc="pandoc --wrap=none --listings"
+# keep-sorted end
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🧹 CLEANUP & MAINTENANCE
