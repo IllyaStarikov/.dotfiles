@@ -2,13 +2,13 @@
 
 [user]
     name = Illya Starikov
-    email = illya@starikov.io
+    email = illya@starikov.co
 
 [core]
     editor = nvim
     pager = delta
-	excludesfile = ~/.gitignore
-    
+	  excludesfile = ~/.gitignore
+
 [init]
     defaultBranch = main
 
@@ -35,7 +35,7 @@
     # Status/Info
     s = status -sb
     l = log --oneline --graph --decorate -20
-    
+
     # Basic operations
     a = add
     c = commit
@@ -43,13 +43,13 @@
     pl = pull
     co = checkout
     b = branch
-    
+
     # Useful shortcuts
     aa = add --all
     cm = commit -m
     undo = reset --soft HEAD~1
     amend = commit --amend --no-edit
-    
+
     # Workflow
     main = checkout main
     wip = !git add -A && git commit -m 'WIP'
@@ -71,7 +71,7 @@
 
 # Credential helper for GitHub
 [credential "https://github.com"]
-    helper = 
+    helper =
     helper = !/opt/homebrew/bin/gh auth git-credential
 
 # Security and performance enhancements
