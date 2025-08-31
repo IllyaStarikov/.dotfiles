@@ -59,6 +59,68 @@ it() {
     return 0
 }
 
+# Mock framework
+mock_command() {
+    local cmd="$1"
+    local return_value="${2:-0}"
+    local output="${3:-}"
+    
+    eval "
+    ${cmd}() {
+        [[ -n \"$output\" ]] && echo \"$output\"
+        return $return_value
+    }
+    export -f ${cmd}
+    "
+}
+
+unmock_command() {
+    local cmd="$1"
+    unset -f "$cmd" 2>/dev/null || true
+}
+
+# Cleanup helper
+cleanup_test() {
+    # Remove any test artifacts
+    if [[ -n "${TEST_TMP_DIR:-}" ]] && [[ -d "$TEST_TMP_DIR" ]]; then
+        rm -rf "$TEST_TMP_DIR"/* 2>/dev/null || true
+    fi
+}
+
+# Setup helper
+setup_test() {
+    # Create clean test environment
+    cleanup_test
+    mkdir -p "$TEST_TMP_DIR"
+}
+
+# Run a command with timeout
+run_with_timeout() {
+    local timeout="$1"
+    shift
+    timeout "$timeout" "$@" 2>&1
+}
+
+# Parameterized test support
+run_parameterized_test() {
+    local test_name="$1"
+    shift
+    local params=("$@")
+    
+    for param in "${params[@]}"; do
+        it "$test_name with $param" && {
+            eval "$test_name \"$param\""
+        }
+    done
+}
+
+# Test runner
+run_tests() {
+    # This function is called at the end of test files
+    # It's a placeholder for future enhancements
+    return 0
+}
+
 # Assertion helpers
 assert_file_exists() {
     if [[ -f "$1" ]]; then
@@ -74,6 +136,145 @@ assert_file_executable() {
         return 0
     else
         fail "File is not executable: $1"
+        return 1
+    fi
+}
+
+assert_directory_exists() {
+    if [[ -d "$1" ]]; then
+        return 0
+    else
+        fail "Directory does not exist: $1"
+        return 1
+    fi
+}
+
+assert_symlink_exists() {
+    if [[ -L "$1" ]]; then
+        return 0
+    else
+        fail "Symlink does not exist: $1"
+        return 1
+    fi
+}
+
+assert_command_exists() {
+    if command -v "$1" &>/dev/null; then
+        return 0
+    else
+        fail "Command not found: $1"
+        return 1
+    fi
+}
+
+assert_contains() {
+    local haystack="$1"
+    local needle="$2"
+    if [[ "$haystack" == *"$needle"* ]]; then
+        return 0
+    else
+        fail "String does not contain: $needle"
+        return 1
+    fi
+}
+
+assert_not_contains() {
+    local haystack="$1"
+    local needle="$2"
+    if [[ "$haystack" != *"$needle"* ]]; then
+        return 0
+    else
+        fail "String should not contain: $needle"
+        return 1
+    fi
+}
+
+assert_equals() {
+    local actual="$1"
+    local expected="$2"
+    local tolerance="${3:-0}"
+    
+    if [[ "$tolerance" -eq 0 ]]; then
+        if [[ "$actual" == "$expected" ]]; then
+            return 0
+        else
+            fail "Expected: $expected, Got: $actual"
+            return 1
+        fi
+    else
+        # Numeric comparison with tolerance
+        local diff=$(( actual - expected ))
+        [[ $diff -lt 0 ]] && diff=$(( -diff ))
+        if [[ $diff -le $tolerance ]]; then
+            return 0
+        else
+            fail "Expected: $expected ±$tolerance, Got: $actual"
+            return 1
+        fi
+    fi
+}
+
+assert_not_equals() {
+    if [[ "$1" != "$2" ]]; then
+        return 0
+    else
+        fail "Values should not be equal: $1"
+        return 1
+    fi
+}
+
+assert_greater_than() {
+    if [[ "$1" -gt "$2" ]]; then
+        return 0
+    else
+        fail "$1 is not greater than $2"
+        return 1
+    fi
+}
+
+assert_less_than() {
+    if [[ "$1" -lt "$2" ]]; then
+        return 0
+    else
+        fail "$1 is not less than $2"
+        return 1
+    fi
+}
+
+assert_success() {
+    local exit_code="${1:-$?}"
+    if [[ "$exit_code" -eq 0 ]]; then
+        return 0
+    else
+        fail "Command failed with exit code: $exit_code"
+        return 1
+    fi
+}
+
+assert_failure() {
+    local exit_code="${1:-$?}"
+    if [[ "$exit_code" -ne 0 ]]; then
+        return 0
+    else
+        fail "Command succeeded but should have failed"
+        return 1
+    fi
+}
+
+assert_empty() {
+    if [[ -z "$1" ]]; then
+        return 0
+    else
+        fail "Value is not empty: $1"
+        return 1
+    fi
+}
+
+assert_not_empty() {
+    if [[ -n "$1" ]]; then
+        return 0
+    else
+        fail "Value is empty"
         return 1
     fi
 }
