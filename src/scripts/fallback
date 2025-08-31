@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+#
+# fallback - Execute the first available command from a list
+#
+# Usage: fallback [-v|--verbose] [-h|--help] command1 command2 ...
+#
+# Tries each command in order until one is found in PATH and executes it.
+# By default, runs silently unless all commands fail.
+# Use -v or --verbose to see which commands are being tried.
+
+set -euo pipefail
+
+# Default settings
+VERBOSE=false
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+# Function to print verbose messages
+verbose() {
+  if [[ "$VERBOSE" == true ]]; then
+    echo -e "${YELLOW}[fallback]${NC} $*" >&2
+  fi
+}
+
+# Function to print error messages
+error() {
+  echo -e "${RED}[fallback error]${NC} $*" >&2
+}
+
+# Function to print success messages in verbose mode
+success() {
+  if [[ "$VERBOSE" == true ]]; then
+    echo -e "${GREEN}[fallback]${NC} $*" >&2
+  fi
+}
+
+# Show usage
+usage() {
+  cat << EOF
+fallback - Execute the first available command from a list
+
+Usage: 
+  fallback [-v|--verbose] [-h|--help] command1 command2 ...
+
+Options:
+  -v, --verbose    Show verbose output (which commands are being tried)
+  -h, --help       Show this help message
+
+Examples:
+  # Try to run claude, fall back to codex, then gemini
+  fallback claude codex gemini
+
+  # Same but with verbose output
+  fallback -v claude codex gemini
+
+  # Pass arguments to the command that runs
+  fallback nvim vim vi -- file.txt
+
+Description:
+  Tries each command in order until one is found in PATH and executes it.
+  By default, runs silently unless all commands fail.
+  
+  Use -- to separate fallback commands from arguments to pass to the
+  command that eventually runs.
+
+Exit codes:
+  0 - A command was found and executed successfully
+  1 - No commands were found in PATH
+  Other - Exit code from the executed command
+EOF
+}
+
+# Parse arguments
+COMMANDS=()
+COMMAND_ARGS=()
+PARSING_ARGS=false
+
+while [[ $# -gt 0 ]]; do
+  if [[ "$PARSING_ARGS" == true ]]; then
+    COMMAND_ARGS+=("$1")
+  else
+    case "$1" in
+      -v|--verbose)
+        VERBOSE=true
+        ;;
+      -h|--help)
+        usage
+        exit 0
+        ;;
+      --)
+        PARSING_ARGS=true
+        ;;
+      -*)
+        error "Unknown option: $1"
+        usage
+        exit 1
+        ;;
+      *)
+        COMMANDS+=("$1")
+        ;;
+    esac
+  fi
+  shift
+done
+
+# Check if any commands were provided
+if [[ ${#COMMANDS[@]} -eq 0 ]]; then
+  error "No commands provided"
+  usage
+  exit 1
+fi
+
+# Try each command
+for cmd in "${COMMANDS[@]}"; do
+  verbose "Checking if '$cmd' exists in PATH..."
+  
+  if command -v "$cmd" &> /dev/null; then
+    success "Found '$cmd', executing..."
+    
+    # Execute the command with any provided arguments
+    # We use exec to replace this script's process with the command
+    if [[ ${#COMMAND_ARGS[@]} -gt 0 ]]; then
+      exec "$cmd" "${COMMAND_ARGS[@]}"
+    else
+      exec "$cmd"
+    fi
+  else
+    verbose "'$cmd' not found, trying next..."
+  fi
+done
+
+# If we get here, no commands were found
+error "None of the following commands were found in PATH: ${COMMANDS[*]}"
+exit 1
