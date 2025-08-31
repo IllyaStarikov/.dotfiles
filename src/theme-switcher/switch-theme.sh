@@ -33,6 +33,7 @@
 # FILES MODIFIED:
 #   ~/.config/alacritty/theme.toml     - Alacritty colors
 #   ~/.config/wezterm/theme.lua        - WezTerm colors
+#   ~/.config/kitty/theme.conf         - Kitty colors
 #   ~/.config/tmux/theme.conf          - tmux status bar
 #   ~/.config/starship/theme.toml      - Starship prompt
 #   ~/.config/theme-switcher/current-theme.sh - Shell environment
@@ -123,6 +124,7 @@ ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 WEZTERM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm"
+KITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
 
 # Default themes
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
@@ -351,6 +353,27 @@ update_app_themes() {
     # Update WezTerm
     update_wezterm_theme || success=1
     
+    # Update Kitty
+    if [[ -f "$theme_dir/kitty.conf" ]]; then
+        if atomic_update "$theme_dir/kitty.conf" "$KITTY_DIR/theme.conf"; then
+            log "Updated Kitty theme"
+            # Reload Kitty configuration if it's running
+            if pgrep -x "kitty" > /dev/null; then
+                # Find Kitty socket and reload config
+                local kitty_socket=$(ls /tmp/kitty-* 2>/dev/null | head -1)
+                if [[ -n "$kitty_socket" ]]; then
+                    kitty @ --to unix:"$kitty_socket" load-config 2>/dev/null || true
+                else
+                    # Fallback: try without socket specification
+                    kitty @ load-config 2>/dev/null || true
+                fi
+            fi
+        else
+            log "Failed to update Kitty theme" "ERROR"
+            success=1
+        fi
+    fi
+    
     # Update tmux
     if [[ -f "$theme_dir/tmux.conf" ]]; then
         if atomic_update "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"; then
@@ -420,6 +443,7 @@ backup_config() {
     [[ -f "$CONFIG_DIR/current-theme.sh" ]] && cp "$CONFIG_DIR/current-theme.sh" "$backup_dir/"
     [[ -f "$ALACRITTY_DIR/theme.toml" ]] && cp "$ALACRITTY_DIR/theme.toml" "$backup_dir/"
     [[ -f "$WEZTERM_DIR/theme.lua" ]] && cp "$WEZTERM_DIR/theme.lua" "$backup_dir/"
+    [[ -f "$KITTY_DIR/theme.conf" ]] && cp "$KITTY_DIR/theme.conf" "$backup_dir/"
     [[ -f "$TMUX_DIR/theme.conf" ]] && cp "$TMUX_DIR/theme.conf" "$backup_dir/"
     [[ -f "$STARSHIP_DIR/starship.toml" ]] && cp "$STARSHIP_DIR/starship.toml" "$backup_dir/"
     
@@ -434,6 +458,11 @@ restore_config() {
         [[ -f "$backup_dir/current-theme.sh" ]] && cp "$backup_dir/current-theme.sh" "$CONFIG_DIR/"
         [[ -f "$backup_dir/theme.toml" ]] && cp "$backup_dir/theme.toml" "$ALACRITTY_DIR/"
         [[ -f "$backup_dir/theme.lua" ]] && cp "$backup_dir/theme.lua" "$WEZTERM_DIR/"
+        # Restore Kitty theme - note the file name in backup dir needs checking
+        if [[ -f "$backup_dir/theme.conf" ]]; then
+            # Check if it's Kitty or tmux theme based on content or separate files
+            [[ -f "$KITTY_DIR/theme.conf" ]] && cp "$backup_dir/theme.conf" "$KITTY_DIR/"
+        fi
         [[ -f "$backup_dir/theme.conf" ]] && cp "$backup_dir/theme.conf" "$TMUX_DIR/"
         [[ -f "$backup_dir/starship.toml" ]] && cp "$backup_dir/starship.toml" "$STARSHIP_DIR/"
         
