@@ -132,6 +132,11 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LE
     test_case "Scripts are executable"
     non_executable=()
     for script in "$DOTFILES_DIR/src/scripts/"* "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"; do
+        # Skip non-script files
+        [[ "$script" == *.md ]] && continue
+        [[ "$script" == *.txt ]] && continue
+        [[ "$script" == *.json ]] && continue
+        [[ "$script" == *.formatrc ]] && continue
         [[ -f "$script" ]] && [[ ! -x "$script" ]] && non_executable+=("$(basename "$script")")
     done
     if [[ ${#non_executable[@]} -eq 0 ]]; then
@@ -185,6 +190,24 @@ fi
 
 if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
     echo -e "\n${CYAN}━━━ Functional Tests ━━━${NC}"
+    
+    # Run comprehensive functional tests
+    [[ -x "$TEST_DIR/functional/nvim/comprehensive_nvim_test.sh" ]] && {
+        echo -e "\n${BLUE}Running Neovim functional tests...${NC}"
+        "$TEST_DIR/functional/nvim/comprehensive_nvim_test.sh"
+    }
+    [[ -x "$TEST_DIR/functional/zsh/comprehensive_zsh_test.sh" ]] && {
+        echo -e "\n${BLUE}Running Zsh functional tests...${NC}"
+        "$TEST_DIR/functional/zsh/comprehensive_zsh_test.sh"
+    }
+    [[ -x "$TEST_DIR/functional/tmux/tmux_test.sh" ]] && {
+        echo -e "\n${BLUE}Running tmux functional tests...${NC}"
+        "$TEST_DIR/functional/tmux/tmux_test.sh"
+    }
+    [[ -x "$TEST_DIR/functional/git/git_test.sh" ]] && {
+        echo -e "\n${BLUE}Running Git functional tests...${NC}"
+        "$TEST_DIR/functional/git/git_test.sh"
+    }
     
     test_case "Neovim starts without errors"
     # In CI, use minimal config to avoid plugin errors
@@ -606,6 +629,20 @@ fi
 
 if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "integration" ]] && [[ "$QUICK" -eq 0 ]]; then
     echo -e "\n${CYAN}━━━ Integration Tests ━━━${NC}"
+    
+    # Run comprehensive integration tests
+    [[ -x "$TEST_DIR/integration/setup_workflow_test.sh" ]] && {
+        echo -e "\n${BLUE}Running setup workflow integration tests...${NC}"
+        "$TEST_DIR/integration/setup_workflow_test.sh"
+    }
+    [[ -x "$TEST_DIR/integration/theme_switching_test.sh" ]] && {
+        echo -e "\n${BLUE}Running theme switching integration tests...${NC}"
+        "$TEST_DIR/integration/theme_switching_test.sh"
+    }
+    [[ -x "$TEST_DIR/integration/dotfiles_sync_test.sh" ]] && {
+        echo -e "\n${BLUE}Running dotfiles sync integration tests...${NC}"
+        "$TEST_DIR/integration/dotfiles_sync_test.sh"
+    }
     
     test_case "Python LSP provides diagnostics and completion"
     cat > "$TEST_TMP_DIR/lsp_test.py" << 'EOF'
