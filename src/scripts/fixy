@@ -16,13 +16,14 @@
 #   fixy --trailing-whitespace *.sh # Only remove trailing whitespace
 #
 # OPTIONS:
-#   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format, sort
+#   -a, --all                Remove trailing spaces, convert tabs, normalize quotes, format, sort, ensure newline
 #   -t, --trailing-whitespace Remove trailing whitespace only
 #   -T, --tabs-to-spaces     Convert tabs to spaces only
 #   -q, --smart-quotes       Normalize smart quotes to ASCII only
 #   -f, --formatters         Run language formatters only (default)
 #   -s, --sorted            Run keep-sorted on marked sections
-#   -d, --dry-run           Show what would be done without making changes
+#   -N, --newline           Ensure exactly one trailing newline at EOF
+#   -n, --dry-run           Show what would be done without making changes
 #   -v, --verbose           Show detailed output
 #   -h, --help              Show this help message
 #
@@ -49,6 +50,7 @@ DO_TABS=false
 DO_QUOTES=false
 DO_FORMATTERS=false
 DO_SORTED=false
+DO_NEWLINE=false
 VERBOSE=false
 DRY_RUN=false
 FILES=()
@@ -97,6 +99,43 @@ convert_tabs_to_spaces() {
   else
     echo -n "  → Converting tabs to ${tab_width} spaces... "
     expand -t "${tab_width}" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+    print_color green "✓"
+  fi
+}
+
+# Ensure file ends with exactly one newline
+# Args: $1 - File path to process
+# Removes all trailing newlines and adds exactly one
+ensure_trailing_newline() {
+  local file="${1:?Error: file required}"
+
+  if [[ "${DRY_RUN}" == true ]]; then
+    print_color blue "[DRY RUN] Would ensure single trailing newline in: $file"
+  else
+    echo -n "  → Ensuring single trailing newline... "
+    # First, check if file is empty
+    if [[ ! -s "$file" ]]; then
+      print_color yellow "empty file, skipping"
+      return 0
+    fi
+    
+    # Use a temporary file to ensure atomic operation
+    local tmpfile="${file}.tmp.$$"
+    
+    # Remove all trailing newlines, then add exactly one
+    # This portable approach:
+    # 1. Uses perl to remove ALL trailing blank lines
+    # 2. Adds exactly one newline at the end
+    if command -v perl >/dev/null 2>&1; then
+      # This perl command removes all trailing newlines and whitespace-only lines at the end
+      perl -0777 -pe 's/\s*\z/\n/' "$file" > "$tmpfile" && mv "$tmpfile" "$file"
+    else
+      # Fallback using sed and awk
+      # First remove all trailing blank lines, then ensure one newline
+      sed -e :a -e '/^\s*$/{ $d; N; ba; }' "$file" | awk 'NR > 1 { print prev } { prev = $0 } END { print prev }' > "$tmpfile" && \
+      echo >> "$tmpfile" && mv "$tmpfile" "$file"
+    fi
+    
     print_color green "✓"
   fi
 }
@@ -608,6 +647,10 @@ process_file() {
   if [[ "${DO_SORTED}" == true ]] || [[ "${DO_ALL}" == true ]]; then
     run_keep_sorted "$file"
   fi
+
+  if [[ "${DO_NEWLINE}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+    ensure_trailing_newline "$file"
+  fi
   
   return 0  # Return 0 for successfully processed files
 }
@@ -628,6 +671,7 @@ OPTIONS:
   -q, --quotes        Normalize smart quotes
   -f, --formatters    Apply language formatters
   -s, --sorted        Apply keep-sorted to marked sections
+  -N, --newline       Ensure exactly one trailing newline at EOF
   -n, --dry-run       Show what would be done
   -v, --verbose       Verbose output
   -c, --config FILE   Use alternate config file
@@ -683,6 +727,10 @@ while [[ $# -gt 0 ]]; do
       DO_SORTED=true
       shift
       ;;
+    -N|--newline)
+      DO_NEWLINE=true
+      shift
+      ;;
     -v|--verbose)
       VERBOSE=true
       shift
@@ -709,7 +757,8 @@ done
 
 # Default to all operations if none specified
 if [[ "${DO_TRAILING}" == false ]] && [[ "${DO_TABS}" == false ]] && \
-   [[ "${DO_QUOTES}" == false ]] && [[ "${DO_FORMATTERS}" == false ]]; then
+   [[ "${DO_QUOTES}" == false ]] && [[ "${DO_FORMATTERS}" == false ]] && \
+   [[ "${DO_SORTED}" == false ]] && [[ "${DO_NEWLINE}" == false ]]; then
   DO_ALL=true
 fi
 
