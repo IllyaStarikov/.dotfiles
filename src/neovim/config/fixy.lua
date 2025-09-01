@@ -8,7 +8,8 @@ local config = {
   enabled = true, -- Auto-format enabled by default
   cmd = vim.fn.expand("~/.dotfiles/src/scripts/fixy"),
   timeout = 5000, -- 5 seconds timeout
-  notifications = true,
+  notifications = false, -- Disable notifications for silent operation
+  notify_on_error = true, -- Still notify on errors
 }
 
 -- Check if fixy command exists
@@ -19,7 +20,7 @@ end
 -- Format the current buffer with fixy
 function M.format_buffer()
   if not fixy_exists() then
-    if config.notifications then
+    if config.notify_on_error then
       vim.notify("Fixy not found at: " .. config.cmd, vim.log.levels.ERROR)
     end
     return
@@ -27,7 +28,7 @@ function M.format_buffer()
 
   local filepath = vim.fn.expand("%:p")
   if filepath == "" then
-    if config.notifications then
+    if config.notify_on_error then
       vim.notify("No file to format", vim.log.levels.WARN)
     end
     return
@@ -42,10 +43,24 @@ function M.format_buffer()
     on_exit = function(_, exit_code, _)
       vim.schedule(function()
         if exit_code == 0 then
-          -- Reload the buffer to get the formatted content
-          -- Use silent to avoid messages
-          vim.cmd("silent! checktime")
-          vim.cmd("silent! edit!")
+          -- Get the current buffer
+          local bufnr = vim.api.nvim_get_current_buf()
+          
+          -- Read the formatted file content
+          local formatted_lines = vim.fn.readfile(filepath)
+          
+          -- Update buffer content without triggering reload notifications
+          local modifiable = vim.bo[bufnr].modifiable
+          vim.bo[bufnr].modifiable = true
+          
+          -- Replace buffer content silently
+          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted_lines)
+          
+          -- Mark as not modified since we just saved
+          vim.bo[bufnr].modified = false
+          
+          -- Restore modifiable state
+          vim.bo[bufnr].modifiable = modifiable
           
           -- Restore cursor position and view
           pcall(vim.fn.winrestview, view)
@@ -55,7 +70,7 @@ function M.format_buffer()
             vim.notify("Formatted with fixy", vim.log.levels.INFO)
           end
         else
-          if config.notifications then
+          if config.notify_on_error then
             vim.notify("Fixy formatting failed (exit code: " .. exit_code .. ")", vim.log.levels.ERROR)
           end
         end
@@ -64,7 +79,7 @@ function M.format_buffer()
     on_stderr = function(_, data, _)
       if data and #data > 0 and data[1] ~= "" then
         vim.schedule(function()
-          if config.notifications then
+          if config.notify_on_error then
             vim.notify("Fixy error: " .. table.concat(data, "\n"), vim.log.levels.ERROR)
           end
         end)
@@ -73,7 +88,7 @@ function M.format_buffer()
   })
 
   if job_id <= 0 then
-    if config.notifications then
+    if config.notify_on_error then
       vim.notify("Failed to start fixy", vim.log.levels.ERROR)
     end
   end
@@ -90,18 +105,21 @@ end
 function M.toggle_auto()
   config.enabled = not config.enabled
   local status = config.enabled and "enabled" or "disabled"
+  -- Always show toggle notifications (user action)
   vim.notify("Fixy auto-format " .. status, vim.log.levels.INFO)
 end
 
 -- Enable auto-formatting
 function M.enable_auto()
   config.enabled = true
+  -- Always show enable notifications (user action)
   vim.notify("Fixy auto-format enabled", vim.log.levels.INFO)
 end
 
 -- Disable auto-formatting
 function M.disable_auto()
   config.enabled = false
+  -- Always show disable notifications (user action)
   vim.notify("Fixy auto-format disabled", vim.log.levels.INFO)
 end
 
