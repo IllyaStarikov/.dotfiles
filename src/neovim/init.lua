@@ -138,6 +138,7 @@ local modules = {
   "config.autocmds",   -- Autocommands
   "config.plugins",    -- Plugin management with lazy.nvim
   "config.commands",   -- Custom commands
+  "config.fixy",       -- Fixy formatter integration
 }
 
 for _, module in ipairs(modules) do
