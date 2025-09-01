@@ -35,9 +35,13 @@ map("n", "<Esc>", ":noh<CR>", opts)
 map("n", "<leader>d", '"_d', opts)
 map("v", "<leader>d", '"_d', opts)
 
--- System clipboard
-map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+-- System clipboard - next greatest remap ever : asbjornHaland
+map("n", "<leader>y", [["+y]], { desc = "Yank to clipboard" })
+map("v", "<leader>y", [["+y]], { desc = "Yank to clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to clipboard" })
+
+-- Greatest remap ever - paste without losing register
+map("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
 
 -- macOS-style copy/paste
 map({ "n", "v" }, "<D-c>", [["+y]], { desc = "Copy (Cmd+C)" })
@@ -80,7 +84,7 @@ map("t", "<Esc>", "<C-\\><C-n>", opts)
 -- Copy filename/path
 map("n", ",cs", ":let @+=expand('%')<CR>", { desc = "Copy relative path" })
 map("n", ",cl", ":let @+=expand('%:p')<CR>", { desc = "Copy absolute path" })
-map("n", "<Leader>p", ":let @+=expand('%:p')<CR>", { desc = "Copy full path" })
+map("n", "<Leader>cp", ":let @+=expand('%:p')<CR>", { desc = "Copy full path" })
 
 -- Replace word under cursor
 map(
