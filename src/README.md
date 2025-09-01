@@ -36,12 +36,14 @@ src/
 ### Terminal & Shell
 
 **alacritty.toml**: Alacritty terminal emulator configuration
+
 - Font settings (MesloLGS Nerd Font)
 - Color scheme (dynamically switched)
 - Key bindings
 - Window decorations
 
 **zshrc** & **zsh/**: Zsh shell configuration
+
 - Plugin management with Zinit
 - Starship prompt
 - 200+ aliases
@@ -49,6 +51,7 @@ src/
 - Completions
 
 **tmux.conf**: Terminal multiplexer configuration
+
 - Custom prefix (Ctrl-a)
 - Vim-like navigation
 - Theme integration
@@ -57,6 +60,7 @@ src/
 ### Development Tools
 
 **neovim/**: Complete Neovim configuration
+
 - Modern Lua configuration
 - Lazy.nvim plugin manager
 - LSP, completion, snippets
@@ -64,6 +68,7 @@ src/
 - Custom keybindings
 
 **git/**: Version control configuration
+
 - Global gitconfig
 - Ignore patterns
 - Commit message template
@@ -71,6 +76,7 @@ src/
 - GPG signing setup
 
 **Brewfile**: macOS package management
+
 - Development tools
 - CLI utilities
 - Applications
@@ -79,21 +85,25 @@ src/
 ### Language-Specific
 
 **pyproject.toml**: Python project settings
+
 - Package metadata
 - Dependency specifications
 - Tool configurations
 
 **ruff.toml**: Python linting and formatting
+
 - Style rules
 - Ignore patterns
 - Line length settings
 
 **clangd_config.yaml**: C/C++ development
+
 - Compiler flags
 - Include paths
 - Diagnostics settings
 
 **latexmkrc**: LaTeX compilation
+
 - PDF generation settings
 - Continuous compilation
 - Viewer configuration
