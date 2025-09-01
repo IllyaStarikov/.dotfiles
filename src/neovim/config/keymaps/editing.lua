@@ -22,7 +22,6 @@ map("v", "K", ":m '<-2<CR>gv=gv", opts)
 
 -- Paste without yanking in visual mode
 map("v", "p", '"_dP', opts)
-map("v", "<leader>p", [["_dP]], { desc = "Paste without yank" })
 
 -- Select to end of line
 map("n", "<leader><leader>", "v$h", opts)
