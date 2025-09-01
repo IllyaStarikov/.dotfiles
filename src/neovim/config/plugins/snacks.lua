@@ -26,7 +26,7 @@ function M.setup()
     -- Re-enable dashboard with safe configuration (uses Telescope instead of picker)
     dashboard = { 
       enabled = true,
-      width = 60,
+      width = 64,  -- Increased width to accommodate ASCII art
       preset = {
         header = [[
 ███╗   ███╗██╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗
@@ -34,7 +34,7 @@ function M.setup()
 ██╔████╔██║██║   ██║   ██║   ██║██╔██╗ ██║ ╚████╔╝ 
 ██║╚██╔╝██║██║   ██║   ██║   ██║██║╚██╗██║  ╚██╔╝  
 ██║ ╚═╝ ██║╚██████╔╝   ██║   ██║██║ ╚████║   ██║   
-╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝   ╚═╝]],
+╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝   ╚═╝   ]],
       },
       sections = {
         { section = "header" },
