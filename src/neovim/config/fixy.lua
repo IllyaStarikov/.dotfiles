@@ -43,24 +43,26 @@ function M.format_buffer()
     on_exit = function(_, exit_code, _)
       vim.schedule(function()
         if exit_code == 0 then
-          -- Get the current buffer
-          local bufnr = vim.api.nvim_get_current_buf()
+          -- Completely suppress all messages and events
+          local save_ei = vim.o.eventignore
+          local save_report = vim.o.report
+          local save_shortmess = vim.o.shortmess
           
-          -- Read the formatted file content
-          local formatted_lines = vim.fn.readfile(filepath)
+          -- Maximum suppression
+          vim.o.eventignore = "all"
+          vim.o.report = 99999  -- Don't report any changes
+          vim.o.shortmess = "filnxtToOFcWAI"  -- Suppress all messages
           
-          -- Update buffer content without triggering reload notifications
-          local modifiable = vim.bo[bufnr].modifiable
-          vim.bo[bufnr].modifiable = true
+          -- Reload the file completely silently
+          vim.cmd("silent! noautocmd keepalt keepjumps edit!")
           
-          -- Replace buffer content silently
-          vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted_lines)
+          -- Clear any messages that might have appeared
+          vim.cmd("echon ''")
           
-          -- Mark as not modified since we just saved
-          vim.bo[bufnr].modified = false
-          
-          -- Restore modifiable state
-          vim.bo[bufnr].modifiable = modifiable
+          -- Restore settings
+          vim.o.eventignore = save_ei
+          vim.o.report = save_report
+          vim.o.shortmess = save_shortmess
           
           -- Restore cursor position and view
           pcall(vim.fn.winrestview, view)
