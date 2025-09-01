@@ -692,7 +692,18 @@ autocmd("FileChangedShellPost", {
   group = autoreload_group,
   pattern = "*",
   callback = function()
-    vim.notify("File reloaded from disk", vim.log.levels.INFO)
+    -- Don't notify if fixy is currently formatting (check both global and buffer flags)
+    local bufnr = vim.api.nvim_get_current_buf()
+    -- Also check if we're in a special buffer type that shouldn't show notifications
+    local buftype = vim.bo[bufnr].buftype
+    local should_notify = buftype == "" -- Only notify for normal file buffers
+      and not vim.g._fixy_formatting
+      and not vim.b[bufnr]._fixy_formatting
+      and not string.match(vim.bo[bufnr].filetype or "", "^snacks_")
+    
+    if should_notify then
+      vim.notify("File reloaded from disk", vim.log.levels.INFO)
+    end
   end,
   desc = "Notify when file is reloaded"
 })
