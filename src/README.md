@@ -111,11 +111,13 @@ src/
 ### Search & Security
 
 **ripgreprc**: Fast text search configuration
+
 - Default search options
 - File type definitions
 - Ignore patterns
 
 **gitleaks.toml**: Secret detection
+
 - Detection rules
 - Allow patterns
 - Custom patterns
@@ -125,6 +127,7 @@ src/
 ### brain/
 
 Local AI assistant system using MLX on Apple Silicon.
+
 - Model management
 - Server daemon
 - API gateway
@@ -133,6 +136,7 @@ Local AI assistant system using MLX on Apple Silicon.
 ### git/
 
 Version control configurations and utilities:
+
 - **gitconfig**: User settings, aliases, tools
 - **gitignore**: Global ignore patterns
 - **gitmessage**: Commit message template
@@ -143,15 +147,40 @@ Version control configurations and utilities:
 ### neovim/
 
 Modern Neovim configuration with 40+ Lua modules:
+
 - **init.lua**: Entry point
 - **config/**: Core configuration modules
+  - **fixy.lua**: Production-ready silent auto-formatter (see below)
+  - **autocmds.lua**: Auto-commands with notification filtering
+  - **lsp.lua**: Language server configurations
+  - **keymaps.lua**: Custom key bindings
 - **snippets/**: Language-specific snippets
 - **spell/**: Custom dictionaries
 - **plugin/**: Plugin configurations
 
+#### Fixy Auto-Formatter (Production-Ready)
+
+The `config/fixy.lua` module provides sophisticated silent auto-formatting:
+
+**Features:**
+- ✅ **Silent Operation**: Formats on save without "file reloaded" notifications
+- ✅ **Multi-layer Notification Suppression**: Handles vim.notify, Snacks.nvim, noice.nvim
+- ✅ **Cursor Preservation**: Maintains position during async formatting
+- ✅ **Robust Error Handling**: Timeout protection, buffer validation, race condition prevention
+- ✅ **Debug Mode**: Optional logging to `/tmp/fixy.log`
+- ✅ **State Management**: Global and buffer-local flags prevent concurrent formatting
+
+**Commands:**
+- `:Fixy` - Format current file
+- `:FixyAuto` - Toggle auto-format
+- `:FixyAutoOn/Off` - Enable/disable
+- `:FixyStatus` - Show status
+- `:FixyDebug` - Toggle debug mode
+
 ### scripts/
 
 Utility scripts for daily workflows:
+
 - **common.sh**: Shared functions
 - **extract**: Archive extraction
 - **fetch-quotes**: Inspirational quotes
@@ -164,6 +193,7 @@ Utility scripts for daily workflows:
 ### setup/
 
 Installation and configuration scripts:
+
 - **setup.sh**: Main setup script
 - **symlinks.sh**: Dotfile linking
 - **README.md**: Setup documentation
@@ -171,6 +201,7 @@ Installation and configuration scripts:
 ### spell/
 
 Spell checking dictionaries:
+
 - Custom word lists
 - Technical terms
 - Personal additions
@@ -178,11 +209,13 @@ Spell checking dictionaries:
 ### theme-switcher/
 
 Dynamic theme switching system:
+
 - **switch-theme.sh**: Main switcher
 - **themes/**: Theme configurations
 - **validate-themes.sh**: Theme validator
 
 Supports TokyoNight variants:
+
 - Day (light)
 - Night (dark)
 - Moon (dark variant)
@@ -191,6 +224,7 @@ Supports TokyoNight variants:
 ### zsh/
 
 Zsh shell components:
+
 - **aliases.zsh**: Command aliases
 - **starship.toml**: Prompt configuration
 - **zshenv**: Environment variables
@@ -236,6 +270,7 @@ The `setup/symlinks.sh` script handles all symlinking automatically.
 ### Daily Use
 
 Most interactions happen through symlinked files:
+
 ```bash
 # Edit Neovim config
 nvim ~/.config/nvim/init.lua
@@ -250,6 +285,7 @@ nvim ~/.gitconfig
 ### Maintenance
 
 Always edit files in src/ directory:
+
 ```bash
 # Edit source file
 nvim ~/.dotfiles/src/alacritty.toml
@@ -315,6 +351,7 @@ nvim ~/.dotfiles/src/alacritty.toml
 ## Testing
 
 Test configuration changes:
+
 ```bash
 # Run quick tests
 ~/.dotfiles/test/test --quick
@@ -329,6 +366,7 @@ Test configuration changes:
 ## Backup
 
 Critical files to backup:
+
 - Custom configurations
 - Personal scripts
 - Spell dictionaries
