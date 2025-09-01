@@ -165,7 +165,7 @@ function M.setup()
       -- Code blocks with language labels (no icons)
       code_blocks = {
         enable = true,
-        style = "minimal",
+        style = "language",  -- Use 'language' style to preserve syntax highlighting
         min_width = 70,
         pad_amount = 2,
         pad_char = " ",
