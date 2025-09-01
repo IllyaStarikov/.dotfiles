@@ -46,6 +46,10 @@ function M.format_buffer()
           -- Get current buffer
           local bufnr = vim.api.nvim_get_current_buf()
           
+          -- Temporarily override vim.notify to suppress ALL notifications
+          local original_notify = vim.notify
+          vim.notify = function() end
+          
           -- Read the formatted content
           local formatted_lines = vim.fn.readfile(filepath)
           
@@ -84,8 +88,14 @@ function M.format_buffer()
             pcall(vim.api.nvim_win_set_cursor, 0, cursor)
           end
           
+          -- Restore vim.notify after a brief delay to catch any async notifications
+          vim.defer_fn(function()
+            vim.notify = original_notify
+          end, 100)
+          
           if config.notifications then
-            vim.notify("Formatted with fixy", vim.log.levels.INFO)
+            -- Use the original notify function if we want to show success
+            original_notify("Formatted with fixy", vim.log.levels.INFO)
           end
         else
           if config.notify_on_error then
