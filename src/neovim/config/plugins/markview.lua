@@ -42,8 +42,8 @@ function M.setup()
     
     -- Preview configuration (moved deprecated options here)
     preview = {
-      -- Draw range for performance
-      draw_range = 100,
+      -- Draw range for performance (lines before and after cursor)
+      draw_range = { 100, 100 },
       -- Mode configuration - render in normal mode only
       modes = { "n", "no" },
       hybrid_modes = { "i" },
