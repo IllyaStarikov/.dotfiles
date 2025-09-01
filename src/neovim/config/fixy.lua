@@ -43,30 +43,46 @@ function M.format_buffer()
     on_exit = function(_, exit_code, _)
       vim.schedule(function()
         if exit_code == 0 then
-          -- Completely suppress all messages and events
-          local save_ei = vim.o.eventignore
-          local save_report = vim.o.report
-          local save_shortmess = vim.o.shortmess
+          -- Get current buffer
+          local bufnr = vim.api.nvim_get_current_buf()
           
-          -- Maximum suppression
-          vim.o.eventignore = "all"
-          vim.o.report = 99999  -- Don't report any changes
-          vim.o.shortmess = "filnxtToOFcWAI"  -- Suppress all messages
+          -- Read the formatted content
+          local formatted_lines = vim.fn.readfile(filepath)
           
-          -- Reload the file completely silently
-          vim.cmd("silent! noautocmd keepalt keepjumps edit!")
+          -- Get current content
+          local current_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
           
-          -- Clear any messages that might have appeared
-          vim.cmd("echon ''")
+          -- Only update if content actually changed
+          local content_changed = false
+          if #formatted_lines ~= #current_lines then
+            content_changed = true
+          else
+            for i, line in ipairs(formatted_lines) do
+              if line ~= current_lines[i] then
+                content_changed = true
+                break
+              end
+            end
+          end
           
-          -- Restore settings
-          vim.o.eventignore = save_ei
-          vim.o.report = save_report
-          vim.o.shortmess = save_shortmess
-          
-          -- Restore cursor position and view
-          pcall(vim.fn.winrestview, view)
-          pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+          if content_changed then
+            -- Save modifiable state
+            local modifiable = vim.bo[bufnr].modifiable
+            vim.bo[bufnr].modifiable = true
+            
+            -- Update buffer content directly
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted_lines)
+            
+            -- Mark as saved
+            vim.bo[bufnr].modified = false
+            
+            -- Restore modifiable
+            vim.bo[bufnr].modifiable = modifiable
+            
+            -- Restore cursor position and view
+            pcall(vim.fn.winrestview, view)
+            pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+          end
           
           if config.notifications then
             vim.notify("Formatted with fixy", vim.log.levels.INFO)
