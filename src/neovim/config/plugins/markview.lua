@@ -44,9 +44,11 @@ function M.setup()
     preview = {
       -- Draw range for performance (lines before and after cursor)
       draw_range = { 100, 100 },
-      -- Mode configuration - render in normal mode only
-      modes = { "n", "no" },
-      hybrid_modes = { "i" },
+      -- Mode configuration - enable preview in these modes
+      modes = { "n", "no", "v", "V", "i" },
+      -- Show raw markdown on cursor line/selection in these modes (hybrid mode)
+      -- Modes in hybrid_modes show raw markdown on cursor line
+      hybrid_modes = { "n", "v", "V", "i" },
       
       -- Don't show virtual text for non-existent frontmatter
       show_virtual = false,
@@ -616,8 +618,7 @@ function M.setup()
     group = markdown_augroup,
     callback = function()
       -- Start with markview enabled (rich preview)
-      vim.opt_local.conceallevel = 2
-      vim.opt_local.concealcursor = ""
+      -- Markview will handle conceallevel and concealcursor based on modes/hybrid_modes config
       vim.opt_local.list = false
       
       -- Create a buffer-local variable to track state
@@ -630,12 +631,10 @@ function M.setup()
       vim.keymap.set("n", "<leader>mp", function()
         if vim.b.markview_enabled then
           vim.cmd("Markview disable")
-          vim.opt_local.conceallevel = 0
           vim.b.markview_enabled = false
           vim.notify("Ligatures enabled ✓ (markview disabled)", vim.log.levels.INFO)
         else
           vim.cmd("Markview enable")
-          vim.opt_local.conceallevel = 2
           vim.b.markview_enabled = true
           vim.notify("Rich preview enabled (ligatures disabled)", vim.log.levels.INFO)
         end
