@@ -324,11 +324,6 @@ function M.setup()
     markdown_inline = {
       enable = true,
       
-      -- Enable pipe tables (GFM tables)
-      pipe_table = {
-        enable = true,
-      },
-      
       -- Disable features that might interfere with ligatures
       escape = {
         enable = false  -- Don't process escape sequences
