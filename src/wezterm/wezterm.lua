@@ -12,7 +12,7 @@ local config = wezterm.config_builder()
 -- 🖋️ FONT CONFIGURATION - JetBrainsMono with full ligature and variant support
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
--- Primary font with fallbacks for better glyph coverage
+-- Primary font with extensive fallbacks for math and Unicode coverage
 config.font = wezterm.font_with_fallback({
   {
     family = 'JetBrainsMono Nerd Font',
@@ -21,7 +21,15 @@ config.font = wezterm.font_with_fallback({
     style = 'Normal',
   },
   'JetBrains Mono',  -- Fallback to non-Nerd Font version
-  'Symbols Nerd Font',  -- Extra symbol coverage
+  'Symbols Nerd Font Mono',  -- Extra symbol coverage
+  'DejaVu Sans Mono',  -- Excellent math symbol coverage
+  'Cambria Math',  -- Windows math font (if available)
+  'STIX Two Math',  -- Professional math font
+  'Latin Modern Math',  -- LaTeX-style math font
+  'Noto Sans Math',  -- Google's math font
+  'Noto Sans Symbols',  -- Additional symbols
+  'Noto Sans Symbols 2',  -- More symbols
+  'Apple Symbols',  -- macOS system symbols
   'Apple Color Emoji',  -- Emoji support
 })
 
@@ -31,13 +39,17 @@ config.cell_width = 1.0
 
 -- Comprehensive font rules for all text styles
 config.font_rules = {
-  -- Regular text (base style)
+  -- Regular text (base style) with math fallbacks
   {
     intensity = 'Normal',
     italic = false,
     font = wezterm.font_with_fallback({
       { family = 'JetBrainsMono Nerd Font', weight = 'Regular' },
       'JetBrains Mono',
+      'DejaVu Sans Mono',
+      'STIX Two Math',
+      'Noto Sans Math',
+      'Apple Symbols',
     }),
   },
   
@@ -112,11 +124,13 @@ config.harfbuzz_features = {
   'onum=1',  -- Oldstyle numbers
 }
 
--- Additional font configuration
-config.allow_square_glyphs_to_overflow_width = 'WhenFollowedBySpace'
+-- Additional font configuration for better math rendering
+config.allow_square_glyphs_to_overflow_width = 'Always'  -- Better for math symbols
 config.custom_block_glyphs = true  -- Better box drawing characters
 config.anti_alias_custom_block_glyphs = true
 config.treat_east_asian_ambiguous_width_as_wide = false
+config.unicode_version = 15  -- Use latest Unicode standard
+config.warn_about_missing_glyphs = false  -- Don't warn about missing math glyphs
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading with error handling
