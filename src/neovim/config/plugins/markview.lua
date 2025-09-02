@@ -320,6 +320,227 @@ function M.setup()
       },
     },
     
+    -- LaTeX Math Configuration for Terminal Rendering - MAXIMIZED FOR WEZTERM
+    latex = {
+      enable = true,
+      
+      -- LaTeX blocks (display math) - Enhanced styling
+      blocks = {
+        enable = true,
+        style = "language",  -- Better rendering style
+        hl = "MarkviewCodeInfo",
+        pad_char = " ",
+        pad_amount = 2,
+        text = " 𝓜 ",  -- Math symbol instead of "LaTeX"
+        text_hl = "MarkviewHeading3",
+        border = true,
+        border_hl = "MarkviewHeading3"
+      },
+      
+      -- Inline math rendering - Clean and minimal
+      inlines = {
+        enable = true,
+        padding_left = " ",
+        padding_right = " ",
+        hl = "MarkviewInlineCode"
+      },
+      
+      -- Enhanced math commands with Unicode symbols (includes operators)
+      commands = {
+        enable = true,
+        default = { enable = true },
+        
+        -- Custom command replacements for better rendering
+        custom = {
+          -- Large operators (moved from deprecated operators section)
+          ["sum"] = { text = "∑" },
+          ["prod"] = { text = "∏" },
+          ["coprod"] = { text = "∐" },
+          ["bigcap"] = { text = "⋂" },
+          ["bigcup"] = { text = "⋃" },
+          ["bigoplus"] = { text = "⨁" },
+          ["bigotimes"] = { text = "⨂" },
+          ["bigvee"] = { text = "⋁" },
+          ["bigwedge"] = { text = "⋀" },
+          
+          -- Calculus operations
+          ["int"] = { text = "∫" },
+          ["oint"] = { text = "∮" },
+          ["iint"] = { text = "∬" },
+          ["iiint"] = { text = "∭" },
+          ["partial"] = { text = "∂" },
+          ["nabla"] = { text = "∇" },
+          
+          -- Set theory
+          ["emptyset"] = { text = "∅" },
+          ["subset"] = { text = "⊂" },
+          ["subseteq"] = { text = "⊆" },
+          ["supset"] = { text = "⊃" },
+          ["supseteq"] = { text = "⊇" },
+          ["cap"] = { text = "∩" },
+          ["cup"] = { text = "∪" },
+          
+          -- Logic symbols
+          ["forall"] = { text = "∀" },
+          ["exists"] = { text = "∃" },
+          ["nexists"] = { text = "∄" },
+          ["land"] = { text = "∧" },
+          ["lor"] = { text = "∨" },
+          ["lnot"] = { text = "¬" },
+          
+          -- Arrows (extended set)
+          ["rightarrow"] = { text = "→" },
+          ["leftarrow"] = { text = "←" },
+          ["leftrightarrow"] = { text = "↔" },
+          ["Rightarrow"] = { text = "⇒" },
+          ["Leftarrow"] = { text = "⇐" },
+          ["Leftrightarrow"] = { text = "⇔" },
+          ["mapsto"] = { text = "↦" },
+          
+          -- Fractions and roots
+          ["frac"] = { text = "⁄" },
+          ["sqrt"] = { text = "√" },
+          ["cbrt"] = { text = "∛" },
+          ["fourthroot"] = { text = "∜" },
+        }
+      },
+      
+      -- Math symbols replacement with enhanced Unicode equivalents
+      symbols = {
+        enable = true,
+        
+        -- Extended symbol mappings for better coverage
+        entries = {
+          -- All default symbols plus these additions
+          ["otimes"] = "⊗",
+          ["oplus"] = "⊕",
+          ["ominus"] = "⊖",
+          ["oslash"] = "⊘",
+          ["odot"] = "⊙",
+          ["boxplus"] = "⊞",
+          ["boxminus"] = "⊟",
+          ["boxtimes"] = "⊠",
+          ["boxdot"] = "⊡",
+          
+          -- More comparison operators
+          ["ll"] = "≪",
+          ["gg"] = "≫",
+          ["sim"] = "∼",
+          ["simeq"] = "≃",
+          ["cong"] = "≅",
+          ["approxeq"] = "≊",
+          ["asymp"] = "≍",
+          ["doteq"] = "≐",
+          ["propto"] = "∝",
+          
+          -- Additional math symbols
+          ["therefore"] = "∴",
+          ["because"] = "∵",
+          ["qed"] = "∎",
+          ["blacksquare"] = "■",
+          ["square"] = "□",
+          ["triangle"] = "△",
+          ["diamond"] = "◇",
+          ["star"] = "⋆",
+          ["bullet"] = "•",
+          ["circ"] = "∘",
+          ["bigcirc"] = "○",
+          
+          -- Matrix delimiters
+          ["langle"] = "⟨",
+          ["rangle"] = "⟩",
+          ["lfloor"] = "⌊",
+          ["rfloor"] = "⌋",
+          ["lceil"] = "⌈",
+          ["rceil"] = "⌉",
+          ["vert"] = "│",
+          ["Vert"] = "‖",
+        }
+      },
+      
+      -- Enable ALL font variations for maximum math beauty
+      fonts = {
+        enable = true,
+        default = { 
+          enable = true
+        },
+        mathbf = { 
+          enable = true
+        },
+        mathbfit = { 
+          enable = true
+        },
+        mathcal = { 
+          enable = true
+        },
+        mathbfscr = { 
+          enable = true
+        },
+        mathfrak = { 
+          enable = true
+        },
+        mathbb = { 
+          enable = true
+        },
+        mathbffrak = { 
+          enable = true
+        },
+        mathsf = { 
+          enable = true
+        },
+        mathsfbf = { 
+          enable = true
+        },
+        mathsfit = { 
+          enable = true
+        },
+        mathsfbfit = { 
+          enable = true
+        },
+        mathtt = { 
+          enable = true
+        },
+        mathrm = { 
+          enable = true
+        },
+      },
+      
+      -- Enhanced subscripts and superscripts with fake preview
+      subscripts = {
+        enable = true,
+        fake_preview = true  -- Use Unicode subscript characters when available
+      },
+      superscripts = {
+        enable = true,
+        fake_preview = true  -- Use Unicode superscript characters when available
+      },
+      
+      -- Parenthesis handling with enhanced bracket/delimiter support
+      parenthesis = {
+        enable = true,
+        
+        -- Custom bracket/delimiter styling (moved from deprecated brackets)
+        custom = {
+          ["("] = { text = "⦅" },
+          [")"] = { text = "⦆" },
+          ["["] = { text = "⟦" },
+          ["]"] = { text = "⟧" },
+          ["{"] = { text = "⦃" },
+          ["}"] = { text = "⦄" },
+        }
+      },
+      
+      -- Text in math mode
+      texts = {
+        enable = true
+      },
+      
+      -- Escape sequences
+      escapes = {
+        enable = true
+      },
+    },
+    
     -- Inline markdown features
     markdown_inline = {
       enable = true,
