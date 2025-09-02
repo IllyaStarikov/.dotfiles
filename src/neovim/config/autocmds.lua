@@ -164,12 +164,54 @@ autocmd("FileType", {
 })
 
 -- Ensure terminal cursor visibility
+local terminal_cursor_group = augroup("TerminalCursor", { clear = true })
+
 autocmd({ "TermEnter" }, {
-  group = augroup("TerminalCursor", { clear = true }),
+  group = terminal_cursor_group,
   callback = function()
     vim.opt.guicursor = "a:ver25-blinkon1"
   end,
   desc = "Ensure cursor is visible in terminal mode"
+})
+
+autocmd({ "TermLeave", "BufLeave" }, {
+  group = terminal_cursor_group,
+  pattern = "term://*",
+  callback = function()
+    -- Restore normal mode cursor to block shape
+    vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
+      .. ",a:blinkwait700-blinkoff400-blinkon250"
+      .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+  end,
+  desc = "Restore cursor to block shape when leaving terminal"
+})
+
+-- Ensure cursor is restored when entering normal buffers from terminal
+autocmd({ "BufEnter", "WinEnter" }, {
+  group = terminal_cursor_group,
+  callback = function()
+    -- Only restore if we're entering a non-terminal buffer
+    if vim.bo.buftype ~= "terminal" then
+      vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
+        .. ",a:blinkwait700-blinkoff400-blinkon250"
+        .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+    end
+  end,
+  desc = "Ensure cursor is restored when entering non-terminal buffers"
+})
+
+-- Force cursor restoration after terminal closes
+autocmd({ "TermClose" }, {
+  group = terminal_cursor_group,
+  callback = function()
+    vim.defer_fn(function()
+      -- Restore cursor shape after terminal closes
+      vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
+        .. ",a:blinkwait700-blinkoff400-blinkon250"
+        .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+    end, 50)
+  end,
+  desc = "Force cursor restoration after terminal closes"
 })
 
 -- =============================================================================
