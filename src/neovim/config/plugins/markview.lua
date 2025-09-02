@@ -313,15 +313,21 @@ function M.setup()
         }
       },
       
-      -- Tables configuration - note: tables may not be fully implemented yet
+      -- Tables configuration
       tables = {
         enable = true,
+        use_virt_lines = false,  -- Set to true if you want virtual lines for borders
       },
     },
     
     -- Inline markdown features
     markdown_inline = {
       enable = true,
+      
+      -- Enable pipe tables (GFM tables)
+      pipe_table = {
+        enable = true,
+      },
       
       -- Disable features that might interfere with ligatures
       escape = {
