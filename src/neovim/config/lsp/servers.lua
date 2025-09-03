@@ -209,8 +209,9 @@ local function setup_lsp()
 
 	-- Simple on_attach function for LSP keybindings
 	local on_attach = function(client, bufnr)
-		-- Disable semantic tokens for clangd (performance)
-		if client.name == "clangd" then
+		-- Disable semantic tokens for servers that don't properly support it
+		-- This prevents errors when switching buffers with bufferline
+		if client.name == "clangd" or client.name == "pyright" or client.name == "marksman" then
 			client.server_capabilities.semanticTokensProvider = nil
 		end
 		
