@@ -59,7 +59,7 @@ jobs:
           fi
           
           echo "::group::Checking Lua formatting"
-          find src -name "*.lua" -type f | xargs stylua --check --indent-type Spaces --indent-width 2 || true
+          find src -name "*.lua" -type f | xargs stylua --check --config-path src/stylua.toml || true
           echo "::endgroup::"
 
   markdown:

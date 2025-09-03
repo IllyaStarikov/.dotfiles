@@ -65,7 +65,7 @@
 # misc config
 *.yaml text
 *.yml text
-.editorconfig text
+editorconfig text
 
 # build config
 *.npmignore text
