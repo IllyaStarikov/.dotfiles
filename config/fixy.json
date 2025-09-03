@@ -58,7 +58,7 @@
     "stylua": {
       "command": "stylua",
       "check_command": "stylua --version",
-      "format_args": "--config-path ~/.dotfiles/.stylua.toml {file}",
+      "format_args": "--config-path ~/.dotfiles/src/stylua.toml {file}",
       "description": "Lua formatter"
     },
     "lua-format": {

@@ -62,7 +62,7 @@ main() {
 
 These standards are enforced through:
 
-1. **Editor Configuration** - `.editorconfig` and language servers
+1. **Editor Configuration** - `src/editorconfig` and language servers
 2. **Formatters** - Automated via `format` script
 3. **Linters** - Pre-commit hooks and CI checks
 4. **Code Review** - Manual verification
