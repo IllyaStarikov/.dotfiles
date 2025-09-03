@@ -19,8 +19,8 @@ fi
 GITLEAKS_CONFIG=""
 if [[ -f ".gitleaks.toml" ]]; then
     GITLEAKS_CONFIG=".gitleaks.toml"
-elif [[ -f "$HOME/.dotfiles/src/git/gitleaks.toml" ]]; then
-    GITLEAKS_CONFIG="$HOME/.dotfiles/src/git/gitleaks.toml"
+elif [[ -f "$HOME/.dotfiles/src/gitleaks.toml" ]]; then
+    GITLEAKS_CONFIG="$HOME/.dotfiles/src/gitleaks.toml"
 fi
 
 # Run gitleaks on staged files
