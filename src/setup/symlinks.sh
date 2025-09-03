@@ -196,7 +196,7 @@ main() {
     fi
     
     # LaTeX
-    create_link "$DOTFILES_DIR/src/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
+    create_link "$DOTFILES_DIR/src/language/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
     
     # Scripts
     mkdir -p "$HOME/.local/bin"
