@@ -651,7 +651,7 @@ format_fallback() {
           print_color blue "[DRY RUN] Would run stylua (fallback) on: $file"
         else
           echo -n "  → Running stylua (fallback)... "
-          stylua --indent-type Spaces --indent-width 2 --column-width 80 "$file"
+          stylua --config-path ~/.dotfiles/src/stylua.toml "$file"
           print_color green "✓"
         fi
         return 0
