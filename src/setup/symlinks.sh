@@ -180,13 +180,7 @@ main() {
         # Create the symlink for the entire nvim directory
         create_link "$DOTFILES_DIR/src/neovim" "$HOME/.config/nvim" "Neovim config (entire directory)"
         
-        # Link spell files from private dotfiles if they exist
-        if [[ -d "$HOME/.dotfiles/.dotfiles.private/neovim/spell" ]]; then
-            create_link "$HOME/.dotfiles/.dotfiles.private/neovim/spell" "$HOME/.config/nvim/spell" "Neovim spell files (private)"
-        elif [[ -d "$HOME/.dotfiles/.dotfiles.private/spell" ]]; then
-            # Fallback to general spell directory in private repo
-            create_link "$HOME/.dotfiles/.dotfiles.private/spell" "$HOME/.config/nvim/spell" "Spell files (private)"
-        fi
+        # Spell files are now configured directly in Neovim options.lua to use private dotfiles
     else
         error "Neovim directory not found at $DOTFILES_DIR/src/neovim"
     fi
