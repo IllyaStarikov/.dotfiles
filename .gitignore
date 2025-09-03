@@ -13,6 +13,8 @@ Session.vim
 
 # Claude Code configuration
 .claude/
+src/.claude/
+**/settings.local.json
 CLAUDE.md
 
 # Debug and log files
