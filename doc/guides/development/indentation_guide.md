@@ -29,7 +29,7 @@ All other languages use 2-space indentation:
 
 ## Configuration Files
 
-### `.editorconfig`
+### `src/editorconfig`
 Universal editor configuration that enforces these standards across all editors.
 
 ### `pyproject.toml`

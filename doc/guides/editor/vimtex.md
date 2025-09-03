@@ -339,7 +339,7 @@ __           " Subscript
 3. **Collaboration**:
    - Use Git for version control
    - Define main file with `% !TEX root`
-   - Consistent formatting with `.editorconfig`
+   - Consistent formatting with `src/editorconfig`
 
 ### Common Solutions
 
