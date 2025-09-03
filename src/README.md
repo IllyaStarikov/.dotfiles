@@ -13,18 +13,22 @@ src/
 ├── Brewfile                # Homebrew package definitions
 ├── alacritty.toml         # Alacritty terminal configuration
 ├── brain/                 # Local AI assistant system
-├── clangd_config.yaml     # C/C++ language server config
+├── editorconfig          # Editor configuration (multi-language)
 ├── git/                   # Git configuration and hooks
 ├── gitleaks.toml         # Secret detection configuration
 ├── i3_config             # i3 window manager config (Linux)
-├── latexmkrc             # LaTeX build configuration
+├── language/             # Language-specific configurations
+│   ├── .clang-format     # C/C++ code formatter
+│   ├── clangd_config.yaml # C/C++ language server
+│   ├── latexmkrc         # LaTeX build configuration
+│   ├── markdownlint.json # Markdown linter rules
+│   ├── pyproject.toml    # Python project configuration
+│   ├── ruff.toml         # Python linter/formatter
+│   └── stylua.toml       # Lua code formatter
 ├── neovim/               # Neovim configuration (Lua)
-├── pyproject.toml        # Python project configuration
 ├── ripgreprc             # Ripgrep search configuration
-├── ruff.toml             # Python linter/formatter config
 ├── scripts/              # Utility and maintenance scripts
 ├── setup/                # Installation and setup scripts
-├── spell/                # Spell check dictionaries
 ├── theme-switcher/       # Dynamic theme switching system
 ├── tmux.conf            # Tmux configuration
 ├── zsh/                 # Zsh shell configuration
@@ -84,25 +88,27 @@ src/
 
 ### Language-Specific
 
-**pyproject.toml**: Python project settings
+All language-specific configurations are now organized in the `language/` directory:
+
+**language/pyproject.toml**: Python project settings
 
 - Package metadata
 - Dependency specifications
 - Tool configurations
 
-**ruff.toml**: Python linting and formatting
+**language/ruff.toml**: Python linting and formatting
 
 - Style rules
 - Ignore patterns
 - Line length settings
 
-**clangd_config.yaml**: C/C++ development
+**language/clangd_config.yaml**: C/C++ development
 
 - Compiler flags
 - Include paths
 - Diagnostics settings
 
-**latexmkrc**: LaTeX compilation
+**language/latexmkrc**: LaTeX compilation
 
 - PDF generation settings
 - Continuous compilation
