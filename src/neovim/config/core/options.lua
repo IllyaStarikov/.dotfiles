@@ -48,6 +48,11 @@ opt.wildmode = { "longest:list", "full" }
 
 -- Disable sounds
 opt.belloff = "all"
+
+-- Spell checking configuration
+opt.spell = false  -- Spell checking off by default (toggle with F5)
+opt.spelllang = { "en_us" }  -- English US spell checking
+opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/spell/en.utf-8.add")  -- Custom spell file in private dotfiles
 opt.errorbells = false
 opt.visualbell = false
 
