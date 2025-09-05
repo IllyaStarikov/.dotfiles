@@ -29,8 +29,9 @@ debug-neovim-config.sh
 *~
 .DS_Store
 
-# WezTerm debug files
+# WezTerm debug files and generated theme
 wezterm_*.txt
+src/wezterm/theme.lua
 
 # Private dotfiles (now untracked)
 .dotfiles.private/
