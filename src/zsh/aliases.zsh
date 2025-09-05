@@ -153,7 +153,6 @@ alias tsgrep="rg --type ts"
 
 # Modern replacements (with command checks)
 command -v bat &>/dev/null && alias cat='bat' || alias cat='cat'
-command -v rg &>/dev/null && alias grep='rg' || alias grep='grep'
 
 # Colorful and enhanced utilities
 alias diff="colordiff"
