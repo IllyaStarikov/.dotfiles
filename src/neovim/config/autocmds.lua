@@ -1023,18 +1023,28 @@ local function get_skeleton_content(filetype, context)
         ""
       }
     else
+      -- Use the template from reference/markdown_reference.md
+      local today = os.date('%d.%m.%Y')
+      local git_repo = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null | xargs basename"):gsub('\n', '')
+      if git_repo == "" then
+        git_repo = vim.fn.expand('%:p:h:t')
+      end
+      
       return {
-        "---",
-        'title: "' .. (context.title or "Document Title") .. '"',
-        'author: "' .. (context.author or "Illya Starikov") .. '"',
-        'date: "' .. date .. '"',
-        "tags: []",
-        "categories: []",
-        "---",
+        "<!--",
+        "NAME         " .. filename,
+        "PROJECT      " .. git_repo,
+        "D.CREATED    " .. today,
+        "D.MODIFIED   " .. today,
+        "VERSION      1.0",
         "",
-        "# " .. (context.title or "Document Title"),
+        "AUTHOR       Illya Starikov",
+        "EMAIL        illya@starikov.co",
+        "COPYRIGHT    © " .. year .. " Illya Starikov",
+        "LICENSE      MIT (https://spdx.org/licenses/MIT.html)",
+        "-->",
         "",
-        context.description or "Brief introduction or overview.",
+        "# ",
         ""
       }
     end
@@ -1227,11 +1237,23 @@ local function insert_skeleton(filetype, context)
     local content = get_skeleton_content(filetype, context or {})
     vim.api.nvim_buf_set_lines(0, 0, 1, false, content)
     
-    -- Position cursor at first TODO or at end of first editable line
-    for i, line in ipairs(content) do
-      if line:match("TODO") or line:match("Module description") or line:match("Script description") then
-        vim.api.nvim_win_set_cursor(0, {i, 0})
-        break
+    -- Special cursor positioning for markdown files
+    if filetype == "markdown" then
+      -- Find the line with "# " and position cursor after it
+      for i, line in ipairs(content) do
+        if line == "# " then
+          vim.api.nvim_win_set_cursor(0, {i, 2})  -- Position after "# "
+          vim.cmd("startinsert!")  -- Enter insert mode at cursor
+          break
+        end
+      end
+    else
+      -- Position cursor at first TODO or at end of first editable line for other filetypes
+      for i, line in ipairs(content) do
+        if line:match("TODO") or line:match("Module description") or line:match("Script description") then
+          vim.api.nvim_win_set_cursor(0, {i, 0})
+          break
+        end
       end
     end
     
@@ -1325,18 +1347,18 @@ autocmd("BufNewFile", {
   end
 })
 
--- Markdown files - DISABLED due to display issues
--- autocmd("BufNewFile", {
---   group = skeleton_group,
---   pattern = {"*.md", "*.markdown"},
---   callback = function()
---     -- Only insert skeleton for truly new files, not existing ones
---     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
---     if #lines == 1 and lines[1] == "" then
---       insert_skeleton("markdown")
---     end
---   end
--- })
+-- Markdown files
+autocmd("BufNewFile", {
+  group = skeleton_group,
+  pattern = {"*.md", "*.markdown"},
+  callback = function()
+    -- Only insert skeleton for truly new files, not existing ones
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    if #lines == 1 and lines[1] == "" then
+      insert_skeleton("markdown")
+    end
+  end
+})
 
 -- C/C++ files
 autocmd("BufNewFile", {
