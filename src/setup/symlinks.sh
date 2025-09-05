@@ -198,6 +198,10 @@ main() {
     # LaTeX
     create_link "$DOTFILES_DIR/src/language/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
     
+    # Python configurations
+    create_link "$DOTFILES_DIR/src/language/ruff.toml" "$HOME/.ruff.toml" "Ruff Python formatter/linter"
+    create_link "$DOTFILES_DIR/src/language/pyproject.toml" "$HOME/pyproject.toml" "Python project config"
+    
     # Scripts
     mkdir -p "$HOME/.local/bin"
     for script in "$DOTFILES_DIR/src/scripts"/*; do
@@ -214,13 +218,6 @@ main() {
     
     # Note: Private tmuxinator configs should be handled by private setup script
     
-    # Legacy Vim support (if exists)
-    if [[ -f "$DOTFILES_DIR/src/vimrc" ]]; then
-        create_link "$DOTFILES_DIR/src/vimrc" "$HOME/.vimrc" "Vim config"
-    fi
-    if [[ -d "$DOTFILES_DIR/src/vim" ]]; then
-        create_link "$DOTFILES_DIR/src/vim" "$HOME/.vim" "Vim directory"
-    fi
     
     # Summary
     echo ""
