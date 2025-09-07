@@ -176,6 +176,12 @@ export PATH="$HOME/.dotfiles/src/scripts:$HOME/.dotfiles/src/setup:$PATH"
 # Starship Prompt
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Fix for recursive zle-keymap-select issue
+# Clear any existing widget before Starship initialization
+if (( ${+widgets[zle-keymap-select]} )); then
+    zle -D zle-keymap-select 2>/dev/null
+fi
+
 if command -v starship &>/dev/null; then
     eval "$(starship init zsh)"
 fi
