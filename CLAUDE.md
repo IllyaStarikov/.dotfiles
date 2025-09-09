@@ -1,0 +1,304 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Repository Overview
+
+This is a comprehensive dotfiles repository serving dual purposes:
+1. **Personal configuration management** - Complete development environment with enterprise-level testing
+2. **Web publishing** - GitHub Pages site at `dotfiles.starikov.io` showcasing configurations
+
+## Key Commands
+
+### Setup and Installation
+```bash
+# Unified setup script with different modes
+./src/setup/setup.sh           # Full installation (interactive)
+./src/setup/setup.sh --core    # Core packages only
+./src/setup/setup.sh --symlinks # Just create symlinks
+
+# Platform-specific setup (called by setup.sh)
+./src/setup/mac.sh     # macOS setup (Intel/Apple Silicon)
+./src/setup/linux.sh   # Linux setup (Ubuntu/Debian/Fedora/Arch)
+
+# Create symlinks for all dotfiles
+./src/setup/symlinks.sh
+
+# System maintenance and updates
+./src/scripts/update   # Update all packages, plugins, and tools
+```
+
+### Testing
+```bash
+# Main test runner with comprehensive test suite
+./test/test            # Run standard test suite
+./test/test --quick    # Quick sanity check (< 10s)
+./test/test --unit     # Unit tests only (< 5s)
+./test/test --functional    # Functional tests (< 30s)
+./test/test --integration   # Integration tests (< 60s)
+./test/test --performance   # Performance regression tests
+./test/test --workflows     # Real-world workflow tests
+./test/test --full          # Complete test suite with all tests
+
+# Run specific test files
+./test/test unit/nvim/init_test.sh    # Single unit test
+./test/test functional/nvim           # All Neovim functional tests
+./test/test integration/setup         # Setup integration tests
+```
+
+### Linting and Code Quality
+```bash
+# Universal code formatter with config-based priority queue
+./src/scripts/fixy [file]   # Auto-detect language and format
+
+# Shell scripts
+shellcheck src/**/*.sh
+
+# Lua files
+stylua --check src/neovim/
+
+# Python files
+ruff format src/**/*.py
+ruff check src/**/*.py
+```
+
+### Theme Management
+```bash
+# Switch themes based on macOS appearance (light/dark mode)
+./src/theme-switcher/switch-theme.sh
+
+# Quick theme switching commands
+theme           # Auto-detect and switch based on macOS appearance
+theme day       # TokyoNight Day (light)
+theme night     # TokyoNight Night (dark)
+theme moon      # TokyoNight Moon (dark variant)
+theme storm     # TokyoNight Storm (dark variant)
+```
+
+### Development Workflow
+```bash
+# Start tmux session with tmuxinator (templates in private repo)
+tmuxinator start project
+tmuxinator start ai       # AI development session
+
+# Edit configurations
+nvim ~/.config/nvim/init.lua
+
+# Utility scripts
+scratchpad              # Create temporary file for quick editing
+fetch-quotes           # Fetch inspirational quotes
+tmux-utils battery     # Check battery status
+tmux-utils cpu         # Check CPU usage
+update-dotfiles        # Pull latest changes from dotfiles repo
+
+# AI-powered local development (via pyenv-installed brain tool)
+brain                  # Local AI assistant for coding
+brain status          # Check MLX server status
+brain model <model>   # Switch AI model
+brain agent on/off    # Toggle AI agent mode
+```
+
+## Repository Statistics
+
+### Actual Metrics (December 2024)
+- **500+ plugin references** across 8 Neovim configuration files
+- **5 Zsh plugins** via Zinit (not 20+ as documentation may suggest)
+- **0 tmux plugins** (pure config, no TPM despite mentions)
+- **30+ test files** with 4-level testing infrastructure
+- **11 utility scripts** in src/scripts/
+- **7 language configs** in src/language/
+- **4 TokyoNight theme variants** 
+- **20+ languages** with LSP support
+
+## High-Level Architecture
+
+### Directory Organization
+
+```
+~/.dotfiles/
+├── src/                    # Source configurations (actual dotfiles)
+│   ├── language/          # Language-specific configurations
+│   │   ├── .clang-format  # C/C++ formatter
+│   │   ├── clangd_config.yaml # C/C++ language server
+│   │   ├── latexmkrc      # LaTeX build configuration
+│   │   ├── markdownlint.json # Markdown linter
+│   │   ├── pyproject.toml # Python project config
+│   │   ├── ruff.toml      # Python linter/formatter
+│   │   └── stylua.toml    # Lua formatter
+│   ├── neovim/            # Neovim configuration (42 modules)
+│   │   ├── config/        # Modular configuration system
+│   │   ├── init.lua       # Entry point with path detection
+│   │   └── snippets/      # Language-specific snippets
+│   ├── setup/             # Installation and setup scripts
+│   ├── scripts/           # Utility and maintenance scripts
+│   ├── theme-switcher/    # Dynamic theme switching system
+│   ├── zsh/               # Zsh configuration with Zinit
+│   └── git/               # Git configuration and hooks
+├── test/                  # 4-level test infrastructure
+├── config/                # Tool configurations (fixy.json)
+├── .dotfiles.private/     # Private submodule (work configs)
+└── .github/workflows/     # CI/CD pipeline (6 workflows)
+```
+
+### Core Architectural Patterns
+
+**1. Symlink Strategy**
+- All configurations live in `/src/` and are symlinked to proper locations
+- `symlinks.sh` creates all necessary links with backup functionality
+- Always edit files in `/src/`, never the symlinked versions
+
+**2. Private Repository Integration**
+- `.dotfiles.private/` submodule for work-specific configurations
+- Contains: Google/Garmin detection, tmuxinator templates, sensitive settings
+- Work overrides loaded conditionally in Neovim and shell configs
+- Spell files stored in private repo: `~/.dotfiles/.dotfiles.private/spell/`
+
+**3. Theme System Architecture**
+- Atomic switching across all applications (Alacritty, tmux, Neovim, WezTerm, Starship)
+- macOS appearance detection via `defaults read -g AppleInterfaceStyle`
+- Configuration generation in `~/.config/` directories
+- Crash-proof with proper locking mechanisms
+- tmux session reloading handled automatically
+
+**4. Testing Infrastructure**
+```
+Test Levels:
+- Unit: Configuration validation (< 5s)
+- Functional: Plugin functionality (< 30s)
+- Integration: Multi-component (< 60s)
+- Performance: Regression tests
+
+Test Categories:
+- Configuration validation
+- Plugin functionality (Telescope, Gitsigns, Treesitter)
+- Performance benchmarks (startup < 300ms, plugin < 500ms)
+- Memory leak detection
+- Real-world workflows
+```
+
+**5. Universal Code Formatter (fixy)**
+- Priority-based formatter selection from `/config/fixy.json`
+- 20+ language support with automatic fallback
+- Parallel processing with CPU core detection
+- Normalizations: whitespace, tabs, smart quotes, keep-sorted
+
+**6. CI/CD Pipeline**
+- Multi-OS testing (Ubuntu, macOS Intel/Apple Silicon)
+- Security scanning with Gitleaks
+- Quality checks: ShellCheck, Stylua, Ruff
+- Automated dependency updates via Dependabot
+- GitHub Pages deployment for web publishing
+
+### Neovim Configuration Architecture
+
+**Module Structure:**
+```
+config/
+├── core/           # Performance tuning, options, globals
+├── keymaps/        # Categorized key bindings
+├── lsp/            # Language server configurations
+├── plugins/        # 80+ plugin specifications
+└── ui/             # Theme and interface settings
+```
+
+**Key Features:**
+- Modern Lua configuration with lazy.nvim
+- Work-specific overrides loaded conditionally
+- AI integration: Avante, CodeCompanion, local Ollama
+- Ultra-fast completion with blink.cmp
+- Production-ready auto-formatter with silent operation
+- Dynamic path detection for dotfiles or standard location
+
+### Integration Points
+
+**Theme Synchronization:**
+- Zsh sources `~/.config/theme-switcher/current-theme.sh`
+- Neovim reads `MACOS_THEME` environment variable
+- tmux loads `~/.config/tmux/theme.conf`
+- Alacritty imports `~/.config/alacritty/theme.toml`
+
+**Performance Standards:**
+- Neovim startup: < 300ms
+- Plugin loading: < 500ms
+- Theme switching: < 500ms
+- Memory usage: < 200MB
+- Test execution: unit < 5s, functional < 30s, integration < 60s
+
+## Documentation Structure
+
+### README Files
+Each major directory now has comprehensive documentation:
+
+**Core Directories:**
+- `/README.md` - Main repository overview with accurate metrics
+- `/src/README.md` - Source configuration overview
+- `/src/neovim/README.md` - Neovim configuration details
+- `/src/scripts/README.md` - All 11 utility scripts documented
+- `/src/setup/README.md` - Installation system
+- `/src/theme-switcher/README.md` - Theme synchronization
+- `/src/zsh/README.md` - Shell configuration
+- `/src/git/README.md` - Git setup and hooks
+- `/src/language/README.md` - Language-specific configs
+- `/test/README.md` - Testing infrastructure
+- `/config/README.md` - Tool configurations
+
+### Key Documentation Updates (December 2024)
+1. **Accurate plugin counts** - Neovim has 500+ plugin refs, Zsh has 5, tmux has 0
+2. **fixy script** - 34KB universal formatter with 631-line JSON config
+3. **Testing coverage** - 30+ test files, not 100+ as might be implied
+4. **Language support** - 7 configs in src/language/, not 25+
+5. **Theme system** - 4 TokyoNight variants, < 500ms switching
+6. **Script inventory** - Exactly 11 scripts, each documented
+
+## Critical Behavioral Notes
+
+**Language Configurations**: All language-specific configs are in `/src/language/`. References in symlinks.sh, fixy, and CI workflows have been updated accordingly.
+
+**Spell Files**: Neovim spell files are configured to load from `~/.dotfiles/.dotfiles.private/spell/` directly via `spellfile` option in `options.lua`. No symlinks needed.
+
+**Testing Before Commits**: Run `./test/test --quick` before committing. For major changes, use `./test/test --full`.
+
+**Code Formatting**: Always use `./src/scripts/fixy` instead of individual formatters. It uses the priority system defined in `/config/fixy.json`.
+
+**Private Repository**: Check for existence of `.dotfiles.private` before accessing work-specific configurations:
+```bash
+[ -d "$HOME/.dotfiles/.dotfiles.private" ] && echo "Private repo exists"
+```
+
+**Theme Changes**: When modifying theme code, test all four TokyoNight variants. The system handles tmux reloading automatically.
+
+**Git Commits**: Pre-commit hooks run Gitleaks for secret detection. The configuration is at `/src/gitleaks.toml`.
+
+**Neovim Debugging**:
+```bash
+nvim --startuptime /tmp/startup.log   # Profile startup
+nvim -V9 /tmp/nvim.log                # Verbose logging
+:checkhealth                          # Inside Neovim
+:Lazy profile                         # Plugin loading times
+```
+
+## Common Fixes and Solutions
+
+### Zsh vim mode recursion error
+Fixed by clearing `zle-keymap-select` widget before Starship initialization in `src/zsh/zshrc:181-183`.
+
+### Theme switching issues
+- Check lockfile: `/tmp/theme-switch.lock`
+- Verify apps are running
+- Use force mode: `theme --force dark`
+
+### Formatter not working
+- Verify formatter installed: `which <formatter>`
+- Check fixy.json config: `/config/fixy.json`
+- Test with dry-run: `fixy --dry-run file`
+
+## Script Aliases and Shortcuts
+
+Many scripts have shorter aliases defined in `src/zsh/aliases.zsh`:
+- `update` → `update-dotfiles`
+- `ff` → fuzzy file finder
+- `fg` → fuzzy grep
+- `gs` → git status
+- `ga` → git add
+- `gc` → git commit
+- `gp` → git push
