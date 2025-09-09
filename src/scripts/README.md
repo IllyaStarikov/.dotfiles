@@ -1,392 +1,340 @@
-# src/scripts/
+# 🛠️ /src/scripts - Utility Scripts
 
-Utility scripts for system maintenance, development workflows, and productivity enhancements.
+> **Power tools for productivity** - Custom scripts that automate everything
 
-## Overview
+A collection of battle-tested utility scripts that make daily development tasks effortless. From universal code formatting to intelligent theme switching, these tools embody the "automate everything" philosophy.
 
-This directory contains shell scripts that provide essential functionality for the dotfiles ecosystem. These scripts handle everything from code formatting to system updates, theme switching, and tmux status bar utilities.
+## 🎯 Script Overview
 
-## Scripts
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| **[fixy](#fixy)** | Universal code formatter (20+ languages) | `fixy file.py` |
+| **[theme](#theme)** | Unified theme switcher | `theme dark` |
+| **[update-dotfiles](#update-dotfiles)** | Update entire system | `update` |
+| **[tmux-utils](#tmux-utils)** | tmux status utilities | `tmux-utils battery` |
+| **[scratchpad](#scratchpad)** | Quick temp file editor | `scratchpad` |
+| **[extract](#extract)** | Universal archive extractor | `extract file.tar.gz` |
+| **[fetch-quotes](#fetch-quotes)** | Inspirational quotes | `fetch-quotes` |
+| **[fallback](#fallback)** | Command fallback handler | Internal use |
+| **[install-ruby-lsp](#install-ruby-lsp)** | Ruby LSP installer | `install-ruby-lsp` |
+| **[common.sh](#commonsh)** | Shared utilities library | Sourced by other scripts |
 
-### common.sh
+## 📁 Directory Structure
 
-Shared library of functions used by other scripts.
-
-**Purpose**: Provides reusable functions for color output, platform detection, command execution, and error handling.
-
-**Key Functions**:
-- `print_color()`: Colored terminal output
-- `platform_command()`: Cross-platform command execution
-- `check_command()`: Command availability checking
-- `get_os()`: Operating system detection
-- `error_exit()`: Graceful error handling
-
-**Usage**:
-```bash
-source "${SCRIPT_DIR}/common.sh"
-print_color green "Success!"
-platform_command "brew install" "apt install"
+```
+scripts/
+├── 🔧 fixy              # Universal formatter (34KB, 631-line config)
+├── 🎨 theme             # Theme switcher (8.8KB)
+├── 🔄 update-dotfiles   # System updater (20KB)
+├── 📊 tmux-utils        # Status bar tools (13KB)
+├── 📝 scratchpad        # Temp file creator (1KB)
+├── 📦 extract           # Archive extractor (913B)
+├── 💬 fetch-quotes      # Quote fetcher (4KB)
+├── 🔀 fallback          # Fallback handler (3.1KB)
+├── 💎 install-ruby-lsp  # Ruby LSP setup (2KB)
+├── 📚 common.sh         # Shared library (12KB)
+└── ⚙️ .formatrc         # Format config (1.3KB)
 ```
 
-### extract
-
-Universal archive extraction tool supporting 20+ formats.
-
-**Purpose**: Extract any compressed archive with a single command, automatically detecting format.
-
-**Supported Formats**:
-- tar, tar.gz, tar.bz2, tar.xz, tar.Z
-- zip, rar, 7z
-- gz, bz2, xz, Z
-- deb, rpm
-- jar, war
-- And more...
-
-**Usage**:
-```bash
-extract archive.tar.gz
-extract file.zip /target/directory
-extract -l archive.7z  # List contents
-```
-
-### fetch-quotes
-
-Fetches and displays inspirational programming quotes.
-
-**Purpose**: Retrieve motivational quotes for terminal sessions, tmux status bars, or daily inspiration.
-
-**Features**:
-- Multiple quote sources
-- Caching for offline access
-- Random selection
-- JSON output support
-
-**Usage**:
-```bash
-fetch-quotes           # Random quote
-fetch-quotes --json    # JSON format
-fetch-quotes --cache   # Use cached quotes
-```
+## 🚀 Key Scripts
 
 ### fixy
+**The Universal Code Formatter** - One command to format any file
 
-Universal code formatter with configuration-based priority system.
-
-**Purpose**: Format code files using the best available formatter, with automatic fallback to alternatives.
-
-**Configuration**: Uses `~/.dotfiles/config/fixy.json` for formatter priorities.
-
-**Features**:
-- 20+ language support
-- Priority-based formatter selection
-- Text normalization (whitespace, tabs, quotes)
-- Dry-run mode
-- Additional formatters (import sorting)
-
-**Usage**:
 ```bash
-fixy file.py                    # Format Python file
-fixy --all file.js             # All normalizations + formatting
-fixy --dry-run file.cpp        # Preview changes
-fixy --trailing-whitespace *.sh # Only remove trailing whitespace
+# Basic usage
+fixy file.py              # Auto-detect and format
+fixy *.js                 # Format multiple files
+fixy --all src/           # Format with normalizations
+fixy --check file.rs      # Check without modifying
+fixy --dry-run file.go    # Preview changes
 ```
 
-**Operations**:
-- `--trailing-whitespace`: Remove trailing spaces
-- `--tabs-to-spaces`: Convert tabs to spaces
-- `--smart-quotes`: Convert smart quotes to ASCII
-- `--formatters`: Run language-specific formatters
+**Features:**
+- 🎯 **20+ languages** supported via priority system
+- ⚡ **Parallel processing** with CPU core detection
+- 🔧 **Smart fallbacks** - tries multiple formatters
+- 📝 **Normalizations** - fixes quotes, whitespace, tabs
+- 🎨 **Config-driven** via `/config/fixy.json`
 
-### scratchpad
-
-Creates temporary files for quick notes or testing.
-
-**Purpose**: Quickly create and open temporary files with automatic cleanup options.
-
-**Features**:
-- Auto-generated filenames with timestamps
-- Multiple editor support
-- Optional persistence
-- Custom extensions
-
-**Usage**:
-```bash
-scratchpad                  # Create temp file, open in $EDITOR
-scratchpad --keep          # Don't auto-delete
-scratchpad --ext py        # Python scratch file
-scratchpad --name test     # Named scratch file
-```
+**Supported Languages:**
+Python, JavaScript, TypeScript, Go, Rust, C/C++, Java, Ruby, Lua, Shell, YAML, JSON, Markdown, HTML, CSS, SQL, Swift, Kotlin, Perl, and more!
 
 ### theme
+**Intelligent Theme Switcher** - Synchronize themes across all applications
 
-Quick theme switching command (alias for theme-switcher).
-
-**Purpose**: Convenient wrapper for the theme switching system.
-
-**Usage**:
 ```bash
-theme           # Auto-detect from macOS appearance
-theme day       # TokyoNight Day (light)
-theme night     # TokyoNight Night (dark)
-theme moon      # TokyoNight Moon (dark)
-theme storm     # TokyoNight Storm (dark)
+theme              # Auto-detect from macOS appearance
+theme dark         # Force dark mode
+theme light        # Force light mode
+theme night        # TokyoNight Night variant
+theme moon         # TokyoNight Moon variant
+theme storm        # TokyoNight Storm variant
+theme day          # TokyoNight Day variant
 ```
 
-### tmux-utils
-
-Utilities for tmux status bar components.
-
-**Purpose**: Provide system information for tmux status bar display.
-
-**Components**:
-- `battery`: Battery status and percentage
-- `cpu`: CPU usage monitoring
-- `memory`: RAM usage display
-- `network`: Network status
-- `weather`: Weather information
-- `time`: Custom time formats
-
-**Features**:
-- Caching for performance
-- Color-coded indicators
-- Platform-specific implementations
-- Emoji support
-
-**Usage**:
-```bash
-tmux-utils battery    # 🔋 85%
-tmux-utils cpu       # 💻 12%
-tmux-utils memory    # 🧠 8.2G/16G
-tmux-utils network   # 🌐 Connected
-```
-
-**tmux.conf Integration**:
-```tmux
-set -g status-right '#(~/.dotfiles/src/scripts/tmux-utils battery)'
-```
+**Synchronizes:**
+- Neovim colorscheme
+- Alacritty terminal
+- WezTerm terminal
+- Kitty terminal
+- tmux status bar
+- Starship prompt
+- bat syntax highlighter
+- delta diff viewer
 
 ### update-dotfiles
+**System-Wide Updater** - Keep everything current with one command
 
-Comprehensive system update script (aliased as `update`).
-
-**Purpose**: Update all system packages, plugins, and tools with a single command.
-
-**Updates**:
-- Homebrew packages and casks
-- App Store applications (via mas)
-- Neovim plugins (lazy.nvim)
-- Tmux plugins (TPM)
-- Zsh plugins (zinit)
-- Python packages (pip)
-- Ruby gems
-- Node packages (npm)
-- Rust toolchain
-- System software updates
-
-**Usage**:
 ```bash
-update              # Update everything
-update --brew       # Only Homebrew
-update --plugins    # Only editor/shell plugins
-update --languages  # Programming language packages
+update             # Update everything
+update --brew      # Only Homebrew packages
+update --nvim      # Only Neovim plugins
+update --zsh       # Only Zsh plugins
+update --tmux      # Only tmux plugins
 ```
 
-## Script Standards
+**Updates:**
+- 📦 Homebrew packages and casks
+- 🌙 Neovim plugins via lazy.nvim
+- 🐚 Zsh plugins via Zinit
+- 💻 tmux plugins via TPM
+- 🐍 Python packages via pip
+- 📝 Language servers
+- 🔧 System tools
 
-### Shell Selection
+### tmux-utils
+**tmux Status Bar Utilities** - System monitoring for tmux
 
-All scripts use:
 ```bash
-#!/usr/bin/env bash
-```
-For maximum portability and feature availability.
-
-### Error Handling
-
-Standard error handling pattern:
-```bash
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
-trap 'echo "Error on line $LINENO"' ERR
-```
-
-### Cross-Platform Support
-
-Scripts detect and handle platform differences:
-```bash
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # macOS specific
-else
-  # Linux specific
-fi
+tmux-utils battery     # Battery percentage and status
+tmux-utils cpu         # CPU usage
+tmux-utils memory      # Memory usage
+tmux-utils network     # Network status
+tmux-utils weather     # Weather info
 ```
 
-### Color Output
+**Features:**
+- 🔋 Smart battery icons based on percentage
+- 📊 Real-time CPU monitoring
+- 💾 Memory usage with smart units
+- 🌐 Network connectivity status
+- 🌤️ Weather integration
 
-Using common.sh functions:
+### scratchpad
+**Quick Temporary File Editor** - For when you need to jot something down
+
 ```bash
-print_color green "Success"
-print_color red "Error"
-print_color yellow "Warning"
-print_color blue "Info"
+scratchpad             # Open temp file in Neovim
+scratchpad --keep      # Don't delete after editing
+scratchpad notes.md    # Use custom filename
 ```
 
-## Configuration Files
+**Features:**
+- 📝 Opens in Neovim instantly
+- 🗑️ Auto-cleanup (unless --keep)
+- 📁 Organized in ~/tmp/scratch/
+- 🕒 Timestamped filenames
 
-### fixy.json
+### extract
+**Universal Archive Extractor** - Extract anything with one command
 
-Located at: `~/.dotfiles/config/fixy.json`
-
-Defines:
-- Formatter commands and arguments
-- Language to formatter mappings
-- Priority orders
-- Global settings
-
-### Script Environment Variables
-
-Common variables:
-- `DOTFILES_DIR`: Root of dotfiles repository
-- `EDITOR`: Preferred text editor
-- `TERM`: Terminal type
-- `OSTYPE`: Operating system type
-
-## Integration Points
-
-### With Shell Configuration
-
-Scripts are added to PATH via zshrc:
 ```bash
-export PATH="$HOME/.dotfiles/src/scripts:$PATH"
+extract file.tar.gz    # Extract any archive
+extract file.zip       # Auto-detect format
+extract file.7z        # Handles 20+ formats
 ```
 
-### With Aliases
+**Supported Formats:**
+`.tar.gz`, `.tar.bz2`, `.tar.xz`, `.zip`, `.rar`, `.7z`, `.gz`, `.bz2`, `.xz`, `.tar`, `.tgz`, `.tbz2`, `.Z`, `.deb`, `.rpm`, `.jar`, `.war`, `.ear`, `.sar`, `.iso`
 
-Common aliases defined:
+### fetch-quotes
+**Inspirational Quote Fetcher** - Start your day with motivation
+
 ```bash
-alias update='update-dotfiles'
-alias fmt='fixy'
-alias scratch='scratchpad'
-alias extract='extract'
+fetch-quotes           # Random quote
+fetch-quotes --tech    # Tech quotes
+fetch-quotes --zen     # Zen quotes
 ```
 
-### With Editors
+**Sources:**
+- Programming wisdom
+- Zen koans
+- Tech leader quotes
+- Unix philosophy
 
-- Neovim: Can call fixy script via keybinding
-- VSCode: Task runner integration
-- Tmux: Status bar components
+### fallback
+**Command Fallback Handler** - Gracefully handle missing commands
 
-## Testing
+Used internally by other scripts to provide fallbacks when tools aren't installed.
 
-### Manual Testing
-
-Test individual scripts:
 ```bash
-# Test fixy script
-fixy --dry-run test.py
-
-# Test tmux utils
-tmux-utils battery
-
-# Test extraction
-extract test.zip /tmp/
+# Internal usage example
+fallback rg grep "pattern" files
+# Uses ripgrep if available, falls back to grep
 ```
 
-### Automated Testing
+### install-ruby-lsp
+**Ruby Language Server Installer** - Set up Ruby development
 
-Part of test suite:
 ```bash
-~/.dotfiles/test/test scripts
+install-ruby-lsp       # Install solargraph and dependencies
+install-ruby-lsp --force  # Reinstall even if present
 ```
 
-## Debugging
+### common.sh
+**Shared Utilities Library** - Functions used across all scripts
 
-### Enable Debug Mode
+**Provides:**
+- 🎨 Color output functions
+- 📝 Logging utilities
+- ✅ Command checking
+- 🔍 Platform detection
+- 📊 Progress indicators
+- ⚠️ Error handling
 
-Most scripts support debug output:
+## 🔧 Configuration
+
+### .formatrc
+Format configuration file with language-specific settings:
 ```bash
-DEBUG=1 fixy file.py
-VERBOSE=1 update-dotfiles
+# Python formatting
+python_formatter="ruff"
+python_args="format --line-length 88"
+
+# JavaScript formatting
+js_formatter="prettier"
+js_args="--write"
 ```
 
-### Common Issues
+### Integration with fixy.json
+The main formatter configuration at `/config/fixy.json`:
+- Priority-based formatter selection
+- Language detection patterns
+- Normalization rules
+- Parallel processing settings
 
-**Permission Denied**:
+## 🚀 Usage Examples
+
+### Daily Workflow
 ```bash
-chmod +x ~/.dotfiles/src/scripts/*
+# Start your day
+theme                  # Set theme based on time/preference
+fetch-quotes           # Get inspired
+update                 # Update everything
+
+# During development
+fixy --all src/        # Format all source files
+scratchpad             # Quick notes
+tmux-utils battery     # Check battery in tmux
+
+# File management
+extract download.tar.gz # Extract archive
 ```
 
-**Command Not Found**:
+### Automation
 ```bash
-# Ensure PATH includes scripts
-echo $PATH | grep dotfiles/src/scripts
+# Add to crontab for daily updates
+0 9 * * * /usr/bin/zsh -c "source ~/.zshrc && update --quiet"
+
+# Auto-format on git commit (via hook)
+fixy --check $(git diff --cached --name-only)
 ```
 
-**Platform Issues**:
+## 🧪 Testing
+
+Each script can be tested:
 ```bash
-# Test platform detection
-bash -c 'source common.sh && get_os'
+# Test individual script
+./test/test unit/scripts/fixy
+./test/test unit/scripts/theme
+
+# Test all scripts
+./test/test functional/scripts
 ```
 
-## Best Practices
+## 🔒 Security
 
-### Script Development
+- **No credentials** stored in scripts
+- **Safe extraction** - validates archives before extracting
+- **Atomic operations** - theme switching uses lockfiles
+- **Input validation** - all user input sanitized
 
-1. **Source common.sh**: Use shared functions
-2. **Error handling**: Always use `set -euo pipefail`
-3. **Help text**: Include usage information
-4. **Validation**: Check inputs and dependencies
-5. **Cross-platform**: Test on macOS and Linux
+## 📈 Performance
 
-### Performance
+| Script | Typical Runtime | Notes |
+|--------|----------------|-------|
+| fixy | < 100ms per file | Parallel for multiple files |
+| theme | < 500ms | Atomic switching |
+| update | 1-5 minutes | Depends on pending updates |
+| scratchpad | < 50ms | Instant open |
+| extract | Varies | Depends on archive size |
 
-1. **Cache when possible**: Reduce repeated operations
-2. **Background jobs**: Use `&` for parallel tasks
-3. **Minimal dependencies**: Check availability
-4. **Early exit**: Fail fast on errors
+## 🎯 Best Practices
 
-### Documentation
+1. **Use fixy for all formatting** - Consistent across languages
+2. **Run update weekly** - Keep tools current
+3. **Let theme auto-detect** - Follows system preference
+4. **Check battery via tmux-utils** - Integrated in status bar
 
-1. **Header comments**: Describe purpose
-2. **Function docs**: Document parameters
-3. **Usage examples**: Show common uses
-4. **Error messages**: Be descriptive
+## 🔄 Adding New Scripts
 
-## Security
+1. Create script in `/src/scripts/`
+2. Make executable: `chmod +x script-name`
+3. Add to PATH via symlinks
+4. Document in this README
+5. Add tests in `/test/unit/scripts/`
 
-- No hardcoded credentials
-- Validate user input
-- Use quotes around variables
-- Avoid eval and arbitrary execution
-- Check file permissions
+## 💡 Tips & Tricks
 
-## Future Enhancements
+```bash
+# Format all Python files in project
+find . -name "*.py" | xargs fixy
 
-Planned improvements:
-- Script dependency management
-- Automated script testing
-- Performance profiling
-- Plugin architecture
-- Configuration UI
+# Quick note-taking workflow
+alias note='scratchpad --keep'
 
-## Dependencies
+# Check all system stats
+for util in battery cpu memory network; do
+  echo "$util: $(tmux-utils $util)"
+done
 
-### Required
+# Extract multiple archives
+for archive in *.tar.gz; do
+  extract "$archive"
+done
+```
 
-- Bash 4.0+
-- Core utilities (sed, awk, grep)
-- Git
+## 🐛 Troubleshooting
 
-### Optional
+### fixy not formatting
+- Check formatter is installed: `which <formatter>`
+- Verify language detection: `fixy --dry-run file`
+- Check config: `cat /config/fixy.json`
 
-Tool-specific dependencies:
-- `format`: Language formatters
-- `tmux-utils`: tmux
-- `update-dotfiles`: Package managers
-- `fetch-quotes`: curl/wget
+### theme not switching
+- Verify applications are running
+- Check lockfile: `ls /tmp/theme-switch.lock`
+- Manual override: `theme --force dark`
 
-## See Also
+### update failing
+- Check network connection
+- Verify credentials for private repos
+- Run with verbose: `update --verbose`
 
-- Common Library: [common.sh](common.sh)
-- Format Config: `~/.dotfiles/config/fixy.json`
-- Theme Switcher: `~/.dotfiles/src/theme-switcher/`
-- Main README: `~/.dotfiles/README.md`
+## 📚 See Also
+
+- [Main Scripts Documentation](../../doc/scripts/)
+- [Fixy Configuration](/config/fixy.json)
+- [Theme System](../theme-switcher/README.md)
+- [Shell Aliases](../zsh/aliases.zsh)
+
+---
+
+<div align="center">
+
+**[⬆ Back to /src](../README.md)**
+
+Each script is a tool in your productivity arsenal - use them wisely! 🚀
+
+</div>
