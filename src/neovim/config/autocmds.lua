@@ -334,6 +334,26 @@ autocmd({ "BufRead", "BufNewFile" }, {
   command = "set filetype=c"
 })
 
+-- BUILD and Bazel file detection
+autocmd({ "BufRead", "BufNewFile" }, {
+  group = projects_group,
+  pattern = { "BUILD", "BUILD.bazel", "WORKSPACE", "WORKSPACE.bazel", "*.BUILD", "*.bzl", "*.bazel" },
+  callback = function()
+    vim.bo.filetype = "bzl"
+  end,
+  desc = "Set filetype for Bazel/BUILD files"
+})
+
+-- Additional pattern for BUILD files in subdirectories
+autocmd({ "BufRead", "BufNewFile" }, {
+  group = projects_group,
+  pattern = { "*/BUILD", "*/BUILD.bazel", "*/WORKSPACE", "*/WORKSPACE.bazel" },
+  callback = function()
+    vim.bo.filetype = "bzl"
+  end,
+  desc = "Set filetype for Bazel/BUILD files in subdirectories"
+})
+
 -- =============================================================================
 -- PYTHON INDENTATION ENFORCEMENT
 -- =============================================================================
