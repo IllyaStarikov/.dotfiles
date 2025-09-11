@@ -36,3 +36,7 @@ src/wezterm/theme.lua
 # Private dotfiles (now untracked)
 .dotfiles.private/
 template/public/
+
+# Debug logs
+log.txt
+log_2.txt
