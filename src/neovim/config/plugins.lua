@@ -1005,7 +1005,7 @@ require("lazy").setup({
           "markdown", "markdown_inline", "python", "javascript", "typescript",
           "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
           "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex",
-          "comment", "vimdoc", "regex", "diff", "gitignore", "query"
+          "comment", "vimdoc", "regex", "diff", "gitignore", "query", "starlark"
         },
         auto_install = true,
         sync_install = false,  -- Don't download parsers synchronously
