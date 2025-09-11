@@ -166,4 +166,43 @@ function M.is_work_env()
   return vim.g.work_profile ~= nil
 end
 
+-- Force reload work configuration (useful for debugging)
+function M.reload()
+  -- Clear existing work indicators
+  vim.g.work_profile = nil
+  vim.g.work_config_dir = nil
+  vim.g.work_aliases_path = nil
+  vim.g.work_lsp_override = nil
+  
+  -- Reapply overrides
+  M.apply_overrides()
+  
+  if M.is_work_env() then
+    vim.notify("Work configuration reloaded: " .. vim.g.work_profile, vim.log.levels.INFO)
+  else
+    vim.notify("No work profile detected for this machine", vim.log.levels.WARN)
+  end
+end
+
+-- Create user command for easy reloading
+vim.api.nvim_create_user_command("WorkReload", function()
+  M.reload()
+end, { desc = "Reload work-specific configuration" })
+
+-- Create user command to check work status
+vim.api.nvim_create_user_command("WorkStatus", function()
+  if M.is_work_env() then
+    local info = M.get_profile()
+    vim.notify(string.format(
+      "Work Profile: %s\nConfig Dir: %s\nAliases: %s\nLSP Override: %s",
+      info.profile or "none",
+      info.config_dir or "none",
+      info.aliases_path or "none",
+      vim.g.work_lsp_override and "active" or "inactive"
+    ), vim.log.levels.INFO, { title = "Work Environment Status" })
+  else
+    vim.notify("No work environment detected", vim.log.levels.INFO)
+  end
+end, { desc = "Show work environment status" })
+
 return M
