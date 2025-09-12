@@ -1,0 +1,1031 @@
+#!/usr/bin/env zsh
+# Dotfiles Test Suite v5.0 - Production-ready test runner
+# Follows Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
+
+set -euo pipefail
+
+readonly SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+readonly DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+readonly TEST_DIR="$SCRIPT_DIR"
+
+# Test configuration
+declare -g TEST_SIZE="large"  # Default to large (all tests)
+declare -g DEBUG_MODE=0
+declare -g CI_MODE=0
+declare -g TEST_FILTER=""
+declare -g PARALLEL_JOBS=1
+declare -g OUTPUT_FORMAT="human"  # human, junit, json
+declare -g TEST_RUNNER="$0"
+
+# Test counters
+declare -gi PASSED=0
+declare -gi FAILED=0
+declare -gi SKIPPED=0
+declare -gi TOTAL_TIME=0
+
+# Colors (disabled in CI/non-TTY)
+if [[ -t 1 ]] && [[ "${NO_COLOR:-}" != "1" ]]; then
+    readonly RED=$'\033[0;31m'
+    readonly GREEN=$'\033[0;32m'
+    readonly YELLOW=$'\033[0;33m'
+    readonly BLUE=$'\033[0;34m'
+    readonly CYAN=$'\033[0;36m'
+    readonly BOLD=$'\033[1m'
+    readonly NC=$'\033[0m'
+else
+    readonly RED=""
+    readonly GREEN=""
+    readonly YELLOW=""
+    readonly BLUE=""
+    readonly CYAN=""
+    readonly BOLD=""
+    readonly NC=""
+fi
+
+# Test categorization by size (execution time)
+readonly -A TEST_SIZES=(
+    [small]="unit smoke sanity"           # < 30 seconds
+    [medium]="integration regression"      # < 5 minutes
+    [large]="e2e performance load stress security compatibility installation chaos"  # < 30 minutes
+)
+
+#######################################
+# Display usage information
+#######################################
+usage() {
+    cat << EOF
+${BOLD}Dotfiles Test Suite v5.0${NC}
+
+${BOLD}USAGE:${NC}
+    $0 [OPTIONS] [TEST_PATTERN]
+
+${BOLD}OPTIONS:${NC}
+    --small         Run unit, smoke, and sanity tests (< 30s)
+    --medium        Run integration and regression tests (< 5m)
+    --large         Run all tests including performance, stress, etc. (< 30m) [default]
+    
+    --debug         Enable debug output with extensive logging
+    --ci            CI mode (generates reports, no colors)
+    --parallel=N    Run N test suites in parallel (default: 1)
+    --output=FORMAT Output format: human, junit, json (default: human)
+    
+    -h, --help      Show this help message
+
+${BOLD}TEST PATTERN:${NC}
+    Optional regex pattern to filter tests
+    Examples:
+        $0 unit              # Run only unit tests
+        $0 "nvim|vim"        # Run tests matching nvim or vim
+        $0 --small setup     # Run small tests matching "setup"
+
+${BOLD}EXAMPLES:${NC}
+    $0                    # Run all tests (large)
+    $0 --small            # Quick test run
+    $0 --medium --debug   # Integration tests with debug output
+    $0 --ci --parallel=4  # CI mode with 4 parallel jobs
+
+${BOLD}EXIT CODES:${NC}
+    0 - All tests passed
+    1 - Some tests failed
+    2 - Invalid arguments
+    3 - Setup error
+
+EOF
+}
+
+#######################################
+# Log message with timestamp and level
+#######################################
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    case "$level" in
+        DEBUG)
+            [[ $DEBUG_MODE -eq 1 ]] && echo "${CYAN}[DEBUG]${NC} ${timestamp} - $message" >&2
+            ;;
+        INFO)
+            echo "${BLUE}[INFO]${NC} ${timestamp} - $message"
+            ;;
+        WARN)
+            echo "${YELLOW}[WARN]${NC} ${timestamp} - $message" >&2
+            ;;
+        ERROR)
+            echo "${RED}[ERROR]${NC} ${timestamp} - $message" >&2
+            ;;
+        SUCCESS)
+            echo "${GREEN}[SUCCESS]${NC} ${timestamp} - $message"
+            ;;
+        TEST)
+            echo "${BOLD}[TEST]${NC} $message"
+            ;;
+    esac
+}
+
+#######################################
+# Parse command line arguments
+#######################################
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --small)
+                TEST_SIZE="small"
+                shift
+                ;;
+            --medium)
+                TEST_SIZE="medium"
+                shift
+                ;;
+            --large)
+                TEST_SIZE="large"
+                shift
+                ;;
+            --debug)
+                DEBUG_MODE=1
+                export DEBUG_MODE
+                shift
+                ;;
+            --ci)
+                CI_MODE=1
+                OUTPUT_FORMAT="junit"
+                export CI_MODE
+                shift
+                ;;
+            --parallel=*)
+                PARALLEL_JOBS="${1#*=}"
+                shift
+                ;;
+            --output=*)
+                OUTPUT_FORMAT="${1#*=}"
+                shift
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            -*)
+                log ERROR "Unknown option: $1"
+                usage
+                exit 2
+                ;;
+            *)
+                TEST_FILTER="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Validate parallel jobs
+    if [[ ! "$PARALLEL_JOBS" =~ ^[1-9][0-9]*$ ]]; then
+        log ERROR "Invalid parallel jobs value: $PARALLEL_JOBS"
+        exit 2
+    fi
+    
+    # Limit parallel jobs to CPU count
+    local cpu_count=$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo 4)
+    if [[ $PARALLEL_JOBS -gt $cpu_count ]]; then
+        log WARN "Limiting parallel jobs to CPU count: $cpu_count"
+        PARALLEL_JOBS=$cpu_count
+    fi
+    
+    # Set up CI mode
+    if [[ $CI_MODE -eq 1 ]]; then
+        export CI=true
+        export GITHUB_ACTIONS="${GITHUB_ACTIONS:-true}"
+    fi
+}
+
+#######################################
+# Setup test environment
+#######################################
+setup_environment() {
+    log INFO "Setting up test environment"
+    
+    # Create temporary directory for test artifacts
+    export TEST_TMP_DIR=$(mktemp -d -t dotfiles-test.XXXXXX)
+    export TEST_REPORTS_DIR="${TEST_DIR}/reports"
+    export TEST_ARTIFACTS_DIR="${TEST_TMP_DIR}/artifacts"
+    
+    mkdir -p "$TEST_REPORTS_DIR" "$TEST_ARTIFACTS_DIR"
+    
+    # Set up cleanup trap
+    trap cleanup EXIT INT TERM
+    
+    # Export test environment variables
+    export DOTFILES_DIR
+    export TEST_DIR
+    export DEBUG_MODE
+    export CI_MODE
+    export TEST_SIZE
+    
+    # Create or source test utilities
+    if [[ ! -f "${TEST_DIR}/lib/test_utils.zsh" ]]; then
+        log DEBUG "Creating test utilities"
+        create_test_utils
+    fi
+    source "${TEST_DIR}/lib/test_utils.zsh"
+    
+    log DEBUG "Test environment ready: $TEST_TMP_DIR"
+}
+
+#######################################
+# Create comprehensive test utilities
+#######################################
+create_test_utils() {
+    mkdir -p "${TEST_DIR}/lib"
+    cat > "${TEST_DIR}/lib/test_utils.zsh" << 'EOF'
+#!/usr/bin/env zsh
+# Comprehensive test utilities
+
+# Test result tracking
+declare -gi TEST_ASSERTIONS=0
+declare -gi TEST_FAILURES=0
+
+# Colors for test output
+if [[ -t 1 ]]; then
+    readonly TEST_RED=$'\033[0;31m'
+    readonly TEST_GREEN=$'\033[0;32m'
+    readonly TEST_YELLOW=$'\033[0;33m'
+    readonly TEST_BLUE=$'\033[0;34m'
+    readonly TEST_NC=$'\033[0m'
+else
+    readonly TEST_RED=""
+    readonly TEST_GREEN=""
+    readonly TEST_YELLOW=""
+    readonly TEST_BLUE=""
+    readonly TEST_NC=""
+fi
+
+#######################################
+# Test case wrapper
+#######################################
+test_case() {
+    local name="$1"
+    shift
+    
+    echo "${TEST_BLUE}▶ Test: $name${TEST_NC}"
+    TEST_ASSERTIONS=0
+    TEST_FAILURES=0
+    
+    # Run the test
+    "$@"
+    local result=$?
+    
+    if [[ $result -eq 0 ]] && [[ $TEST_FAILURES -eq 0 ]]; then
+        echo "PASS: $name"
+        return 0
+    else
+        echo "FAIL: $name"
+        return 1
+    fi
+}
+
+#######################################
+# Assertion functions
+#######################################
+assert_equals() {
+    local expected="$1"
+    local actual="$2"
+    local message="${3:-Values should be equal}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ "$expected" != "$actual" ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Expected: '$expected'"
+        echo "    Actual:   '$actual'"
+        [[ $DEBUG_MODE -eq 1 ]] && echo "    Stack: ${funcstack[2,-1]}"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+assert_not_equals() {
+    local unexpected="$1"
+    local actual="$2"
+    local message="${3:-Values should not be equal}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ "$unexpected" == "$actual" ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Unexpected: '$unexpected'"
+        echo "    Actual:     '$actual'"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+assert_true() {
+    local condition="$1"
+    local message="${2:-Condition should be true}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if ! eval "$condition"; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Condition: $condition"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+assert_false() {
+    local condition="$1"
+    local message="${2:-Condition should be false}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if eval "$condition"; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Condition: $condition"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+assert_file_exists() {
+    local file="$1"
+    local message="${2:-File should exist}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ ! -f "$file" ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    File: $file"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message: $file${TEST_NC}"
+    return 0
+}
+
+assert_dir_exists() {
+    local dir="$1"
+    local message="${2:-Directory should exist}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ ! -d "$dir" ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Directory: $dir"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message: $dir${TEST_NC}"
+    return 0
+}
+
+assert_command_exists() {
+    local cmd="$1"
+    local message="${2:-Command should exist}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    Command: $cmd"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message: $cmd${TEST_NC}"
+    return 0
+}
+
+assert_contains() {
+    local haystack="$1"
+    local needle="$2"
+    local message="${3:-String should contain substring}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ "$haystack" != *"$needle"* ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    String: '$haystack'"
+        echo "    Should contain: '$needle'"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+assert_matches() {
+    local string="$1"
+    local pattern="$2"
+    local message="${3:-String should match pattern}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if [[ ! "$string" =~ $pattern ]]; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    String: '$string'"
+        echo "    Pattern: '$pattern'"
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+#######################################
+# Skip test with reason
+#######################################
+skip_test() {
+    local reason="$1"
+    echo "SKIP: $reason"
+    return 0
+}
+
+#######################################
+# Timing functions
+#######################################
+measure_time() {
+    local start=$(date +%s%N)
+    "$@"
+    local end=$(date +%s%N)
+    echo $(( (end - start) / 1000000 ))  # Return milliseconds
+}
+
+benchmark() {
+    local name="$1"
+    local threshold_ms="${2:-1000}"
+    shift 2
+    
+    local duration=$(measure_time "$@")
+    
+    if [[ $duration -gt $threshold_ms ]]; then
+        echo "${TEST_YELLOW}  ⚠ Performance: $name took ${duration}ms (threshold: ${threshold_ms}ms)${TEST_NC}"
+        return 1
+    else
+        echo "${TEST_GREEN}  ✓ Performance: $name took ${duration}ms${TEST_NC}"
+        return 0
+    fi
+}
+
+#######################################
+# Debug and logging helpers
+#######################################
+debug_log() {
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_BLUE}[DEBUG]${TEST_NC} $*" >&2
+}
+
+info_log() {
+    echo "${TEST_BLUE}[INFO]${TEST_NC} $*"
+}
+
+warn_log() {
+    echo "${TEST_YELLOW}[WARN]${TEST_NC} $*" >&2
+}
+
+error_log() {
+    echo "${TEST_RED}[ERROR]${TEST_NC} $*" >&2
+}
+
+#######################################
+# Setup and teardown helpers
+#######################################
+setup_test_dir() {
+    local test_name="${1:-test}"
+    local dir="${TEST_TMP_DIR}/${test_name}"
+    mkdir -p "$dir"
+    echo "$dir"
+}
+
+cleanup_test_dir() {
+    local dir="$1"
+    [[ -d "$dir" ]] && rm -rf "$dir"
+}
+
+#######################################
+# Mock and stub helpers
+#######################################
+create_mock_command() {
+    local cmd="$1"
+    local output="${2:-mock output}"
+    local mock_dir="${TEST_TMP_DIR}/mocks"
+    
+    mkdir -p "$mock_dir"
+    cat > "$mock_dir/$cmd" << MOCK
+#!/usr/bin/env zsh
+echo "$output"
+exit 0
+MOCK
+    chmod +x "$mock_dir/$cmd"
+    export PATH="$mock_dir:$PATH"
+}
+
+#######################################
+# Process helpers
+#######################################
+run_with_timeout() {
+    local timeout="$1"
+    shift
+    
+    timeout "$timeout" "$@" 2>/dev/null || {
+        local code=$?
+        if [[ $code -eq 124 ]]; then
+            error_log "Command timed out after ${timeout}s"
+        fi
+        return $code
+    }
+}
+
+#######################################
+# File comparison helpers
+#######################################
+assert_files_equal() {
+    local file1="$1"
+    local file2="$2"
+    local message="${3:-Files should be equal}"
+    
+    ((TEST_ASSERTIONS++))
+    
+    if ! diff -q "$file1" "$file2" >/dev/null 2>&1; then
+        ((TEST_FAILURES++))
+        echo "${TEST_RED}  ✗ $message${TEST_NC}"
+        echo "    File 1: $file1"
+        echo "    File 2: $file2"
+        [[ $DEBUG_MODE -eq 1 ]] && diff -u "$file1" "$file2" | head -20
+        return 1
+    fi
+    
+    [[ $DEBUG_MODE -eq 1 ]] && echo "${TEST_GREEN}  ✓ $message${TEST_NC}"
+    return 0
+}
+
+#######################################
+# Network helpers
+#######################################
+wait_for_port() {
+    local port="$1"
+    local timeout="${2:-10}"
+    local elapsed=0
+    
+    while [[ $elapsed -lt $timeout ]]; do
+        if nc -z localhost "$port" 2>/dev/null; then
+            return 0
+        fi
+        sleep 1
+        ((elapsed++))
+    done
+    
+    return 1
+}
+
+#######################################
+# Export all functions
+#######################################
+export -f test_case assert_equals assert_not_equals assert_true assert_false
+export -f assert_file_exists assert_dir_exists assert_command_exists
+export -f assert_contains assert_matches skip_test
+export -f measure_time benchmark
+export -f debug_log info_log warn_log error_log
+export -f setup_test_dir cleanup_test_dir
+export -f create_mock_command run_with_timeout
+export -f assert_files_equal wait_for_port
+EOF
+    chmod +x "${TEST_DIR}/lib/test_utils.zsh"
+}
+
+#######################################
+# Cleanup test environment
+#######################################
+cleanup() {
+    local exit_code=$?
+    
+    log DEBUG "Cleaning up test environment"
+    
+    # Save artifacts if tests failed
+    if [[ $exit_code -ne 0 ]] && [[ $DEBUG_MODE -eq 1 ]]; then
+        local artifact_archive="${TEST_REPORTS_DIR}/test-artifacts-$(date +%Y%m%d-%H%M%S).tar.gz"
+        tar -czf "$artifact_archive" -C "$TEST_TMP_DIR" . 2>/dev/null || true
+        log INFO "Test artifacts saved to: $artifact_archive"
+    fi
+    
+    # Clean up temporary directory
+    [[ -d "$TEST_TMP_DIR" ]] && rm -rf "$TEST_TMP_DIR"
+    
+    return $exit_code
+}
+
+#######################################
+# Discover test files based on size and filter
+#######################################
+discover_tests() {
+    local test_categories=""
+    
+    case "$TEST_SIZE" in
+        small)
+            test_categories="unit smoke sanity"
+            ;;
+        medium)
+            test_categories="unit smoke sanity integration regression"
+            ;;
+        large)
+            test_categories="unit smoke sanity integration regression e2e performance load stress security compatibility installation chaos"
+            ;;
+    esac
+    
+    log DEBUG "Discovering tests for categories: $test_categories"
+    
+    local test_files=()
+    for category in ${=test_categories}; do
+        local category_dir="${TEST_DIR}/${category}"
+        [[ -d "$category_dir" ]] || continue
+        
+        # Find all .zsh test files
+        while IFS= read -r -d '' test_file; do
+            # Apply filter if specified
+            if [[ -z "$TEST_FILTER" ]] || [[ "$test_file" =~ "$TEST_FILTER" ]]; then
+                test_files+=("$test_file")
+                log DEBUG "Found test: $test_file"
+            fi
+        done < <(find "$category_dir" -name "*.zsh" -type f -print0 2>/dev/null)
+    done
+    
+    # Also check for any existing .sh files to maintain compatibility
+    for category in ${=test_categories}; do
+        local category_dir="${TEST_DIR}/${category}"
+        [[ -d "$category_dir" ]] || continue
+        
+        while IFS= read -r -d '' test_file; do
+            if [[ -z "$TEST_FILTER" ]] || [[ "$test_file" =~ "$TEST_FILTER" ]]; then
+                test_files+=("$test_file")
+                log DEBUG "Found legacy test: $test_file"
+            fi
+        done < <(find "$category_dir" -name "*_test.sh" -type f -print0 2>/dev/null)
+    done
+    
+    # Output unique test files
+    printf '%s\n' "${test_files[@]}" | sort -u
+}
+
+#######################################
+# Run a single test file
+#######################################
+run_test_file() {
+    local test_file="$1"
+    local test_name=$(basename "$test_file" | sed 's/\.[^.]*$//')
+    local test_category=$(basename "$(dirname "$test_file")")
+    local test_log="${TEST_ARTIFACTS_DIR}/${test_category}_${test_name}.log"
+    
+    log TEST "Running ${test_category}/${test_name}"
+    
+    local start_time=$(date +%s%N)
+    local exit_code=0
+    
+    # Run test with proper environment
+    (
+        export TEST_NAME="$test_name"
+        export TEST_CATEGORY="$test_category"
+        export TEST_LOG="$test_log"
+        
+        # Source test utilities
+        source "${TEST_DIR}/lib/test_utils.zsh"
+        
+        if [[ $DEBUG_MODE -eq 1 ]]; then
+            zsh -x "$test_file" 2>&1 | tee "$test_log"
+        else
+            zsh "$test_file" > "$test_log" 2>&1
+        fi
+    ) || exit_code=$?
+    
+    local end_time=$(date +%s%N)
+    local duration=$(( (end_time - start_time) / 1000000 ))
+    
+    # Parse test results from log
+    local passed=$(grep -c "^PASS:" "$test_log" 2>/dev/null || echo 0)
+    local failed=$(grep -c "^FAIL:" "$test_log" 2>/dev/null || echo 0)
+    local skipped=$(grep -c "^SKIP:" "$test_log" 2>/dev/null || echo 0)
+    
+    # If no explicit PASS/FAIL/SKIP markers, check exit code
+    if [[ $passed -eq 0 ]] && [[ $failed -eq 0 ]] && [[ $skipped -eq 0 ]]; then
+        if [[ $exit_code -eq 0 ]]; then
+            passed=1
+        else
+            failed=1
+        fi
+    fi
+    
+    # Update global counters
+    ((PASSED += passed))
+    ((FAILED += failed))
+    ((SKIPPED += skipped))
+    ((TOTAL_TIME += duration))
+    
+    # Report results
+    if [[ $exit_code -eq 0 ]] && [[ $failed -eq 0 ]]; then
+        log SUCCESS "${test_category}/${test_name} - ${passed} passed, ${skipped} skipped (${duration}ms)"
+    else
+        log ERROR "${test_category}/${test_name} - ${failed} failed, ${passed} passed, ${skipped} skipped (${duration}ms)"
+        
+        # Show failures in debug mode
+        if [[ $DEBUG_MODE -eq 1 ]] && [[ -f "$test_log" ]]; then
+            echo "${RED}Failed assertions:${NC}"
+            grep -E "^(FAIL:|✗)" "$test_log" | head -10
+        fi
+    fi
+    
+    return $exit_code
+}
+
+#######################################
+# Run tests in parallel
+#######################################
+run_tests_parallel() {
+    local test_files=("$@")
+    local pids=()
+    local exit_codes=()
+    
+    log INFO "Running ${#test_files[@]} test files with $PARALLEL_JOBS parallel jobs"
+    
+    local job_count=0
+    for test_file in "${test_files[@]}"; do
+        # Wait if we've reached the parallel job limit
+        while [[ ${#pids[@]} -ge $PARALLEL_JOBS ]]; do
+            for i in "${!pids[@]}"; do
+                if ! kill -0 "${pids[$i]}" 2>/dev/null; then
+                    wait "${pids[$i]}"
+                    exit_codes+=($?)
+                    unset "pids[$i]"
+                    pids=("${pids[@]}")  # Reindex array
+                    break
+                fi
+            done
+            sleep 0.1
+        done
+        
+        # Start new test job
+        run_test_file "$test_file" &
+        pids+=($!)
+        ((job_count++))
+    done
+    
+    # Wait for remaining jobs
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+        exit_codes+=($?)
+    done
+    
+    # Check if any tests failed
+    for code in "${exit_codes[@]}"; do
+        [[ $code -ne 0 ]] && return 1
+    done
+    
+    return 0
+}
+
+#######################################
+# Generate test report
+#######################################
+generate_report() {
+    local report_file="${TEST_REPORTS_DIR}/test-report-$(date +%Y%m%d-%H%M%S)"
+    
+    case "$OUTPUT_FORMAT" in
+        junit)
+            generate_junit_report > "${report_file}.xml"
+            log INFO "JUnit report saved to: ${report_file}.xml"
+            ;;
+        json)
+            generate_json_report > "${report_file}.json"
+            log INFO "JSON report saved to: ${report_file}.json"
+            ;;
+        human|*)
+            generate_human_report | tee "${report_file}.txt"
+            ;;
+    esac
+}
+
+#######################################
+# Generate human-readable report
+#######################################
+generate_human_report() {
+    local total=$((PASSED + FAILED + SKIPPED))
+    local pass_rate=0
+    [[ $total -gt 0 ]] && pass_rate=$(( (PASSED * 100) / total ))
+    
+    cat << EOF
+
+${BOLD}════════════════════════════════════════════════════════════════${NC}
+${BOLD}                    TEST EXECUTION SUMMARY                      ${NC}
+${BOLD}════════════════════════════════════════════════════════════════${NC}
+
+Test Size:        ${TEST_SIZE}
+Parallel Jobs:    ${PARALLEL_JOBS}
+Total Duration:   ${TOTAL_TIME}ms
+
+${BOLD}Results:${NC}
+  ${GREEN}✓ Passed:${NC}  ${PASSED}
+  ${RED}✗ Failed:${NC}  ${FAILED}
+  ${YELLOW}⊘ Skipped:${NC} ${SKIPPED}
+  ────────────
+  Total:      ${total}
+
+${BOLD}Pass Rate:${NC} ${pass_rate}%
+
+EOF
+
+    if [[ $FAILED -gt 0 ]]; then
+        echo "${BOLD}${RED}Failed Tests:${NC}"
+        find "$TEST_ARTIFACTS_DIR" -name "*.log" -exec grep -l "^FAIL:" {} \; 2>/dev/null | while read -r log; do
+            local test_name=$(basename "$log" .log)
+            echo "  • $test_name"
+            if [[ $DEBUG_MODE -eq 1 ]]; then
+                grep "^FAIL:" "$log" 2>/dev/null | head -3 | sed 's/^/    /'
+            fi
+        done
+        echo
+    fi
+    
+    if [[ $DEBUG_MODE -eq 1 ]]; then
+        echo "${BOLD}Test Artifacts:${NC} ${TEST_ARTIFACTS_DIR}"
+        echo "${BOLD}Test Reports:${NC} ${TEST_REPORTS_DIR}"
+        echo
+    fi
+}
+
+#######################################
+# Generate JUnit XML report
+#######################################
+generate_junit_report() {
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    
+    cat << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Dotfiles Test Suite" tests="$((PASSED + FAILED + SKIPPED))" failures="$FAILED" skipped="$SKIPPED" time="$((TOTAL_TIME / 1000))" timestamp="$timestamp">
+  <testsuite name="$TEST_SIZE" tests="$((PASSED + FAILED + SKIPPED))" failures="$FAILED" skipped="$SKIPPED" time="$((TOTAL_TIME / 1000))">
+EOF
+
+    find "$TEST_ARTIFACTS_DIR" -name "*.log" 2>/dev/null | while read -r log; do
+        local test_name=$(basename "$log" .log)
+        local test_category=$(echo "$test_name" | cut -d_ -f1)
+        local passed=$(grep -c "^PASS:" "$log" 2>/dev/null || echo 0)
+        local failed=$(grep -c "^FAIL:" "$log" 2>/dev/null || echo 0)
+        local skipped=$(grep -c "^SKIP:" "$log" 2>/dev/null || echo 0)
+        
+        echo "    <testcase classname=\"${test_category}\" name=\"${test_name}\" time=\"0.1\">"
+        
+        if [[ $failed -gt 0 ]]; then
+            echo "      <failure message=\"Test failed\">"
+            echo "        <![CDATA["
+            grep -E "^(FAIL:|✗)" "$log" 2>/dev/null | head -10 | sed 's/^/        /'
+            echo "        ]]>"
+            echo "      </failure>"
+        elif [[ $skipped -gt 0 ]]; then
+            echo "      <skipped message=\"Test skipped\"/>"
+        fi
+        
+        if [[ $DEBUG_MODE -eq 1 ]]; then
+            echo "      <system-out>"
+            echo "        <![CDATA["
+            cat "$log" 2>/dev/null | head -50 | sed 's/^/        /'
+            echo "        ]]>"
+            echo "      </system-out>"
+        fi
+        
+        echo "    </testcase>"
+    done
+
+    cat << EOF
+  </testsuite>
+</testsuites>
+EOF
+}
+
+#######################################
+# Generate JSON report
+#######################################
+generate_json_report() {
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    local total=$((PASSED + FAILED + SKIPPED))
+    local pass_rate=0
+    [[ $total -gt 0 ]] && pass_rate=$(( (PASSED * 100) / total ))
+    
+    cat << EOF
+{
+  "version": "5.0",
+  "timestamp": "$timestamp",
+  "test_size": "$TEST_SIZE",
+  "parallel_jobs": $PARALLEL_JOBS,
+  "duration_ms": $TOTAL_TIME,
+  "summary": {
+    "total": $total,
+    "passed": $PASSED,
+    "failed": $FAILED,
+    "skipped": $SKIPPED,
+    "pass_rate": $pass_rate
+  },
+  "environment": {
+    "dotfiles_dir": "$DOTFILES_DIR",
+    "ci_mode": $([ $CI_MODE -eq 1 ] && echo "true" || echo "false"),
+    "debug_mode": $([ $DEBUG_MODE -eq 1 ] && echo "true" || echo "false")
+  },
+  "tests": [
+EOF
+
+    local first=true
+    find "$TEST_ARTIFACTS_DIR" -name "*.log" 2>/dev/null | while read -r log; do
+        [[ "$first" == true ]] && first=false || echo ","
+        
+        local test_name=$(basename "$log" .log)
+        local test_category=$(echo "$test_name" | cut -d_ -f1)
+        local passed=$(grep -c "^PASS:" "$log" 2>/dev/null || echo 0)
+        local failed=$(grep -c "^FAIL:" "$log" 2>/dev/null || echo 0)
+        local skipped=$(grep -c "^SKIP:" "$log" 2>/dev/null || echo 0)
+        
+        cat << TESTJSON
+    {
+      "name": "$test_name",
+      "category": "$test_category",
+      "passed": $passed,
+      "failed": $failed,
+      "skipped": $skipped,
+      "status": "$([ $failed -gt 0 ] && echo "failed" || [ $skipped -gt 0 ] && echo "skipped" || echo "passed")"
+    }
+TESTJSON
+    done
+
+    cat << EOF
+
+  ]
+}
+EOF
+}
+
+#######################################
+# Main execution
+#######################################
+main() {
+    parse_args "$@"
+    
+    # Display header
+    echo "${BOLD}╔════════════════════════════════════════════════════════════════╗${NC}"
+    echo "${BOLD}║              DOTFILES TEST SUITE v5.0                          ║${NC}"
+    echo "${BOLD}╚════════════════════════════════════════════════════════════════╝${NC}"
+    echo
+    
+    log INFO "Starting test run (size: $TEST_SIZE, debug: $DEBUG_MODE, parallel: $PARALLEL_JOBS)"
+    
+    # Setup environment
+    setup_environment
+    
+    # Discover tests
+    local test_files=($(discover_tests))
+    
+    if [[ ${#test_files[@]} -eq 0 ]]; then
+        log WARN "No tests found matching criteria (size: $TEST_SIZE, filter: ${TEST_FILTER:-none})"
+        log INFO "Available test directories:"
+        ls -la "$TEST_DIR" | grep "^d" | awk '{print "  - " $NF}' | grep -v "^\.$\|^\.\.$\|^lib$\|^reports$"
+        exit 0
+    fi
+    
+    log INFO "Found ${#test_files[@]} test files to run"
+    [[ $DEBUG_MODE -eq 1 ]] && printf '  - %s\n' "${test_files[@]}"
+    
+    # Run tests
+    if [[ $PARALLEL_JOBS -eq 1 ]]; then
+        # Sequential execution
+        for test_file in "${test_files[@]}"; do
+            run_test_file "$test_file" || true
+        done
+    else
+        # Parallel execution
+        run_tests_parallel "${test_files[@]}" || true
+    fi
+    
+    # Generate report
+    generate_report
+    
+    # Exit with appropriate code
+    if [[ $FAILED -eq 0 ]]; then
+        log SUCCESS "All tests passed!"
+        exit 0
+    else
+        log ERROR "$FAILED tests failed"
+        [[ $DEBUG_MODE -eq 0 ]] && log INFO "Run with --debug for detailed output"
+        exit 1
+    fi
+}
+
+# Run main function
+main "$@"

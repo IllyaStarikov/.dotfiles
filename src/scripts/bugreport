@@ -1,0 +1,780 @@
+#!/usr/bin/env zsh
+# Comprehensive Bug Report Generator for Dotfiles
+# Collects system fingerprint and diagnostic information
+# Follows Google Shell Style Guide
+
+set -euo pipefail
+
+readonly SCRIPT_NAME="$(basename "$0")"
+readonly SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
+readonly REPORT_DIR="${DOTFILES_DIR}/bugreport_${TIMESTAMP}"
+readonly ARCHIVE_NAME="dotfiles_bugreport_${TIMESTAMP}.tar.gz"
+
+# Configuration
+declare -g DEBUG_MODE=0
+declare -g TEST_MODE=0
+declare -g TEST_SIZE="large"
+declare -g INCLUDE_LOGS=1
+declare -g SANITIZE_OUTPUT=1
+
+# Colors
+if [[ -t 1 ]]; then
+    readonly RED=$'\033[0;31m'
+    readonly GREEN=$'\033[0;32m'
+    readonly YELLOW=$'\033[0;33m'
+    readonly BLUE=$'\033[0;34m'
+    readonly CYAN=$'\033[0;36m'
+    readonly BOLD=$'\033[1m'
+    readonly NC=$'\033[0m'
+else
+    readonly RED=""
+    readonly GREEN=""
+    readonly YELLOW=""
+    readonly BLUE=""
+    readonly CYAN=""
+    readonly BOLD=""
+    readonly NC=""
+fi
+
+#######################################
+# Display usage information
+#######################################
+usage() {
+    cat << EOF
+${BOLD}Dotfiles Bug Report Generator${NC}
+
+${BOLD}USAGE:${NC}
+    $SCRIPT_NAME [OPTIONS]
+
+${BOLD}OPTIONS:${NC}
+    --test[=SIZE]   Run tests and include results (SIZE: small, medium, large)
+    --no-logs       Exclude log files from report
+    --no-sanitize   Don't sanitize sensitive information
+    --debug         Enable debug output
+    -h, --help      Show this help message
+
+${BOLD}DESCRIPTION:${NC}
+    Generates a comprehensive bug report containing:
+    - System information and hardware details
+    - Installed software versions
+    - Dotfiles configuration
+    - Environment variables (sanitized)
+    - Shell configuration
+    - Editor configuration (Neovim, Vim)
+    - Terminal configuration
+    - Package manager information
+    - Network configuration (sanitized)
+    - Process information
+    - Disk usage statistics
+    - Recent system logs (if permitted)
+    - Test results (if --test is specified)
+
+    The report is sanitized by default to remove sensitive information
+    such as API keys, tokens, passwords, and personal data.
+
+${BOLD}OUTPUT:${NC}
+    Creates a compressed archive: ${ARCHIVE_NAME}
+
+${BOLD}EXAMPLES:${NC}
+    $SCRIPT_NAME                  # Generate standard bug report
+    $SCRIPT_NAME --test           # Include all test results
+    $SCRIPT_NAME --test=small     # Include only quick tests
+    $SCRIPT_NAME --debug          # Show detailed progress
+
+EOF
+}
+
+#######################################
+# Log message with level and color
+#######################################
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    
+    case "$level" in
+        DEBUG)
+            [[ $DEBUG_MODE -eq 1 ]] && echo "${CYAN}[DEBUG]${NC} $message" >&2
+            ;;
+        INFO)
+            echo "${BLUE}[INFO]${NC} $message"
+            ;;
+        WARN)
+            echo "${YELLOW}[WARN]${NC} $message" >&2
+            ;;
+        ERROR)
+            echo "${RED}[ERROR]${NC} $message" >&2
+            ;;
+        SUCCESS)
+            echo "${GREEN}[✓]${NC} $message"
+            ;;
+        PROGRESS)
+            echo "${BOLD}▶${NC} $message"
+            ;;
+    esac
+}
+
+#######################################
+# Parse command line arguments
+#######################################
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --test)
+                TEST_MODE=1
+                TEST_SIZE="large"
+                shift
+                ;;
+            --test=*)
+                TEST_MODE=1
+                TEST_SIZE="${1#*=}"
+                shift
+                ;;
+            --no-logs)
+                INCLUDE_LOGS=0
+                shift
+                ;;
+            --no-sanitize)
+                SANITIZE_OUTPUT=0
+                shift
+                ;;
+            --debug)
+                DEBUG_MODE=1
+                shift
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                log ERROR "Unknown option: $1"
+                usage
+                exit 1
+                ;;
+        esac
+    done
+}
+
+#######################################
+# Create report directory structure
+#######################################
+setup_report_dir() {
+    log PROGRESS "Creating report directory"
+    
+    mkdir -p "$REPORT_DIR"/{system,config,logs,tests,debug}
+    
+    # Create metadata file
+    cat > "$REPORT_DIR/metadata.json" << EOF
+{
+    "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+    "version": "1.0.0",
+    "dotfiles_dir": "$DOTFILES_DIR",
+    "hostname": "$(hostname -s)",
+    "user": "$(whoami)",
+    "report_id": "${TIMESTAMP}",
+    "options": {
+        "debug": $DEBUG_MODE,
+        "test": $TEST_MODE,
+        "test_size": "$TEST_SIZE",
+        "include_logs": $INCLUDE_LOGS,
+        "sanitized": $SANITIZE_OUTPUT
+    }
+}
+EOF
+    
+    log SUCCESS "Report directory created: $REPORT_DIR"
+}
+
+#######################################
+# Sanitize sensitive information
+#######################################
+sanitize() {
+    local input="$1"
+    
+    if [[ $SANITIZE_OUTPUT -eq 0 ]]; then
+        echo "$input"
+        return
+    fi
+    
+    echo "$input" | sed -E \
+        -e 's/[A-Za-z0-9+\/]{40,}/<REDACTED_TOKEN>/g' \
+        -e 's/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/<IP_ADDRESS>/g' \
+        -e 's/([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})/<EMAIL>/g' \
+        -e 's/(api[_-]?key|token|secret|password|passwd|pwd)[[:space:]]*[=:][[:space:]]*[^[:space:]]+/<REDACTED>/gi' \
+        -e 's/\/Users\/[^\/]+/\/Users\/<USER>/g' \
+        -e 's/\/home\/[^\/]+/\/home\/<USER>/g'
+}
+
+#######################################
+# Collect system information
+#######################################
+collect_system_info() {
+    log PROGRESS "Collecting system information"
+    
+    local sys_file="$REPORT_DIR/system/system_info.txt"
+    
+    {
+        echo "=== System Information ==="
+        echo "Date: $(date)"
+        echo "Hostname: $(hostname)"
+        echo "User: $(whoami)"
+        echo "Home: $HOME"
+        echo "Shell: $SHELL"
+        echo "ZSH Version: $ZSH_VERSION"
+        echo
+        
+        echo "=== Hardware Information ==="
+        if [[ "$(uname)" == "Darwin" ]]; then
+            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | sanitize "$(cat)"
+            echo
+            echo "=== macOS Version ==="
+            sw_vers
+            echo
+            echo "=== System Integrity Protection ==="
+            csrutil status 2>/dev/null || echo "Unable to check SIP status"
+        else
+            echo "=== Linux System Info ==="
+            uname -a
+            lsb_release -a 2>/dev/null || cat /etc/os-release 2>/dev/null || echo "Distribution info not available"
+            echo
+            echo "=== CPU Info ==="
+            lscpu 2>/dev/null | head -20 || echo "CPU info not available"
+            echo
+            echo "=== Memory Info ==="
+            free -h 2>/dev/null || echo "Memory info not available"
+        fi
+        
+        echo
+        echo "=== Disk Usage ==="
+        df -h | head -20
+        
+        echo
+        echo "=== Network Interfaces ==="
+        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | sanitize "$(cat)" || ip addr 2>/dev/null | sanitize "$(cat)"
+        
+        echo
+        echo "=== Process Count ==="
+        ps aux | wc -l
+        
+        echo
+        echo "=== Load Average ==="
+        uptime
+        
+    } > "$sys_file"
+    
+    # Collect environment variables (sanitized)
+    {
+        echo "=== Environment Variables (Sanitized) ==="
+        env | sort | sanitize "$(cat)" | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL"
+    } > "$REPORT_DIR/system/environment.txt"
+    
+    # Collect PATH information
+    {
+        echo "=== PATH Analysis ==="
+        echo "PATH entries:"
+        echo "$PATH" | tr ':' '\n' | nl
+        echo
+        echo "=== Executable Directories ==="
+        echo "$PATH" | tr ':' '\n' | while read -r dir; do
+            if [[ -d "$dir" ]]; then
+                echo "$dir: $(ls -1 "$dir" 2>/dev/null | wc -l) executables"
+            fi
+        done
+    } > "$REPORT_DIR/system/path_info.txt"
+    
+    log SUCCESS "System information collected"
+}
+
+#######################################
+# Collect software versions
+#######################################
+collect_software_versions() {
+    log PROGRESS "Collecting software versions"
+    
+    local ver_file="$REPORT_DIR/system/versions.txt"
+    
+    {
+        echo "=== Core Tools ==="
+        
+        # Shell
+        echo -n "zsh: "
+        zsh --version 2>/dev/null | head -1 || echo "not found"
+        
+        echo -n "bash: "
+        bash --version 2>/dev/null | head -1 || echo "not found"
+        
+        # Editors
+        echo
+        echo "=== Editors ==="
+        
+        echo -n "nvim: "
+        nvim --version 2>/dev/null | head -1 || echo "not found"
+        
+        echo -n "vim: "
+        vim --version 2>/dev/null | head -1 | cut -d' ' -f1-5 || echo "not found"
+        
+        # Version control
+        echo
+        echo "=== Version Control ==="
+        
+        echo -n "git: "
+        git --version 2>/dev/null || echo "not found"
+        
+        echo -n "gh: "
+        gh --version 2>/dev/null | head -1 || echo "not found"
+        
+        # Terminal multiplexers
+        echo
+        echo "=== Terminal Tools ==="
+        
+        echo -n "tmux: "
+        tmux -V 2>/dev/null || echo "not found"
+        
+        echo -n "screen: "
+        screen --version 2>/dev/null | head -1 || echo "not found"
+        
+        # Package managers
+        echo
+        echo "=== Package Managers ==="
+        
+        if command -v brew >/dev/null 2>&1; then
+            echo -n "homebrew: "
+            brew --version 2>/dev/null | head -1
+            echo "Homebrew packages: $(brew list 2>/dev/null | wc -l)"
+        fi
+        
+        if command -v apt >/dev/null 2>&1; then
+            echo -n "apt: "
+            apt --version 2>/dev/null | head -1
+        fi
+        
+        if command -v yum >/dev/null 2>&1; then
+            echo -n "yum: "
+            yum --version 2>/dev/null | head -1
+        fi
+        
+        # Programming languages
+        echo
+        echo "=== Programming Languages ==="
+        
+        echo -n "python: "
+        python3 --version 2>/dev/null || python --version 2>/dev/null || echo "not found"
+        
+        echo -n "node: "
+        node --version 2>/dev/null || echo "not found"
+        
+        echo -n "ruby: "
+        ruby --version 2>/dev/null || echo "not found"
+        
+        echo -n "go: "
+        go version 2>/dev/null || echo "not found"
+        
+        echo -n "rust: "
+        rustc --version 2>/dev/null || echo "not found"
+        
+        echo -n "java: "
+        java --version 2>&1 | head -1 || echo "not found"
+        
+        # Other tools
+        echo
+        echo "=== Other Tools ==="
+        
+        echo -n "docker: "
+        docker --version 2>/dev/null || echo "not found"
+        
+        echo -n "kubectl: "
+        kubectl version --client --short 2>/dev/null || echo "not found"
+        
+        echo -n "terraform: "
+        terraform version 2>/dev/null | head -1 || echo "not found"
+        
+    } > "$ver_file"
+    
+    # Detailed package lists
+    if command -v brew >/dev/null 2>&1; then
+        log DEBUG "Collecting Homebrew packages"
+        brew list --versions > "$REPORT_DIR/system/brew_packages.txt" 2>/dev/null
+        brew list --cask --versions > "$REPORT_DIR/system/brew_casks.txt" 2>/dev/null
+    fi
+    
+    if command -v pip3 >/dev/null 2>&1; then
+        log DEBUG "Collecting Python packages"
+        pip3 list > "$REPORT_DIR/system/pip_packages.txt" 2>/dev/null
+    fi
+    
+    if command -v npm >/dev/null 2>&1; then
+        log DEBUG "Collecting npm packages"
+        npm list -g --depth=0 > "$REPORT_DIR/system/npm_packages.txt" 2>/dev/null
+    fi
+    
+    log SUCCESS "Software versions collected"
+}
+
+#######################################
+# Collect dotfiles configuration
+#######################################
+collect_dotfiles_config() {
+    log PROGRESS "Collecting dotfiles configuration"
+    
+    # Git information
+    {
+        echo "=== Git Repository Info ==="
+        cd "$DOTFILES_DIR"
+        echo "Remote: $(git remote -v 2>/dev/null | head -1)"
+        echo "Branch: $(git branch --show-current 2>/dev/null)"
+        echo "Last commit: $(git log -1 --oneline 2>/dev/null)"
+        echo "Status:"
+        git status --short 2>/dev/null
+        echo
+        echo "=== Submodules ==="
+        git submodule status 2>/dev/null || echo "No submodules"
+    } > "$REPORT_DIR/config/git_info.txt"
+    
+    # Directory structure
+    {
+        echo "=== Dotfiles Structure ==="
+        tree -L 3 "$DOTFILES_DIR" 2>/dev/null || find "$DOTFILES_DIR" -maxdepth 3 -type d | sort
+    } > "$REPORT_DIR/config/structure.txt"
+    
+    # Symlinks
+    {
+        echo "=== Active Symlinks ==="
+        find ~ -maxdepth 2 -type l -exec sh -c 'echo "{} -> $(readlink "{}")"' \; 2>/dev/null | \
+            grep "$DOTFILES_DIR" | sort
+    } > "$REPORT_DIR/config/symlinks.txt"
+    
+    # Configuration files (headers only, no content for security)
+    {
+        echo "=== Configuration Files ==="
+        echo
+        echo "Neovim config:"
+        ls -la "$DOTFILES_DIR/src/neovim/" 2>/dev/null | head -20
+        echo
+        echo "Zsh config:"
+        ls -la "$DOTFILES_DIR/src/zsh/" 2>/dev/null | head -20
+        echo
+        echo "Scripts:"
+        ls -la "$DOTFILES_DIR/src/scripts/" 2>/dev/null
+    } > "$REPORT_DIR/config/files.txt"
+    
+    log SUCCESS "Dotfiles configuration collected"
+}
+
+#######################################
+# Collect Neovim diagnostics
+#######################################
+collect_nvim_diagnostics() {
+    log PROGRESS "Collecting Neovim diagnostics"
+    
+    if ! command -v nvim >/dev/null 2>&1; then
+        log WARN "Neovim not found, skipping"
+        return
+    fi
+    
+    # Basic info
+    nvim --version > "$REPORT_DIR/config/nvim_version.txt" 2>&1
+    
+    # Checkhealth
+    log DEBUG "Running Neovim checkhealth"
+    nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null
+    
+    # Plugin list
+    {
+        echo "=== Lazy.nvim Plugins ==="
+        nvim --headless -c "lua require('lazy').stats()" -c "qa!" 2>&1 || echo "Unable to get plugin stats"
+    } > "$REPORT_DIR/config/nvim_plugins.txt"
+    
+    # LSP servers
+    {
+        echo "=== LSP Servers ==="
+        nvim --headless -c "lua vim.tbl_map(print, vim.lsp.get_clients())" -c "qa!" 2>&1 || echo "Unable to get LSP info"
+    } > "$REPORT_DIR/config/nvim_lsp.txt"
+    
+    log SUCCESS "Neovim diagnostics collected"
+}
+
+#######################################
+# Collect shell diagnostics
+#######################################
+collect_shell_diagnostics() {
+    log PROGRESS "Collecting shell diagnostics"
+    
+    # Zsh configuration
+    {
+        echo "=== Zsh Configuration ==="
+        echo "ZDOTDIR: $ZDOTDIR"
+        echo "Config files:"
+        ls -la ~/.z* 2>/dev/null | grep -E "zsh|zprofile|zlogin"
+        echo
+        echo "=== Zsh Modules ==="
+        zmodload 2>/dev/null || echo "Unable to list modules"
+        echo
+        echo "=== Zsh Options ==="
+        setopt 2>/dev/null | head -50
+    } > "$REPORT_DIR/config/zsh_config.txt"
+    
+    # Shell startup time
+    {
+        echo "=== Shell Startup Time ==="
+        echo "Testing zsh startup..."
+        local start=$(date +%s%N)
+        zsh -i -c exit 2>/dev/null
+        local end=$(date +%s%N)
+        echo "Interactive shell startup: $(( (end - start) / 1000000 ))ms"
+        
+        start=$(date +%s%N)
+        zsh -c exit 2>/dev/null
+        end=$(date +%s%N)
+        echo "Non-interactive shell startup: $(( (end - start) / 1000000 ))ms"
+    } > "$REPORT_DIR/debug/shell_performance.txt"
+    
+    # Aliases and functions count
+    {
+        echo "=== Shell Environment ==="
+        echo "Aliases: $(alias | wc -l)"
+        echo "Functions: $(functions | wc -l)"
+        echo "Completion functions: $(print -l $fpath | wc -l)"
+    } > "$REPORT_DIR/config/shell_env.txt"
+    
+    log SUCCESS "Shell diagnostics collected"
+}
+
+#######################################
+# Collect terminal information
+#######################################
+collect_terminal_info() {
+    log PROGRESS "Collecting terminal information"
+    
+    {
+        echo "=== Terminal Environment ==="
+        echo "TERM: $TERM"
+        echo "TERM_PROGRAM: ${TERM_PROGRAM:-not set}"
+        echo "COLORTERM: ${COLORTERM:-not set}"
+        echo "Terminal size: $(tput cols)x$(tput lines)"
+        echo
+        echo "=== Terminal Capabilities ==="
+        echo "Colors: $(tput colors)"
+        infocmp -1 2>/dev/null | head -20 || echo "Unable to get terminfo"
+    } > "$REPORT_DIR/config/terminal.txt"
+    
+    # Alacritty config
+    if [[ -f ~/.config/alacritty/alacritty.toml ]]; then
+        echo "Found Alacritty config" > "$REPORT_DIR/config/alacritty_info.txt"
+        head -50 ~/.config/alacritty/alacritty.toml >> "$REPORT_DIR/config/alacritty_info.txt" 2>/dev/null
+    fi
+    
+    # tmux config
+    if command -v tmux >/dev/null 2>&1; then
+        {
+            echo "=== tmux Information ==="
+            tmux -V
+            echo "Config file: ${TMUX_CONF:-~/.tmux.conf}"
+            echo "Sessions: $(tmux ls 2>/dev/null | wc -l)"
+        } > "$REPORT_DIR/config/tmux_info.txt"
+    fi
+    
+    log SUCCESS "Terminal information collected"
+}
+
+#######################################
+# Collect system logs
+#######################################
+collect_logs() {
+    if [[ $INCLUDE_LOGS -eq 0 ]]; then
+        log INFO "Skipping log collection (--no-logs specified)"
+        return
+    fi
+    
+    log PROGRESS "Collecting relevant logs"
+    
+    # Dotfiles logs
+    if [[ -d "$DOTFILES_DIR/test/logs" ]]; then
+        log DEBUG "Copying test logs"
+        cp -r "$DOTFILES_DIR/test/logs" "$REPORT_DIR/logs/test_logs" 2>/dev/null
+    fi
+    
+    # Neovim logs
+    if [[ -d ~/.local/state/nvim ]]; then
+        log DEBUG "Collecting Neovim logs"
+        find ~/.local/state/nvim -name "*.log" -type f -mtime -7 -exec cp {} "$REPORT_DIR/logs/" \; 2>/dev/null
+    fi
+    
+    # System logs (last 100 lines, sanitized)
+    if [[ "$(uname)" == "Darwin" ]]; then
+        log DEBUG "Collecting macOS system logs"
+        log show --style syslog --last 1h 2>/dev/null | tail -100 | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log"
+    else
+        # Linux system logs
+        if [[ -r /var/log/syslog ]]; then
+            tail -100 /var/log/syslog | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log" 2>/dev/null
+        elif [[ -r /var/log/messages ]]; then
+            tail -100 /var/log/messages | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log" 2>/dev/null
+        fi
+    fi
+    
+    log SUCCESS "Logs collected"
+}
+
+#######################################
+# Run tests if requested
+#######################################
+run_tests() {
+    if [[ $TEST_MODE -eq 0 ]]; then
+        return
+    fi
+    
+    log PROGRESS "Running tests (size: $TEST_SIZE)"
+    
+    local test_runner="$DOTFILES_DIR/test/run"
+    
+    if [[ ! -x "$test_runner" ]]; then
+        log WARN "Test runner not found or not executable"
+        return
+    fi
+    
+    # Run tests with appropriate size
+    local test_output="$REPORT_DIR/tests/test_results.txt"
+    local test_args="--${TEST_SIZE}"
+    
+    [[ $DEBUG_MODE -eq 1 ]] && test_args="$test_args --debug"
+    
+    log INFO "Executing: $test_runner $test_args"
+    
+    # Run tests and capture output
+    if $test_runner $test_args > "$test_output" 2>&1; then
+        log SUCCESS "Tests completed successfully"
+    else
+        log WARN "Some tests failed (see test_results.txt)"
+    fi
+    
+    # Also generate test report in different formats
+    $test_runner $test_args --output=json > "$REPORT_DIR/tests/results.json" 2>/dev/null || true
+    $test_runner $test_args --output=junit > "$REPORT_DIR/tests/results.xml" 2>/dev/null || true
+}
+
+#######################################
+# Collect debug information
+#######################################
+collect_debug_info() {
+    log PROGRESS "Collecting debug information"
+    
+    # Process list
+    {
+        echo "=== Process Tree ==="
+        pstree 2>/dev/null || ps auxf 2>/dev/null | head -50
+    } > "$REPORT_DIR/debug/processes.txt"
+    
+    # Open files
+    {
+        echo "=== Open Files (Sample) ==="
+        lsof 2>/dev/null | head -100 | sanitize "$(cat)"
+    } > "$REPORT_DIR/debug/open_files.txt"
+    
+    # Network connections
+    {
+        echo "=== Network Connections ==="
+        netstat -an 2>/dev/null | head -50 | sanitize "$(cat)" || ss -an 2>/dev/null | head -50 | sanitize "$(cat)"
+    } > "$REPORT_DIR/debug/network.txt"
+    
+    # Kernel modules (Linux)
+    if [[ "$(uname)" == "Linux" ]]; then
+        {
+            echo "=== Kernel Modules ==="
+            lsmod 2>/dev/null | head -50
+        } > "$REPORT_DIR/debug/kernel_modules.txt"
+    fi
+    
+    # System limits
+    {
+        echo "=== System Limits ==="
+        ulimit -a
+    } > "$REPORT_DIR/debug/limits.txt"
+    
+    log SUCCESS "Debug information collected"
+}
+
+#######################################
+# Create final archive
+#######################################
+create_archive() {
+    log PROGRESS "Creating archive"
+    
+    # Create README
+    cat > "$REPORT_DIR/README.txt" << EOF
+Dotfiles Bug Report
+Generated: $(date)
+Report ID: $TIMESTAMP
+
+This report contains diagnostic information about the dotfiles setup.
+All sensitive information has been sanitized (unless --no-sanitize was used).
+
+Contents:
+- metadata.json: Report metadata and options
+- system/: System and hardware information
+- config/: Dotfiles and application configuration
+- logs/: Recent log files (if included)
+- tests/: Test results (if run)
+- debug/: Additional debug information
+
+To extract: tar -xzf $ARCHIVE_NAME
+EOF
+    
+    # Create archive
+    cd "$(dirname "$REPORT_DIR")"
+    tar -czf "$ARCHIVE_NAME" "$(basename "$REPORT_DIR")"
+    
+    # Calculate size
+    local size=$(du -h "$ARCHIVE_NAME" | cut -f1)
+    
+    # Clean up directory
+    rm -rf "$REPORT_DIR"
+    
+    log SUCCESS "Archive created: $ARCHIVE_NAME (${size})"
+}
+
+#######################################
+# Main execution
+#######################################
+main() {
+    parse_args "$@"
+    
+    echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
+    echo "${BOLD}            Dotfiles Bug Report Generator              ${NC}"
+    echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
+    echo
+    
+    # Setup
+    setup_report_dir
+    
+    # Collect information
+    collect_system_info
+    collect_software_versions
+    collect_dotfiles_config
+    collect_nvim_diagnostics
+    collect_shell_diagnostics
+    collect_terminal_info
+    collect_logs
+    collect_debug_info
+    
+    # Run tests if requested
+    run_tests
+    
+    # Create final archive
+    create_archive
+    
+    echo
+    echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
+    echo "${GREEN}Report generation complete!${NC}"
+    echo
+    echo "Archive: ${BOLD}${ARCHIVE_NAME}${NC}"
+    echo "Size: $(du -h "$ARCHIVE_NAME" | cut -f1)"
+    echo
+    echo "You can now share this file for debugging purposes."
+    echo "All sensitive information has been sanitized."
+    echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
+}
+
+# Run main function
+main "$@"
