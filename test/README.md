@@ -1,176 +1,308 @@
-# Dotfiles Test Suite v4.0
+# Dotfiles Test Suite v5.0
 
-A comprehensive test suite that validates actual functionality, not just file existence.
+Production-grade testing framework with comprehensive coverage for all aspects of dotfiles functionality.
 
 ## Quick Start
 
 ```bash
-# Run standard test suite (recommended)
-./tests/test
-
-# Quick sanity check (< 10 seconds)
-./tests/test --quick
-
-# Full test suite with all deep functionality tests
-./tests/test --full
+# Run tests by size (default: large)
+./test/run --small           # Quick unit tests (< 30s)
+./test/run --medium          # Unit + integration (< 5m)
+./test/run --large           # All tests (< 30m)
 
 # Run specific test categories
-./tests/test --unit          # Configuration validation
-./tests/test --functional    # Tool functionality + deep plugin tests
-./tests/test --integration   # Multi-component workflows
-./tests/test --performance   # Performance regression tests
-./tests/test --workflows     # Real-world development scenarios
+./test/run --unit            # Configuration validation
+./test/run --smoke           # Quick functionality checks
+./test/run --regression      # Prevent feature breakage
+./test/run --performance     # Performance benchmarks
+./test/run --security        # Security vulnerability scans
 
-# CI mode with JUnit output
-./tests/test --ci
+# Generate bug report with tests
+./src/scripts/bugreport --test
+
+# Run with verbose output
+./test/run --verbose --format text
 ```
 
-## Test Categories
+## Test Architecture
 
-### 1. Unit Tests (< 5s)
-- Configuration syntax validation
-- Lua modules load without errors
-- Script executable permissions
-- Plugin spec validation
+### Test Sizes
+- **Small** (`--small`): Unit tests, smoke tests, quick validation (< 30s)
+- **Medium** (`--medium`): Integration, system, acceptance tests (< 5m)
+- **Large** (`--large`): All tests including performance and security (< 30m)
 
-### 2. Functional Tests (< 30s)
-- Critical plugins load and initialize (10+ plugins)
-- Custom keybindings work
+### Test Categories
+
+#### Functional Testing
+- **unit**: Configuration validation, syntax checking, file structure
+- **integration**: Component interaction, cross-tool functionality
+- **system**: System-wide functionality validation
+- **acceptance**: User acceptance criteria verification
+- **smoke**: Quick health checks for critical features
+- **sanity**: Basic functionality verification
+- **regression**: Prevent feature breakage and regressions
+- **e2e**: End-to-end workflow validation
+
+#### Non-Functional Testing
+- **performance**: Startup time, memory usage, operation speed
+- **load**: System behavior under load
+- **stress**: Behavior at system limits
+- **security**: Vulnerability scanning, secret detection
+- **configuration**: Config file validation
+- **snapshot**: State comparison and regression detection
+- **fuzz**: Randomized input testing
+
+### Key Tests Implemented
+
+#### Unit Tests (`test/unit/core_validation.zsh`)
+- Dotfiles structure validation
+- Essential file existence
+- Script executability
+- Shell/Lua syntax validation
+- JSON/YAML configuration validity
+- No hardcoded paths or secrets
+
+#### Smoke Tests (`test/smoke/quick_check.zsh`)
+- Neovim startup
+- Zsh configuration loading
+- tmux config validation
+- Git configuration
+- Theme switcher availability
+- Essential commands presence
+- Symlink integrity
+
+#### Performance Tests (`test/performance/benchmarks.zsh`)
+- Neovim startup time (< 300ms)
+- Zsh startup time (< 500ms)
+- Theme switching (< 500ms)
+- Plugin loading (< 500ms)
+- Memory usage (< 200MB)
+- File operations
+- Concurrent operations
+- Performance regression detection
+
+#### Security Tests (`test/security/vulnerability_scan.zsh`)
+- No hardcoded secrets/API keys
+- No exposed SSH/GPG keys
+- Secure file permissions
+- Command injection prevention
+- Secure temp file usage
+- Safe curl/wget usage
+- Git hooks security
+- Dependency vulnerabilities
+
+#### Regression Tests (`test/regression/key_functionality.zsh`)
+- Plugin loading consistency
+- Alias availability
+- Theme switching functionality
+- Formatter functionality
+- Update script operation
+- Critical keybindings
 - LSP server configuration
-- Theme switching synchronization
 
-#### Deep Plugin Functionality Tests
-- **Telescope**: Tests file finding respects gitignore
-- **Gitsigns**: Verifies diff display and staging
-- **Treesitter**: Validates syntax highlighting works
-- **Blink.cmp**: Context-aware completion
-- **Snacks.nvim**: Dashboard and features
+## Test Framework Features
 
-### 3. Integration Tests (< 60s)
-- Python LSP with diagnostics and hover
-- Git workflow with gitsigns
-- Complete development workflow
-- Neovim + tmux integration
+### Core Library (`lib/framework.zsh`)
 
-### 4. Performance Tests (--performance or --full)
-- Neovim startup time (cold < 300ms, warm < 150ms)
-- Plugin loading time (< 500ms)
-- Theme switching speed (< 500ms)
-- Memory usage and leak detection
-- Large file handling performance
+The comprehensive test framework provides:
 
-### 5. Real-World Workflows (--workflows or --full)
-- Full stack web development (React + Python)
-- Machine learning projects
-- Infrastructure as Code
-- Microservices development
+✅ **Advanced Logging**: Multi-level logging with automatic sanitization  
+✅ **Rich Assertions**: Complete assertion library for all test scenarios  
+✅ **Performance Benchmarking**: Built-in timing and memory tracking  
+✅ **Parallel Execution**: Run tests concurrently for faster results  
+✅ **Multiple Report Formats**: Text, JSON, JUnit XML, HTML  
+✅ **Progress Tracking**: Real-time progress with ETA  
+✅ **Test Isolation**: Each test runs in isolated environment  
+✅ **Automatic Cleanup**: Tests clean up after themselves  
 
-## Key Features
+### Key Functions
 
-✅ **Tests actual functionality**, not just file existence  
-✅ **Measures real performance**, not synthetic benchmarks  
-✅ **Validates complete workflows**, not isolated features  
-✅ **Detects memory leaks** and performance regressions  
-✅ **Provides actionable feedback** when tests fail
+```zsh
+# Assertions
+assert "condition" "error message"
+assert_equals "expected" "actual" "message"
+assert_contains "haystack" "needle" "message"
+assert_file_exists "/path/to/file" "message"
+assert_command_succeeds "command" "message"
 
-## Test Infrastructure
+# Benchmarking
+benchmark "operation_name" command_to_benchmark
 
-### Helpers (`lib/test_helpers.zsh`)
-- `test_case` - Define a test
-- `pass/fail/skip` - Test outcomes
-- `nvim_headless` - Run Neovim tests
-- `measure_time_ms` - Performance timing
+# Test execution
+run_test "test_name" "test_function" "category" "size" "timeout"
+run_test_suite "suite_name" "suite_dir" "category" "size_filter"
 
-### Fixtures (`fixtures/`)
-- Language-specific test files for LSP testing
-- Sample configurations
-- Test data for various scenarios
+# Parallel execution
+run_tests_parallel "test1" "test2" "test3"
 
-## Options
+# Logging
+log "LEVEL" "message"  # LEVEL: ERROR, WARNING, INFO, DEBUG, TRACE
+```
 
-- `--quick` - Essential tests only (< 10s)
-- `--unit` - Unit tests only
-- `--functional` - Functional tests only
-- `--integration` - Integration tests only
-- `--performance` - Performance regression tests
-- `--workflows` - Real-world workflow tests
-- `--full` - All tests including deep functionality
-- `--ci` - CI mode (generates reports)
-- `-v, --verbose` - Detailed output
-- `-h, --help` - Show help
+## Bug Report Generation
 
-## Performance Targets
+The `bugreport` script provides comprehensive system diagnostics:
 
-- Neovim startup: < 300ms cold, < 150ms warm
-- Plugin loading: < 500ms total
-- Completion: < 100ms to show
-- Theme switch: < 500ms complete
-- Memory growth: < 10% in extended session
-- File scaling: < 20x slowdown for 100x size
+```bash
+# Generate basic bug report
+./src/scripts/bugreport
+
+# Include test results
+./src/scripts/bugreport --test
+
+# Include medium test suite
+./src/scripts/bugreport --test medium
+
+# Skip log collection
+./src/scripts/bugreport --no-logs
+```
+
+### Bug Report Contents
+- System information (OS, hardware, shell)
+- Tool versions (editors, languages, package managers)
+- Dotfiles configuration and structure
+- Neovim health check and configuration
+- Shell environment and aliases
+- Performance metrics
+- Recent logs (optional)
+- Test execution results (optional)
+- System fingerprint for debugging
+
+All sensitive data is automatically sanitized.
+
+## Private Repository Testing
+
+The `.dotfiles.private` has separate tests for work configurations:
+
+```bash
+# Run private tests
+cd ~/.dotfiles/.dotfiles.private
+./test/run --small|medium|large
+
+# Test categories
+- unit: Basic validation
+- configuration: Config file integrity
+- integration: Main dotfiles interaction
+- machine_detection: Work environment detection
+- security: Security compliance
+- compliance: Company policy validation
+```
+
+## Writing Tests
+
+### Test Structure
+
+```zsh
+#!/usr/bin/env zsh
+# Test Description
+# TEST_SIZE: small|medium|large
+
+source "${TEST_DIR}/lib/framework.zsh"
+
+test_feature_name() {
+    log "TRACE" "Starting test for feature"
+    
+    # Setup
+    local test_data=$(setup_test_data)
+    
+    # Execute
+    local result=$(run_feature "$test_data")
+    
+    # Assert
+    assert_equals "expected" "$result" "Feature should produce expected result"
+    
+    # Cleanup happens automatically
+    return 0  # Pass
+}
+```
+
+### Return Codes
+- `0`: Test passed
+- `1`: Test failed
+- `77`: Test skipped (missing dependencies)
+- `124`: Test timeout
 
 ## CI/CD Integration
 
-Add to GitHub Actions:
-
 ```yaml
-- name: Run Dotfiles Tests
-  run: |
-    cd tests
-    ./test --ci
-    
-- name: Run Performance Tests
-  run: ./tests/test --performance
-
-- name: Test Real Workflows
-  run: ./tests/test --workflows
+# GitHub Actions example
+- name: Run Small Tests (PR)
+  run: ./test/run --small --format junit --report test-results.xml
+  
+- name: Run Medium Tests (main branch)
+  run: ./test/run --medium --verbose
+  
+- name: Run Full Test Suite (nightly)
+  run: ./test/run --large --format json --report nightly-results.json
+  
+- name: Performance Regression Check
+  run: ./test/run --performance --regression
 ```
 
-## Interpreting Results
+## Performance Standards
 
-### When Tests Pass
-```
-✓ All tests passed!
-```
-Your dotfiles are working correctly for real-world usage.
+Current thresholds enforced by tests:
 
-### When Tests Fail
-```
-✗ Some tests failed
-```
-Check the specific failures - they indicate real issues affecting functionality.
+| Metric | Threshold | Test File |
+|--------|-----------|-----------|
+| Neovim startup | < 300ms | `performance/benchmarks.zsh` |
+| Zsh startup | < 500ms | `performance/benchmarks.zsh` |
+| Theme switch | < 500ms | `performance/benchmarks.zsh` |
+| Plugin loading | < 500ms | `performance/benchmarks.zsh` |
+| Memory usage | < 200MB | `performance/benchmarks.zsh` |
 
-### When Tests Skip
-```
-⚠ SKIPPED: Feature needs additional setup
-```
-The feature requires additional configuration or dependencies.
+## Debugging Failed Tests
 
-## Writing New Tests
+### Verbose Output
+```bash
+# Maximum verbosity
+./test/run -vv --debug
 
-Tests follow a simple pattern:
-```zsh
-test_case "Description of what we're testing"
-if [[ condition ]]; then
-    pass
-else
-    fail "Reason for failure"
-fi
+# Run specific category with debug
+DEBUG=1 ./test/run --unit --verbose
+
+# Dry run to see what would execute
+DRY_RUN=1 ./test/run
 ```
 
-For deep functionality tests:
-1. Test real operations, not just loading
-2. Use actual project structures
-3. Verify user-visible outcomes
-4. Include performance measurements
+### Test Artifacts
+- `test/logs/`: Execution logs per test
+- `test/reports/`: Generated test reports
+- `test/snapshots/`: Performance baselines
+
+### Environment Variables
+```bash
+TEST_SIZE=small       # Override default test size
+VERBOSE=1            # Enable verbose output
+DEBUG=1              # Enable debug output
+PARALLEL=0           # Disable parallel execution
+MAX_PARALLEL_JOBS=8  # Set parallel job limit
+TEST_TIMEOUT=600     # Set test timeout (seconds)
+DRY_RUN=1           # Show what would run
+```
+
+## Maintenance
+
+### Update Performance Baselines
+```bash
+rm test/snapshots/*.json
+./test/run --performance
+```
+
+### Clean Test Data
+```bash
+rm -rf test/logs/* test/reports/*
+find /tmp -name "test_*" -mtime +1 -delete
+```
 
 ## Summary
 
-This test suite provides confidence that your development environment actually works for real tasks. It goes beyond checking if files exist to validate that:
+This production-grade test suite ensures:
 
-- Plugins provide their advertised functionality
-- LSP servers catch real errors and provide completions
-- Performance meets acceptable targets
-- Memory usage stays reasonable
-- Complete workflows function end-to-end
+- **Reliability**: All configurations work as expected
+- **Performance**: Operations meet speed requirements
+- **Security**: No vulnerabilities or exposed secrets
+- **Compatibility**: Works across environments
+- **Regression Prevention**: Features don't break over time
 
-Run `./tests/test --full` for the complete validation of your dotfiles.
+Run `./test/run` regularly to maintain confidence in your development environment.
