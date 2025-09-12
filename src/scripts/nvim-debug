@@ -1,0 +1,321 @@
+#!/usr/bin/env zsh
+# Debug helper for Neovim work configuration issues
+
+set -euo pipefail
+
+readonly SCRIPT_NAME="$(basename "$0")"
+readonly DOTFILES_DIR="$(cd "$(dirname "$(dirname "$(dirname "$0")")")" && pwd)"
+
+# Colors
+if [[ -t 1 ]]; then
+    readonly RED=$'\033[0;31m'
+    readonly GREEN=$'\033[0;32m'
+    readonly YELLOW=$'\033[0;33m'
+    readonly BLUE=$'\033[0;34m'
+    readonly BOLD=$'\033[1m'
+    readonly NC=$'\033[0m'
+else
+    readonly RED=""
+    readonly GREEN=""
+    readonly YELLOW=""
+    readonly BLUE=""
+    readonly BOLD=""
+    readonly NC=""
+fi
+
+#######################################
+# Display usage
+#######################################
+usage() {
+    cat << EOF
+${BOLD}Neovim Work Configuration Debugger${NC}
+
+${BOLD}USAGE:${NC}
+    $SCRIPT_NAME [OPTIONS]
+
+${BOLD}OPTIONS:${NC}
+    --check       Check work environment detection
+    --test        Test Neovim startup with debug output
+    --lsp         Check LSP configuration
+    --logs        Show recent Neovim logs
+    --clean       Clean Neovim cache and retry
+    -h, --help    Show this help
+
+${BOLD}DESCRIPTION:${NC}
+    Helps debug Neovim configuration issues in work environments.
+    Checks machine detection, LSP setup, and module loading.
+
+${BOLD}EXAMPLES:${NC}
+    $SCRIPT_NAME --check    # Check if work environment is detected
+    $SCRIPT_NAME --test     # Test Neovim startup with debugging
+    $SCRIPT_NAME --lsp      # Check LSP configuration status
+
+EOF
+}
+
+#######################################
+# Check work environment detection
+#######################################
+check_environment() {
+    echo "${BOLD}=== Work Environment Detection ===${NC}"
+    echo
+    
+    # Check hostname
+    echo "${BLUE}Hostname:${NC} $(hostname)"
+    echo "${BLUE}Domain:${NC} $(hostname -d 2>/dev/null || echo "none")"
+    echo
+    
+    # Check for private directory
+    local private_dir="$HOME/.dotfiles/.dotfiles.private"
+    if [[ -d "$private_dir" ]]; then
+        echo "${GREEN}✓${NC} Private directory exists: $private_dir"
+        
+        # Check for check-machine.sh
+        if [[ -x "$private_dir/check-machine.sh" ]]; then
+            echo "${GREEN}✓${NC} Machine detection script found"
+            
+            # Run detection
+            local machine_type=$("$private_dir/check-machine.sh" 2>/dev/null || echo "error")
+            echo "${BLUE}Detected machine type:${NC} ${BOLD}$machine_type${NC}"
+        else
+            echo "${RED}✗${NC} Machine detection script not found or not executable"
+        fi
+        
+        # Check for machine-detection.lua
+        if [[ -f "$private_dir/machine-detection.lua" ]]; then
+            echo "${GREEN}✓${NC} Machine detection Lua module found"
+        else
+            echo "${YELLOW}⚠${NC} Machine detection Lua module not found"
+        fi
+        
+        # Check for lsp-override.lua
+        if [[ -f "$private_dir/lsp-override.lua" ]]; then
+            echo "${GREEN}✓${NC} LSP override module found"
+        else
+            echo "${YELLOW}⚠${NC} LSP override module not found"
+        fi
+        
+        # Check for init.lua
+        if [[ -f "$private_dir/init.lua" ]]; then
+            echo "${GREEN}✓${NC} Private init.lua found"
+        else
+            echo "${YELLOW}⚠${NC} Private init.lua not found"
+        fi
+    else
+        echo "${RED}✗${NC} Private directory not found: $private_dir"
+    fi
+    
+    echo
+}
+
+#######################################
+# Test Neovim startup
+#######################################
+test_startup() {
+    echo "${BOLD}=== Testing Neovim Startup ===${NC}"
+    echo
+    
+    # Set debug environment variables
+    export NVIM_DEBUG_WORK=1
+    export NVIM_DEBUG=1
+    
+    # Create test script
+    local test_script=$(mktemp)
+    cat > "$test_script" << 'EOF'
+-- Debug script to check work configuration
+vim.notify("=== Neovim Work Configuration Debug ===", vim.log.levels.INFO)
+
+-- Check global variables
+local vars = {
+    work_machine_type = vim.g.work_machine_type,
+    work_profile = vim.g.work_profile,
+    work_lsp_override = vim.g.work_lsp_override,
+    google_lsp_active = vim.g.google_lsp_active,
+    disable_standard_lsp = vim.g.disable_standard_lsp,
+}
+
+print("Global variables:")
+for k, v in pairs(vars) do
+    print(string.format("  %s: %s", k, tostring(v)))
+end
+
+-- Check if machine detection module loads
+local ok, detection = pcall(require, "machine-detection")
+if ok then
+    print("\nMachine detection module loaded successfully")
+    print("  Machine type: " .. detection.get_machine_type())
+else
+    print("\nMachine detection module failed to load:")
+    print("  " .. tostring(detection))
+end
+
+-- Check LSP clients
+vim.defer_fn(function()
+    local clients = vim.lsp.get_clients()
+    print("\nActive LSP clients: " .. #clients)
+    for _, client in ipairs(clients) do
+        print("  - " .. client.name)
+    end
+    
+    -- Exit after checking
+    vim.cmd("qa!")
+end, 1000)
+EOF
+    
+    echo "${BLUE}Starting Neovim with debug mode...${NC}"
+    timeout 5 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -S "$test_script" 2>&1 || true
+    
+    rm -f "$test_script"
+    echo
+}
+
+#######################################
+# Check LSP configuration
+#######################################
+check_lsp() {
+    echo "${BOLD}=== LSP Configuration Check ===${NC}"
+    echo
+    
+    # Create LSP check script
+    local lsp_script=$(mktemp)
+    cat > "$lsp_script" << 'EOF'
+-- Check LSP configuration
+vim.notify("Checking LSP configuration...", vim.log.levels.INFO)
+
+-- Try to run CheckLSP command if it exists
+if vim.fn.exists(":CheckLSP") > 0 then
+    vim.cmd("CheckLSP")
+end
+
+-- List all available LSP servers
+vim.defer_fn(function()
+    local lspconfig = require("lspconfig")
+    local configs = require("lspconfig.configs")
+    
+    print("\nAvailable LSP servers:")
+    for name, _ in pairs(configs) do
+        print("  - " .. name)
+    end
+    
+    -- Check active clients
+    local clients = vim.lsp.get_clients()
+    print("\nActive LSP clients:")
+    if #clients == 0 then
+        print("  None")
+    else
+        for _, client in ipairs(clients) do
+            print(string.format("  - %s (id: %d)", client.name, client.id))
+        end
+    end
+    
+    vim.cmd("qa!")
+end, 1000)
+EOF
+    
+    timeout 5 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -S "$lsp_script" 2>&1 || true
+    
+    rm -f "$lsp_script"
+    echo
+}
+
+#######################################
+# Show recent logs
+#######################################
+show_logs() {
+    echo "${BOLD}=== Recent Neovim Logs ===${NC}"
+    echo
+    
+    # Check for Neovim log
+    local nvim_log="$HOME/.local/state/nvim/log"
+    if [[ -f "$nvim_log" ]]; then
+        echo "${BLUE}Last 50 lines of Neovim log:${NC}"
+        tail -50 "$nvim_log"
+    else
+        echo "${YELLOW}No Neovim log found at: $nvim_log${NC}"
+    fi
+    
+    echo
+    
+    # Check for LSP log
+    local lsp_log="$HOME/.local/state/nvim/lsp.log"
+    if [[ -f "$lsp_log" ]]; then
+        echo "${BLUE}Last 50 lines of LSP log:${NC}"
+        tail -50 "$lsp_log"
+    else
+        echo "${YELLOW}No LSP log found at: $lsp_log${NC}"
+    fi
+    
+    echo
+}
+
+#######################################
+# Clean Neovim cache
+#######################################
+clean_cache() {
+    echo "${BOLD}=== Cleaning Neovim Cache ===${NC}"
+    echo
+    
+    local dirs_to_clean=(
+        "$HOME/.cache/nvim"
+        "$HOME/.local/share/nvim/lazy"
+        "$HOME/.local/state/nvim/shada"
+        "$HOME/.local/state/nvim/swap"
+    )
+    
+    for dir in "${dirs_to_clean[@]}"; do
+        if [[ -d "$dir" ]]; then
+            echo "${YELLOW}Removing:${NC} $dir"
+            rm -rf "$dir"
+        fi
+    done
+    
+    echo
+    echo "${GREEN}Cache cleaned. Neovim will rebuild on next start.${NC}"
+    echo
+}
+
+#######################################
+# Main execution
+#######################################
+main() {
+    if [[ $# -eq 0 ]]; then
+        usage
+        exit 0
+    fi
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --check)
+                check_environment
+                shift
+                ;;
+            --test)
+                test_startup
+                shift
+                ;;
+            --lsp)
+                check_lsp
+                shift
+                ;;
+            --logs)
+                show_logs
+                shift
+                ;;
+            --clean)
+                clean_cache
+                shift
+                ;;
+            -h|--help)
+                usage
+                exit 0
+                ;;
+            *)
+                echo "${RED}Unknown option: $1${NC}"
+                usage
+                exit 1
+                ;;
+        esac
+    done
+}
+
+main "$@"

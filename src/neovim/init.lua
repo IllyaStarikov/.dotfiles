@@ -59,11 +59,24 @@ end
 
 -- Load work-specific early initialization if available
 -- This must happen before ANY other configuration
-local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
-if vim.fn.filereadable(private_init_path) == 1 then
-	local private_init = dofile(private_init_path)
-	if private_init and private_init.init then
-		private_init.init()
+-- First try the new work-init module, then fallback to private init
+local work_init_ok, work_init = pcall(require, "config.work-init")
+if work_init_ok and work_init then
+	work_init.init()
+else
+	-- Fallback to the old private init method
+	local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
+	if vim.fn.filereadable(private_init_path) == 1 then
+		local ok, private_init = pcall(dofile, private_init_path)
+		if ok and private_init and private_init.init then
+			-- Initialize work configuration with error handling
+			local init_ok, init_err = pcall(private_init.init)
+			if not init_ok and vim.env.NVIM_DEBUG_WORK then
+				vim.notify("Private init failed: " .. tostring(init_err), vim.log.levels.WARN)
+			end
+		elseif not ok and vim.env.NVIM_DEBUG_WORK then
+			vim.notify("Failed to load private init: " .. tostring(private_init), vim.log.levels.WARN)
+		end
 	end
 end
 
@@ -121,6 +134,14 @@ vim.g.lsp_autostart = true
 local ok, error_handler = pcall(require, "config.error-handler")
 if ok then
   error_handler.init()
+end
+
+-- Initialize debug logging system if in debug mode
+if vim.env.NVIM_DEBUG_WORK or vim.env.NVIM_DEBUG then
+	local debug_ok, debug_system = pcall(require, "config.debug")
+	if debug_ok then
+		debug_system.init()
+	end
 end
 
 -- Load utils for protected requires
