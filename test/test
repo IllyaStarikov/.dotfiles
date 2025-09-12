@@ -11,7 +11,7 @@ export DOTFILES_DIR="$(dirname "$TEST_DIR")"
 
 # Default options
 TEST_LEVEL="all"
-VERBOSE=0
+DEBUG=0
 QUICK=0
 CI_MODE=0
 PERFORMANCE=0
@@ -39,7 +39,7 @@ Options:
   --workflows     Run real-world workflow tests
   --full          Run all tests including deep functionality
   --ci            CI mode (generates reports)
-  -v, --verbose   Show detailed output
+  --debug         Show detailed debug output
   -h, --help      Show this help
 
 Examples:
@@ -62,7 +62,7 @@ while [[ $# -gt 0 ]]; do
         --workflows) WORKFLOWS=1; shift ;;
         --full) TEST_LEVEL="full"; PERFORMANCE=1; WORKFLOWS=1; shift ;;
         --ci) CI_MODE=1; shift ;;
-        -v|--verbose) VERBOSE=1; shift ;;
+        --debug) DEBUG=1; shift ;;
         -h|--help) usage; exit 0 ;;
         *) echo "Unknown option: $1"; usage; exit 1 ;;
     esac
@@ -120,7 +120,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LE
     if [[ "$output" == *"E5113"* ]] || [[ "$output" == *"syntax error"* ]]; then
         # These are critical Lua errors
         ((critical_errors++))
-        [[ $VERBOSE -eq 1 ]] && echo "    Critical error found: $output"
+        [[ $DEBUG -eq 1 ]] && echo "    Critical error found: $output"
     fi
     
     if [[ $critical_errors -eq 0 ]]; then
@@ -150,7 +150,7 @@ if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LE
     for script in "$DOTFILES_DIR/src/scripts/"* "$DOTFILES_DIR/src/theme-switcher/"*.sh; do
         if [[ -f "$script" ]] && [[ "$script" == *.sh ]]; then
             if ! zsh -n "$script" 2>/dev/null; then
-                [[ $VERBOSE -eq 1 ]] && echo "    Syntax error in $(basename "$script")"
+                [[ $DEBUG -eq 1 ]] && echo "    Syntax error in $(basename "$script")"
                 ((syntax_errors++))
             fi
         fi
@@ -1378,6 +1378,6 @@ if [[ $FAILED -eq 0 ]]; then
     exit 0
 else
     echo -e "\n${RED}✗ Some tests failed${NC}"
-    [[ $VERBOSE -eq 0 ]] && echo "Run with -v for details"
+    [[ $DEBUG -eq 0 ]] && echo "Run with --debug for details"
     exit 1
 fi
