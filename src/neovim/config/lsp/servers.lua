@@ -43,18 +43,42 @@
 -- LSP Setup with blink.cmp integration
 -- Returns: nil (modifies global LSP configuration)
 local function setup_lsp()
+	-- Try to use debug logging if available
+	local debug = nil
+	pcall(function() debug = require("config.debug") end)
+	
 	-- Check for private work-specific LSP overrides
 	-- The override file handles machine detection and routing to company configs
 	local override_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/lsp-override.lua")
 	if vim.fn.filereadable(override_path) == 1 then
-		local override = dofile(override_path)
-		if override and override.setup then
-			local result = override.setup()
-			-- If override returns true, it means a work config is handling everything
-			if result == true then
-				return -- Exit early, work config handles all LSP setup
+		if debug then debug.info("LSP", "Found LSP override at: " .. override_path) end
+		
+		-- Use pcall to handle any errors in the override file
+		local ok, override = pcall(dofile, override_path)
+		if ok and override and override.setup then
+			if debug then debug.info("LSP", "Attempting work-specific LSP setup") end
+			
+			local setup_ok, result = pcall(override.setup)
+			if setup_ok then
+				-- If override returns true, it means a work config is handling everything
+				if result == true then
+					if debug then debug.info("LSP", "Work-specific LSP configuration active") end
+					return -- Exit early, work config handles all LSP setup
+				end
+			else
+				-- Log error if debug mode is enabled
+				local err_msg = "LSP override error: " .. tostring(result)
+				if debug then 
+					debug.error("LSP", err_msg)
+				elseif vim.env.NVIM_DEBUG or vim.env.NVIM_DEBUG_WORK then
+					vim.notify(err_msg, vim.log.levels.WARN)
+				end
 			end
+		elseif not ok then
+			if debug then debug.error("LSP", "Failed to load override: " .. tostring(override)) end
 		end
+	else
+		if debug then debug.debug("LSP", "No LSP override found, using standard configuration") end
 	end
 
 	local lspconfig = require("lspconfig")
