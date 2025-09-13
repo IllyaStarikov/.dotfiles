@@ -134,10 +134,7 @@ function M.apply_overrides()
     return
   end
   
-  -- Log successful profile load
-  vim.schedule(function()
-    vim.notify("Work profile loaded: " .. vim.g.work_profile, vim.log.levels.INFO)
-  end)
+  -- Don't log here - the work_nvim.lua will handle the notification
   
   -- Source shell aliases if they exist
   local aliases_path
