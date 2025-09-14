@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Setup script for Git commit signing with SSH keys
 
 set -euo pipefail

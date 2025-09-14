@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Theme validation script - ensures all themes have required files
 
 set -euo pipefail

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # Extract various archive formats with a single command
 
 if [[ -z "$1" ]]; then
