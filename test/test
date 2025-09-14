@@ -390,9 +390,11 @@ if [[ "$TEST_LEVEL" == "medium" ]] || [[ "$TEST_LEVEL" == "small" ]] || [[ "$TES
     # Check Alacritty
     if [[ -f ~/.config/alacritty/theme.toml ]]; then
         if [[ "$expected_nvim_theme" == "tokyonight" ]]; then
-            grep -qE "#222436|#1a1b26|#24283b|background.*dark" ~/.config/alacritty/theme.toml || theme_ok=0
+            # Check for dark theme indicators
+            grep -qE "tokyonight_(night|storm|moon)" ~/.config/alacritty/theme.toml || theme_ok=0
         else
-            grep -qE "#d5d6db|#e1e2e7|#f7f7f7|background.*light" ~/.config/alacritty/theme.toml || theme_ok=0
+            # Check for light theme indicators
+            grep -qE "tokyonight_day" ~/.config/alacritty/theme.toml || theme_ok=0
         fi
     else
         theme_ok=0
