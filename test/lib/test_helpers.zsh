@@ -1,17 +1,17 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Shared test helpers and utilities
 
 # Ensure we have required variables
 : ${DOTFILES_DIR:?"DOTFILES_DIR must be set"}
 : ${TEST_TMP_DIR:?"TEST_TMP_DIR must be set"}
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+# Colors (only define if not already defined)
+: ${RED:='\033[0;31m'}
+: ${GREEN:='\033[0;32m'}
+: ${BLUE:='\033[0;34m'}
+: ${YELLOW:='\033[1;33m'}
+: ${CYAN:='\033[0;36m'}
+: ${NC:='\033[0m'}
 
 # Initialize counters if not already set
 : ${PASSED:=0}

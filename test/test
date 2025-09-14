@@ -26,27 +26,35 @@ TOTAL_TIME=0
 # Show usage
 usage() {
     cat << EOF
-Dotfiles Test Suite v4.0
+Dotfiles Test Suite v5.0
 
 Usage: $0 [options]
 
-Options:
+Test Size Options:
+  --small         Run unit tests and quick tests (< 30s)
+  --medium        Run integration and functional tests (< 5min)
+  --large         Run all tests including performance/E2E (default)
+
+Legacy Options (still supported):
   --quick         Run only essential tests (< 10s)
   --unit          Run unit tests only
-  --functional    Run functional tests only  
+  --functional    Run functional tests only
   --integration   Run integration tests only
   --performance   Run performance regression tests
   --workflows     Run real-world workflow tests
   --full          Run all tests including deep functionality
+
+Other Options:
   --ci            CI mode (generates reports)
   --debug         Show detailed debug output
   -h, --help      Show this help
 
 Examples:
-  $0              # Run standard test suite
-  $0 --quick      # Quick sanity check
-  $0 --full       # Complete test suite with all tests
-  $0 --performance # Run performance regression tests
+  $0              # Run large test suite (default)
+  $0 --small      # Quick unit tests
+  $0 --medium     # Integration tests
+  $0 --large      # Complete test suite with all tests
+  $0 --debug      # Run with verbose debugging
 
 EOF
 }
@@ -54,6 +62,11 @@ EOF
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        # New test size options
+        --small) TEST_LEVEL="small"; shift ;;
+        --medium) TEST_LEVEL="medium"; shift ;;
+        --large) TEST_LEVEL="large"; PERFORMANCE=1; WORKFLOWS=1; shift ;;
+        # Legacy options (still supported)
         --quick) QUICK=1; TEST_LEVEL="quick"; shift ;;
         --unit) TEST_LEVEL="unit"; shift ;;
         --functional) TEST_LEVEL="functional"; shift ;;
@@ -62,11 +75,18 @@ while [[ $# -gt 0 ]]; do
         --workflows) WORKFLOWS=1; shift ;;
         --full) TEST_LEVEL="full"; PERFORMANCE=1; WORKFLOWS=1; shift ;;
         --ci) CI_MODE=1; shift ;;
-        --debug) DEBUG=1; shift ;;
+        --debug) DEBUG=1; export DEBUG; shift ;;
         -h|--help) usage; exit 0 ;;
         *) echo "Unknown option: $1"; usage; exit 1 ;;
     esac
 done
+
+# Default to large if not specified
+if [[ "$TEST_LEVEL" == "all" ]]; then
+    TEST_LEVEL="large"
+    PERFORMANCE=1
+    WORKFLOWS=1
+fi
 
 # Setup test environment
 export TEST_TMP_DIR=$(mktemp -d -t dotfiles-test.XXXXXX)
@@ -83,7 +103,7 @@ if [[ $CI_MODE -eq 1 ]]; then
 fi
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║       Dotfiles Test Suite v4.0         ║${NC}"
+echo -e "${BLUE}║       Dotfiles Test Suite v5.0         ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo
 echo "Mode: $TEST_LEVEL"
@@ -94,7 +114,7 @@ echo
 # LEVEL 1: UNIT TESTS - Configuration Validation (< 5s)
 # ======================================================================
 
-if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LEVEL" == "quick" ]]; then
+if [[ "$TEST_LEVEL" == "small" ]] || [[ "$TEST_LEVEL" == "unit" ]] || [[ "$TEST_LEVEL" == "quick" ]]; then
     echo -e "\n${CYAN}━━━ Unit Tests ━━━${NC}"
     
     test_case "Essential files exist"
@@ -188,7 +208,7 @@ fi
 # LEVEL 2: FUNCTIONAL TESTS - Tool Functionality (< 30s)
 # ======================================================================
 
-if [[ "$TEST_LEVEL" == "all" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
+if [[ "$TEST_LEVEL" == "medium" ]] || [[ "$TEST_LEVEL" == "small" ]] || [[ "$TEST_LEVEL" == "functional" ]]; then
     echo -e "\n${CYAN}━━━ Functional Tests ━━━${NC}"
     
     # Run comprehensive functional tests

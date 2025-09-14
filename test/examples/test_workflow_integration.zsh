@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Example: End-to-end workflow integration tests
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
