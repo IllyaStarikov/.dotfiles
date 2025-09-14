@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # Universal Git hooks installer
 # Works on both macOS and Linux
 
 # Source common library
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DOTFILES_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 source "${DOTFILES_ROOT}/src/scripts/common.sh"
 

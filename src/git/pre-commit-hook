@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Pre-commit hook for secret scanning with gitleaks
 
 # Colors for output

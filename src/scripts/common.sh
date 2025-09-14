@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # common.sh - Shared library for dotfiles scripts
 #
 # DESCRIPTION:

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Unified theme management script for macOS
 # Handles theme switching across Alacritty, tmux, and shell
 
 set -euo pipefail
 
 # Script directory for relative paths
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 THEME_SWITCHER_DIR="$(dirname "$SCRIPT_DIR")/theme-switcher"
 
 # Configuration directories
@@ -26,7 +26,7 @@ mkdir -p "$CONFIG_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR" "$KITTY_DIR"
 # Function to detect macOS appearance
 detect_macos_appearance() {
     local appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light")
-    if [[ "$appearance" == "Dark" ]]; then
+    if [[ "$appearance" = "Dark" ]]; then
         echo "dark"
     else
         echo "light"
