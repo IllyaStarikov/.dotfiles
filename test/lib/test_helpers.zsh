@@ -121,6 +121,19 @@ run_tests() {
     return 0
 }
 
+# Run individual test with description
+run_test() {
+    local description="$1"
+    local test_function="$2"
+
+    test_case "$description"
+    if $test_function; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Assertion helpers
 assert_file_exists() {
     if [[ -f "$1" ]]; then
