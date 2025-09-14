@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # Install Ruby LSP tools (solargraph, rubocop)
 
 set -euo pipefail

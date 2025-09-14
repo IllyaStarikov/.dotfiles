@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # fixy - Universal code formatter with priority-based selection
 #
 # DESCRIPTION:
@@ -39,7 +39,7 @@
 #   fixy -s config.yaml    # Sort marked sections with keep-sorted
 
 # Source common library for cross-platform support
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
 # Strict mode
@@ -91,7 +91,7 @@ is_binary_file() {
 remove_trailing_whitespace() {
   local file="${1:?Error: file required}"
 
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would remove trailing whitespace from: $file"
   else
     [[ "${PARALLEL}" != true ]] && echo -n "  → Removing trailing whitespace... "
@@ -119,7 +119,7 @@ convert_tabs_to_spaces() {
     tab_width=4
   fi
 
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would convert tabs to ${tab_width} spaces in: $file"
   else
     [[ "${PARALLEL}" != true ]] && echo -n "  → Converting tabs to ${tab_width} spaces... "
@@ -134,7 +134,7 @@ convert_tabs_to_spaces() {
 ensure_trailing_newline() {
   local file="${1:?Error: file required}"
 
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     [[ "${PARALLEL}" != true ]] && print_color blue "[DRY RUN] Would ensure single trailing newline in: $file"
   else
     [[ "${PARALLEL}" != true ]] && echo -n "  → Ensuring single trailing newline... "
@@ -172,16 +172,16 @@ run_keep_sorted() {
   
   # Check if keep-sorted is available
   if [[ ! -x "${KEEP_SORTED_BIN}" ]]; then
-    if [[ "${VERBOSE}" == true ]]; then
+    if [[ "${VERBOSE}" = true ]]; then
       print_color yellow "  → keep-sorted not found, skipping..."
     fi
     return 1
   fi
   
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     print_color blue "[DRY RUN] Would run keep-sorted on: $file"
     # Show what would be sorted
-    if [[ "${VERBOSE}" == true ]]; then
+    if [[ "${VERBOSE}" = true ]]; then
       "${KEEP_SORTED_BIN}" --mode=lint "$file" 2>/dev/null || true
     fi
   else
@@ -207,7 +207,7 @@ run_keep_sorted() {
 normalize_quotes() {
   local file="${1:?Error: file required}"
 
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     print_color blue "[DRY RUN] Would normalize smart quotes in: $file"
   else
     echo -n "  → Normalizing smart quotes... "
@@ -220,7 +220,7 @@ normalize_quotes() {
 # Load configuration from JSON file
 load_config() {
   if [[ ! -f "${CONFIG_FILE}" ]]; then
-    if [[ "${VERBOSE}" == true ]]; then
+    if [[ "${VERBOSE}" = true ]]; then
       print_color yellow "Config file not found: ${CONFIG_FILE}"
       print_color yellow "Using built-in defaults"
     fi
@@ -449,7 +449,7 @@ is_extension_allowed() {
   allowed=$(get_allowed_extensions)
   
   for allowed_ext in $allowed; do
-    if [[ "$ext" == "$allowed_ext" ]]; then
+    if [[ "$ext" = "$allowed_ext" ]]; then
       return 0
     fi
   done
@@ -499,9 +499,9 @@ except:
 " 2>/dev/null)
     fi
     
-    if [[ "$check_cmd" == "internal" ]]; then
+    if [[ "$check_cmd" = "internal" ]]; then
       # Internal formatter (text files)
-      if [[ "${DRY_RUN}" == true ]]; then
+      if [[ "${DRY_RUN}" = true ]]; then
         print_color blue "[DRY RUN] Would run internal text formatter on: $file"
       else
         echo -n "  → Running text formatter... "
@@ -521,14 +521,14 @@ except:
       format_cmd=$(get_formatter_command "$formatter" "$file")
       
       if [[ -n "$format_cmd" ]]; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run $formatter on: $file"
-          if [[ "${VERBOSE}" == true ]]; then
+          if [[ "${VERBOSE}" = true ]]; then
             echo "    Command: $format_cmd"
           fi
         else
           echo -n "  → Running $formatter... "
-          if [[ "$formatter" == "ruff" ]]; then
+          if [[ "$formatter" = "ruff" ]]; then
             # Special handling for ruff (run check first)
             ruff check --fix --line-length 100 "$file" 2>/dev/null || true
           fi
@@ -538,7 +538,7 @@ except:
         formatted=true
         break
       fi
-    elif [[ "${VERBOSE}" == true ]]; then
+    elif [[ "${VERBOSE}" = true ]]; then
       print_color yellow "    $formatter not available"
     fi
   done
@@ -546,7 +546,7 @@ except:
   # Run additional formatters if configured
   local additional
   additional=$(get_additional_formatters "$ext")
-  if [[ -n "$additional" ]] && [[ "$formatted" == true ]]; then
+  if [[ -n "$additional" ]] && [[ "$formatted" = true ]]; then
     for formatter in $additional; do
       local check_cmd
       if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
@@ -566,7 +566,7 @@ except:
         local format_cmd
         format_cmd=$(get_formatter_command "$formatter" "$file")
         if [[ -n "$format_cmd" ]]; then
-          if [[ "${DRY_RUN}" == false ]]; then
+          if [[ "${DRY_RUN}" = false ]]; then
             echo -n "  → Running $formatter (additional)... "
             eval "$format_cmd" 2>/dev/null || true
             print_color green "✓"
@@ -576,7 +576,7 @@ except:
     done
   fi
   
-  if [[ "$formatted" == true ]]; then
+  if [[ "$formatted" = true ]]; then
     return 0
   fi
   return 1
@@ -598,7 +598,7 @@ format_fallback() {
     py|pyw|pyi)
       # Python fallback
       if has_command ruff; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run ruff (fallback) on: $file"
         else
           echo -n "  → Running ruff (fallback)... "
@@ -608,7 +608,7 @@ format_fallback() {
         fi
         return 0
       elif has_command black; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run black (fallback) on: $file"
         else
           echo -n "  → Running black (fallback)... "
@@ -621,7 +621,7 @@ format_fallback() {
     c|h|cpp|cc|cxx|hpp|hxx)
       # C/C++ fallback
       if has_command clang-format; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run clang-format (fallback) on: $file"
         else
           echo -n "  → Running clang-format (fallback)... "
@@ -634,7 +634,7 @@ format_fallback() {
     sh|bash|zsh)
       # Shell fallback
       if has_command shfmt; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run shfmt (fallback) on: $file"
         else
           echo -n "  → Running shfmt (fallback)... "
@@ -647,7 +647,7 @@ format_fallback() {
     lua)
       # Lua fallback
       if has_command stylua; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run stylua (fallback) on: $file"
         else
           echo -n "  → Running stylua (fallback)... "
@@ -667,7 +667,7 @@ format_fallback() {
       fi
       
       if [[ -n "$cmd" ]]; then
-        if [[ "${DRY_RUN}" == true ]]; then
+        if [[ "${DRY_RUN}" = true ]]; then
           print_color blue "[DRY RUN] Would run $cmd (fallback) on: $file"
         else
           echo -n "  → Running $cmd (fallback)... "
@@ -679,7 +679,7 @@ format_fallback() {
       ;;
     txt|text|log|csv)
       # Text fallback
-      if [[ "${DRY_RUN}" == true ]]; then
+      if [[ "${DRY_RUN}" = true ]]; then
         print_color blue "[DRY RUN] Would format text file (fallback): $file"
       else
         echo -n "  → Formatting text file (fallback)... "
@@ -729,7 +729,7 @@ apply_formatters() {
   # Try config-based formatting first
   if ! run_formatter_with_priority "$file"; then
     # Fallback to built-in formatters if config fails
-    if [[ "${VERBOSE}" == true ]]; then
+    if [[ "${VERBOSE}" = true ]]; then
       print_color yellow "  ⚠ Config-based formatting unavailable, trying fallback"
     fi
     if ! format_fallback "$file"; then
@@ -765,7 +765,7 @@ process_file() {
 
   # Skip binary files early
   if is_binary_file "$file"; then
-    if [[ "${VERBOSE}" == true ]] && [[ "${PARALLEL}" != true ]]; then
+    if [[ "${VERBOSE}" = true ]] && [[ "${PARALLEL}" != true ]]; then
       print_color yellow "Skipping binary file: $file"
     fi
     return 2  # Return 2 for skipped files
@@ -774,11 +774,11 @@ process_file() {
   # Check if extension is allowed BEFORE any processing
   if ! is_extension_allowed "$ext"; then
     # Check shebang for shell scripts without extension
-    if [[ -x "$file" ]] && [[ -z "$ext" || "$ext" == "$basename" ]] && head -n1 "$file" 2>/dev/null | grep -q "^#!/.*sh"; then
+    if [[ -x "$file" ]] && [[ -z "$ext" || "$ext" = "$basename" ]] && head -n1 "$file" 2>/dev/null | grep -q "^#!/.*sh"; then
       # Shell script with shebang - allow processing
       ext="sh"
     else
-      if [[ "${VERBOSE}" == true ]] && [[ "${PARALLEL}" != true ]]; then
+      if [[ "${VERBOSE}" = true ]] && [[ "${PARALLEL}" != true ]]; then
         print_color yellow "Skipping unsupported file type: $file (.${ext})"
       fi
       return 2  # Return 2 for skipped files
@@ -792,27 +792,27 @@ process_file() {
   fi
 
   # Apply operations only to allowed files
-  if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_TRAILING}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     remove_trailing_whitespace "$file"
   fi
 
-  if [[ "${DO_TABS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_TABS}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     convert_tabs_to_spaces "$file"
   fi
 
-  if [[ "${DO_QUOTES}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_QUOTES}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     normalize_quotes "$file"
   fi
 
-  if [[ "${DO_FORMATTERS}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_FORMATTERS}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     apply_formatters "$file"
   fi
   
-  if [[ "${DO_SORTED}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_SORTED}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     run_keep_sorted "$file"
   fi
 
-  if [[ "${DO_NEWLINE}" == true ]] || [[ "${DO_ALL}" == true ]]; then
+  if [[ "${DO_NEWLINE}" == true ]] || [[ "${DO_ALL}" = true ]]; then
     ensure_trailing_newline "$file"
   fi
   
@@ -946,9 +946,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Default to all operations if none specified
-if [[ "${DO_TRAILING}" == false ]] && [[ "${DO_TABS}" == false ]] && \
-   [[ "${DO_QUOTES}" == false ]] && [[ "${DO_FORMATTERS}" == false ]] && \
-   [[ "${DO_SORTED}" == false ]] && [[ "${DO_NEWLINE}" == false ]]; then
+if [[ "${DO_TRAILING}" == false ]] && [[ "${DO_TABS}" = false ]] && \
+   [[ "${DO_QUOTES}" == false ]] && [[ "${DO_FORMATTERS}" = false ]] && \
+   [[ "${DO_SORTED}" == false ]] && [[ "${DO_NEWLINE}" = false ]]; then
   DO_ALL=true
 fi
 
@@ -1060,7 +1060,7 @@ process_files_parallel() {
   # Display summary
   echo
   print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  if [[ "${DRY_RUN}" == true ]]; then
+  if [[ "${DRY_RUN}" = true ]]; then
     print_color blue "📋 DRY RUN COMPLETE (PARALLEL)"
   else
     print_color green "✅ FORMATTING COMPLETE (PARALLEL)"
@@ -1100,7 +1100,7 @@ main() {
         fi
       done
       
-      if [[ "${found}" == false ]]; then
+      if [[ "${found}" = false ]]; then
         print_color yellow "No files match: $file"
       fi
     fi
@@ -1113,7 +1113,7 @@ main() {
   fi
   
   # Process files either in parallel or sequentially
-  if [[ "${PARALLEL}" == true ]]; then
+  if [[ "${PARALLEL}" = true ]]; then
     # Process in parallel
     process_files_parallel "${all_files[@]}"
   else
@@ -1138,7 +1138,7 @@ main() {
     echo
     print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
-    if [[ "${DRY_RUN}" == true ]]; then
+    if [[ "${DRY_RUN}" = true ]]; then
       print_color blue "📋 DRY RUN COMPLETE"
       echo "   Would process: ${processed} files"
     else

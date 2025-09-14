@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Consolidated tmux utility functions for status bar
 
 # OS detection
