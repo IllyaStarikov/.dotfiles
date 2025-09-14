@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: tmux configuration
 
 test_case "tmux.conf exists"

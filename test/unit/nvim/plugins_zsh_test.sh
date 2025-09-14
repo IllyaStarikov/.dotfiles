@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: Neovim plugin configuration
 
 test_case "Plugin manager (lazy.nvim) is bootstrapped"

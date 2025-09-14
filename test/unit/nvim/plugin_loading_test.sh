@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # Comprehensive plugin loading tests
 
-source "$(dirname "$0")/../../lib/test_helpers.sh"
+source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
 test_suite "Plugin Loading Tests"
 
