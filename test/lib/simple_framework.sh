@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Minimal test framework for the new test runner
 # This file is kept for backward compatibility but is no longer used
 

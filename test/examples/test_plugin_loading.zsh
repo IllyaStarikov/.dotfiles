@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Example: Comprehensive plugin loading tests
 
 # Source test framework

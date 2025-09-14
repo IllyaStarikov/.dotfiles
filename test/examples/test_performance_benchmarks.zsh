@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Example: Performance benchmarks with detailed metrics
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

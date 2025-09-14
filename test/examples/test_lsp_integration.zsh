@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Example: LSP and completion integration tests
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

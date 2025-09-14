@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: Theme switcher script
 
 test_case "Theme switcher script exists and is executable"

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: LSP configuration
 
 test_case "LSP configuration exists"

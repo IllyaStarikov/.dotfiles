@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: Zsh aliases
 
 test_case "Aliases file exists"

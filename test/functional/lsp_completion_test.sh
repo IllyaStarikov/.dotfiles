@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # LSP and completion engine functional tests
 
-source "$(dirname "$0")/../lib/test_helpers.sh"
+source "$(dirname "$0")/../lib/test_helpers.zsh"
 
 test_suite "LSP and Completion Tests"
 

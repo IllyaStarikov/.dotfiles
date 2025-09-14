@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: Zsh configuration
 
 test_case "zshrc exists and is valid"

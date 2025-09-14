@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # Test: Neovim init.lua configuration
 
 test_case "init.lua exists and is valid"
