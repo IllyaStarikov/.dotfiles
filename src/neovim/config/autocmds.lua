@@ -1518,6 +1518,9 @@ autocmd("BufNewFile", {
 -- Optimize handling for large BUILD/Bazel files
 local large_file_group = augroup("large_file_handling", { clear = true })
 
+-- Store flag to track if we're dealing with a large BUILD file
+local is_large_build_file = {}
+
 -- Detect and optimize large BUILD files
 autocmd({ "BufReadPre", "FileReadPre" }, {
   group = large_file_group,
@@ -1525,55 +1528,75 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
   callback = function()
     local file = vim.fn.expand("<afile>")
     local size = vim.fn.getfsize(file)
-    local lines = vim.fn.system("wc -l < " .. vim.fn.shellescape(file)):gsub("%s+", "")
-    lines = tonumber(lines) or 0
+    local bufnr = vim.fn.bufnr(file)
+
+    -- Quick line count check without reading entire file
+    local lines = 0
+    if vim.fn.filereadable(file) == 1 then
+      lines = tonumber(vim.fn.system("wc -l < " .. vim.fn.shellescape(file)):gsub("%s+", "")) or 0
+    end
 
     -- For BUILD files over 5000 lines or 1MB, optimize settings
     if lines > 5000 or size > 1048576 then
+      is_large_build_file[bufnr] = true
       vim.notify("Large BUILD file detected (" .. lines .. " lines). Optimizing performance...", vim.log.levels.INFO)
 
-      -- Increase memory and performance limits
-      vim.opt_local.synmaxcol = 500  -- Limit syntax highlighting to first 500 chars per line
-      vim.opt_local.syntax = "on"     -- Ensure syntax is still enabled
+      -- Performance optimizations for large files
       vim.opt_local.foldmethod = "manual"  -- Disable automatic folding
       vim.opt_local.undolevels = 100  -- Reduce undo history
       vim.opt_local.undoreload = 0    -- Don't reload undo on file reload
       vim.opt_local.swapfile = false  -- Disable swap for large files
 
-      -- Increase regex and redraw timeouts for large files
+      -- IMPORTANT: Don't limit synmaxcol for BUILD files - we need full line syntax
+      -- Instead, increase timeouts to allow processing
       vim.opt.redrawtime = 10000  -- Increase redraw timeout to 10 seconds
       vim.opt.regexpengine = 0    -- Use automatic regex engine selection
-      vim.opt.maxmempattern = 5000  -- Increase memory for pattern matching
-
-      -- Defer expensive operations
-      vim.defer_fn(function()
-        -- Re-trigger filetype detection to ensure LSP attaches
-        vim.cmd("doautocmd FileType " .. vim.bo.filetype)
-      end, 100)
+      vim.opt.maxmempattern = 10000  -- Increase memory for pattern matching (double previous)
+    else
+      is_large_build_file[bufnr] = false
     end
   end,
   desc = "Optimize settings for large BUILD files",
 })
 
--- Re-enable syntax highlighting after entering large BUILD files
-autocmd({ "BufEnter", "BufWinEnter" }, {
+-- Ensure syntax highlighting works after file is loaded
+autocmd({ "BufReadPost", "FileReadPost" }, {
   group = large_file_group,
   pattern = { "BUILD", "BUILD.bazel", "*.BUILD", "*.bzl", "*.bazel", "WORKSPACE", "WORKSPACE.bazel" },
   callback = function()
-    local lines = vim.api.nvim_buf_line_count(0)
-    if lines > 5000 then
-      -- Force syntax and filetype recognition
+    local bufnr = vim.fn.bufnr()
+
+    -- Ensure filetype is set
+    if vim.bo.filetype ~= "bzl" then
+      vim.bo.filetype = "bzl"
+    end
+
+    -- For large files, we need to ensure syntax is properly enabled
+    if is_large_build_file[bufnr] then
+      -- Enable syntax highlighting
+      vim.cmd("syntax on")
+      vim.cmd("syntax enable")
+
+      -- Force filetype redetection to ensure all features work
+      vim.cmd("doautocmd FileType bzl")
+
+      -- Ensure LSP starts
       vim.defer_fn(function()
-        if vim.bo.filetype ~= "bzl" then
-          vim.bo.filetype = "bzl"
-        end
-        vim.cmd("syntax enable")
-        -- Trigger LSP attachment
         vim.cmd("LspStart")
-      end, 200)
+      end, 100)
     end
   end,
-  desc = "Ensure syntax and LSP work for large BUILD files",
+  desc = "Ensure syntax and LSP work for BUILD files",
+})
+
+-- Clean up tracking when buffer is deleted
+autocmd("BufDelete", {
+  group = large_file_group,
+  callback = function()
+    local bufnr = vim.fn.bufnr()
+    is_large_build_file[bufnr] = nil
+  end,
+  desc = "Clean up large file tracking",
 })
 
 -- =============================================================================
