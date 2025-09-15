@@ -51,7 +51,8 @@ end
 function M.setup_plugin(plugin_name, config)
   local plugin, ok = M.safe_require(plugin_name)
   if ok and plugin.setup then
-    local setup_ok = M.protected_call(plugin.setup, plugin_name .. ".setup", config)
+    local setup_ok =
+      M.protected_call(plugin.setup, plugin_name .. ".setup", config)
     if setup_ok then
       return plugin, true
     end
@@ -115,7 +116,7 @@ end
 function M.batch_require(module_names)
   local loaded = {}
   local errors = {}
-  
+
   for _, name in ipairs(module_names) do
     local module, ok = M.silent_require(name)
     if ok then
@@ -124,7 +125,7 @@ function M.batch_require(module_names)
       table.insert(errors, name)
     end
   end
-  
+
   if #errors > 0 then
     vim.notify(
       string.format("Failed to load modules:\n%s", table.concat(errors, "\n")),
@@ -132,7 +133,7 @@ function M.batch_require(module_names)
       { title = "Module Load Errors" }
     )
   end
-  
+
   return loaded, errors
 end
 

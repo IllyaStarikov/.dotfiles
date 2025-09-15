@@ -10,7 +10,7 @@ local core_modules = {
   "config.core.performance",
   "config.core.backup",
   "config.core.search",
-  "config.core.folding"
+  "config.core.folding",
 }
 
 utils.batch_require(core_modules)

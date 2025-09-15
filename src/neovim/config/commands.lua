@@ -14,7 +14,11 @@ local fn = vim.fn
 api.nvim_create_user_command("BufOnly", function()
   local current = api.nvim_get_current_buf()
   for _, buf in ipairs(api.nvim_list_bufs()) do
-    if buf ~= current and api.nvim_buf_is_valid(buf) and api.nvim_buf_get_option(buf, "buflisted") then
+    if
+      buf ~= current
+      and api.nvim_buf_is_valid(buf)
+      and api.nvim_buf_get_option(buf, "buflisted")
+    then
       api.nvim_buf_delete(buf, { force = false })
     end
   end
@@ -23,9 +27,11 @@ end, { desc = "Delete all buffers except current" })
 -- Delete all unmodified buffers
 api.nvim_create_user_command("BufClean", function()
   for _, buf in ipairs(api.nvim_list_bufs()) do
-    if api.nvim_buf_is_valid(buf) 
-       and api.nvim_buf_get_option(buf, "buflisted")
-       and not api.nvim_buf_get_option(buf, "modified") then
+    if
+      api.nvim_buf_is_valid(buf)
+      and api.nvim_buf_get_option(buf, "buflisted")
+      and not api.nvim_buf_get_option(buf, "modified")
+    then
       api.nvim_buf_delete(buf, { force = false })
     end
   end
@@ -60,7 +66,7 @@ end, { desc = "Copy file name to clipboard" })
 -- Search for word under cursor in project
 api.nvim_create_user_command("SearchProject", function()
   local word = fn.expand("<cword>")
-  local ok, builtin = pcall(require, 'telescope.builtin')
+  local ok, builtin = pcall(require, "telescope.builtin")
   if ok then
     builtin.grep_string({ search = word })
   else
@@ -70,8 +76,9 @@ end, { desc = "Search word under cursor in project" })
 
 -- Search for visual selection in project
 api.nvim_create_user_command("SearchSelection", function()
-  local selection = fn.getregion(fn.getpos("'<"), fn.getpos("'>"), { type = fn.mode() })
-  local ok, builtin = pcall(require, 'telescope.builtin')
+  local selection =
+    fn.getregion(fn.getpos("'<"), fn.getpos("'>"), { type = fn.mode() })
+  local ok, builtin = pcall(require, "telescope.builtin")
   if ok then
     builtin.grep_string({ search = table.concat(selection, "\n") })
   else
@@ -161,12 +168,13 @@ end, { desc = "Measure startup time" })
 
 -- Change to project root
 api.nvim_create_user_command("ProjectRoot", function()
-  local root_patterns = { ".git", "package.json", "Makefile", "go.mod", "Cargo.toml" }
+  local root_patterns =
+    { ".git", "package.json", "Makefile", "go.mod", "Cargo.toml" }
   local root = vim.fs.find(root_patterns, {
     upward = true,
     path = vim.fn.expand("%:p:h"),
   })[1]
-  
+
   if root then
     local dir = vim.fn.fnamemodify(root, ":h")
     vim.cmd("cd " .. dir)
@@ -186,11 +194,11 @@ api.nvim_create_user_command("Scratch", function(opts)
   api.nvim_buf_set_option(buf, "buftype", "nofile")
   api.nvim_buf_set_option(buf, "bufhidden", "hide")
   api.nvim_buf_set_option(buf, "swapfile", false)
-  
+
   if opts.args ~= "" then
     api.nvim_buf_set_option(buf, "filetype", opts.args)
   end
-  
+
   api.nvim_set_current_buf(buf)
 end, { nargs = "?", desc = "Create scratch buffer with optional filetype" })
 
@@ -202,53 +210,63 @@ end, { nargs = "?", desc = "Create scratch buffer with optional filetype" })
 api.nvim_create_user_command("Format", function(opts)
   -- Save current view
   local save = fn.winsaveview()
-  
+
   -- Save the file first to ensure script operates on latest content
   vim.cmd("silent! write")
-  
+
   -- Build command
   local format_script = vim.fn.expand("~/.dotfiles/src/scripts/fixy")
   local current_file = vim.fn.expand("%:p")
   local cmd = { format_script }
-  
+
   -- Parse arguments to convert to script flags
   local args = opts.args
   if args ~= "" then
-    if args:find("trailing") then table.insert(cmd, "-t") end
-    if args:find("tabs") then table.insert(cmd, "-T") end
-    if args:find("quotes") then table.insert(cmd, "-q") end
-    if args:find("formatters") then table.insert(cmd, "-f") end
-    if args:find("all") then table.insert(cmd, "-a") end
+    if args:find("trailing") then
+      table.insert(cmd, "-t")
+    end
+    if args:find("tabs") then
+      table.insert(cmd, "-T")
+    end
+    if args:find("quotes") then
+      table.insert(cmd, "-q")
+    end
+    if args:find("formatters") then
+      table.insert(cmd, "-f")
+    end
+    if args:find("all") then
+      table.insert(cmd, "-a")
+    end
   else
     -- Default to all operations
     table.insert(cmd, "-a")
   end
-  
+
   -- Add the current file
   table.insert(cmd, current_file)
-  
+
   -- Execute the format script
   local output = vim.fn.system(table.concat(cmd, " "))
   local exit_code = vim.v.shell_error
-  
+
   -- Reload the buffer to show changes
   vim.cmd("silent! edit!")
-  
+
   -- Restore view
   fn.winrestview(save)
-  
+
   -- Show output
   if exit_code == 0 then
     print("Format: completed successfully")
   else
     print("Format: " .. output)
   end
-end, { 
+end, {
   nargs = "?",
   desc = "Format buffer with external script: trailing, tabs, quotes, formatters, all (default: all)",
   complete = function()
     return { "all", "trailing", "tabs", "quotes", "formatters" }
-  end
+  end,
 })
 
 -- =============================================================================
@@ -261,7 +279,9 @@ api.nvim_create_user_command("ClipboardInfo", function()
   print("Has clipboard: " .. tostring(vim.fn.has("clipboard") == 1))
   print("Has unnamedplus: " .. tostring(vim.fn.has("unnamedplus") == 1))
   print("Clipboard global: " .. tostring(vim.g.clipboard))
-  print("Loaded clipboard provider: " .. tostring(vim.g.loaded_clipboard_provider))
+  print(
+    "Loaded clipboard provider: " .. tostring(vim.g.loaded_clipboard_provider)
+  )
 end, { desc = "Show clipboard configuration info" })
 
 -- Debug yank performance
@@ -270,10 +290,17 @@ api.nvim_create_user_command("YankDebug", function()
   local start = vim.loop.hrtime()
   vim.cmd("normal! yy")
   local internal_time = (vim.loop.hrtime() - start) / 1e6
-  
+
   print(string.format("Internal yank took: %.2fms", internal_time))
   print("Clipboard: " .. vim.o.clipboard)
-  print("Timeout settings: timeout=" .. tostring(vim.o.timeout) .. " timeoutlen=" .. vim.o.timeoutlen .. " ttimeoutlen=" .. vim.o.ttimeoutlen)
+  print(
+    "Timeout settings: timeout="
+      .. tostring(vim.o.timeout)
+      .. " timeoutlen="
+      .. vim.o.timeoutlen
+      .. " ttimeoutlen="
+      .. vim.o.ttimeoutlen
+  )
 end, { desc = "Debug yank performance" })
 
 -- =============================================================================
@@ -285,7 +312,7 @@ api.nvim_create_user_command("RunFile", function()
   local ft = vim.bo.filetype
   local filename = vim.fn.expand("%")
   local cmd = ""
-  
+
   -- Determine command based on filetype
   if ft == "python" then
     cmd = "python3 " .. vim.fn.shellescape(filename)
@@ -299,25 +326,42 @@ api.nvim_create_user_command("RunFile", function()
     cmd = "bash " .. vim.fn.shellescape(filename)
   elseif ft == "c" then
     local output = vim.fn.tempname()
-    cmd = string.format("gcc %s -o %s && %s", vim.fn.shellescape(filename), output, output)
+    cmd = string.format(
+      "gcc %s -o %s && %s",
+      vim.fn.shellescape(filename),
+      output,
+      output
+    )
   elseif ft == "cpp" then
     local output = vim.fn.tempname()
-    cmd = string.format("g++ %s -o %s && %s", vim.fn.shellescape(filename), output, output)
+    cmd = string.format(
+      "g++ %s -o %s && %s",
+      vim.fn.shellescape(filename),
+      output,
+      output
+    )
   elseif ft == "rust" then
     cmd = "cargo run"
   elseif ft == "go" then
     cmd = "go run " .. vim.fn.shellescape(filename)
   elseif ft == "java" then
     local class_name = vim.fn.expand("%:t:r")
-    cmd = string.format("javac %s && java %s", vim.fn.shellescape(filename), class_name)
+    cmd = string.format(
+      "javac %s && java %s",
+      vim.fn.shellescape(filename),
+      class_name
+    )
   else
-    vim.notify("No run command configured for filetype: " .. ft, vim.log.levels.WARN)
+    vim.notify(
+      "No run command configured for filetype: " .. ft,
+      vim.log.levels.WARN
+    )
     return
   end
-  
+
   -- Save and run
   vim.cmd("write")
-  
+
   -- Create terminal in bottom split
   vim.cmd("botright new")
   vim.cmd("resize 15")

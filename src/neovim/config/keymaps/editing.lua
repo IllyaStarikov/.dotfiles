@@ -29,7 +29,6 @@ map("n", "<leader><leader>", "v$h", opts)
 -- Code execution
 map("n", "<leader>r", "<cmd>RunFile<cr>", { desc = "Run current file" })
 
-
 -- Python specific run command (F5)
 map("n", "<F5>", function()
   if vim.bo.filetype == "python" then
@@ -37,7 +36,13 @@ map("n", "<F5>", function()
     local cmd = "python3 " .. vim.fn.shellescape(vim.fn.expand("%"))
     local ok, snacks = pcall(require, "snacks")
     if ok then
-      snacks.terminal(cmd, { cwd = vim.fn.expand("%:p:h"), win = { position = "bottom", height = 0.3 } })
+      snacks.terminal(
+        cmd,
+        {
+          cwd = vim.fn.expand("%:p:h"),
+          win = { position = "bottom", height = 0.3 },
+        }
+      )
     else
       vim.cmd("split | terminal " .. cmd)
     end

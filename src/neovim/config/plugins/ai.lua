@@ -11,7 +11,7 @@ function M.setup()
     vim.notify("Failed to load codecompanion", vim.log.levels.WARN)
     return
   end
-  
+
   codecompanion.setup({
     -- Minimal adapter configuration - just Ollama
     adapters = {

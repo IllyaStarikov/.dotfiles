@@ -21,10 +21,15 @@ local augroup = vim.api.nvim_create_augroup
 
 -- Global error handler for treesitter decoration provider errors
 _G.__treesitter_decoration_error_handler = function(err)
-  if err and type(err) == "string" and 
-     (err:match("Invalid 'index': Expected Lua number") or 
-      err:match("get_offset") or
-      err:match("treesitter/_range.lua")) then
+  if
+    err
+    and type(err) == "string"
+    and (
+      err:match("Invalid 'index': Expected Lua number")
+      or err:match("get_offset")
+      or err:match("treesitter/_range.lua")
+    )
+  then
     -- Silently ignore these specific errors
     return true
   end
@@ -34,9 +39,11 @@ end
 -- Override vim.notify to catch and suppress these errors
 local original_notify = vim.notify
 vim.notify = function(msg, level, opts)
-  if type(msg) == "string" and 
-     msg:match("Error in decoration provider") and 
-     msg:match("nvim.treesitter.highlighter") then
+  if
+    type(msg) == "string"
+    and msg:match("Error in decoration provider")
+    and msg:match("nvim.treesitter.highlighter")
+  then
     -- Don't show this notification
     return
   end
@@ -48,7 +55,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   pattern = { "markdown", "markdown.pandoc" },
   callback = function()
     local bufnr = vim.api.nvim_get_current_buf()
-    
+
     -- Create error-resistant wrapper for this buffer
     vim.api.nvim_buf_attach(bufnr, false, {
       on_lines = function(_, _, _, first_line, last_line, new_last_line)
@@ -61,7 +68,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
               parser:parse()
             end
           end)
-          
+
           if not ok and err:match("Invalid 'index'") then
             -- Restart treesitter to recover from error state
             vim.treesitter.stop(bufnr)
@@ -70,14 +77,14 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
             end, 50)
           end
         end)
-      end
+      end,
     })
   end,
-  desc = "Setup error-resistant markdown treesitter handling"
+  desc = "Setup error-resistant markdown treesitter handling",
 })
 
 -- Add command to manually reset treesitter if needed
-vim.api.nvim_create_user_command('TSReset', function()
+vim.api.nvim_create_user_command("TSReset", function()
   local bufnr = vim.api.nvim_get_current_buf()
   vim.treesitter.stop(bufnr)
   vim.defer_fn(function()
@@ -90,11 +97,15 @@ end, { desc = "Reset treesitter for current buffer" })
 -- This wraps the problematic function to handle invalid positions gracefully
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
 vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
-  local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
+  local ok, result =
+    pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
   if not ok then
     -- Silently ignore out of range errors from treesitter highlighter
-    if result:match("Invalid 'end_col': out of range") or result:match("Invalid 'col': out of range") then
-      return 0  -- Return a dummy extmark id
+    if
+      result:match("Invalid 'end_col': out of range")
+      or result:match("Invalid 'col': out of range")
+    then
+      return 0 -- Return a dummy extmark id
     else
       -- Re-throw other errors
       error(result)
@@ -121,13 +132,13 @@ autocmd("FileType", {
     -- Defer to ensure treesitter is loaded
     vim.defer_fn(function()
       local bufnr = vim.api.nvim_get_current_buf()
-      
+
       -- Wrap the decoration provider to catch errors
-      local ns = vim.api.nvim_get_namespaces()['nvim.treesitter.highlighter']
+      local ns = vim.api.nvim_get_namespaces()["nvim.treesitter.highlighter"]
       if ns then
         -- Override the decoration provider
         local orig_provider = vim.api.nvim_buf_get_extmarks
-        
+
         -- Create a safe wrapper for get_offset
         local ts = vim.treesitter
         if ts._range and ts._range.get_range then
@@ -141,7 +152,7 @@ autocmd("FileType", {
           end
         end
       end
-      
+
       -- Also wrap the highlighter's on_line method
       local highlighter = vim.treesitter.highlighter
       if highlighter and highlighter.active and highlighter.active[bufnr] then
@@ -160,7 +171,7 @@ autocmd("FileType", {
       end
     end, 100)
   end,
-  desc = "Add error handling for treesitter in markdown files"
+  desc = "Add error handling for treesitter in markdown files",
 })
 
 -- Ensure terminal cursor visibility
@@ -171,7 +182,7 @@ autocmd({ "TermEnter" }, {
   callback = function()
     vim.opt.guicursor = "a:ver25-blinkon1"
   end,
-  desc = "Ensure cursor is visible in terminal mode"
+  desc = "Ensure cursor is visible in terminal mode",
 })
 
 autocmd({ "TermLeave", "BufLeave" }, {
@@ -183,7 +194,7 @@ autocmd({ "TermLeave", "BufLeave" }, {
       .. ",a:blinkwait700-blinkoff400-blinkon250"
       .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
   end,
-  desc = "Restore cursor to block shape when leaving terminal"
+  desc = "Restore cursor to block shape when leaving terminal",
 })
 
 -- Ensure cursor is restored when entering normal buffers from terminal
@@ -197,7 +208,7 @@ autocmd({ "BufEnter", "WinEnter" }, {
         .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
     end
   end,
-  desc = "Ensure cursor is restored when entering non-terminal buffers"
+  desc = "Ensure cursor is restored when entering non-terminal buffers",
 })
 
 -- Force cursor restoration after terminal closes
@@ -211,7 +222,7 @@ autocmd({ "TermClose" }, {
         .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
     end, 50)
   end,
-  desc = "Force cursor restoration after terminal closes"
+  desc = "Force cursor restoration after terminal closes",
 })
 
 -- =============================================================================
@@ -228,7 +239,7 @@ autocmd("FileType", {
     -- Enable treesitter highlighting for embedded code blocks
     vim.opt_local.conceallevel = 2
     vim.opt_local.concealcursor = ""
-    
+
     -- Set up syntax highlighting for code blocks with enhanced visual borders
     vim.cmd([[
       " Define custom highlight groups for code block borders
@@ -293,9 +304,9 @@ autocmd("FileType", {
       highlight markdownCodeBlockDelimiter guifg=#48cae4 gui=bold
       highlight markdownCodeBlockLang guifg=#ffa657 gui=bold,italic guibg=#161b22
     ]])
-    
+
     -- Removed code block border signs that were interfering with sign column
-  end
+  end,
 })
 
 -- =============================================================================
@@ -308,7 +319,7 @@ local normalize_group = augroup("normalize", { clear = true })
 autocmd("FileType", {
   group = normalize_group,
   pattern = { "make", "makefile" },
-  command = "set noexpandtab"
+  command = "set noexpandtab",
 })
 
 -- Removed auto-formatting on save
@@ -331,17 +342,25 @@ local projects_group = augroup("projects", { clear = true })
 autocmd({ "BufRead", "BufNewFile" }, {
   group = projects_group,
   pattern = { "*.h", "*.c" },
-  command = "set filetype=c"
+  command = "set filetype=c",
 })
 
 -- BUILD and Bazel file detection
 autocmd({ "BufRead", "BufNewFile" }, {
   group = projects_group,
-  pattern = { "BUILD", "BUILD.bazel", "WORKSPACE", "WORKSPACE.bazel", "*.BUILD", "*.bzl", "*.bazel" },
+  pattern = {
+    "BUILD",
+    "BUILD.bazel",
+    "WORKSPACE",
+    "WORKSPACE.bazel",
+    "*.BUILD",
+    "*.bzl",
+    "*.bazel",
+  },
   callback = function()
     vim.bo.filetype = "bzl"
   end,
-  desc = "Set filetype for Bazel/BUILD files"
+  desc = "Set filetype for Bazel/BUILD files",
 })
 
 -- Additional pattern for BUILD files in subdirectories
@@ -351,7 +370,7 @@ autocmd({ "BufRead", "BufNewFile" }, {
   callback = function()
     vim.bo.filetype = "bzl"
   end,
-  desc = "Set filetype for Bazel/BUILD files in subdirectories"
+  desc = "Set filetype for Bazel/BUILD files in subdirectories",
 })
 
 -- =============================================================================
@@ -370,7 +389,7 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 4
     vim.opt_local.softtabstop = 4
     vim.opt_local.expandtab = true
-  end
+  end,
 })
 
 -- Removed auto-enforcement of Python settings
@@ -393,9 +412,9 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- Shell/Bash (Google Shell Style Guide: 2 spaces)
@@ -408,9 +427,9 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- Swift (Apple/Google convention: 2 spaces)
@@ -425,7 +444,7 @@ autocmd("FileType", {
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
     vim.opt_local.colorcolumn = "100"
-  end
+  end,
 })
 
 -- Lua (Common convention: 2 spaces)
@@ -437,9 +456,9 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- LaTeX (Common convention: 2 spaces)
@@ -452,27 +471,34 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
     -- LaTeX-specific settings
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
-  end
+  end,
 })
 
 -- JavaScript/TypeScript (Google JavaScript Style Guide: 2 spaces)
 -- https://google.github.io/styleguide/jsguide.html
 autocmd("FileType", {
   group = google_style_group,
-  pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "jsonc" },
+  pattern = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "jsonc",
+  },
   callback = function()
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- HTML/XML (Google HTML/CSS Style Guide: 2 spaces)
@@ -485,9 +511,9 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- YAML/TOML (Common convention: 2 spaces)
@@ -499,7 +525,7 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-  end
+  end,
 })
 
 -- Ruby (Common convention: 2 spaces)
@@ -511,9 +537,9 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- Go (Official Go style: tabs)
@@ -524,10 +550,10 @@ autocmd("FileType", {
     vim.opt_local.shiftwidth = 4
     vim.opt_local.tabstop = 4
     vim.opt_local.softtabstop = 4
-    vim.opt_local.expandtab = false  -- Go uses tabs
-    vim.opt_local.textwidth = 80
-    vim.opt_local.colorcolumn = "80"
-  end
+    vim.opt_local.expandtab = false -- Go uses tabs
+    vim.opt_local.textwidth = 100
+    vim.opt_local.colorcolumn = "100"
+  end,
 })
 
 -- Rust (Official Rust style: 4 spaces)
@@ -541,7 +567,7 @@ autocmd("FileType", {
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
     vim.opt_local.colorcolumn = "100"
-  end
+  end,
 })
 
 -- Markdown (Common convention: 2 spaces, wider text)
@@ -557,7 +583,7 @@ autocmd("FileType", {
     vim.opt_local.colorcolumn = "100"
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
-  end
+  end,
 })
 
 -- =============================================================================
@@ -570,13 +596,13 @@ local syntax_group = augroup("syntax", { clear = true })
 autocmd("FileType", {
   group = syntax_group,
   pattern = { "tex", "latex", "markdown", "pandoc" },
-  command = "set synmaxcol=2048"
+  command = "set synmaxcol=2048",
 })
 
 autocmd({ "BufNewFile", "BufRead" }, {
   group = syntax_group,
   pattern = "*.tex",
-  command = "set syntax=tex"
+  command = "set syntax=tex",
 })
 
 -- Removed duplicate markdown settings - handled by markdown_settings above
@@ -592,8 +618,8 @@ local bigfile_group = augroup("bigfile", { clear = true })
 local function optimize_for_bigfile()
   local file = vim.fn.expand("<afile>")
   local size = vim.fn.getfsize(file)
-  local big_file_limit = 1024 * 1024 * 10  -- 10MB
-  
+  local big_file_limit = 1024 * 1024 * 10 -- 10MB
+
   if size > big_file_limit or size == -2 then
     -- Disable expensive features
     vim.opt_local.syntax = "off"
@@ -607,14 +633,17 @@ local function optimize_for_bigfile()
     vim.opt_local.colorcolumn = ""
     vim.opt_local.cursorline = false
     vim.opt_local.spell = false
-    
+
     -- Disable matchparen
     if vim.fn.exists(":NoMatchParen") == 2 then
       vim.cmd("NoMatchParen")
     end
-    
+
     -- Notify user
-    vim.notify("Big file detected. Disabled expensive features for performance.", vim.log.levels.INFO)
+    vim.notify(
+      "Big file detected. Disabled expensive features for performance.",
+      vim.log.levels.INFO
+    )
   end
 end
 
@@ -622,7 +651,7 @@ end
 autocmd("BufReadPre", {
   group = bigfile_group,
   pattern = "*",
-  callback = optimize_for_bigfile
+  callback = optimize_for_bigfile,
 })
 
 -- Additional optimization for files with long lines
@@ -630,13 +659,13 @@ autocmd("BufWinEnter", {
   group = bigfile_group,
   pattern = "*",
   callback = function()
-    local max_filesize = 100 * 1024  -- 100KB
+    local max_filesize = 100 * 1024 -- 100KB
     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(0))
     if ok and stats and stats.size > max_filesize then
       vim.opt_local.wrap = false
       vim.opt_local.synmaxcol = 200
     end
-  end
+  end,
 })
 
 -- =============================================================================
@@ -647,21 +676,21 @@ autocmd("BufWinEnter", {
 local markdown_group = augroup("markdown_writing", { clear = true })
 
 local markdown_settings = {
-  "setlocal wrap",                    -- Enable word wrap
-  "setlocal linebreak",               -- Break lines at word boundaries
-  "setlocal nolist",                  -- Hide special characters for cleaner view
-  "setlocal textwidth=0",             -- No hard line breaks
-  "setlocal wrapmargin=0",            -- No wrap margin
-  "setlocal formatoptions-=t",        -- Don't auto-wrap text
-  "setlocal formatoptions+=l",        -- Don't break long lines in insert mode
-  "setlocal display+=lastline",       -- Show partial wrapped lines
-  "setlocal breakindent",             -- Indent wrapped lines
+  "setlocal wrap", -- Enable word wrap
+  "setlocal linebreak", -- Break lines at word boundaries
+  "setlocal nolist", -- Hide special characters for cleaner view
+  "setlocal textwidth=0", -- No hard line breaks
+  "setlocal wrapmargin=0", -- No wrap margin
+  "setlocal formatoptions-=t", -- Don't auto-wrap text
+  "setlocal formatoptions+=l", -- Don't break long lines in insert mode
+  "setlocal display+=lastline", -- Show partial wrapped lines
+  "setlocal breakindent", -- Indent wrapped lines
   "setlocal breakindentopt=shift:2,min:40",
-  "setlocal spell",                   -- Enable spell check
-  "setlocal number",                  -- Show line numbers
-  "setlocal relativenumber",          -- Show relative line numbers
-  "setlocal colorcolumn=",            -- Remove color column
-  "setlocal signcolumn=yes"           -- Show sign column
+  "setlocal spell", -- Enable spell check
+  "setlocal number", -- Show line numbers
+  "setlocal relativenumber", -- Show relative line numbers
+  "setlocal colorcolumn=", -- Remove color column
+  "setlocal signcolumn=yes", -- Show sign column
 }
 
 autocmd("FileType", {
@@ -671,12 +700,12 @@ autocmd("FileType", {
     for _, setting in ipairs(markdown_settings) do
       vim.cmd(setting)
     end
-    
+
     -- Font settings for GUI vim (JetBrainsMono has better Haskell ligatures than Hasklug)
     if vim.fn.has("gui_running") == 1 then
       vim.cmd("setlocal guifont=JetBrainsMono\\ Nerd\\ Font:h14")
     end
-    
+
     -- Improved navigation for wrapped lines
     local buf_opts = { buffer = true, noremap = true, silent = true }
     vim.keymap.set("n", "j", "gj", buf_opts)
@@ -687,7 +716,7 @@ autocmd("FileType", {
     vim.keymap.set("v", "k", "gk", buf_opts)
     vim.keymap.set("v", "0", "g0", buf_opts)
     vim.keymap.set("v", "$", "g$", buf_opts)
-  end
+  end,
 })
 
 -- =============================================================================
@@ -704,7 +733,7 @@ autocmd("FileType", {
   pattern = { "tex", "plaintex" },
   callback = function()
     window_open = 0
-  end
+  end,
 })
 
 autocmd("QuickFixCmdPost", {
@@ -712,7 +741,7 @@ autocmd("QuickFixCmdPost", {
   pattern = "*",
   callback = function()
     vim.fn["asyncrun#quickfix_toggle"](8, window_open)
-  end
+  end,
 })
 
 -- Note: Language-specific run commands have been moved to commands.lua RunFile command
@@ -722,11 +751,14 @@ autocmd("FileType", {
   group = run_group,
   pattern = "*",
   callback = function()
-    vim.keymap.set("n", "<leader>R", ":AsyncRun<Up><CR>", { buffer = true, desc = "Repeat last async command" })
-  end
+    vim.keymap.set(
+      "n",
+      "<leader>R",
+      ":AsyncRun<Up><CR>",
+      { buffer = true, desc = "Repeat last async command" }
+    )
+  end,
 })
-
-
 
 -- =============================================================================
 -- AUTO-RELOAD FILES
@@ -746,7 +778,7 @@ autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
       vim.cmd("checktime")
     end
   end,
-  desc = "Check for file changes on disk"
+  desc = "Check for file changes on disk",
 })
 
 -- Notification when file changes
@@ -762,12 +794,12 @@ autocmd("FileChangedShellPost", {
       and not vim.g._fixy_formatting
       and not vim.b[bufnr]._fixy_formatting
       and not string.match(vim.bo[bufnr].filetype or "", "^snacks_")
-    
+
     if should_notify then
       vim.notify("File reloaded from disk", vim.log.levels.INFO)
     end
   end,
-  desc = "Notify when file is reloaded"
+  desc = "Notify when file is reloaded",
 })
 
 -- Auto reload for specific file types (immediate reload without prompt)
@@ -778,27 +810,34 @@ autocmd({ "FileChangedShell" }, {
     -- Auto reload if file wasn't modified in vim
     if not vim.bo.modified then
       vim.cmd("edit!")
-      vim.notify("File auto-reloaded (external change detected)", vim.log.levels.INFO)
+      vim.notify(
+        "File auto-reloaded (external change detected)",
+        vim.log.levels.INFO
+      )
     end
   end,
-  desc = "Auto reload unmodified files"
+  desc = "Auto reload unmodified files",
 })
 
 -- More aggressive checking for terminal users
 if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM then
   -- Check more frequently in terminal
-  vim.opt.updatetime = 1000  -- Trigger CursorHold after 1 second
-  
+  vim.opt.updatetime = 1000 -- Trigger CursorHold after 1 second
+
   -- Watch for changes using timer (checks every 2 seconds)
   local timer = vim.loop.new_timer()
-  timer:start(2000, 2000, vim.schedule_wrap(function()
-    if vim.fn.mode() ~= "c" and vim.fn.getcmdwintype() == "" then
-      vim.cmd("silent! checktime")
-    end
-  end))
+  timer:start(
+    2000,
+    2000,
+    vim.schedule_wrap(function()
+      if vim.fn.mode() ~= "c" and vim.fn.getcmdwintype() == "" then
+        vim.cmd("silent! checktime")
+      end
+    end)
+  )
 elseif vim.env.TERM_PROGRAM == "WezTerm" then
   -- WezTerm-specific settings to prevent hangs
-  vim.opt.updatetime = 4000  -- Much less aggressive for WezTerm
+  vim.opt.updatetime = 4000 -- Much less aggressive for WezTerm
   -- No automatic redraws or timers for WezTerm
 end
 
@@ -814,17 +853,41 @@ autocmd("ColorScheme", {
   pattern = "*",
   callback = function()
     -- Make LSP references more visible with a subtle background highlight
-    vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
-    vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
-    vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
+    vim.api.nvim_set_hl(
+      0,
+      "LspReferenceText",
+      { bg = "#3b3b3b", underline = false }
+    )
+    vim.api.nvim_set_hl(
+      0,
+      "LspReferenceRead",
+      { bg = "#3b3b3b", underline = false }
+    )
+    vim.api.nvim_set_hl(
+      0,
+      "LspReferenceWrite",
+      { bg = "#4b3b3b", underline = false }
+    )
   end,
-  desc = "Set LSP reference highlight colors"
+  desc = "Set LSP reference highlight colors",
 })
 
 -- Apply highlight groups immediately
-vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
-vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
-vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
+vim.api.nvim_set_hl(
+  0,
+  "LspReferenceText",
+  { bg = "#3b3b3b", underline = false }
+)
+vim.api.nvim_set_hl(
+  0,
+  "LspReferenceRead",
+  { bg = "#3b3b3b", underline = false }
+)
+vim.api.nvim_set_hl(
+  0,
+  "LspReferenceWrite",
+  { bg = "#4b3b3b", underline = false }
+)
 
 -- =============================================================================
 -- SPELL CHECKING CONFIGURATION
@@ -834,12 +897,20 @@ local spell_group = augroup("spell_check", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
   group = spell_group,
-  pattern = { "markdown", "tex", "latex", "plaintex", "text", "gitcommit", "rst" },
+  pattern = {
+    "markdown",
+    "tex",
+    "latex",
+    "plaintex",
+    "text",
+    "gitcommit",
+    "rst",
+  },
   callback = function()
     vim.opt_local.spell = true
     vim.opt_local.spelllang = "en_us"
   end,
-  desc = "Enable spell checking for documentation files"
+  desc = "Enable spell checking for documentation files",
 })
 
 -- =============================================================================
@@ -858,11 +929,11 @@ local skeleton_group = augroup("skeleton_files", { clear = true })
 
 -- Helper function to get skeleton content directly
 local function get_skeleton_content(filetype, context)
-  local date = os.date('%Y-%m-%d')
-  local year = os.date('%Y')
-  local filename = vim.fn.expand('%:t') or 'untitled'
-  local project = vim.fn.expand('%:p:h:t') or 'project'
-  
+  local date = os.date("%Y-%m-%d")
+  local year = os.date("%Y")
+  local filename = vim.fn.expand("%:t") or "untitled"
+  local project = vim.fn.expand("%:p:h:t") or "project"
+
   if filetype == "python" then
     return {
       "#!/usr/bin/env python3",
@@ -896,7 +967,9 @@ local function get_skeleton_content(filetype, context)
       "        int: Exit code (0 for success, non-zero for failure)",
       '    """',
       "    parser = argparse.ArgumentParser(",
-      "        description='" .. (context.description or "Script description") .. "'",
+      "        description='"
+        .. (context.description or "Script description")
+        .. "'",
       "    )",
       "",
       "    # Add command line arguments",
@@ -930,7 +1003,7 @@ local function get_skeleton_content(filetype, context)
       "",
       "if __name__ == '__main__':",
       "    sys.exit(main())",
-      ""
+      "",
     }
   elseif filetype == "shell" then
     return {
@@ -940,7 +1013,11 @@ local function get_skeleton_content(filetype, context)
       "#",
       "# Author: " .. (context.author or "Illya Starikov"),
       "# Date: " .. date,
-      "# Copyright (c) " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      "# Copyright (c) "
+        .. year
+        .. " "
+        .. (context.author or "Illya Starikov")
+        .. ". All rights reserved.",
       "#",
       "",
       "# Enable strict error handling",
@@ -956,11 +1033,11 @@ local function get_skeleton_content(filetype, context)
       "  # TODO: Add your implementation here",
       "}",
       "",
-      '# Only run main if script is executed directly (not sourced)',
+      "# Only run main if script is executed directly (not sourced)",
       'if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then',
       '  main "$@"',
       "fi",
-      ""
+      "",
     }
   elseif filetype == "html" then
     return {
@@ -969,9 +1046,13 @@ local function get_skeleton_content(filetype, context)
       "<head>",
       '  <meta charset="UTF-8">',
       '  <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-      '  <meta name="description" content="' .. (context.description or "Page description") .. '">',
-      '  <meta name="author" content="' .. (context.author or "Illya Starikov") .. '">',
-      '  <title>' .. (context.title or "Page Title") .. '</title>',
+      '  <meta name="description" content="'
+        .. (context.description or "Page description")
+        .. '">',
+      '  <meta name="author" content="'
+        .. (context.author or "Illya Starikov")
+        .. '">',
+      "  <title>" .. (context.title or "Page Title") .. "</title>",
       '  <link rel="stylesheet" href="styles.css">',
       "</head>",
       "<body>",
@@ -987,13 +1068,17 @@ local function get_skeleton_content(filetype, context)
       "  </main>",
       "",
       "  <footer>",
-      "    <p>&copy; " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.</p>",
+      "    <p>&copy; "
+        .. year
+        .. " "
+        .. (context.author or "Illya Starikov")
+        .. ". All rights reserved.</p>",
       "  </footer>",
       "",
       '  <script src="script.js"></script>',
       "</body>",
       "</html>",
-      ""
+      "",
     }
   elseif filetype == "markdown" then
     local filename_lower = filename:lower()
@@ -1040,16 +1125,18 @@ local function get_skeleton_content(filetype, context)
         "## License",
         "",
         "This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.",
-        ""
+        "",
       }
     else
       -- Use the template from reference/markdown_reference.md
-      local today = os.date('%d.%m.%Y')
-      local git_repo = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null | xargs basename"):gsub('\n', '')
+      local today = os.date("%d.%m.%Y")
+      local git_repo = vim.fn
+        .system("git rev-parse --show-toplevel 2>/dev/null | xargs basename")
+        :gsub("\n", "")
       if git_repo == "" then
-        git_repo = vim.fn.expand('%:p:h:t')
+        git_repo = vim.fn.expand("%:p:h:t")
       end
-      
+
       return {
         "<!--",
         "NAME         " .. filename,
@@ -1065,7 +1152,7 @@ local function get_skeleton_content(filetype, context)
         "-->",
         "",
         "# ",
-        ""
+        "",
       }
     end
   elseif filetype == "javascript" then
@@ -1075,7 +1162,11 @@ local function get_skeleton_content(filetype, context)
       " *",
       " * Author: " .. (context.author or "Illya Starikov"),
       " * Date: " .. date,
-      " * Copyright (c) " .. year .. " " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      " * Copyright (c) "
+        .. year
+        .. " "
+        .. (context.author or "Illya Starikov")
+        .. ". All rights reserved.",
       " */",
       "",
       "'use strict';",
@@ -1087,7 +1178,7 @@ local function get_skeleton_content(filetype, context)
       "    // TODO: Exported functions/objects",
       "  };",
       "}",
-      ""
+      "",
     }
   elseif filetype == "c" then
     return {
@@ -1095,8 +1186,16 @@ local function get_skeleton_content(filetype, context)
       "//  " .. filename,
       "//  " .. project,
       "//",
-      "//  Created by " .. (context.author or "Illya Starikov") .. " on " .. date .. ".",
-      "//  Copyright " .. year .. ". " .. (context.author or "Illya Starikov") .. ". All rights reserved.",
+      "//  Created by "
+        .. (context.author or "Illya Starikov")
+        .. " on "
+        .. date
+        .. ".",
+      "//  Copyright "
+        .. year
+        .. ". "
+        .. (context.author or "Illya Starikov")
+        .. ". All rights reserved.",
       "//",
       "",
       "#include <stdio.h>",
@@ -1117,7 +1216,7 @@ local function get_skeleton_content(filetype, context)
       "",
       "  return EXIT_SUCCESS;",
       "}",
-      ""
+      "",
     }
   elseif filetype == "java" then
     local classname = filename:gsub("%.java$", ""):gsub("^%l", string.upper)
@@ -1125,14 +1224,14 @@ local function get_skeleton_content(filetype, context)
       "/*",
       " * Copyright " .. year .. " " .. (context.author or "Illya Starikov"),
       " *",
-      " * Licensed under the Apache License, Version 2.0 (the \"License\");",
+      ' * Licensed under the Apache License, Version 2.0 (the "License");',
       " * you may not use this file except in compliance with the License.",
       " * You may obtain a copy of the License at",
       " *",
       " *     http://www.apache.org/licenses/LICENSE-2.0",
       " *",
       " * Unless required by applicable law or agreed to in writing, software",
-      " * distributed under the License is distributed on an \"AS IS\" BASIS,",
+      ' * distributed under the License is distributed on an "AS IS" BASIS,',
       " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
       " * See the License for the specific language governing permissions and",
       " * limitations under the License.",
@@ -1149,7 +1248,9 @@ local function get_skeleton_content(filetype, context)
       " */",
       "public final class " .. classname .. " {",
       "",
-      "  private static final Logger logger = Logger.getLogger(" .. classname .. ".class.getName());",
+      "  private static final Logger logger = Logger.getLogger("
+        .. classname
+        .. ".class.getName());",
       "",
       "  // Prevent instantiation",
       "  private " .. classname .. "() {}",
@@ -1171,7 +1272,7 @@ local function get_skeleton_content(filetype, context)
       "    }",
       "  }",
       "}",
-      ""
+      "",
     }
   elseif filetype == "latex" then
     return {
@@ -1207,7 +1308,7 @@ local function get_skeleton_content(filetype, context)
       "% TODO: Document content",
       "",
       "\\end{document}",
-      ""
+      "",
     }
   elseif filetype == "react" then
     return {
@@ -1240,11 +1341,11 @@ local function get_skeleton_content(filetype, context)
       "};",
       "",
       "export default " .. (context.name or "ComponentName") .. ";",
-      ""
+      "",
     }
   end
-  
-  return {"# TODO: Add skeleton for " .. filetype}
+
+  return { "# TODO: Add skeleton for " .. filetype }
 end
 
 -- Helper function to insert skeleton content
@@ -1252,67 +1353,71 @@ local function insert_skeleton(filetype, context)
   -- Only insert if the buffer is completely empty
   local line_count = vim.api.nvim_buf_line_count(0)
   local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] or ""
-  
+
   if line_count == 1 and first_line == "" then
     local content = get_skeleton_content(filetype, context or {})
     vim.api.nvim_buf_set_lines(0, 0, 1, false, content)
-    
+
     -- Special cursor positioning for markdown files
     if filetype == "markdown" then
       -- Find the line with "# " and position cursor after it
       for i, line in ipairs(content) do
         if line == "# " then
-          vim.api.nvim_win_set_cursor(0, {i, 2})  -- Position after "# "
-          vim.cmd("startinsert!")  -- Enter insert mode at cursor
+          vim.api.nvim_win_set_cursor(0, { i, 2 }) -- Position after "# "
+          vim.cmd("startinsert!") -- Enter insert mode at cursor
           break
         end
       end
     else
       -- Position cursor at first TODO or at end of first editable line for other filetypes
       for i, line in ipairs(content) do
-        if line:match("TODO") or line:match("Module description") or line:match("Script description") then
-          vim.api.nvim_win_set_cursor(0, {i, 0})
+        if
+          line:match("TODO")
+          or line:match("Module description")
+          or line:match("Script description")
+        then
+          vim.api.nvim_win_set_cursor(0, { i, 0 })
           break
         end
       end
     end
-    
+
     -- Force proper filetype detection and trigger events to ensure indentation guides work
     vim.schedule(function()
       -- Ensure filetype is properly detected
       vim.cmd("filetype detect")
-      
+
       -- Trigger events that plugins might be listening to
       vim.cmd("doautocmd BufRead")
       vim.cmd("doautocmd BufWinEnter")
-      
+
       -- Trigger specific events for Snacks.nvim
       vim.cmd("doautocmd User SnacksIndentRefresh")
       vim.cmd("doautocmd CursorMoved")
       vim.cmd("doautocmd CursorMovedI")
-      
+
       -- Try to refresh Snacks indent if available
       local ok, snacks = pcall(require, "snacks")
       if ok and snacks.indent then
         pcall(snacks.indent.refresh)
       end
-      
+
       -- Force a redraw to ensure indentation guides appear
       vim.cmd("redraw!")
-      
+
       -- Set buffer as modified initially, then unmodify to trigger proper state
       vim.bo.modified = true
       vim.bo.modified = false
-      
+
       -- Additional schedule to ensure everything is processed
       vim.schedule(function()
         -- Trigger a small cursor movement to activate indent guides
         local current_pos = vim.api.nvim_win_get_cursor(0)
-        vim.api.nvim_win_set_cursor(0, {current_pos[1], current_pos[2]})
-        
+        vim.api.nvim_win_set_cursor(0, { current_pos[1], current_pos[2] })
+
         -- Final redraw
         vim.cmd("redraw!")
-        
+
         -- Trigger buffer text changed events that Snacks might listen to
         vim.cmd("doautocmd TextChanged")
         vim.cmd("doautocmd TextChangedI")
@@ -1321,41 +1426,40 @@ local function insert_skeleton(filetype, context)
   end
 end
 
-
 -- Python files
 autocmd("BufNewFile", {
   group = skeleton_group,
   pattern = "*.py",
   callback = function()
     insert_skeleton("python")
-  end
+  end,
 })
 
 -- Shell scripts
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.sh", "*.bash"},
+  pattern = { "*.sh", "*.bash" },
   callback = function()
     insert_skeleton("shell")
-  end
+  end,
 })
 
 -- JavaScript files
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.js", "*.mjs"},
+  pattern = { "*.js", "*.mjs" },
   callback = function()
     insert_skeleton("javascript")
-  end
+  end,
 })
 
 -- React components (JSX/TSX)
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.jsx", "*.tsx"},
+  pattern = { "*.jsx", "*.tsx" },
   callback = function()
     insert_skeleton("react")
-  end
+  end,
 })
 
 -- LaTeX documents
@@ -1364,29 +1468,29 @@ autocmd("BufNewFile", {
   pattern = "*.tex",
   callback = function()
     insert_skeleton("latex")
-  end
+  end,
 })
 
 -- Markdown files
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.md", "*.markdown"},
+  pattern = { "*.md", "*.markdown" },
   callback = function()
     -- Only insert skeleton for truly new files, not existing ones
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     if #lines == 1 and lines[1] == "" then
       insert_skeleton("markdown")
     end
-  end
+  end,
 })
 
 -- C/C++ files
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.c", "*.cpp", "*.cc", "*.cxx"},
+  pattern = { "*.c", "*.cpp", "*.cc", "*.cxx" },
   callback = function()
     insert_skeleton("c")
-  end
+  end,
 })
 
 -- Java files
@@ -1395,16 +1499,16 @@ autocmd("BufNewFile", {
   pattern = "*.java",
   callback = function()
     insert_skeleton("java")
-  end
+  end,
 })
 
 -- HTML files
 autocmd("BufNewFile", {
   group = skeleton_group,
-  pattern = {"*.html", "*.htm"},
+  pattern = { "*.html", "*.htm" },
   callback = function()
     insert_skeleton("html")
-  end
+  end,
 })
 
 -- =============================================================================

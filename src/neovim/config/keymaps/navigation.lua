@@ -39,12 +39,19 @@ map("n", "]b", ":bnext<cr>", { desc = "Next buffer" })
 -- Buffer management
 map("n", "<leader>bd", ":bdelete<cr>", { desc = "Delete buffer" })
 map("n", "<leader>ba", ":%bdelete<cr>", { desc = "Delete all buffers" })
-map("n", "<leader>bo", ":%bdelete|edit#|bdelete#<cr>", { desc = "Delete other buffers" })
+map(
+  "n",
+  "<leader>bo",
+  ":%bdelete|edit#|bdelete#<cr>",
+  { desc = "Delete other buffers" }
+)
 map("n", "<leader>c", ":Kwbd<cr>", { desc = "Delete buffer (keep window)" })
 
 -- Buffer navigation by number
 for i = 1, 9 do
-  map("n", "<leader>" .. i, function() vim.cmd("buffer " .. i) end, { desc = "Go to buffer " .. i })
+  map("n", "<leader>" .. i, function()
+    vim.cmd("buffer " .. i)
+  end, { desc = "Go to buffer " .. i })
 end
 map("n", "<leader>0", ":bprevious<cr>", { desc = "Go to previous buffer" })
 
@@ -53,12 +60,18 @@ map("n", "<leader>bb", function()
   local buffers = vim.fn.getbufinfo({ buflisted = 1 })
   local lines = {}
   for i, buf in ipairs(buffers) do
-    local name = vim.fn.fnamemodify(buf.name, ':t')
-    if name == '' then name = '[No Name]' end
-    local modified = buf.changed == 1 and ' [+]' or ''
-    table.insert(lines, string.format('%d: %s%s', i, name, modified))
+    local name = vim.fn.fnamemodify(buf.name, ":t")
+    if name == "" then
+      name = "[No Name]"
+    end
+    local modified = buf.changed == 1 and " [+]" or ""
+    table.insert(lines, string.format("%d: %s%s", i, name, modified))
   end
-  vim.notify(table.concat(lines, '\n'), vim.log.levels.INFO, { title = 'Open Buffers' })
+  vim.notify(
+    table.concat(lines, "\n"),
+    vim.log.levels.INFO,
+    { title = "Open Buffers" }
+  )
 end, { desc = "Show buffer list" })
 
 -- Tab navigation
