@@ -219,7 +219,7 @@ function M.setup()
   -- 🔧 C/C++ DEBUGGING CONFIGURATION
   dap.adapters.lldb = {
     type = "executable",
-    command = "/usr/bin/lldb-vscode", -- adjust as needed, must be absolute path
+    command = "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap", -- Updated to use lldb-dap from LLVM
     name = "lldb",
   }
 
@@ -373,7 +373,7 @@ function M.setup()
   -- 🦀 RUST DEBUGGING CONFIGURATION
   dap.adapters.rust = {
     type = "executable",
-    command = lldb_cmd or "lldb-vscode",
+    command = lldb_cmd or "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap",
     name = "rust_lldb",
   }
 

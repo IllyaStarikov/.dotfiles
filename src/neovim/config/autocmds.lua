@@ -359,6 +359,8 @@ autocmd({ "BufRead", "BufNewFile" }, {
   },
   callback = function()
     vim.bo.filetype = "bzl"
+    vim.cmd("syntax enable")
+    vim.cmd("doautocmd Syntax")
   end,
   desc = "Set filetype for Bazel/BUILD files",
 })
@@ -369,6 +371,8 @@ autocmd({ "BufRead", "BufNewFile" }, {
   pattern = { "*/BUILD", "*/BUILD.bazel", "*/WORKSPACE", "*/WORKSPACE.bazel" },
   callback = function()
     vim.bo.filetype = "bzl"
+    vim.cmd("syntax enable")
+    vim.cmd("doautocmd Syntax")
   end,
   desc = "Set filetype for Bazel/BUILD files in subdirectories",
 })
