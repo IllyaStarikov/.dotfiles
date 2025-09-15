@@ -1,392 +1,256 @@
-# src/
+# /src - Source Configuration Files
 
-Source configuration files for the dotfiles repository - the actual dotfiles that get symlinked to their proper locations.
+> **The heart of the dotfiles** - All configuration files that get symlinked to their proper locations
 
-## Overview
+This directory contains the actual dotfiles, scripts, and configurations that make up the development environment. Everything here is symlinked to appropriate system locations by the setup scripts.
 
-This directory contains all the configuration files, scripts, and settings that make up the dotfiles system. Files here are symlinked to their appropriate locations in the home directory and ~/.config/ by the setup scripts.
-
-## Directory Structure
+## 📁 Directory Structure
 
 ```
 src/
-├── Brewfile                # Homebrew package definitions
 ├── alacritty.toml         # Alacritty terminal configuration
-├── brain/                 # Local AI assistant system
-├── editorconfig          # Editor configuration (multi-language)
+├── Brewfile               # macOS package definitions
+├── editorconfig           # Universal editor configuration
+├── gitleaks.toml          # Secret detection configuration
+├── i3_config              # i3 window manager (Linux)
+├── ripgreprc              # Ripgrep search configuration
+├── tmux.conf              # Tmux terminal multiplexer
 ├── git/                   # Git configuration and hooks
-├── gitleaks.toml         # Secret detection configuration
-├── i3_config             # i3 window manager config (Linux)
-├── language/             # Language-specific configurations
-│   ├── .clang-format     # C/C++ code formatter
-│   ├── clangd_config.yaml # C/C++ language server
-│   ├── latexmkrc         # LaTeX build configuration
-│   ├── markdownlint.json # Markdown linter rules
-│   ├── pyproject.toml    # Python project configuration
-│   ├── ruff.toml         # Python linter/formatter
-│   └── stylua.toml       # Lua code formatter
-├── neovim/               # Neovim configuration (Lua)
-├── ripgreprc             # Ripgrep search configuration
-├── scripts/              # Utility and maintenance scripts
-├── setup/                # Installation and setup scripts
-├── theme-switcher/       # Dynamic theme switching system
-├── tmux.conf            # Tmux configuration
-├── zsh/                 # Zsh shell configuration
-└── zshrc                # Zsh entry point
+├── kitty/                 # Kitty terminal emulator
+├── language/              # Language-specific configs (7 files)
+├── neovim/                # Neovim editor (42+ modules)
+├── scripts/               # Utility scripts (11 tools)
+├── setup/                 # Installation scripts
+├── theme-switcher/        # Dynamic theme system
+├── wezterm/               # WezTerm terminal
+└── zsh/                   # Zsh shell configuration
 ```
 
-## Core Configuration Files
+## 🔧 Configuration Files
 
-### Terminal & Shell
+### Terminal Emulators
 
-**alacritty.toml**: Alacritty terminal emulator configuration
+**alacritty.toml** - GPU-accelerated terminal
+- Font: MesloLGS Nerd Font Mono
+- Dynamic theme switching via imports
+- Custom key bindings
+- macOS-specific decorations
 
-- Font settings (MesloLGS Nerd Font)
-- Color scheme (dynamically switched)
-- Key bindings
-- Window decorations
+**kitty/** - Fast, feature-rich terminal
+- GPU rendering
+- Ligature support
+- Image protocol
+- Custom layouts
 
-**zshrc** & **zsh/**: Zsh shell configuration
+**wezterm/** - Lua-configurable terminal
+- Cross-platform
+- Multiplexing support
+- GPU acceleration
+- Dynamic configuration
 
-- Plugin management with Zinit
+### Shell & Multiplexer
+
+**tmux.conf** - Terminal multiplexer
+- Prefix: `Ctrl-a` (screen-like)
+- Vi-mode navigation
+- Smart pane switching
+- Status bar with system stats
+- Theme integration
+
+**zsh/** - Z shell configuration
+- Zinit plugin manager (turbo mode)
 - Starship prompt
 - 200+ aliases
-- Vi mode
-- Completions
-
-**tmux.conf**: Terminal multiplexer configuration
-
-- Custom prefix (Ctrl-a)
-- Vim-like navigation
-- Theme integration
-- Plugin management with TPM
+- Vi mode with visual feedback
+- Smart completions
 
 ### Development Tools
 
-**neovim/**: Complete Neovim configuration
-
-- Modern Lua configuration
-- Lazy.nvim plugin manager
-- LSP, completion, snippets
+**neovim/** - Modern text editor
+- 500+ plugin references
+- LSP for 20+ languages
 - AI integration (Avante, CodeCompanion)
-- Custom keybindings
+- Blink.cmp for ultra-fast completion
+- Custom snippets per language
 
-**git/**: Version control configuration
-
-- Global gitconfig
-- Ignore patterns
-- Commit message template
+**git/** - Version control
+- Global configuration
+- 50+ aliases
+- Delta for diffs
+- GPG signing
 - Pre-commit hooks
-- GPG signing setup
+- Gitleaks integration
 
-**Brewfile**: macOS package management
+### Package Management
 
-- Development tools
-- CLI utilities
-- Applications
-- Fonts
+**Brewfile** - Homebrew packages
+- Core tools: git, tmux, neovim
+- Modern CLI: eza, bat, fd, ripgrep
+- Development: node, python, rust, go
+- Fonts: Nerd Fonts collection
 
-### Language-Specific
+### Language Support
 
-All language-specific configurations are now organized in the `language/` directory:
-
-**language/pyproject.toml**: Python project settings
-
-- Package metadata
-- Dependency specifications
-- Tool configurations
-
-**language/ruff.toml**: Python linting and formatting
-
-- Style rules
-- Ignore patterns
-- Line length settings
-
-**language/clangd_config.yaml**: C/C++ development
-
-- Compiler flags
-- Include paths
-- Diagnostics settings
-
-**language/latexmkrc**: LaTeX compilation
-
-- PDF generation settings
-- Continuous compilation
-- Viewer configuration
+**language/** - Language-specific configurations
+- `.clang-format` - C/C++ formatting
+- `clangd_config.yaml` - C/C++ LSP
+- `latexmkrc` - LaTeX compilation
+- `markdownlint.json` - Markdown linting
+- `pyproject.toml` - Python project
+- `ruff.toml` - Python formatting/linting
+- `stylua.toml` - Lua formatting
 
 ### Search & Security
 
-**ripgreprc**: Fast text search configuration
-
-- Default search options
-- File type definitions
+**ripgreprc** - Fast search configuration
+- Smart case sensitivity
+- Hidden file searching
+- Custom type definitions
 - Ignore patterns
 
-**gitleaks.toml**: Secret detection
+**gitleaks.toml** - Secret detection
+- Custom rules for dotfiles
+- Allow patterns for false positives
+- Pre-commit integration
 
-- Detection rules
-- Allow patterns
-- Custom patterns
+**editorconfig** - Universal editor settings
+- Consistent indentation
+- Line endings
+- Charset settings
+- Works with all editors
 
-## Subdirectories
+## 📂 Key Subdirectories
 
-### brain/
+### /git
+Version control configuration and utilities:
+- `gitconfig` - User settings and aliases
+- `gitignore` - Global ignore patterns
+- `gitmessage` - Commit template
+- `install-git-hooks` - Hook installer
+- `pre-commit-hook` - Quality checks
+- `setup-git-signing` - GPG configuration
 
-Local AI assistant system using MLX on Apple Silicon.
+### /neovim
+Modern Neovim configuration:
+- `init.lua` - Entry point with path detection
+- `config/` - Core modules (options, keymaps, autocmds)
+- `plugins/` - Plugin specifications (lazy.nvim)
+- `snippets/` - Language-specific snippets
+- Work overrides loaded from private repo
 
-- Model management
-- Server daemon
-- API gateway
-- Integration with editors
+### /scripts
+Utility scripts for productivity:
+- `fixy` - Universal code formatter (20+ languages)
+- `theme` - Quick theme switcher
+- `update-dotfiles` - System updater
+- `tmux-utils` - Status bar utilities
+- `scratchpad` - Temp file editor
+- `extract` - Archive extractor
+- `fetch-quotes` - Inspiration fetcher
 
-### git/
+### /setup
+Installation and configuration:
+- `setup.sh` - Main installer (interactive)
+- `symlinks.sh` - Dotfile linking
+- `mac.sh` - macOS-specific setup
+- `linux.sh` - Linux-specific setup
 
-Version control configurations and utilities:
+### /theme-switcher
+Dynamic theme synchronization:
+- `switch-theme.sh` - Main switcher
+- `themes/` - TokyoNight variants
+- Syncs: Alacritty, tmux, Neovim, WezTerm, Starship
+- < 500ms switching time
 
-- **gitconfig**: User settings, aliases, tools
-- **gitignore**: Global ignore patterns
-- **gitmessage**: Commit message template
-- **install-git-hooks**: Hook installation script
-- **pre-commit-hook**: Code quality checks
-- **setup-git-signing**: GPG configuration
+### /zsh
+Shell configuration:
+- `aliases.zsh` - Command shortcuts
+- `starship.toml` - Prompt configuration
+- `zshenv` - Environment variables
+- `zshrc` - Main configuration
 
-### neovim/
+## 🔗 Symlink Mapping
 
-Modern Neovim configuration with 40+ Lua modules:
-
-- **init.lua**: Entry point
-- **config/**: Core configuration modules
-  - **fixy.lua**: Production-ready silent auto-formatter (see below)
-  - **autocmds.lua**: Auto-commands with notification filtering
-  - **lsp.lua**: Language server configurations
-  - **keymaps.lua**: Custom key bindings
-- **snippets/**: Language-specific snippets
-- **spell/**: Custom dictionaries
-- **plugin/**: Plugin configurations
-
-#### Fixy Auto-Formatter (Production-Ready)
-
-The `config/fixy.lua` module provides sophisticated silent auto-formatting:
-
-**Features:**
-- ✅ **Silent Operation**: Formats on save without "file reloaded" notifications
-- ✅ **Multi-layer Notification Suppression**: Handles vim.notify, Snacks.nvim, noice.nvim
-- ✅ **Cursor Preservation**: Maintains position during async formatting
-- ✅ **Robust Error Handling**: Timeout protection, buffer validation, race condition prevention
-- ✅ **Debug Mode**: Optional logging to `/tmp/fixy.log`
-- ✅ **State Management**: Global and buffer-local flags prevent concurrent formatting
-
-**Commands:**
-- `:Fixy` - Format current file
-- `:FixyAuto` - Toggle auto-format
-- `:FixyAutoOn/Off` - Enable/disable
-- `:FixyStatus` - Show status
-- `:FixyDebug` - Toggle debug mode
-
-### scripts/
-
-Utility scripts for daily workflows:
-
-- **common.sh**: Shared functions
-- **extract**: Archive extraction
-- **fetch-quotes**: Inspirational quotes
-- **format**: Universal code formatter
-- **scratchpad**: Temporary file creation
-- **theme**: Theme switching
-- **tmux-utils**: Status bar utilities
-- **update-dotfiles**: System updater
-
-### setup/
-
-Installation and configuration scripts:
-
-- **setup.sh**: Main setup script
-- **symlinks.sh**: Dotfile linking
-- **README.md**: Setup documentation
-
-### spell/
-
-Spell checking dictionaries:
-
-- Custom word lists
-- Technical terms
-- Personal additions
-
-### theme-switcher/
-
-Dynamic theme switching system:
-
-- **switch-theme.sh**: Main switcher
-- **themes/**: Theme configurations
-- **validate-themes.sh**: Theme validator
-
-Supports TokyoNight variants:
-
-- Day (light)
-- Night (dark)
-- Moon (dark variant)
-- Storm (dark variant)
-
-### zsh/
-
-Zsh shell components:
-
-- **aliases.zsh**: Command aliases
-- **starship.toml**: Prompt configuration
-- **zshenv**: Environment variables
-- **zshrc**: Main Zsh config
-
-## Symlinking Strategy
-
-Files are symlinked from src/ to their proper locations:
-
-```
-src/alacritty.toml      → ~/.config/alacritty/alacritty.toml
-src/tmux.conf          → ~/.tmux.conf
-src/zshrc              → ~/.zshrc
-src/neovim/            → ~/.config/nvim/
-src/git/gitconfig      → ~/.gitconfig
-src/git/gitignore      → ~/.gitignore_global
-```
-
-The `setup/symlinks.sh` script handles all symlinking automatically.
-
-## File Organization Principles
-
-### Configuration Placement
-
-1. **Modern locations preferred**: Use ~/.config/ when possible
-2. **Legacy support**: Maintain ~/.file for tools that require it
-3. **Modularity**: Split large configs into logical modules
-
-### Naming Conventions
-
-- **Lowercase with underscores**: For scripts and directories
-- **Standard names**: Use tool's expected config name
-- **Extensions**: Include for clarity (.toml, .yaml, .lua)
-
-### Structure Guidelines
-
-1. **Group by tool**: Keep related configs together
-2. **Separate concerns**: Scripts, configs, data in different dirs
-3. **Document inline**: Include comments in configs
-
-## Usage Patterns
-
-### Daily Use
-
-Most interactions happen through symlinked files:
+Files are symlinked from `src/` to system locations:
 
 ```bash
-# Edit Neovim config
-nvim ~/.config/nvim/init.lua
+# Terminal configs
+src/alacritty.toml    → ~/.config/alacritty/alacritty.toml
+src/kitty/            → ~/.config/kitty/
+src/wezterm/          → ~/.config/wezterm/
 
-# Modify shell aliases
-nvim ~/.zshrc
+# Shell configs
+src/zsh/zshrc         → ~/.zshrc
+src/zsh/zshenv        → ~/.zshenv
+src/tmux.conf         → ~/.tmux.conf
 
-# Update git config
-nvim ~/.gitconfig
+# Editor configs
+src/neovim/           → ~/.config/nvim/
+src/editorconfig      → ~/.editorconfig
+
+# Git configs
+src/git/gitconfig     → ~/.gitconfig
+src/git/gitignore     → ~/.gitignore_global
+
+# Language configs
+src/language/*        → ~/.config/*/
 ```
 
-### Maintenance
+## 💡 Usage Guidelines
 
-Always edit files in src/ directory:
-
+### Daily Workflow
 ```bash
-# Edit source file
-nvim ~/.dotfiles/src/alacritty.toml
+# Edit configurations (always in src/)
+nvim ~/.dotfiles/src/neovim/init.lua
+nvim ~/.dotfiles/src/zsh/aliases.zsh
 
-# Changes immediately reflected via symlink
-# No need to re-link
+# Changes reflect immediately via symlinks
+# No re-linking needed
 ```
 
 ### Adding New Dotfiles
-
-1. Create file in appropriate src/ location
+1. Create file in `src/` directory
 2. Add symlink logic to `setup/symlinks.sh`
-3. Run symlink script to create link
-4. Commit both file and script changes
+3. Run `./setup/symlinks.sh` to create link
+4. Test the configuration
+5. Commit changes
 
-## Integration Points
+### Best Practices
+- ✅ Always edit files in `src/`, never symlinked versions
+- ✅ Test changes immediately after editing
+- ✅ Run `./test/test --quick` before committing
+- ✅ Keep related configs together
+- ✅ Document inline with comments
+- ✅ No secrets in configs (use env vars)
 
-### With Setup System
+## 🧪 Testing
 
-- `setup/setup.sh`: Installs dependencies
-- `setup/symlinks.sh`: Creates all symlinks
-- Platform-specific setup scripts
-
-### With Theme System
-
-- Theme switcher updates multiple configs
-- Configs read theme variables
-- Atomic switching prevents inconsistencies
-
-### With Update System
-
-- `scripts/update-dotfiles`: Updates all components
-- Package managers: Homebrew, pip, gem, npm
-- Plugin managers: Neovim, tmux, Zsh
-
-## Best Practices
-
-### File Editing
-
-1. **Always edit in src/**: Never edit symlinked versions
-2. **Test changes**: Reload configs after editing
-3. **Version control**: Commit changes promptly
-
-### Organization
-
-1. **Logical grouping**: Related files stay together
-2. **Clear naming**: Self-documenting filenames
-3. **Documentation**: README in each major directory
-
-### Compatibility
-
-1. **Cross-platform**: Consider macOS and Linux
-2. **Version checks**: Handle missing features gracefully
-3. **Fallbacks**: Provide defaults for missing tools
-
-## Security Considerations
-
-- No secrets in configs (use env vars)
-- Git hooks prevent accidental commits
-- Gitleaks configuration for scanning
-- Private configs in separate private repo
-
-## Testing
-
-Test configuration changes:
-
+Validate configuration changes:
 ```bash
-# Run quick tests
-~/.dotfiles/test/test --quick
+# Quick sanity check
+./test/test --quick
 
-# Validate specific component
-~/.dotfiles/test/test neovim
+# Test specific component
+./test/test unit/nvim
 
 # Full test suite
-~/.dotfiles/test/test --full
+./test/test --full
 ```
 
-## Backup
+## 🔒 Security
 
-Critical files to backup:
+- Pre-commit hooks scan for secrets
+- Gitleaks configuration included
+- Private configs in separate submodule
+- GPG signing for commits
+- No sensitive data in configs
 
-- Custom configurations
-- Personal scripts
-- Spell dictionaries
-- Snippet definitions
+## 📚 Related Documentation
 
-```bash
-# Backup src directory
-tar -czf dotfiles-src-backup.tar.gz ~/.dotfiles/src/
-```
-
-## See Also
-
-- Setup Guide: [setup/README.md](setup/README.md)
-- Scripts Documentation: [scripts/README.md](scripts/README.md)
-- Neovim Configuration: [neovim/README.md](neovim/README.md)
-- Theme System: [theme-switcher/README.md](theme-switcher/README.md)
-- Main README: `~/.dotfiles/README.md`
+- [Setup Guide](setup/README.md) - Installation instructions
+- [Scripts Reference](scripts/README.md) - Utility script docs
+- [Neovim Config](neovim/README.md) - Editor setup
+- [Theme System](theme-switcher/README.md) - Theme switching
+- [Git Config](git/README.md) - Version control setup
+- [Language Configs](language/README.md) - Language support
+- [Main README](../README.md) - Repository overview
