@@ -1104,6 +1104,7 @@ require("lazy").setup({
     dependencies = {
       "rafamadriz/friendly-snippets", -- Preconfigured snippets
     },
+    build = "make install_jsregexp", -- Build jsregexp for transformations
     config = function()
       require("config.plugins.snippets").setup()
     end,

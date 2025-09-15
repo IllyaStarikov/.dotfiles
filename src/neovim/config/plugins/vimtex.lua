@@ -27,7 +27,7 @@ function M.setup()
     out_dir = "", -- Keep output files in same directory
     callback = 1,
     continuous = 1, -- Enable continuous compilation
-    executable = "latexmk",
+    executable = "/Library/TeX/texbin/latexmk",
     options = {
       "-verbose",
       "-file-line-error",
