@@ -1,308 +1,131 @@
-# Dotfiles Test Suite v5.0
+# Dotfiles Test Suite
 
-Production-grade testing framework with comprehensive coverage for all aspects of dotfiles functionality.
+A focused, signal-driven test suite for validating dotfiles functionality.
 
 ## Quick Start
 
 ```bash
-# Run tests by size (default: large)
-./test/run --small           # Quick unit tests (< 30s)
-./test/run --medium          # Unit + integration (< 5m)
-./test/run --large           # All tests (< 30m)
+# Run all tests
+./test/runner.py
 
-# Run specific test categories
-./test/run --unit            # Configuration validation
-./test/run --smoke           # Quick functionality checks
-./test/run --regression      # Prevent feature breakage
-./test/run --performance     # Performance benchmarks
-./test/run --security        # Security vulnerability scans
+# Run with debug output
+./test/runner.py --debug
 
-# Generate bug report with tests
-./src/scripts/bugreport --test
+# Run in CI mode
+./test/runner.py --ci
 
-# Run with verbose output
-./test/run --verbose --format text
+# Save artifacts to specific directory
+./test/runner.py --artifacts /tmp/test-results
 ```
 
-## Test Architecture
+## Test Philosophy
 
-### Test Sizes
-- **Small** (`--small`): Unit tests, smoke tests, quick validation (< 30s)
-- **Medium** (`--medium`): Integration, system, acceptance tests (< 5m)
-- **Large** (`--large`): All tests including performance and security (< 30m)
+This test suite focuses on **meaningful signal** rather than exhaustive coverage. Each test should answer a specific question about the health of the dotfiles setup:
 
-### Test Categories
+1. **Does it work?** - Core functionality tests
+2. **Is it fast?** - Performance regression tests
+3. **Is it correct?** - Configuration validation
+4. **Will it deploy?** - Integration tests
 
-#### Functional Testing
-- **unit**: Configuration validation, syntax checking, file structure
-- **integration**: Component interaction, cross-tool functionality
-- **system**: System-wide functionality validation
-- **acceptance**: User acceptance criteria verification
-- **smoke**: Quick health checks for critical features
-- **sanity**: Basic functionality verification
-- **regression**: Prevent feature breakage and regressions
-- **e2e**: End-to-end workflow validation
+## Test Categories
 
-#### Non-Functional Testing
-- **performance**: Startup time, memory usage, operation speed
-- **load**: System behavior under load
-- **stress**: Behavior at system limits
-- **security**: Vulnerability scanning, secret detection
-- **configuration**: Config file validation
-- **snapshot**: State comparison and regression detection
-- **fuzz**: Randomized input testing
+### Core Validation (Must Pass)
+- **Essential files exist** - Verifies core configuration files are present
+- **Neovim configuration loads** - Ensures Neovim starts without errors
+- **Shell scripts syntax** - Validates all shell scripts have correct syntax
+- **Language configurations** - Checks formatter/linter configs are present
 
-### Key Tests Implemented
+### Integration Tests (Should Pass)
+- **Theme switcher** - Validates theme switching functionality
+- **Symlinks integrity** - Ensures symlink script would create proper links
+- **Critical commands** - Tests availability of custom commands (fixy, theme)
+- **Git hooks** - Verifies git security hooks are configured
 
-#### Unit Tests (`test/unit/core_validation.zsh`)
-- Dotfiles structure validation
-- Essential file existence
-- Script executability
-- Shell/Lua syntax validation
-- JSON/YAML configuration validity
-- No hardcoded paths or secrets
+### Performance Tests (Nice to Pass)
+- **Neovim startup** - Measures and validates startup time (<300ms excellent, <500ms acceptable)
 
-#### Smoke Tests (`test/smoke/quick_check.zsh`)
-- Neovim startup
-- Zsh configuration loading
-- tmux config validation
-- Git configuration
-- Theme switcher availability
-- Essential commands presence
-- Symlink integrity
+## Test Artifacts
 
-#### Performance Tests (`test/performance/benchmarks.zsh`)
-- Neovim startup time (< 300ms)
-- Zsh startup time (< 500ms)
-- Theme switching (< 500ms)
-- Plugin loading (< 500ms)
-- Memory usage (< 200MB)
-- File operations
-- Concurrent operations
-- Performance regression detection
+The test runner generates artifacts in `test/artifacts/`:
 
-#### Security Tests (`test/security/vulnerability_scan.zsh`)
-- No hardcoded secrets/API keys
-- No exposed SSH/GPG keys
-- Secure file permissions
-- Command injection prevention
-- Secure temp file usage
-- Safe curl/wget usage
-- Git hooks security
-- Dependency vulnerabilities
+- **test-report-TIMESTAMP.json** - Machine-readable test results
+- **debug-TIMESTAMP.log** - Detailed debug output (when using --debug)
+- **nvim-startup.log** - Neovim startup timing details
 
-#### Regression Tests (`test/regression/key_functionality.zsh`)
-- Plugin loading consistency
-- Alias availability
-- Theme switching functionality
-- Formatter functionality
-- Update script operation
-- Critical keybindings
-- LSP server configuration
+## Architecture
 
-## Test Framework Features
-
-### Core Library (`lib/framework.zsh`)
-
-The comprehensive test framework provides:
-
-✅ **Advanced Logging**: Multi-level logging with automatic sanitization  
-✅ **Rich Assertions**: Complete assertion library for all test scenarios  
-✅ **Performance Benchmarking**: Built-in timing and memory tracking  
-✅ **Parallel Execution**: Run tests concurrently for faster results  
-✅ **Multiple Report Formats**: Text, JSON, JUnit XML, HTML  
-✅ **Progress Tracking**: Real-time progress with ETA  
-✅ **Test Isolation**: Each test runs in isolated environment  
-✅ **Automatic Cleanup**: Tests clean up after themselves  
-
-### Key Functions
-
-```zsh
-# Assertions
-assert "condition" "error message"
-assert_equals "expected" "actual" "message"
-assert_contains "haystack" "needle" "message"
-assert_file_exists "/path/to/file" "message"
-assert_command_succeeds "command" "message"
-
-# Benchmarking
-benchmark "operation_name" command_to_benchmark
-
-# Test execution
-run_test "test_name" "test_function" "category" "size" "timeout"
-run_test_suite "suite_name" "suite_dir" "category" "size_filter"
-
-# Parallel execution
-run_tests_parallel "test1" "test2" "test3"
-
-# Logging
-log "LEVEL" "message"  # LEVEL: ERROR, WARNING, INFO, DEBUG, TRACE
+```
+test/
+├── runner.py           # Main test runner (Python 3.6+)
+├── artifacts/          # Test results and logs
+├── fixtures/           # Test files for LSP/formatter testing
+│   ├── sample.py
+│   ├── sample.js
+│   ├── sample.ts
+│   └── sample.cpp
+└── README.md          # This file
 ```
 
-## Bug Report Generation
+## Key Features
 
-The `bugreport` script provides comprehensive system diagnostics:
+- **Fast** - All tests complete in <1 second
+- **Focused** - Only tests that provide real signal
+- **Debuggable** - Comprehensive debug mode and artifacts
+- **CI-Ready** - Supports CI mode with JSON reporting
+- **Portable** - Pure Python, no external dependencies
 
-```bash
-# Generate basic bug report
-./src/scripts/bugreport
+## Exit Codes
 
-# Include test results
-./src/scripts/bugreport --test
+- `0` - All tests passed
+- `1` - One or more tests failed
+- `130` - Interrupted by user (Ctrl+C)
+- `1` - Test runner error
 
-# Include medium test suite
-./src/scripts/bugreport --test medium
+## Adding New Tests
 
-# Skip log collection
-./src/scripts/bugreport --no-logs
+To add a new test, create a method in the `TestRunner` class:
+
+```python
+def test_my_feature(self) -> TestResult:
+    """One-line description of what this tests."""
+    start = time.time()
+
+    # Your test logic here
+    passed = check_something()
+
+    return TestResult(
+        name="My feature test",
+        passed=passed,
+        duration=time.time() - start,
+        output="What succeeded",
+        error="What failed" if not passed else ""
+    )
 ```
 
-### Bug Report Contents
-- System information (OS, hardware, shell)
-- Tool versions (editors, languages, package managers)
-- Dotfiles configuration and structure
-- Neovim health check and configuration
-- Shell environment and aliases
-- Performance metrics
-- Recent logs (optional)
-- Test execution results (optional)
-- System fingerprint for debugging
+Then add it to the appropriate suite in `run_all()`:
 
-All sensitive data is automatically sanitized.
-
-## Private Repository Testing
-
-The `.dotfiles.private` has separate tests for work configurations:
-
-```bash
-# Run private tests
-cd ~/.dotfiles/.dotfiles.private
-./test/run --small|medium|large
-
-# Test categories
-- unit: Basic validation
-- configuration: Config file integrity
-- integration: Main dotfiles interaction
-- machine_detection: Work environment detection
-- security: Security compliance
-- compliance: Company policy validation
+```python
+self.run_suite("Core Validation", [
+    'test_essential_files',
+    'test_my_feature',  # Add here
+    ...
+])
 ```
 
-## Writing Tests
+## Design Principles
 
-### Test Structure
+1. **Signal over Coverage** - Test what matters, not everything
+2. **Fast Feedback** - All tests should complete quickly
+3. **Clear Failures** - Error messages should be actionable
+4. **No Dependencies** - Use only Python stdlib
+5. **Reproducible** - Tests should be deterministic
 
-```zsh
-#!/usr/bin/env zsh
-# Test Description
-# TEST_SIZE: small|medium|large
+## Legacy Tests
 
-source "${TEST_DIR}/lib/framework.zsh"
+The old test framework files are preserved but deprecated. They contained:
+- Over 50 individual test files
+- Complex categorization (unit/functional/integration/performance/etc.)
+- Redundant tests that didn't provide signal
+- Slow execution (some tests took minutes)
 
-test_feature_name() {
-    log "TRACE" "Starting test for feature"
-    
-    # Setup
-    local test_data=$(setup_test_data)
-    
-    # Execute
-    local result=$(run_feature "$test_data")
-    
-    # Assert
-    assert_equals "expected" "$result" "Feature should produce expected result"
-    
-    # Cleanup happens automatically
-    return 0  # Pass
-}
-```
-
-### Return Codes
-- `0`: Test passed
-- `1`: Test failed
-- `77`: Test skipped (missing dependencies)
-- `124`: Test timeout
-
-## CI/CD Integration
-
-```yaml
-# GitHub Actions example
-- name: Run Small Tests (PR)
-  run: ./test/run --small --format junit --report test-results.xml
-  
-- name: Run Medium Tests (main branch)
-  run: ./test/run --medium --verbose
-  
-- name: Run Full Test Suite (nightly)
-  run: ./test/run --large --format json --report nightly-results.json
-  
-- name: Performance Regression Check
-  run: ./test/run --performance --regression
-```
-
-## Performance Standards
-
-Current thresholds enforced by tests:
-
-| Metric | Threshold | Test File |
-|--------|-----------|-----------|
-| Neovim startup | < 300ms | `performance/benchmarks.zsh` |
-| Zsh startup | < 500ms | `performance/benchmarks.zsh` |
-| Theme switch | < 500ms | `performance/benchmarks.zsh` |
-| Plugin loading | < 500ms | `performance/benchmarks.zsh` |
-| Memory usage | < 200MB | `performance/benchmarks.zsh` |
-
-## Debugging Failed Tests
-
-### Verbose Output
-```bash
-# Maximum verbosity
-./test/run -vv --debug
-
-# Run specific category with debug
-DEBUG=1 ./test/run --unit --verbose
-
-# Dry run to see what would execute
-DRY_RUN=1 ./test/run
-```
-
-### Test Artifacts
-- `test/logs/`: Execution logs per test
-- `test/reports/`: Generated test reports
-- `test/snapshots/`: Performance baselines
-
-### Environment Variables
-```bash
-TEST_SIZE=small       # Override default test size
-VERBOSE=1            # Enable verbose output
-DEBUG=1              # Enable debug output
-PARALLEL=0           # Disable parallel execution
-MAX_PARALLEL_JOBS=8  # Set parallel job limit
-TEST_TIMEOUT=600     # Set test timeout (seconds)
-DRY_RUN=1           # Show what would run
-```
-
-## Maintenance
-
-### Update Performance Baselines
-```bash
-rm test/snapshots/*.json
-./test/run --performance
-```
-
-### Clean Test Data
-```bash
-rm -rf test/logs/* test/reports/*
-find /tmp -name "test_*" -mtime +1 -delete
-```
-
-## Summary
-
-This production-grade test suite ensures:
-
-- **Reliability**: All configurations work as expected
-- **Performance**: Operations meet speed requirements
-- **Security**: No vulnerabilities or exposed secrets
-- **Compatibility**: Works across environments
-- **Regression Prevention**: Features don't break over time
-
-Run `./test/run` regularly to maintain confidence in your development environment.
+The new `runner.py` consolidates all meaningful tests into a single, fast, maintainable suite.
