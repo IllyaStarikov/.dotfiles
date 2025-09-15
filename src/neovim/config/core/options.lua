@@ -10,9 +10,9 @@ opt.sidescrolloff = 8 -- Horizontal scroll context
 opt.regexpengine = 1 -- Use regex engine v1 for better performance
 
 -- Large file performance settings
-opt.maxmempattern = 2000 -- Increase memory for pattern matching (default: 1000)
-opt.redrawtime = 2000 -- Increase redraw timeout (default: 2000ms)
-opt.synmaxcol = 300 -- Limit syntax highlighting column (0 = unlimited)
+opt.maxmempattern = 5000 -- Increase memory for pattern matching (default: 1000)
+opt.redrawtime = 5000 -- Increase redraw timeout for complex syntax (default: 2000ms)
+-- NOTE: synmaxcol removed - we handle it per-filetype in autocmds
 opt.clipboard:append("unnamedplus") -- Use system clipboard
 opt.backspace = { "indent", "eol", "start" } -- Proper backspace
 opt.autoread = true -- Auto-reload changed files
