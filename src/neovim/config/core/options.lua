@@ -4,38 +4,38 @@ local opt = vim.opt
 local g = vim.g
 
 -- General settings
-opt.history = 1000                   -- Increased history size for better undo
-opt.scrolloff = 8                    -- More context lines around cursor
-opt.sidescrolloff = 8                -- Horizontal scroll context
-opt.regexpengine = 1                 -- Use regex engine v1 for better performance
-opt.clipboard:append("unnamedplus")  -- Use system clipboard
-opt.backspace = { "indent", "eol", "start" }  -- Proper backspace
-opt.autoread = true                  -- Auto-reload changed files
-opt.virtualedit = "block"            -- Freedom of movement in visual block mode
-opt.updatetime = 300                 -- Faster completion (4s -> 300ms)
-opt.timeoutlen = 500                 -- Faster which-key trigger
+opt.history = 1000 -- Increased history size for better undo
+opt.scrolloff = 8 -- More context lines around cursor
+opt.sidescrolloff = 8 -- Horizontal scroll context
+opt.regexpengine = 1 -- Use regex engine v1 for better performance
+opt.clipboard:append("unnamedplus") -- Use system clipboard
+opt.backspace = { "indent", "eol", "start" } -- Proper backspace
+opt.autoread = true -- Auto-reload changed files
+opt.virtualedit = "block" -- Freedom of movement in visual block mode
+opt.updatetime = 300 -- Faster completion (4s -> 300ms)
+opt.timeoutlen = 500 -- Faster which-key trigger
 
 -- Fix for table/box drawing characters
 opt.fillchars = {
-  vert = '│',     -- Vertical separator
-  horiz = '─',    -- Horizontal separator  
-  horizup = '┴',  -- Horizontal with up
-  horizdown = '┬', -- Horizontal with down
-  vertleft = '┤',  -- Vertical with left
-  vertright = '├', -- Vertical with right
-  verthoriz = '┼', -- Cross
+  vert = "│", -- Vertical separator
+  horiz = "─", -- Horizontal separator
+  horizup = "┴", -- Horizontal with up
+  horizdown = "┬", -- Horizontal with down
+  vertleft = "┤", -- Vertical with left
+  vertright = "├", -- Vertical with right
+  verthoriz = "┼", -- Cross
 }
 
 -- Ensure proper character width handling
-opt.ambiwidth = "single"  -- Treat ambiguous width chars as single width
+opt.ambiwidth = "single" -- Treat ambiguous width chars as single width
 
 -- Force proper rendering of box-drawing characters
-if vim.fn.has('multi_byte') == 1 then
+if vim.fn.has("multi_byte") == 1 then
   vim.opt.listchars = {
-    tab = '▸ ',
-    trail = '·',
-    extends = '❯',
-    precedes = '❮',
+    tab = "▸ ",
+    trail = "·",
+    extends = "❯",
+    precedes = "❮",
   }
 end
 
@@ -50,9 +50,10 @@ opt.wildmode = { "longest:list", "full" }
 opt.belloff = "all"
 
 -- Spell checking configuration
-opt.spell = false  -- Spell checking off by default (toggle with F5)
-opt.spelllang = { "en_us" }  -- English US spell checking
-opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/spell/en.utf-8.add")  -- Custom spell file in private dotfiles
+opt.spell = false -- Spell checking off by default (toggle with F5)
+opt.spelllang = { "en_us" } -- English US spell checking
+opt.spellfile =
+  vim.fn.expand("~/.dotfiles/.dotfiles.private/spell/en.utf-8.add") -- Custom spell file in private dotfiles
 opt.errorbells = false
 opt.visualbell = false
 

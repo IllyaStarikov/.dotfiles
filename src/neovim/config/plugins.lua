@@ -7,7 +7,14 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  local out = vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    lazyrepo,
+    lazypath,
+  })
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -37,44 +44,90 @@ require("lazy").setup({
     },
     config = function()
       local utils = require("config.utils")
-      utils.load_config('config.telescope')
+      utils.load_config("config.telescope")
     end,
     keys = {
-      { "<C-p>", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.find_files() end
-      end, desc = "Find Files" },
-      { "<leader>ff", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.find_files() end
-      end, desc = "Find Files" },
-      { "<leader>fg", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.live_grep() end
-      end, desc = "Live Grep" },
-      { "<leader>fb", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.buffers() end
-      end, desc = "Buffers" },
-      { "<leader>fh", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.help_tags() end
-      end, desc = "Help Tags" },
-      { "<leader>fr", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.oldfiles() end
-      end, desc = "Recent Files" },
-      { "<leader>fc", function() 
-        local ok, builtin = pcall(require, 'telescope.builtin')
-        if ok then builtin.commands() end
-      end, desc = "Commands" },
-      { "<leader>fp", function() 
-        local ok, builtin = pcall(require, "telescope.builtin")
-        local config_ok, lazy_config = pcall(require, "lazy.core.config")
-        if ok and config_ok then 
-          builtin.find_files({ cwd = lazy_config.options.root }) 
-        end
-      end, desc = "Find Plugin File" },
+      {
+        "<C-p>",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.find_files()
+          end
+        end,
+        desc = "Find Files",
+      },
+      {
+        "<leader>ff",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.find_files()
+          end
+        end,
+        desc = "Find Files",
+      },
+      {
+        "<leader>fg",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.live_grep()
+          end
+        end,
+        desc = "Live Grep",
+      },
+      {
+        "<leader>fb",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.buffers()
+          end
+        end,
+        desc = "Buffers",
+      },
+      {
+        "<leader>fh",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.help_tags()
+          end
+        end,
+        desc = "Help Tags",
+      },
+      {
+        "<leader>fr",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.oldfiles()
+          end
+        end,
+        desc = "Recent Files",
+      },
+      {
+        "<leader>fc",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          if ok then
+            builtin.commands()
+          end
+        end,
+        desc = "Commands",
+      },
+      {
+        "<leader>fp",
+        function()
+          local ok, builtin = pcall(require, "telescope.builtin")
+          local config_ok, lazy_config = pcall(require, "lazy.core.config")
+          if ok and config_ok then
+            builtin.find_files({ cwd = lazy_config.options.root })
+          end
+        end,
+        desc = "Find Plugin File",
+      },
     },
   },
 
@@ -99,30 +152,30 @@ require("lazy").setup({
       require("aerial").setup({
         -- Priority list of backends for aerial to use for symbols
         backends = { "treesitter", "lsp", "markdown", "man" },
-        
+
         layout = {
           -- These values get passed to the `open_win` function
           max_width = { 40, 0.2 },
           width = nil,
           min_width = 20,
-          
+
           -- Determines the default direction to open aerial window
           default_direction = "prefer_right",
-          
+
           -- Preserve window size equality when opening aerial
           preserve_equality = false,
         },
-        
+
         -- Optionally use on_attach to set keymaps when aerial has attached to a buffer
         on_attach = function(bufnr)
           -- Jump forwards/backwards with '{' and '}'
           vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
           vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
         end,
-        
+
         -- Show box drawing characters for the tree hierarchy
         show_guides = true,
-        
+
         -- Customize the characters used when show_guides = true
         guides = {
           mid_item = "├─",
@@ -130,7 +183,7 @@ require("lazy").setup({
           nested_top = "│ ",
           whitespace = "  ",
         },
-        
+
         -- Options for the floating navigation window
         nav = {
           border = "rounded",
@@ -172,13 +225,13 @@ require("lazy").setup({
             ["zX"] = "actions.tree_sync_folds",
           },
         },
-        
+
         -- Automatically open aerial when entering a buffer
         open_automatic = false,
-        
+
         -- Unfold the tree when opening aerial
         autofold = false,
-        
+
         -- Use symbol icons
         icons = {
           -- Icons for different symbol kinds
@@ -209,7 +262,7 @@ require("lazy").setup({
           Operator = "󰆕",
           TypeParameter = "󰊄",
         },
-        
+
         -- Control which symbols to display
         filter_kind = {
           "Class",
@@ -225,17 +278,17 @@ require("lazy").setup({
           "Constant",
           "Variable",
         },
-        
+
         -- Highlight the symbol and its parents when focused
         highlight_on_hover = true,
         highlight_on_jump = 300,
-        
+
         -- Update the aerial window when the buffer changes
         update_events = "TextChanged,InsertLeave",
-        
+
         -- Show the aerial window when you jump to a symbol
         autojump = false,
-        
+
         -- Define how aerial finds the cursor position
         float = {
           border = "rounded",
@@ -251,7 +304,7 @@ require("lazy").setup({
           end,
         },
       })
-      
+
       -- Optional: setup Telescope integration
       pcall(function()
         require("telescope").load_extension("aerial")
@@ -266,13 +319,12 @@ require("lazy").setup({
     lazy = false,
     config = function()
       local utils = require("config.utils")
-      utils.load_config('config.plugins.snacks')
+      utils.load_config("config.plugins.snacks")
     end,
   },
-  
 
   -- UI/UX plugins
-  { 
+  {
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
@@ -282,9 +334,19 @@ require("lazy").setup({
       },
     },
   },
-  { 
+  {
     "tpope/vim-fugitive",
-    cmd = { "Git", "G", "Gstatus", "Gblame", "Gpush", "Gpull", "Gcommit", "Glog", "Gdiff" },
+    cmd = {
+      "Git",
+      "G",
+      "Gstatus",
+      "Gblame",
+      "Gpush",
+      "Gpull",
+      "Gcommit",
+      "Glog",
+      "Gdiff",
+    },
     keys = {
       { "<leader>gs", "<cmd>Git<cr>", desc = "Git status" },
       { "<leader>gb", "<cmd>Git blame<cr>", desc = "Git blame" },
@@ -298,117 +360,139 @@ require("lazy").setup({
     event = "VeryLazy",
     config = function()
       local utils = require("config.utils")
-      
+
       -- mini.statusline - Modern statusline
-      utils.setup_plugin('mini.statusline', {
+      utils.setup_plugin("mini.statusline", {
         use_icons = true,
         set_vim_settings = true,
       })
-      
+
       -- mini.surround - Better surround operations
-      utils.setup_plugin('mini.surround', {
+      utils.setup_plugin("mini.surround", {
         mappings = {
-          add = 'ys',
-          delete = 'ds',
-          find = '',
-          find_left = '',
-          highlight = '',
-          replace = 'cs',
-          update_n_lines = '',
+          add = "ys",
+          delete = "ds",
+          find = "",
+          find_left = "",
+          highlight = "",
+          replace = "cs",
+          update_n_lines = "",
         },
       })
-      
+
       -- mini.align - Easy alignment
-      utils.setup_plugin('mini.align', {
+      utils.setup_plugin("mini.align", {
         mappings = {
-          start = 'ga',
-          start_with_preview = 'gA',
+          start = "ga",
+          start_with_preview = "gA",
         },
       })
-      
+
       -- mini.pairs - Auto pairs and bracket highlighting
-      utils.setup_plugin('mini.pairs', {
+      utils.setup_plugin("mini.pairs", {
         modes = { insert = true, command = false, terminal = false },
         mappings = {
-          ['('] = { action = 'open', pair = '()', neigh_pattern = '[^\\].' },
-          ['['] = { action = 'open', pair = '[]', neigh_pattern = '[^\\].' },
-          ['{'] = { action = 'open', pair = '{}', neigh_pattern = '[^\\].' },
-          
-          [')'] = { action = 'close', pair = '()', neigh_pattern = '[^\\].' },
-          [']'] = { action = 'close', pair = '[]', neigh_pattern = '[^\\].' },
-          ['}'] = { action = 'close', pair = '{}', neigh_pattern = '[^\\].' },
-          
-          ['"'] = { action = 'closeopen', pair = '""', neigh_pattern = '[^\\].', register = { cr = false } },
-          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^%a\\].', register = { cr = false } },
-          ['`'] = { action = 'closeopen', pair = '``', neigh_pattern = '[^\\].', register = { cr = false } },
+          ["("] = { action = "open", pair = "()", neigh_pattern = "[^\\]." },
+          ["["] = { action = "open", pair = "[]", neigh_pattern = "[^\\]." },
+          ["{"] = { action = "open", pair = "{}", neigh_pattern = "[^\\]." },
+
+          [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]." },
+          ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]." },
+          ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]." },
+
+          ['"'] = {
+            action = "closeopen",
+            pair = '""',
+            neigh_pattern = "[^\\].",
+            register = { cr = false },
+          },
+          ["'"] = {
+            action = "closeopen",
+            pair = "''",
+            neigh_pattern = "[^%a\\].",
+            register = { cr = false },
+          },
+          ["`"] = {
+            action = "closeopen",
+            pair = "``",
+            neigh_pattern = "[^\\].",
+            register = { cr = false },
+          },
         },
       })
-      
+
       -- mini.ai - Enhanced text objects
-      local ai_ok, ai = pcall(require, 'mini.ai')
+      local ai_ok, ai = pcall(require, "mini.ai")
       if ai_ok then
-        utils.setup_plugin('mini.ai', {
+        utils.setup_plugin("mini.ai", {
           n_lines = 500,
           custom_textobjects = {
             o = ai.gen_spec.treesitter({
-              a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-              i = { '@block.inner', '@conditional.inner', '@loop.inner' },
+              a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+              i = { "@block.inner", "@conditional.inner", "@loop.inner" },
             }),
-            f = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
-            c = ai.gen_spec.treesitter({ a = '@class.outer', i = '@class.inner' }),
+            f = ai.gen_spec.treesitter({
+              a = "@function.outer",
+              i = "@function.inner",
+            }),
+            c = ai.gen_spec.treesitter({
+              a = "@class.outer",
+              i = "@class.inner",
+            }),
           },
         })
       end
     end,
   },
-  
+
   -- vim-kwbd - Keep window on buffer delete
   {
-    'rgarver/Kwbd.vim',
-    cmd = 'Kwbd',
+    "rgarver/Kwbd.vim",
+    cmd = "Kwbd",
   },
 
   -- Rainbow delimiters for better bracket visualization
   {
-    'HiPhish/rainbow-delimiters.nvim',
+    "HiPhish/rainbow-delimiters.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      local rainbow_delimiters = require('rainbow-delimiters')
-      
-      require('rainbow-delimiters.setup').setup {
+      local rainbow_delimiters = require("rainbow-delimiters")
+
+      require("rainbow-delimiters.setup").setup({
         strategy = {
-          [''] = rainbow_delimiters.strategy['global'],
-          vim = rainbow_delimiters.strategy['local'],
+          [""] = rainbow_delimiters.strategy["global"],
+          vim = rainbow_delimiters.strategy["local"],
         },
         query = {
-          [''] = 'rainbow-delimiters',
-          lua = 'rainbow-blocks',
+          [""] = "rainbow-delimiters",
+          lua = "rainbow-blocks",
         },
         highlight = {
-          'RainbowDelimiterRed',
-          'RainbowDelimiterYellow',
-          'RainbowDelimiterBlue',
-          'RainbowDelimiterOrange',
-          'RainbowDelimiterGreen',
-          'RainbowDelimiterViolet',
-          'RainbowDelimiterCyan',
+          "RainbowDelimiterRed",
+          "RainbowDelimiterYellow",
+          "RainbowDelimiterBlue",
+          "RainbowDelimiterOrange",
+          "RainbowDelimiterGreen",
+          "RainbowDelimiterViolet",
+          "RainbowDelimiterCyan",
         },
-      }
+      })
     end,
   },
 
   -- Bufferline - Better buffer management
   {
-    'akinsho/bufferline.nvim',
+    "akinsho/bufferline.nvim",
     version = "*",
-    dependencies = 'nvim-tree/nvim-web-devicons',
+    dependencies = "nvim-tree/nvim-web-devicons",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       -- Function to get Tokyo Night colors
       local function get_tokyonight_colors()
         local colors = {}
-        local has_tokyonight, tokyonight_colors = pcall(require, "tokyonight.colors")
-        
+        local has_tokyonight, tokyonight_colors =
+          pcall(require, "tokyonight.colors")
+
         if has_tokyonight then
           colors = tokyonight_colors.setup()
         else
@@ -422,14 +506,14 @@ require("lazy").setup({
             blue = "#7aa2f7",
           }
         end
-        
+
         return colors
       end
-      
+
       -- Setup bufferline with dynamic colors
       local function setup_bufferline()
         local colors = get_tokyonight_colors()
-        
+
         require("bufferline").setup({
           options = {
             mode = "buffers",
@@ -440,19 +524,19 @@ require("lazy").setup({
             color_icons = true,
             themable = true,
             indicator = {
-              style = 'icon',
-              icon = '▎',
+              style = "icon",
+              icon = "▎",
             },
-            modified_icon = '●',
-            left_trunc_marker = '',
-            right_trunc_marker = '',
+            modified_icon = "●",
+            left_trunc_marker = "",
+            right_trunc_marker = "",
             offsets = {
               {
                 filetype = "neo-tree",
                 text = "File Explorer",
                 text_align = "center",
                 separator = true,
-              }
+              },
             },
           },
           highlights = {
@@ -497,13 +581,13 @@ require("lazy").setup({
               fg = colors.yellow or colors.fg,
               bg = colors.bg,
             },
-          }
+          },
         })
       end
-      
+
       -- Initial setup
       vim.defer_fn(setup_bufferline, 100)
-      
+
       -- Reload on colorscheme change
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "tokyonight*",
@@ -518,28 +602,49 @@ require("lazy").setup({
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous Buffer" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
       { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "Pin Buffer" },
-      { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "Close Unpinned Buffers" },
-      { "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", desc = "Close Other Buffers" },
-      { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "Close Buffers to Right" },
-      { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "Close Buffers to Left" },
+      {
+        "<leader>bP",
+        "<cmd>BufferLineGroupClose ungrouped<cr>",
+        desc = "Close Unpinned Buffers",
+      },
+      {
+        "<leader>bo",
+        "<cmd>BufferLineCloseOthers<cr>",
+        desc = "Close Other Buffers",
+      },
+      {
+        "<leader>br",
+        "<cmd>BufferLineCloseRight<cr>",
+        desc = "Close Buffers to Right",
+      },
+      {
+        "<leader>bl",
+        "<cmd>BufferLineCloseLeft<cr>",
+        desc = "Close Buffers to Left",
+      },
       { "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", desc = "Previous Buffer" },
       { "<Tab>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
     },
   },
 
   -- Git integration
-  { 
+  {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    config = function() 
+    config = function()
       local utils = require("config.utils")
-      utils.load_config('config.gitsigns')
-    end 
+      utils.load_config("config.gitsigns")
+    end,
   },
-  { 
+  {
     "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
-    dependencies = { "nvim-lua/plenary.nvim" }
+    cmd = {
+      "DiffviewOpen",
+      "DiffviewClose",
+      "DiffviewToggleFiles",
+      "DiffviewFocusFiles",
+    },
+    dependencies = { "nvim-lua/plenary.nvim" },
   },
 
   -- UI enhancements
@@ -597,43 +702,79 @@ require("lazy").setup({
         open_split = { "<c-x>" },
         open_vsplit = { "<c-v>" },
         open_tab = { "<c-t>" },
-        jump_close = {"o"},
+        jump_close = { "o" },
         toggle_mode = "m",
         toggle_preview = "P",
         hover = "K",
         preview = "p",
-        close_folds = {"zM", "zm"},
-        open_folds = {"zR", "zr"},
-        toggle_fold = {"zA", "za"},
+        close_folds = { "zM", "zm" },
+        open_folds = { "zR", "zr" },
+        toggle_fold = { "zA", "za" },
         previous = "k",
-        next = "j"
+        next = "j",
       },
       indent_lines = true,
       auto_open = false,
       auto_close = false,
       auto_preview = true,
       auto_fold = false,
-      auto_jump = {"lsp_definitions"},
+      auto_jump = { "lsp_definitions" },
       signs = {
         error = "",
         warning = "",
         hint = "",
         information = "",
-        other = ""
+        other = "",
       },
-      use_diagnostic_signs = true
+      use_diagnostic_signs = true,
     },
     keys = {
       { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
-      { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics" },
-      { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics" },
-      { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List" },
-      { "<leader>xl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List" },
-      { "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
+      {
+        "<leader>xw",
+        "<cmd>TroubleToggle workspace_diagnostics<cr>",
+        desc = "Workspace Diagnostics",
+      },
+      {
+        "<leader>xd",
+        "<cmd>TroubleToggle document_diagnostics<cr>",
+        desc = "Document Diagnostics",
+      },
+      {
+        "<leader>xq",
+        "<cmd>TroubleToggle quickfix<cr>",
+        desc = "Quickfix List",
+      },
+      {
+        "<leader>xl",
+        "<cmd>TroubleToggle loclist<cr>",
+        desc = "Location List",
+      },
+      {
+        "<leader>xr",
+        "<cmd>TroubleToggle lsp_references<cr>",
+        desc = "LSP References",
+      },
       { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo Comments" },
-      { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "LSP References" },
-      { "[q", function() require("trouble").previous({skip_groups = true, jump = true}) end, desc = "Previous Trouble Item" },
-      { "]q", function() require("trouble").next({skip_groups = true, jump = true}) end, desc = "Next Trouble Item" },
+      {
+        "gR",
+        "<cmd>TroubleToggle lsp_references<cr>",
+        desc = "LSP References",
+      },
+      {
+        "[q",
+        function()
+          require("trouble").previous({ skip_groups = true, jump = true })
+        end,
+        desc = "Previous Trouble Item",
+      },
+      {
+        "]q",
+        function()
+          require("trouble").next({ skip_groups = true, jump = true })
+        end,
+        desc = "Next Trouble Item",
+      },
     },
   },
 
@@ -648,13 +789,17 @@ require("lazy").setup({
       keywords = {
         FIX = { icon = " ", color = "error", alt = { "BUG", "FIXIT", "ISSUE" } },
         TODO = { icon = " ", color = "info" },
-        FIXME = { icon = " ", color = "fixme" },  -- Personal notes, complementary to TODO
-        MARK = { icon = " ", color = "mark" },  -- Special code area marker
+        FIXME = { icon = " ", color = "fixme" }, -- Personal notes, complementary to TODO
+        MARK = { icon = " ", color = "mark" }, -- Special code area marker
         HACK = { icon = " ", color = "warning" },
         WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
         PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
         NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
-        TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
+        TEST = {
+          icon = "⏲ ",
+          color = "test",
+          alt = { "TESTING", "PASSED", "FAILED" },
+        },
       },
       gui_style = {
         fg = "NONE",
@@ -668,7 +813,7 @@ require("lazy").setup({
         before = "",
         keyword = "wide",
         after = "fg",
-        pattern = [[.*<(KEYWORDS)\s*:?]],  -- Optional colon for flexibility
+        pattern = [[.*<(KEYWORDS)\s*:?]], -- Optional colon for flexibility
         comments_only = true,
         max_line_len = 400,
         exclude = {},
@@ -680,8 +825,8 @@ require("lazy").setup({
         hint = { "DiagnosticHint", "#10B981" },
         default = { "Identifier", "#7C3AED" },
         test = { "Identifier", "#FF00FF" },
-        fixme = { "DiagnosticHint", "#00CED1" },  -- Dark Turquoise - complementary to TODO's blue
-        mark = { "DiagnosticWarn", "#FFD700" }     -- Gold - stands out for special areas
+        fixme = { "DiagnosticHint", "#00CED1" }, -- Dark Turquoise - complementary to TODO's blue
+        mark = { "DiagnosticWarn", "#FFD700" }, -- Gold - stands out for special areas
       },
       search = {
         command = "rg",
@@ -692,19 +837,31 @@ require("lazy").setup({
           "--line-number",
           "--column",
         },
-        pattern = [[\b(KEYWORDS):?]],  -- Optional colon to support both "MARK:" and "MARK"
+        pattern = [[\b(KEYWORDS):?]], -- Optional colon to support both "MARK:" and "MARK"
       },
     },
     keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
+      {
+        "]t",
+        function()
+          require("todo-comments").jump_next()
+        end,
+        desc = "Next Todo Comment",
+      },
+      {
+        "[t",
+        function()
+          require("todo-comments").jump_prev()
+        end,
+        desc = "Previous Todo Comment",
+      },
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Search Todo Comments" },
     },
   },
 
   -- Formatting
   {
-    'stevearc/conform.nvim',
+    "stevearc/conform.nvim",
     lazy = true,
     cmd = { "ConformInfo", "Format" },
     -- Everything in opts will be passed to setup()
@@ -732,15 +889,14 @@ require("lazy").setup({
     },
   },
 
-  
   -- nvzone plugins ecosystem
   { "nvzone/volt", lazy = true },
-  { 
-    "nvzone/menu", 
+  {
+    "nvzone/menu",
     lazy = true,
     dependencies = { "nvzone/volt" },
     config = function()
-      require('config.menu').setup()
+      require("config.menu").setup()
     end,
     keys = {
       { "<C-t>", desc = "Open Smart Menu" },
@@ -752,16 +908,26 @@ require("lazy").setup({
       { "<leader>ma", desc = "AI Assistant Menu" },
       { "<leader>mF", desc = "File Management Menu" },
       { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
-    }
+    },
   },
   {
     "nvzone/typr",
     lazy = true,
     dependencies = { "nvzone/volt" },
     config = function()
-      require('config.plugins.typr').setup()
+      require("config.plugins.typr").setup()
     end,
-    cmd = { "Typr", "TyprStats", "TyprQuick", "TyprLong", "TyprTimed", "TyprProgramming", "TyprHistory", "TyprDashboard", "TyprConfig" },
+    cmd = {
+      "Typr",
+      "TyprStats",
+      "TyprQuick",
+      "TyprLong",
+      "TyprTimed",
+      "TyprProgramming",
+      "TyprHistory",
+      "TyprDashboard",
+      "TyprConfig",
+    },
   },
 
   -- Aerial.nvim - Modern code outline window
@@ -769,16 +935,16 @@ require("lazy").setup({
     "stevearc/aerial.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons"
+      "nvim-tree/nvim-web-devicons",
     },
     opts = {
       backends = { "treesitter", "lsp", "markdown", "man" },
-      
+
       -- Markdown-specific settings
       markdown = {
         include_yaml_front_matter = false,
       },
-      
+
       layout = {
         max_width = { 40, 0.2 },
         width = nil,
@@ -845,10 +1011,10 @@ require("lazy").setup({
   -- LaTeX support with vimtex
   {
     "lervag/vimtex",
-    lazy = false,  -- Load immediately for LaTeX files
+    lazy = false, -- Load immediately for LaTeX files
     ft = { "tex", "latex", "plaintex" },
     config = function()
-      require('config.plugins.vimtex').setup()
+      require("config.plugins.vimtex").setup()
     end,
     dependencies = {
       -- Optional: Add LaTeX snippets support
@@ -865,16 +1031,16 @@ require("lazy").setup({
       {
         "rcarriga/nvim-dap-ui",
         dependencies = {
-          "nvim-neotest/nvim-nio"  -- Required for dap-ui
+          "nvim-neotest/nvim-nio", -- Required for dap-ui
         },
       },
       -- Virtual text support for debugging
       "theHamsta/nvim-dap-virtual-text",
       -- Language-specific DAP adapters
-      "jay-babu/mason-nvim-dap.nvim",  -- Auto-install debug adapters
+      "jay-babu/mason-nvim-dap.nvim", -- Auto-install debug adapters
     },
     config = function()
-      require('config.dap').setup()
+      require("config.dap").setup()
     end,
     keys = {
       { "<leader>db", desc = "Toggle Breakpoint" },
@@ -890,7 +1056,7 @@ require("lazy").setup({
   },
 
   -- LSP and completion plugins
-  { 
+  {
     "neovim/nvim-lspconfig",
     dependencies = { "saghen/blink.cmp" },
     config = function()
@@ -926,7 +1092,7 @@ require("lazy").setup({
       end
     end,
   },
-  { 
+  {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
   },
@@ -939,14 +1105,14 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets", -- Preconfigured snippets
     },
     config = function()
-      require('config.plugins.snippets').setup()
+      require("config.plugins.snippets").setup()
     end,
     keys = {
       -- Tab/S-Tab handled by blink.cmp to avoid conflicts
-      { "<C-j>", mode = {"i", "s"}, desc = "Next choice in snippet" },
-      { "<C-k>", mode = {"i", "s"}, desc = "Previous choice in snippet" },
-      { "<C-l>", mode = {"i", "s"}, desc = "Expand/Jump in snippet" },
-      { "<C-h>", mode = {"i", "s"}, desc = "Jump back in snippet" },
+      { "<C-j>", mode = { "i", "s" }, desc = "Next choice in snippet" },
+      { "<C-k>", mode = { "i", "s" }, desc = "Previous choice in snippet" },
+      { "<C-l>", mode = { "i", "s" }, desc = "Expand/Jump in snippet" },
+      { "<C-h>", mode = { "i", "s" }, desc = "Jump back in snippet" },
       { "<leader>sl", desc = "Show available snippets" },
     },
   },
@@ -960,15 +1126,15 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets",
       "L3MON4D3/LuaSnip",
     },
-    version = "v1.*",  -- Use stable v1 series
+    version = "v1.*", -- Use stable v1 series
     opts = function()
-      return require('config.plugins.completion')
+      return require("config.plugins.completion")
     end,
     -- Allow extending sources array
     opts_extend = { "sources.default" },
     config = function(_, opts)
       -- Setup blink.cmp
-      require('blink.cmp').setup(opts)
+      require("blink.cmp").setup(opts)
     end,
   },
 
@@ -986,36 +1152,64 @@ require("lazy").setup({
       },
     },
     config = function()
-      require('config.plugins.ai').setup()
-    end
+      require("config.plugins.ai").setup()
+    end,
   },
 
   -- Writing and editing
   {
     "iamcco/markdown-preview.nvim",
-    build = function() vim.fn["mkdp#util#install"]() end
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    priority = 1000,  -- High priority to load first
+    priority = 1000, -- High priority to load first
     build = ":TSUpdate",
     config = function()
-      require('nvim-treesitter.configs').setup({
+      require("nvim-treesitter.configs").setup({
         ensure_installed = {
-          "markdown", "markdown_inline", "python", "javascript", "typescript",
-          "lua", "vim", "bash", "html", "css", "json", "yaml", "toml",
-          "rust", "go", "c", "cpp", "java", "ruby", "php", "latex", "bibtex",
-          "comment", "vimdoc", "regex", "diff", "gitignore", "query", "starlark"
+          "markdown",
+          "markdown_inline",
+          "python",
+          "javascript",
+          "typescript",
+          "lua",
+          "vim",
+          "bash",
+          "html",
+          "css",
+          "json",
+          "yaml",
+          "toml",
+          "rust",
+          "go",
+          "c",
+          "cpp",
+          "java",
+          "ruby",
+          "php",
+          "latex",
+          "bibtex",
+          "comment",
+          "vimdoc",
+          "regex",
+          "diff",
+          "gitignore",
+          "query",
+          "starlark",
         },
         auto_install = true,
-        sync_install = false,  -- Don't download parsers synchronously
+        sync_install = false, -- Don't download parsers synchronously
         highlight = {
           enable = true,
-          additional_vim_regex_highlighting = false,  -- Disable to let Treesitter handle everything
+          additional_vim_regex_highlighting = false, -- Disable to let Treesitter handle everything
           -- Disable for large files
           disable = function(lang, buf)
             local max_filesize = 100 * 1024 -- 100 KB
-            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            local ok, stats =
+              pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
             end
@@ -1029,25 +1223,26 @@ require("lazy").setup({
           enable = true,
           disable = function(lang, buf)
             local max_filesize = 100 * 1024 -- 100 KB
-            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            local ok, stats =
+              pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
             end
           end,
         },
       })
-    end
+    end,
   },
   {
     "OXY2DEV/markview.nvim",
     lazy = false,
-    priority = 500,  -- Lower priority than treesitter
+    priority = 500, -- Lower priority than treesitter
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       {
         "nvim-tree/nvim-web-devicons",
         config = function()
-          require('nvim-web-devicons').setup({
+          require("nvim-web-devicons").setup({
             -- Force override for better compatibility
             override = {},
             -- Ensure color icons are enabled
@@ -1055,34 +1250,38 @@ require("lazy").setup({
             -- Use default icons
             default = true,
           })
-        end
-      }
+        end,
+      },
     },
     config = function()
       -- FIRST: Load markview modules to ensure they're available
       local markview = require("markview")
       local spec = require("markview.spec")
       local filetypes = require("markview.filetypes")
-      
+
       -- Remove all filetype icons
       for _, style in pairs(filetypes.styles) do
         style.icon = ""
         style.sign = ""
       end
-      
+
       -- Directly modify the spec.default BEFORE any setup
-      if spec.default and spec.default.markdown and spec.default.markdown.list_items then
+      if
+        spec.default
+        and spec.default.markdown
+        and spec.default.markdown.list_items
+      then
         spec.default.markdown.list_items.marker_minus.text = "-"
         spec.default.markdown.list_items.marker_plus.text = "+"
         spec.default.markdown.list_items.marker_star.text = "*"
       end
-      
+
       -- Create our configuration that will be merged
-      local config = require('config.plugins.markview')
-      
+      local config = require("config.plugins.markview")
+
       -- Just run setup, no patches needed with FiraCode
       config.setup()
-    end
+    end,
   },
   { "skywind3000/asyncrun.vim" },
   { "tommcdo/vim-lion" },
@@ -1091,7 +1290,7 @@ require("lazy").setup({
     "numToStr/Comment.nvim",
     event = "VeryLazy",
     config = function()
-      require('Comment').setup({
+      require("Comment").setup({
         padding = true,
         sticky = true,
         mappings = {
@@ -1101,9 +1300,6 @@ require("lazy").setup({
       })
     end,
   },
-
-
-
 }, {
   -- Lazy.nvim options
   defaults = {
@@ -1125,8 +1321,8 @@ require("lazy").setup({
     },
   },
   checker = {
-    enabled = true,  -- check for plugin updates periodically
-    notify = false,  -- don't notify on update (less intrusive)
+    enabled = true, -- check for plugin updates periodically
+    notify = false, -- don't notify on update (less intrusive)
   },
   change_detection = {
     notify = false, -- Don't notify about config changes
@@ -1158,9 +1354,6 @@ local g = vim.g
 local opt = vim.opt
 
 -- Theme is set dynamically in config/theme.lua
-
-
-
 
 -- Plugin configurations have been moved to their respective setup functions
 

@@ -18,16 +18,16 @@
 --- @return nil
 local function setup_theme()
   local config_file = vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
-  
+
   if vim.fn.filereadable(config_file) == 1 then
     -- Source the theme config and get environment variables
     local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
     local variant_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
     -- MACOS_VARIANT is the single source of truth for light/dark
-    
-    local theme = vim.fn.system(theme_cmd):gsub('\n', '')
-    local variant = vim.fn.system(variant_cmd):gsub('\n', '')
-    
+
+    local theme = vim.fn.system(theme_cmd):gsub("\n", "")
+    local variant = vim.fn.system(variant_cmd):gsub("\n", "")
+
     -- Handle legacy format where theme is just "light" or "dark"
     if theme == "light" then
       theme = "tokyonight_day"
@@ -36,14 +36,14 @@ local function setup_theme()
       theme = "tokyonight_moon"
       variant = "dark"
     end
-    
+
     -- Set background based on variant
     if variant == "dark" then
       vim.opt.background = "dark"
     else
       vim.opt.background = "light"
     end
-    
+
     -- Apply colorscheme based on current theme
     if theme == "tokyonight_moon" then
       vim.opt.background = "dark"
@@ -146,32 +146,40 @@ local function setup_theme()
     vim.cmd("colorscheme tokyonight-moon")
     -- vim.g.airline_theme = 'base16'
   end
-  
+
   -- Apply intelligent syntax highlighting optimizations
   vim.schedule(function()
     local current_bg = vim.opt.background:get()
-    
+
     -- Smart comment colors based on background
     if current_bg == "dark" then
       -- Dark background: lighter, more visible comment colors
-      vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
-      vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
+      vim.cmd(
+        "highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic"
+      )
+      vim.cmd(
+        "highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic"
+      )
     else
-      -- Light background: darker, high-contrast comment colors  
-      vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
-      vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
+      -- Light background: darker, high-contrast comment colors
+      vim.cmd(
+        "highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic"
+      )
+      vim.cmd(
+        "highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic"
+      )
     end
-    
+
     -- Light theme syntax optimizations for better readability
     if current_bg == "light" then
-      vim.cmd("highlight String guifg=#032F62 ctermfg=28")     -- Dark blue strings
-      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26")     -- Blue numbers
-      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")   -- Blue constants
-      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")   -- Purple preprocessor
-      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")       -- Blue types
-      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")   -- Orange special chars
+      vim.cmd("highlight String guifg=#032F62 ctermfg=28") -- Dark blue strings
+      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26") -- Blue numbers
+      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26") -- Blue constants
+      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129") -- Purple preprocessor
+      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26") -- Blue types
+      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202") -- Orange special chars
     end
-    
+
     -- Theme changes are automatically applied by mini.statusline
   end)
 end
@@ -187,7 +195,7 @@ setup_theme()
 vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = vim.fn.expand("~/.config/theme-switcher/current-theme.sh"),
   callback = setup_theme,
-  group = vim.api.nvim_create_augroup("ThemeReload", { clear = true })
+  group = vim.api.nvim_create_augroup("ThemeReload", { clear = true }),
 })
 
 -- =============================================================================
@@ -196,30 +204,38 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 -- Convenient commands for manual theme management
 vim.api.nvim_create_user_command("ReloadTheme", setup_theme, {
-  desc = "Reload the current theme and adjust colors"
+  desc = "Reload the current theme and adjust colors",
 })
 
 vim.api.nvim_create_user_command("FixComments", function()
   local current_bg = vim.opt.background:get()
-  
+
   if current_bg == "dark" then
-    vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
-    vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
+    vim.cmd(
+      "highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic"
+    )
+    vim.cmd(
+      "highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic"
+    )
     -- Dark theme comment colors applied
   else
-    vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
-    vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
+    vim.cmd(
+      "highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic"
+    )
+    vim.cmd(
+      "highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic"
+    )
     -- Light theme comment colors applied
   end
 end, {
-  desc = "Fix comment colors for current background"
+  desc = "Fix comment colors for current background",
 })
 
 -- Command to force Tokyo Night theme reload
 vim.api.nvim_create_user_command("TokyoNight", function(args)
   local style = args.args ~= "" and args.args or "moon"
   vim.opt.background = style == "day" and "light" or "dark"
-  
+
   local ok, tokyonight = pcall(require, "tokyonight")
   if ok then
     tokyonight.setup({
@@ -241,5 +257,5 @@ end, {
   complete = function()
     return { "night", "moon", "storm", "day" }
   end,
-  desc = "Load Tokyo Night theme variant (night, moon, storm, day)"
+  desc = "Load Tokyo Night theme variant (night, moon, storm, day)",
 })

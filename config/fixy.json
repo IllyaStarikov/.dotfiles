@@ -10,19 +10,19 @@
     "black": {
       "command": "black",
       "check_command": "black --version",
-      "format_args": "-q --line-length 100 --skip-string-normalization {file}",
+      "format_args": "-q --line-length 100 {file}",
       "description": "Python code formatter"
     },
     "yapf": {
       "command": "yapf",
       "check_command": "yapf --version",
-      "format_args": "-i --style=google {file}",
+      "format_args": "-i --style='{based_on_style: google, column_limit: 100}' {file}",
       "description": "Google's Python formatter"
     },
     "autopep8": {
       "command": "autopep8",
       "check_command": "autopep8 --version",
-      "format_args": "-i --max-line-length 100 {file}",
+      "format_args": "-i --max-line-length 100 --aggressive --aggressive {file}",
       "description": "Python PEP8 formatter"
     },
     "isort": {
@@ -34,7 +34,7 @@
     "clang-format": {
       "command": "clang-format",
       "check_command": "clang-format --version",
-      "format_args": "-i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' {file}",
+      "format_args": "-i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 100}' {file}",
       "description": "C/C++ formatter"
     },
     "astyle": {
@@ -70,13 +70,13 @@
     "prettier": {
       "command": "prettier",
       "check_command": "prettier --version",
-      "format_args": "--write --tab-width 2 --print-width 80 --single-quote --trailing-comma none --arrow-parens avoid {file}",
+      "format_args": "--write --tab-width 2 --print-width 100 --single-quote --trailing-comma es5 --arrow-parens always {file}",
       "description": "Web code formatter"
     },
     "prettierd": {
       "command": "prettierd",
       "check_command": "prettierd --version",
-      "format_args": "--write --tab-width 2 --print-width 80 --single-quote --trailing-comma none --arrow-parens avoid {file}",
+      "format_args": "--write --tab-width 2 --print-width 100 --single-quote --trailing-comma es5 --arrow-parens always {file}",
       "description": "Prettier daemon (faster)"
     },
     "eslint": {
@@ -197,9 +197,9 @@
     "py": {
       "language": "Python",
       "formatters": [
+        "yapf",
         "ruff",
         "black",
-        "yapf",
         "autopep8"
       ],
       "additional": [
@@ -209,9 +209,9 @@
     "pyw": {
       "language": "Python",
       "formatters": [
+        "yapf",
         "ruff",
         "black",
-        "yapf",
         "autopep8"
       ],
       "additional": [
@@ -221,9 +221,9 @@
     "pyi": {
       "language": "Python",
       "formatters": [
+        "yapf",
         "ruff",
         "black",
-        "yapf",
         "autopep8"
       ],
       "additional": [
