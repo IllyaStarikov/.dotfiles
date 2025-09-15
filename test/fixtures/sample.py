@@ -6,7 +6,7 @@ Tests diagnostics, completion, hover, and formatting.
 
 import os
 import sys
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 
 class Calculator:
@@ -38,8 +38,7 @@ class Calculator:
         return self.value / 0  # This too
 
 
-def process_data(data: List[int],
-                 processor: Optional[callable] = None) -> Dict[str, any]:
+def process_data(data: List[int], processor: Optional[callable] = None) -> Dict[str, any]:
     """Process a list of integers with optional processor function."""
     if processor is None:
         processor = lambda x: x * 2
