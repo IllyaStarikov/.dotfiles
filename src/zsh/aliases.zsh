@@ -324,9 +324,9 @@ alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"  # Re-run setup
 alias dotfiles-symlinks="~/.dotfiles/src/setup/symlinks.sh"  # Re-create symlinks
 alias dotfiles-install="~/.dotfiles/src/setup/setup.sh --full"  # Full installation
 alias dotfiles-core="~/.dotfiles/src/setup/setup.sh --core"  # Core packages only
-alias dotfiles-test="~/.dotfiles/test/runner.py"  # Run dotfiles test suite
-alias dotfiles-test-debug="~/.dotfiles/test/runner.py --debug"  # Run tests with debug output
-alias dotfiles-test-old="~/.dotfiles/test/test"  # Run old test suite (deprecated)
+alias dotfiles-test="~/.dotfiles/test/runner.zsh"  # Run dotfiles test suite
+alias dotfiles-test-debug="~/.dotfiles/test/runner.zsh --debug"  # Run tests with debug output
+alias dotfiles-test-old="~/.dotfiles/test/runner.py"  # Run Python test suite (deprecated)
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📊 MONITORING & DIAGNOSTICS
