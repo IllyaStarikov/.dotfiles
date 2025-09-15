@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Code Style Preferences
+
+**Line Length**: 100 characters maximum (modern preference over traditional 80 chars)
+- All formatters and linters are configured for 100-character line length
+- This applies to all languages: Python, C/C++, Lua, JavaScript/TypeScript, Shell, etc.
+
+## Important: README Documentation
+
+**ALWAYS read the README.md file in any directory before performing actions in that directory.** Each directory contains a README that documents:
+- Directory purpose and structure
+- Configuration details
+- Usage patterns
+- Integration points
+- Best practices specific to that component
+
+When making changes to any directory, **update its README.md** to reflect those changes.
+
 ## Repository Overview
 
 This is a comprehensive dotfiles repository serving dual purposes:
@@ -25,7 +42,7 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ./src/setup/symlinks.sh
 
 # System maintenance and updates
-./src/scripts/update   # Update all packages, plugins, and tools
+./src/scripts/update-dotfiles   # Update all packages, plugins, and tools (alias: update)
 ```
 
 ### Testing
@@ -67,7 +84,7 @@ ruff check src/**/*.py
 # Switch themes based on macOS appearance (light/dark mode)
 ./src/theme-switcher/switch-theme.sh
 
-# Quick theme switching commands
+# Quick theme switching commands (aliases in zsh)
 theme           # Auto-detect and switch based on macOS appearance
 theme day       # TokyoNight Day (light)
 theme night     # TokyoNight Night (dark)
@@ -89,7 +106,6 @@ scratchpad              # Create temporary file for quick editing
 fetch-quotes           # Fetch inspirational quotes
 tmux-utils battery     # Check battery status
 tmux-utils cpu         # Check CPU usage
-update-dotfiles        # Pull latest changes from dotfiles repo
 
 # AI-powered local development (via pyenv-installed brain tool)
 brain                  # Local AI assistant for coding
@@ -107,7 +123,7 @@ brain agent on/off    # Toggle AI agent mode
 - **30+ test files** with 4-level testing infrastructure
 - **11 utility scripts** in src/scripts/
 - **7 language configs** in src/language/
-- **4 TokyoNight theme variants** 
+- **4 TokyoNight theme variants**
 - **20+ languages** with LSP support
 
 ## High-Level Architecture
@@ -224,32 +240,6 @@ config/
 - Memory usage: < 200MB
 - Test execution: unit < 5s, functional < 30s, integration < 60s
 
-## Documentation Structure
-
-### README Files
-Each major directory now has comprehensive documentation:
-
-**Core Directories:**
-- `/README.md` - Main repository overview with accurate metrics
-- `/src/README.md` - Source configuration overview
-- `/src/neovim/README.md` - Neovim configuration details
-- `/src/scripts/README.md` - All 11 utility scripts documented
-- `/src/setup/README.md` - Installation system
-- `/src/theme-switcher/README.md` - Theme synchronization
-- `/src/zsh/README.md` - Shell configuration
-- `/src/git/README.md` - Git setup and hooks
-- `/src/language/README.md` - Language-specific configs
-- `/test/README.md` - Testing infrastructure
-- `/config/README.md` - Tool configurations
-
-### Key Documentation Updates (December 2024)
-1. **Accurate plugin counts** - Neovim has 500+ plugin refs, Zsh has 5, tmux has 0
-2. **fixy script** - 34KB universal formatter with 631-line JSON config
-3. **Testing coverage** - 30+ test files, not 100+ as might be implied
-4. **Language support** - 7 configs in src/language/, not 25+
-5. **Theme system** - 4 TokyoNight variants, < 500ms switching
-6. **Script inventory** - Exactly 11 scripts, each documented
-
 ## Critical Behavioral Notes
 
 **Language Configurations**: All language-specific configs are in `/src/language/`. References in symlinks.sh, fixy, and CI workflows have been updated accordingly.
@@ -302,3 +292,85 @@ Many scripts have shorter aliases defined in `src/zsh/aliases.zsh`:
 - `ga` → git add
 - `gc` → git commit
 - `gp` → git push
+
+## Google Style Guide Reference
+
+The Google style guides are included as a submodule at `/Users/starikov/.dotfiles/styleguide/`. These should be consulted before any code refactoring or commits.
+
+### Style Guide Locations
+
+#### Primary Language Guides
+- **Python**: `styleguide/pyguide.md` (100 chars modern preference, 4-space indent)
+  - Linter config: `styleguide/pylintrc`
+  - Vim config: `styleguide/google_python_style.vim`
+- **C++**: `styleguide/cppguide.html` (100 chars modern preference, 2-space indent)
+  - Eclipse: `styleguide/eclipse-cpp-google-style.xml`
+  - Emacs: `styleguide/google-c-style.el`
+- **Shell/Bash**: `styleguide/shellguide.md` (100 chars modern preference, 2-space indent)
+- **JavaScript**: `styleguide/jsguide.html` (deprecated, use TypeScript)
+- **TypeScript**: `styleguide/tsguide.html` (100 chars modern preference, 2-space indent)
+- **Java**: `styleguide/javaguide.html`
+  - IntelliJ: `styleguide/intellij-java-google-style.xml`
+  - Eclipse: `styleguide/eclipse-java-google-style.xml`
+- **Go**: `styleguide/go/guide.md` (no line limit, tabs)
+  - Best practices: `styleguide/go/best-practices.md`
+  - Decisions: `styleguide/go/decisions.md`
+
+#### Additional Languages
+- **HTML/CSS**: `styleguide/htmlcssguide.html`
+- **Objective-C**: `styleguide/objcguide.md`
+- **R**: `styleguide/Rguide.md`
+- **Lisp**: `styleguide/lispguide.xml`
+- **Vimscript**: `styleguide/vimscriptguide.xml`
+- **XML**: `styleguide/xmlstyle.html`
+- **JSON**: `styleguide/jsoncstyleguide.html`
+- **C#**: `styleguide/csharp-style.md`
+
+#### Documentation Style
+- **Docs**: `styleguide/docguide/style.md`
+- **READMEs**: `styleguide/docguide/READMEs.md`
+- **Best Practices**: `styleguide/docguide/best_practices.md`
+
+### Configured Style Settings
+
+All formatters and linters in this repository are configured to follow Google style:
+
+#### Python
+- Line length: 100 characters (modern preference)
+- Indentation: 4 spaces
+- Formatter priority: yapf (Google's formatter) → ruff → black
+- Import sorting: Google profile via isort
+- Config: `src/language/ruff.toml`
+
+#### C/C++
+- Line length: 100 characters (modern preference)
+- Indentation: 2 spaces
+- Base style: Google (via clang-format)
+- Config: `src/language/.clang-format`
+
+#### Lua
+- Line length: 100 characters (modern preference)
+- Indentation: 2 spaces
+- Quote style: Double quotes preferred
+- Config: `src/language/stylua.toml`
+
+#### Shell Scripts
+- Line length: 100 characters (modern preference)
+- Indentation: 2 spaces (via shfmt)
+- Always use `#!/usr/bin/env zsh` or `#!/bin/bash`
+
+#### JavaScript/TypeScript
+- Line length: 100 characters (modern preference)
+- Indentation: 2 spaces
+- Trailing commas: ES5 style
+- Arrow parens: Always
+- Config: Prettier in `config/fixy.json`
+
+### Pre-commit Checklist
+
+Before committing code changes:
+1. Check the relevant style guide in `styleguide/` directory
+2. Run `./src/scripts/fixy` on modified files
+3. Run `./test/test --quick` to verify configurations
+4. Ensure line lengths comply (100 chars - modern preference for all languages)
+5. Verify proper indentation (2 spaces for most, 4 for Python, tabs for Go)

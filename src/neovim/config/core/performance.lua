@@ -7,7 +7,7 @@ local g = vim.g
 opt.lazyredraw = false
 opt.updatecount = 100
 opt.redrawtime = 1500
-opt.ttimeoutlen = 10  -- Small delay for escape sequences
+opt.ttimeoutlen = 10 -- Small delay for escape sequences
 
 -- Large file optimizations
 opt.synmaxcol = 1000
@@ -15,8 +15,8 @@ g.vimsyn_embed = "lPr"
 opt.maxmempattern = 2000
 
 -- Python host configuration
-local python3_path = vim.fn.exepath('python3')
-if python3_path ~= '' then
+local python3_path = vim.fn.exepath("python3")
+if python3_path ~= "" then
   g.python3_host_prog = python3_path
 else
   g.loaded_python3_provider = 1
@@ -73,5 +73,5 @@ vim.api.nvim_create_autocmd("VimEnter", {
       vim.cmd("echo ''")
     end, 100)
   end,
-  desc = "Clear startup messages"
+  desc = "Clear startup messages",
 })

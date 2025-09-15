@@ -11,11 +11,11 @@ local function get_python_path()
 
   -- Check various Python paths in order of preference
   local python_paths = {
-    vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV .. '/bin/python',
-    cwd .. '/venv/bin/python',
-    cwd .. '/.venv/bin/python',
-    vim.fn.exepath('python3'),
-    vim.fn.exepath('python'),
+    vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV .. "/bin/python",
+    cwd .. "/venv/bin/python",
+    cwd .. "/.venv/bin/python",
+    vim.fn.exepath("python3"),
+    vim.fn.exepath("python"),
   }
 
   for _, path in ipairs(python_paths) do
@@ -25,13 +25,13 @@ local function get_python_path()
   end
 
   -- Fallback
-  return 'python3'
+  return "python3"
 end
 
 function M.setup()
-  local dap = require('dap')
-  local dapui = require('dapui')
-  local dap_virtual_text = require('nvim-dap-virtual-text')
+  local dap = require("dap")
+  local dapui = require("dapui")
+  local dap_virtual_text = require("nvim-dap-virtual-text")
 
   -- ⚡ PERFORMANCE & UI SETTINGS
   -- Configure DAP UI for optimal experience
@@ -39,7 +39,7 @@ function M.setup()
     icons = {
       expanded = "▾",
       collapsed = "▸",
-      current_frame = "▸"
+      current_frame = "▸",
     },
     mappings = {
       -- Use a table to apply multiple mappings
@@ -95,7 +95,7 @@ function M.setup()
     },
     floating = {
       max_height = nil, -- These can be integers or a float between 0 and 1.
-      max_width = nil,   -- Floats will be treated as percentage of your screen.
+      max_width = nil, -- Floats will be treated as percentage of your screen.
       border = "single", -- Border style. Can be "single", "double" or "rounded"
       mappings = {
         close = { "q", "<Esc>" },
@@ -105,36 +105,36 @@ function M.setup()
     render = {
       max_type_length = nil, -- Can be integer or nil.
       max_value_lines = 100, -- Can be integer or nil.
-    }
+    },
   })
 
   -- 🎨 VIRTUAL TEXT CONFIGURATION
   dap_virtual_text.setup({
-    enabled = true,                        -- enable this plugin (the default)
-    enabled_commands = true,               -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
-    highlight_changed_variables = true,    -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
-    highlight_new_as_changed = false,      -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
-    show_stop_reason = true,               -- show stop reason when stopped for exceptions
-    commented = false,                     -- prefix virtual text with comment string
-    only_first_definition = true,          -- only show virtual text at first definition (if there are multiple)
-    all_references = false,                -- show virtual text on all all references of the variable (not only definitions)
-    clear_on_continue = false,             -- clear virtual text on "continue" (might cause flickering when stepping)
+    enabled = true, -- enable this plugin (the default)
+    enabled_commands = true, -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
+    highlight_changed_variables = true, -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
+    highlight_new_as_changed = false, -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
+    show_stop_reason = true, -- show stop reason when stopped for exceptions
+    commented = false, -- prefix virtual text with comment string
+    only_first_definition = true, -- only show virtual text at first definition (if there are multiple)
+    all_references = false, -- show virtual text on all all references of the variable (not only definitions)
+    clear_on_continue = false, -- clear virtual text on "continue" (might cause flickering when stepping)
     -- A callback that determines how a variable is displayed or whether it should be omitted
     display_callback = function(variable, buf, stackframe, node, options)
-      if options.virt_text_pos == 'inline' then
-        return ' = ' .. variable.value
+      if options.virt_text_pos == "inline" then
+        return " = " .. variable.value
       else
-        return variable.name .. ' = ' .. variable.value
+        return variable.name .. " = " .. variable.value
       end
     end,
     -- position of virtual text, see `:h nvim_buf_set_extmark()`, default tries to inline the virtual text. Use 'eol' to set to end of line
-    virt_text_pos = vim.fn.has 'nvim-0.10' == 1 and 'inline' or 'eol',
+    virt_text_pos = vim.fn.has("nvim-0.10") == 1 and "inline" or "eol",
 
     -- experimental features:
-    all_frames = false,                    -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
-    virt_lines = false,                    -- show virtual lines instead of virtual text (will flicker!)
-    virt_text_win_col = nil                -- position the virtual text at a fixed window column (starting from the first text column) ,
-                                           -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
+    all_frames = false, -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
+    virt_lines = false, -- show virtual lines instead of virtual text (will flicker!)
+    virt_text_win_col = nil, -- position the virtual text at a fixed window column (starting from the first text column) ,
+    -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
   })
 
   -- 🔧 AUTOMATIC DAP UI MANAGEMENT
@@ -151,26 +151,29 @@ function M.setup()
 
   -- 🐍 PYTHON DEBUGGING CONFIGURATION
   dap.adapters.python = function(cb, config)
-    if config.request == 'attach' then
+    if config.request == "attach" then
       ---@diagnostic disable-next-line: undefined-field
       local port = (config.connect or config).port
       ---@diagnostic disable-next-line: undefined-field
-      local host = (config.connect or config).host or '127.0.0.1'
+      local host = (config.connect or config).host or "127.0.0.1"
       cb({
-        type = 'server',
-        port = assert(port, '`connect.port` is required for a python `attach` configuration'),
+        type = "server",
+        port = assert(
+          port,
+          "`connect.port` is required for a python `attach` configuration"
+        ),
         host = host,
         options = {
-          source_filetype = 'python',
+          source_filetype = "python",
         },
       })
     else
       cb({
-        type = 'executable',
-        command = 'python',
-        args = { '-m', 'debugpy.adapter' },
+        type = "executable",
+        command = "python",
+        args = { "-m", "debugpy.adapter" },
         options = {
-          source_filetype = 'python',
+          source_filetype = "python",
         },
       })
     end
@@ -179,8 +182,8 @@ function M.setup()
   dap.configurations.python = {
     {
       -- The first three options are required by nvim-dap
-      type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
-      request = 'launch',
+      type = "python", -- the type here established the link to the adapter definition: `dap.adapters.python`
+      request = "launch",
       name = "Launch file",
 
       -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
@@ -189,25 +192,25 @@ function M.setup()
       pythonPath = get_python_path,
     },
     {
-      type = 'python',
-      request = 'launch',
-      name = 'Launch file with arguments',
-      program = '${file}',
+      type = "python",
+      request = "launch",
+      name = "Launch file with arguments",
+      program = "${file}",
       args = function()
-        local args_string = vim.fn.input('Arguments: ')
+        local args_string = vim.fn.input("Arguments: ")
         return vim.split(args_string, " +")
       end,
-      console = 'integratedTerminal',
+      console = "integratedTerminal",
       pythonPath = get_python_path,
     },
     {
-      type = 'python',
-      request = 'attach',
-      name = 'Attach remote',
+      type = "python",
+      request = "attach",
+      name = "Attach remote",
       connect = function()
-        local host = vim.fn.input('Host [127.0.0.1]: ')
-        host = host ~= '' and host or '127.0.0.1'
-        local port = tonumber(vim.fn.input('Port [5678]: ')) or 5678
+        local host = vim.fn.input("Host [127.0.0.1]: ")
+        host = host ~= "" and host or "127.0.0.1"
+        local port = tonumber(vim.fn.input("Port [5678]: ")) or 5678
         return { host = host, port = port }
       end,
     },
@@ -215,56 +218,68 @@ function M.setup()
 
   -- 🔧 C/C++ DEBUGGING CONFIGURATION
   dap.adapters.lldb = {
-    type = 'executable',
-    command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
-    name = 'lldb'
+    type = "executable",
+    command = "/usr/bin/lldb-vscode", -- adjust as needed, must be absolute path
+    name = "lldb",
   }
 
   -- Alternative GDB adapter
   dap.adapters.gdb = {
     type = "executable",
     command = "gdb",
-    args = { "-i", "dap" }
+    args = { "-i", "dap" },
   }
 
   dap.configurations.cpp = {
     {
-      name = 'Launch',
-      type = 'lldb',
-      request = 'launch',
+      name = "Launch",
+      type = "lldb",
+      request = "launch",
       program = function()
-        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        return vim.fn.input(
+          "Path to executable: ",
+          vim.fn.getcwd() .. "/",
+          "file"
+        )
       end,
-      cwd = '${workspaceFolder}',
+      cwd = "${workspaceFolder}",
       stopOnEntry = false,
       args = {},
     },
     {
-      name = 'Launch with args',
-      type = 'lldb',
-      request = 'launch',
+      name = "Launch with args",
+      type = "lldb",
+      request = "launch",
       program = function()
-        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        return vim.fn.input(
+          "Path to executable: ",
+          vim.fn.getcwd() .. "/",
+          "file"
+        )
       end,
-      cwd = '${workspaceFolder}',
+      cwd = "${workspaceFolder}",
       stopOnEntry = false,
       args = function()
-        local args_string = vim.fn.input('Arguments: ')
+        local args_string = vim.fn.input("Arguments: ")
         return vim.split(args_string, " +")
       end,
     },
     {
       -- If you get an "Operation not permitted" error using this, try disabling YAMA:
       --  echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-      name = 'Attach to gdbserver :1234',
-      type = 'lldb',
-      request = 'launch',
-      MIMode = 'gdb',
-      miDebuggerServerAddress = 'localhost:1234',
-      miDebuggerPath = '/usr/bin/gdb',
-      cwd = '${workspaceFolder}',
+      name = "Attach to gdbserver :1234",
+      type = "lldb",
+      request = "launch",
+      MIMode = "gdb",
+      miDebuggerServerAddress = "localhost:1234",
+      miDebuggerPath = "/usr/bin/gdb",
+      cwd = "${workspaceFolder}",
       program = function()
-        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        return vim.fn.input(
+          "Path to executable: ",
+          vim.fn.getcwd() .. "/",
+          "file"
+        )
       end,
     },
   }
@@ -274,15 +289,19 @@ function M.setup()
 
   -- 🌙 LUA DEBUGGING CONFIGURATION
   dap.adapters.nlua = function(callback, config)
-    callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
+    callback({
+      type = "server",
+      host = config.host or "127.0.0.1",
+      port = config.port or 8086,
+    })
   end
 
   dap.configurations.lua = {
     {
-      type = 'nlua',
-      request = 'attach',
+      type = "nlua",
+      request = "attach",
       name = "Attach to running Neovim instance",
-    }
+    },
   }
 
   -- 🟨 JAVASCRIPT/TYPESCRIPT DEBUGGING
@@ -353,35 +372,39 @@ function M.setup()
 
   -- 🦀 RUST DEBUGGING CONFIGURATION
   dap.adapters.rust = {
-    type = 'executable',
-    command = lldb_cmd or 'lldb-vscode',
-    name = 'rust_lldb'
+    type = "executable",
+    command = lldb_cmd or "lldb-vscode",
+    name = "rust_lldb",
   }
 
   dap.configurations.rust = {
     {
-      name = 'Launch',
-      type = 'rust',
-      request = 'launch',
+      name = "Launch",
+      type = "rust",
+      request = "launch",
       program = function()
-        local metadata_json = vim.fn.system("cargo metadata --format-version 1 --no-deps")
+        local metadata_json =
+          vim.fn.system("cargo metadata --format-version 1 --no-deps")
         local metadata = vim.json.decode(metadata_json)
         local target_name = metadata.packages[1].targets[1].name
         local target_dir = metadata.target_directory
-        return target_dir .. '/debug/' .. target_name
+        return target_dir .. "/debug/" .. target_name
       end,
-      cwd = '${workspaceFolder}',
+      cwd = "${workspaceFolder}",
       stopOnEntry = false,
       args = {},
       initCommands = function()
         -- Find out where to look for the pretty printer Python module
-        local rustc_sysroot = vim.fn.trim(vim.fn.system('rustc --print sysroot'))
+        local rustc_sysroot =
+          vim.fn.trim(vim.fn.system("rustc --print sysroot"))
 
-        local script_import = 'command script import "' .. rustc_sysroot .. '/lib/rustlib/etc/lldb_lookup.py"'
-        local commands_file = rustc_sysroot .. '/lib/rustlib/etc/lldb_commands'
+        local script_import = 'command script import "'
+          .. rustc_sysroot
+          .. '/lib/rustlib/etc/lldb_lookup.py"'
+        local commands_file = rustc_sysroot .. "/lib/rustlib/etc/lldb_commands"
 
         local commands = {}
-        local file = io.open(commands_file, 'r')
+        local file = io.open(commands_file, "r")
         if file then
           for line in file:lines() do
             table.insert(commands, line)
@@ -392,7 +415,7 @@ function M.setup()
 
         return commands
       end,
-    }
+    },
   }
 
   -- 🔧 MASON-DAP INTEGRATION
@@ -412,98 +435,104 @@ function M.setup()
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'python',
-        'codelldb',  -- For C/C++/Rust
+        "python",
+        "codelldb", -- For C/C++/Rust
         -- 'node2',     -- Disabled: For JavaScript/TypeScript (node-debug2-adapter)
-      }
+      },
     })
   end
 
   -- 🎯 CUSTOM COMMANDS
   -- Create useful DAP commands
-  vim.api.nvim_create_user_command('DapUIToggle', function()
+  vim.api.nvim_create_user_command("DapUIToggle", function()
     dapui.toggle()
-  end, { desc = 'Toggle DAP UI' })
+  end, { desc = "Toggle DAP UI" })
 
-  vim.api.nvim_create_user_command('DapClearBreakpoints', function()
+  vim.api.nvim_create_user_command("DapClearBreakpoints", function()
     dap.clear_breakpoints()
     vim.notify("All breakpoints cleared", vim.log.levels.INFO)
-  end, { desc = 'Clear all breakpoints' })
+  end, { desc = "Clear all breakpoints" })
 
-  vim.api.nvim_create_user_command('DapShowLog', function()
-    dap.set_log_level('TRACE')
+  vim.api.nvim_create_user_command("DapShowLog", function()
+    dap.set_log_level("TRACE")
     dap.repl.open()
-  end, { desc = 'Show DAP log' })
+  end, { desc = "Show DAP log" })
 
   -- 📊 SIGNS CONFIGURATION
   -- Set up custom signs for breakpoints
-  vim.fn.sign_define('DapBreakpoint', {
-    text = '🔴',
-    texthl = 'DapBreakpoint',
-    linehl = 'DapBreakpoint',
-    numhl = 'DapBreakpoint'
+  vim.fn.sign_define("DapBreakpoint", {
+    text = "🔴",
+    texthl = "DapBreakpoint",
+    linehl = "DapBreakpoint",
+    numhl = "DapBreakpoint",
   })
 
-  vim.fn.sign_define('DapBreakpointCondition', {
-    text = '🔶',
-    texthl = 'DapBreakpoint',
-    linehl = 'DapBreakpoint',
-    numhl = 'DapBreakpoint'
+  vim.fn.sign_define("DapBreakpointCondition", {
+    text = "🔶",
+    texthl = "DapBreakpoint",
+    linehl = "DapBreakpoint",
+    numhl = "DapBreakpoint",
   })
 
-  vim.fn.sign_define('DapBreakpointRejected', {
-    text = '🚫',
-    texthl = 'DapBreakpoint',
-    linehl = 'DapBreakpoint',
-    numhl = 'DapBreakpoint'
+  vim.fn.sign_define("DapBreakpointRejected", {
+    text = "🚫",
+    texthl = "DapBreakpoint",
+    linehl = "DapBreakpoint",
+    numhl = "DapBreakpoint",
   })
 
-  vim.fn.sign_define('DapLogPoint', {
-    text = '📝',
-    texthl = 'DapLogPoint',
-    linehl = 'DapLogPoint',
-    numhl = 'DapLogPoint'
+  vim.fn.sign_define("DapLogPoint", {
+    text = "📝",
+    texthl = "DapLogPoint",
+    linehl = "DapLogPoint",
+    numhl = "DapLogPoint",
   })
 
-  vim.fn.sign_define('DapStopped', {
-    text = '▶️',
-    texthl = 'DapStopped',
-    linehl = 'DapStopped',
-    numhl = 'DapStopped'
+  vim.fn.sign_define("DapStopped", {
+    text = "▶️",
+    texthl = "DapStopped",
+    linehl = "DapStopped",
+    numhl = "DapStopped",
   })
 
   -- 🎨 HIGHLIGHT GROUPS
   -- Set up custom highlight groups
   vim.api.nvim_create_autocmd("ColorScheme", {
     callback = function()
-      vim.api.nvim_set_hl(0, 'DapBreakpoint', { fg = '#e51400' })
-      vim.api.nvim_set_hl(0, 'DapLogPoint', { fg = '#61afef' })
-      vim.api.nvim_set_hl(0, 'DapStopped', { fg = '#98c379' })
+      vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#e51400" })
+      vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#61afef" })
+      vim.api.nvim_set_hl(0, "DapStopped", { fg = "#98c379" })
     end,
   })
 
   -- Apply highlights immediately
-  vim.api.nvim_set_hl(0, 'DapBreakpoint', { fg = '#e51400' })
-  vim.api.nvim_set_hl(0, 'DapLogPoint', { fg = '#61afef' })
-  vim.api.nvim_set_hl(0, 'DapStopped', { fg = '#98c379' })
+  vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#e51400" })
+  vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#61afef" })
+  vim.api.nvim_set_hl(0, "DapStopped", { fg = "#98c379" })
 end
 
 -- 🚀 UTILITY FUNCTIONS
 function M.debug_nearest()
-  local dap = require('dap')
+  local dap = require("dap")
   dap.run_to_cursor()
 end
 
 function M.debug_class()
-  local dap = require('dap')
+  local dap = require("dap")
   -- This would need to be customized per language
-  vim.notify("Debug class not implemented for this language", vim.log.levels.WARN)
+  vim.notify(
+    "Debug class not implemented for this language",
+    vim.log.levels.WARN
+  )
 end
 
 function M.debug_method()
-  local dap = require('dap')
+  local dap = require("dap")
   -- This would need to be customized per language
-  vim.notify("Debug method not implemented for this language", vim.log.levels.WARN)
+  vim.notify(
+    "Debug method not implemented for this language",
+    vim.log.levels.WARN
+  )
 end
 
 return M

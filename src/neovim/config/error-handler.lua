@@ -20,11 +20,13 @@ function M.setup_notify()
     if type(level) == "string" then
       level = vim.log.levels[level:upper()] or vim.log.levels.INFO
     end
-    
+
     -- Filter out known Google vim plugin errors that are harmless
     if type(msg) == "string" then
       -- Skip known harmless errors from Google vim plugins
-      if msg:match("AutoFormatBuffer") and msg:match("Not an editor command") then
+      if
+        msg:match("AutoFormatBuffer") and msg:match("Not an editor command")
+      then
         -- AutoFormatBuffer not available yet, skip error
         return
       end
@@ -37,14 +39,15 @@ function M.setup_notify()
         return
       end
     end
-    
+
     -- For errors, check if we should throttle
     if level == vim.log.levels.ERROR then
       local now = os.time()
       local error_key = msg:sub(1, 50) -- Use first 50 chars as key
-      
+
       if error_counts[error_key] then
-        local last_time, count = error_counts[error_key].time, error_counts[error_key].count
+        local last_time, count =
+          error_counts[error_key].time, error_counts[error_key].count
         if now - last_time < error_window then
           error_counts[error_key].count = count + 1
           -- Only show every 5th occurrence within the window
@@ -60,7 +63,7 @@ function M.setup_notify()
         error_counts[error_key] = { time = now, count = 1 }
       end
     end
-    
+
     -- Call original notify
     original_notify(msg, level, opts)
   end
@@ -82,7 +85,7 @@ function M.setup_error_handler()
       end
     end)
   end
-  
+
   -- Log startup errors
   vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
@@ -120,9 +123,9 @@ end
 -- Safe keymap wrapper
 function M.safe_keymap(mode, lhs, rhs, opts)
   local wrapped_rhs = function()
-    local ok, err = pcall(
-      type(rhs) == "function" and rhs or function() vim.cmd(rhs) end
-    )
+    local ok, err = pcall(type(rhs) == "function" and rhs or function()
+      vim.cmd(rhs)
+    end)
     if not ok then
       vim.notify(
         string.format("Error in keymap %s:\n%s", lhs, err),
@@ -131,7 +134,7 @@ function M.safe_keymap(mode, lhs, rhs, opts)
       )
     end
   end
-  
+
   vim.keymap.set(mode, lhs, wrapped_rhs, opts)
 end
 
@@ -139,7 +142,7 @@ end
 function M.init()
   M.setup_notify()
   M.setup_error_handler()
-  
+
   -- Add command to view error log
   vim.api.nvim_create_user_command("ErrorLog", function()
     local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
@@ -149,7 +152,7 @@ function M.init()
       vim.notify("No error log found", vim.log.levels.INFO)
     end
   end, { desc = "View startup error log" })
-  
+
   -- Add command to clear error counts
   vim.api.nvim_create_user_command("ClearErrorCounts", function()
     error_counts = {}

@@ -30,61 +30,72 @@ function M.setup()
   luasnip.config.set_config({
     -- Keep snippets around after leaving snippet region
     history = true,
-    
+
     -- Dynamic snippets update as you type
     updateevents = "TextChanged,TextChangedI",
-    
+
     -- Autosnippets
     enable_autosnippets = true,
-    
+
     -- Use Tab to expand and jump in snippets
-    region_check_events = "CursorMoved"
+    region_check_events = "CursorMoved",
   })
 
   -- Load snippets from friendly-snippets
   -- Exclude languages where we have custom snippets to avoid duplicates
   require("luasnip.loaders.from_vscode").lazy_load({
-    exclude = { "python", "cpp", "c", "java", "javascript", "html", "sh", "markdown", "tex", "todo" }
+    exclude = {
+      "python",
+      "cpp",
+      "c",
+      "java",
+      "javascript",
+      "html",
+      "sh",
+      "markdown",
+      "tex",
+      "todo",
+    },
   })
-  
+
   -- Load custom snippets
   local snippet_path = vim.fn.stdpath("config") .. "/lua/snippets"
-  
+
   -- Load Lua snippets (these take priority over VSCode snippets)
   require("luasnip.loaders.from_lua").lazy_load({
-    paths = { snippet_path }
+    paths = { snippet_path },
   })
-  
+
   -- Keymaps for snippet navigation
   -- NOTE: Tab/S-Tab are now handled by blink.cmp to avoid conflicts
   -- Blink.cmp will call LuaSnip for snippet expansion/jumping automatically
-  
+
   -- Alternative keys for snippet navigation
-  vim.keymap.set({"i", "s"}, "<C-l>", function()
+  vim.keymap.set({ "i", "s" }, "<C-l>", function()
     if luasnip.expand_or_jumpable() then
       luasnip.expand_or_jump()
     end
   end, { silent = true, desc = "Expand snippet or jump forward" })
-  
-  vim.keymap.set({"i", "s"}, "<C-h>", function()
+
+  vim.keymap.set({ "i", "s" }, "<C-h>", function()
     if luasnip.jumpable(-1) then
       luasnip.jump(-1)
     end
   end, { silent = true, desc = "Jump backward in snippet" })
-  
+
   -- Choice selection
-  vim.keymap.set({"i", "s"}, "<C-j>", function()
+  vim.keymap.set({ "i", "s" }, "<C-j>", function()
     if luasnip.choice_active() then
       luasnip.change_choice(1)
     end
   end, { silent = true })
-  
-  vim.keymap.set({"i", "s"}, "<C-k>", function()
+
+  vim.keymap.set({ "i", "s" }, "<C-k>", function()
     if luasnip.choice_active() then
       luasnip.change_choice(-1)
     end
   end, { silent = true })
-  
+
   -- Snippet list
   vim.keymap.set("n", "<leader>sl", function()
     require("telescope").extensions.luasnip.luasnip()

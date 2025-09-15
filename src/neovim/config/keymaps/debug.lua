@@ -8,15 +8,19 @@ local opts = { noremap = true, silent = true }
 
 -- Only set up DAP keybindings if DAP is available
 local function setup_dap_keybindings()
-  local ok, dap = pcall(require, 'dap')
+  local ok, dap = pcall(require, "dap")
   if not ok then
     return
   end
 
   -- Core debugging actions
   map("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
-  map("n", "<leader>dB", function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { desc = "Set Conditional Breakpoint" })
-  map("n", "<leader>dlp", function() dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end, { desc = "Set Log Point" })
+  map("n", "<leader>dB", function()
+    dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+  end, { desc = "Set Conditional Breakpoint" })
+  map("n", "<leader>dlp", function()
+    dap.set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+  end, { desc = "Set Log Point" })
 
   -- Debug session control
   map("n", "<leader>dc", dap.continue, { desc = "Continue/Start Debugging" })
@@ -35,12 +39,19 @@ local function setup_dap_keybindings()
   map("n", "<leader>dR", dap.repl.open, { desc = "Open REPL" })
   map("n", "<leader>dE", function()
     vim.ui.input({ prompt = "Expression: " }, function(expr)
-      if expr then dap.eval(expr) end
+      if expr then
+        dap.eval(expr)
+      end
     end)
   end, { desc = "Evaluate Expression" })
 
   -- Breakpoint management
-  map("n", "<leader>dbc", dap.clear_breakpoints, { desc = "Clear All Breakpoints" })
+  map(
+    "n",
+    "<leader>dbc",
+    dap.clear_breakpoints,
+    { desc = "Clear All Breakpoints" }
+  )
   map("n", "<leader>dbl", dap.list_breakpoints, { desc = "List Breakpoints" })
 
   -- Run configurations
@@ -54,7 +65,7 @@ local function setup_dap_keybindings()
   map("n", "<F12>", dap.step_out, { desc = "DAP Step Out" })
 
   -- DAP UI keybindings (if dapui is available)
-  local ok_ui, dapui = pcall(require, 'dapui')
+  local ok_ui, dapui = pcall(require, "dapui")
   if ok_ui then
     map("n", "<leader>du", dapui.toggle, { desc = "Toggle DAP UI" })
     map("n", "<leader>dU", dapui.open, { desc = "Open DAP UI" })
@@ -62,10 +73,20 @@ local function setup_dap_keybindings()
   end
 
   -- DAP widgets (if available)
-  local ok_widgets, widgets = pcall(require, 'dap.ui.widgets')
+  local ok_widgets, widgets = pcall(require, "dap.ui.widgets")
   if ok_widgets then
-    map("n", "<leader>de", widgets.hover, { desc = "Evaluate Expression Under Cursor" })
-    map("v", "<leader>de", widgets.hover, { desc = "Evaluate Selected Expression" })
+    map(
+      "n",
+      "<leader>de",
+      widgets.hover,
+      { desc = "Evaluate Expression Under Cursor" }
+    )
+    map(
+      "v",
+      "<leader>de",
+      widgets.hover,
+      { desc = "Evaluate Selected Expression" }
+    )
     map("n", "<leader>dS", function()
       local sidebar = widgets.sidebar(widgets.scopes)
       sidebar.open()
@@ -79,10 +100,10 @@ local function setup_dap_keybindings()
   end
 
   -- Virtual text toggle (if nvim-dap-virtual-text is available)
-  local ok_vt = pcall(require, 'nvim-dap-virtual-text')
+  local ok_vt = pcall(require, "nvim-dap-virtual-text")
   if ok_vt then
     map("n", "<leader>dvt", function()
-      require('nvim-dap-virtual-text').toggle()
+      require("nvim-dap-virtual-text").toggle()
     end, { desc = "Toggle Virtual Text" })
   end
 end

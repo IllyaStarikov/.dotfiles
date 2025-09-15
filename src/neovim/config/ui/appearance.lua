@@ -36,12 +36,12 @@ end
 g.have_nerd_font = true
 
 -- UI elements
-opt.number = true                    -- Show current line number
-opt.relativenumber = true            -- Relative line numbers
-opt.signcolumn = "yes"               -- Always show sign column
-opt.cursorline = true                -- Turn on the cursorline
-opt.colorcolumn = "100"              -- Visual line length guide
-opt.termguicolors = true             -- 24-bit RGB colors
+opt.number = true -- Show current line number
+opt.relativenumber = true -- Relative line numbers
+opt.signcolumn = "yes" -- Always show sign column
+opt.cursorline = true -- Turn on the cursorline
+opt.colorcolumn = "100" -- Visual line length guide
+opt.termguicolors = true -- 24-bit RGB colors
 opt.pumheight = 10
 opt.splitbelow = true
 opt.splitright = true
@@ -59,12 +59,12 @@ opt.listchars = {
   trail = "·",
   extends = "›",
   precedes = "‹",
-  eol = "¬"
+  eol = "¬",
 }
 
 -- Bracket/parenthesis matching
-opt.showmatch = true                  -- Highlight matching brackets
-opt.matchtime = 2                     -- Tenths of a second to show match
+opt.showmatch = true -- Highlight matching brackets
+opt.matchtime = 2 -- Tenths of a second to show match
 
 -- Cursor behavior
 opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"

@@ -13,20 +13,20 @@ function M.setup()
     vim.notify("Failed to load snacks.nvim", vim.log.levels.WARN)
     return
   end
-  
+
   snacks.setup({
     -- Core modules
     bigfile = { enabled = true },
-    picker = { enabled = true },   -- Required for explorer
-    explorer = { 
+    picker = { enabled = true }, -- Required for explorer
+    explorer = {
       enabled = true,
-      replace_netrw = true,  -- Replace netrw with Snacks explorer
+      replace_netrw = true, -- Replace netrw with Snacks explorer
     },
-    
+
     -- Re-enable dashboard with safe configuration (uses Telescope instead of picker)
-    dashboard = { 
+    dashboard = {
       enabled = true,
-      width = 64,  -- Increased width to accommodate ASCII art
+      width = 64, -- Increased width to accommodate ASCII art
       preset = {
         header = [[
 ███╗   ███╗██╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗
@@ -44,19 +44,53 @@ function M.setup()
           padding = 1,
           keys = {
             -- Use telescope for all file operations to avoid picker conflicts
-            { icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files" },
-            { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-            { icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
-            { icon = " ", key = "b", desc = "Buffers", action = ":Telescope buffers" },
-            { icon = " ", key = "c", desc = "Config", action = function() require('telescope.builtin').find_files({ cwd = vim.fn.stdpath("config") }) end },
-            { icon = " ", key = ".", desc = "Browse Files", action = function() 
-              local ok, snacks = pcall(require, "snacks")
-              if ok and snacks then 
-                snacks.explorer() 
-              else 
-                vim.notify("Snacks not loaded", vim.log.levels.WARN) 
-              end 
-            end },
+            {
+              icon = " ",
+              key = "f",
+              desc = "Find File",
+              action = ":Telescope find_files",
+            },
+            {
+              icon = " ",
+              key = "r",
+              desc = "Recent Files",
+              action = ":Telescope oldfiles",
+            },
+            {
+              icon = " ",
+              key = "g",
+              desc = "Find Text",
+              action = ":Telescope live_grep",
+            },
+            {
+              icon = " ",
+              key = "b",
+              desc = "Buffers",
+              action = ":Telescope buffers",
+            },
+            {
+              icon = " ",
+              key = "c",
+              desc = "Config",
+              action = function()
+                require("telescope.builtin").find_files({
+                  cwd = vim.fn.stdpath("config"),
+                })
+              end,
+            },
+            {
+              icon = " ",
+              key = ".",
+              desc = "Browse Files",
+              action = function()
+                local ok, snacks = pcall(require, "snacks")
+                if ok and snacks then
+                  snacks.explorer()
+                else
+                  vim.notify("Snacks not loaded", vim.log.levels.WARN)
+                end
+              end,
+            },
             { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
           },
         },
@@ -66,7 +100,7 @@ function M.setup()
 
     -- Enable only safe modules that don't use picker
     indent = { enabled = true },
-    scroll = { enabled = false },  -- Disabled for instant scrolling
+    scroll = { enabled = false }, -- Disabled for instant scrolling
     notifier = { enabled = true },
     words = { enabled = true },
     terminal = { enabled = true },
