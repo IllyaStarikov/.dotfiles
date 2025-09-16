@@ -34,8 +34,6 @@ config.font = wezterm.font_with_fallback({
 })
 
 config.font_size = 18.0  -- Matching Alacritty
-config.line_height = 1.0
-config.cell_width = 1.0
 
 -- Comprehensive font rules for all text styles
 config.font_rules = {
@@ -192,15 +190,13 @@ config.native_macos_fullscreen_mode = false
 -- 📜 SCROLLING & HISTORY
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-config.scrollback_lines = 50000  -- Default: 3500
-config.enable_scroll_bar = false
+config.scrollback_lines = 50000  -- Default: 3500 (more history)
 
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 -- 🖱️ MOUSE CONFIGURATION
 -- ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-config.mouse_wheel_scrolls_tabs = false
-config.hide_mouse_cursor_when_typing = true
+config.hide_mouse_cursor_when_typing = true  -- Default: false (hide cursor when typing)
 
 -- Simplified mouse bindings to prevent event conflicts
 config.mouse_bindings = {

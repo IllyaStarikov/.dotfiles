@@ -1,17 +1,10 @@
 # Stylua configuration for dotfiles
 # Consistent Lua formatting across the project
 
-indent_type = "Spaces"
-indent_width = 2
-column_width = 100  # Modern standard column width
-line_endings = "Unix"
-quote_style = "AutoPreferDouble"  # Prefer double quotes
+indent_type = "Spaces"  # Default: "Tabs"
+indent_width = 2  # Default: 4
+column_width = 100  # Default: 120
 
-# Keep statements expanded for readability
-collapse_simple_statement = "Never"
-
-# Always use parentheses for clarity
-call_parentheses = "Always"
 
 # Table formatting
 [sort_requires]

@@ -1,15 +1,11 @@
 # Ruff configuration file
 # https://docs.astral.sh/ruff/configuration/
 
-# Line length configuration
-line-length = 100
+line-length = 100  # Default: 88
 
 # Format configuration
 [format]
-quote-style = "single"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
+quote-style = "single"  # Default: "double"
 
 # Lint configuration
 [lint]
@@ -21,41 +17,10 @@ select = [
     "W",  # pycodestyle warnings
 ]
 # keep-sorted end
-ignore = []
 
-# Allow autofix for all enabled rules
-fixable = ["ALL"]
-unfixable = []
 
-# Exclude common directories
-# keep-sorted start
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-# keep-sorted end
 
-# Python version target
-target-version = "py39"
+target-version = "py39"  # Default: "py38"
 
 [lint.isort]
 profile = "google"
