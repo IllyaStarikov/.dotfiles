@@ -1,0 +1,9 @@
+=== System Information ===
+Date: Mon Sep 15 21:12:16 PDT 2025
+Hostname: stariMac.local
+User: starikov
+Home: /Users/starikov
+Shell: /bin/zsh
+ZSH Version: 5.9
+
+=== Hardware Information ===

@@ -3,14 +3,15 @@
 local opt = vim.opt
 local fn = vim.fn
 
--- Disable backup files
+-- Backup settings
 opt.backup = false
 opt.writebackup = false
 opt.swapfile = false
 
 -- Persistent undo
 opt.undofile = true
-opt.undolevels = 10000
+opt.undolevels = 50000  -- Default: 1000
+opt.undoreload = 50000  -- Default: 10000
 opt.undodir = fn.stdpath("data") .. "/undo"
 
 -- Ensure required directories exist
