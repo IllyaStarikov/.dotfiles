@@ -89,35 +89,10 @@ function M.setup()
     vim.notify("Failed to load codecompanion", vim.log.levels.WARN)
     return
   end
-<<<<<<< HEAD
 
-  codecompanion.setup({
-    -- Minimal adapter configuration - just Ollama
-    adapters = {
-      ollama = function()
-        return require("codecompanion.adapters").extend("ollama", {
-          name = "llama3.1:70b",
-          schema = {
-            model = {
-              default = "llama3.1:70b",
-            },
-||||||| parent of 5dc9916 (feat: implement download command for AI models)
-  
-  codecompanion.setup({
-    -- Minimal adapter configuration - just Ollama
-    adapters = {
-      ollama = function()
-        return require("codecompanion.adapters").extend("ollama", {
-          name = "llama3.1:70b",
-          schema = {
-            model = {
-              default = "llama3.1:70b",
-            },
-=======
-  
   -- Configure adapters based on OS
   local adapters = {}
-  
+
   if is_macos then
     -- MLX adapter for macOS (OpenAI-compatible API)
     adapters.mlx = function()
@@ -126,7 +101,6 @@ function M.setup()
         schema = {
           model = {
             default = vim.g.codecompanion_model,
->>>>>>> 5dc9916 (feat: implement download command for AI models)
           },
         },
         env = {
@@ -207,11 +181,6 @@ function M.setup()
   })
 end
 
-<<<<<<< HEAD
-return M
-||||||| parent of 5dc9916 (feat: implement download command for AI models)
-return M
-=======
 -- Helper function to switch models
 function M.switch_model(model_name, adapter)
   vim.g.codecompanion_model = model_name
@@ -335,4 +304,3 @@ function M.use_mlx()
 end
 
 return M
->>>>>>> 5dc9916 (feat: implement download command for AI models)
