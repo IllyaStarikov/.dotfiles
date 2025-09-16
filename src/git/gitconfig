@@ -13,18 +13,18 @@
     defaultBranch = main
 
 [pull]
-    rebase = true
+    rebase = true  # Default: false (cleaner history)
 
 [push]
-    default = simple
-    autoSetupRemote = true
+    # default "simple" is already default in Git 2.0+
+    autoSetupRemote = true  # Default: false (auto-track remote branches)
 
 [merge]
-    conflictstyle = zdiff3
+    conflictstyle = zdiff3  # Default: merge (better conflict markers)
 
 [diff]
-    algorithm = histogram
-    colorMoved = default
+    algorithm = histogram  # Default: myers (better diff algorithm)
+    # colorMoved "default" is already default
 
 [commit]
     template = ~/.gitmessage
@@ -55,19 +55,18 @@
     wip = !git add -A && git commit -m 'WIP'
 
 # Colors
-[color]
-    ui = auto
+# color.ui "auto" is already default in modern Git
 
-# Delta configuration
+# Delta configuration (pager for better diffs)
 [delta]
-    navigate = true
-    light = false
-    side-by-side = true
-    line-numbers = true
+    navigate = true       # Default: false (n/N navigation)
+    # light false is default
+    side-by-side = true   # Default: false (split view)
+    line-numbers = true   # Default: false (show line numbers)
 
-# Performance (use defaults for most)
+# Performance
 [pack]
-    threads = 0
+    threads = 0  # Default: 1 (use all CPU cores)
 
 # Credential helper for GitHub
 [credential "https://github.com"]
@@ -84,39 +83,38 @@
 	signingkey = ~/.ssh/id_rsa.pub
 
 [transfer]
-    fsckobjects = true
+    fsckobjects = true  # Default: false (verify objects for corruption)
 
 [receive]
-    fsckobjects = true
+    fsckobjects = true  # Default: false (verify received objects)
 
 [fetch]
-    fsckobjects = true
+    fsckobjects = true  # Default: false (verify fetched objects)
 
-[maintenance]
-    auto = true
-    strategy = incremental
+# maintenance section removed - defaults are already optimal
 
 # Performance optimizations
 [pack]
-    threads = 0          # Default: number of CPUs
-    windowMemory = 256m  # Default: unlimited
-    packSizeLimit = 2g   # Default: unlimited
+    threads = 0          # Already set above, duplicate section
+    windowMemory = 256m  # Default: unlimited (limit for large repos)
+    packSizeLimit = 2g   # Default: unlimited (GitHub limit)
 
 [core]
-    preloadindex = true  # Default: true
-    fscache = true       # Default: true on Windows
-    untrackedCache = true # Default: false
+    # preloadindex true is already default
+    # fscache is Windows-only
+    untrackedCache = true # Default: false (speeds up status)
 
 [diff]
-    algorithm = histogram # Default: myers
-    renameLimit = 10000   # Default: 400
+    # algorithm histogram already set above
+    renameLimit = 10000   # Default: 400 (handle more renames)
 
 [merge]
-    renameLimit = 10000   # Default: 1000
+    # conflictstyle zdiff3 already set above
+    renameLimit = 10000   # Default: 1000 (handle more renames)
 
 [gc]
-    auto = 256           # Default: 6700
-    autopacklimit = 50   # Default: 50
+    auto = 256           # Default: 6700 (gc more frequently)
+    # autopacklimit 50 is already default
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
