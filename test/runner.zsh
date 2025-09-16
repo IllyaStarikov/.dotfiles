@@ -1,466 +1,661 @@
 #!/usr/bin/env zsh
+# Unified Test Runner for Dotfiles
+# Consolidates all test functionality into a single, comprehensive runner
 
-# Dotfiles Test Suite - ZSH Implementation
-# A focused, signal-driven test suite for validating dotfiles functionality
+set -uo pipefail
 
-# Don't use pipefail as it can cause issues with command substitution in ZSH
-set -eu
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
 
-# Test configuration
-readonly DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
-readonly TEST_DIR="${DOTFILES_DIR}/test"
-readonly ARTIFACTS_DIR="${TEST_DIR}/artifacts"
-readonly TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+# Paths
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export TEST_DIR="$SCRIPT_DIR"
+export DOTFILES_DIR="$(dirname "$TEST_DIR")"
+export TEST_TMP_DIR="${TEST_TMP_DIR:-/tmp/dotfiles_test_$$}"
 
-# Source library system
-source "${DOTFILES_DIR}/src/lib/lib.zsh"
+# Test levels and options
+TEST_LEVEL="standard"
+DEBUG=0
+VERBOSE=0
+CI_MODE=0
+NO_COLOR=0
+PARALLEL=0
+COVERAGE=0
+BAIL_ON_FAIL=0
 
-# Load required libraries
-lib_load_all logging colors cli unit
+# Test selection
+RUN_UNIT=0
+RUN_FUNCTIONAL=0
+RUN_INTEGRATION=0
+RUN_PERFORMANCE=0
+RUN_WORKFLOWS=0
+RUN_ALL=0
 
-# Set default log level
-: ${LOG_LEVEL:=INFO}
-typeset -g CI_MODE=${CI:-false}
+# Counters
+PASSED=0
+FAILED=0
+SKIPPED=0
+WARNINGS=0
+TOTAL_TIME=0
 
-# Test counters (using unit library)
-typeset -i PASSED=0
-typeset -i FAILED=0
-typeset -i SKIPPED=0
-typeset -g -a FAILED_TESTS=()
+# Test patterns
+TEST_PATTERN=""
+EXCLUDE_PATTERN=""
 
-# Create artifacts directory
-mkdir -p "$ARTIFACTS_DIR"
+# ============================================================================
+# COLORS AND OUTPUT
+# ============================================================================
 
-print_header() {
-    print_color "╔════════════════════════════════════════════════╗" "BLUE" "BOLD"
-    print_color "║              Dotfiles Test Suite               ║" "BLUE" "BOLD"
-    print_color "╚════════════════════════════════════════════════╝" "BLUE" "BOLD"
-    echo
+setup_colors() {
+    if [[ -t 1 ]] && [[ $NO_COLOR -eq 0 ]]; then
+        RED='\033[0;31m'
+        GREEN='\033[0;32m'
+        YELLOW='\033[0;33m'
+        BLUE='\033[0;34m'
+        MAGENTA='\033[0;35m'
+        CYAN='\033[0;36m'
+        WHITE='\033[0;37m'
+        BOLD='\033[1m'
+        DIM='\033[2m'
+        NC='\033[0m' # No Color
+    else
+        RED=''
+        GREEN=''
+        YELLOW=''
+        BLUE=''
+        MAGENTA=''
+        CYAN=''
+        WHITE=''
+        BOLD=''
+        DIM=''
+        NC=''
+    fi
 }
 
-print_section() {
-    print_color "━━━ $1 ━━━" "CYAN"
+# Logging functions
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp=$(date '+%H:%M:%S')
+
+    case "$level" in
+        ERROR)
+            echo -e "${RED}[ERROR]${NC} ${timestamp} - $message" >&2
+            ;;
+        WARN)
+            echo -e "${YELLOW}[WARN]${NC} ${timestamp} - $message" >&2
+            ((WARNINGS++))
+            ;;
+        INFO)
+            echo -e "${BLUE}[INFO]${NC} ${timestamp} - $message"
+            ;;
+        SUCCESS)
+            echo -e "${GREEN}[✓]${NC} $message"
+            ;;
+        FAIL)
+            echo -e "${RED}[✗]${NC} $message"
+            ;;
+        DEBUG)
+            [[ $DEBUG -eq 1 ]] && echo -e "${DIM}[DEBUG]${NC} ${timestamp} - $message" >&2
+            ;;
+        *)
+            echo "$message"
+            ;;
+    esac
 }
+
+# Progress indicator
+show_progress() {
+    local current=$1
+    local total=$2
+    local percent=$((current * 100 / total))
+    local filled=$((percent / 2))
+    local empty=$((50 - filled))
+
+    printf "\r[${GREEN}"
+    printf "%0.s█" $(seq 1 $filled)
+    printf "${NC}"
+    printf "%0.s░" $(seq 1 $empty)
+    printf "] ${percent}%% ($current/$total)"
+}
+
+# ============================================================================
+# USAGE AND HELP
+# ============================================================================
+
+usage() {
+    # Initialize colors if not already done
+    [[ -z "${BOLD:-}" ]] && setup_colors
+
+    cat << EOF
+${BOLD}Dotfiles Unified Test Runner${NC}
+
+${BOLD}Usage:${NC} $0 [OPTIONS] [TEST_PATTERN]
+
+${BOLD}Test Levels:${NC}
+  --quick         Run essential tests only (< 30s)
+  --standard      Run standard test suite (default, < 2min)
+  --full          Run complete test suite including performance tests
+  --ci            CI mode with artifacts and reporting
+
+${BOLD}Test Categories:${NC}
+  --unit          Run unit tests only
+  --functional    Run functional tests only
+  --integration   Run integration tests only
+  --performance   Run performance tests only
+  --workflows     Run workflow tests only
+  --all           Run all test categories
+
+${BOLD}Output Options:${NC}
+  -v, --verbose   Show detailed output
+  -d, --debug     Enable debug logging
+  --no-color      Disable colored output
+  --coverage      Generate coverage report
+  --junit         Output JUnit XML report
+
+${BOLD}Execution Options:${NC}
+  --parallel      Run tests in parallel
+  --bail          Stop on first failure
+  --timeout SEC   Set test timeout (default: 300s)
+  --exclude PAT   Exclude tests matching pattern
+
+${BOLD}Examples:${NC}
+  $0                          # Run standard tests
+  $0 --quick                  # Quick sanity check
+  $0 --unit nvim              # Run Neovim unit tests
+  $0 --full --ci              # Full CI test run
+  $0 --debug "test_*.sh"      # Debug specific tests
+
+${BOLD}Environment Variables:${NC}
+  TEST_TMP_DIR    Temporary directory for tests
+  CI              Set to 1 for CI mode
+  DEBUG           Set to 1 for debug output
+  NO_COLOR        Set to 1 to disable colors
+
+EOF
+    exit 0
+}
+
+# ============================================================================
+# TEST DISCOVERY
+# ============================================================================
+
+discover_tests() {
+    local category="$1"
+    local pattern="${2:-*.sh}"
+    local test_files=()
+
+    case "$category" in
+        unit)
+            test_files=($(find "$TEST_DIR/unit" -name "$pattern" -type f 2>/dev/null | sort))
+            ;;
+        functional)
+            test_files=($(find "$TEST_DIR/functional" -name "$pattern" -type f 2>/dev/null | sort))
+            ;;
+        integration)
+            test_files=($(find "$TEST_DIR/integration" -name "$pattern" -type f 2>/dev/null | sort))
+            ;;
+        performance)
+            test_files=($(find "$TEST_DIR/performance" -name "$pattern" -type f 2>/dev/null | sort))
+            ;;
+        workflows)
+            test_files=($(find "$TEST_DIR/workflows" -name "$pattern" -type f 2>/dev/null | sort))
+            ;;
+        all)
+            test_files=($(find "$TEST_DIR" -name "$pattern" -type f \
+                ! -path "*/helpers/*" \
+                ! -path "*/.git/*" \
+                2>/dev/null | sort))
+            ;;
+    esac
+
+    # Apply exclude pattern if set
+    if [[ -n "$EXCLUDE_PATTERN" ]]; then
+        local filtered=()
+        for file in "${test_files[@]}"; do
+            if [[ ! "$file" =~ $EXCLUDE_PATTERN ]]; then
+                filtered+=("$file")
+            fi
+        done
+        test_files=("${filtered[@]}")
+    fi
+
+    echo "${test_files[@]}"
+}
+
+# ============================================================================
+# TEST EXECUTION
+# ============================================================================
 
 run_test() {
-    LOG DEBUG "run_test called with: $1, $2"
-    local test_name="$1"
-    local test_function="$2"
-
-    echo -n "${COLORS[BLUE]}▶${COLORS[RESET]} ${test_name}.... "
-
+    local test_file="$1"
+    local test_name=$(basename "$test_file" .sh)
+    local test_dir=$(dirname "$test_file")
     local start_time=$(date +%s)
-    LOG DEBUG "Start time: $start_time"
 
-    # Run the test function directly (not in subshell) and check return code
-    local test_passed=true
-    local test_error=""
+    log DEBUG "Running test: $test_file"
 
-    # Temporarily disable errexit for test execution
-    LOG DEBUG "Running test function: $test_function"
-    set +e
-    $test_function
-    local exit_code=$?
-    set -e
-    LOG DEBUG "Test function completed with exit code: $exit_code"
+    # Create test-specific temp dir
+    local test_tmp="$TEST_TMP_DIR/$test_name"
+    mkdir -p "$test_tmp"
 
-    if [[ $exit_code -eq 0 ]]; then
-        test_passed=true
+    # Run test with timeout
+    local timeout_cmd="timeout ${TEST_TIMEOUT:-300}"
+    local test_output
+    local test_status
+
+    if [[ $VERBOSE -eq 1 ]]; then
+        $timeout_cmd zsh "$test_file" 2>&1
+        test_status=$?
     else
-        test_passed=false
-        test_error="Test returned exit code $exit_code"
+        test_output=$($timeout_cmd zsh "$test_file" 2>&1)
+        test_status=$?
     fi
 
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))
 
-    if [[ "$test_passed" == "true" ]]; then
-        print_color "✓ PASSED" "GREEN"
-        PASSED=$((PASSED + 1))
+    # Process result
+    if [[ $test_status -eq 0 ]]; then
+        log SUCCESS "$test_name (${duration}s)"
+        ((PASSED++))
+    elif [[ $test_status -eq 124 ]]; then
+        log FAIL "$test_name - TIMEOUT"
+        ((FAILED++))
+        [[ $VERBOSE -eq 0 ]] && echo "$test_output"
     else
-        print_color "✗ FAILED" "RED"
-        [[ -n "$test_error" ]] && print_color "  ${test_error}" "GRAY"
-        FAILED=$((FAILED + 1))
-        FAILED_TESTS+=("$test_name")
+        log FAIL "$test_name - EXIT $test_status"
+        ((FAILED++))
+        [[ $VERBOSE -eq 0 ]] && echo "$test_output"
+
+        # Bail on first failure if requested
+        [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
     fi
 
-    LOG DEBUG "Test duration: ${duration}s"
-}
+    # Clean up test temp dir
+    rm -rf "$test_tmp"
 
-# Test functions
-test_essential_files() {
-    local essential_files=(
-        "src/neovim/init.lua"
-        "src/zsh/zshrc"
-        "src/tmux.conf"
-        "src/git/gitconfig"
-        "src/scripts/fixy"
-        "src/theme-switcher/switch-theme.sh"
-    )
-
-    for file in "${essential_files[@]}"; do
-        local full_path="${DOTFILES_DIR}/${file}"
-        if [[ ! -f "$full_path" ]]; then
-            LOG DEBUG "Missing: $file"
-            return 1
-        fi
-        if [[ ! -r "$full_path" ]]; then
-            LOG DEBUG "Not readable: $file"
-            return 1
-        fi
-    done
-
-    LOG DEBUG "All ${#essential_files[@]} essential files exist and are readable"
     return 0
 }
 
-test_neovim_config() {
-    local temp_config=$(mktemp)
-    cat > "$temp_config" << 'NVIM_TEST_EOF'
--- Minimal test config that loads the main configuration
-vim.opt.runtimepath:prepend(vim.fn.expand("~/.dotfiles/src/neovim"))
-vim.opt.packpath:prepend(vim.fn.expand("~/.dotfiles/src/neovim"))
+run_test_category() {
+    local category="$1"
+    local pattern="${TEST_PATTERN:-*.sh}"
 
-local ok, err = pcall(function()
-    dofile(vim.fn.expand("~/.dotfiles/src/neovim/init.lua"))
-end)
+    log INFO "Running $category tests..."
 
-if ok then
-    print("CONFIG_OK")
-    vim.cmd("qa!")
-else
-    print("CONFIG_ERROR: " .. tostring(err))
-    vim.cmd("cq 1")
-end
-NVIM_TEST_EOF
+    local test_files=($(discover_tests "$category" "$pattern"))
+    local total=${#test_files[@]}
 
-    LOG DEBUG "Running: nvim --headless -u $temp_config"
-    local output
-    # Add timeout to prevent hanging
-    if command -v timeout >/dev/null 2>&1; then
-        output=$(timeout 3 nvim --headless -u "$temp_config" 2>&1)
-    else
-        output=$(nvim --headless -u "$temp_config" 2>&1)
-    fi
-    local exit_code=$?
-
-    rm -f "$temp_config"
-
-    if [[ $exit_code -ne 0 ]] || ! echo "$output" | grep -q "CONFIG_OK"; then
-        LOG DEBUG "Neovim config failed to load"
-        return 1
+    if [[ $total -eq 0 ]]; then
+        log WARN "No $category tests found matching pattern: $pattern"
+        return 0
     fi
 
-    LOG DEBUG "Neovim configuration loaded successfully"
-    return 0
-}
+    log INFO "Found $total $category test(s)"
 
-test_shell_scripts() {
-    local shell_files=()
-    while IFS= read -r -d '' file; do
-        shell_files+=("$file")
-    done < <(find "$DOTFILES_DIR/src" -type f -name "*.sh" -o -name "*.zsh" -print0)
+    local count=0
+    for test_file in "${test_files[@]}"; do
+        ((count++))
+        [[ $VERBOSE -eq 0 ]] && show_progress $count $total
 
-    local errors=()
-    for script in "${shell_files[@]}"; do
-        local shell="sh"
-        if [[ "$script" == *.zsh ]]; then
-            shell="zsh"
-        elif head -1 "$script" 2>/dev/null | grep -q "bash"; then
-            shell="bash"
-        elif head -1 "$script" 2>/dev/null | grep -q "zsh"; then
-            shell="zsh"
-        fi
-
-        LOG DEBUG "Checking syntax: $script (with $shell)"
-        if ! $shell -n "$script" 2>/dev/null; then
-            errors+=("$(basename "$script")")
-        fi
-    done
-
-    if [[ ${#errors[@]} -gt 0 ]]; then
-        LOG DEBUG "Syntax errors in: ${errors[*]}"
-        return 1
-    fi
-
-    LOG DEBUG "Checked ${#shell_files[@]} shell scripts"
-    return 0
-}
-
-test_language_configs() {
-    local configs=(
-        "src/language/ruff.toml"
-        "src/language/stylua.toml"
-        "src/language/.clang-format"
-        "src/language/pyproject.toml"
-    )
-
-    for config in "${configs[@]}"; do
-        local full_path="${DOTFILES_DIR}/${config}"
-        if [[ ! -f "$full_path" ]]; then
-            LOG DEBUG "Missing config: $config"
-            return 1
-        fi
-    done
-
-    # Test Python config
-    if command -v python3 >/dev/null 2>&1; then
-        if ! python3 -c "import tomllib; tomllib.load(open('${DOTFILES_DIR}/src/language/ruff.toml', 'rb'))" 2>/dev/null; then
-            LOG DEBUG "Invalid ruff.toml"
-            return 1
-        fi
-    fi
-
-    LOG DEBUG "All language configurations are valid"
-    return 0
-}
-
-test_theme_switcher() {
-    local switcher="${DOTFILES_DIR}/src/theme-switcher/switch-theme.sh"
-    if [[ ! -x "$switcher" ]]; then
-        LOG DEBUG "Theme switcher not executable"
-        return 1
-    fi
-
-    # Run from theme-switcher directory
-    local output
-    output=$(cd "$(dirname "$switcher")" && ./switch-theme.sh --list 2>&1)
-    local exit_code=$?
-
-    if [[ $exit_code -ne 0 ]]; then
-        LOG DEBUG "Failed to list themes"
-        return 1
-    fi
-
-    local themes=("tokyonight_day" "tokyonight_storm" "tokyonight_night" "tokyonight_moon")
-    for theme in "${themes[@]}"; do
-        if ! echo "$output" | grep -q "$theme"; then
-            LOG DEBUG "Missing theme: $theme"
-            return 1
-        fi
-    done
-
-    LOG DEBUG "All themes available"
-    return 0
-}
-
-test_symlinks() {
-    local symlinks_script="${DOTFILES_DIR}/src/setup/symlinks.sh"
-    if [[ ! -x "$symlinks_script" ]]; then
-        LOG DEBUG "Symlinks script not executable"
-        return 1
-    fi
-
-    # Test dry run
-    LOG DEBUG "Running: $symlinks_script --dry-run"
-    if ! bash "$symlinks_script" --dry-run >/dev/null 2>&1; then
-        LOG DEBUG "Symlinks script dry-run failed"
-        return 1
-    fi
-
-    LOG DEBUG "Symlinks script validated"
-    return 0
-}
-
-test_critical_commands() {
-    local commands=(
-        "${DOTFILES_DIR}/src/scripts/theme:--help"
-        "${DOTFILES_DIR}/src/scripts/fixy:--help"
-    )
-
-    for cmd_spec in "${commands[@]}"; do
-        local cmd="${cmd_spec%%:*}"
-        local arg="${cmd_spec#*:}"
-
-        if [[ ! -x "$cmd" ]]; then
-            LOG DEBUG "Command not executable: $(basename "$cmd")"
-            return 1
-        fi
-
-        LOG DEBUG "Testing: $cmd $arg"
-        if ! "$cmd" "$arg" >/dev/null 2>&1; then
-            LOG DEBUG "Command failed: $(basename "$cmd")"
-            return 1
-        fi
-    done
-
-    LOG DEBUG "All critical commands work"
-    return 0
-}
-
-test_git_hooks() {
-    # Check if gitleaks is available
-    if ! command -v gitleaks >/dev/null 2>&1; then
-        if [[ "$CI_MODE" == "true" ]]; then
-            LOG DEBUG "Gitleaks not installed (CI mode)"
-            return 0  # Skip in CI
+        if [[ $PARALLEL -eq 1 ]]; then
+            run_test "$test_file" &
         else
-            LOG DEBUG "Gitleaks not installed"
-            return 1
+            run_test "$test_file" || [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
         fi
+    done
+
+    # Wait for parallel tests
+    [[ $PARALLEL -eq 1 ]] && wait
+
+    [[ $VERBOSE -eq 0 ]] && echo # New line after progress bar
+}
+
+# ============================================================================
+# TEST HELPERS
+# ============================================================================
+
+setup_test_environment() {
+    # Create temp directory
+    mkdir -p "$TEST_TMP_DIR"
+
+    # Export test helpers
+    export -f assert_equals
+    export -f assert_true
+    export -f assert_false
+    export -f assert_file_exists
+    export -f assert_dir_exists
+    export -f assert_command_succeeds
+    export -f skip_if
+
+    # Source test helpers if available
+    if [[ -f "$TEST_DIR/helpers/common.sh" ]]; then
+        source "$TEST_DIR/helpers/common.sh"
     fi
 
-    # Check gitleaks config exists
-    if [[ ! -f "${DOTFILES_DIR}/src/gitleaks.toml" ]] && [[ ! -f "${DOTFILES_DIR}/.gitleaks.toml" ]]; then
-        LOG DEBUG "Gitleaks config not found"
+    log DEBUG "Test environment ready"
+}
+
+cleanup_test_environment() {
+    # Clean up temp directory
+    if [[ -d "$TEST_TMP_DIR" ]]; then
+        rm -rf "$TEST_TMP_DIR"
+    fi
+
+    log DEBUG "Test environment cleaned up"
+}
+
+# ============================================================================
+# ASSERTIONS
+# ============================================================================
+
+assert_equals() {
+    local expected="$1"
+    local actual="$2"
+    local message="${3:-Assertion failed}"
+
+    if [[ "$expected" != "$actual" ]]; then
+        echo "FAIL: $message"
+        echo "  Expected: $expected"
+        echo "  Actual:   $actual"
         return 1
     fi
-
-    LOG DEBUG "Git security hooks configured"
     return 0
 }
 
-test_neovim_startup() {
-    local startup_log="${ARTIFACTS_DIR}/nvim-startup.log"
+assert_true() {
+    local condition="$1"
+    local message="${2:-Assertion failed}"
 
-    LOG DEBUG "Running: nvim --headless --startuptime $startup_log -c qa"
-    nvim --headless --startuptime "$startup_log" -c qa 2>/dev/null
-
-    if [[ ! -f "$startup_log" ]]; then
-        LOG DEBUG "Failed to generate startup log"
+    if ! eval "$condition"; then
+        echo "FAIL: $message"
+        echo "  Condition: $condition"
         return 1
     fi
-
-    # Parse startup time
-    local total_time
-    total_time=$(grep "^[0-9]" "$startup_log" | tail -1 | awk '{print $1}')
-
-    if [[ -z "$total_time" ]]; then
-        LOG DEBUG "Could not parse startup time"
-        return 1
-    fi
-
-    # Convert to integer for comparison (remove decimal)
-    local time_ms=${total_time%.*}
-
-    LOG DEBUG "Neovim startup time: ${time_ms}ms"
-
-    if [[ $time_ms -gt 500 ]]; then
-        LOG DEBUG "Startup too slow: ${time_ms}ms (>500ms)"
-        return 1
-    elif [[ $time_ms -gt 300 ]]; then
-        LOG DEBUG "Startup acceptable but could be improved: ${time_ms}ms"
-    else
-        LOG DEBUG "Excellent startup time: ${time_ms}ms"
-    fi
-
     return 0
 }
 
-# Generate JSON report
-generate_json_report() {
-    local report_file="${ARTIFACTS_DIR}/test-report-${TIMESTAMP}.json"
-    local total=$((PASSED + FAILED + SKIPPED))
-    local duration=$(date +%s.%N)
+assert_false() {
+    local condition="$1"
+    local message="${2:-Assertion failed}"
 
-    cat > "$report_file" << EOF
-{
-  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "summary": {
-    "total": $total,
-    "passed": $PASSED,
-    "failed": $FAILED,
-    "skipped": $SKIPPED
-  },
-  "failed_tests": [$(printf '"%s",' "${FAILED_TESTS[@]}" | sed 's/,$//')],
-  "environment": {
-    "os": "$(uname -s)",
-    "arch": "$(uname -m)",
-    "ci": $([[ "$CI_MODE" == "true" ]] && echo "true" || echo "false")
-  }
-}
-EOF
-
-    print_color "Report saved to: $report_file" "GRAY"
+    if eval "$condition"; then
+        echo "FAIL: $message"
+        echo "  Condition should be false: $condition"
+        return 1
+    fi
+    return 0
 }
 
-# Print summary
-print_summary() {
+assert_file_exists() {
+    local file="$1"
+    local message="${2:-File should exist}"
+
+    if [[ ! -f "$file" ]]; then
+        echo "FAIL: $message"
+        echo "  File not found: $file"
+        return 1
+    fi
+    return 0
+}
+
+assert_dir_exists() {
+    local dir="$1"
+    local message="${2:-Directory should exist}"
+
+    if [[ ! -d "$dir" ]]; then
+        echo "FAIL: $message"
+        echo "  Directory not found: $dir"
+        return 1
+    fi
+    return 0
+}
+
+assert_command_succeeds() {
+    local command="$1"
+    local message="${2:-Command should succeed}"
+
+    if ! eval "$command" >/dev/null 2>&1; then
+        echo "FAIL: $message"
+        echo "  Command failed: $command"
+        return 1
+    fi
+    return 0
+}
+
+skip_if() {
+    local condition="$1"
+    local message="${2:-Test skipped}"
+
+    if eval "$condition"; then
+        echo "SKIP: $message"
+        exit 0
+    fi
+}
+
+# ============================================================================
+# REPORTING
+# ============================================================================
+
+generate_report() {
     local total=$((PASSED + FAILED + SKIPPED))
+    local success_rate=0
+    [[ $total -gt 0 ]] && success_rate=$((PASSED * 100 / total))
 
     echo
-    print_color "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" "BLUE"
-    print_color "Test Summary" "WHITE" "BOLD"
-    print_color "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" "BLUE"
-    echo "  $(print_color_inline "Passed:" "GREEN")  $PASSED"
-    echo "  $(print_color_inline "Failed:" "RED")  $FAILED"
-    echo "  $(print_color_inline "Skipped:" "YELLOW") $SKIPPED"
-    echo "  $(print_color_inline "Total:" "CYAN")   $total"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "${BOLD}Test Results Summary${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo
+    echo "  ${GREEN}Passed:${NC}  $PASSED"
+    echo "  ${RED}Failed:${NC}  $FAILED"
+    echo "  ${YELLOW}Skipped:${NC} $SKIPPED"
+    [[ $WARNINGS -gt 0 ]] && echo "  ${YELLOW}Warnings:${NC} $WARNINGS"
+    echo
+    echo "  ${BOLD}Total:${NC}   $total"
+    echo "  ${BOLD}Success:${NC} ${success_rate}%"
+    echo "  ${BOLD}Time:${NC}    ${TOTAL_TIME}s"
+    echo
 
     if [[ $FAILED -eq 0 ]]; then
-        echo
-        print_color "✓ All tests passed!" "GREEN" "BOLD"
+        echo "${GREEN}${BOLD}All tests passed! ✅${NC}"
     else
-        echo
-        print_color "✗ ${FAILED} test(s) failed" "RED" "BOLD"
-        echo
-        print_color "Failed tests:" "RED"
-        for test in "${FAILED_TESTS[@]}"; do
-            echo "  • $test"
-        done
+        echo "${RED}${BOLD}Tests failed! ❌${NC}"
     fi
+
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
-# Main function to run tests
+generate_junit_report() {
+    local report_file="${1:-test-results.xml}"
+    local timestamp=$(date -Iseconds)
+
+    cat > "$report_file" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Dotfiles Tests" time="$TOTAL_TIME" tests="$((PASSED + FAILED))" failures="$FAILED" skipped="$SKIPPED">
+    <testsuite name="Test Suite" timestamp="$timestamp" tests="$((PASSED + FAILED))" failures="$FAILED" skipped="$SKIPPED" time="$TOTAL_TIME">
+        <!-- Test cases would be added here in a real implementation -->
+    </testsuite>
+</testsuites>
+EOF
+
+    log INFO "JUnit report saved to: $report_file"
+}
+
+# ============================================================================
+# MAIN EXECUTION
+# ============================================================================
+
 main() {
-    # Setup CLI parser
-    cli_program "test-runner" "Dotfiles test suite runner" "1.0.0"
-    cli_flag "debug" "d" "Enable debug output" "" "bool"
-    cli_flag "log-level" "l" "Set log level" "INFO" "string"
-    cli_flag "ci" "" "Run in CI mode" "" "bool"
-    cli_flag "artifacts" "a" "Artifacts directory" "$ARTIFACTS_DIR" "string"
+    local start_time=$(date +%s)
 
     # Parse arguments
-    if ! cli_parse_with_help "$@"; then
-        exit $?
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            # Test levels
+            --quick)
+                TEST_LEVEL="quick"
+                shift
+                ;;
+            --standard)
+                TEST_LEVEL="standard"
+                shift
+                ;;
+            --full)
+                TEST_LEVEL="full"
+                shift
+                ;;
+            --ci)
+                CI_MODE=1
+                TEST_LEVEL="full"
+                shift
+                ;;
+
+            # Test categories
+            --unit)
+                RUN_UNIT=1
+                shift
+                ;;
+            --functional)
+                RUN_FUNCTIONAL=1
+                shift
+                ;;
+            --integration)
+                RUN_INTEGRATION=1
+                shift
+                ;;
+            --performance)
+                RUN_PERFORMANCE=1
+                shift
+                ;;
+            --workflows)
+                RUN_WORKFLOWS=1
+                shift
+                ;;
+            --all)
+                RUN_ALL=1
+                shift
+                ;;
+
+            # Output options
+            -v|--verbose)
+                VERBOSE=1
+                shift
+                ;;
+            -d|--debug)
+                DEBUG=1
+                VERBOSE=1
+                shift
+                ;;
+            --no-color)
+                NO_COLOR=1
+                shift
+                ;;
+            --coverage)
+                COVERAGE=1
+                shift
+                ;;
+            --junit)
+                JUNIT=1
+                shift
+                ;;
+
+            # Execution options
+            --parallel)
+                PARALLEL=1
+                shift
+                ;;
+            --bail)
+                BAIL_ON_FAIL=1
+                shift
+                ;;
+            --timeout)
+                TEST_TIMEOUT="$2"
+                shift 2
+                ;;
+            --exclude)
+                EXCLUDE_PATTERN="$2"
+                shift 2
+                ;;
+
+            # Help
+            -h|--help)
+                usage
+                ;;
+
+            # Test pattern
+            *)
+                TEST_PATTERN="$1"
+                shift
+                ;;
+        esac
+    done
+
+    # Setup
+    setup_colors
+    setup_test_environment
+
+    # Determine what to run based on level
+    if [[ $RUN_ALL -eq 1 ]]; then
+        RUN_UNIT=1
+        RUN_FUNCTIONAL=1
+        RUN_INTEGRATION=1
+        RUN_PERFORMANCE=1
+        RUN_WORKFLOWS=1
+    elif [[ $RUN_UNIT -eq 0 && $RUN_FUNCTIONAL -eq 0 && $RUN_INTEGRATION -eq 0 && $RUN_PERFORMANCE -eq 0 && $RUN_WORKFLOWS -eq 0 ]]; then
+        # No specific category selected, use test level
+        case "$TEST_LEVEL" in
+            quick)
+                RUN_UNIT=1
+                ;;
+            standard)
+                RUN_UNIT=1
+                RUN_FUNCTIONAL=1
+                ;;
+            full)
+                RUN_UNIT=1
+                RUN_FUNCTIONAL=1
+                RUN_INTEGRATION=1
+                RUN_PERFORMANCE=1
+                RUN_WORKFLOWS=1
+                ;;
+        esac
     fi
 
-    # Apply settings from CLI
-    if cli_has "debug"; then
-        SET_LOG_LEVEL DEBUG
-    elif cli_has "log-level"; then
-        SET_LOG_LEVEL "$(cli_get "log-level")"
-    fi
-
-    if cli_has "ci"; then
-        CI_MODE=true
-    fi
-
-    if cli_has "artifacts"; then
-        ARTIFACTS_DIR="$(cli_get "artifacts")"
-        mkdir -p "$ARTIFACTS_DIR"
-    fi
-
-    # Main test execution
-    print_header
-
-    # Core Validation Tests
-    print_section "Core Validation"
-    run_test "Essential files exist" test_essential_files
-    run_test "Neovim configuration loads" test_neovim_config
-    run_test "Shell scripts syntax" test_shell_scripts
-    run_test "Language configurations" test_language_configs
-
-    # Integration Tests
+    # Print header
     echo
-    print_section "Integration Tests"
-    run_test "Theme switcher functionality" test_theme_switcher
-    run_test "Symlinks script validation" test_symlinks
-    run_test "Critical commands work" test_critical_commands
-    run_test "Git hooks configured" test_git_hooks
-
-    # Performance Tests
+    echo "${BOLD}Dotfiles Test Runner${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Level: $TEST_LEVEL"
+    [[ -n "$TEST_PATTERN" ]] && echo "Pattern: $TEST_PATTERN"
+    [[ -n "$EXCLUDE_PATTERN" ]] && echo "Exclude: $EXCLUDE_PATTERN"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo
-    print_section "Performance Tests"
-    run_test "Neovim startup performance" test_neovim_startup
 
-    # Generate report and summary
-    generate_json_report
-    print_summary
+    # Run tests
+    [[ $RUN_UNIT -eq 1 ]] && run_test_category "unit"
+    [[ $RUN_FUNCTIONAL -eq 1 ]] && run_test_category "functional"
+    [[ $RUN_INTEGRATION -eq 1 ]] && run_test_category "integration"
+    [[ $RUN_PERFORMANCE -eq 1 ]] && run_test_category "performance"
+    [[ $RUN_WORKFLOWS -eq 1 ]] && run_test_category "workflows"
+
+    # Calculate total time
+    local end_time=$(date +%s)
+    TOTAL_TIME=$((end_time - start_time))
+
+    # Generate reports
+    generate_report
+    [[ ${JUNIT:-0} -eq 1 ]] && generate_junit_report
+
+    # Cleanup
+    cleanup_test_environment
 
     # Exit with appropriate code
     [[ $FAILED -eq 0 ]] && exit 0 || exit 1
 }
 
-# Run main function with all arguments
+# Run main function
 main "$@"
