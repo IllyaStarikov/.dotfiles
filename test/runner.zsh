@@ -246,15 +246,63 @@ run_test() {
     export TEST_DIR
     export TEST_TMP_DIR
 
-    # Run test (tests handle their own timeouts)
+    # Create a wrapper script that sources helpers and runs the test
+    local wrapper_script="$test_tmp/wrapper.zsh"
+    cat > "$wrapper_script" << 'EOF'
+#!/usr/bin/env zsh
+# Source test helpers if not already sourced
+if ! type test_case >/dev/null 2>&1; then
+    if [[ -f "$TEST_DIR/lib/test_helpers.zsh" ]]; then
+        source "$TEST_DIR/lib/test_helpers.zsh"
+    fi
+fi
+
+# Add missing test functions that some tests expect
+if ! type test_suite >/dev/null 2>&1; then
+    test_suite() { echo "=== $* ==="; }
+fi
+
+if ! type test_plugin_loaded >/dev/null 2>&1; then
+    test_plugin_loaded() {
+        # Simple check if plugin exists in lazy directory
+        local plugin=$1
+        if [[ -d "$HOME/.local/share/nvim/lazy/$plugin" ]]; then
+            echo "  ✓ $plugin loaded"
+            return 0
+        else
+            echo "  ✗ $plugin not found"
+            return 1
+        fi
+    }
+fi
+
+if ! type nvim_test >/dev/null 2>&1; then
+    nvim_test() {
+        # Simple nvim headless test
+        local cmd=$1
+        nvim --headless -c "$cmd" -c 'qa!' 2>/dev/null
+        return $?
+    }
+fi
+
+# Set default values if not set
+: ${DOTFILES_DIR:=/Users/starikov/.dotfiles}
+: ${TEST_DIR:=$DOTFILES_DIR/test}
+: ${TEST_TMP_DIR:=/tmp/test-$$}
+
+# Run the actual test
+source "$1"
+EOF
+
+    # Run test through wrapper
     local test_output
     local test_status
 
     if [[ $VERBOSE -eq 1 ]]; then
-        zsh "$test_file" 2>&1
+        zsh "$wrapper_script" "$test_file" 2>&1
         test_status=$?
     else
-        test_output=$(zsh "$test_file" 2>&1)
+        test_output=$(zsh "$wrapper_script" "$test_file" 2>&1)
         test_status=$?
     fi
 
