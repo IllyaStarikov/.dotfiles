@@ -618,7 +618,7 @@ local bigfile_group = augroup("bigfile", { clear = true })
 local function optimize_for_bigfile()
   local file = vim.fn.expand("<afile>")
   local size = vim.fn.getfsize(file)
-  local big_file_limit = 1024 * 1024 * 10 -- 10MB
+  local big_file_limit = 1024 * 1024 * 50 -- 50MB, default behavior at 10MB
 
   if size > big_file_limit or size == -2 then
     -- Disable expensive features
@@ -1534,8 +1534,8 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
       lines = tonumber(line_count_str) or 0
     end
 
-    -- For BUILD files over 5000 lines or 1MB, optimize settings
-    if lines > 5000 or size > 1048576 then
+    -- For BUILD files over 20000 lines or 50MB, optimize settings
+    if lines > 20000 or size > 52428800 then
       vim.notify("Large BUILD file detected (" .. lines .. " lines). Applying optimizations...", vim.log.levels.INFO)
 
       -- Set buffer-local variables to track large file
@@ -1543,15 +1543,15 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
       vim.b.large_file_lines = lines
 
       -- Performance optimizations
-      vim.opt_local.foldmethod = "manual"  -- Disable automatic folding
-      vim.opt_local.undolevels = 100  -- Reduce undo history
+      vim.opt_local.foldmethod = "manual"
+      vim.opt_local.undolevels = 5000  -- Default: 1000
       vim.opt_local.swapfile = false  -- Disable swap for large files
       vim.opt_local.backup = false  -- Disable backup
       vim.opt_local.writebackup = false  -- Disable write backup
 
       -- Increase processing limits for large files
-      vim.opt.maxmempattern = 10000  -- Increase memory for pattern matching
-      vim.opt.redrawtime = 10000  -- Increase redraw timeout
+      vim.opt.maxmempattern = 100000  -- Default: 1000
+      vim.opt.redrawtime = 30000  -- Default: 2000
 
       -- Disable some expensive features for performance
       vim.opt_local.cursorline = false  -- Disable cursor line highlighting

@@ -22,8 +22,8 @@ $time\
 $status\
 $character"""
 
-# Global timeout for external commands (ms)
-command_timeout = 2000
+# Global timeout for external commands (ms) - increased for 32GB+ RAM
+command_timeout = 5000  # Increased from 2000 - allow more time for complex commands
 
 # Prompt character configuration
 [character]
@@ -74,7 +74,7 @@ deleted = "✘"
 
 # Show command duration for slow commands
 [cmd_duration]
-min_time = 2000  # Show if command took more than 2 seconds
+min_time = 1000  # Reduced from 2000 - show more command durations with available resources
 format = "took [$duration]($style) "
 style = "yellow bold"
 show_milliseconds = false

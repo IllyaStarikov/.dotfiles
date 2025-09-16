@@ -17,8 +17,8 @@ setopt GLOB_DOTS            # Include dotfiles in globbing
 
 # History
 HISTFILE="$HOME/.zsh_history"
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=100000  # Default: 10000
+SAVEHIST=100000  # Default: 10000
 
 # Performance: Skip global compinit (we'll do it once)
 skip_global_compinit=1
