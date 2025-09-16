@@ -241,16 +241,20 @@ run_test() {
     local test_tmp="$TEST_TMP_DIR/$test_name"
     mkdir -p "$test_tmp"
 
-    # Run test with timeout
-    local timeout_cmd="timeout ${TEST_TIMEOUT:-300}"
+    # Set up test environment
+    export DOTFILES_DIR
+    export TEST_DIR
+    export TEST_TMP_DIR
+
+    # Run test (tests handle their own timeouts)
     local test_output
     local test_status
 
     if [[ $VERBOSE -eq 1 ]]; then
-        $timeout_cmd zsh "$test_file" 2>&1
+        zsh "$test_file" 2>&1
         test_status=$?
     else
-        test_output=$($timeout_cmd zsh "$test_file" 2>&1)
+        test_output=$(zsh "$test_file" 2>&1)
         test_status=$?
     fi
 
@@ -264,11 +268,15 @@ run_test() {
     elif [[ $test_status -eq 124 ]]; then
         log FAIL "$test_name - TIMEOUT"
         ((FAILED++))
-        [[ $VERBOSE -eq 0 ]] && echo "$test_output"
+        if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
+            echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
+        fi
     else
         log FAIL "$test_name - EXIT $test_status"
         ((FAILED++))
-        [[ $VERBOSE -eq 0 ]] && echo "$test_output"
+        if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
+            echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
+        fi
 
         # Bail on first failure if requested
         [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
@@ -304,7 +312,10 @@ run_test_category() {
         if [[ $PARALLEL -eq 1 ]]; then
             run_test "$test_file" &
         else
-            run_test "$test_file" || [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
+            run_test "$test_file"
+            if [[ $? -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
+                return 1
+            fi
         fi
     done
 
@@ -322,14 +333,10 @@ setup_test_environment() {
     # Create temp directory
     mkdir -p "$TEST_TMP_DIR"
 
-    # Export test helpers
-    export -f assert_equals
-    export -f assert_true
-    export -f assert_false
-    export -f assert_file_exists
-    export -f assert_dir_exists
-    export -f assert_command_succeeds
-    export -f skip_if
+    # Export environment variables for tests
+    export DOTFILES_DIR
+    export TEST_DIR
+    export TEST_TMP_DIR
 
     # Source test helpers if available
     if [[ -f "$TEST_DIR/helpers/common.sh" ]]; then
