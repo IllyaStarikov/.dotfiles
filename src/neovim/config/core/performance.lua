@@ -5,14 +5,14 @@ local g = vim.g
 
 -- Performance settings
 opt.lazyredraw = false
-opt.updatecount = 100
-opt.redrawtime = 1500
-opt.ttimeoutlen = 10 -- Small delay for escape sequences
+opt.updatecount = 500  -- Default: 100
+opt.redrawtime = 10000  -- Default: 2000
+opt.ttimeoutlen = 10
 
 -- Large file optimizations
-opt.synmaxcol = 1000
+opt.synmaxcol = 4096  -- Default: 3000
 g.vimsyn_embed = "lPr"
-opt.maxmempattern = 2000
+opt.maxmempattern = 50000  -- Default: 1000
 
 -- Python host configuration
 local python3_path = vim.fn.exepath("python3")

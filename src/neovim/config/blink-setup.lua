@@ -45,7 +45,7 @@ return {
 
     -- List configuration
     list = {
-      max_items = 200,
+      max_items = 500,  -- Default: 200
       selection = {
         preselect = true, -- Preselect first item
         auto_insert = false, -- Don't auto-insert on selection
@@ -63,7 +63,7 @@ return {
 
     -- Menu appearance
     menu = {
-      max_height = 10,
+      max_height = 20,  -- Default: 10
       draw = {
         columns = {
           { "kind_icon" },
@@ -99,10 +99,10 @@ return {
     providers = {
       lsp = {
         async = true, -- Non-blocking LSP requests
-        timeout_ms = 2000, -- Timeout for LSP requests
+        timeout_ms = 5000, -- Default: 2000
       },
       buffer = {
-        max_items = 5, -- Limit buffer completions for performance
+        max_items = 20, -- Default: 5
         opts = {
           -- Only search visible buffers
           get_bufnrs = function()
@@ -122,7 +122,7 @@ return {
         async = false, -- Path completion is fast enough to be sync
       },
       snippets = {
-        max_items = 10,
+        max_items = 30,  -- Default: 10
         opts = {
           friendly_snippets = true,
           search_paths = { vim.fn.stdpath("config") .. "/snippets" },

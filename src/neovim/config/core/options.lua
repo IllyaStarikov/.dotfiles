@@ -4,14 +4,14 @@ local opt = vim.opt
 local g = vim.g
 
 -- General settings
-opt.history = 1000 -- Increased history size for better undo
-opt.scrolloff = 8 -- More context lines around cursor
-opt.sidescrolloff = 8 -- Horizontal scroll context
-opt.regexpengine = 1 -- Use regex engine v1 for better performance
+opt.history = 10000 -- Default: 1000
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.regexpengine = 0 -- Default: 1
 
 -- Large file performance settings
-opt.maxmempattern = 5000 -- Increase memory for pattern matching (default: 1000)
-opt.redrawtime = 5000 -- Increase redraw timeout for complex syntax (default: 2000ms)
+opt.maxmempattern = 50000 -- Default: 1000
+opt.redrawtime = 20000 -- Default: 2000
 -- NOTE: synmaxcol removed - we handle it per-filetype in autocmds
 opt.clipboard:append("unnamedplus") -- Use system clipboard
 opt.backspace = { "indent", "eol", "start" } -- Proper backspace

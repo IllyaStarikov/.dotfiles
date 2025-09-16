@@ -95,6 +95,28 @@
 [maintenance]
     auto = true
     strategy = incremental
+
+# Performance optimizations
+[pack]
+    threads = 0          # Default: number of CPUs
+    windowMemory = 256m  # Default: unlimited
+    packSizeLimit = 2g   # Default: unlimited
+
+[core]
+    preloadindex = true  # Default: true
+    fscache = true       # Default: true on Windows
+    untrackedCache = true # Default: false
+
+[diff]
+    algorithm = histogram # Default: myers
+    renameLimit = 10000   # Default: 400
+
+[merge]
+    renameLimit = 10000   # Default: 1000
+
+[gc]
+    auto = 256           # Default: 6700
+    autopacklimit = 50   # Default: 50
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
