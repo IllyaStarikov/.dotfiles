@@ -24,16 +24,7 @@ action = "ToggleFullscreen"
 key = "Return"
 mods = "Command"
 
-# Enhanced clipboard operations
-[[keyboard.bindings]]
-action = "Copy"
-key = "C"
-mods = "Command"
-
-[[keyboard.bindings]]
-action = "Paste"
-key = "V"
-mods = "Command"
+# Clipboard - Cmd+C and Cmd+V are defaults, removed
 
 # Advanced text selection - Command+A is handled by default
 
@@ -119,15 +110,15 @@ command = "None"    # No audio bell for productivity
 
 [general]
 import = ["~/.config/alacritty/theme.toml"]
-live_config_reload = true
+# live_config_reload true is default
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🎨 COLOR CONFIGURATION
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [colors]
-draw_bold_text_with_bright_colors = true
-transparent_background_colors = true
+draw_bold_text_with_bright_colors = true  # Default: false (better visibility)
+transparent_background_colors = true       # Default: false (transparency support)
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🌍 ENVIRONMENT VARIABLES
@@ -146,43 +137,41 @@ LC_CTYPE = "en_US.UTF-8"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [scrolling]
-history = 50000      # Default: 10000
-multiplier = 3       # Faster scrolling
+history = 50000      # Default: 10000 (more history for debugging)
+# multiplier removed - default 3 is already optimal
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 📝 TEXT SELECTION & CLIPBOARD
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [selection]
-save_to_clipboard = true  # Auto-copy selection
-semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+save_to_clipboard = true  # Default: false (auto-copy is useful)
+# semantic_escape_chars default is already optimal
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🖼️ WINDOW CONFIGURATION
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [window]
-decorations = "full"        # Required for macOS tabs to work
-dynamic_title = true
-opacity = 1.0               # Full opacity for better performance
-startup_mode = "Windowed"
-resize_increments = true    # Resize by character grid
-option_as_alt = "Both"      # Proper Alt key behavior on macOS
+# decorations "full" is default
+# dynamic_title true is default
+# opacity 1.0 is default
+# startup_mode "Windowed" is default
+resize_increments = true    # Default: false (resize by character grid)
+option_as_alt = "Both"      # Default: "None" (proper Alt key on macOS)
 
 # macOS specific window options
-decorations_theme_variant = "None"  # Follow system theme
+# decorations_theme_variant "None" is default
 
 [window.dimensions]
-columns = 120
-lines = 40
+columns = 120  # Default: 80 (wider window)
+lines = 40     # Default: 24 (taller window)
 
 [window.padding]
-x = 8
-y = 8
+x = 8  # Default: 0 (breathing room)
+y = 8  # Default: 0 (breathing room)
 
-[window.position]
-x = 100
-y = 100
+# window.position removed - let window manager decide
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🖋️ FONT CONFIGURATION (Enhanced)
@@ -225,7 +214,7 @@ y = 1  # Only non-default value
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [mouse]
-hide_when_typing = true
+# hide_when_typing true is default
 
 [[mouse.bindings]]
 mouse = "Middle"
