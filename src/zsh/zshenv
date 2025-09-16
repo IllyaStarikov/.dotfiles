@@ -18,29 +18,18 @@ case "$OSTYPE" in
         ;;
 esac
 
-# Ensure proper locale settings for UTF-8
-export LANG="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-export LC_CTYPE="en_US.UTF-8"
 
 # Zinit configuration
 export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-# Faster vim mode
-export KEYTIMEOUT=1
+export KEYTIMEOUT=1  # Default: 40 (faster vim mode switching)
 
-# If on SSH, just use vim
+# Editor configuration
 if [[ $SSH_CONNECTION ]]; then
    export EDITOR='vim'
+else
+   export VISUAL=nvim
+   export EDITOR="$VISUAL"
 fi
-
-# Python configuration - use system python3
-if command -v python3 >/dev/null 2>&1; then
-    export PYTHON3_PATH="$(command -v python3)"
-fi
-
-# If not on SSH, still use vim
-export VISUAL=nvim
-export EDITOR="$VISUAL"
 # Rust configuration
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
