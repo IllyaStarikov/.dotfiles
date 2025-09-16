@@ -10,8 +10,8 @@ This directory contains configuration files that control the behavior of various
 
 ```
 config/
-├── brain/              # AI assistant configuration
-│   └── logs/          # Runtime logs for brain AI system
+├── cortex/             # AI assistant configuration
+│   └── logs/          # Runtime logs for cortex AI system
 └── fixy.json  # Universal code formatter configuration
 ```
 
@@ -55,9 +55,9 @@ This means Python files will:
 
 ## Subdirectories
 
-### brain/
+### cortex/
 
-Configuration and runtime data for the Brain AI assistant system.
+Configuration and runtime data for the Cortex AI assistant system.
 
 **Contents**:
 - Configuration files for AI providers
@@ -67,7 +67,7 @@ Configuration and runtime data for the Brain AI assistant system.
 
 **Structure**:
 ```
-brain/
+cortex/
 └── logs/           # Runtime logs
     ├── server.log  # MLX server logs
     ├── agent.log   # AI agent logs

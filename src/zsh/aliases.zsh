@@ -183,6 +183,12 @@ alias py2="python2"
 alias pip="pip3"
 # Node/npm/yarn are handled by NVM lazy loading - no aliases needed
 
+# AI assistant - Cortex
+alias cortex="~/.dotfiles/src/scripts/cortex"
+alias cortex-status="cortex status"
+alias cortex-model="cortex model"
+alias cortex-agent="cortex agent"
+
 # Docker shortcuts
 if command -v docker &>/dev/null; then
     # keep-sorted start

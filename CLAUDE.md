@@ -107,11 +107,11 @@ fetch-quotes           # Fetch inspirational quotes
 tmux-utils battery     # Check battery status
 tmux-utils cpu         # Check CPU usage
 
-# AI-powered local development (via pyenv-installed brain tool)
-brain                  # Local AI assistant for coding
-brain status          # Check MLX server status
-brain model <model>   # Switch AI model
-brain agent on/off    # Toggle AI agent mode
+# AI-powered local development with Cortex (via pyenv)
+cortex                  # Local AI assistant for coding
+cortex status          # Check MLX server status
+cortex model <model>   # Switch AI model
+cortex agent on/off    # Toggle AI agent mode
 ```
 
 ## Repository Statistics
