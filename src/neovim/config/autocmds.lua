@@ -1518,85 +1518,87 @@ autocmd("BufNewFile", {
 -- Optimize handling for large BUILD/Bazel files
 local large_file_group = augroup("large_file_handling", { clear = true })
 
--- Store flag to track if we're dealing with a large BUILD file
-local is_large_build_file = {}
-
--- Detect and optimize large BUILD files
+-- Handle large BUILD files with proper syntax highlighting
 autocmd({ "BufReadPre", "FileReadPre" }, {
   group = large_file_group,
   pattern = { "BUILD", "BUILD.bazel", "*.BUILD", "*.bzl", "*.bazel", "WORKSPACE", "WORKSPACE.bazel" },
   callback = function()
     local file = vim.fn.expand("<afile>")
     local size = vim.fn.getfsize(file)
-    local bufnr = vim.fn.bufnr(file)
 
     -- Quick line count check without reading entire file
     local lines = 0
     if vim.fn.filereadable(file) == 1 then
-      lines = tonumber(vim.fn.system("wc -l < " .. vim.fn.shellescape(file)):gsub("%s+", "")) or 0
+      local line_count_str = vim.fn.system("wc -l < " .. vim.fn.shellescape(file))
+      line_count_str = line_count_str:gsub("%s+", "")
+      lines = tonumber(line_count_str) or 0
     end
 
     -- For BUILD files over 5000 lines or 1MB, optimize settings
     if lines > 5000 or size > 1048576 then
-      is_large_build_file[bufnr] = true
-      vim.notify("Large BUILD file detected (" .. lines .. " lines). Optimizing performance...", vim.log.levels.INFO)
+      vim.notify("Large BUILD file detected (" .. lines .. " lines). Applying optimizations...", vim.log.levels.INFO)
 
-      -- Performance optimizations for large files
+      -- Set buffer-local variables to track large file
+      vim.b.large_build_file = true
+      vim.b.large_file_lines = lines
+
+      -- Performance optimizations
       vim.opt_local.foldmethod = "manual"  -- Disable automatic folding
       vim.opt_local.undolevels = 100  -- Reduce undo history
-      vim.opt_local.undoreload = 0    -- Don't reload undo on file reload
       vim.opt_local.swapfile = false  -- Disable swap for large files
+      vim.opt_local.backup = false  -- Disable backup
+      vim.opt_local.writebackup = false  -- Disable write backup
 
-      -- IMPORTANT: Don't limit synmaxcol for BUILD files - we need full line syntax
-      -- Instead, increase timeouts to allow processing
-      vim.opt.redrawtime = 10000  -- Increase redraw timeout to 10 seconds
-      vim.opt.regexpengine = 0    -- Use automatic regex engine selection
-      vim.opt.maxmempattern = 10000  -- Increase memory for pattern matching (double previous)
-    else
-      is_large_build_file[bufnr] = false
+      -- Increase processing limits for large files
+      vim.opt.maxmempattern = 10000  -- Increase memory for pattern matching
+      vim.opt.redrawtime = 10000  -- Increase redraw timeout
+
+      -- Disable some expensive features for performance
+      vim.opt_local.cursorline = false  -- Disable cursor line highlighting
+      vim.opt_local.relativenumber = false  -- Disable relative numbers
+      vim.opt_local.spell = false  -- Disable spell checking
     end
   end,
   desc = "Optimize settings for large BUILD files",
 })
 
--- Ensure syntax highlighting works after file is loaded
+-- Ensure proper filetype and highlighting after file is loaded
 autocmd({ "BufReadPost", "FileReadPost" }, {
   group = large_file_group,
   pattern = { "BUILD", "BUILD.bazel", "*.BUILD", "*.bzl", "*.bazel", "WORKSPACE", "WORKSPACE.bazel" },
   callback = function()
-    local bufnr = vim.fn.bufnr()
-
-    -- Ensure filetype is set
-    if vim.bo.filetype ~= "bzl" then
+    -- Always set filetype to bzl for BUILD files
+    if vim.bo.filetype ~= "bzl" and vim.bo.filetype ~= "starlark" then
       vim.bo.filetype = "bzl"
     end
 
-    -- For large files, we need to ensure syntax is properly enabled
-    if is_large_build_file[bufnr] then
-      -- Enable syntax highlighting
-      vim.cmd("syntax on")
-      vim.cmd("syntax enable")
+    -- For large files, ensure treesitter is used instead of regex-based syntax
+    if vim.b.large_build_file then
+      -- Use Treesitter for highlighting if available
+      local ok, ts_configs = pcall(require, "nvim-treesitter.configs")
+      if ok then
+        -- Ensure starlark parser is installed and active
+        local ts_parsers = require("nvim-treesitter.parsers")
+        if ts_parsers.has_parser("starlark") then
+          vim.treesitter.start(0, "starlark")
+        else
+          -- Fallback to traditional syntax if treesitter not available
+          vim.cmd("syntax on")
+          vim.cmd("syntax sync fromstart")
+        end
+      else
+        -- Fallback to traditional syntax
+        vim.cmd("syntax on")
+        vim.cmd("syntax sync fromstart")
+      end
 
-      -- Force filetype redetection to ensure all features work
-      vim.cmd("doautocmd FileType bzl")
-
-      -- Ensure LSP starts
-      vim.defer_fn(function()
+      -- Trigger LSP attachment
+      vim.schedule(function()
         vim.cmd("LspStart")
-      end, 100)
+      end)
     end
   end,
-  desc = "Ensure syntax and LSP work for BUILD files",
-})
-
--- Clean up tracking when buffer is deleted
-autocmd("BufDelete", {
-  group = large_file_group,
-  callback = function()
-    local bufnr = vim.fn.bufnr()
-    is_large_build_file[bufnr] = nil
-  end,
-  desc = "Clean up large file tracking",
+  desc = "Setup highlighting for BUILD files",
 })
 
 -- =============================================================================
