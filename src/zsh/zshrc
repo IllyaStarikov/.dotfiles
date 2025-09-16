@@ -5,14 +5,14 @@
 # Core Settings
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Essential options
+# Essential options (only non-defaults)
 setopt AUTO_CD              # cd by typing directory name
 setopt INTERACTIVE_COMMENTS # Allow comments in interactive mode
 setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
 setopt SHARE_HISTORY        # Share history between sessions
 setopt HIST_REDUCE_BLANKS   # Remove blanks from history
 setopt CORRECT              # Command correction
-setopt NO_BEEP              # No beeping
+# NO_BEEP is default in modern zsh
 setopt GLOB_DOTS            # Include dotfiles in globbing
 
 # History
@@ -78,12 +78,12 @@ fi
 export EDITOR=nvim
 export VISUAL=nvim
 
-# Language
+# Language - usually set by system, but ensures consistency
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Less options
-export LESS='-R -S -M -i'
+# Less options (default is no flags)
+export LESS='-R -S -M -i'  # Raw colors, no wrap, long prompt, case-insensitive
 
 # FZF configuration
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
