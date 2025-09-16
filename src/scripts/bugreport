@@ -13,11 +13,11 @@ readonly REPORT_DIR="${DOTFILES_DIR}/bugreport_${TIMESTAMP}"
 readonly ARCHIVE_NAME="dotfiles_bugreport_${TIMESTAMP}.tar.gz"
 
 # Configuration
-declare -g DEBUG_MODE=0
-declare -g TEST_MODE=0
-declare -g TEST_SIZE="large"
-declare -g INCLUDE_LOGS=1
-declare -g SANITIZE_OUTPUT=1
+DEBUG_MODE=0
+TEST_MODE=0
+TEST_SIZE="large"
+INCLUDE_LOGS=1
+SANITIZE_OUTPUT=1
 
 # Colors
 if [[ -t 1 ]]; then
@@ -227,7 +227,8 @@ collect_system_info() {
         
         echo "=== Hardware Information ==="
         if [[ "$(uname)" == "Darwin" ]]; then
-            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | sanitize "$(cat)"
+            # Fix: sanitize function call was incorrect - should pipe through it
+            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | while read -r line; do sanitize "$line"; done
             echo
             echo "=== macOS Version ==="
             sw_vers
@@ -252,7 +253,7 @@ collect_system_info() {
         
         echo
         echo "=== Network Interfaces ==="
-        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | sanitize "$(cat)" || ip addr 2>/dev/null | sanitize "$(cat)"
+        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | while read -r line; do sanitize "$line"; done || ip addr 2>/dev/null | while read -r line; do sanitize "$line"; done
         
         echo
         echo "=== Process Count ==="
@@ -267,7 +268,7 @@ collect_system_info() {
     # Collect environment variables (sanitized)
     {
         echo "=== Environment Variables (Sanitized) ==="
-        env | sort | sanitize "$(cat)" | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL"
+        env | sort | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL" | while read -r line; do sanitize "$line"; done
     } > "$REPORT_DIR/system/environment.txt"
     
     # Collect PATH information
@@ -417,7 +418,8 @@ collect_software_versions() {
 #######################################
 collect_dotfiles_config() {
     log PROGRESS "Collecting dotfiles configuration"
-    
+
+    log DEBUG "Collecting git info"
     # Git information
     {
         echo "=== Git Repository Info ==="
@@ -431,20 +433,30 @@ collect_dotfiles_config() {
         echo "=== Submodules ==="
         git submodule status 2>/dev/null || echo "No submodules"
     } > "$REPORT_DIR/config/git_info.txt"
-    
-    # Directory structure
+
+    log DEBUG "Collecting directory structure"
+    # Directory structure (with timeout)
     {
         echo "=== Dotfiles Structure ==="
-        tree -L 3 "$DOTFILES_DIR" 2>/dev/null || find "$DOTFILES_DIR" -maxdepth 3 -type d | sort
+        timeout 3 tree -L 3 "$DOTFILES_DIR" 2>/dev/null || timeout 3 find "$DOTFILES_DIR" -maxdepth 3 -type d 2>/dev/null | sort | head -100
     } > "$REPORT_DIR/config/structure.txt"
-    
-    # Symlinks
+
+    log DEBUG "Collecting symlinks"
+    # Symlinks (simpler approach to avoid hanging)
     {
         echo "=== Active Symlinks ==="
-        find ~ -maxdepth 2 -type l -exec sh -c 'echo "{} -> $(readlink "{}")"' \; 2>/dev/null | \
-            grep "$DOTFILES_DIR" | sort
+        # Just list common dotfile symlinks to avoid hanging
+        for item in ~/.zshrc ~/.zshenv ~/.tmux.conf ~/.gitconfig ~/.gitignore ~/.config/nvim ~/.config/alacritty; do
+            if [[ -L "$item" ]]; then
+                target=$(readlink "$item" 2>/dev/null)
+                if [[ "$target" == *"$DOTFILES_DIR"* ]]; then
+                    echo "$item -> $target"
+                fi
+            fi
+        done
     } > "$REPORT_DIR/config/symlinks.txt"
-    
+
+    log DEBUG "Collecting configuration file listings"
     # Configuration files (headers only, no content for security)
     {
         echo "=== Configuration Files ==="
@@ -476,20 +488,22 @@ collect_nvim_diagnostics() {
     # Basic info
     nvim --version > "$REPORT_DIR/config/nvim_version.txt" 2>&1
     
-    # Checkhealth
+    # Checkhealth (with timeout to prevent hanging)
     log DEBUG "Running Neovim checkhealth"
-    nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null
+    timeout 10 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
+        echo "Neovim checkhealth timed out after 10 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
+    }
     
-    # Plugin list
+    # Plugin list (with timeout)
     {
         echo "=== Lazy.nvim Plugins ==="
-        nvim --headless -c "lua require('lazy').stats()" -c "qa!" 2>&1 || echo "Unable to get plugin stats"
+        timeout 5 nvim --headless -c "lua require('lazy').stats()" -c "qa!" 2>&1 || echo "Unable to get plugin stats (timed out)"
     } > "$REPORT_DIR/config/nvim_plugins.txt"
     
-    # LSP servers
+    # LSP servers (with timeout)
     {
         echo "=== LSP Servers ==="
-        nvim --headless -c "lua vim.tbl_map(print, vim.lsp.get_clients())" -c "qa!" 2>&1 || echo "Unable to get LSP info"
+        timeout 5 nvim --headless -c "lua vim.tbl_map(print, vim.lsp.get_clients())" -c "qa!" 2>&1 || echo "Unable to get LSP info (timed out)"
     } > "$REPORT_DIR/config/nvim_lsp.txt"
     
     log SUCCESS "Neovim diagnostics collected"
@@ -504,7 +518,7 @@ collect_shell_diagnostics() {
     # Zsh configuration
     {
         echo "=== Zsh Configuration ==="
-        echo "ZDOTDIR: $ZDOTDIR"
+        echo "ZDOTDIR: ${ZDOTDIR:-not set}"
         echo "Config files:"
         ls -la ~/.z* 2>/dev/null | grep -E "zsh|zprofile|zlogin"
         echo
@@ -515,19 +529,27 @@ collect_shell_diagnostics() {
         setopt 2>/dev/null | head -50
     } > "$REPORT_DIR/config/zsh_config.txt"
     
-    # Shell startup time
+    # Shell startup time (with timeout to prevent hanging on initialization)
     {
         echo "=== Shell Startup Time ==="
         echo "Testing zsh startup..."
         local start=$(date +%s%N)
-        zsh -i -c exit 2>/dev/null
+        timeout 5 zsh -i -c exit 2>/dev/null
         local end=$(date +%s%N)
-        echo "Interactive shell startup: $(( (end - start) / 1000000 ))ms"
-        
+        if [[ $? -eq 124 ]]; then
+            echo "Interactive shell startup: TIMEOUT (>5s)"
+        else
+            echo "Interactive shell startup: $(( (end - start) / 1000000 ))ms"
+        fi
+
         start=$(date +%s%N)
-        zsh -c exit 2>/dev/null
+        timeout 2 zsh -c exit 2>/dev/null
         end=$(date +%s%N)
-        echo "Non-interactive shell startup: $(( (end - start) / 1000000 ))ms"
+        if [[ $? -eq 124 ]]; then
+            echo "Non-interactive shell startup: TIMEOUT (>2s)"
+        else
+            echo "Non-interactive shell startup: $(( (end - start) / 1000000 ))ms"
+        fi
     } > "$REPORT_DIR/debug/shell_performance.txt"
     
     # Aliases and functions count
@@ -603,14 +625,16 @@ collect_logs() {
     
     # System logs (last 100 lines, sanitized)
     if [[ "$(uname)" == "Darwin" ]]; then
-        log DEBUG "Collecting macOS system logs"
-        log show --style syslog --last 1h 2>/dev/null | tail -100 | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log"
+        log DEBUG "Collecting macOS system logs (limited to 5 seconds)"
+        timeout 5 log show --style syslog --last 5m 2>/dev/null | tail -100 | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" || {
+            echo "System log collection timed out" > "$REPORT_DIR/logs/system.log"
+        }
     else
         # Linux system logs
         if [[ -r /var/log/syslog ]]; then
-            tail -100 /var/log/syslog | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/syslog | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         elif [[ -r /var/log/messages ]]; then
-            tail -100 /var/log/messages | sanitize "$(cat)" > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/messages | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         fi
     fi
     
@@ -659,23 +683,27 @@ run_tests() {
 #######################################
 collect_debug_info() {
     log PROGRESS "Collecting debug information"
-    
+
+    log DEBUG "Collecting process list"
     # Process list
     {
         echo "=== Process Tree ==="
-        pstree 2>/dev/null || ps auxf 2>/dev/null | head -50
+        # Use ps aux on macOS (no -f flag), pstree if available
+        pstree 2>/dev/null | head -50 || ps aux 2>/dev/null | head -50 || echo "Unable to get process list"
     } > "$REPORT_DIR/debug/processes.txt"
-    
-    # Open files
+
+    log DEBUG "Collecting open files"
+    # Open files (with timeout - lsof can be very slow)
     {
         echo "=== Open Files (Sample) ==="
-        lsof 2>/dev/null | head -100 | sanitize "$(cat)"
+        timeout 3 lsof 2>/dev/null | head -100 | while read -r line; do sanitize "$line"; done || echo "lsof command timed out"
     } > "$REPORT_DIR/debug/open_files.txt"
-    
-    # Network connections
+
+    log DEBUG "Collecting network connections"
+    # Network connections (with timeout)
     {
         echo "=== Network Connections ==="
-        netstat -an 2>/dev/null | head -50 | sanitize "$(cat)" || ss -an 2>/dev/null | head -50 | sanitize "$(cat)"
+        timeout 2 netstat -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || timeout 2 ss -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || echo "Network info collection timed out"
     } > "$REPORT_DIR/debug/network.txt"
     
     # Kernel modules (Linux)
@@ -686,12 +714,13 @@ collect_debug_info() {
         } > "$REPORT_DIR/debug/kernel_modules.txt"
     fi
     
+    log DEBUG "Collecting system limits"
     # System limits
     {
         echo "=== System Limits ==="
         ulimit -a
     } > "$REPORT_DIR/debug/limits.txt"
-    
+
     log SUCCESS "Debug information collected"
 }
 
@@ -776,5 +805,8 @@ main() {
     echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
 }
 
-# Run main function
-main "$@"
+# Run main function only if script is executed directly
+# Zsh way to check if script is being sourced
+if [[ "${ZSH_EVAL_CONTEXT}" != *":file" ]] && [[ "${ZSH_EVAL_CONTEXT}" != *":source" ]]; then
+    main "$@"
+fi
