@@ -597,60 +597,9 @@ map(
   { desc = "New CodeCompanion Chat" }
 )
 
-<<<<<<< HEAD
--- Adapter switching
-local function switch_codecompanion_adapter(adapter_name)
-  local ok, codecompanion = pcall(require, "codecompanion")
-  if
-    ok
-    and codecompanion.config
-    and codecompanion.config.strategies
-    and codecompanion.config.strategies.chat
-  then
-    codecompanion.config.strategies.chat.adapter = adapter_name
-    vim.notify(
-      "CodeCompanion switched to " .. adapter_name,
-      vim.log.levels.INFO
-    )
-  else
-    vim.notify("Failed to switch adapter", vim.log.levels.ERROR)
-  end
-end
-||||||| parent of 5dc9916 (feat: implement download command for AI models)
--- Adapter switching
-local function switch_codecompanion_adapter(adapter_name)
-  local ok, codecompanion = pcall(require, "codecompanion")
-  if ok and codecompanion.config and codecompanion.config.strategies and codecompanion.config.strategies.chat then
-    codecompanion.config.strategies.chat.adapter = adapter_name
-    vim.notify("CodeCompanion switched to " .. adapter_name, vim.log.levels.INFO)
-  else
-    vim.notify("Failed to switch adapter", vim.log.levels.ERROR)
-  end
-end
-=======
 -- Model and adapter switching
 local ai_config = require("config.plugins.ai")
->>>>>>> 5dc9916 (feat: implement download command for AI models)
 
-<<<<<<< HEAD
-map("n", "<leader>cal", function()
-  switch_codecompanion_adapter("ollama")
-end, { desc = "Switch to Ollama" })
-map("n", "<leader>caa", function()
-  switch_codecompanion_adapter("anthropic")
-end, { desc = "Switch to Anthropic" })
-map("n", "<leader>cao", function()
-  switch_codecompanion_adapter("openai")
-end, { desc = "Switch to OpenAI" })
-map("n", "<leader>cac", function()
-  switch_codecompanion_adapter("copilot")
-end, { desc = "Switch to Copilot" })
-||||||| parent of 5dc9916 (feat: implement download command for AI models)
-map("n", "<leader>cal", function() switch_codecompanion_adapter("ollama") end, { desc = "Switch to Ollama" })
-map("n", "<leader>caa", function() switch_codecompanion_adapter("anthropic") end, { desc = "Switch to Anthropic" })
-map("n", "<leader>cao", function() switch_codecompanion_adapter("openai") end, { desc = "Switch to OpenAI" })
-map("n", "<leader>cac", function() switch_codecompanion_adapter("copilot") end, { desc = "Switch to Copilot" })
-=======
 -- Quick model size switching
 map("n", "<leader>c1", function() ai_config.use_small_model() end, { desc = "Use Small Model (1-3B)" })
 map("n", "<leader>c2", function() ai_config.use_medium_model() end, { desc = "Use Medium Model (7B)" })
@@ -665,7 +614,6 @@ if vim.fn.has('mac') == 1 then
   map("n", "<leader>cao", function() ai_config.use_ollama() end, { desc = "Switch to Ollama" })
   map("n", "<leader>cax", function() ai_config.start_mlx_server() end, { desc = "Start MLX Server" })
 end
->>>>>>> 5dc9916 (feat: implement download command for AI models)
 
 -- ============================================================================
 -- OIL.NVIM
