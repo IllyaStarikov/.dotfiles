@@ -325,6 +325,15 @@ collect_software_versions() {
         
         echo -n "gh: "
         gh --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "git-lfs: "
+        git-lfs --version 2>/dev/null || echo "not found"
+
+        echo -n "gitleaks: "
+        gitleaks version 2>/dev/null || echo "not found"
+
+        echo -n "pre-commit: "
+        pre-commit --version 2>/dev/null || echo "not found"
         
         # Terminal multiplexers
         echo
@@ -378,18 +387,279 @@ collect_software_versions() {
         echo -n "java: "
         java --version 2>&1 | head -1 || echo "not found"
         
-        # Other tools
+        # Terminal emulators and shells
         echo
-        echo "=== Other Tools ==="
-        
+        echo "=== Terminal Emulators & Shells ==="
+
+        echo -n "alacritty: "
+        alacritty --version 2>/dev/null || echo "not found"
+
+        echo -n "wezterm: "
+        wezterm --version 2>/dev/null || echo "not found"
+
+        echo -n "kitty: "
+        kitty --version 2>/dev/null || echo "not found"
+
+        echo -n "starship: "
+        starship --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "fish: "
+        fish --version 2>/dev/null || echo "not found"
+
+        # Development tools
+        echo
+        echo "=== Development Tools ==="
+
+        echo -n "make: "
+        make --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "cmake: "
+        cmake --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "gcc: "
+        gcc --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "clang: "
+        clang --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "cargo: "
+        cargo --version 2>/dev/null || echo "not found"
+
+        echo -n "npm: "
+        npm --version 2>/dev/null || echo "not found"
+
+        echo -n "yarn: "
+        yarn --version 2>/dev/null || echo "not found"
+
+        echo -n "pnpm: "
+        pnpm --version 2>/dev/null || echo "not found"
+
+        echo -n "pip: "
+        pip3 --version 2>/dev/null || pip --version 2>/dev/null || echo "not found"
+
+        echo -n "poetry: "
+        poetry --version 2>/dev/null || echo "not found"
+
+        echo -n "pyenv: "
+        pyenv --version 2>/dev/null || echo "not found"
+
+        echo -n "rbenv: "
+        rbenv --version 2>/dev/null || echo "not found"
+
+        echo -n "nvm: "
+        nvm --version 2>/dev/null || echo "not found"
+
+        echo -n "rustup: "
+        rustup --version 2>/dev/null || echo "not found"
+
+        # Code quality tools
+        echo
+        echo "=== Code Quality Tools ==="
+
+        echo -n "shellcheck: "
+        shellcheck --version 2>/dev/null | grep version || echo "not found"
+
+        echo -n "stylua: "
+        stylua --version 2>/dev/null || echo "not found"
+
+        echo -n "ruff: "
+        ruff --version 2>/dev/null || echo "not found"
+
+        echo -n "black: "
+        black --version 2>/dev/null || echo "not found"
+
+        echo -n "prettier: "
+        prettier --version 2>/dev/null || echo "not found"
+
+        echo -n "eslint: "
+        eslint --version 2>/dev/null || echo "not found"
+
+        echo -n "shfmt: "
+        shfmt --version 2>/dev/null || echo "not found"
+
+        # File utilities
+        echo
+        echo "=== File Utilities ==="
+
+        echo -n "fd: "
+        fd --version 2>/dev/null || echo "not found"
+
+        echo -n "rg (ripgrep): "
+        rg --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "fzf: "
+        fzf --version 2>/dev/null || echo "not found"
+
+        echo -n "bat: "
+        bat --version 2>/dev/null || echo "not found"
+
+        echo -n "eza: "
+        eza --version 2>/dev/null || echo "not found"
+
+        echo -n "tree: "
+        tree --version 2>/dev/null || echo "not found"
+
+        echo -n "jq: "
+        jq --version 2>/dev/null || echo "not found"
+
+        echo -n "yq: "
+        yq --version 2>/dev/null || echo "not found"
+
+        # Cloud tools
+        echo
+        echo "=== Cloud & Container Tools ==="
+
         echo -n "docker: "
         docker --version 2>/dev/null || echo "not found"
-        
+
+        echo -n "docker-compose: "
+        docker-compose --version 2>/dev/null || echo "not found"
+
         echo -n "kubectl: "
         kubectl version --client --short 2>/dev/null || echo "not found"
-        
+
         echo -n "terraform: "
         terraform version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "aws: "
+        aws --version 2>/dev/null || echo "not found"
+
+        echo -n "gcloud: "
+        gcloud --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "azure: "
+        az --version 2>/dev/null | head -1 || echo "not found"
+
+        # Database clients
+        echo
+        echo "=== Database Clients ==="
+
+        echo -n "psql: "
+        psql --version 2>/dev/null || echo "not found"
+
+        echo -n "mysql: "
+        mysql --version 2>/dev/null || echo "not found"
+
+        echo -n "sqlite3: "
+        sqlite3 --version 2>/dev/null || echo "not found"
+
+        echo -n "redis-cli: "
+        redis-cli --version 2>/dev/null || echo "not found"
+
+        echo -n "mongosh: "
+        mongosh --version 2>/dev/null || echo "not found"
+
+        # AI/ML tools
+        echo
+        echo "=== AI/ML Tools ==="
+
+        echo -n "ollama: "
+        ollama --version 2>/dev/null || echo "not found"
+
+        echo -n "cortex: "
+        cortex --version 2>/dev/null || echo "not found"
+
+        echo -n "brain: "
+        brain --version 2>/dev/null || echo "not found"
+
+        # System utilities
+        echo
+        echo "=== System Utilities ==="
+
+        echo -n "htop: "
+        htop --version 2>/dev/null || echo "not found"
+
+        echo -n "btop: "
+        btop --version 2>/dev/null || echo "not found"
+
+        echo -n "ncdu: "
+        ncdu --version 2>/dev/null || echo "not found"
+
+        echo -n "wget: "
+        wget --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "curl: "
+        curl --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "rsync: "
+        rsync --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "ssh: "
+        ssh -V 2>&1 || echo "not found"
+
+        echo -n "openssl: "
+        openssl version 2>/dev/null || echo "not found"
+
+        # macOS specific tools
+        if [[ "$(uname)" == "Darwin" ]]; then
+            echo
+            echo "=== macOS Tools ==="
+
+            echo -n "xcode-select: "
+            xcode-select --version 2>/dev/null || echo "not found"
+
+            echo -n "xcrun: "
+            xcrun --version 2>/dev/null || echo "not found"
+
+            echo -n "mas: "
+            mas version 2>/dev/null || echo "not found"
+
+            echo -n "defaults: "
+            echo "$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light") mode"
+        fi
+
+        # Language servers
+        echo
+        echo "=== Language Servers ==="
+
+        echo -n "pyright: "
+        pyright --version 2>/dev/null || echo "not found"
+
+        echo -n "typescript-language-server: "
+        typescript-language-server --version 2>/dev/null || echo "not found"
+
+        echo -n "rust-analyzer: "
+        rust-analyzer --version 2>/dev/null || echo "not found"
+
+        echo -n "gopls: "
+        gopls version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "clangd: "
+        clangd --version 2>/dev/null || echo "not found"
+
+        echo -n "lua-language-server: "
+        lua-language-server --version 2>/dev/null || echo "not found"
+
+        echo -n "yaml-language-server: "
+        yaml-language-server --version 2>/dev/null || echo "not found"
+
+        echo -n "vscode-json-language-server: "
+        vscode-json-language-server --version 2>/dev/null || echo "not found"
+
+        echo -n "bash-language-server: "
+        bash-language-server --version 2>/dev/null || echo "not found"
+
+        echo -n "dockerfile-language-server: "
+        docker-langserver --version 2>/dev/null || echo "not found"
+
+        # Neovim related tools
+        echo
+        echo "=== Neovim Tools ==="
+
+        echo -n "neovide: "
+        neovide --version 2>/dev/null || echo "not found"
+
+        echo -n "nvim-qt: "
+        nvim-qt --version 2>/dev/null || echo "not found"
+
+        echo -n "luarocks: "
+        luarocks --version 2>/dev/null | head -1 || echo "not found"
+
+        echo -n "luajit: "
+        luajit -v 2>/dev/null || echo "not found"
+
+        echo -n "tree-sitter: "
+        tree-sitter --version 2>/dev/null || echo "not found"
         
     } > "$ver_file"
     
@@ -587,17 +857,178 @@ collect_terminal_info() {
         head -50 ~/.config/alacritty/alacritty.toml >> "$REPORT_DIR/config/alacritty_info.txt" 2>/dev/null
     fi
     
-    # tmux config
+    # tmux config with enhanced health check
     if command -v tmux >/dev/null 2>&1; then
         {
             echo "=== tmux Information ==="
             tmux -V
             echo "Config file: ${TMUX_CONF:-~/.tmux.conf}"
             echo "Sessions: $(tmux ls 2>/dev/null | wc -l)"
+            echo
+            echo "=== tmux Server Info ==="
+            tmux info 2>/dev/null | head -50 || echo "Unable to get tmux info"
+            echo
+            echo "=== tmux Plugins (if TPM installed) ==="
+            if [[ -d ~/.tmux/plugins/tpm ]]; then
+                ls -la ~/.tmux/plugins/ 2>/dev/null | head -20
+            else
+                echo "TPM not installed"
+            fi
         } > "$REPORT_DIR/config/tmux_info.txt"
     fi
-    
-    log SUCCESS "Terminal information collected"
+
+    log DEBUG "Checking for Starship"
+    # Starship prompt health check
+    if command -v starship >/dev/null 2>&1; then
+        log DEBUG "Collecting Starship info"
+        {
+            echo "=== Starship Information ==="
+            starship --version
+            echo
+            echo "=== Starship Config Location ==="
+            echo "Config: ~/.config/starship.toml"
+            echo
+            echo "=== Starship Module Status ==="
+            timeout 2 starship module --list 2>/dev/null || echo "Unable to list modules"
+        } > "$REPORT_DIR/config/starship_info.txt"
+    fi
+
+    # WezTerm health check
+    if command -v wezterm >/dev/null 2>&1; then
+        {
+            echo "=== WezTerm Information ==="
+            wezterm --version
+            echo
+            echo "=== WezTerm Config Location ==="
+            echo "Config dir: ~/.config/wezterm/"
+            ls -la ~/.config/wezterm/ 2>/dev/null | head -10 || echo "Config directory not found"
+        } > "$REPORT_DIR/config/wezterm_info.txt"
+    fi
+
+    log DEBUG "Checking for Homebrew"
+    # Homebrew doctor (health check)
+    if command -v brew >/dev/null 2>&1; then
+        log DEBUG "Running Homebrew doctor (limited)"
+        {
+            echo "=== Homebrew Doctor (Critical Issues Only) ==="
+            timeout 10 brew doctor 2>&1 | { grep -E "Warning|Error|Critical" | head -50 || echo "No critical issues found"; }
+            echo
+            echo "=== Homebrew Config ==="
+            brew config 2>&1 | head -30 || echo "Unable to get config"
+        } > "$REPORT_DIR/config/brew_health.txt"
+    fi
+
+    # Git health check
+    {
+        echo "=== Git Configuration Health ==="
+        git config --list --show-origin 2>/dev/null | grep -E "user\.|core\.|push\." | head -30 || echo "Unable to list git config"
+        echo
+        echo "=== Git Hooks ==="
+        if [[ -d "$DOTFILES_DIR/.git/hooks" ]]; then
+            ls -la "$DOTFILES_DIR/.git/hooks/" 2>/dev/null | grep -v sample
+        else
+            echo "No git hooks directory"
+        fi
+        echo
+        echo "=== Git Aliases ==="
+        git config --get-regexp alias 2>/dev/null | head -20 || echo "No aliases found"
+    } > "$REPORT_DIR/config/git_health.txt"
+
+    # Python/pip health check
+    if command -v python3 >/dev/null 2>&1; then
+        {
+            echo "=== Python Health Check ==="
+            python3 --version
+            echo "Python path: $(which python3)"
+            echo
+            echo "=== Pip Check (Dependency Conflicts) ==="
+            timeout 5 python3 -m pip check 2>&1 || echo "Pip check failed or timed out"
+            echo
+            echo "=== Python Site Packages ==="
+            python3 -c "import site; print('\n'.join(site.getsitepackages()))" 2>/dev/null || echo "Unable to get site packages"
+        } > "$REPORT_DIR/config/python_health.txt"
+    fi
+
+    # Node/npm health check
+    if command -v npm >/dev/null 2>&1; then
+        {
+            echo "=== Node/NPM Health Check ==="
+            node --version
+            npm --version
+            echo "NPM prefix: $(npm config get prefix 2>/dev/null)"
+            echo
+            echo "=== NPM Doctor ==="
+            timeout 10 npm doctor 2>&1 | head -50 || echo "NPM doctor timed out or failed"
+            echo
+            echo "=== NPM Cache Verify ==="
+            timeout 5 npm cache verify 2>&1 || echo "Cache verify timed out"
+        } > "$REPORT_DIR/config/npm_health.txt"
+    fi
+
+    # Rust/Cargo health check
+    if command -v cargo >/dev/null 2>&1; then
+        {
+            echo "=== Rust/Cargo Health Check ==="
+            rustc --version 2>/dev/null || echo "rustc not found"
+            cargo --version
+            echo
+            echo "=== Rustup Show ==="
+            rustup show 2>/dev/null | head -30 || echo "rustup not available"
+            echo
+            echo "=== Cargo Config ==="
+            cat ~/.cargo/config.toml 2>/dev/null | head -20 || echo "No cargo config found"
+        } > "$REPORT_DIR/config/rust_health.txt"
+    fi
+
+    # Cortex/Brain AI tool health check
+    if command -v cortex >/dev/null 2>&1 || command -v brain >/dev/null 2>&1; then
+        {
+            echo "=== AI Tool Health Check ==="
+            if command -v cortex >/dev/null 2>&1; then
+                echo "Tool: cortex"
+                cortex --version 2>/dev/null || echo "Version not available"
+                echo
+                echo "=== Cortex Status ==="
+                timeout 5 cortex status 2>&1 || echo "Status check timed out"
+                echo
+                echo "=== Cortex Health ==="
+                timeout 5 cortex health -v 2>&1 || echo "Health check timed out"
+            elif command -v brain >/dev/null 2>&1; then
+                echo "Tool: brain"
+                brain --version 2>/dev/null || echo "Version not available"
+                echo
+                echo "=== Brain Status ==="
+                timeout 5 brain status 2>&1 || echo "Status check timed out"
+            fi
+        } > "$REPORT_DIR/config/ai_tools_health.txt"
+    fi
+
+    # Zsh completions health check
+    {
+        echo "=== Zsh Completions Health ==="
+        echo "Completion paths:"
+        echo "$fpath" | tr ' ' '\n' | head -20
+        echo
+        echo "=== Completion Files Count ==="
+        for dir in ${fpath[@]}; do
+            if [[ -d "$dir" ]]; then
+                echo "$dir: $(ls "$dir" 2>/dev/null | wc -l) files"
+            fi
+        done 2>/dev/null | head -20
+    } > "$REPORT_DIR/config/zsh_completions.txt"
+
+    # LSP servers health check (via Neovim)
+    if command -v nvim >/dev/null 2>&1; then
+        {
+            echo "=== LSP Servers Health Check ==="
+            timeout 5 nvim --headless -c "lua vim.lsp.get_log_path()" -c "qa!" 2>&1 || echo "Unable to get LSP log path"
+            echo
+            echo "=== Available LSP Configs ==="
+            timeout 5 nvim --headless -c "lua for k,_ in pairs(require('lspconfig').util.available_servers()) do print(k) end" -c "qa!" 2>&1 || echo "Unable to list LSP configs"
+        } > "$REPORT_DIR/config/lsp_health.txt"
+    fi
+
+    log SUCCESS "Terminal information and health checks collected"
 }
 
 #######################################
