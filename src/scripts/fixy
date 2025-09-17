@@ -543,7 +543,10 @@ except:
       print_color yellow "    $formatter not available"
     fi
   done
-  
+
+  # Clear variables from main loop to prevent leakage
+  unset check_cmd format_cmd
+
   # Run additional formatters if configured
   local additional
   additional=$(get_additional_formatters "$ext")
@@ -562,7 +565,7 @@ except:
     pass
 " 2>/dev/null)
       fi
-      
+
       if [[ -n "$check_cmd" ]] && has_command "$check_cmd"; then
         local format_cmd
         format_cmd=$(get_formatter_command "$formatter" "$file")
