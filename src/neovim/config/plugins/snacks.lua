@@ -17,13 +17,21 @@ function M.setup()
   snacks.setup({
     -- Core modules
     bigfile = { enabled = true },
-    picker = { enabled = true }, -- Required for explorer
+
+    -- Picker configuration with vim.ui overrides
+    picker = {
+      enabled = true,
+      on_show = function()
+        vim.ui.select = require("snacks.picker").select
+      end,
+    },
+
     explorer = {
       enabled = true,
       replace_netrw = true, -- Replace netrw with Snacks explorer
     },
 
-    -- Re-enable dashboard with safe configuration (uses Telescope instead of picker)
+    -- Dashboard configuration with proper setup
     dashboard = {
       enabled = true,
       width = 64, -- Increased width to accommodate ASCII art
@@ -31,9 +39,9 @@ function M.setup()
         header = [[
 ███╗   ███╗██╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗
 ████╗ ████║██║   ██║╚══██╔══╝██║████╗  ██║╚██╗ ██╔╝
-██╔████╔██║██║   ██║   ██║   ██║██╔██╗ ██║ ╚████╔╝ 
-██║╚██╔╝██║██║   ██║   ██║   ██║██║╚██╗██║  ╚██╔╝  
-██║ ╚═╝ ██║╚██████╔╝   ██║   ██║██║ ╚████║   ██║   
+██╔████╔██║██║   ██║   ██║   ██║██╔██╗ ██║ ╚████╔╝
+██║╚██╔╝██║██║   ██║   ██║   ██║██║╚██╗██║  ╚██╔╝
+██║ ╚═╝ ██║╚██████╔╝   ██║   ██║██║ ╚████║   ██║
 ╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝   ╚═╝   ]],
       },
       sections = {
@@ -105,13 +113,25 @@ function M.setup()
     words = { enabled = true },
     terminal = { enabled = true },
     toggle = { enabled = true },
-    input = { enabled = true },
+
+    -- Input with vim.ui.input override
+    input = {
+      enabled = true,
+      on_show = function()
+        vim.ui.input = require("snacks.input")
+      end,
+    },
+
     git = { enabled = true },
     rename = { enabled = true },
     bufdelete = { enabled = true },
     scratch = { enabled = true },
-    lazygit = { enabled = true },
+    lazygit = { enabled = false }, -- Disable until lazygit is installed
   })
+
+  -- Set up vim.ui overrides after setup
+  vim.ui.select = require("snacks.picker").select
+  vim.ui.input = require("snacks.input")
 end
 
 return M

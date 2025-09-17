@@ -764,16 +764,25 @@ collect_nvim_diagnostics() {
         echo "Neovim checkhealth timed out after 10 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
     }
     
-    # Plugin list (with timeout)
+    # Plugin list (with timeout and better error handling)
     {
         echo "=== Lazy.nvim Plugins ==="
-        timeout 5 nvim --headless -c "lua require('lazy').stats()" -c "qa!" 2>&1 || echo "Unable to get plugin stats (timed out)"
+        timeout 5 nvim --headless +'lua local ok, lazy = pcall(require, "lazy"); if ok then local stats = lazy.stats(); print("Loaded plugins: " .. stats.loaded .. "/" .. stats.count); print("Startup time: " .. math.floor(stats.startuptime) .. "ms"); for _, plugin in pairs(require("lazy").plugins()) do print("  - " .. plugin.name .. (plugin._.loaded and " [loaded]" or "")); end else print("Lazy.nvim not found") end' +qa! 2>&1 || {
+            echo "Unable to get plugin stats (timed out or error)"
+            echo "Attempting simpler plugin list..."
+            timeout 5 nvim --headless +'redir @a | silent! Lazy | redir END | put a | w!' "$REPORT_DIR/config/nvim_plugins_fallback.txt" +qa! 2>/dev/null || echo "Plugin collection failed"
+        }
     } > "$REPORT_DIR/config/nvim_plugins.txt"
-    
-    # LSP servers (with timeout)
+
+    # LSP servers (with timeout and better error handling)
     {
         echo "=== LSP Servers ==="
-        timeout 5 nvim --headless -c "lua vim.tbl_map(print, vim.lsp.get_clients())" -c "qa!" 2>&1 || echo "Unable to get LSP info (timed out)"
+        timeout 5 nvim --headless +'lua local clients = vim.lsp.get_clients(); if #clients > 0 then for _, client in ipairs(clients) do print("  - " .. client.name .. " (id: " .. client.id .. ")") end else print("No LSP clients active") end' +qa! 2>&1 || {
+            echo "Unable to get LSP info (timed out or error)"
+            # Try to at least get installed servers from Mason
+            echo "Checking Mason installed servers..."
+            timeout 5 nvim --headless +'lua local ok, mason = pcall(require, "mason-registry"); if ok then local installed = mason.get_installed_package_names(); for _, pkg in ipairs(installed) do print("  - " .. pkg) end else print("Mason not available") end' +qa! 2>/dev/null || echo "LSP collection failed"
+        }
     } > "$REPORT_DIR/config/nvim_lsp.txt"
 
     # Critical Neovim health checks
@@ -848,23 +857,65 @@ collect_shell_diagnostics() {
     {
         echo "=== Shell Startup Time ==="
         echo "Testing zsh startup..."
-        local start=$(date +%s%N)
-        timeout 5 zsh -i -c exit 2>/dev/null
-        local end=$(date +%s%N)
-        if [[ $? -eq 124 ]]; then
-            echo "Interactive shell startup: TIMEOUT (>5s)"
+
+        # Check if we can use high-resolution timer
+        if date +%s%N >/dev/null 2>&1; then
+            # High-resolution timing available (Linux)
+            local start=$(date +%s%N)
+            timeout 5 zsh -i -c exit 2>/dev/null
+            local exit_code=$?
+            local end=$(date +%s%N)
+            if [[ $exit_code -eq 124 ]]; then
+                echo "Interactive shell startup: TIMEOUT (>5s)"
+            else
+                local elapsed=$(( (end - start) / 1000000 ))
+                echo "Interactive shell startup: ${elapsed}ms"
+            fi
+
+            start=$(date +%s%N)
+            timeout 2 zsh -c exit 2>/dev/null
+            exit_code=$?
+            end=$(date +%s%N)
+            if [[ $exit_code -eq 124 ]]; then
+                echo "Non-interactive shell startup: TIMEOUT (>2s)"
+            else
+                elapsed=$(( (end - start) / 1000000 ))
+                echo "Non-interactive shell startup: ${elapsed}ms"
+            fi
         else
-            echo "Interactive shell startup: $(( (end - start) / 1000000 ))ms"
+            # Fallback to second resolution (macOS)
+            echo "Note: High-resolution timer not available, using second resolution"
+            local start=$(date +%s)
+            timeout 5 zsh -i -c exit 2>/dev/null
+            local exit_code=$?
+            local end=$(date +%s)
+            if [[ $exit_code -eq 124 ]]; then
+                echo "Interactive shell startup: TIMEOUT (>5s)"
+            else
+                local elapsed=$(( end - start ))
+                echo "Interactive shell startup: ~${elapsed}s"
+            fi
+
+            start=$(date +%s)
+            timeout 2 zsh -c exit 2>/dev/null
+            exit_code=$?
+            end=$(date +%s)
+            if [[ $exit_code -eq 124 ]]; then
+                echo "Non-interactive shell startup: TIMEOUT (>2s)"
+            else
+                elapsed=$(( end - start ))
+                echo "Non-interactive shell startup: ~${elapsed}s"
+            fi
         fi
 
-        start=$(date +%s%N)
-        timeout 2 zsh -c exit 2>/dev/null
-        end=$(date +%s%N)
-        if [[ $? -eq 124 ]]; then
-            echo "Non-interactive shell startup: TIMEOUT (>2s)"
-        else
-            echo "Non-interactive shell startup: $(( (end - start) / 1000000 ))ms"
-        fi
+        # Additional timing using built-in time command if available
+        echo
+        echo "=== Detailed Timing (using time command) ==="
+        echo "Interactive shell:"
+        (time timeout 5 zsh -i -c exit) 2>&1 | grep -E "real|user|sys" || echo "Time command not available"
+        echo
+        echo "Non-interactive shell:"
+        (time timeout 2 zsh -c exit) 2>&1 | grep -E "real|user|sys" || echo "Time command not available"
     } > "$REPORT_DIR/debug/shell_performance.txt"
     
     # Aliases and functions count
@@ -1375,29 +1426,50 @@ main() {
     # Setup
     setup_report_dir
     
-    # Collect information
-    collect_system_info
-    collect_software_versions
-    collect_dotfiles_config
-    collect_nvim_diagnostics
-    collect_shell_diagnostics
-    collect_terminal_info
-    validate_configuration
-    collect_logs
-    collect_debug_info
+    # Collect information with error handling
+    collect_system_info || log WARN "System info collection had errors"
+    collect_software_versions || log WARN "Software version collection had errors"
+    collect_dotfiles_config || log WARN "Dotfiles config collection had errors"
+    collect_nvim_diagnostics || log WARN "Neovim diagnostics collection had errors"
+    collect_shell_diagnostics || log WARN "Shell diagnostics collection had errors"
+    collect_terminal_info || log WARN "Terminal info collection had errors"
+    validate_configuration || log WARN "Configuration validation had errors"
+    collect_logs || log WARN "Log collection had errors"
+    collect_debug_info || log WARN "Debug info collection had errors"
 
     # Run tests if requested
     run_tests
     
+    # Create summary of what was collected
+    {
+        echo "=== Collection Summary ==="
+        echo "Report generated at: $(date)"
+        echo
+        echo "Files collected:"
+        find "$REPORT_DIR" -type f -name "*.txt" -o -name "*.json" | while read -r file; do
+            local size=$(du -h "$file" | cut -f1)
+            local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
+            echo "  - $(basename "$file"): ${lines} lines (${size})"
+        done
+        echo
+        echo "Errors and warnings found:"
+        grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0"
+    } > "$REPORT_DIR/collection_summary.txt"
+
     # Create final archive
     create_archive
-    
+
     echo
     echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
     echo "${GREEN}Report generation complete!${NC}"
     echo
     echo "Archive: ${BOLD}${ARCHIVE_NAME}${NC}"
     echo "Size: $(du -h "$ARCHIVE_NAME" | cut -f1)"
+    echo
+    echo "Summary:"
+    echo "  - System: $(uname -s) $(uname -r)"
+    echo "  - Files collected: $(find "$REPORT_DIR" -type f | wc -l)"
+    echo "  - Errors/warnings found: $(grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0")"
     echo
     echo "You can now share this file for debugging purposes."
     echo "All sensitive information has been sanitized."

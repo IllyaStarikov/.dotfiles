@@ -433,6 +433,7 @@ install_macos_packages() {
         "autoconf"
         "libtool"
         "pkg-config"
+        "lazygit"
     )
 
     # Language servers
@@ -756,6 +757,35 @@ install_linux_packages() {
         curl -sS https://starship.rs/install.sh | sh -s -- -y
     fi
 
+    # Install lazygit
+    if ! command -v lazygit &>/dev/null; then
+        info "Installing lazygit..."
+        case "$PKG_MANAGER" in
+            apt)
+                # For Ubuntu/Debian - install from GitHub releases
+                LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+                curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+                tar xf lazygit.tar.gz lazygit
+                sudo install lazygit /usr/local/bin
+                rm lazygit lazygit.tar.gz
+                ;;
+            dnf|yum)
+                # For Fedora/RHEL
+                sudo dnf copr enable atim/lazygit -y
+                sudo dnf install -y lazygit
+                ;;
+            pacman)
+                # For Arch Linux
+                sudo pacman -S --noconfirm lazygit
+                ;;
+            *)
+                warning "Cannot install lazygit for unknown package manager"
+                ;;
+        esac
+    else
+        success "lazygit already installed"
+    fi
+
     # Install Terminal Emulators (Linux) - Both Alacritty and WezTerm
     if [[ "$INSTALL_MODE" == "full" ]]; then
         # Install Alacritty
@@ -1038,7 +1068,21 @@ setup_python() {
         }
         
         # Try to install essential packages, continue on failure
-        for pkg in pynvim black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort; do
+        # Ensure pynvim is upgraded to latest version (0.6.0+) for Neovim compatibility
+        pip3 install --user --upgrade "pynvim>=0.6.0" 2>/dev/null || {
+            warning "Failed to upgrade pynvim to latest version"
+            info "Trying system package manager..."
+            if [[ "$OS" == "linux" ]]; then
+                case "$PKG_MANAGER" in
+                    apt) sudo apt-get install -y python3-pynvim 2>/dev/null || true ;;
+                    dnf|yum) sudo dnf install -y python3-neovim 2>/dev/null || true ;;
+                    *) true ;;
+                esac
+            fi
+        }
+
+        # Install other Python packages
+        for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort; do
             pip3 install --user "$pkg" 2>/dev/null || {
                 info "Could not install $pkg with pip, trying system package manager..."
                 if [[ "$OS" == "linux" ]]; then
