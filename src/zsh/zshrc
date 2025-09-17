@@ -120,6 +120,9 @@ bindkey '^W' backward-kill-word
 # Completion System
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Load completion fix for hanging issues
+[[ -f "$HOME/.dotfiles/src/zsh/completion-fix.zsh" ]] && source "$HOME/.dotfiles/src/zsh/completion-fix.zsh"
+
 # Initialize completion system
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qNmh+24) ]]; then
