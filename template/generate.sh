@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Advanced Dotfiles Documentation Generator
 # Generates a complete mirror of configuration files with enhanced navigation
@@ -10,7 +10,7 @@ set -euo pipefail
 # Configuration
 # ════════════════════════════════════════════════════════════════════════════
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 SRC_DIR="$ROOT_DIR/src"
 OUTPUT_DIR="$SCRIPT_DIR/dist"
@@ -18,7 +18,7 @@ ASSETS_DIR="$OUTPUT_DIR/assets"
 DATA_DIR="$OUTPUT_DIR/data"
 
 # File categories and their patterns
-declare -a CONFIG_PATTERNS=(
+typeset -a CONFIG_PATTERNS=(
     "*.lua:Lua Configuration"
     "*.vim:Vim Script"
     "*.toml:TOML Configuration"

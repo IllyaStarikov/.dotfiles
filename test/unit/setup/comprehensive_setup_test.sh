@@ -73,7 +73,7 @@ it "should support symlinks mode" && {
 # Test: Detects operating system
 it "should detect the operating system" && {
     # Run setup and check if it mentions the OS
-    output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || bash "$DOTFILES_DIR/src/setup/setup.sh" 2>&1 | head -20 || true)
+    output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || zsh "$DOTFILES_DIR/src/setup/setup.sh" 2>&1 | head -20 || true)
 
     if [[ "$output" == *"macOS"* ]] || [[ "$output" == *"Linux"* ]] || [[ "$output" == *"Darwin"* ]] || [[ "$output" == *"System:"* ]]; then
         pass "OS detection works"
