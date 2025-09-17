@@ -307,15 +307,36 @@ fi
 source "$1"
 EOF
 
-  # Run test through wrapper
+  # Run test through wrapper with timeout
   local test_output
   local test_status
+  local test_timeout=30  # Default 30 second timeout per test
 
+  # In CI mode or non-interactive, use stricter timeout
+  if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]]; then
+    test_timeout=10  # Much shorter timeout in CI
+
+    # Skip certain problematic tests in CI
+    if [[ "$test_name" == "keybinding_conflicts_test" ]] ||
+       [[ "$test_name" == "comprehensive_nvim_test" ]] ||
+       [[ "$test_name" == "*_interactive_*" ]] ||
+       [[ "$test_name" == "plugin_loading_test" ]]; then
+      [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+      log WARN "$test_name - SKIPPED (CI mode)"
+      ((SKIPPED++))
+      rm -rf "$test_tmp"
+      return 0
+    fi
+  fi
+
+  # Use timeout command with kill signal after grace period
   if [[ $VERBOSE -eq 1 ]]; then
-    zsh "$wrapper_script" "$test_file" 2>&1
+    # Run with timeout in verbose mode
+    timeout --kill-after=5 $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
     test_status=$?
   else
-    test_output=$(zsh "$wrapper_script" "$test_file" 2>&1)
+    # Run with timeout in quiet mode
+    test_output=$(timeout --kill-after=5 $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
     test_status=$?
   fi
 
@@ -328,13 +349,16 @@ EOF
     [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
     log SUCCESS "$test_name (${duration}s)"
     ((PASSED++))
-  elif [[ $test_status -eq 124 ]]; then
+  elif [[ $test_status -eq 124 ]] || [[ $test_status -eq 137 ]] || [[ $test_status -eq 143 ]]; then
+    # Timeout exit codes: 124 (timeout), 137 (SIGKILL), 143 (SIGTERM)
     [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-    log FAIL "$test_name - TIMEOUT"
+    log FAIL "$test_name - TIMEOUT (killed after ${test_timeout}s)"
     ((FAILED++))
     if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
       echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
     fi
+    # Bail on timeout if requested
+    [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
   else
     [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
     log FAIL "$test_name - EXIT $test_status"

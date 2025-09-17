@@ -5,6 +5,12 @@
 
 source "${TEST_DIR}/lib/framework.zsh"
 
+# Skip this test in non-interactive CI mode if it causes issues
+if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]]; then
+  # Still run but with stricter timeouts and no interactive features
+  export SKIP_INTERACTIVE_TESTS=1
+fi
+
 # Test for Neovim keybinding conflicts
 test_neovim_keybinding_conflicts() {
   log "TRACE" "Testing for Neovim keybinding conflicts"
@@ -136,21 +142,25 @@ test_zsh_keybinding_conflicts() {
   local -A zsh_keys
   local conflicts=0
 
-  echo "$bindkeys" | while read -r line; do
-    # Extract the key sequence
-    local key=$(echo "$line" | sed -n 's/.*bindkey[[:space:]]*['\''\"]*\([^'\''\"]*\).*/\1/p')
+  # Process bindkeys without while read (for CI)
+  if [[ -n "$bindkeys" ]]; then
+    local IFS=$'\n'
+    for line in ${(f)bindkeys}; do
+      # Extract the key sequence
+      local key=$(echo "$line" | sed -n 's/.*bindkey[[:space:]]*['\''\"]*\([^'\''\"]*\).*/\1/p')
 
-    if [[ -n "$key" ]]; then
-      if [[ -n "${zsh_keys[$key]}" ]]; then
-        log "WARNING" "Duplicate Zsh binding: $key"
-        [[ $VERBOSE -ge 2 ]] && log "DEBUG" "  Previous: ${zsh_keys[$key]}"
-        [[ $VERBOSE -ge 2 ]] && log "DEBUG" "  Current: $line"
-        ((conflicts++))
-      else
-        zsh_keys[$key]="$line"
+      if [[ -n "$key" ]]; then
+        if [[ -n "${zsh_keys[$key]}" ]]; then
+          log "WARNING" "Duplicate Zsh binding: $key"
+          [[ $VERBOSE -ge 2 ]] && log "DEBUG" "  Previous: ${zsh_keys[$key]}"
+          [[ $VERBOSE -ge 2 ]] && log "DEBUG" "  Current: $line"
+          ((conflicts++))
+        else
+          zsh_keys[$key]="$line"
+        fi
       fi
-    fi
-  done
+    done
+  fi
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Found ${#zsh_keys[@]} Zsh keybindings"
 
