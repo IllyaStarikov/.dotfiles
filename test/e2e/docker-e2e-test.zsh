@@ -249,15 +249,15 @@ phase_run_unit_tests() {
 
   # Run unit tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    local timeout_val=180
+    local timeout_val=300  # Increased from 180
     if [[ "${DEBUG:-false}" == true ]]; then
       print_info "Running FULL unit tests (may take several minutes)..."
-      timeout_val=300
+      timeout_val=600  # Increased from 300
     fi
 
     # Run with explicit timeout and non-interactive flags
     print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit"
-    if timeout --kill-after=10 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
+    if timeout --kill-after=30 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
       print_success "Unit tests passed"
       return 0
     else
@@ -266,9 +266,9 @@ phase_run_unit_tests() {
         print_error "Unit tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
         return 1  # FAIL on timeout
       else
-        print_warning "Unit tests had failures (exit code: $exit_code) - continuing"
-        # Don't fail E2E on regular test failures, only on timeout
-        return 0
+        print_error "Unit tests FAILED (exit code: $exit_code)"
+        # ALL test failures are critical for E2E
+        return 1  # FAIL on any test failure
       fi
     fi
   else
@@ -300,15 +300,15 @@ phase_run_functional_tests() {
 
   # Run functional tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    local timeout_val=180
+    local timeout_val=300  # Increased from 180
     if [[ "${DEBUG:-false}" == true ]]; then
       print_info "Running FULL functional tests (may take several minutes)..."
-      timeout_val=300
+      timeout_val=600  # Increased from 300
     fi
 
     # Run with explicit timeout and non-interactive flags
     print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional"
-    if timeout --kill-after=10 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
+    if timeout --kill-after=30 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
       print_success "Functional tests passed"
       return 0
     else
@@ -317,9 +317,9 @@ phase_run_functional_tests() {
         print_error "Functional tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
         return 1  # FAIL on timeout
       else
-        print_warning "Functional tests had failures (exit code: $exit_code) - continuing"
-        # Don't fail E2E on regular test failures, only on timeout
-        return 0
+        print_error "Functional tests FAILED (exit code: $exit_code)"
+        # ALL test failures are critical for E2E
+        return 1  # FAIL on any test failure
       fi
     fi
   else
