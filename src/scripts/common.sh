@@ -422,12 +422,6 @@ print_color() {
 # Export Functions
 # ============================================================================
 
-# Export all functions for use in subshells
-export -f detect_os is_macos is_linux platform_command
-export -f get_cpu_count get_memory_mb open_in_default
-export -f copy_to_clipboard paste_from_clipboard
-export -f has_command detect_package_manager install_package
-export -f realpath_portable create_temp_dir
-export -f is_process_running kill_process
-export -f get_user_shell get_home_dir
-export -f supports_colors print_color
+# Note: zsh doesn't support 'export -f' like bash does
+# Functions are automatically available in subshells in zsh
+# If needed in child processes, use 'typeset -f' or source this file again
