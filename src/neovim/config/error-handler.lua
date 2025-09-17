@@ -24,9 +24,7 @@ function M.setup_notify()
     -- Filter out known Google vim plugin errors that are harmless
     if type(msg) == "string" then
       -- Skip known harmless errors from Google vim plugins
-      if
-        msg:match("AutoFormatBuffer") and msg:match("Not an editor command")
-      then
+      if msg:match("AutoFormatBuffer") and msg:match("Not an editor command") then
         -- AutoFormatBuffer not available yet, skip error
         return
       end
@@ -46,8 +44,7 @@ function M.setup_notify()
       local error_key = msg:sub(1, 50) -- Use first 50 chars as key
 
       if error_counts[error_key] then
-        local last_time, count =
-          error_counts[error_key].time, error_counts[error_key].count
+        local last_time, count = error_counts[error_key].time, error_counts[error_key].count
         if now - last_time < error_window then
           error_counts[error_key].count = count + 1
           -- Only show every 5th occurrence within the window

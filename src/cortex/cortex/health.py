@@ -5,11 +5,12 @@ Health check and monitoring system for Cortex.
 import asyncio
 import logging
 import os
-import time
-from typing import Dict, Any, Optional, List
 from pathlib import Path
-import psutil
+import time
+from typing import Any, Dict, List, Optional
+
 import aiohttp
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -112,12 +113,7 @@ class HealthMonitor:
                 "timestamp": time.time()
             }
         except Exception:
-            return {
-                "status": "offline",
-                "running": False,
-                "port": port,
-                "timestamp": time.time()
-            }
+            return {"status": "offline", "running": False, "port": port, "timestamp": time.time()}
 
     async def check_ollama_server(self, port: int = 11434) -> Dict[str, Any]:
         """Check if Ollama server is running."""
@@ -135,12 +131,7 @@ class HealthMonitor:
                             "timestamp": time.time()
                         }
         except:
-            return {
-                "status": "offline",
-                "running": False,
-                "port": port,
-                "timestamp": time.time()
-            }
+            return {"status": "offline", "running": False, "port": port, "timestamp": time.time()}
 
     async def check_api_keys(self) -> Dict[str, Any]:
         """Check if API keys are configured."""
@@ -167,8 +158,7 @@ class HealthMonitor:
             async with aiohttp.ClientSession() as session:
                 # Check multiple endpoints for robustness
                 endpoints = [
-                    "https://api.openai.com",
-                    "https://api.anthropic.com",
+                    "https://api.openai.com", "https://api.anthropic.com",
                     "https://generativelanguage.googleapis.com"
                 ]
 

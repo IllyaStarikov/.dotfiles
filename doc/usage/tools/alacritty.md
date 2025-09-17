@@ -63,48 +63,48 @@ multiplier = 3
 
 ### Window Management
 
-| Key | Action | macOS |
-|-----|--------|-------|
-| `Cmd+N` | New window | ✓ |
-| `Cmd+W` | Close window | ✓ |
-| `Cmd+M` | Minimize | ✓ |
-| `Cmd+Q` | Quit Alacritty | ✓ |
+| Key     | Action         | macOS |
+| ------- | -------------- | ----- |
+| `Cmd+N` | New window     | ✓     |
+| `Cmd+W` | Close window   | ✓     |
+| `Cmd+M` | Minimize       | ✓     |
+| `Cmd+Q` | Quit Alacritty | ✓     |
 
 ### Tab Management
 
-| Key | Action |
-|-----|--------|
-| `Cmd+T` | New tab |
-| `Cmd+Tab` | Next tab |
-| `Cmd+Shift+Tab` | Previous tab |
-| `Cmd+1-9` | Go to tab 1-9 |
+| Key             | Action        |
+| --------------- | ------------- |
+| `Cmd+T`         | New tab       |
+| `Cmd+Tab`       | Next tab      |
+| `Cmd+Shift+Tab` | Previous tab  |
+| `Cmd+1-9`       | Go to tab 1-9 |
 
 ### Text Operations
 
-| Key | Action |
-|-----|--------|
-| `Cmd+C` | Copy |
-| `Cmd+V` | Paste |
-| `Cmd+A` | Select all |
-| `Cmd+F` | Search |
+| Key     | Action       |
+| ------- | ------------ |
+| `Cmd+C` | Copy         |
+| `Cmd+V` | Paste        |
+| `Cmd+A` | Select all   |
+| `Cmd+F` | Search       |
 | `Cmd+K` | Clear screen |
 
 ### Font Size
 
-| Key | Action |
-|-----|--------|
-| `Cmd+Plus` | Increase font |
+| Key         | Action        |
+| ----------- | ------------- |
+| `Cmd+Plus`  | Increase font |
 | `Cmd+Minus` | Decrease font |
-| `Cmd+0` | Reset font |
+| `Cmd+0`     | Reset font    |
 
 ### Scrolling
 
-| Key | Action |
-|-----|--------|
-| `Shift+PgUp` | Scroll up |
-| `Shift+PgDown` | Scroll down |
-| `Cmd+Home` | Scroll to top |
-| `Cmd+End` | Scroll to bottom |
+| Key            | Action           |
+| -------------- | ---------------- |
+| `Shift+PgUp`   | Scroll up        |
+| `Shift+PgDown` | Scroll down      |
+| `Cmd+Home`     | Scroll to top    |
+| `Cmd+End`      | Scroll to bottom |
 
 ## Custom Keybindings
 
@@ -165,13 +165,13 @@ semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
 ### Mouse Actions
 
-| Action | Result |
-|--------|--------|
-| Click | Position cursor |
-| Double-click | Select word |
-| Triple-click | Select line |
-| Click+Drag | Select text |
-| Right-click | Paste (if no selection) |
+| Action       | Result                  |
+| ------------ | ----------------------- |
+| Click        | Position cursor         |
+| Double-click | Select word             |
+| Triple-click | Select line             |
+| Click+Drag   | Select text             |
+| Right-click  | Paste (if no selection) |
 
 ## Color Schemes
 
@@ -272,14 +272,14 @@ end
 
 ### Vi Mode
 
-| Key | Action |
-|-----|--------|
-| `Ctrl+Shift+Space` | Toggle vi mode |
-| `v` | Visual selection |
-| `y` | Copy selection |
-| `/` | Search forward |
-| `?` | Search backward |
-| `n/N` | Next/Previous match |
+| Key                | Action              |
+| ------------------ | ------------------- |
+| `Ctrl+Shift+Space` | Toggle vi mode      |
+| `v`                | Visual selection    |
+| `y`                | Copy selection      |
+| `/`                | Search forward      |
+| `?`                | Search backward     |
+| `n/N`              | Next/Previous match |
 
 ### URL Handling
 
@@ -297,23 +297,23 @@ enabled = [
 
 ### Search Mode
 
-| Key | Action |
-|-----|--------|
-| `Cmd+F` | Enter search |
-| `Enter` | Find next |
+| Key           | Action        |
+| ------------- | ------------- |
+| `Cmd+F`       | Enter search  |
+| `Enter`       | Find next     |
 | `Shift+Enter` | Find previous |
-| `Escape` | Exit search |
+| `Escape`      | Exit search   |
 
 ## Troubleshooting
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Font not rendering | Install Nerd Font variant |
-| Colors look wrong | Check `$TERM` and termguicolors |
-| Slow performance | Check GPU acceleration |
-| tmux issues | Set `TERM=xterm-256color` |
+| Issue              | Solution                        |
+| ------------------ | ------------------------------- |
+| Font not rendering | Install Nerd Font variant       |
+| Colors look wrong  | Check `$TERM` and termguicolors |
+| Slow performance   | Check GPU acceleration          |
+| tmux issues        | Set `TERM=xterm-256color`       |
 
 ### Debug Mode
 

@@ -2,14 +2,16 @@
 Configuration management for Cortex.
 """
 
-import os
-import yaml
+from dataclasses import asdict
+from dataclasses import dataclass
+from datetime import datetime
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Dict, Any, Optional
-from dataclasses import dataclass, asdict
-from datetime import datetime
+from typing import Any, Dict, Optional
+
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -19,19 +21,19 @@ class ConfigDefaults:
     """Default configuration values."""
     version: str = "0.1.0"
     mode: str = "offline"
-    
+
     # Provider defaults
     providers: Dict[str, Dict[str, Any]] = None
-    
+
     # Preferences
     preferences: Dict[str, Any] = None
-    
+
     # Current model
     current_model: Dict[str, Any] = None
-    
+
     # Ensemble configuration
     ensemble: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         """Initialize default values."""
         if self.providers is None:
@@ -59,30 +61,23 @@ class ConfigDefaults:
                     "api_key_env": "GEMINI_API_KEY"
                 }
             }
-        
+
         if self.preferences is None:
-            self.preferences = {
-                "auto_download": False,
-                "verbose_default": False,
-                "theme": "dark"
-            }
-        
+            self.preferences = {"auto_download": False, "verbose_default": False, "theme": "dark"}
+
         if self.current_model is None:
             self.current_model = {}
-        
+
         if self.ensemble is None:
-            self.ensemble = {
-                "enabled": False,
-                "models": []
-            }
+            self.ensemble = {"enabled": False, "models": []}
 
 
 class Config:
     """Configuration manager for Cortex."""
-    
+
     DEFAULT_CONFIG_DIR = Path.home() / ".dotfiles" / "config" / "cortex"
     DEFAULT_PRIVATE_DIR = Path.home() / ".dotfiles" / ".dotfiles.private"
-    
+
     def __init__(self, config_path: Optional[Path] = None):
         """Initialize configuration."""
         self.config_dir = config_path or self.DEFAULT_CONFIG_DIR
@@ -90,19 +85,21 @@ class Config:
         self.env_file = self.config_dir / "cortex.env"
         self.models_cache_file = self.config_dir / "models.yaml"
         self.private_dir = self.DEFAULT_PRIVATE_DIR
-        
+
         # Ensure directories exist
         self.config_dir.mkdir(parents=True, exist_ok=True)
         # Only create private dir if it doesn't exist - it's managed by the dotfiles repo
         if not self.private_dir.exists():
-            logger.warning(f"Private directory {self.private_dir} does not exist. API keys will not be loaded.")
-        
+            logger.warning(
+                f"Private directory {self.private_dir} does not exist. API keys will not be loaded."
+            )
+
         # Load configuration
         self.data = self._load_config()
-        
+
         # Load API keys from private directory
         self._load_api_keys()
-    
+
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from file or create default."""
         if self.config_file.exists():
@@ -115,23 +112,23 @@ class Config:
                 config = {}
         else:
             config = {}
-        
+
         # Merge with defaults
         defaults = asdict(ConfigDefaults())
         return self._merge_configs(defaults, config)
-    
+
     def _merge_configs(self, base: Dict, override: Dict) -> Dict:
         """Recursively merge two configuration dictionaries."""
         result = base.copy()
-        
+
         for key, value in override.items():
             if key in result and isinstance(result[key], dict) and isinstance(value, dict):
                 result[key] = self._merge_configs(result[key], value)
             else:
                 result[key] = value
-        
+
         return result
-    
+
     def _load_api_keys(self):
         """Load API keys from private directory."""
         if not self.private_dir.exists():
@@ -139,10 +136,8 @@ class Config:
 
         # Try multiple possible locations for API keys
         possible_files = [
-            self.private_dir / "api_keys.yaml",
-            self.private_dir / "api_keys.toml",
-            self.private_dir / ".env",
-            self.private_dir / "config" / "api_keys.yaml"
+            self.private_dir / "api_keys.yaml", self.private_dir / "api_keys.toml",
+            self.private_dir / ".env", self.private_dir / "config" / "api_keys.yaml"
         ]
 
         for api_keys_file in possible_files:
@@ -185,7 +180,7 @@ class Config:
                 except Exception as e:
                     logger.warning(f"Failed to load API keys from {api_keys_file}: {e}")
                     continue
-    
+
     def save(self):
         """Save current configuration to file."""
         try:
@@ -195,13 +190,13 @@ class Config:
         except Exception as e:
             logger.error(f"Failed to save config: {e}")
             raise
-    
+
     def update_current_model(self, model_info: Dict[str, Any]):
         """Update the current model configuration."""
         self.data["current_model"] = model_info
         self.save()
         self._update_env_file(model_info)
-    
+
     def _update_env_file(self, model_info: Dict[str, Any]):
         """Update the environment file for shell integration."""
         env_content = f"""# Cortex environment variables for shell integration
@@ -211,10 +206,10 @@ class Config:
 export CORTEX_PROVIDER="{model_info.get('provider', '')}"
 export CORTEX_MODEL="{model_info.get('id', '')}"
 """
-        
+
         # Add provider-specific variables
         provider = model_info.get('provider', '')
-        
+
         if provider == 'mlx':
             env_content += f"""export CORTEX_ENDPOINT="http://localhost:{self.data['providers']['mlx']['port']}/v1"
 export CORTEX_API_KEY="mlx-local-no-key-needed"
@@ -258,34 +253,31 @@ export CORTEX_API_KEY="${{GEMINI_API_KEY}}"
 export AVANTE_PROVIDER="gemini"
 export AVANTE_GEMINI_MODEL="{model_info.get('id', '')}"
 """
-        
+
         try:
             with open(self.env_file, 'w') as f:
                 f.write(env_content)
             logger.info(f"Updated environment file: {self.env_file}")
         except Exception as e:
             logger.error(f"Failed to update env file: {e}")
-    
+
     def get_api_key(self, provider: str) -> Optional[str]:
         """Get API key for a provider."""
         env_var = self.data.get("providers", {}).get(provider, {}).get("api_key_env")
         if env_var:
             return os.environ.get(env_var)
         return None
-    
+
     def cache_models(self, models_data: Dict[str, Any]):
         """Cache model data to file."""
         try:
-            cache_data = {
-                "timestamp": datetime.now().isoformat(),
-                "models": models_data
-            }
+            cache_data = {"timestamp": datetime.now().isoformat(), "models": models_data}
             with open(self.models_cache_file, 'w') as f:
                 yaml.dump(cache_data, f, default_flow_style=False)
             logger.debug(f"Cached model data to {self.models_cache_file}")
         except Exception as e:
             logger.warning(f"Failed to cache models: {e}")
-    
+
     def load_models_cache(self) -> Optional[Dict[str, Any]]:
         """Load cached model data."""
         if self.models_cache_file.exists():

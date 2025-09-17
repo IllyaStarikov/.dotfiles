@@ -2,11 +2,15 @@
 Tests for extended CLI commands in cli.py module.
 """
 
-import unittest
 import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock, call
-from click.testing import CliRunner
 import json
+import unittest
+from unittest.mock import AsyncMock
+from unittest.mock import call
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
+from click.testing import CliRunner
 
 from cortex.cli import cli
 
@@ -24,11 +28,7 @@ class TestExtendedCLICommands(unittest.TestCase):
         """Test start command for MLX server."""
         mock_config = MagicMock()
         mock_config_class.return_value = mock_config
-        mock_config.data = {
-            "providers": {
-                "mlx": {"enabled": True, "port": 8080}
-            }
-        }
+        mock_config.data = {"providers": {"mlx": {"enabled": True, "port": 8080}}}
 
         mock_subprocess.return_value = MagicMock(returncode=0)
 
@@ -64,7 +64,9 @@ class TestExtendedCLICommands(unittest.TestCase):
                 "provider": "mlx"
             },
             "providers": {
-                "mlx": {"enabled": True}
+                "mlx": {
+                    "enabled": True
+                }
             }
         }
 
@@ -74,8 +76,7 @@ class TestExtendedCLICommands(unittest.TestCase):
                 cpu_model="Apple M1 Max",
                 cpu_cores=10,
                 ram_gb=64.0,
-                performance_tier=MagicMock(value="ultra")
-            )
+                performance_tier=MagicMock(value="ultra"))
 
             result = self.runner.invoke(cli, ["status"])
 
@@ -91,9 +92,15 @@ class TestExtendedCLICommands(unittest.TestCase):
         # Mock async method
         async def mock_run_checks(checks=None):
             return {
-                "system": {"status": "healthy"},
-                "mlx_server": {"status": "offline"},
-                "api_keys": {"status": "configured"}
+                "system": {
+                    "status": "healthy"
+                },
+                "mlx_server": {
+                    "status": "offline"
+                },
+                "api_keys": {
+                    "status": "configured"
+                }
             }
 
         mock_health.run_health_checks = mock_run_checks
@@ -133,7 +140,9 @@ class TestExtendedCLICommands(unittest.TestCase):
                 "provider": "mlx"
             },
             "providers": {
-                "mlx": {"enabled": True}
+                "mlx": {
+                    "enabled": True
+                }
             }
         }
 
@@ -146,10 +155,7 @@ class TestExtendedCLICommands(unittest.TestCase):
 
             mock_provider.chat = mock_chat
 
-            result = self.runner.invoke(
-                cli,
-                ["chat", "Hello, world!"]
-            )
+            result = self.runner.invoke(cli, ["chat", "Hello, world!"])
 
             # Command should handle the message
             self.assertIn(result.exit_code, [0, 1])

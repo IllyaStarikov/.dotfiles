@@ -111,9 +111,7 @@ function M.setup()
               for _, entry in ipairs(multi_selections) do
                 local filename = entry[1] or entry.path or entry.filename
                 if filename then
-                  vim.cmd(
-                    string.format("edit %s", vim.fn.fnameescape(filename))
-                  )
+                  vim.cmd(string.format("edit %s", vim.fn.fnameescape(filename)))
                 end
               end
             else
@@ -132,8 +130,7 @@ function M.setup()
           ["<PageDown>"] = actions.results_scrolling_down,
 
           ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-          ["<S-Tab>"] = actions.toggle_selection
-            + actions.move_selection_better,
+          ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 
@@ -154,9 +151,7 @@ function M.setup()
               for _, entry in ipairs(multi_selections) do
                 local filename = entry[1] or entry.path or entry.filename
                 if filename then
-                  vim.cmd(
-                    string.format("edit %s", vim.fn.fnameescape(filename))
-                  )
+                  vim.cmd(string.format("edit %s", vim.fn.fnameescape(filename)))
                 end
               end
             else
@@ -169,8 +164,7 @@ function M.setup()
           ["<C-t>"] = actions.select_tab,
 
           ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
-          ["<S-Tab>"] = actions.toggle_selection
-            + actions.move_selection_better,
+          ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 

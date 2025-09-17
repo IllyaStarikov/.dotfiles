@@ -8,8 +8,7 @@ local opts = { noremap = true, silent = true }
 
 -- Ensure VIMRUNTIME is properly set for health checks
 if not vim.env.VIMRUNTIME or vim.env.VIMRUNTIME == "" then
-  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h")
-    .. "/share/nvim/runtime"
+  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h") .. "/share/nvim/runtime"
   if vim.fn.isdirectory(runtime_path) == 1 then
     vim.env.VIMRUNTIME = runtime_path
   end

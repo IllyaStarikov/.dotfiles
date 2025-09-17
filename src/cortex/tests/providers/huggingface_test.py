@@ -3,11 +3,15 @@ Tests for huggingface.py provider module.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import aiohttp
 
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
 from cortex.providers.huggingface import HuggingFaceProvider
-from cortex.providers import ModelInfo, ModelCapability
 
 
 class TestHuggingFaceProvider(unittest.TestCase):
@@ -30,22 +34,19 @@ class TestHuggingFaceProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value=[
-            {
-                "modelId": "meta-llama/Llama-2-7b-chat-hf",
-                "downloads": 50000,
-                "likes": 1000,
-                "tags": ["text-generation", "conversational"],
-                "private": False
-            },
-            {
-                "modelId": "codellama/CodeLlama-13b-Python-hf",
-                "downloads": 30000,
-                "likes": 500,
-                "tags": ["text-generation", "code"],
-                "private": False
-            }
-        ])
+        mock_response.json = AsyncMock(return_value=[{
+            "modelId": "meta-llama/Llama-2-7b-chat-hf",
+            "downloads": 50000,
+            "likes": 1000,
+            "tags": ["text-generation", "conversational"],
+            "private": False
+        }, {
+            "modelId": "codellama/CodeLlama-13b-Python-hf",
+            "downloads": 30000,
+            "likes": 500,
+            "tags": ["text-generation", "code"],
+            "private": False
+        }])
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session

@@ -115,6 +115,7 @@ kern.maxfilesperproc=65536
 ### Terminal Fonts
 
 1. **Install via Homebrew**:
+
    ```bash
    brew install --cask font-fira-code-nerd-font
    ```
@@ -154,13 +155,13 @@ tic -xe tmux-256color terminfo.src
 
 ### Common macOS Issues
 
-| Issue | Solution |
-|-------|----------|
-| "xcrun: error: invalid active developer path" | `xcode-select --install` |
-| Homebrew SSL certificate errors | `brew install ca-certificates` |
-| "operation not permitted" errors | Grant Full Disk Access to Terminal |
-| Slow terminal startup | Disable shell integration in iTerm2 |
-| Font rendering issues | Adjust AppleFontSmoothing value |
+| Issue                                         | Solution                            |
+| --------------------------------------------- | ----------------------------------- |
+| "xcrun: error: invalid active developer path" | `xcode-select --install`            |
+| Homebrew SSL certificate errors               | `brew install ca-certificates`      |
+| "operation not permitted" errors              | Grant Full Disk Access to Terminal  |
+| Slow terminal startup                         | Disable shell integration in iTerm2 |
+| Font rendering issues                         | Adjust AppleFontSmoothing value     |
 
 ### Reset Shell Environment
 

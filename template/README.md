@@ -5,6 +5,7 @@
 This directory contains the templates and assets for generating the dotfiles documentation website hosted at `dotfiles.starikov.io`. It includes HTML templates, CSS styles, JavaScript, and build scripts for creating a static documentation site from the repository content.
 
 ### Directory Structure:
+
 ```
 template/
 ├── .vscode/           # VSCode workspace settings
@@ -22,6 +23,7 @@ template/
 ```
 
 ### How to use:
+
 ```bash
 # Generate the documentation site
 ./template/generate.sh
@@ -41,6 +43,7 @@ jekyll serve --watch
 The template system transforms the dotfiles repository into a browsable, searchable documentation website. This provides a user-friendly way to explore configurations without cloning the repository, improving discoverability and accessibility.
 
 ### Benefits:
+
 - **Web accessibility** - View configs in browser
 - **Syntax highlighting** - Prism.js for readability
 - **Search indexing** - Google can index configs
@@ -51,26 +54,28 @@ The template system transforms the dotfiles repository into a browsable, searcha
 ## Template System
 
 ### HTML Templates
+
 Each configuration file type has a corresponding HTML template:
 
 ```html
 <!-- Example: nvim.html -->
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Neovim Configuration</title>
-    <link rel="stylesheet" href="prism-tomorrow.css">
-</head>
-<body>
+    <link rel="stylesheet" href="prism-tomorrow.css" />
+  </head>
+  <body>
     <pre><code class="language-lua">
         <!-- Content injected here -->
     </code></pre>
     <script src="prism.js"></script>
-</body>
+  </body>
 </html>
 ```
 
 ### Generation Process (`generate.sh`)
+
 ```bash
 # 1. Clone/update repository
 git pull origin main
@@ -95,6 +100,7 @@ git push origin gh-pages
 ```
 
 ### Mirror Script (`mirror.sh`)
+
 Maintains synchronized copy of configurations:
 
 ```bash
@@ -115,8 +121,10 @@ doc/ → public/doc/
 ### What NOT to Do
 
 #### ❌ Don't use client-side rendering
+
 **Problem**: Poor SEO, slow initial load
 **Solution**: Static generation at build time
+
 ```javascript
 // BAD: Client-side fetch
 fetch('/api/config/nvim').then(render)
@@ -126,8 +134,10 @@ fetch('/api/config/nvim').then(render)
 ```
 
 #### ❌ Don't include sensitive files
+
 **Problem**: Private keys exposed in documentation
 **Solution**: Explicit exclude list
+
 ```bash
 # Files to never publish
 .env
@@ -137,16 +147,19 @@ fetch('/api/config/nvim').then(render)
 ```
 
 #### ❌ Don't use heavy frameworks
+
 **Problem**: 500KB of JavaScript for simple docs
 **Solution**: Vanilla JS + Prism.js only (19KB)
 
 #### ❌ Don't forget mobile users
+
 **Problem**: Code blocks unreadable on phones
 **Solution**: Responsive design with horizontal scroll
+
 ```css
 pre {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 ```
 
@@ -177,23 +190,24 @@ cdn_url: https://cdn.jsdelivr.net/gh/user/dotfiles@main/
 
 ```html
 <!-- Meta tags for better indexing -->
-<meta name="description" content="Professional dotfiles configuration">
-<meta property="og:image" content="dotfiles.png">
-<link rel="canonical" href="https://dotfiles.starikov.io">
+<meta name="description" content="Professional dotfiles configuration" />
+<meta property="og:image" content="dotfiles.png" />
+<link rel="canonical" href="https://dotfiles.starikov.io" />
 
 <!-- Structured data -->
 <script type="application/ld+json">
-{
-  "@type": "SoftwareSourceCode",
-  "name": "Dotfiles Configuration",
-  "codeRepository": "https://github.com/user/dotfiles"
-}
+  {
+    "@type": "SoftwareSourceCode",
+    "name": "Dotfiles Configuration",
+    "codeRepository": "https://github.com/user/dotfiles"
+  }
 </script>
 ```
 
 ## Site Features
 
 ### Syntax Highlighting
+
 ```javascript
 // Prism.js configuration
 Prism.languages.lua = { ... }
@@ -202,11 +216,11 @@ Prism.plugins.lineNumbers.activate()
 ```
 
 ### Navigation System
+
 ```html
 <!-- Breadcrumbs -->
 <nav>
-  <a href="/">Home</a> /
-  <a href="/src">Source</a> /
+  <a href="/">Home</a> / <a href="/src">Source</a> /
   <a href="/src/neovim">Neovim</a>
 </nav>
 
@@ -217,17 +231,19 @@ Prism.plugins.lineNumbers.activate()
 ```
 
 ### Search Functionality
+
 ```javascript
 // Simple client-side search
 const searchIndex = {
   'nvim.lua': ['neovim', 'config', 'lua'],
-  'tmux.conf': ['tmux', 'terminal', 'multiplexer']
-}
+  'tmux.conf': ['tmux', 'terminal', 'multiplexer'],
+};
 ```
 
 ## Deployment
 
 ### GitHub Pages Setup
+
 ```yaml
 # .github/workflows/pages.yml
 on:
@@ -243,12 +259,14 @@ jobs:
 ```
 
 ### Custom Domain
+
 ```
 # CNAME file
 dotfiles.starikov.io
 ```
 
 ### Analytics
+
 ```javascript
 // Simple, privacy-respecting analytics
 if (location.hostname === 'dotfiles.starikov.io') {
@@ -261,6 +279,7 @@ if (location.hostname === 'dotfiles.starikov.io') {
 To add support for a new file type:
 
 1. **Create HTML template**
+
    ```html
    <!-- template/newtype.html -->
    <pre><code class="language-newlang">
@@ -269,12 +288,14 @@ To add support for a new file type:
    ```
 
 2. **Update generator**
+
    ```bash
    # In generate.sh
    *.newext) template="newtype.html" ;;
    ```
 
 3. **Add Prism support**
+
    ```javascript
    Prism.languages.newlang = { ... }
    ```
@@ -287,6 +308,7 @@ To add support for a new file type:
 ## Maintenance
 
 ### Regular Updates
+
 ```bash
 # Weekly automation via GitHub Actions
 - Update dependencies
@@ -296,6 +318,7 @@ To add support for a new file type:
 ```
 
 ### Performance Monitoring
+
 ```bash
 # PageSpeed Insights
 lighthouse https://dotfiles.starikov.io

@@ -5,6 +5,7 @@
 This directory contains functional tests that validate actual features and workflows of the dotfiles configuration. Unlike unit tests that check individual components, functional tests verify that features work end-to-end in realistic scenarios.
 
 ### Directory Structure:
+
 ```
 functional/
 ├── git/                         # Git workflow tests
@@ -20,6 +21,7 @@ functional/
 ```
 
 ### How to run:
+
 ```bash
 # Run all functional tests
 ./test/test --functional
@@ -39,6 +41,7 @@ SKIP_SLOW_TESTS=1 ./test/test --functional
 ```
 
 ### Expected output:
+
 ```
 ━━━ Functional Tests ━━━
 ▶ Testing: LSP completion integration
@@ -52,9 +55,11 @@ Time: 8.3s
 ## 2. Why this directory exists
 
 ### Purpose:
+
 Functional tests ensure that features actually work for users, not just that code is syntactically correct. They catch integration issues, workflow problems, and user experience bugs that unit tests miss.
 
 ### Why functional vs unit tests:
+
 1. **User perspective** - Tests what users actually do
 2. **Integration** - Validates component interactions
 3. **Real environment** - Uses actual configurations
@@ -62,12 +67,14 @@ Functional tests ensure that features actually work for users, not just that cod
 5. **Regression prevention** - Catches feature breaks
 
 ### Why organized by component:
+
 - **Clear scope** - Each directory tests specific functionality
 - **Parallel execution** - Independent test suites
 - **Easy debugging** - Isolate feature problems
 - **Maintenance** - Update tests with features
 
 ### Why these specific tests:
+
 - **LSP completion** - Core development feature
 - **Git workflows** - Daily version control tasks
 - **Plugin functionality** - Expensive features to break
@@ -79,7 +86,9 @@ Functional tests ensure that features actually work for users, not just that cod
 ### Test Categories:
 
 #### LSP & Completion Tests (lsp_completion_test.sh):
+
 Tests the integration between Language Server Protocol and completion:
+
 ```bash
 # Test Python completion
 test_case "Python import completion"
@@ -105,7 +114,9 @@ assert_contains "function documentation"
 ```
 
 #### Git Workflow Tests (git/):
+
 Validates common git operations:
+
 ```bash
 # Test staging workflow
 test_case "Stage and commit workflow"
@@ -125,7 +136,9 @@ assert_conflicts_resolved
 ```
 
 #### Neovim Plugin Tests (nvim/):
+
 Ensures plugins work correctly:
+
 ```bash
 # Test Telescope
 test_case "Telescope file finding"
@@ -152,7 +165,9 @@ assert_filesystem_changes
 ```
 
 #### Tmux Session Tests (tmux/):
+
 Complex multiplexer operations:
+
 ```bash
 # Test session creation
 test_case "Tmuxinator session loads"
@@ -171,7 +186,9 @@ assert_state_preserved
 ```
 
 #### Shell Completion Tests (zsh/):
+
 Validates intelligent completions:
+
 ```bash
 # Test git completions
 test_case "Git branch completion"
@@ -192,6 +209,7 @@ assert_themes_listed ["day", "night", "moon"]
 ### Test Helpers:
 
 #### Neovim Interaction:
+
 ```bash
 # Start headless Neovim with test file
 start_nvim() {
@@ -216,6 +234,7 @@ get_buffer_content() {
 ```
 
 #### Timing Considerations:
+
 ```bash
 # Wait for async operations
 wait_for_lsp() {
@@ -244,6 +263,7 @@ wait_for_completion() {
 When writing functional tests:
 
 1. **Setup realistic environment**
+
    ```bash
    # Create actual project structure
    setup_test_project() {
@@ -253,6 +273,7 @@ When writing functional tests:
    ```
 
 2. **Use proper waits**
+
    ```bash
    # Don't use arbitrary sleep
    sleep 2  # BAD
@@ -262,6 +283,7 @@ When writing functional tests:
    ```
 
 3. **Clean up thoroughly**
+
    ```bash
    cleanup() {
        [[ -n "$NVIM_PID" ]] && kill $NVIM_PID 2>/dev/null
@@ -272,6 +294,7 @@ When writing functional tests:
    ```
 
 4. **Test user workflows**
+
    ```bash
    # Test what users actually do
    test_case "Edit, save, commit workflow"
@@ -287,6 +310,7 @@ When writing functional tests:
    ```
 
 ### Common patterns:
+
 ```bash
 # Test with timeout
 test_with_timeout() {
@@ -316,6 +340,7 @@ assert_ui_element() {
 ### What NOT to do:
 
 #### ❌ Don't test in production environment
+
 ```bash
 # BAD - Modifies user's actual config
 nvim ~/.config/nvim/init.lua
@@ -325,6 +350,7 @@ nvim -u test/fixtures/init.lua
 ```
 
 #### ❌ Don't ignore timing issues
+
 ```bash
 # BAD - Race condition
 start_nvim
@@ -337,6 +363,7 @@ send_keys "gd"
 ```
 
 #### ❌ Don't test implementation details
+
 ```bash
 # BAD - Testing internal function
 assert_equals "$(get_internal_state)" "expected"
@@ -349,9 +376,11 @@ assert_visible_result
 ### Known Issues:
 
 #### Issue: LSP tests flaky in CI
+
 **Symptom**: Random failures on GitHub Actions
 **Cause**: LSP servers take longer to start in CI
 **Fix**: Increased timeouts for CI
+
 ```bash
 if [[ "$CI" == "true" ]]; then
     LSP_TIMEOUT=30  # CI is slower
@@ -362,9 +391,11 @@ wait_for_lsp $LSP_TIMEOUT
 ```
 
 #### Issue: Tmux tests fail on macOS
+
 **Symptom**: "no server running" errors
 **Cause**: macOS security restrictions
 **Fix**: Start server explicitly
+
 ```bash
 # Ensure tmux server is running
 tmux start-server 2>/dev/null || true
@@ -372,9 +403,11 @@ tmux new-session -d -s test_session
 ```
 
 #### Issue: Completion tests inconsistent
+
 **Symptom**: Different results each run
 **Cause**: Completion sources have different priorities
 **Fix**: Disable non-deterministic sources
+
 ```bash
 # Disable fuzzy matching for tests
 nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
@@ -405,6 +438,7 @@ nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
 ### Performance Discoveries:
 
 1. **Reuse Neovim instances**
+
    ```bash
    # Start once, run multiple tests
    start_nvim_server
@@ -415,6 +449,7 @@ nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
    ```
 
 2. **Parallel test execution**
+
    ```bash
    # Run independent tests simultaneously
    test_git &
@@ -434,12 +469,14 @@ nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
 ### Best Practices:
 
 1. **Use fixtures for consistency**
+
    ```bash
    # Known good test data
    cp test/fixtures/sample.py "$TEST_FILE"
    ```
 
 2. **Test error conditions**
+
    ```bash
    test_case "Handles missing LSP server"
    uninstall_lsp_server
@@ -448,6 +485,7 @@ nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
    ```
 
 3. **Document timing requirements**
+
    ```bash
    # This test requires fast machine
    # Typically completes in 2-3 seconds
@@ -465,6 +503,7 @@ nvim +"lua require('blink.cmp').setup({ fuzzy = { enabled = false } })"
 ## Troubleshooting
 
 ### Debug Commands:
+
 ```bash
 # Run with verbose output
 TEST_DEBUG=1 ./test/functional/lsp_completion_test.sh
@@ -482,6 +521,7 @@ NVIM_LOG_FILE=/tmp/nvim.log ./test.sh
 ### Common Problems:
 
 1. **Test hangs**
+
    ```bash
    # Find stuck process
    ps aux | grep nvim
@@ -490,6 +530,7 @@ NVIM_LOG_FILE=/tmp/nvim.log ./test.sh
    ```
 
 2. **Cannot connect to Neovim**
+
    ```bash
    # Check server is running
    nvim --remote-expr "v:servername"

@@ -97,8 +97,7 @@ end, { desc = "Reset treesitter for current buffer" })
 -- This wraps the problematic function to handle invalid positions gracefully
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
 vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
-  local ok, result =
-    pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
+  local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
   if not ok then
     -- Silently ignore out of range errors from treesitter highlighter
     if
@@ -246,58 +245,58 @@ autocmd("FileType", {
       highlight CodeBlockBorder guifg=#30363d gui=bold
       highlight CodeBlockBackground guibg=#161b22
       highlight CodeBlockLang guifg=#ffa657 gui=bold,italic guibg=#161b22
-      
+
       " Python syntax
       syntax include @pythonSyntax syntax/python.vim
       syntax region markdownPythonCode start="```python" end="```" contains=@pythonSyntax keepend
-      
+
       " JavaScript syntax
       syntax include @javascriptSyntax syntax/javascript.vim
       syntax region markdownJavaScriptCode start="```javascript" end="```" contains=@javascriptSyntax keepend
       syntax region markdownJavaScriptCode start="```js" end="```" contains=@javascriptSyntax keepend
-      
+
       " Bash syntax
       syntax include @bashSyntax syntax/bash.vim
       syntax region markdownBashCode start="```bash" end="```" contains=@bashSyntax keepend
       syntax region markdownBashCode start="```sh" end="```" contains=@bashSyntax keepend
-      
+
       " Lua syntax
       syntax include @luaSyntax syntax/lua.vim
       syntax region markdownLuaCode start="```lua" end="```" contains=@luaSyntax keepend
-      
+
       " Vim syntax
       syntax include @vimSyntax syntax/vim.vim
       syntax region markdownVimCode start="```vim" end="```" contains=@vimSyntax keepend
-      
+
       " JSON syntax
       syntax include @jsonSyntax syntax/json.vim
       syntax region markdownJsonCode start="```json" end="```" contains=@jsonSyntax keepend
-      
+
       " YAML syntax
       syntax include @yamlSyntax syntax/yaml.vim
       syntax region markdownYamlCode start="```yaml" end="```" contains=@yamlSyntax keepend
-      
+
       " HTML syntax
       syntax include @htmlSyntax syntax/html.vim
       syntax region markdownHtmlCode start="```html" end="```" contains=@htmlSyntax keepend
-      
+
       " CSS syntax
       syntax include @cssSyntax syntax/css.vim
       syntax region markdownCssCode start="```css" end="```" contains=@cssSyntax keepend
-      
+
       " Rust syntax
       syntax include @rustSyntax syntax/rust.vim
       syntax region markdownRustCode start="```rust" end="```" contains=@rustSyntax keepend
-      
+
       " Go syntax
       syntax include @goSyntax syntax/go.vim
       syntax region markdownGoCode start="```go" end="```" contains=@goSyntax keepend
-      
+
       " TypeScript syntax
       syntax include @typescriptSyntax syntax/typescript.vim
       syntax region markdownTypeScriptCode start="```typescript" end="```" contains=@typescriptSyntax keepend
       syntax region markdownTypeScriptCode start="```ts" end="```" contains=@typescriptSyntax keepend
-      
+
       " Enhanced code block delimiters with box drawing
       syntax match markdownCodeBlockDelimiter /^```.*$/ contains=markdownCodeBlockLang
       syntax match markdownCodeBlockLang /```\zs\w\+/ contained
@@ -810,10 +809,7 @@ autocmd({ "FileChangedShell" }, {
     -- Auto reload if file wasn't modified in vim
     if not vim.bo.modified then
       vim.cmd("edit!")
-      vim.notify(
-        "File auto-reloaded (external change detected)",
-        vim.log.levels.INFO
-      )
+      vim.notify("File auto-reloaded (external change detected)", vim.log.levels.INFO)
     end
   end,
   desc = "Auto reload unmodified files",
@@ -853,41 +849,17 @@ autocmd("ColorScheme", {
   pattern = "*",
   callback = function()
     -- Make LSP references more visible with a subtle background highlight
-    vim.api.nvim_set_hl(
-      0,
-      "LspReferenceText",
-      { bg = "#3b3b3b", underline = false }
-    )
-    vim.api.nvim_set_hl(
-      0,
-      "LspReferenceRead",
-      { bg = "#3b3b3b", underline = false }
-    )
-    vim.api.nvim_set_hl(
-      0,
-      "LspReferenceWrite",
-      { bg = "#4b3b3b", underline = false }
-    )
+    vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
   end,
   desc = "Set LSP reference highlight colors",
 })
 
 -- Apply highlight groups immediately
-vim.api.nvim_set_hl(
-  0,
-  "LspReferenceText",
-  { bg = "#3b3b3b", underline = false }
-)
-vim.api.nvim_set_hl(
-  0,
-  "LspReferenceRead",
-  { bg = "#3b3b3b", underline = false }
-)
-vim.api.nvim_set_hl(
-  0,
-  "LspReferenceWrite",
-  { bg = "#4b3b3b", underline = false }
-)
+vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
+vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
+vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
 
 -- =============================================================================
 -- SPELL CHECKING CONFIGURATION
@@ -967,9 +939,7 @@ local function get_skeleton_content(filetype, context)
       "        int: Exit code (0 for success, non-zero for failure)",
       '    """',
       "    parser = argparse.ArgumentParser(",
-      "        description='"
-        .. (context.description or "Script description")
-        .. "'",
+      "        description='" .. (context.description or "Script description") .. "'",
       "    )",
       "",
       "    # Add command line arguments",
@@ -1046,12 +1016,8 @@ local function get_skeleton_content(filetype, context)
       "<head>",
       '  <meta charset="UTF-8">',
       '  <meta name="viewport" content="width=device-width, initial-scale=1.0">',
-      '  <meta name="description" content="'
-        .. (context.description or "Page description")
-        .. '">',
-      '  <meta name="author" content="'
-        .. (context.author or "Illya Starikov")
-        .. '">',
+      '  <meta name="description" content="' .. (context.description or "Page description") .. '">',
+      '  <meta name="author" content="' .. (context.author or "Illya Starikov") .. '">',
       "  <title>" .. (context.title or "Page Title") .. "</title>",
       '  <link rel="stylesheet" href="styles.css">',
       "</head>",
@@ -1130,9 +1096,8 @@ local function get_skeleton_content(filetype, context)
     else
       -- Use the template from reference/markdown_reference.md
       local today = os.date("%d.%m.%Y")
-      local git_repo = vim.fn
-        .system("git rev-parse --show-toplevel 2>/dev/null | xargs basename")
-        :gsub("\n", "")
+      local git_repo =
+        vim.fn.system("git rev-parse --show-toplevel 2>/dev/null | xargs basename"):gsub("\n", "")
       if git_repo == "" then
         git_repo = vim.fn.expand("%:p:h:t")
       end
@@ -1186,11 +1151,7 @@ local function get_skeleton_content(filetype, context)
       "//  " .. filename,
       "//  " .. project,
       "//",
-      "//  Created by "
-        .. (context.author or "Illya Starikov")
-        .. " on "
-        .. date
-        .. ".",
+      "//  Created by " .. (context.author or "Illya Starikov") .. " on " .. date .. ".",
       "//  Copyright "
         .. year
         .. ". "
@@ -1521,7 +1482,15 @@ local large_file_group = augroup("large_file_handling", { clear = true })
 -- Handle large BUILD files with proper syntax highlighting
 autocmd({ "BufReadPre", "FileReadPre" }, {
   group = large_file_group,
-  pattern = { "BUILD", "BUILD.bazel", "*.BUILD", "*.bzl", "*.bazel", "WORKSPACE", "WORKSPACE.bazel" },
+  pattern = {
+    "BUILD",
+    "BUILD.bazel",
+    "*.BUILD",
+    "*.bzl",
+    "*.bazel",
+    "WORKSPACE",
+    "WORKSPACE.bazel",
+  },
   callback = function()
     local file = vim.fn.expand("<afile>")
     local size = vim.fn.getfsize(file)
@@ -1536,7 +1505,10 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
 
     -- For BUILD files over 20000 lines or 50MB, optimize settings
     if lines > 20000 or size > 52428800 then
-      vim.notify("Large BUILD file detected (" .. lines .. " lines). Applying optimizations...", vim.log.levels.INFO)
+      vim.notify(
+        "Large BUILD file detected (" .. lines .. " lines). Applying optimizations...",
+        vim.log.levels.INFO
+      )
 
       -- Set buffer-local variables to track large file
       vim.b.large_build_file = true
@@ -1544,19 +1516,19 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
 
       -- Performance optimizations
       vim.opt_local.foldmethod = "manual"
-      vim.opt_local.undolevels = 5000  -- Default: 1000
-      vim.opt_local.swapfile = false  -- Disable swap for large files
-      vim.opt_local.backup = false  -- Disable backup
-      vim.opt_local.writebackup = false  -- Disable write backup
+      vim.opt_local.undolevels = 5000 -- Default: 1000
+      vim.opt_local.swapfile = false -- Disable swap for large files
+      vim.opt_local.backup = false -- Disable backup
+      vim.opt_local.writebackup = false -- Disable write backup
 
       -- Increase processing limits for large files
-      vim.opt.maxmempattern = 100000  -- Default: 1000
-      vim.opt.redrawtime = 30000  -- Default: 2000
+      vim.opt.maxmempattern = 100000 -- Default: 1000
+      vim.opt.redrawtime = 30000 -- Default: 2000
 
       -- Disable some expensive features for performance
-      vim.opt_local.cursorline = false  -- Disable cursor line highlighting
-      vim.opt_local.relativenumber = false  -- Disable relative numbers
-      vim.opt_local.spell = false  -- Disable spell checking
+      vim.opt_local.cursorline = false -- Disable cursor line highlighting
+      vim.opt_local.relativenumber = false -- Disable relative numbers
+      vim.opt_local.spell = false -- Disable spell checking
     end
   end,
   desc = "Optimize settings for large BUILD files",
@@ -1565,7 +1537,15 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
 -- Ensure proper filetype and highlighting after file is loaded
 autocmd({ "BufReadPost", "FileReadPost" }, {
   group = large_file_group,
-  pattern = { "BUILD", "BUILD.bazel", "*.BUILD", "*.bzl", "*.bazel", "WORKSPACE", "WORKSPACE.bazel" },
+  pattern = {
+    "BUILD",
+    "BUILD.bazel",
+    "*.BUILD",
+    "*.bzl",
+    "*.bazel",
+    "WORKSPACE",
+    "WORKSPACE.bazel",
+  },
   callback = function()
     -- Always set filetype to bzl for BUILD files
     if vim.bo.filetype ~= "bzl" and vim.bo.filetype ~= "starlark" then

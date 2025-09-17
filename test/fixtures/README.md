@@ -5,6 +5,7 @@
 This directory contains sample files and test data used across the test suite. These fixtures provide consistent, predictable inputs for testing language servers, formatters, linters, and editor functionality.
 
 ### Fixture Files:
+
 ```
 fixtures/
 ├── sample.cpp   # C++ test file (4.2KB) - Templates, classes, STL
@@ -18,6 +19,7 @@ fixtures/
 ```
 
 ### How to use:
+
 ```bash
 # In tests, reference fixtures
 TEST_FILE="$TEST_DIR/fixtures/sample.py"
@@ -37,6 +39,7 @@ nvim "$TEST_FILE" -c "TSHighlightCapturesUnderCursor"
 Test fixtures ensure reproducibility and consistency. Real-world files change, but fixtures remain stable, allowing tests to reliably verify functionality across different environments and over time.
 
 ### Purpose of fixtures:
+
 - **Consistent test input** - Same file, same results
 - **Edge case coverage** - Intentional errors and complex syntax
 - **Performance baseline** - Known file sizes for benchmarking
@@ -48,6 +51,7 @@ Test fixtures ensure reproducibility and consistency. Real-world files change, b
 ### Each sample file includes:
 
 #### Language Features (`sample.py`):
+
 ```python
 # 1. Import statements (for completion testing)
 import os
@@ -70,6 +74,7 @@ def bad_method(self):
 #### Common Test Patterns:
 
 **LSP Testing Elements:**
+
 - Function definitions with docstrings
 - Class hierarchies with inheritance
 - Import statements for completion
@@ -77,6 +82,7 @@ def bad_method(self):
 - Intentional errors for diagnostics
 
 **Formatter Testing Elements:**
+
 - Inconsistent indentation
 - Long lines needing wrapping
 - Mixed quotes and spacing
@@ -84,6 +90,7 @@ def bad_method(self):
 - Tab/space mixing
 
 **Syntax Testing Elements:**
+
 - Language-specific keywords
 - Complex nested structures
 - String interpolation
@@ -95,8 +102,10 @@ def bad_method(self):
 ### What NOT to Do
 
 #### ❌ Don't use production code as fixtures
+
 **Problem**: Customer code accidentally committed
 **Solution**: Create synthetic examples
+
 ```python
 # BAD: Real database credentials
 connection = psycopg2.connect("dbname=prod_db user=admin password=secret123")
@@ -106,8 +115,10 @@ connection = psycopg2.connect("dbname=test_db user=test_user password=FAKE_PASS"
 ```
 
 #### ❌ Don't make fixtures too simple
+
 **Problem**: Tests passed but real files failed
 **Solution**: Include complexity
+
 ```lua
 -- Too simple
 local x = 1
@@ -121,15 +132,19 @@ end
 ```
 
 #### ❌ Don't forget encoding issues
+
 **Problem**: Tests failed on files with unicode
 **Solution**: Include unicode in fixtures
+
 ```markdown
 # Include emojis 🚀 and special chars: ñ, ü, 中文
 ```
 
 #### ❌ Don't test only happy paths
+
 **Problem**: Error handling never tested
 **Solution**: Include intentional errors
+
 ```javascript
 // Syntax error for parser testing
 const broken = {
@@ -159,16 +174,19 @@ console.log(undefinedVar.property);
 ### Discovered Patterns
 
 1. **Golden files** - Expected output for comparison
+
    ```bash
    diff expected.txt actual.txt
    ```
 
 2. **Error seeding** - Intentional bugs at specific lines
+
    ```python
    # Line 37: undefined_variable diagnostic test
    ```
 
 3. **Feature flags** - Toggle test scenarios
+
    ```typescript
    const ENABLE_ASYNC_TESTS = true;
    ```
@@ -190,6 +208,7 @@ When creating new fixture files:
 5. **Test the fixture** manually first
 
 Template for new fixture:
+
 ```python
 #!/usr/bin/env python3
 """
@@ -215,6 +234,7 @@ Tests: completion, diagnostics, formatting, folding
 ## Fixture Maintenance
 
 ### Validation:
+
 ```bash
 # Ensure fixtures are valid
 for file in fixtures/sample.*; do
@@ -228,6 +248,7 @@ done
 ```
 
 ### Updates:
+
 - Review fixtures when language versions change
 - Update when new LSP features added
 - Expand when new test cases needed

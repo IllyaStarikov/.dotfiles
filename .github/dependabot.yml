@@ -1,28 +1,28 @@
 version: 2
 updates:
   # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'
     commit-message:
-      prefix: "ci"
-      include: "scope"
+      prefix: 'ci'
+      include: 'scope'
 
   # Git submodules (if any)
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
+  - package-ecosystem: 'gitsubmodule'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     labels:
-      - "dependencies"
-      - "submodules"
+      - 'dependencies'
+      - 'submodules'
     commit-message:
-      prefix: "deps"
+      prefix: 'deps'

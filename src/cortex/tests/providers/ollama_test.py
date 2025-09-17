@@ -3,11 +3,15 @@ Tests for ollama.py provider module.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import aiohttp
 
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
 from cortex.providers.ollama import OllamaProvider
-from cortex.providers import ModelInfo, ModelCapability
 
 
 class TestOllamaProvider(unittest.TestCase):
@@ -30,20 +34,21 @@ class TestOllamaProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={
-            "models": [
-                {
-                    "name": "llama2:latest",
-                    "size": 3825819519,  # ~3.8GB
-                    "modified_at": "2024-01-01T12:00:00Z"
-                },
-                {
-                    "name": "codellama:13b",
-                    "size": 13958643712,  # ~14GB
-                    "modified_at": "2024-01-01T12:00:00Z"
-                }
-            ]
-        })
+        mock_response.json = AsyncMock(
+            return_value={
+                "models": [
+                    {
+                        "name": "llama2:latest",
+                        "size": 3825819519,  # ~3.8GB
+                        "modified_at": "2024-01-01T12:00:00Z"
+                    },
+                    {
+                        "name": "codellama:13b",
+                        "size": 13958643712,  # ~14GB
+                        "modified_at": "2024-01-01T12:00:00Z"
+                    }
+                ]
+            })
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -63,11 +68,9 @@ class TestOllamaProvider(unittest.TestCase):
         result = self.provider.download_model("llama2")
 
         self.assertTrue(result)
-        mock_run.assert_called_once_with(
-            ["ollama", "pull", "llama2"],
-            capture_output=True,
-            text=True
-        )
+        mock_run.assert_called_once_with(["ollama", "pull", "llama2"],
+                                         capture_output=True,
+                                         text=True)
 
     @patch('aiohttp.ClientSession')
     def test_chat_success(self, mock_session_class):
@@ -79,8 +82,7 @@ class TestOllamaProvider(unittest.TestCase):
         # Simulate streaming response
         mock_response.content.iter_any = AsyncMock()
         mock_response.content.iter_any.return_value = [
-            b'{"message": {"content": "Hello "}}',
-            b'{"message": {"content": "world"}}',
+            b'{"message": {"content": "Hello "}}', b'{"message": {"content": "world"}}',
             b'{"done": true}'
         ]
 

@@ -2,12 +2,18 @@
 Tests for cli.py module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock, call
-from click.testing import CliRunner
 import json
+import unittest
+from unittest.mock import call
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from cortex.cli import cli, list as list_command, model, download
+from click.testing import CliRunner
+
+from cortex.cli import cli
+from cortex.cli import download
+from cortex.cli import list as list_command
+from cortex.cli import model
 
 
 class TestCLICommands(unittest.TestCase):
@@ -23,33 +29,28 @@ class TestCLICommands(unittest.TestCase):
         mock_cortex = MagicMock()
         mock_cortex_class.return_value = mock_cortex
 
-        mock_cortex.list_models.return_value = [
-            {
-                "id": "test-model-1",
-                "name": "Test Model 1",
-                "provider": "mlx",
-                "size_gb": 7.0,
-                "online": False
-            },
-            {
-                "id": "test-model-2",
-                "name": "Test Model 2",
-                "provider": "openai",
-                "size_gb": 0,
-                "online": True
-            }
-        ]
+        mock_cortex.list_models.return_value = [{
+            "id": "test-model-1",
+            "name": "Test Model 1",
+            "provider": "mlx",
+            "size_gb": 7.0,
+            "online": False
+        }, {
+            "id": "test-model-2",
+            "name": "Test Model 2",
+            "provider": "openai",
+            "size_gb": 0,
+            "online": True
+        }]
 
         result = self.runner.invoke(list_command)
 
         self.assertEqual(result.exit_code, 0)
-        mock_cortex.list_models.assert_called_once_with(
-            provider=None,
-            capability=None,
-            local_only=False,
-            recommended=False,
-            format="table"
-        )
+        mock_cortex.list_models.assert_called_once_with(provider=None,
+                                                        capability=None,
+                                                        local_only=False,
+                                                        recommended=False,
+                                                        format="table")
         # Check output contains model names
         self.assertIn("Test Model 1", result.output)
         self.assertIn("Test Model 2", result.output)
@@ -64,35 +65,29 @@ class TestCLICommands(unittest.TestCase):
         # Test with provider filter
         result = self.runner.invoke(list_command, ["--provider", "mlx"])
         self.assertEqual(result.exit_code, 0)
-        mock_cortex.list_models.assert_called_with(
-            provider="mlx",
-            capability=None,
-            local_only=False,
-            recommended=False,
-            format="table"
-        )
+        mock_cortex.list_models.assert_called_with(provider="mlx",
+                                                   capability=None,
+                                                   local_only=False,
+                                                   recommended=False,
+                                                   format="table")
 
         # Test with local only
         result = self.runner.invoke(list_command, ["--local"])
         self.assertEqual(result.exit_code, 0)
-        mock_cortex.list_models.assert_called_with(
-            provider=None,
-            capability=None,
-            local_only=True,
-            recommended=False,
-            format="table"
-        )
+        mock_cortex.list_models.assert_called_with(provider=None,
+                                                   capability=None,
+                                                   local_only=True,
+                                                   recommended=False,
+                                                   format="table")
 
         # Test with recommended
         result = self.runner.invoke(list_command, ["--recommended"])
         self.assertEqual(result.exit_code, 0)
-        mock_cortex.list_models.assert_called_with(
-            provider=None,
-            capability=None,
-            local_only=False,
-            recommended=True,
-            format="table"
-        )
+        mock_cortex.list_models.assert_called_with(provider=None,
+                                                   capability=None,
+                                                   local_only=False,
+                                                   recommended=True,
+                                                   format="table")
 
     @patch('cortex.cli.Cortex')
     def test_list_models_json_format(self, mock_cortex_class):
@@ -100,13 +95,7 @@ class TestCLICommands(unittest.TestCase):
         mock_cortex = MagicMock()
         mock_cortex_class.return_value = mock_cortex
 
-        test_models = [
-            {
-                "id": "test-model",
-                "name": "Test Model",
-                "provider": "mlx"
-            }
-        ]
+        test_models = [{"id": "test-model", "name": "Test Model", "provider": "mlx"}]
         mock_cortex.list_models.return_value = test_models
 
         result = self.runner.invoke(list_command, ["--format", "json"])
@@ -241,13 +230,11 @@ class TestCLICommands(unittest.TestCase):
         result = self.runner.invoke(list_command, ["--capability", "code"])
 
         self.assertEqual(result.exit_code, 0)
-        mock_cortex.list_models.assert_called_with(
-            provider=None,
-            capability="code",
-            local_only=False,
-            recommended=False,
-            format="table"
-        )
+        mock_cortex.list_models.assert_called_with(provider=None,
+                                                   capability="code",
+                                                   local_only=False,
+                                                   recommended=False,
+                                                   format="table")
 
     def test_cli_version(self):
         """Test CLI version display."""

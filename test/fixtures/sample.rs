@@ -21,17 +21,17 @@ impl Person {
             email: None,
         }
     }
-    
+
     // Method with mutable self
     pub fn set_email(&mut self, email: String) {
         self.email = Some(email);
     }
-    
+
     // Method with immutable self
     pub fn can_vote(&self) -> bool {
         self.age >= 18
     }
-    
+
     // Intentional error: undefined field
     pub fn get_phone(&self) -> &str {
         &self.phone  // Error: no field `phone`
@@ -47,18 +47,18 @@ impl<T> Container<T> {
     fn new() -> Self {
         Container { items: Vec::new() }
     }
-    
+
     fn add(&mut self, item: T) {
         self.items.push(item);
     }
-    
+
     // Test completion here: self.items.
 }
 
 // Trait definition
 trait Drawable {
     fn draw(&self);
-    
+
     // Default implementation
     fn description(&self) -> String {
         String::from("A drawable object")
@@ -92,7 +92,7 @@ impl Message {
 async fn fetch_data(url: &str) -> Result<String, Box<dyn std::error::Error>> {
     // Simulated async operation
     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-    
+
     // Type error: wrong return type
     Ok(42)  // Should return String
 }
@@ -109,26 +109,26 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 // Closure examples
 fn closure_examples() {
     let numbers = vec![1, 2, 3, 4, 5];
-    
+
     // Simple closure
     let sum: i32 = numbers.iter().sum();
-    
+
     // Closure with type annotation
     let is_even = |x: &i32| -> bool { x % 2 == 0 };
-    
+
     // Filter and map
     let even_squares: Vec<i32> = numbers
         .iter()
         .filter(|&&x| is_even(&x))
         .map(|&x| x * x)
         .collect();
-    
+
     // Move closure
     let captured = String::from("Hello");
     let print_captured = move || {
         println!("{}", captured);
     };
-    
+
     // Error: captured moved
     println!("{}", captured);  // Error: value moved
 }
@@ -163,29 +163,29 @@ fn   poorly_formatted(  x:i32,y:i32  )->i32{x+y}
 fn main() {
     let mut person = Person::new("Alice", 25);
     person.set_email("alice@example.com".to_string());
-    
+
     // Pattern matching
     let msg = Message::Text("Hello, Rust!".to_string());
     msg.process();
-    
+
     // Error handling
     match read_config() {
         Ok(config) => println!("Config loaded"),
         Err(e) => eprintln!("Error: {}", e),
     }
-    
+
     // Thread safety with Arc and Mutex
     let counter = Arc::new(Mutex::new(0));
     let counter_clone = Arc::clone(&counter);
-    
+
     std::thread::spawn(move || {
         let mut num = counter_clone.lock().unwrap();
         *num += 1;
     });
-    
+
     // Missing semicolon
     println!("Counter: {:?}", counter.lock().unwrap())
-    
+
     // Unreachable code
     return;
     println!("This is unreachable");

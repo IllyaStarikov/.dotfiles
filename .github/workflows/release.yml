@@ -19,13 +19,13 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
-      
+
       - name: Determine Version
         id: version
         run: |
@@ -36,92 +36,92 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
-      
+
       - name: Generate Changelog
         id: changelog
         run: |
           # Get previous tag
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           CURRENT_TAG="${{ steps.version.outputs.version }}"
-          
+
           # Get commit range
           if [[ -z "$PREV_TAG" ]]; then
             COMMITS=$(git log --oneline --no-merges)
           else
             COMMITS=$(git log --oneline --no-merges "${PREV_TAG}..HEAD")
           fi
-          
+
           # Generate changelog
           cat > CHANGELOG.md << EOF
           ## 🎉 Release ${CURRENT_TAG}
-          
+
           ### ✨ Features
           $(echo "$COMMITS" | grep -E "^[a-f0-9]+ feat(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No new features")
-          
+
           ### 🐛 Bug Fixes
           $(echo "$COMMITS" | grep -E "^[a-f0-9]+ fix(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No bug fixes")
-          
+
           ### 📚 Documentation
           $(echo "$COMMITS" | grep -E "^[a-f0-9]+ docs(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' || echo "- No documentation updates")
-          
+
           ### 🔧 Maintenance
           $(echo "$COMMITS" | grep -E "^[a-f0-9]+ (chore|refactor|test)(\(.*\))?:" | sed 's/^[a-f0-9]* /- /' | head -5 || echo "- No maintenance updates")
-          
+
           ---
           **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG:-initial}...${CURRENT_TAG}
           EOF
-          
+
           cat CHANGELOG.md
-      
+
       - name: Create Release Assets
         run: |
           # Create release directory
           mkdir -p release/dotfiles-${VERSION}
           VERSION="${{ steps.version.outputs.version }}"
-          
+
           # Copy essential files
           cp -r src release/dotfiles-${VERSION}/
           cp -r template release/dotfiles-${VERSION}/
           cp -r test release/dotfiles-${VERSION}/
           cp README.md CLAUDE.md release/dotfiles-${VERSION}/
           cp .gitleaks.toml release/dotfiles-${VERSION}/ 2>/dev/null || true
-          
+
           # Create install script
           cat > release/dotfiles-${VERSION}/install.sh << 'EOF'
           #!/bin/bash
           set -euo pipefail
-          
+
           echo "🚀 Dotfiles Installer"
           echo "===================="
-          
+
           # Detect OS
           case "$(uname -s)" in
               Darwin*) OS="macos" ;;
               Linux*)  OS="linux" ;;
               *)       echo "❌ Unsupported OS"; exit 1 ;;
           esac
-          
+
           # Install location
           DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
           echo "📁 Installing to: $DOTFILES_DIR"
-          
+
           # Backup existing
           if [[ -d "$DOTFILES_DIR" ]]; then
               echo "📦 Backing up existing dotfiles..."
               mv "$DOTFILES_DIR" "$DOTFILES_DIR.backup.$(date +%Y%m%d_%H%M%S)"
           fi
-          
+
           # Copy files
           echo "📋 Copying files..."
           mkdir -p "$DOTFILES_DIR"
           cp -r * "$DOTFILES_DIR/" 2>/dev/null || true
-          
+
           # Set permissions
           echo "🔧 Setting permissions..."
           find "$DOTFILES_DIR/src/scripts" -type f -exec chmod +x {} \;
           chmod +x "$DOTFILES_DIR/src/setup/"*.sh 2>/dev/null || true
           chmod +x "$DOTFILES_DIR/src/theme-switcher/"*.sh 2>/dev/null || true
-          
+
           # Run setup
           echo "🔗 Creating symlinks..."
           if [[ -f "$DOTFILES_DIR/src/setup/symlinks.sh" ]]; then
@@ -129,7 +129,7 @@ jobs:
           elif [[ -f "$DOTFILES_DIR/src/setup/aliases.sh" ]]; then
               bash "$DOTFILES_DIR/src/setup/aliases.sh"
           fi
-          
+
           echo "✅ Installation complete!"
           echo ""
           echo "Next steps:"
@@ -138,15 +138,15 @@ jobs:
           echo "  3. Run 'theme' to set your theme"
           EOF
           chmod +x release/dotfiles-${VERSION}/install.sh
-          
+
           # Create archives
           cd release
           tar -czf dotfiles-${VERSION}.tar.gz dotfiles-${VERSION}
           zip -qr dotfiles-${VERSION}.zip dotfiles-${VERSION}
-          
+
           echo "📦 Release assets created:"
           ls -lh dotfiles-${VERSION}.*
-      
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

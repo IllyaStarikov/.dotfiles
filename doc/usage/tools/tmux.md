@@ -39,101 +39,101 @@ Changed from default `C-b` for ergonomics.
 
 ## Session Management
 
-| Command | Action |
-|---------|--------|
-| `tmux new -s name` | New named session |
-| `tmux a -t name` | Attach to session |
-| `tmux ls` | List sessions |
-| `tmux kill-session -t name` | Kill session |
-| `C-a d` | Detach from session |
-| `C-a s` | Session switcher |
-| `C-a $` | Rename session |
+| Command                     | Action              |
+| --------------------------- | ------------------- |
+| `tmux new -s name`          | New named session   |
+| `tmux a -t name`            | Attach to session   |
+| `tmux ls`                   | List sessions       |
+| `tmux kill-session -t name` | Kill session        |
+| `C-a d`                     | Detach from session |
+| `C-a s`                     | Session switcher    |
+| `C-a $`                     | Rename session      |
 
 ## Window Management
 
-| Key | Action |
-|-----|--------|
-| `C-a c` | Create window |
-| `C-a ,` | Rename window |
-| `C-a n` | Next window |
-| `C-a p` | Previous window |
-| `C-a l` | Last window |
+| Key       | Action           |
+| --------- | ---------------- |
+| `C-a c`   | Create window    |
+| `C-a ,`   | Rename window    |
+| `C-a n`   | Next window      |
+| `C-a p`   | Previous window  |
+| `C-a l`   | Last window      |
 | `C-a 0-9` | Go to window 0-9 |
-| `C-a w` | Window list |
-| `C-a &` | Kill window |
+| `C-a w`   | Window list      |
+| `C-a &`   | Kill window      |
 
 ## Pane Management
 
 ### Creating Panes
 
-| Key | Action |
-|-----|--------|
-| `C-a |` | Split vertical |
-| `C-a -` | Split horizontal |
-| `C-a %` | Split vertical (default) |
+| Key     | Action                     |
+| ------- | -------------------------- | -------------- |
+| `C-a    | `                          | Split vertical |
+| `C-a -` | Split horizontal           |
+| `C-a %` | Split vertical (default)   |
 | `C-a "` | Split horizontal (default) |
 
 ### Navigation
 
-| Key | Action |
-|-----|--------|
-| `C-a h/j/k/l` | Move to pane |
-| `C-h/j/k/l` | Smart navigation (with vim) |
-| `C-a o` | Cycle panes |
-| `C-a ;` | Last pane |
-| `C-a q` | Show pane numbers |
+| Key           | Action                      |
+| ------------- | --------------------------- |
+| `C-a h/j/k/l` | Move to pane                |
+| `C-h/j/k/l`   | Smart navigation (with vim) |
+| `C-a o`       | Cycle panes                 |
+| `C-a ;`       | Last pane                   |
+| `C-a q`       | Show pane numbers           |
 
 ### Resizing
 
-| Key | Action |
-|-----|--------|
-| `C-a H/J/K/L` | Resize by 1 |
+| Key             | Action      |
+| --------------- | ----------- |
+| `C-a H/J/K/L`   | Resize by 1 |
 | `C-a M-h/j/k/l` | Resize by 5 |
 
 ### Layout
 
-| Key | Action |
-|-----|--------|
-| `C-a Space` | Cycle layouts |
-| `C-a M-1` | Even horizontal |
-| `C-a M-2` | Even vertical |
-| `C-a M-3` | Main horizontal |
-| `C-a M-4` | Main vertical |
-| `C-a M-5` | Tiled |
+| Key         | Action          |
+| ----------- | --------------- |
+| `C-a Space` | Cycle layouts   |
+| `C-a M-1`   | Even horizontal |
+| `C-a M-2`   | Even vertical   |
+| `C-a M-3`   | Main horizontal |
+| `C-a M-4`   | Main vertical   |
+| `C-a M-5`   | Tiled           |
 
 ## Copy Mode
 
 ### Entering
 
-| Key | Action |
-|-----|--------|
-| `C-a [` | Enter copy mode |
+| Key        | Action              |
+| ---------- | ------------------- |
+| `C-a [`    | Enter copy mode     |
 | `C-a PgUp` | Enter and scroll up |
 
 ### Navigation (vi-style)
 
-| Key | Action |
-|-----|--------|
-| `h/j/k/l` | Move cursor |
-| `w/b` | Word forward/back |
-| `0/$` | Line start/end |
-| `g/G` | Top/bottom |
-| `C-u/C-d` | Page up/down |
-| `/` | Search forward |
-| `?` | Search backward |
-| `n/N` | Next/Previous result |
+| Key       | Action               |
+| --------- | -------------------- |
+| `h/j/k/l` | Move cursor          |
+| `w/b`     | Word forward/back    |
+| `0/$`     | Line start/end       |
+| `g/G`     | Top/bottom           |
+| `C-u/C-d` | Page up/down         |
+| `/`       | Search forward       |
+| `?`       | Search backward      |
+| `n/N`     | Next/Previous result |
 
 ### Selection
 
-| Key | Action |
-|-----|--------|
-| `v` | Start selection |
-| `V` | Line selection |
-| `C-v` | Block selection |
-| `y` | Copy selection |
-| `Enter` | Copy and exit |
+| Key      | Action          |
+| -------- | --------------- |
+| `v`      | Start selection |
+| `V`      | Line selection  |
+| `C-v`    | Block selection |
+| `y`      | Copy selection  |
+| `Enter`  | Copy and exit   |
 | `Escape` | Clear selection |
-| `q` | Exit copy mode |
+| `q`      | Exit copy mode  |
 
 ## Configuration
 
@@ -179,13 +179,13 @@ C-a I
 
 ### Key Plugins
 
-| Plugin | Purpose | Keys |
-|--------|---------|------|
-| tmux-sensible | Better defaults | Auto |
-| tmux-resurrect | Save/restore | `C-a C-s/C-r` |
-| tmux-continuum | Auto-save | Auto |
-| tmux-yank | Better copy | `y` in copy mode |
-| vim-tmux-navigator | Vim integration | `C-h/j/k/l` |
+| Plugin             | Purpose         | Keys             |
+| ------------------ | --------------- | ---------------- |
+| tmux-sensible      | Better defaults | Auto             |
+| tmux-resurrect     | Save/restore    | `C-a C-s/C-r`    |
+| tmux-continuum     | Auto-save       | Auto             |
+| tmux-yank          | Better copy     | `y` in copy mode |
+| vim-tmux-navigator | Vim integration | `C-h/j/k/l`      |
 
 ## Workflows
 
@@ -203,7 +203,7 @@ C-a -        # Horizontal split
 # Name windows
 C-a c        # New window
 C-a ,        # Rename to "server"
-C-a c        # New window  
+C-a c        # New window
 C-a ,        # Rename to "logs"
 ```
 
@@ -329,12 +329,12 @@ lazygit            # Run lazygit
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Colors wrong | `export TERM=screen-256color` |
-| Can't create session | `tmux kill-server` |
-| Slow in vim | `set -sg escape-time 0` |
-| Copy not working | Install `reattach-to-user-namespace` |
+| Issue                | Solution                             |
+| -------------------- | ------------------------------------ |
+| Colors wrong         | `export TERM=screen-256color`        |
+| Can't create session | `tmux kill-server`                   |
+| Slow in vim          | `set -sg escape-time 0`              |
+| Copy not working     | Install `reattach-to-user-namespace` |
 
 ### Debug Commands
 

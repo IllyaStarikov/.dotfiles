@@ -27,6 +27,7 @@ All terminal tools in this setup automatically sync with the system theme:
 ### Font Configuration
 
 We use JetBrainsMono Nerd Font across all terminals:
+
 - Includes programming ligatures
 - Has powerline symbols
 - Contains devicons for file types
@@ -41,6 +42,7 @@ We use JetBrainsMono Nerd Font across all terminals:
 ## Creating Custom Terminal Guides
 
 Add guides here when you have:
+
 - Complex terminal setups
 - Custom integrations
 - Performance optimizations

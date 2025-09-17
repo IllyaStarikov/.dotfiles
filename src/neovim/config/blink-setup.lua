@@ -45,7 +45,7 @@ return {
 
     -- List configuration
     list = {
-      max_items = 500,  -- Default: 200
+      max_items = 500, -- Default: 200
       selection = {
         preselect = true, -- Preselect first item
         auto_insert = false, -- Don't auto-insert on selection
@@ -63,7 +63,7 @@ return {
 
     -- Menu appearance
     menu = {
-      max_height = 20,  -- Default: 10
+      max_height = 20, -- Default: 10
       draw = {
         columns = {
           { "kind_icon" },
@@ -122,7 +122,7 @@ return {
         async = false, -- Path completion is fast enough to be sync
       },
       snippets = {
-        max_items = 30,  -- Default: 10
+        max_items = 30, -- Default: 10
         opts = {
           friendly_snippets = true,
           search_paths = { vim.fn.stdpath("config") .. "/snippets" },

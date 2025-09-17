@@ -3,12 +3,14 @@
 Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 
 ## Files
+
 - `zshrc` - Main configuration with plugins
 - `zshenv` - Environment variables
 - `aliases.zsh` - 200+ command aliases
 - `starship.toml` - Prompt configuration
 
 ## Key Features
+
 - **< 200ms startup** with Zinit turbo mode
 - **5 essential plugins** (syntax highlighting, autosuggestions, completions)
 - **Vi mode** with visual feedback
@@ -16,6 +18,7 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 - **Starship prompt** with git integration
 
 ## Plugin Management
+
 ```zsh
 # Zinit with turbo mode (loads after prompt)
 zinit wait lucid for \
@@ -25,6 +28,7 @@ zinit wait lucid for \
 ```
 
 ## Common Aliases
+
 ```zsh
 # Navigation
 alias ..="cd .."
@@ -41,6 +45,7 @@ alias py="python3"
 ```
 
 ## Performance Tips
+
 - Use `zinit wait` for deferred loading
 - Profile with `time zsh -i -c exit`
 - Clear widget conflicts before Starship init
@@ -49,7 +54,9 @@ alias py="python3"
 ## Lessons Learned
 
 ### Vi Mode Recursion Fix
+
 Both Starship and vi-mode define `zle-keymap-select` causing infinite recursion.
+
 ```zsh
 # Fix at zshrc:181-183
 if (( ${+widgets[zle-keymap-select]} )); then
@@ -58,11 +65,13 @@ fi
 ```
 
 ### Why Not Oh-My-Zsh
+
 - Adds 500ms+ to startup
 - Bloated with unused features
 - Zinit is 10x faster with turbo mode
 
 ### Failed Approaches
+
 - **Prezto** - Still 300ms+ startup
 - **Antigen** - No parallel loading
 - **Powerline** - Python-based, very slow

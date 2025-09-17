@@ -15,31 +15,31 @@ Modern CLI tools provide significant improvements over traditional Unix utilitie
 
 ### File Operations
 
-| Traditional | Modern | Benefits |
-|-------------|---------|----------|
-| `ls` | **[eza](https://eza.rocks/)** | Git integration, tree view, icons |
-| `cat` | **[bat](https://github.com/sharkdp/bat)** | Syntax highlighting, line numbers, git changes |
-| `find` | **[fd](https://github.com/sharkdp/fd)** | Intuitive syntax, respect `.gitignore`, faster |
-| `grep` | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | 10-100x faster, respects `.gitignore`, better UX |
-| `sed` | **[sd](https://github.com/chmln/sd)** | Intuitive find/replace syntax |
-| `diff` | **[delta](https://github.com/dandavison/delta)** | Syntax highlighting, side-by-side view |
+| Traditional | Modern                                               | Benefits                                         |
+| ----------- | ---------------------------------------------------- | ------------------------------------------------ |
+| `ls`        | **[eza](https://eza.rocks/)**                        | Git integration, tree view, icons                |
+| `cat`       | **[bat](https://github.com/sharkdp/bat)**            | Syntax highlighting, line numbers, git changes   |
+| `find`      | **[fd](https://github.com/sharkdp/fd)**              | Intuitive syntax, respect `.gitignore`, faster   |
+| `grep`      | **[ripgrep](https://github.com/BurntSushi/ripgrep)** | 10-100x faster, respects `.gitignore`, better UX |
+| `sed`       | **[sd](https://github.com/chmln/sd)**                | Intuitive find/replace syntax                    |
+| `diff`      | **[delta](https://github.com/dandavison/delta)**     | Syntax highlighting, side-by-side view           |
 
 ### System Monitoring
 
-| Traditional | Modern | Benefits |
-|-------------|---------|----------|
-| `top` | **[htop](https://htop.dev/)** | Interactive process viewer, tree view |
-| `ps` | **[procs](https://github.com/dalance/procs)** | Better formatting, tree view |
-| `df` | **[duf](https://github.com/muesli/duf)** | Better formatting, device filtering |
-| `du` | **[dust](https://github.com/bootandy/dust)** | Intuitive tree view, faster |
+| Traditional | Modern                                        | Benefits                              |
+| ----------- | --------------------------------------------- | ------------------------------------- |
+| `top`       | **[htop](https://htop.dev/)**                 | Interactive process viewer, tree view |
+| `ps`        | **[procs](https://github.com/dalance/procs)** | Better formatting, tree view          |
+| `df`        | **[duf](https://github.com/muesli/duf)**      | Better formatting, device filtering   |
+| `du`        | **[dust](https://github.com/bootandy/dust)**  | Intuitive tree view, faster           |
 
 ### Network Tools
 
-| Traditional | Modern | Benefits |
-|-------------|---------|----------|
-| `ping` | **[gping](https://github.com/orf/gping)** | Graph visualization |
-| `dig` | **[dog](https://github.com/ogham/dog)** | Colorful output, better UX |
-| `curl` | **[xh](https://github.com/ducaale/xh)** | HTTPie-compatible, faster, single binary |
+| Traditional | Modern                                    | Benefits                                 |
+| ----------- | ----------------------------------------- | ---------------------------------------- |
+| `ping`      | **[gping](https://github.com/orf/gping)** | Graph visualization                      |
+| `dig`       | **[dog](https://github.com/ogham/dog)**   | Colorful output, better UX               |
+| `curl`      | **[xh](https://github.com/ducaale/xh)**   | HTTPie-compatible, faster, single binary |
 
 ## Configuration
 

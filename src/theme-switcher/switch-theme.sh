@@ -61,13 +61,13 @@ OPTIONS:
 THEMES:
     light              Use default light theme (tokyonight_day)
     dark               Use default dark theme (tokyonight_storm)
-    
+
     Shortcuts:
     day                tokyonight_day (light)
     night              tokyonight_night (dark)
     moon               tokyonight_moon (dark)
     storm              tokyonight_storm (dark) [default dark]
-    
+
     Full theme names:
     tokyonight_day, tokyonight_night, tokyonight_moon, tokyonight_storm
 

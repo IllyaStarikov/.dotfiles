@@ -8,7 +8,7 @@ This document tests **marksman** LSP functionality including diagnostics, comple
 - [Code Examples](#code-examples)
 - [Links and References](#links-and-references)
 - [Common Issues](#common-issues)
-- [Missing Section](#missing-section)  <!-- This link should show as broken -->
+- [Missing Section](#missing-section) <!-- This link should show as broken -->
 
 ## Introduction
 
@@ -16,7 +16,7 @@ This is a sample document with various Markdown features to test LSP functionali
 
 ### Features to Test
 
-1. **Bold text** and *italic text*
+1. **Bold text** and _italic text_
 2. `Inline code`
 3. [Internal links](#code-examples)
 4. [External links](https://example.com)
@@ -33,7 +33,7 @@ def hello_world():
 
 ```javascript
 const greet = (name) => {
-    console.log(`Hello, ${name}!`);
+  console.log(`Hello, ${name}!`);
 };
 ```
 
@@ -47,22 +47,23 @@ echo "Hello from Bash!"
 ### Internal References
 
 - Link to [Introduction](#introduction)
-- Link to [non-existent section](#this-does-not-exist)  <!-- Should show diagnostic -->
+- Link to [non-existent section](#this-does-not-exist) <!-- Should show diagnostic -->
 - Link to [Code Examples](#code-examples)
 
 ### External Links
 
 - [GitHub](https://github.com)
-- [Broken link](htps://example.com)  <!-- Typo in protocol -->
-- Relative link to [another file](./another.md)  <!-- May show as broken if file doesn't exist -->
+- [Broken link](htps://example.com) <!-- Typo in protocol -->
+- Relative link to [another file](./another.md) <!-- May show as broken if file doesn't exist -->
 
 ### Reference-style Links
 
 Here's a [reference link][1] and another [reference][label].
 
-[1]: https://example.com "Example Site"
-[label]: https://github.com "GitHub"
-[unused]: https://unused.com "This reference is not used"  <!-- Might show warning -->
+[1]: https://example.com 'Example Site'
+[label]: https://github.com 'GitHub'
+
+[unused]: https://unused.com "This reference is not used" <!-- Might show warning -->
 
 ## Common Issues
 
@@ -74,27 +75,28 @@ Here's a [reference link][1] and another [reference][label].
     - Double nested
 - Item 3
 
-* Mixed bullet style  <!-- Inconsistent list markers -->
+* Mixed bullet style <!-- Inconsistent list markers -->
+
 - Back to dashes
 
 ### Ordered List Issues
 
 1. First item
 2. Second item
-1. Third item  <!-- Incorrect numbering -->
+3. Third item <!-- Incorrect numbering -->
 4. Fourth item
 
 ### Table Formatting
 
 | Header 1 | Header 2 | Header 3 |
-|----------|----------|----------|
+| -------- | -------- | -------- | --------------------- | ------------------- |
 | Cell 1   | Cell 2   | Cell 3   |
-| Cell 4   | Cell 5   |          |  <!-- Missing cell -->
-| Cell 7   | Cell 8   | Cell 9   | Extra cell |  <!-- Extra cell -->
+| Cell 4   | Cell 5   |          | <!-- Missing cell --> |
+| Cell 7   | Cell 8   | Cell 9   | Extra cell            | <!-- Extra cell --> |
 
 ### Incomplete Formatting
 
-This is **bold but not closed
+This is \**bold but not closed
 This is *italic but not closed
 This is `code but not closed
 
@@ -102,25 +104,29 @@ This is `code but not closed
 
 - [x] Completed task
 - [ ] Incomplete task
-- [X] Another completed task  <!-- Uppercase X -->
-- [] Missing space  <!-- Incorrect format -->
+- [x] Another completed task <!-- Uppercase X -->
+- [] Missing space <!-- Incorrect format -->
 
 ## Heading Issues
 
-### Duplicate Heading  <!-- This heading appears twice -->
+### Duplicate Heading <!-- This heading appears twice -->
+
 Some content here.
 
-### Duplicate Heading  <!-- Duplicate -->
+### Duplicate Heading <!-- Duplicate -->
+
 More content here.
 
-####No space after hashes  <!-- Missing space -->
+####No space after hashes <!-- Missing space -->
 
 ## Front Matter
 
 ---
+
 title: Sample Document
 author: Test Author
 tags: [markdown, lsp, testing]
+
 ---
 
 ## Footnotes
@@ -128,9 +134,10 @@ tags: [markdown, lsp, testing]
 Here's a sentence with a footnote[^1].
 
 [^1]: This is the footnote text.
-[^2]: This footnote is not referenced.  <!-- Unused footnote -->
 
-Here's another reference[^3] to a missing footnote.  <!-- Missing footnote -->
+[^2]: This footnote is not referenced. <!-- Unused footnote -->
+
+Here's another reference[^3] to a missing footnote. <!-- Missing footnote -->
 
 ## HTML in Markdown
 
@@ -151,15 +158,16 @@ Here's another reference[^3] to a missing footnote.  <!-- Missing footnote -->
 
 ## Empty Sections
 
-### 
+###
 
-###   <!-- Only whitespace -->
+### <!-- Only whitespace -->
 
 ## Conclusion
 
 This document includes various Markdown elements that should trigger different LSP features:
+
 - Diagnostics for broken links
-- Warnings for style issues  
+- Warnings for style issues
 - Completion for link references
 - Navigation between sections
 

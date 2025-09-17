@@ -31,18 +31,21 @@ src/
 ### Terminal Emulators
 
 **alacritty.toml** - GPU-accelerated terminal
+
 - Font: MesloLGS Nerd Font Mono
 - Dynamic theme switching via imports
 - Custom key bindings
 - macOS-specific decorations
 
 **kitty/** - Fast, feature-rich terminal
+
 - GPU rendering
 - Ligature support
 - Image protocol
 - Custom layouts
 
 **wezterm/** - Lua-configurable terminal
+
 - Cross-platform
 - Multiplexing support
 - GPU acceleration
@@ -51,6 +54,7 @@ src/
 ### Shell & Multiplexer
 
 **tmux.conf** - Terminal multiplexer
+
 - Prefix: `Ctrl-a` (screen-like)
 - Vi-mode navigation
 - Smart pane switching
@@ -58,6 +62,7 @@ src/
 - Theme integration
 
 **zsh/** - Z shell configuration
+
 - Zinit plugin manager (turbo mode)
 - Starship prompt
 - 200+ aliases
@@ -67,6 +72,7 @@ src/
 ### Development Tools
 
 **neovim/** - Modern text editor
+
 - 500+ plugin references
 - LSP for 20+ languages
 - AI integration (Avante, CodeCompanion)
@@ -74,6 +80,7 @@ src/
 - Custom snippets per language
 
 **git/** - Version control
+
 - Global configuration
 - 50+ aliases
 - Delta for diffs
@@ -84,6 +91,7 @@ src/
 ### Package Management
 
 **Brewfile** - Homebrew packages
+
 - Core tools: git, tmux, neovim
 - Modern CLI: eza, bat, fd, ripgrep
 - Development: node, python, rust, go
@@ -92,6 +100,7 @@ src/
 ### Language Support
 
 **language/** - Language-specific configurations
+
 - `.clang-format` - C/C++ formatting
 - `clangd_config.yaml` - C/C++ LSP
 - `latexmkrc` - LaTeX compilation
@@ -103,17 +112,20 @@ src/
 ### Search & Security
 
 **ripgreprc** - Fast search configuration
+
 - Smart case sensitivity
 - Hidden file searching
 - Custom type definitions
 - Ignore patterns
 
 **gitleaks.toml** - Secret detection
+
 - Custom rules for dotfiles
 - Allow patterns for false positives
 - Pre-commit integration
 
 **editorconfig** - Universal editor settings
+
 - Consistent indentation
 - Line endings
 - Charset settings
@@ -122,7 +134,9 @@ src/
 ## 📂 Key Subdirectories
 
 ### /git
+
 Version control configuration and utilities:
+
 - `gitconfig` - User settings and aliases
 - `gitignore` - Global ignore patterns
 - `gitmessage` - Commit template
@@ -131,7 +145,9 @@ Version control configuration and utilities:
 - `setup-git-signing` - GPG configuration
 
 ### /neovim
+
 Modern Neovim configuration:
+
 - `init.lua` - Entry point with path detection
 - `config/` - Core modules (options, keymaps, autocmds)
 - `plugins/` - Plugin specifications (lazy.nvim)
@@ -139,7 +155,9 @@ Modern Neovim configuration:
 - Work overrides loaded from private repo
 
 ### /scripts
+
 Utility scripts for productivity:
+
 - `fixy` - Universal code formatter (20+ languages)
 - `theme` - Quick theme switcher
 - `update-dotfiles` - System updater
@@ -149,21 +167,27 @@ Utility scripts for productivity:
 - `fetch-quotes` - Inspiration fetcher
 
 ### /setup
+
 Installation and configuration:
+
 - `setup.sh` - Main installer (interactive)
 - `symlinks.sh` - Dotfile linking
 - `mac.sh` - macOS-specific setup
 - `linux.sh` - Linux-specific setup
 
 ### /theme-switcher
+
 Dynamic theme synchronization:
+
 - `switch-theme.sh` - Main switcher
 - `themes/` - TokyoNight variants
 - Syncs: Alacritty, tmux, Neovim, WezTerm, Starship
 - < 500ms switching time
 
 ### /zsh
+
 Shell configuration:
+
 - `aliases.zsh` - Command shortcuts
 - `starship.toml` - Prompt configuration
 - `zshenv` - Environment variables
@@ -199,6 +223,7 @@ src/language/*        → ~/.config/*/
 ## 💡 Usage Guidelines
 
 ### Daily Workflow
+
 ```bash
 # Edit configurations (always in src/)
 nvim ~/.dotfiles/src/neovim/init.lua
@@ -209,6 +234,7 @@ nvim ~/.dotfiles/src/zsh/aliases.zsh
 ```
 
 ### Adding New Dotfiles
+
 1. Create file in `src/` directory
 2. Add symlink logic to `setup/symlinks.sh`
 3. Run `./setup/symlinks.sh` to create link
@@ -216,6 +242,7 @@ nvim ~/.dotfiles/src/zsh/aliases.zsh
 5. Commit changes
 
 ### Best Practices
+
 - ✅ Always edit files in `src/`, never symlinked versions
 - ✅ Test changes immediately after editing
 - ✅ Run `./test/test --quick` before committing
@@ -226,6 +253,7 @@ nvim ~/.dotfiles/src/zsh/aliases.zsh
 ## 🧪 Testing
 
 Validate configuration changes:
+
 ```bash
 # Quick sanity check
 ./test/test --quick

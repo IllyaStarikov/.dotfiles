@@ -23,13 +23,13 @@ nvim +/pattern  # Search for pattern
 
 ### Modes
 
-| Mode | Key | Purpose |
-|------|-----|---------|
-| Normal | `ESC` | Navigation and commands |
-| Insert | `i` | Text input |
-| Visual | `v` | Text selection |
-| Command | `:` | Ex commands |
-| Replace | `R` | Replace text |
+| Mode    | Key   | Purpose                 |
+| ------- | ----- | ----------------------- |
+| Normal  | `ESC` | Navigation and commands |
+| Insert  | `i`   | Text input              |
+| Visual  | `v`   | Text selection          |
+| Command | `:`   | Ex commands             |
+| Replace | `R`   | Replace text            |
 
 ### Configuration Structure
 
@@ -50,41 +50,41 @@ nvim +/pattern  # Search for pattern
 
 ### File Operations
 
-| Command | Action |
-|---------|--------|
-| `:w` | Save file |
-| `:q` | Quit |
-| `:wq` | Save and quit |
-| `:q!` | Quit without saving |
-| `:e file` | Open file |
-| `:w newname` | Save as |
-| `:wa` | Save all buffers |
-| `:qa` | Quit all |
+| Command      | Action              |
+| ------------ | ------------------- |
+| `:w`         | Save file           |
+| `:q`         | Quit                |
+| `:wq`        | Save and quit       |
+| `:q!`        | Quit without saving |
+| `:e file`    | Open file           |
+| `:w newname` | Save as             |
+| `:wa`        | Save all buffers    |
+| `:qa`        | Quit all            |
 
 ### Navigation
 
-| Key | Action |
-|-----|--------|
-| `h/j/k/l` | Left/Down/Up/Right |
-| `w/b` | Next/Previous word |
-| `0/$` | Start/End of line |
-| `gg/G` | Top/Bottom of file |
-| `{/}` | Previous/Next paragraph |
-| `%` | Matching bracket |
-| `*/#` | Search word forward/backward |
+| Key       | Action                       |
+| --------- | ---------------------------- |
+| `h/j/k/l` | Left/Down/Up/Right           |
+| `w/b`     | Next/Previous word           |
+| `0/$`     | Start/End of line            |
+| `gg/G`    | Top/Bottom of file           |
+| `{/}`     | Previous/Next paragraph      |
+| `%`       | Matching bracket             |
+| `*/#`     | Search word forward/backward |
 
 ### Editing
 
-| Key | Action |
-|-----|--------|
-| `i/a` | Insert before/after cursor |
-| `I/A` | Insert at start/end of line |
-| `o/O` | New line below/above |
-| `x/X` | Delete char forward/backward |
-| `dd` | Delete line |
-| `yy` | Copy line |
-| `p/P` | Paste after/before |
-| `u/C-r` | Undo/Redo |
+| Key     | Action                       |
+| ------- | ---------------------------- |
+| `i/a`   | Insert before/after cursor   |
+| `I/A`   | Insert at start/end of line  |
+| `o/O`   | New line below/above         |
+| `x/X`   | Delete char forward/backward |
+| `dd`    | Delete line                  |
+| `yy`    | Copy line                    |
+| `p/P`   | Paste after/before           |
+| `u/C-r` | Undo/Redo                    |
 
 ## Plugin Ecosystem
 
@@ -99,14 +99,14 @@ nvim +/pattern  # Search for pattern
 
 ### Key Plugins
 
-| Plugin | Purpose | Key Command |
-|--------|---------|-------------|
-| Telescope | Fuzzy finder | `<leader>ff` |
-| Treesitter | Syntax highlighting | Auto |
-| LSP | Language support | `gd`, `K` |
-| Blink.cmp | Completion | `Tab` |
-| Snacks.nvim | QoL features | Various |
-| CodeCompanion | AI assistance | `<leader>cc` |
+| Plugin        | Purpose             | Key Command  |
+| ------------- | ------------------- | ------------ |
+| Telescope     | Fuzzy finder        | `<leader>ff` |
+| Treesitter    | Syntax highlighting | Auto         |
+| LSP           | Language support    | `gd`, `K`    |
+| Blink.cmp     | Completion          | `Tab`        |
+| Snacks.nvim   | QoL features        | Various      |
+| CodeCompanion | AI assistance       | `<leader>cc` |
 
 ## File Navigation
 
@@ -136,26 +136,26 @@ r            # Rename
 
 ### LSP Features
 
-| Key | Action |
-|-----|--------|
-| `gd` | Go to definition |
-| `gr` | Find references |
-| `gi` | Go to implementation |
-| `gt` | Go to type definition |
-| `K` | Show hover docs |
-| `<leader>ca` | Code actions |
-| `<leader>rn` | Rename symbol |
-| `[d/]d` | Previous/Next diagnostic |
+| Key          | Action                   |
+| ------------ | ------------------------ |
+| `gd`         | Go to definition         |
+| `gr`         | Find references          |
+| `gi`         | Go to implementation     |
+| `gt`         | Go to type definition    |
+| `K`          | Show hover docs          |
+| `<leader>ca` | Code actions             |
+| `<leader>rn` | Rename symbol            |
+| `[d/]d`      | Previous/Next diagnostic |
 
 ### Completion
 
-| Key | Action |
-|-----|--------|
-| `Tab` | Accept completion |
+| Key       | Action             |
+| --------- | ------------------ |
+| `Tab`     | Accept completion  |
 | `C-n/C-p` | Next/Previous item |
-| `C-e` | Cancel completion |
-| `C-f` | Scroll docs down |
-| `C-b` | Scroll docs up |
+| `C-e`     | Cancel completion  |
+| `C-f`     | Scroll docs down   |
+| `C-b`     | Scroll docs up     |
 
 ## AI Integration
 
@@ -188,40 +188,40 @@ r            # Rename
 
 ### Gitsigns
 
-| Key | Action |
-|-----|--------|
-| `]c` | Next hunk |
-| `[c` | Previous hunk |
-| `<leader>hs` | Stage hunk |
-| `<leader>hr` | Reset hunk |
-| `<leader>hp` | Preview hunk |
-| `<leader>hb` | Blame line |
+| Key          | Action        |
+| ------------ | ------------- |
+| `]c`         | Next hunk     |
+| `[c`         | Previous hunk |
+| `<leader>hs` | Stage hunk    |
+| `<leader>hr` | Reset hunk    |
+| `<leader>hp` | Preview hunk  |
+| `<leader>hb` | Blame line    |
 
 ## Window Management
 
 ### Splits
 
-| Key | Action |
-|-----|--------|
-| `C-w s` | Horizontal split |
-| `C-w v` | Vertical split |
-| `C-w c` | Close window |
-| `C-w o` | Close others |
+| Key         | Action           |
+| ----------- | ---------------- |
+| `C-w s`     | Horizontal split |
+| `C-w v`     | Vertical split   |
+| `C-w c`     | Close window     |
+| `C-w o`     | Close others     |
 | `C-h/j/k/l` | Navigate windows |
-| `C-w =` | Equal size |
-| `C-w _` | Max height |
-| `C-w \|` | Max width |
+| `C-w =`     | Equal size       |
+| `C-w _`     | Max height       |
+| `C-w \|`    | Max width        |
 
 ### Tabs
 
-| Command | Action |
-|---------|--------|
-| `:tabnew` | New tab |
-| `:tabnext` | Next tab |
-| `:tabprev` | Previous tab |
-| `:tabclose` | Close tab |
-| `gt` | Next tab |
-| `gT` | Previous tab |
+| Command     | Action       |
+| ----------- | ------------ |
+| `:tabnew`   | New tab      |
+| `:tabnext`  | Next tab     |
+| `:tabprev`  | Previous tab |
+| `:tabclose` | Close tab    |
+| `gt`        | Next tab     |
+| `gT`        | Previous tab |
 
 ## Advanced Features
 
@@ -323,12 +323,12 @@ nvim --startuptime startup.log
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Slow startup | Check `:StartupTime` |
-| Plugin errors | `:Lazy sync` |
-| LSP not working | `:LspInfo` |
-| Colors wrong | Check `$TERM` |
+| Issue           | Solution             |
+| --------------- | -------------------- |
+| Slow startup    | Check `:StartupTime` |
+| Plugin errors   | `:Lazy sync`         |
+| LSP not working | `:LspInfo`           |
+| Colors wrong    | Check `$TERM`        |
 
 ## Performance Tips
 

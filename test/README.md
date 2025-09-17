@@ -30,18 +30,21 @@ This test suite focuses on **meaningful signal** rather than exhaustive coverage
 ## Test Categories
 
 ### Core Validation (Must Pass)
+
 - **Essential files exist** - Verifies core configuration files are present
 - **Neovim configuration loads** - Ensures Neovim starts without errors
 - **Shell scripts syntax** - Validates all shell scripts have correct syntax
 - **Language configurations** - Checks formatter/linter configs are present
 
 ### Integration Tests (Should Pass)
+
 - **Theme switcher** - Validates theme switching functionality
 - **Symlinks integrity** - Ensures symlink script would create proper links
 - **Critical commands** - Tests availability of custom commands (fixy, theme)
 - **Git hooks** - Verifies git security hooks are configured
 
 ### Performance Tests (Nice to Pass)
+
 - **Neovim startup** - Measures and validates startup time (<300ms excellent, <500ms acceptable)
 
 ## Test Artifacts
@@ -123,6 +126,7 @@ self.run_suite("Core Validation", [
 ## Legacy Tests
 
 The old test framework files are preserved but deprecated. They contained:
+
 - Over 50 individual test files
 - Complex categorization (unit/functional/integration/performance/etc.)
 - Redundant tests that didn't provide signal

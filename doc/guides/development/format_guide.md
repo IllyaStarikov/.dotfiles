@@ -77,16 +77,16 @@ The `:Format` command now uses this shell script:
 
 All languages follow industry-standard style guides:
 
-| Language | Formatter | Style Guide |
-|----------|-----------|-------------|
-| C/C++ | clang-format | Industry standard: 2 spaces, 80 column limit |
-| Python | ruff/black/yapf + pylint | PEP 8: 4 spaces, 80 column limit |
-| Shell | shfmt | Industry standard: 2 spaces |
-| JavaScript/TypeScript | prettier/prettierd | Industry standard: 2 spaces, single quotes, 80 column |
-| Lua | stylua | 2 spaces, 80 column limit |
-| JSON/YAML | prettier/prettierd | 2 spaces |
-| HTML/CSS/SCSS | prettier/prettierd | 2 spaces |
-| Markdown | prettier/prettierd | 80 column limit |
+| Language              | Formatter                | Style Guide                                           |
+| --------------------- | ------------------------ | ----------------------------------------------------- |
+| C/C++                 | clang-format             | Industry standard: 2 spaces, 80 column limit          |
+| Python                | ruff/black/yapf + pylint | PEP 8: 4 spaces, 80 column limit                      |
+| Shell                 | shfmt                    | Industry standard: 2 spaces                           |
+| JavaScript/TypeScript | prettier/prettierd       | Industry standard: 2 spaces, single quotes, 80 column |
+| Lua                   | stylua                   | 2 spaces, 80 column limit                             |
+| JSON/YAML             | prettier/prettierd       | 2 spaces                                              |
+| HTML/CSS/SCSS         | prettier/prettierd       | 2 spaces                                              |
+| Markdown              | prettier/prettierd       | 80 column limit                                       |
 
 ## Configuration
 

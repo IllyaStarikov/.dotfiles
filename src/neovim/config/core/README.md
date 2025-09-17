@@ -5,6 +5,7 @@
 This directory contains the foundational Neovim settings that configure editor behavior, performance optimizations, and basic functionality. These are loaded first before any plugins or custom configurations.
 
 ### Files in this directory:
+
 ```
 core/
 ├── init.lua        # Module loader (364B)
@@ -17,6 +18,7 @@ core/
 ```
 
 ### How to use:
+
 ```lua
 -- These are automatically loaded by config/init.lua
 require('config.core')  -- Loads all core modules
@@ -31,6 +33,7 @@ require('config.core.performance')
 ```
 
 ### Load order matters:
+
 1. **performance.lua** - Disable unused features first
 2. **options.lua** - Set general options
 3. **indentation.lua** - Configure tabs/spaces
@@ -41,9 +44,11 @@ require('config.core.performance')
 ## 2. Why this directory exists
 
 ### Purpose:
+
 Core settings form the foundation that everything else builds upon. Wrong settings here can break plugins, slow down the editor, or cause unexpected behavior.
 
 ### Why separate files:
+
 1. **Logical grouping** - Related settings together
 2. **Easy debugging** - Isolate problem areas
 3. **Selective loading** - Can disable specific modules
@@ -51,12 +56,14 @@ Core settings form the foundation that everything else builds upon. Wrong settin
 5. **Performance** - Load only what's needed
 
 ### Why loaded first:
+
 - **Dependencies** - Plugins expect certain settings
 - **Performance** - Disable features before they load
 - **Consistency** - Same behavior regardless of plugins
 - **Debugging** - Core works even if plugins fail
 
 ### Why these specific settings:
+
 - **options.lua** - User preferences and editor behavior
 - **performance.lua** - Critical for sub-300ms startup
 - **backup.lua** - Prevent data loss
@@ -69,6 +76,7 @@ Core settings form the foundation that everything else builds upon. Wrong settin
 ### Module Details:
 
 #### init.lua - Module Loader
+
 ```lua
 -- Simple loader that requires all core modules
 require('config.core.performance')  -- Must be first!
@@ -78,7 +86,9 @@ require('config.core.backup')
 ```
 
 #### options.lua - Editor Options
+
 Key settings:
+
 - **Line numbers**: Hybrid (relative + absolute current)
 - **Mouse**: Enabled in all modes
 - **Splits**: Open right and below
@@ -88,7 +98,9 @@ Key settings:
 - **Undo**: Persistent across sessions
 
 #### performance.lua - Speed Optimizations
+
 Critical optimizations:
+
 ```lua
 -- Disable unused providers (saves ~50ms)
 g.loaded_python_provider = 0
@@ -110,6 +122,7 @@ vim.lsp.set_log_level("ERROR")  -- Reduce log spam
 ```
 
 #### backup.lua - Data Protection
+
 ```lua
 opt.backup = false      -- No backup files
 opt.writebackup = false -- No backup during write
@@ -119,6 +132,7 @@ opt.undodir = vim.fn.stdpath('data') .. '/undo'
 ```
 
 #### folding.lua - Code Folding
+
 ```lua
 opt.foldenable = true
 opt.foldlevelstart = 99  -- Start unfolded
@@ -127,6 +141,7 @@ opt.foldexpr = 'nvim_treesitter#foldexpr()'
 ```
 
 #### indentation.lua - Tab/Space Settings
+
 ```lua
 opt.expandtab = true    -- Spaces instead of tabs
 opt.shiftwidth = 2      -- 2-space indents
@@ -135,6 +150,7 @@ opt.smartindent = true  -- Auto-indent
 ```
 
 #### search.lua - Search Configuration
+
 ```lua
 opt.ignorecase = true   -- Case-insensitive
 opt.smartcase = true    -- Unless uppercase used
@@ -143,6 +159,7 @@ opt.incsearch = true    -- Show matches while typing
 ```
 
 ### Performance Impact:
+
 - **Startup time**: ~15ms for all core modules
 - **Memory usage**: < 1MB
 - **Disabled features save**: ~70ms startup time
@@ -161,6 +178,7 @@ When modifying core settings, understand:
 5. **User experience** - Core defines how Neovim feels
 
 ### Adding new settings:
+
 ```lua
 -- Always document why
 -- WRONG: Just set the option
@@ -173,6 +191,7 @@ opt.something = true
 ```
 
 ### Testing changes:
+
 ```bash
 # Profile startup time
 nvim --startuptime /tmp/startup.log
@@ -185,6 +204,7 @@ nvim --headless -c "checkhealth" -c "q"
 ```
 
 ### Common patterns:
+
 ```lua
 -- Conditional settings
 if vim.fn.has('mac') == 1 then
@@ -210,6 +230,7 @@ end, 100)
 ### What NOT to do:
 
 #### ❌ Don't set conflicting options
+
 ```lua
 -- BAD - These conflict
 opt.compatible = true    -- Vi compatible mode
@@ -220,6 +241,7 @@ opt.nocompatible = true  -- Modern Vim mode
 ```
 
 #### ❌ Don't load providers unnecessarily
+
 ```lua
 -- BAD - Checking providers that aren't used
 g.python3_host_prog = '/usr/bin/python3'
@@ -230,6 +252,7 @@ g.loaded_python3_provider = 1
 ```
 
 #### ❌ Don't enable expensive features
+
 ```lua
 -- BAD - Slows down scrolling
 opt.cursorcolumn = true  -- Highlights column
@@ -244,9 +267,11 @@ opt.lazyredraw = false   -- Don't use, causes issues
 ### Known Issues:
 
 #### Issue: Startup takes > 300ms
+
 **Symptom**: Slow Neovim launch
 **Cause**: Providers being checked
 **Fix**: Disable unused providers
+
 ```lua
 -- Add to performance.lua
 g.loaded_python_provider = 0  -- Python 2
@@ -256,18 +281,22 @@ g.loaded_perl_provider = 0
 ```
 
 #### Issue: Matchit plugin errors
+
 **Symptom**: "Matchit.vim already loaded" errors
 **Cause**: Trying to manually load built-in plugin
 **Fix**: Don't load it, Neovim includes it
+
 ```lua
 -- REMOVED: vim.cmd('runtime macros/matchit.vim')
 -- It's built-in since Neovim 0.8
 ```
 
 #### Issue: netrw security warning
+
 **Symptom**: Security warning about rm command
 **Cause**: netrw uses shell commands for file operations
 **Fix**: Use safe, explicit command
+
 ```lua
 -- Safe version with proper flags
 g.netrw_localrmdir = "rm -rf"
@@ -276,9 +305,11 @@ g.netrw_localrmdir = "rm -rf"
 ```
 
 #### Issue: Verbose logging creates vimlog.txt
+
 **Symptom**: Unexpected vimlog.txt file appears
 **Cause**: Verbose mode accidentally enabled
 **Fix**: Reset verbose settings
+
 ```lua
 -- Only reset if not explicitly set via command line
 if vim.v.verbose == 0 then
@@ -312,6 +343,7 @@ end
 ### Performance Discoveries:
 
 1. **Provider detection order matters**
+
    ```lua
    -- Fast: Check executable first
    if vim.fn.exepath('python3') ~= '' then
@@ -321,6 +353,7 @@ end
    ```
 
 2. **Defer non-critical autocmds**
+
    ```lua
    vim.defer_fn(function()
      -- Clear messages after startup
@@ -335,12 +368,14 @@ end
 ### Best Practices:
 
 1. **Profile everything**
+
    ```bash
    nvim --startuptime startup.log
    grep "core" startup.log  # Check core module times
    ```
 
 2. **Document provider requirements**
+
    ```lua
    -- Python3 needed for:
    -- - Ultisnips (if used)
@@ -349,6 +384,7 @@ end
    ```
 
 3. **Use has() for compatibility**
+
    ```lua
    if vim.fn.has('nvim-0.9') == 1 then
      -- 0.9+ only features
@@ -366,6 +402,7 @@ end
 ## Troubleshooting
 
 ### Debug Commands:
+
 ```vim
 " Check where option was set
 :verbose set option?

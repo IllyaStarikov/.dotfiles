@@ -11,11 +11,11 @@ export NC='\033[0m'
 
 # Stub functions for compatibility
 print_test_summary() {
-    echo "Tests complete"
+  echo "Tests complete"
 }
 
 # Mock command helper
 mock_command() {
-    # Simple mock - just echo the expected output
-    echo "$2"
+  # Simple mock - just echo the expected output
+  echo "$2"
 }

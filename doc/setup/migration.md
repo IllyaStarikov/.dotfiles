@@ -25,13 +25,13 @@ Modern Lua config, LSP support, plugins
 
 ### Feature Mapping
 
-| iTerm2 Feature    | Our Equivalent                     |
-|-------------------|-------------------------------------|
-| Profiles          | Alacritty + theme switcher          |
-| Split panes       | tmux (`C-a \|` and `C-a -`)        |
-| Hotkey window     | tmux sessions                       |
-| Shell integration | Starship prompt                     |
-| Triggers          | Shell functions/aliases             |
+| iTerm2 Feature    | Our Equivalent              |
+| ----------------- | --------------------------- |
+| Profiles          | Alacritty + theme switcher  |
+| Split panes       | tmux (`C-a \|` and `C-a -`) |
+| Hotkey window     | tmux sessions               |
+| Shell integration | Starship prompt             |
+| Triggers          | Shell functions/aliases     |
 
 ### Migration Steps
 
@@ -56,7 +56,7 @@ cat ~/.bash_profile >> ~/.zshrc.local
 ### Muscle Memory Transitions
 
 | VS Code       | Neovim       |
-|---------------|--------------|
+| ------------- | ------------ |
 | `Cmd+P`       | `<leader>ff` |
 | `Cmd+Shift+P` | `<leader>fc` |
 | `F12`         | `gd`         |
@@ -101,7 +101,7 @@ vim.opt.relativenumber = true
 ### Plugin Equivalents
 
 | Vim Plugin | Neovim Equivalent   |
-|------------|---------------------|
+| ---------- | ------------------- |
 | NERDTree   | neo-tree.nvim       |
 | CtrlP      | telescope.nvim      |
 | Airline    | lualine.nvim        |
@@ -121,6 +121,7 @@ vim.opt.relativenumber = true
 ### Evil Mode Users
 
 Most keybindings will feel familiar. Additional options:
+
 ```lua
 -- Add Emacs-style keybindings where needed
 vim.keymap.set('i', '<C-a>', '<Home>')
@@ -133,7 +134,8 @@ vim.keymap.set('i', '<C-k>', '<C-o>D')
 ### Project Management
 
 **Old way** Open folder in IDE
-**New way** 
+**New way**
+
 ```bash
 z project       # Jump to project
 tmux new -s project  # Named session
@@ -149,6 +151,7 @@ v .             # Open Neovim
 
 **Old way** Tabs
 **New way** Buffers + splits
+
 ```vim
 <leader>fb      # Buffer list
 :vsp file       # Vertical split
@@ -158,14 +161,15 @@ v .             # Open Neovim
 ### Debugging
 
 **Old way** IDE debugger
-**New way** 
+**New way**
 DAP (Debug Adapter Protocol) in Neovim
 Or terminal debugging:
+
 ```bash
 # Python
 python -m pdb script.py
 
-# Node.js  
+# Node.js
 node --inspect-brk app.js
 
 # In Neovim
@@ -196,11 +200,13 @@ GPU: Accelerated rendering
 ## Getting Help
 
 ### Built-in Documentation
+
 `:help` in Neovim
 `man command` in shell
 `<leader>fh` search help
 
 ### Community Resources
+
 [r/neovim](https://reddit.com/r/neovim)
 [Neovim Discourse](https://neovim.discourse.group/)
 [Our GitHub Issues](https://github.com/IllyaStarikov/.dotfiles/issues)
