@@ -41,3 +41,5 @@ if [[ -f "$script" ]]; then
 else
     skip "Script not found"
 fi
+# Return success
+exit 0

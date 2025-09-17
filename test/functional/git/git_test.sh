@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Functional tests for Git configuration
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"

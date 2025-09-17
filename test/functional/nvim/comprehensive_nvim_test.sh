@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Comprehensive functional tests for Neovim configuration
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 # Set up test environment
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"

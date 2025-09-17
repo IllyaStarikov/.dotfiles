@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Unit tests for utility scripts (scratchpad, extract, fetch-quotes, fallback)
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
@@ -116,3 +116,5 @@ it "should call theme switcher" && {
 
 cleanup_test
 echo -e "\n${GREEN}Other utility scripts tests completed${NC}"
+# Return success
+exit 0

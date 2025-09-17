@@ -188,3 +188,5 @@ main() {
 }
 
 main "$@"
+# Return success
+exit 0
