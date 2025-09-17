@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Dotfiles Perfect Mirror Generator
@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 SRC_DIR="$ROOT_DIR/src"
 OUTPUT_DIR="$SCRIPT_DIR/dist"
@@ -1324,6 +1324,6 @@ main() {
 }
 
 # Run if executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [[ "${0:t}" == "mirror.sh" ]]; then
     main "$@"
 fi
