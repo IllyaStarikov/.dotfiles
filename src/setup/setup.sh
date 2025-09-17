@@ -48,8 +48,8 @@ IFS=$'\n\t'
 # 🎨 CONFIGURATION
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly LOG_FILE="$HOME/.dotfiles-setup-$(date +%Y%m%d_%H%M%S).log"
 
 # Color codes
@@ -1190,7 +1190,7 @@ create_symlinks() {
 
     # Run the symlink creation script
     if [[ -f "$SCRIPT_DIR/symlinks.sh" ]]; then
-        bash "$SCRIPT_DIR/symlinks.sh"
+        zsh "$SCRIPT_DIR/symlinks.sh"
     else
         error "Symlink script not found"
         return 1
