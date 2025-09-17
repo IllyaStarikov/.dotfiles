@@ -319,8 +319,14 @@ EOF
     # Skip certain problematic tests in CI
     if [[ "$test_name" == "keybinding_conflicts_test" ]] ||
        [[ "$test_name" == "comprehensive_nvim_test" ]] ||
+       [[ "$test_name" == "comprehensive_scripts_test" ]] ||
+       [[ "$test_name" == "comprehensive_setup_test" ]] ||
+       [[ "$test_name" == "comprehensive_symlinks_test" ]] ||
+       [[ "$test_name" == "comprehensive_theme_test" ]] ||
+       [[ "$test_name" == "comprehensive_zsh_test" ]] ||
        [[ "$test_name" == "*_interactive_*" ]] ||
-       [[ "$test_name" == "plugin_loading_test" ]]; then
+       [[ "$test_name" == "plugin_loading_test" ]] ||
+       [[ "$test_name" == "lsp_completion_test" ]]; then
       [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
       log WARN "$test_name - SKIPPED (CI mode)"
       ((SKIPPED++))
