@@ -312,31 +312,38 @@ EOF
   local test_status
   local test_timeout=30  # Default 30 second timeout per test
 
-  # In CI mode or non-interactive, use stricter timeout and skip problematic tests
+  # In CI mode or non-interactive, use different timeout strategy
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
-    test_timeout=10  # Much shorter timeout in CI
+    # In E2E test mode, run ALL tests with longer timeouts
+    if [[ "${E2E_TEST:-0}" == "1" ]]; then
+      test_timeout=60  # Longer timeout for E2E tests
+      # Don't skip any tests in E2E mode - all tests are critical
+    else
+      # Regular CI mode - shorter timeout and skip problematic tests
+      test_timeout=10  # Much shorter timeout in CI
 
-    # Skip certain problematic tests in CI - check both with and without _zsh suffix
-    local base_name="${test_name%_zsh_test}"
-    base_name="${base_name%_test}"
+      # Skip certain problematic tests in CI - check both with and without _zsh suffix
+      local base_name="${test_name%_zsh_test}"
+      base_name="${base_name%_test}"
 
-    if [[ "$test_name" == "keybinding_conflicts_test" ]] ||
-       [[ "$test_name" == "keybinding_conflicts_zsh_test" ]] ||
-       [[ "$base_name" == "keybinding_conflicts" ]] ||
-       [[ "$test_name" == "comprehensive_nvim_test" ]] ||
-       [[ "$test_name" == "comprehensive_scripts_test" ]] ||
-       [[ "$test_name" == "comprehensive_setup_test" ]] ||
-       [[ "$test_name" == "comprehensive_symlinks_test" ]] ||
-       [[ "$test_name" == "comprehensive_theme_test" ]] ||
-       [[ "$test_name" == "comprehensive_zsh_test" ]] ||
-       [[ "$test_name" == *"_interactive_"* ]] ||
-       [[ "$test_name" == "plugin_loading_test" ]] ||
-       [[ "$test_name" == "lsp_completion_test" ]]; then
-      [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-      log WARN "$test_name - SKIPPED (CI mode)"
-      ((SKIPPED++))
-      rm -rf "$test_tmp"
-      return 0
+      if [[ "$test_name" == "keybinding_conflicts_test" ]] ||
+         [[ "$test_name" == "keybinding_conflicts_zsh_test" ]] ||
+         [[ "$base_name" == "keybinding_conflicts" ]] ||
+         [[ "$test_name" == "comprehensive_nvim_test" ]] ||
+         [[ "$test_name" == "comprehensive_scripts_test" ]] ||
+         [[ "$test_name" == "comprehensive_setup_test" ]] ||
+         [[ "$test_name" == "comprehensive_symlinks_test" ]] ||
+         [[ "$test_name" == "comprehensive_theme_test" ]] ||
+         [[ "$test_name" == "comprehensive_zsh_test" ]] ||
+         [[ "$test_name" == *"_interactive_"* ]] ||
+         [[ "$test_name" == "plugin_loading_test" ]] ||
+         [[ "$test_name" == "lsp_completion_test" ]]; then
+        [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+        log WARN "$test_name - SKIPPED (CI mode)"
+        ((SKIPPED++))
+        rm -rf "$test_tmp"
+        return 0
+      fi
     fi
   fi
 

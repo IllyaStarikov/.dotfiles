@@ -196,15 +196,15 @@ run_docker_test() {
   # Build the command based on debug mode
   local docker_cmd="cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && "
   if [[ "$DEBUG_MODE" == true ]]; then
-    docker_cmd+="DEBUG=true timeout 900 zsh test/e2e/docker-e2e-test.zsh"
+    docker_cmd+="DEBUG=true timeout 1800 zsh test/e2e/docker-e2e-test.zsh"  # Increased to 30 minutes
   else
-    docker_cmd+="DEBUG=false timeout 600 zsh test/e2e/docker-e2e-test.zsh"
+    docker_cmd+="DEBUG=false timeout 1200 zsh test/e2e/docker-e2e-test.zsh"  # Increased to 20 minutes
   fi
 
   # Run the test script in the container
   if [[ "$DEBUG_MODE" == true ]]; then
-    # In debug mode, show output in real-time
-    timeout 1000 docker run --name "$container_name" \
+    # In debug mode, show output in real-time (timeout: 33 minutes)
+    timeout 2000 docker run --name "$container_name" \
       --rm \
       -e NONINTERACTIVE=1 \
       -e CI=true \
@@ -214,8 +214,8 @@ run_docker_test() {
     # In zsh, use pipestatus (lowercase) array
     local result=${pipestatus[1]:-$?}
   else
-    # Normal mode, just log to file
-    timeout 600 docker run --name "$container_name" \
+    # Normal mode, just log to file (timeout: 25 minutes)
+    timeout 1500 docker run --name "$container_name" \
       --rm \
       -e NONINTERACTIVE=1 \
       -e CI=true \
