@@ -4,6 +4,7 @@
 --
 
 local M = {}
+local compat = require("config.compat")
 
 -- Store original notify function
 local original_notify = vim.notify
@@ -84,10 +85,10 @@ function M.setup_error_handler()
   end
 
   -- Log startup errors
-  vim.api.nvim_create_autocmd("VimEnter", {
+  compat.create_autocmd("VimEnter", {
     callback = function()
       -- Check for any startup errors
-      local messages = vim.api.nvim_exec2("messages", { output = true })
+      local messages = compat.exec2("messages", { output = true })
       if messages.output:match("E%d+:") or messages.output:match("Error") then
         -- Save startup errors to a file for debugging
         local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
@@ -105,7 +106,7 @@ end
 
 -- Safe execution wrapper for user commands
 function M.safe_command(name, fn, opts)
-  vim.api.nvim_create_user_command(name, function(...)
+  compat.create_user_command(name, function(...)
     local ok, err = pcall(fn, ...)
     if not ok then
       vim.notify(
