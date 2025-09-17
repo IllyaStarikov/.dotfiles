@@ -1027,7 +1027,7 @@ process_files_parallel() {
       process_file_parallel "$file" "$tmpdir" "$file_index"
     ) &
     
-    ((file_index++))
+    file_index=$((file_index + 1))
     
     # Show progress every 10 files in non-verbose mode
     if [[ "${VERBOSE}" != true ]] && (( file_index % 10 == 0 )); then
@@ -1049,12 +1049,12 @@ process_files_parallel() {
     if [[ -f "$result_file" ]]; then
       local result=$(cat "$result_file")
       case "$result" in
-        0) ((processed++)) ;;
-        2) ((skipped++)) ;;
-        *) ((failed++)) ;;
+        0) processed=$((processed + 1)) ;;
+        2) skipped=$((skipped + 1)) ;;
+        *) failed=$((failed + 1)) ;;
       esac
     else
-      ((failed++))
+      failed=$((failed + 1))
     fi
   done
   
@@ -1127,14 +1127,15 @@ main() {
     local failed=0
     
     for file in "${all_files[@]}"; do
-      local result
+      local result=0
       process_file "$file" || result=$?
+
       if [[ ${result:-0} -eq 0 ]]; then
-        ((processed++))
+        processed=$((processed + 1))
       elif [[ ${result:-0} -eq 2 ]]; then
-        ((skipped++))
+        skipped=$((skipped + 1))
       else
-        ((failed++))
+        failed=$((failed + 1))
       fi
     done
     
