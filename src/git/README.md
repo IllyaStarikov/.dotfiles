@@ -3,6 +3,7 @@
 Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 
 ## Files
+
 - `gitconfig` - Main configuration
 - `gitignore` - Global ignore patterns
 - `gitmessage` - Commit template
@@ -12,6 +13,7 @@ Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 - `setup-git-signing` - GPG/SSH setup
 
 ## Quick Setup
+
 ```bash
 ./src/git/install-git-hooks        # Install hooks
 ./src/git/setup-git-signing --ssh  # Configure SSH signing
@@ -20,6 +22,7 @@ Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 ## Key Features
 
 ### Minimal Aliases (15 only)
+
 ```bash
 gs   # status -sb
 gl   # log --oneline --graph
@@ -30,16 +33,20 @@ gco  # checkout
 ```
 
 ### SSH Signing (Recommended)
+
 ```ini
 [gpg]
     format = ssh
 [user]
     signingkey = ~/.ssh/id_rsa.pub
 ```
+
 10x easier than GPG - no key expiration, already have SSH keys.
 
 ### Delta Integration
+
 Beautiful side-by-side diffs with syntax highlighting:
+
 ```ini
 [core]
     pager = delta
@@ -49,6 +56,7 @@ Beautiful side-by-side diffs with syntax highlighting:
 ```
 
 ### Security Settings
+
 ```ini
 [transfer]
     fsckobjects = true  # Validate all objects

@@ -9,28 +9,36 @@ This section provides comprehensive command references for Git, shell, and moder
 ## Available References
 
 ### [Git Commands](git.md)
+
 Version control aliases:
+
 - Basic workflow commands
 - Advanced operations
 - Semantic branch creation
 - GitHub CLI integration
 
 ### [Shell Commands](shell.md)
+
 Zsh aliases and functions:
+
 - Navigation shortcuts
 - File operations
 - System utilities
 - Custom functions
 
 ### [Modern CLI Tools](modern-cli.md)
+
 Enhanced Unix commands:
+
 - Better alternatives (ripgrep, fd, bat)
 - Performance comparisons
 - Integration examples
 - Configuration tips
 
 ### [Tools Comparison](tools-comparison.md)
+
 Detailed comparisons:
+
 - Performance benchmarks
 - Feature matrices
 - Use case recommendations
@@ -74,21 +82,25 @@ theme           # Switch theme
 ## Command Categories
 
 ### Navigation & Files
+
 - Directory jumping with `z`
 - Modern `ls` alternatives
 - File search and manipulation
 
 ### Development
+
 - Git workflow aliases
 - Editor shortcuts
 - Build and test commands
 
 ### System & Network
+
 - Process management
 - Network utilities
 - System information
 
 ### Text Processing
+
 - Search with ripgrep
 - File viewing with bat
 - Text manipulation
@@ -98,16 +110,19 @@ theme           # Switch theme
 Our aliases follow consistent patterns:
 
 ### Git Aliases
+
 - `g*` - Git commands (gs, gaa, gco)
 - `gc*` - Commit related (gcmsg, gca)
 - `gb*` - Branch operations (gbd, gba)
 - `gp*` - Push operations (gp, gpf)
 
 ### File Operations
+
 - Single letters for common tools (l, ll, la)
 - Descriptive names for functions (mkd, trash)
 
 ### System Commands
+
 - Short memorable names
 - Fallback to full names if no conflict
 
@@ -134,11 +149,13 @@ greet() {
 ## Performance Tips
 
 ### Use Modern Tools
+
 - `rg` over `grep` (10-100x faster)
 - `fd` over `find` (more intuitive)
 - `eza` over `ls` (more features)
 
 ### Combine with fzf
+
 ```bash
 # Interactive selection
 v $(fd -e py | fzf)
@@ -147,7 +164,9 @@ cd $(fd -t d | fzf)
 ```
 
 ### Use Aliases
+
 Save keystrokes with common operations:
+
 - `gaa` vs `git add --all`
 - `gcmsg` vs `git commit -m`
 - `z proj` vs `cd ~/1-projects/my-project`

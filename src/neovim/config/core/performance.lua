@@ -4,14 +4,14 @@ local opt = vim.opt
 local g = vim.g
 
 -- Performance settings
-opt.updatecount = 500    -- Default: 200 (less frequent swap file writes)
-opt.redrawtime = 10000   -- Default: 2000 (prevent timeouts on syntax highlighting)
-opt.ttimeoutlen = 10     -- Default: 50 (faster key sequence timeout)
+opt.updatecount = 500 -- Default: 200 (less frequent swap file writes)
+opt.redrawtime = 10000 -- Default: 2000 (prevent timeouts on syntax highlighting)
+opt.ttimeoutlen = 10 -- Default: 50 (faster key sequence timeout)
 
 -- Large file optimizations
-opt.synmaxcol = 4096       -- Default: 3000 (syntax highlighting for longer lines)
-g.vimsyn_embed = "lPr"     -- Limit vim syntax embedding (Lua, Python, Ruby only)
-opt.maxmempattern = 50000  -- Default: 1000 (handle complex patterns)
+opt.synmaxcol = 4096 -- Default: 3000 (syntax highlighting for longer lines)
+g.vimsyn_embed = "lPr" -- Limit vim syntax embedding (Lua, Python, Ruby only)
+opt.maxmempattern = 50000 -- Default: 1000 (handle complex patterns)
 
 -- Python host configuration
 local python3_path = vim.fn.exepath("python3")

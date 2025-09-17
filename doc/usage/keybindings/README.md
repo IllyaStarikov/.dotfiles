@@ -14,19 +14,19 @@
 
 Everywhere possible, we use vi-style keys:
 
-| Key | Movement | Used In |
-|-----|----------|---------|
-| `h` | Left | Neovim, tmux, shell |
-| `j` | Down | Neovim, tmux, shell |
-| `k` | Up | Neovim, tmux, shell |
-| `l` | Right | Neovim, tmux, shell |
+| Key | Movement | Used In             |
+| --- | -------- | ------------------- |
+| `h` | Left     | Neovim, tmux, shell |
+| `j` | Down     | Neovim, tmux, shell |
+| `k` | Up       | Neovim, tmux, shell |
+| `l` | Right    | Neovim, tmux, shell |
 
 ### Leader Keys
 
-| Tool | Leader | Usage |
-|------|--------|-------|
-| Neovim | `Space` | All custom commands |
-| tmux | `Ctrl-a` | All tmux commands |
+| Tool   | Leader   | Usage               |
+| ------ | -------- | ------------------- |
+| Neovim | `Space`  | All custom commands |
+| tmux   | `Ctrl-a` | All tmux commands   |
 
 ### Consistency Patterns
 

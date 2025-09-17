@@ -19,10 +19,10 @@ function M.configure(config)
     if not config.name then
         return false
     end
-    
+
     -- Incomplete line for completion testing
     local result = config.
-    
+
     return config.enabled or false
 end
 
@@ -47,11 +47,11 @@ end
 -- Intentional errors for diagnostic testing
 function M.broken_function()
     local undefined_var = unknown_global
-    
+
     -- Type mismatch
     local str = "hello"
     local num = str + 5  -- Error: attempt to perform arithmetic on string
-    
+
     -- Missing 'then'
     if true
         print("missing then")
@@ -61,7 +61,7 @@ end
 -- Table with methods for completion testing
 M.utils = {
     format = function(str) return string.format("%s", str) end,
-    split = function(str, sep) 
+    split = function(str, sep)
         -- Incomplete for testing
         return vim.
     end,

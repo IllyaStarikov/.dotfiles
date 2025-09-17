@@ -2,15 +2,18 @@
 Tests for system_utils.py module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock
 from dataclasses import dataclass
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from cortex.system_utils import (
-    SystemType, PerformanceTier, SystemInfo,
-    SystemDetector, ModelRecommender
-)
-from cortex.providers import ModelInfo, ModelCapability
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
+from cortex.system_utils import ModelRecommender
+from cortex.system_utils import PerformanceTier
+from cortex.system_utils import SystemDetector
+from cortex.system_utils import SystemInfo
+from cortex.system_utils import SystemType
 
 
 class TestSystemDetector(unittest.TestCase):
@@ -71,31 +74,25 @@ class TestSystemDetector(unittest.TestCase):
 
     def test_calculate_performance_tier_ultra(self):
         """Test performance tier calculation for ultra systems."""
-        tier = SystemDetector._calculate_performance_tier(
-            ram_gb=64.0,
-            gpu_memory_gb=48.0,
-            os_type=SystemType.MACOS_APPLE_SILICON
-        )
+        tier = SystemDetector._calculate_performance_tier(ram_gb=64.0,
+                                                          gpu_memory_gb=48.0,
+                                                          os_type=SystemType.MACOS_APPLE_SILICON)
 
         self.assertEqual(tier, PerformanceTier.ULTRA)
 
     def test_calculate_performance_tier_high(self):
         """Test performance tier calculation for high-end systems."""
-        tier = SystemDetector._calculate_performance_tier(
-            ram_gb=32.0,
-            gpu_memory_gb=16.0,
-            os_type=SystemType.MACOS_APPLE_SILICON
-        )
+        tier = SystemDetector._calculate_performance_tier(ram_gb=32.0,
+                                                          gpu_memory_gb=16.0,
+                                                          os_type=SystemType.MACOS_APPLE_SILICON)
 
         self.assertEqual(tier, PerformanceTier.HIGH)
 
     def test_calculate_performance_tier_minimal(self):
         """Test performance tier calculation for minimal systems."""
-        tier = SystemDetector._calculate_performance_tier(
-            ram_gb=4.0,
-            gpu_memory_gb=None,
-            os_type=SystemType.LINUX
-        )
+        tier = SystemDetector._calculate_performance_tier(ram_gb=4.0,
+                                                          gpu_memory_gb=None,
+                                                          os_type=SystemType.LINUX)
 
         self.assertEqual(tier, PerformanceTier.MINIMAL)
 
@@ -106,20 +103,18 @@ class TestModelRecommender(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Create mock system info for M1 Max with 64GB RAM
-        self.system_info = SystemInfo(
-            os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model="Apple M1 Max",
-            cpu_cores=10,
-            ram_gb=64.0,
-            ram_available_gb=30.0,
-            gpu_info="Apple M1 Max",
-            gpu_memory_gb=48.0,
-            performance_tier=PerformanceTier.ULTRA,
-            has_neural_engine=True,
-            has_cuda=False,
-            has_metal=True,
-            platform_details={}
-        )
+        self.system_info = SystemInfo(os_type=SystemType.MACOS_APPLE_SILICON,
+                                      cpu_model="Apple M1 Max",
+                                      cpu_cores=10,
+                                      ram_gb=64.0,
+                                      ram_available_gb=30.0,
+                                      gpu_info="Apple M1 Max",
+                                      gpu_memory_gb=48.0,
+                                      performance_tier=PerformanceTier.ULTRA,
+                                      has_neural_engine=True,
+                                      has_cuda=False,
+                                      has_metal=True,
+                                      platform_details={})
 
         # Create test models
         self.models = [
@@ -136,60 +131,51 @@ class TestModelRecommender(unittest.TestCase):
                 recommended_ram=40,
                 score=80.0,
                 downloads=15000,
-                likes=200
-            ),
-            ModelInfo(
-                id="mlx-community/medium-model",
-                name="Medium Model",
-                provider="mlx",
-                size_gb=7.0,
-                ram_gb=8.0,
-                context_window=16000,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True,
-                recommended_ram=10,
-                score=60.0,
-                downloads=5000,
-                likes=50
-            ),
-            ModelInfo(
-                id="gpt-4",
-                name="GPT-4",
-                provider="openai",
-                size_gb=0,
-                ram_gb=0,
-                context_window=8192,
-                capabilities=[ModelCapability.CHAT, ModelCapability.CODE],
-                online=True,
-                open_source=False,
-                recommended_ram=0,
-                score=85.0
-            ),
-            ModelInfo(
-                id="ollama/tiny-model",
-                name="Tiny Model",
-                provider="ollama",
-                size_gb=1.5,
-                ram_gb=2.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True,
-                recommended_ram=3,
-                score=40.0,
-                downloads=1000,
-                likes=10
-            )
+                likes=200),
+            ModelInfo(id="mlx-community/medium-model",
+                      name="Medium Model",
+                      provider="mlx",
+                      size_gb=7.0,
+                      ram_gb=8.0,
+                      context_window=16000,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True,
+                      recommended_ram=10,
+                      score=60.0,
+                      downloads=5000,
+                      likes=50),
+            ModelInfo(id="gpt-4",
+                      name="GPT-4",
+                      provider="openai",
+                      size_gb=0,
+                      ram_gb=0,
+                      context_window=8192,
+                      capabilities=[ModelCapability.CHAT, ModelCapability.CODE],
+                      online=True,
+                      open_source=False,
+                      recommended_ram=0,
+                      score=85.0),
+            ModelInfo(id="ollama/tiny-model",
+                      name="Tiny Model",
+                      provider="ollama",
+                      size_gb=1.5,
+                      ram_gb=2.0,
+                      context_window=4096,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True,
+                      recommended_ram=3,
+                      score=40.0,
+                      downloads=1000,
+                      likes=10)
         ]
 
     def test_recommend_models_basic(self):
         """Test basic model recommendation."""
-        recommendations = ModelRecommender.recommend_models(
-            self.system_info,
-            self.models,
-            max_recommendations=5
-        )
+        recommendations = ModelRecommender.recommend_models(self.system_info,
+                                                            self.models,
+                                                            max_recommendations=5)
 
         # Should not include the model that requires too much RAM
         model_ids = [m.id for m in recommendations]
@@ -200,12 +186,10 @@ class TestModelRecommender(unittest.TestCase):
 
     def test_recommend_models_prefer_local(self):
         """Test recommendation with local preference."""
-        recommendations = ModelRecommender.recommend_models(
-            self.system_info,
-            self.models,
-            max_recommendations=3,
-            prefer_local=True
-        )
+        recommendations = ModelRecommender.recommend_models(self.system_info,
+                                                            self.models,
+                                                            max_recommendations=3,
+                                                            prefer_local=True)
 
         # Local models should be preferred
         if len(recommendations) > 0:
@@ -221,12 +205,10 @@ class TestModelRecommender(unittest.TestCase):
 
     def test_recommend_models_capability_filter(self):
         """Test recommendation with capability filter."""
-        recommendations = ModelRecommender.recommend_models(
-            self.system_info,
-            self.models,
-            max_recommendations=5,
-            capability_filter="code"
-        )
+        recommendations = ModelRecommender.recommend_models(self.system_info,
+                                                            self.models,
+                                                            max_recommendations=5,
+                                                            capability_filter="code")
 
         # All recommendations should have code capability
         for model in recommendations:
@@ -235,9 +217,9 @@ class TestModelRecommender(unittest.TestCase):
     def test_fitness_score_calculation(self):
         """Test fitness score calculation."""
         model = self.models[1]  # Medium model
-        score = ModelRecommender._calculate_fitness_score(
-            model, self.system_info, prefer_local=True
-        )
+        score = ModelRecommender._calculate_fitness_score(model,
+                                                          self.system_info,
+                                                          prefer_local=True)
 
         # Score should include base score + various bonuses
         self.assertGreater(score, 0)
@@ -248,12 +230,12 @@ class TestModelRecommender(unittest.TestCase):
         mlx_model = self.models[1]  # MLX medium model
         ollama_model = self.models[3]  # Ollama tiny model
 
-        mlx_score = ModelRecommender._calculate_fitness_score(
-            mlx_model, self.system_info, prefer_local=True
-        )
-        ollama_score = ModelRecommender._calculate_fitness_score(
-            ollama_model, self.system_info, prefer_local=True
-        )
+        mlx_score = ModelRecommender._calculate_fitness_score(mlx_model,
+                                                              self.system_info,
+                                                              prefer_local=True)
+        ollama_score = ModelRecommender._calculate_fitness_score(ollama_model,
+                                                                 self.system_info,
+                                                                 prefer_local=True)
 
         # MLX should score higher on Apple Silicon (30 point bonus)
         self.assertGreater(mlx_score, ollama_score)
@@ -262,25 +244,20 @@ class TestModelRecommender(unittest.TestCase):
         """Test that recommendations have diversity."""
         # Create models from same provider
         same_provider_models = [
-            ModelInfo(
-                id=f"mlx-community/model-{i}",
-                name=f"Model {i}",
-                provider="mlx",
-                size_gb=float(i),
-                ram_gb=float(i + 1),
-                context_window=8192,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True,
-                recommended_ram=i + 2,
-                score=float(90 - i * 10)
-            )
-            for i in range(5)
+            ModelInfo(id=f"mlx-community/model-{i}",
+                      name=f"Model {i}",
+                      provider="mlx",
+                      size_gb=float(i),
+                      ram_gb=float(i + 1),
+                      context_window=8192,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True,
+                      recommended_ram=i + 2,
+                      score=float(90 - i * 10)) for i in range(5)
         ]
 
-        recommendations = ModelRecommender._ensure_diversity(
-            same_provider_models, max_count=3
-        )
+        recommendations = ModelRecommender._ensure_diversity(same_provider_models, max_count=3)
 
         # Should include diverse sizes even if from same provider
         self.assertLessEqual(len(recommendations), 3)
@@ -295,11 +272,8 @@ class TestModelRecommender(unittest.TestCase):
 
     def test_empty_models_list(self):
         """Test recommendation with empty models list."""
-        recommendations = ModelRecommender.recommend_models(
-            self.system_info,
-            [],
-            max_recommendations=5
-        )
+        recommendations = ModelRecommender.recommend_models(self.system_info, [],
+                                                            max_recommendations=5)
 
         self.assertEqual(recommendations, [])
 
@@ -317,15 +291,12 @@ class TestModelRecommender(unittest.TestCase):
                 online=False,
                 open_source=True,
                 recommended_ram=130,
-                score=95.0
-            )
+                score=95.0)
         ]
 
-        recommendations = ModelRecommender.recommend_models(
-            self.system_info,
-            large_models,
-            max_recommendations=5
-        )
+        recommendations = ModelRecommender.recommend_models(self.system_info,
+                                                            large_models,
+                                                            max_recommendations=5)
 
         # Should be empty as no models fit
         self.assertEqual(recommendations, [])

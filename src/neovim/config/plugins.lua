@@ -490,8 +490,7 @@ require("lazy").setup({
       -- Function to get Tokyo Night colors
       local function get_tokyonight_colors()
         local colors = {}
-        local has_tokyonight, tokyonight_colors =
-          pcall(require, "tokyonight.colors")
+        local has_tokyonight, tokyonight_colors = pcall(require, "tokyonight.colors")
 
         if has_tokyonight then
           colors = tokyonight_colors.setup()
@@ -1209,8 +1208,7 @@ require("lazy").setup({
           -- Disable for large files
           disable = function(lang, buf)
             local max_filesize = 10 * 1024 * 1024 -- 10 MB
-            local ok, stats =
-              pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
             end
@@ -1224,8 +1222,7 @@ require("lazy").setup({
           enable = true,
           disable = function(lang, buf)
             local max_filesize = 10 * 1024 * 1024 -- 10 MB
-            local ok, stats =
-              pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+            local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
             if ok and stats and stats.size > max_filesize then
               return true
             end
@@ -1267,11 +1264,7 @@ require("lazy").setup({
       end
 
       -- Directly modify the spec.default BEFORE any setup
-      if
-        spec.default
-        and spec.default.markdown
-        and spec.default.markdown.list_items
-      then
+      if spec.default and spec.default.markdown and spec.default.markdown.list_items then
         spec.default.markdown.list_items.marker_minus.text = "-"
         spec.default.markdown.list_items.marker_plus.text = "+"
         spec.default.markdown.list_items.marker_star.text = "*"

@@ -39,12 +39,7 @@ map("n", "]b", ":bnext<cr>", { desc = "Next buffer" })
 -- Buffer management
 map("n", "<leader>bd", ":bdelete<cr>", { desc = "Delete buffer" })
 map("n", "<leader>ba", ":%bdelete<cr>", { desc = "Delete all buffers" })
-map(
-  "n",
-  "<leader>bo",
-  ":%bdelete|edit#|bdelete#<cr>",
-  { desc = "Delete other buffers" }
-)
+map("n", "<leader>bo", ":%bdelete|edit#|bdelete#<cr>", { desc = "Delete other buffers" })
 map("n", "<leader>c", ":Kwbd<cr>", { desc = "Delete buffer (keep window)" })
 
 -- Buffer navigation by number
@@ -67,11 +62,7 @@ map("n", "<leader>bb", function()
     local modified = buf.changed == 1 and " [+]" or ""
     table.insert(lines, string.format("%d: %s%s", i, name, modified))
   end
-  vim.notify(
-    table.concat(lines, "\n"),
-    vim.log.levels.INFO,
-    { title = "Open Buffers" }
-  )
+  vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "Open Buffers" })
 end, { desc = "Show buffer list" })
 
 -- Tab navigation

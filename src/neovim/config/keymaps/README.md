@@ -5,6 +5,7 @@
 This directory contains organized key mapping configurations for Neovim, separated by functionality to maintain clarity and avoid conflicts. Each file defines mappings for specific contexts or features.
 
 ### Files in this directory:
+
 ```
 keymaps/
 ├── core.lua        # Essential mappings and fixes (3.0KB)
@@ -16,6 +17,7 @@ keymaps/
 ```
 
 ### How to use:
+
 ```lua
 -- Key mappings are automatically loaded by config system
 -- Check current mappings
@@ -33,6 +35,7 @@ vim.keymap.del("n", "<leader>xx")
 ```
 
 ### Key notation:
+
 - `<leader>` = Space key (configured globally)
 - `<C-x>` = Ctrl+x
 - `<M-x>` = Alt/Meta+x
@@ -45,9 +48,11 @@ vim.keymap.del("n", "<leader>xx")
 ## 2. Why this directory exists
 
 ### Purpose:
+
 Key mappings are the interface between thought and action in Neovim. Well-organized keymaps reduce cognitive load, prevent RSI, and make complex operations effortless.
 
 ### Why separate files:
+
 1. **Avoid conflicts** - Clear namespace separation
 2. **Easy discovery** - Find mappings by category
 3. **Conditional loading** - Disable categories if needed
@@ -55,6 +60,7 @@ Key mappings are the interface between thought and action in Neovim. Well-organi
 5. **Debugging** - Isolate mapping issues
 
 ### Why these categories:
+
 - **core.lua** - Universal mappings everyone needs
 - **editing.lua** - Text manipulation efficiency
 - **navigation.lua** - Fast movement patterns
@@ -63,6 +69,7 @@ Key mappings are the interface between thought and action in Neovim. Well-organi
 - **plugins.lua** - Feature-specific bindings
 
 ### Why this loading order:
+
 1. Core mappings first (foundation)
 2. Editing/navigation (basic operations)
 3. LSP mappings (development features)
@@ -73,6 +80,7 @@ Key mappings are the interface between thought and action in Neovim. Well-organi
 ### Core Mappings (core.lua):
 
 #### System Fixes:
+
 ```lua
 -- Fix VIMRUNTIME for health checks
 if not vim.env.VIMRUNTIME then
@@ -86,6 +94,7 @@ end
 ```
 
 #### Essential Operations:
+
 ```lua
 -- Quick save (works in all modes)
 <C-s>        -- Save file
@@ -108,6 +117,7 @@ end
 ### Editing Mappings (editing.lua):
 
 #### Text Manipulation:
+
 ```lua
 -- Line operations
 <M-j>        -- Move line down
@@ -129,6 +139,7 @@ yiw          -- Yank inner word
 ### Navigation Mappings (navigation.lua):
 
 #### Movement Patterns:
+
 ```lua
 -- Window navigation
 <C-h>        -- Move to left window
@@ -149,6 +160,7 @@ G            -- Go to bottom
 ```
 
 #### Search Navigation:
+
 ```lua
 n            -- Next search result (centered)
 N            -- Previous search result (centered)
@@ -161,6 +173,7 @@ N            -- Previous search result (centered)
 ### LSP Mappings (lsp.lua):
 
 #### Code Intelligence:
+
 ```lua
 gd           -- Go to definition
 gD           -- Go to declaration
@@ -178,6 +191,7 @@ K            -- Hover documentation
 ### Debug Mappings (debug.lua):
 
 #### DAP (Debug Adapter Protocol):
+
 ```lua
 <F5>         -- Continue/Start debugging
 <F10>        -- Step over
@@ -192,6 +206,7 @@ K            -- Hover documentation
 ### Plugin Mappings (plugins.lua):
 
 #### Telescope:
+
 ```lua
 <leader>ff   -- Find files
 <leader>fg   -- Live grep
@@ -202,6 +217,7 @@ K            -- Hover documentation
 ```
 
 #### File Explorer:
+
 ```lua
 <leader>e    -- Toggle file tree
 <leader>o    -- Focus file tree
@@ -209,6 +225,7 @@ K            -- Hover documentation
 ```
 
 #### Git Integration:
+
 ```lua
 <leader>gg   -- LazyGit
 <leader>gj   -- Next hunk
@@ -219,6 +236,7 @@ K            -- Hover documentation
 ```
 
 #### AI Assistants:
+
 ```lua
 <leader>aa   -- Avante ask
 <leader>ae   -- Avante edit
@@ -240,6 +258,7 @@ When working with keymaps, understand:
 5. **Check conflicts** - Use `:verbose map` before adding
 
 ### Adding new mappings:
+
 ```lua
 -- Template for new mapping
 vim.keymap.set(
@@ -256,6 +275,7 @@ vim.keymap.set(
 ```
 
 ### Best practices:
+
 ```lua
 -- Use functions for complex operations
 vim.keymap.set("n", "<leader>x", function()
@@ -279,6 +299,7 @@ end
 ### What NOT to do:
 
 #### ❌ Don't override essential Vim keys
+
 ```lua
 -- BAD - Breaks core functionality
 vim.keymap.set("n", "j", function() print("j pressed") end)
@@ -289,6 +310,7 @@ vim.keymap.set("n", "<leader>j", function() print("custom") end)
 ```
 
 #### ❌ Don't use conflicting plugin mappings
+
 ```lua
 -- BAD - Multiple plugins might use same key
 vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>")
@@ -300,6 +322,7 @@ vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>")
 ```
 
 #### ❌ Don't forget mode differences
+
 ```lua
 -- BAD - Wrong mode
 vim.keymap.set("n", "<C-c>", '"+y')  -- Copy in normal mode??
@@ -311,9 +334,11 @@ vim.keymap.set("v", "<C-c>", '"+y')  -- Copy in visual mode
 ### Known Issues:
 
 #### Issue: macOS Cmd key not working
+
 **Symptom**: `<D-c>` mappings don't work
 **Cause**: Terminal doesn't pass Cmd key to Neovim
 **Fix**: Use terminal that supports it (Kitty, Alacritty with config)
+
 ```lua
 -- Only works in GUI or specific terminals
 if vim.fn.has("gui_running") or vim.env.TERM_PROGRAM == "WezTerm" then
@@ -322,18 +347,22 @@ end
 ```
 
 #### Issue: Leader key timeout
+
 **Symptom**: Mappings timeout too quickly
 **Cause**: Default timeoutlen too short
 **Fix**: Adjust timeout
+
 ```lua
 vim.o.timeoutlen = 1000  -- 1 second timeout for leader
 vim.o.ttimeoutlen = 0    -- No timeout for escape sequences
 ```
 
 #### Issue: Paste in insert mode loses position
+
 **Symptom**: Cursor jumps after paste
 **Cause**: Default paste behavior
 **Fix**: Use proper insert mode paste
+
 ```lua
 -- Better insert mode paste
 vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
@@ -364,12 +393,14 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
 ### Best Practices Discovered:
 
 1. **Always add descriptions**
+
    ```lua
    -- Shows in which-key and Telescope
    { desc = "Clear, actionable description" }
    ```
 
 2. **Use functions for complex mappings**
+
    ```lua
    -- Easier to debug and maintain
    local function my_complex_action()
@@ -379,6 +410,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
    ```
 
 3. **Group with which-key**
+
    ```lua
    -- Visual grouping in which-key popup
    ["<leader>g"] = { name = "+git" },
@@ -399,6 +431,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
 ### Performance Insights:
 
 1. **Lazy-load plugin mappings**
+
    ```lua
    -- Only create mapping when plugin loads
    keys = {
@@ -407,6 +440,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
    ```
 
 2. **Avoid expensive mapping functions**
+
    ```lua
    -- BAD - Runs on every keypress
    vim.keymap.set("n", "j", function()
@@ -423,6 +457,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
 ## Troubleshooting
 
 ### Debug Commands:
+
 ```vim
 " Show all mappings
 :map
@@ -445,6 +480,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
 ### Common Problems:
 
 1. **Mapping doesn't work**
+
    ```lua
    -- Check if key is already mapped
    :verbose map <your-key>
@@ -453,6 +489,7 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
    ```
 
 2. **Timeout issues**
+
    ```lua
    -- Increase timeout
    vim.o.timeoutlen = 1500

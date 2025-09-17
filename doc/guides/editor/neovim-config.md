@@ -5,6 +5,7 @@ This directory contains the modular Lua configuration for Neovim, organized for 
 ## Module Overview
 
 ### Core Configuration
+
 - **init.lua** - Main entry point that loads all modules in the correct order
 - **options.lua** - Core Neovim options (indentation, UI, performance settings)
 - **keymaps.lua** - All key mappings organized by functionality
@@ -14,11 +15,13 @@ This directory contains the modular Lua configuration for Neovim, organized for 
 - **theme.lua** - Dynamic theme switching based on system appearance
 
 ### LSP & Completion
+
 - **lsp.lua** - Language Server Protocol configuration with Mason
 - **blink.lua** - Ultra-fast completion engine configuration
 - **luasnip.lua** - Snippet engine setup
 
 ### Plugin Configurations
+
 - **codecompanion.lua** - AI assistant integration (Ollama, Claude, OpenAI, Copilot)
 - **dap.lua** - Debug Adapter Protocol for debugging support
 - **gitsigns.lua** - Git integration in the sign column

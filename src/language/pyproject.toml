@@ -1,5 +1,5 @@
 [tool.black]
-line-length = 100  # Default: 88 (Google style guide)
+line-length = 100 # Default: 88 (Google style guide)
 target-version = ['py38']
 include = '\.pyi?$'
 extend-exclude = '''
@@ -12,8 +12,8 @@ extend-exclude = '''
 '''
 
 [tool.isort]
-profile = "black"  # Use Black-compatible settings
-line_length = 100  # Match Black's line length
+profile = "black" # Use Black-compatible settings
+line_length = 100 # Match Black's line length
 
 [tool.pylsp-mypy]
 enabled = true

@@ -5,9 +5,9 @@
 alias vi="nvim"
 # Platform-aware code command
 if command -v code >/dev/null 2>&1; then
-    alias code="code ."
+  alias code="code ."
 elif command -v codium >/dev/null 2>&1; then
-    alias code="codium ."
+  alias code="codium ."
 fi
 alias vimconfig="nvim ~/.config/nvim/init.lua"
 alias zshconfig="nvim ~/.zshrc"
@@ -17,18 +17,18 @@ alias tmuxconfig="nvim ~/.tmux.conf"
 
 # Enhanced eza-based file listing (with fallback to ls)
 if command -v eza >/dev/null 2>&1; then
-    alias l='eza --group-directories-first --time-style=relative --git --icons --all --header --long'
-    alias ls='eza --group-directories-first'
-    alias lt="eza --tree --level=2"
-    alias tree="eza --tree"
-    alias l1="eza --tree --level=1"
-    alias l2="eza --tree --level=2"
-    alias l3="eza --tree --level=3"
+  alias l='eza --group-directories-first --time-style=relative --git --icons --all --header --long'
+  alias ls='eza --group-directories-first'
+  alias lt="eza --tree --level=2"
+  alias tree="eza --tree"
+  alias l1="eza --tree --level=1"
+  alias l2="eza --tree --level=2"
+  alias l3="eza --tree --level=3"
 else
-    # Fallback to standard ls
-    alias l='ls -la'
-    alias ls="ls -G"
-    alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+  # Fallback to standard ls
+  alias l='ls -la'
+  alias ls="ls -G"
+  alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 fi
 
 # Aliases with icons (use when font issues are resolved)
@@ -37,10 +37,9 @@ alias lli="eza -l --group-directories-first --time-style=relative --icons --git"
 alias lai="eza -la --group-directories-first --time-style=relative --icons --git"
 
 # Size-aware listings
-alias lh="eza -lah --group-directories-first --time-style=relative --git"  # Human readable
-alias lS="eza -laS --group-directories-first --time-style=relative --git"  # Sort by size
+alias lh="eza -lah --group-directories-first --time-style=relative --git" # Human readable
+alias lS="eza -laS --group-directories-first --time-style=relative --git" # Sort by size
 alias lt_size="eza --tree --level=2 -s size"
-
 
 # Tmux & Session Management
 
@@ -131,7 +130,7 @@ alias c="bat --style=header,grid,numbers"
 alias preview="bat --style=header,grid,numbers --color=always"
 
 # Safety aliases
-alias rn='trash'  # Move files to trash instead of permanent deletion
+alias rn='trash' # Move files to trash instead of permanent deletion
 
 # System information
 alias df='df -H'
@@ -187,27 +186,27 @@ alias pip="pip3"
 
 # Docker shortcuts
 if command -v docker &>/dev/null; then
-    # keep-sorted start
-    alias d="docker"
-    alias dc="docker-compose"
-    alias dclean="docker system prune -af"
-    alias dex="docker exec -it"
-    alias di="docker images"
-    alias dlog="docker logs"
-    alias dps="docker ps"
-    # Use single quotes to prevent command substitution at alias definition time
-    alias dstop='docker stop $(docker ps -q 2>/dev/null)'
-    # keep-sorted end
-    
-    # Function to safely run docker commands only when daemon is running
-    docker_safe() {
-        if docker info &>/dev/null; then
-            docker "$@"
-        else
-            echo "Docker daemon is not running. Start Docker or Colima first."
-            return 1
-        fi
-    }
+  # keep-sorted start
+  alias d="docker"
+  alias dc="docker-compose"
+  alias dclean="docker system prune -af"
+  alias dex="docker exec -it"
+  alias di="docker images"
+  alias dlog="docker logs"
+  alias dps="docker ps"
+  # Use single quotes to prevent command substitution at alias definition time
+  alias dstop='docker stop $(docker ps -q 2>/dev/null)'
+  # keep-sorted end
+
+  # Function to safely run docker commands only when daemon is running
+  docker_safe() {
+    if docker info &>/dev/null; then
+      docker "$@"
+    else
+      echo "Docker daemon is not running. Start Docker or Colima first."
+      return 1
+    fi
+  }
 fi
 
 # Kubernetes shortcuts
@@ -234,56 +233,56 @@ alias pandoc="pandoc --wrap=none --listings"
 
 # Safer cleanup with confirmation
 cleanup() {
-    echo "This will delete all .DS_Store and .pyc files recursively from current directory."
-    echo -n "Are you sure? [y/N] "
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        find . -type f -name '*.DS_Store' -delete
-        find . -type f -name '*.pyc' -delete
-        echo "Cleanup complete."
-    else
-        echo "Cleanup cancelled."
-    fi
+  echo "This will delete all .DS_Store and .pyc files recursively from current directory."
+  echo -n "Are you sure? [y/N] "
+  read -r response
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    find . -type f -name '*.DS_Store' -delete
+    find . -type f -name '*.pyc' -delete
+    echo "Cleanup complete."
+  else
+    echo "Cleanup cancelled."
+  fi
 }
 
 # Safer trash emptying function with confirmation
 emptytrash() {
-    echo "WARNING: This will permanently delete:"
-    echo "  - All items in Trash"
-    echo "  - System trash folders"
-    echo "  - ASL log files"
-    echo -n "Are you ABSOLUTELY sure? Type 'yes' to confirm: "
-    read -r response
-    if [[ "$response" == "yes" ]]; then
-        # Use specific paths instead of wildcards with sudo
-        sudo rm -rfv ~/.Trash
-        # Only clear Trashes on mounted volumes if they exist
-        for volume in /Volumes/*; do
-            if [[ -d "$volume/.Trashes" ]]; then
-                sudo rm -rfv "$volume/.Trashes"
-            fi
-        done
-        # Clear ASL logs safely
-        sudo rm -rfv /private/var/log/asl/*.asl 2>/dev/null || true
-        echo "Trash emptied."
-    else
-        echo "Operation cancelled."
-    fi
+  echo "WARNING: This will permanently delete:"
+  echo "  - All items in Trash"
+  echo "  - System trash folders"
+  echo "  - ASL log files"
+  echo -n "Are you ABSOLUTELY sure? Type 'yes' to confirm: "
+  read -r response
+  if [[ "$response" == "yes" ]]; then
+    # Use specific paths instead of wildcards with sudo
+    sudo rm -rfv ~/.Trash
+    # Only clear Trashes on mounted volumes if they exist
+    for volume in /Volumes/*; do
+      if [[ -d "$volume/.Trashes" ]]; then
+        sudo rm -rfv "$volume/.Trashes"
+      fi
+    done
+    # Clear ASL logs safely
+    sudo rm -rfv /private/var/log/asl/*.asl 2>/dev/null || true
+    echo "Trash emptied."
+  else
+    echo "Operation cancelled."
+  fi
 }
 alias reset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 
 # System maintenance
-alias update="~/.dotfiles/src/scripts/update"  # Use the comprehensive update script
+alias update="~/.dotfiles/src/scripts/update" # Use the comprehensive update script
 alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
-alias update-dotfiles="~/.dotfiles/src/scripts/update-dotfiles"  # Pull latest dotfiles changes
-alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"  # Re-run setup
-alias dotfiles-symlinks="~/.dotfiles/src/setup/symlinks.sh"  # Re-create symlinks
+alias update-dotfiles="~/.dotfiles/src/scripts/update-dotfiles" # Pull latest dotfiles changes
+alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"           # Re-run setup
+alias dotfiles-symlinks="~/.dotfiles/src/setup/symlinks.sh"     # Re-create symlinks
 alias dotfiles-install="~/.dotfiles/src/setup/setup.sh --full"  # Full installation
-alias dotfiles-core="~/.dotfiles/src/setup/setup.sh --core"  # Core packages only
-alias dotfiles-test="~/.dotfiles/test/runner.zsh"  # Run dotfiles test suite
-alias dotfiles-test-debug="~/.dotfiles/test/runner.zsh --debug"  # Run tests with debug output
-alias dotfiles-test-old="~/.dotfiles/test/runner.py"  # Run Python test suite (deprecated)
+alias dotfiles-core="~/.dotfiles/src/setup/setup.sh --core"     # Core packages only
+alias dotfiles-test="~/.dotfiles/test/runner.zsh"               # Run dotfiles test suite
+alias dotfiles-test-debug="~/.dotfiles/test/runner.zsh --debug" # Run tests with debug output
+alias dotfiles-test-old="~/.dotfiles/test/runner.py"            # Run Python test suite (deprecated)
 
 # Monitoring & Diagnostics
 
@@ -310,10 +309,10 @@ alias weztermconfig="nvim ~/.dotfiles/src/wezterm/wezterm.lua"
 alias ripgrepconfig="nvim ~/.dotfiles/src/ripgreprc"
 
 # Neovim plugin management
-alias nvim-update="nvim --headless '+Lazy! sync' +qa"  # Update all Neovim plugins
-alias nvim-plugins="nvim '+Lazy'"  # Open Lazy plugin manager
-alias nvim-health="nvim '+checkhealth'"  # Check Neovim health
-alias nvim-clean="rm -rf ~/.local/share/nvim ~/.cache/nvim"  # Clean Neovim cache (use with caution)
+alias nvim-update="nvim --headless '+Lazy! sync' +qa"       # Update all Neovim plugins
+alias nvim-plugins="nvim '+Lazy'"                           # Open Lazy plugin manager
+alias nvim-health="nvim '+checkhealth'"                     # Check Neovim health
+alias nvim-clean="rm -rf ~/.local/share/nvim ~/.cache/nvim" # Clean Neovim cache (use with caution)
 
 # Time savers
 alias h="history"
@@ -373,19 +372,16 @@ alias share="python3 -m http.server 8000"
 alias lg="lazygit"
 
 # Better df with duf if available
-if command -v duf &> /dev/null;
-then
-    alias df='duf'
+if command -v duf &>/dev/null; then
+  alias df='duf'
 fi
 
 # Better du with dust if available
-if command -v dust &> /dev/null;
-then
-    alias du='dust'
+if command -v dust &>/dev/null; then
+  alias du='dust'
 fi
 
 # Better ping with gping if available
-if command -v gping &> /dev/null;
-then
-    alias ping='gping'
+if command -v gping &>/dev/null; then
+  alias ping='gping'
 fi

@@ -2,15 +2,18 @@
 Tests for statistics.py module.
 """
 
-import unittest
-import tempfile
+from datetime import datetime
+from datetime import timedelta
 import json
 from pathlib import Path
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
+import tempfile
 import time
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from cortex.statistics import StatisticsTracker, ChatSession
+from cortex.statistics import ChatSession
+from cortex.statistics import StatisticsTracker
 
 
 class TestStatisticsTracker(unittest.TestCase):
@@ -45,17 +48,15 @@ class TestStatisticsTracker(unittest.TestCase):
             "total_tokens": 5000,
             "total_input_tokens": 2000,
             "total_output_tokens": 3000,
-            "sessions": [
-                {
-                    "session_id": "test-session",
-                    "model": "gpt-4",
-                    "start_time": "2024-01-01T12:00:00",
-                    "duration": 60.5,
-                    "input_tokens": 100,
-                    "output_tokens": 200,
-                    "total_tokens": 300
-                }
-            ],
+            "sessions": [{
+                "session_id": "test-session",
+                "model": "gpt-4",
+                "start_time": "2024-01-01T12:00:00",
+                "duration": 60.5,
+                "input_tokens": 100,
+                "output_tokens": 200,
+                "total_tokens": 300
+            }],
             "model_usage": {
                 "gpt-4": {
                     "sessions": 5,
@@ -231,25 +232,21 @@ class TestStatisticsTracker(unittest.TestCase):
         now = datetime.now()
 
         # Old session (40 days ago)
-        old_session = ChatSession(
-            session_id="old",
-            model="old-model",
-            start_time=(now - timedelta(days=40)).isoformat(),
-            input_tokens=100,
-            output_tokens=100,
-            total_tokens=200
-        )
+        old_session = ChatSession(session_id="old",
+                                  model="old-model",
+                                  start_time=(now - timedelta(days=40)).isoformat(),
+                                  input_tokens=100,
+                                  output_tokens=100,
+                                  total_tokens=200)
         stats.sessions.append(old_session.__dict__)
 
         # Recent session (5 days ago)
-        recent_session = ChatSession(
-            session_id="recent",
-            model="recent-model",
-            start_time=(now - timedelta(days=5)).isoformat(),
-            input_tokens=50,
-            output_tokens=50,
-            total_tokens=100
-        )
+        recent_session = ChatSession(session_id="recent",
+                                     model="recent-model",
+                                     start_time=(now - timedelta(days=5)).isoformat(),
+                                     input_tokens=50,
+                                     output_tokens=50,
+                                     total_tokens=100)
         stats.sessions.append(recent_session.__dict__)
 
         stats.clear_old_sessions(days=30)

@@ -212,14 +212,14 @@ open http://localhost:3000
 def authenticate(email: str, password: str) -> User:
     """
     Authenticate user with email and password.
-    
+
     Args:
         email: User's email address
         password: Plain text password
-        
+
     Returns:
         User object if authenticated
-        
+
     Raises:
         AuthenticationError: If credentials invalid
     """
@@ -415,12 +415,14 @@ gh release create v1.2.0 \
 
 ```markdown
 ## Pre-Development
+
 - [ ] Issue created and assigned
 - [ ] Design documented
 - [ ] Dependencies identified
 - [ ] Branch created from main
 
 ## Development
+
 - [ ] Tests written first (TDD)
 - [ ] Implementation complete
 - [ ] All tests passing
@@ -428,6 +430,7 @@ gh release create v1.2.0 \
 - [ ] Documentation updated
 
 ## Review
+
 - [ ] Self-review completed
 - [ ] PR created with description
 - [ ] CI checks passing
@@ -435,6 +438,7 @@ gh release create v1.2.0 \
 - [ ] Branch up to date with main
 
 ## Deployment
+
 - [ ] Merged to main
 - [ ] Deployed to staging
 - [ ] Smoke tests passed
@@ -442,6 +446,7 @@ gh release create v1.2.0 \
 - [ ] Monitoring confirmed
 
 ## Post-Release
+
 - [ ] Branch cleaned up
 - [ ] Release documented
 - [ ] Stakeholders notified

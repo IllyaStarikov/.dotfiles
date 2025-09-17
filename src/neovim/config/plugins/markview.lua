@@ -471,15 +471,12 @@ function M.setup()
 
   -- Function to get theme-appropriate colors
   local function get_theme_colors()
-    local config_file =
-      vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
+    local config_file = vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
     local is_light_theme = false
 
     if vim.fn.filereadable(config_file) == 1 then
       local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
-      local background_cmd = "source "
-        .. config_file
-        .. " && echo $MACOS_VARIANT"
+      local background_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
       local theme = vim.fn.system(theme_cmd):gsub("\n", "")
       local background = vim.fn.system(background_cmd):gsub("\n", "")
 
@@ -663,8 +660,7 @@ function M.setup()
   -- JetBrainsMono Nerd Font has excellent ligature support!
 
   -- Auto-enable for markdown files
-  local markdown_augroup =
-    vim.api.nvim_create_augroup("MarkviewMarkdown", { clear = true })
+  local markdown_augroup = vim.api.nvim_create_augroup("MarkviewMarkdown", { clear = true })
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "quarto", "rmd" },
     group = markdown_augroup,
@@ -684,17 +680,11 @@ function M.setup()
         if vim.b.markview_enabled then
           vim.cmd("Markview disable")
           vim.b.markview_enabled = false
-          vim.notify(
-            "Ligatures enabled ✓ (markview disabled)",
-            vim.log.levels.INFO
-          )
+          vim.notify("Ligatures enabled ✓ (markview disabled)", vim.log.levels.INFO)
         else
           vim.cmd("Markview enable")
           vim.b.markview_enabled = true
-          vim.notify(
-            "Rich preview enabled (ligatures disabled)",
-            vim.log.levels.INFO
-          )
+          vim.notify("Rich preview enabled (ligatures disabled)", vim.log.levels.INFO)
         end
       end, {
         buffer = true,
@@ -766,8 +756,7 @@ function M.setup()
   })
 
   -- Handle folding behavior for insert/normal mode transitions
-  local augroup =
-    vim.api.nvim_create_augroup("MarkviewInsertMode", { clear = true })
+  local augroup = vim.api.nvim_create_augroup("MarkviewInsertMode", { clear = true })
 
   vim.api.nvim_create_autocmd({ "InsertEnter" }, {
     pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
@@ -814,10 +803,7 @@ function M.setup()
       -- Reapply markview colors when theme changes
       vim.defer_fn(apply_markview_highlights, 100)
     end,
-    group = vim.api.nvim_create_augroup(
-      "MarkviewThemeReload",
-      { clear = true }
-    ),
+    group = vim.api.nvim_create_augroup("MarkviewThemeReload", { clear = true }),
   })
 
   -- Custom handling for <details> elements
@@ -843,10 +829,7 @@ function M.setup()
         end
       end, 100)
     end,
-    group = vim.api.nvim_create_augroup(
-      "MarkviewDetailsFold",
-      { clear = true }
-    ),
+    group = vim.api.nvim_create_augroup("MarkviewDetailsFold", { clear = true }),
   })
 end
 

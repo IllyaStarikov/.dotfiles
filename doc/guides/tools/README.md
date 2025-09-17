@@ -18,12 +18,14 @@ Currently exploring tool-specific customizations. Common tools are documented in
 Create guides here for:
 
 ### Custom Tool Configurations
+
 - Non-standard tool setups
 - Complex integrations between tools
 - Performance optimizations
 - Workflow automation
 
 ### Examples of Future Guides
+
 - **Docker** - Custom compose workflows
 - **Kubernetes** - Local development setup
 - **Database Tools** - pgcli, mycli configurations

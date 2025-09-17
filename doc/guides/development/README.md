@@ -9,19 +9,25 @@ This section contains guides for maintaining consistent code quality and style a
 ## Available Guides
 
 ### [Format Script Guide](format_guide.md)
+
 Universal code formatter that combines:
+
 - File operations (trailing whitespace, tabs)
 - Language-specific formatters
 - Smart quote normalization
 
 ### [Indentation Guide](indentation_guide.md)
+
 Industry standard compliance:
+
 - Python: 4 spaces
 - Other languages: 2 spaces
 - Exceptions: Go (tabs), Makefiles (tabs)
 
 ### [Style Guide](style_guide.md)
+
 Comprehensive coding standards:
+
 - Language-specific conventions
 - Naming patterns
 - Documentation requirements
@@ -29,6 +35,7 @@ Comprehensive coding standards:
 ## Quick Reference
 
 ### Python
+
 ```python
 # 4 spaces, 100 char lines
 def example_function(parameter_one: str,
@@ -38,6 +45,7 @@ def example_function(parameter_one: str,
 ```
 
 ### JavaScript/TypeScript
+
 ```javascript
 // 2 spaces, modern syntax
 const exampleFunction = async (param) => {
@@ -47,6 +55,7 @@ const exampleFunction = async (param) => {
 ```
 
 ### Shell
+
 ```bash
 # 2 spaces, industry standard
 main() {

@@ -34,12 +34,12 @@ We chose Blink.cmp over nvim-cmp for:
 
 Our setup differs from defaults:
 
-| Key | Our Binding | Default | Reason |
-|-----|-------------|---------|--------|
-| `Tab` | Accept & snippet jump | Accept only | Unified snippet workflow |
-| `<C-y>` | Confirm selection | Same | Vim convention |
-| `<C-e>` | Cancel | Same | Standard abort |
-| `<C-Space>` | Manual trigger | Same | Force completion |
+| Key         | Our Binding           | Default     | Reason                   |
+| ----------- | --------------------- | ----------- | ------------------------ |
+| `Tab`       | Accept & snippet jump | Accept only | Unified snippet workflow |
+| `<C-y>`     | Confirm selection     | Same        | Vim convention           |
+| `<C-e>`     | Cancel                | Same        | Standard abort           |
+| `<C-Space>` | Manual trigger        | Same        | Force completion         |
 
 ### Source Priorities
 
@@ -47,7 +47,7 @@ Our setup differs from defaults:
 sources = {
   -- Our priority order (differs from default)
   default = { 'lsp', 'snippets', 'path', 'buffer' },
-  
+
   -- Custom for specific contexts
   providers = {
     lsp = {
@@ -121,11 +121,11 @@ documentation = {
 
 In our environment:
 
-| Metric | Blink.cmp | nvim-cmp | Improvement |
-|--------|-----------|----------|-------------|
-| Initial completion | <1ms | 15-60ms | 15-60x |
-| Filtering 10k items | 2ms | 20ms | 10x |
-| Memory usage | 20MB | 35MB | 43% less |
+| Metric              | Blink.cmp | nvim-cmp | Improvement |
+| ------------------- | --------- | -------- | ----------- |
+| Initial completion  | <1ms      | 15-60ms  | 15-60x      |
+| Filtering 10k items | 2ms       | 20ms     | 10x         |
+| Memory usage        | 20MB      | 35MB     | 43% less    |
 
 ## Troubleshooting Our Setup
 

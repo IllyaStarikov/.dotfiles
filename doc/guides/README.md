@@ -5,6 +5,7 @@
 ## Purpose
 
 These guides explain:
+
 - **Why** we made specific configuration choices
 - **What** makes our setup different from defaults
 - **How** our customizations improve the development experience
@@ -54,6 +55,7 @@ Modern CLI tool setups:
 ### 1. Performance Focus
 
 Every configuration prioritizes speed:
+
 - Lazy loading everywhere possible
 - Caching strategies for completions and searches
 - Async operations by default
@@ -61,6 +63,7 @@ Every configuration prioritizes speed:
 ### 2. Integration
 
 Components work together seamlessly:
+
 - Unified theme switching across all tools
 - Consistent keybindings (vim-style everywhere)
 - Shared clipboard between tmux, vim, and system
@@ -68,6 +71,7 @@ Components work together seamlessly:
 ### 3. Modern Tooling
 
 We replace traditional tools with faster alternatives:
+
 - `ripgrep` instead of `grep` (10-100x faster)
 - `fd` instead of `find` (more intuitive)
 - `eza` instead of `ls` (git integration)
@@ -76,6 +80,7 @@ We replace traditional tools with faster alternatives:
 ### 4. AI-First Development
 
 Built-in AI assistance that respects privacy:
+
 - Local LLMs via Ollama by default
 - Context-aware code suggestions
 - Custom prompts for common tasks

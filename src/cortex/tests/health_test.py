@@ -2,10 +2,12 @@
 Tests for health.py module.
 """
 
-import unittest
 import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
 import time
+import unittest
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from cortex.health import HealthMonitor
 
@@ -242,6 +244,7 @@ class TestHealthMonitor(unittest.TestCase):
 
     def test_run_health_checks_all(self):
         """Test running all health checks."""
+
         # Mock all check methods
         async def mock_check():
             return {"status": "healthy", "timestamp": time.time()}
@@ -257,6 +260,7 @@ class TestHealthMonitor(unittest.TestCase):
 
     def test_run_health_checks_specific(self):
         """Test running specific health checks."""
+
         # Mock check methods
         async def mock_check():
             return {"status": "healthy", "timestamp": time.time()}
@@ -273,9 +277,15 @@ class TestHealthMonitor(unittest.TestCase):
     def test_get_summary_healthy(self):
         """Test getting summary when all healthy."""
         self.monitor.status = {
-            "system": {"status": "healthy"},
-            "api_keys": {"status": "healthy"},
-            "network": {"status": "healthy"}
+            "system": {
+                "status": "healthy"
+            },
+            "api_keys": {
+                "status": "healthy"
+            },
+            "network": {
+                "status": "healthy"
+            }
         }
         self.monitor.last_check = {
             "system": time.time(),
@@ -292,9 +302,18 @@ class TestHealthMonitor(unittest.TestCase):
     def test_get_summary_with_issues(self):
         """Test getting summary with issues."""
         self.monitor.status = {
-            "system": {"status": "warning", "message": "High CPU"},
-            "api_keys": {"status": "critical", "message": "No keys"},
-            "network": {"status": "error", "message": "No connection"}
+            "system": {
+                "status": "warning",
+                "message": "High CPU"
+            },
+            "api_keys": {
+                "status": "critical",
+                "message": "No keys"
+            },
+            "network": {
+                "status": "error",
+                "message": "No connection"
+            }
         }
         self.monitor.last_check = {
             "system": time.time(),

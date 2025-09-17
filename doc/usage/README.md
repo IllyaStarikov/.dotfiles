@@ -80,6 +80,7 @@ Individual tool guides:
 ## Common Tasks
 
 ### Find Files
+
 ```bash
 ff                    # Interactive file finder
 fd -e py | fzf        # Find Python files
@@ -87,6 +88,7 @@ fd -e py | fzf        # Find Python files
 ```
 
 ### Search Text
+
 ```bash
 rg "TODO"             # Search for TODOs
 rg -t py "class"      # Search Python files
@@ -94,6 +96,7 @@ rg -t py "class"      # Search Python files
 ```
 
 ### Git Operations
+
 ```bash
 gaa && gcmsg "fix: bug" && gp  # Quick commit
 lazygit               # Visual Git UI
@@ -101,6 +104,7 @@ lazygit               # Visual Git UI
 ```
 
 ### AI Assistance
+
 ```vim
 <leader>cc            # Open AI chat
 <leader>ca            # Show AI actions
@@ -117,18 +121,21 @@ Select text + <leader>co  # Optimize code
 ## Performance Tips
 
 ### Fast Navigation
+
 Use `z` instead of `cd` - learns your habits
 Use `zi` for interactive directory jumping
 Use `ff` for fuzzy file finding
 Use `<C-r>` for command history search
 
 ### Efficient Editing
+
 `gaa && gcmsg "message" && gp` for quick commits
 `<leader>f` to format code instantly
 `<leader>ca` for AI-powered suggestions
 Use snippets for boilerplate code
 
 ### Tool Selection
+
 `rg` over `grep` - 10-100x faster
 `fd` over `find` - more intuitive
 `eza` over `ls` - git integration
@@ -151,12 +158,12 @@ Use snippets for boilerplate code
 
 ## Configuration Files
 
-| Tool | Config Location | Edit Command |
-|------|-----------------|--------------|
-| Zsh | `~/.zshrc` | `zshconfig` |
-| Neovim | `~/.config/nvim/` | `vimconfig` |
-| tmux | `~/.tmux.conf` | `tmuxconfig` |
-| Git | `~/.gitconfig` | `gitconfig` |
+| Tool      | Config Location        | Edit Command                           |
+| --------- | ---------------------- | -------------------------------------- |
+| Zsh       | `~/.zshrc`             | `zshconfig`                            |
+| Neovim    | `~/.config/nvim/`      | `vimconfig`                            |
+| tmux      | `~/.tmux.conf`         | `tmuxconfig`                           |
+| Git       | `~/.gitconfig`         | `gitconfig`                            |
 | Alacritty | `~/.config/alacritty/` | `v ~/.config/alacritty/alacritty.toml` |
 
 ## Troubleshooting
@@ -166,6 +173,7 @@ See [Setup Troubleshooting](../setup/troubleshooting.md) for solutions to common
 ## Learning Resources
 
 ### Recommended Path
+
 1. Start with [Daily Workflow](workflows/daily.md)
 2. Learn [Essential Keybindings](keybindings/README.md)
 3. Master [Git Commands](commands/git.md)

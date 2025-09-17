@@ -51,6 +51,7 @@ brain status
 ## Configuration
 
 Configuration files are stored in `~/.dotfiles/config/brain/`:
+
 - `config.yaml` - Main configuration
 - `brain.env` - Environment variables for shell integration
 - `models.yaml` - Model metadata cache
@@ -60,6 +61,7 @@ API keys are stored securely in `~/.dotfiles/.dotfiles.private/`
 ## Neovim Integration
 
 brAIn automatically sets environment variables that are picked up by CodeCompanion and Avante.nvim:
+
 - `BRAIN_PROVIDER` - Current provider (mlx, ollama, etc.)
 - `BRAIN_MODEL` - Current model name
 - `BRAIN_ENDPOINT` - API endpoint URL

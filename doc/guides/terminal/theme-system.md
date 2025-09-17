@@ -9,7 +9,7 @@
 The theme system automatically synchronizes your development environment with macOS appearance settings. When you switch between light and dark mode, all tools update instantly:
 
 - **Alacritty** - Terminal colors and background
-- **tmux** - Status bar and window styling  
+- **tmux** - Status bar and window styling
 - **Starship** - Prompt colors and symbols
 - **Neovim** - Editor colorscheme (TokyoNight variants)
 
@@ -26,10 +26,10 @@ defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light"
 
 ### Theme Mapping
 
-| macOS Mode | Terminal Theme | Neovim Theme |
-|------------|---------------|--------------|
-| Light | `tokyonight_day` | `tokyonight-day` |
-| Dark | `tokyonight_night` | `tokyonight-night` |
+| macOS Mode | Terminal Theme     | Neovim Theme       |
+| ---------- | ------------------ | ------------------ |
+| Light      | `tokyonight_day`   | `tokyonight-day`   |
+| Dark       | `tokyonight_night` | `tokyonight-night` |
 
 ### File Updates
 
@@ -59,9 +59,11 @@ theme tokyonight_moon
 ### Available Themes
 
 **Light Variants:**
+
 - `tokyonight_day` - Bright, high contrast
 
 **Dark Variants:**
+
 - `tokyonight_night` - Deep blue darkness
 - `tokyonight_storm` - Softer dark variant (default)
 - `tokyonight_moon` - Purple-tinted darkness
@@ -111,7 +113,7 @@ mkdir ~/.dotfiles/src/theme-switcher/themes/my_custom_theme
 
 # 2. Add theme files
 # alacritty.toml - Terminal colors
-# tmux.conf - tmux styling  
+# tmux.conf - tmux styling
 # starship.toml - Prompt colors
 
 # 3. Use your theme
@@ -147,7 +149,7 @@ launchctl list io.starikov.theme-watcher
 # Start theme watcher
 launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 
-# Stop theme watcher  
+# Stop theme watcher
 launchctl unload ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 ```
 
@@ -156,17 +158,20 @@ launchctl unload ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 ### Theme Not Switching
 
 **Check watcher status:**
+
 ```bash
 launchctl list io.starikov.theme-watcher
 # Should show PID if running
 ```
 
 **View logs:**
+
 ```bash
 tail -f ~/.cache/theme-switcher/theme-watcher.log
 ```
 
 **Restart watcher:**
+
 ```bash
 launchctl unload ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
@@ -175,11 +180,13 @@ launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 ### Manual Override
 
 **Force theme update:**
+
 ```bash
 ~/.dotfiles/src/theme-switcher/switch-theme.sh auto
 ```
 
 **Reset to system default:**
+
 ```bash
 rm ~/.config/theme-switcher/current-theme
 theme
@@ -188,6 +195,7 @@ theme
 ### Colors Not Updating
 
 **Restart applications:**
+
 ```bash
 # Reload tmux config
 tmux source-file ~/.tmux.conf
@@ -202,6 +210,7 @@ tmux source-file ~/.tmux.conf
 ### Logs and Debugging
 
 **View detailed logs:**
+
 ```bash
 # Theme watcher logs
 tail -f ~/.cache/theme-switcher/theme-watcher.log
@@ -211,6 +220,7 @@ tail -f ~/.cache/theme-switcher/theme-watcher.log
 ```
 
 **Reset all state:**
+
 ```bash
 rm -rf ~/.cache/theme-switcher
 rm -rf ~/.config/theme-switcher
@@ -228,6 +238,7 @@ theme  # Reinitialize
 3. Add application restart logic
 
 **Example for adding VSCode theme:**
+
 ```bash
 # In themes/tokyonight_night/vscode.json
 {
@@ -243,6 +254,7 @@ fi
 ### Work-Specific Themes
 
 **Override themes for work environments:**
+
 ```bash
 # In ~/.dotfiles.private/work/theme.zsh
 if [[ "$PWD" == *"/work/"* ]]; then
@@ -254,6 +266,7 @@ fi
 ### Conditional Theme Logic
 
 **Time-based theme switching:**
+
 ```bash
 # In ~/.dotfiles.private/functions.zsh
 work_theme() {

@@ -5,9 +5,10 @@
 ## Most Used Commands
 
 ### Navigation
+
 ```bash
 z project        # Jump to project directory
-cd -            # Previous directory  
+cd -            # Previous directory
 ..              # Up one level
 ll              # List with details
 lt              # Tree view
@@ -15,6 +16,7 @@ ff              # Find files interactively
 ```
 
 ### Git Workflow
+
 ```bash
 gs              # Status
 gaa             # Add all
@@ -26,6 +28,7 @@ lazygit         # Visual UI
 ```
 
 ### Search & Edit
+
 ```bash
 rg "TODO"       # Search in files
 fd -e py        # Find Python files
@@ -34,6 +37,7 @@ code .          # Open VS Code
 ```
 
 ### System
+
 ```bash
 htop            # System monitor
 duf             # Disk usage
@@ -47,23 +51,27 @@ cleanup         # Clean caches
 **Leader** = `Space`
 
 ### Files & Search
+
 `<leader>ff` Find files
 `<leader>fg` Grep text
 `<leader>fb` Buffers
 `<leader>fr` Recent
 
-### Code Navigation  
+### Code Navigation
+
 `gd` Definition
 `gr` References
 `K` Documentation
 `<leader>ca` Actions
 
 ### AI Assistant
+
 `<leader>cc` Chat
 `<leader>co` Optimize (visual)
 `<leader>ce` Explain (visual)
 
 ### Git
+
 `<leader>gg` LazyGit
 `]c` Next change
 `[c` Previous change
@@ -73,18 +81,21 @@ cleanup         # Clean caches
 **Prefix** = `Ctrl-a`
 
 ### Sessions & Windows
+
 `C-a s` List sessions
 `C-a c` New window
 `C-a n` Next window
 `C-a ,` Rename
 
 ### Panes
+
 `C-a |` Split vertical
 `C-a -` Split horizontal
 `C-h/j/k/l` Navigate
 `C-a z` Zoom toggle
 
 ### Copy Mode
+
 `C-a [` Enter
 `v` Select
 `y` Copy
@@ -93,12 +104,14 @@ cleanup         # Clean caches
 ## Shell Shortcuts
 
 ### Command Line
+
 `C-r` History search
 `C-t` File picker
 `ESC` Vi mode
 `TAB` Complete
 
 ### Vi Mode (after ESC)
+
 `h/l` Move left/right
 `w/b` Word forward/back
 `dd` Delete line
@@ -107,6 +120,7 @@ cleanup         # Clean caches
 ## One-Liners
 
 ### Quick Tasks
+
 ```bash
 # Find and edit TODO
 v $(rg -l TODO | fzf)
@@ -125,6 +139,7 @@ fd -e py -x sd 'old' 'new'
 ```
 
 ### System Info
+
 ```bash
 # What's using port 3000?
 lsof -i :3000
@@ -139,6 +154,7 @@ netstat -an | grep LISTEN
 ## Emergency
 
 ### Recovery
+
 ```bash
 # Undo last commit
 git undo
@@ -149,7 +165,7 @@ killport 3000
 # Reset shell
 exec zsh
 
-# Fix permissions  
+# Fix permissions
 sudo chown -R $(whoami) .
 
 # Restore Neovim
@@ -158,6 +174,7 @@ nvim +Lazy
 ```
 
 ### Debug
+
 ```bash
 # Check health
 nvim +checkhealth

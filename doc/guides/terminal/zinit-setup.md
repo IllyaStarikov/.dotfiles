@@ -36,6 +36,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 ### Essential Plugins
 
 **Syntax Highlighting (Turbo Mode):**
+
 ```bash
 zinit wait lucid for \
     atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
@@ -43,18 +44,21 @@ zinit wait lucid for \
 ```
 
 **Autosuggestions (Lazy Loading):**
+
 ```bash
 zinit wait lucid atload"!_zsh_autosuggest_start" for \
     zsh-users/zsh-autosuggestions
 ```
 
 **Directory Jumping:**
+
 ```bash
 zinit ice wait"0" lucid
 zinit light agkozak/zsh-z
 ```
 
 **Enhanced Completions:**
+
 ```bash
 zinit ice wait"0" lucid blockf
 zinit light zsh-users/zsh-completions
@@ -63,15 +67,18 @@ zinit light zsh-users/zsh-completions
 ### Performance Features
 
 **Turbo Mode (`wait` ice)**
+
 - Plugins load after prompt appears
 - Shell becomes interactive immediately
 - Background loading prevents startup delays
 
 **Lazy Loading (`atload` ice)**
+
 - Plugins initialize only when first used
 - Reduces memory usage and startup time
 
 **Compilation (`compile` ice)**
+
 - Compiles plugins for faster execution
 - Automatic recompilation on updates
 
@@ -103,7 +110,7 @@ zinit unload agkozak/zsh-z
 # Compile all plugins
 zinit compile --all
 
-# Create report of loading times  
+# Create report of loading times
 zinit times
 
 # Stress test installation
@@ -131,23 +138,27 @@ zinit cuninstall _command
 ### Adding New Plugins
 
 **Simple plugin:**
+
 ```bash
 zinit load "user/plugin-name"
 ```
 
 **With turbo mode:**
+
 ```bash
 zinit ice wait"1" lucid
 zinit load "user/plugin-name"
 ```
 
 **With conditions:**
+
 ```bash
 zinit ice wait"1" lucid if"command -v git"
 zinit load "user/git-plugin"
 ```
 
 **Local configuration:**
+
 ```bash
 zinit ice wait"1" lucid \
     atload"export PLUGIN_VAR=value" \
@@ -158,19 +169,20 @@ zinit load "user/complex-plugin"
 
 ### Ice Modifiers
 
-| Ice | Purpose | Example |
-|-----|---------|---------|
-| `wait"N"` | Delay loading N seconds | `wait"2"` |
-| `lucid` | Silent loading | Always use with wait |
-| `atload` | Execute after loading | `atload"export VAR=1"` |
-| `atinit` | Execute before loading | `atinit"setup()"` |
-| `if` | Conditional loading | `if"command -v node"` |
-| `blockf` | Block default completions | For completion plugins |
-| `compile` | Compile plugin | For faster execution |
+| Ice       | Purpose                   | Example                |
+| --------- | ------------------------- | ---------------------- |
+| `wait"N"` | Delay loading N seconds   | `wait"2"`              |
+| `lucid`   | Silent loading            | Always use with wait   |
+| `atload`  | Execute after loading     | `atload"export VAR=1"` |
+| `atinit`  | Execute before loading    | `atinit"setup()"`      |
+| `if`      | Conditional loading       | `if"command -v node"`  |
+| `blockf`  | Block default completions | For completion plugins |
+| `compile` | Compile plugin            | For faster execution   |
 
 ### Theme Integration
 
 **Starship prompt (already configured):**
+
 ```bash
 # Starship is loaded externally
 if command -v starship &>/dev/null; then
@@ -179,6 +191,7 @@ fi
 ```
 
 **Custom prompt plugin:**
+
 ```bash
 zinit ice depth=1
 zinit light romkatv/powerlevel10k
@@ -188,11 +201,11 @@ zinit light romkatv/powerlevel10k
 
 ### Plugin Equivalents
 
-| Oh My Zsh | Zinit Equivalent |
-|-----------|------------------|
-| `git` plugin | `zinit snippet OMZ::plugins/git/git.plugin.zsh` |
+| Oh My Zsh           | Zinit Equivalent                                                            |
+| ------------------- | --------------------------------------------------------------------------- |
+| `git` plugin        | `zinit snippet OMZ::plugins/git/git.plugin.zsh`                             |
 | `colored-man-pages` | `zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh` |
-| Custom theme | `zinit load "theme-author/theme-name"` |
+| Custom theme        | `zinit load "theme-author/theme-name"`                                      |
 
 ### Snippet Loading
 
@@ -205,12 +218,14 @@ zinit snippet OMZ::plugins/git/git.plugin.zsh
 ### Configuration Migration
 
 **Old `.zshrc` (Oh My Zsh):**
+
 ```bash
 plugins=(git colored-man-pages z)
 ZSH_THEME="spaceship"
 ```
 
 **New `.zshrc` (Zinit):**
+
 ```bash
 zinit snippet OMZ::plugins/git/git.plugin.zsh
 zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
@@ -222,34 +237,37 @@ zinit load agkozak/zsh-z
 
 ### Startup Time
 
-| Setup | Cold Start | Warm Start |
-|-------|------------|------------|
-| Oh My Zsh | 800-1200ms | 400-600ms |
-| Zinit (basic) | 200-400ms | 100-200ms |
-| Zinit (turbo) | 50-150ms | 30-80ms |
+| Setup         | Cold Start | Warm Start |
+| ------------- | ---------- | ---------- |
+| Oh My Zsh     | 800-1200ms | 400-600ms  |
+| Zinit (basic) | 200-400ms  | 100-200ms  |
+| Zinit (turbo) | 50-150ms   | 30-80ms    |
 
 ### Memory Usage
 
-| Setup | Initial RAM | After Loading |
-|-------|-------------|---------------|
-| Oh My Zsh | 35MB | 45MB |
-| Zinit | 15MB | 25MB |
+| Setup     | Initial RAM | After Loading |
+| --------- | ----------- | ------------- |
+| Oh My Zsh | 35MB        | 45MB          |
+| Zinit     | 15MB        | 25MB          |
 
 ## Troubleshooting
 
 ### Plugin Not Loading
 
 **Check plugin status:**
+
 ```bash
 zinit status plugin-name
 ```
 
 **Manual reload:**
+
 ```bash
 zinit reload plugin-name
 ```
 
 **Verbose loading:**
+
 ```bash
 zinit load plugin-name --verbose
 ```
@@ -257,11 +275,13 @@ zinit load plugin-name --verbose
 ### Slow Startup
 
 **Profile loading times:**
+
 ```bash
 zinit times
 ```
 
 **Check problematic plugins:**
+
 ```bash
 # Look for plugins without 'wait' ice
 zinit list | grep -v "wait"
@@ -270,6 +290,7 @@ zinit list | grep -v "wait"
 ### Completion Issues
 
 **Rebuild completions:**
+
 ```bash
 rm -rf ~/.zcompdump*
 zinit creinstall
@@ -277,6 +298,7 @@ exec zsh
 ```
 
 **Check completion sources:**
+
 ```bash
 zinit clist
 ```
@@ -284,6 +306,7 @@ zinit clist
 ### Reset Everything
 
 **Complete Zinit reset:**
+
 ```bash
 rm -rf ~/.local/share/zinit
 rm -rf ~/.zcompdump*
@@ -295,6 +318,7 @@ exec zsh  # Will auto-reinstall
 ### Custom Plugin Development
 
 **Local plugin structure:**
+
 ```
 ~/.local/share/zinit/custom/
 └── my-plugin/
@@ -305,6 +329,7 @@ exec zsh  # Will auto-reinstall
 ```
 
 **Load local plugin:**
+
 ```bash
 zinit load ~/.local/share/zinit/custom/my-plugin
 ```
@@ -312,12 +337,14 @@ zinit load ~/.local/share/zinit/custom/my-plugin
 ### Conditional Loading
 
 **Development tools only in dev projects:**
+
 ```bash
 zinit ice wait"1" lucid if"[[ -f package.json ]]"
 zinit load "lukechilds/zsh-nvm"
 ```
 
 **Work-specific plugins:**
+
 ```bash
 if [[ "$PWD" == *"/work/"* ]]; then
     zinit load "work/corporate-plugin"
@@ -327,12 +354,14 @@ fi
 ### Binary Programs
 
 **Install programs via Zinit:**
+
 ```bash
 zinit ice from"gh-r" as"program"
 zinit load junegunn/fzf
 ```
 
 **With renaming:**
+
 ```bash
 zinit ice from"gh-r" as"program" mv"ripgrep* -> rg"
 zinit load BurntSushi/ripgrep

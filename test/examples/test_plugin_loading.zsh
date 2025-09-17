@@ -14,7 +14,7 @@ output=$(nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
         local lazy = require('lazy')
         local failed = {}
         local loaded = 0
-        
+
         for _, plugin in ipairs(lazy.plugins()) do
             if plugin.enabled ~= false then
                 if require('lazy.core.loader').is_loaded(plugin.name) then
@@ -24,7 +24,7 @@ output=$(nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
                 end
             end
         end
-        
+
         print('loaded:', loaded)
         if #failed > 0 then
             print('failed:', table.concat(failed, ', '))
@@ -53,7 +53,7 @@ for cmd in "${commands[@]}"; do
             print(vim.fn.exists(':$cmd') > 0 and 'exists' or 'missing')
             vim.cmd('qa!')
         end, 2000)" 2>&1)
-    
+
     if [[ "$result" != *"exists"* ]]; then
         fail "Command '$cmd' not available"
         break
@@ -78,7 +78,7 @@ output=$(nvim --headless "$TEST_TMP_DIR/completion_test.lua" \
         -- Move to the incomplete line
         vim.cmd('normal! 4G$')
         vim.cmd('startinsert')
-        
+
         -- Wait for completion to trigger
         vim.defer_fn(function()
             local blink = require('blink.cmp')
@@ -108,13 +108,13 @@ output=$(nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
             vim.cmd('qa!')
             return
         end
-        
+
         -- Test dashboard
         local ok2 = pcall(function() snacks.dashboard.open() end)
-        
+
         -- Test picker
         local ok3 = pcall(function() snacks.picker.files() end)
-        
+
         print(ok2 and ok3 and 'snacks-ok' or 'snacks-error')
         vim.cmd('qa!')
     end, 2000)" 2>&1)
@@ -134,13 +134,13 @@ output=$(nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua vim.defer_fn(function()
         local mason_registry = require('mason-registry')
         local missing = {}
-        
+
         for _, server in ipairs({'${(j:', ')lsp_servers}'}) do
             if not mason_registry.is_installed(server) then
                 table.insert(missing, server)
             end
         end
-        
+
         if #missing > 0 then
             print('missing:', table.concat(missing, ', '))
         else

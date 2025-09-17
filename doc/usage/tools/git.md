@@ -25,51 +25,51 @@ git config --global core.pager delta
 
 ### Repository Management
 
-| Command | Alias | Description |
-|---------|-------|-------------|
-| `git init` | | Initialize repository |
-| `git clone url` | `gcl` | Clone repository |
-| `git status` | `gs` | Show status |
-| `git log` | `gl` | View history |
-| `git remote -v` | | List remotes |
+| Command         | Alias | Description           |
+| --------------- | ----- | --------------------- |
+| `git init`      |       | Initialize repository |
+| `git clone url` | `gcl` | Clone repository      |
+| `git status`    | `gs`  | Show status           |
+| `git log`       | `gl`  | View history          |
+| `git remote -v` |       | List remotes          |
 
 ### Basic Workflow
 
-| Command | Alias | Description |
-|---------|-------|-------------|
-| `git add .` | `gaa` | Stage all changes |
-| `git add file` | `ga` | Stage specific file |
+| Command               | Alias   | Description         |
+| --------------------- | ------- | ------------------- |
+| `git add .`           | `gaa`   | Stage all changes   |
+| `git add file`        | `ga`    | Stage specific file |
 | `git commit -m "msg"` | `gcmsg` | Commit with message |
-| `git push` | `gp` | Push to remote |
-| `git pull` | `gl` | Pull from remote |
+| `git push`            | `gp`    | Push to remote      |
+| `git pull`            | `gl`    | Pull from remote    |
 
 ## Advanced Aliases
 
 ### Staging and Committing
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gaa` | `git add --all` | Add all files |
-| `gap` | `git add -p` | Add interactively |
-| `gapa` | `git add --patch` | Add by hunks |
-| `gau` | `git add --update` | Add modified files |
-| `gav` | `git add --verbose` | Verbose add |
-| `gcmsg` | `git commit -m` | Commit with message |
-| `gc!` | `git commit --amend` | Amend last commit |
-| `gca!` | `git commit -a --amend` | Amend with all changes |
+| Alias   | Command                 | Description            |
+| ------- | ----------------------- | ---------------------- |
+| `gaa`   | `git add --all`         | Add all files          |
+| `gap`   | `git add -p`            | Add interactively      |
+| `gapa`  | `git add --patch`       | Add by hunks           |
+| `gau`   | `git add --update`      | Add modified files     |
+| `gav`   | `git add --verbose`     | Verbose add            |
+| `gcmsg` | `git commit -m`         | Commit with message    |
+| `gc!`   | `git commit --amend`    | Amend last commit      |
+| `gca!`  | `git commit -a --amend` | Amend with all changes |
 
 ### Branching
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gb` | `git branch` | List branches |
-| `gba` | `git branch -a` | List all branches |
-| `gbd` | `git branch -d` | Delete branch |
-| `gbD` | `git branch -D` | Force delete branch |
-| `gco` | `git checkout` | Switch branch |
-| `gcb` | `git checkout -b` | Create and switch |
-| `gco -` | `git checkout -` | Previous branch |
-| `gcm` | `git checkout main` | Switch to main |
+| Alias   | Command             | Description         |
+| ------- | ------------------- | ------------------- |
+| `gb`    | `git branch`        | List branches       |
+| `gba`   | `git branch -a`     | List all branches   |
+| `gbd`   | `git branch -d`     | Delete branch       |
+| `gbD`   | `git branch -D`     | Force delete branch |
+| `gco`   | `git checkout`      | Switch branch       |
+| `gcb`   | `git checkout -b`   | Create and switch   |
+| `gco -` | `git checkout -`    | Previous branch     |
+| `gcm`   | `git checkout main` | Switch to main      |
 
 ### Semantic Branch Creation
 
@@ -86,83 +86,83 @@ git perf optimization    # perf/optimization
 
 ### Remote Operations
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gf` | `git fetch` | Fetch from remote |
-| `gfo` | `git fetch origin` | Fetch from origin |
-| `gp` | `git push` | Push to remote |
-| `gpf` | `git push --force` | Force push |
-| `gpf!` | `git push --force` | Force push (alt) |
-| `gpsup` | `git push --set-upstream origin $(current_branch)` | Push and track |
-| `gpu` | `git push upstream` | Push to upstream |
+| Alias   | Command                                            | Description       |
+| ------- | -------------------------------------------------- | ----------------- |
+| `gf`    | `git fetch`                                        | Fetch from remote |
+| `gfo`   | `git fetch origin`                                 | Fetch from origin |
+| `gp`    | `git push`                                         | Push to remote    |
+| `gpf`   | `git push --force`                                 | Force push        |
+| `gpf!`  | `git push --force`                                 | Force push (alt)  |
+| `gpsup` | `git push --set-upstream origin $(current_branch)` | Push and track    |
+| `gpu`   | `git push upstream`                                | Push to upstream  |
 
 ### Pulling and Rebasing
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gl` | `git pull` | Pull from remote |
-| `glr` | `git pull --rebase` | Pull with rebase |
+| Alias  | Command                         | Description             |
+| ------ | ------------------------------- | ----------------------- |
+| `gl`   | `git pull`                      | Pull from remote        |
+| `glr`  | `git pull --rebase`             | Pull with rebase        |
 | `glra` | `git pull --rebase --autostash` | Pull, rebase, autostash |
-| `grb` | `git rebase` | Rebase branch |
-| `grbi` | `git rebase -i` | Interactive rebase |
-| `grbc` | `git rebase --continue` | Continue rebase |
-| `grba` | `git rebase --abort` | Abort rebase |
+| `grb`  | `git rebase`                    | Rebase branch           |
+| `grbi` | `git rebase -i`                 | Interactive rebase      |
+| `grbc` | `git rebase --continue`         | Continue rebase         |
+| `grba` | `git rebase --abort`            | Abort rebase            |
 
 ### Stashing
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gsta` | `git stash push` | Stash changes |
-| `gstaa` | `git stash apply` | Apply stash |
-| `gstc` | `git stash clear` | Clear all stashes |
-| `gstd` | `git stash drop` | Drop stash |
-| `gstl` | `git stash list` | List stashes |
-| `gstp` | `git stash pop` | Pop stash |
-| `gsts` | `git stash show` | Show stash diff |
+| Alias   | Command           | Description       |
+| ------- | ----------------- | ----------------- |
+| `gsta`  | `git stash push`  | Stash changes     |
+| `gstaa` | `git stash apply` | Apply stash       |
+| `gstc`  | `git stash clear` | Clear all stashes |
+| `gstd`  | `git stash drop`  | Drop stash        |
+| `gstl`  | `git stash list`  | List stashes      |
+| `gstp`  | `git stash pop`   | Pop stash         |
+| `gsts`  | `git stash show`  | Show stash diff   |
 
 ### Diff and Status
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gd` | `git diff` | Show changes |
-| `gdca` | `git diff --cached` | Show staged changes |
-| `gdcw` | `git diff --cached --word-diff` | Staged word diff |
-| `gds` | `git diff --staged` | Staged changes |
-| `gdw` | `git diff --word-diff` | Word diff |
-| `gdt` | `git diff-tree --no-commit-id --name-only -r` | List changed files |
+| Alias  | Command                                       | Description         |
+| ------ | --------------------------------------------- | ------------------- |
+| `gd`   | `git diff`                                    | Show changes        |
+| `gdca` | `git diff --cached`                           | Show staged changes |
+| `gdcw` | `git diff --cached --word-diff`               | Staged word diff    |
+| `gds`  | `git diff --staged`                           | Staged changes      |
+| `gdw`  | `git diff --word-diff`                        | Word diff           |
+| `gdt`  | `git diff-tree --no-commit-id --name-only -r` | List changed files  |
 
 ### History and Logs
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `glg` | `git log --stat` | Log with stats |
-| `glgp` | `git log --stat -p` | Log with patches |
-| `glgg` | `git log --graph` | Log with graph |
-| `glgga` | `git log --graph --all` | Full graph |
-| `glo` | `git log --oneline` | One line logs |
-| `glol` | Pretty one-line log | Decorated log |
-| `glola` | Pretty log all branches | Full decorated |
+| Alias   | Command                 | Description      |
+| ------- | ----------------------- | ---------------- |
+| `glg`   | `git log --stat`        | Log with stats   |
+| `glgp`  | `git log --stat -p`     | Log with patches |
+| `glgg`  | `git log --graph`       | Log with graph   |
+| `glgga` | `git log --graph --all` | Full graph       |
+| `glo`   | `git log --oneline`     | One line logs    |
+| `glol`  | Pretty one-line log     | Decorated log    |
+| `glola` | Pretty log all branches | Full decorated   |
 
 ### Reset and Clean
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `grh` | `git reset` | Reset HEAD |
-| `grhh` | `git reset --hard` | Hard reset |
-| `groh` | `git reset origin/$(current_branch) --hard` | Reset to origin |
-| `gclean` | `git clean -id` | Interactive clean |
-| `gpristine` | Reset and clean | Full clean |
-| `git undo` | `git reset HEAD~` | Undo last commit |
+| Alias       | Command                                     | Description       |
+| ----------- | ------------------------------------------- | ----------------- |
+| `grh`       | `git reset`                                 | Reset HEAD        |
+| `grhh`      | `git reset --hard`                          | Hard reset        |
+| `groh`      | `git reset origin/$(current_branch) --hard` | Reset to origin   |
+| `gclean`    | `git clean -id`                             | Interactive clean |
+| `gpristine` | Reset and clean                             | Full clean        |
+| `git undo`  | `git reset HEAD~`                           | Undo last commit  |
 
 ### Merge and Cherry-pick
 
-| Alias | Command | Description |
-|-------|---------|-------------|
-| `gm` | `git merge` | Merge branch |
-| `gma` | `git merge --abort` | Abort merge |
-| `gms` | `git merge --squash` | Squash merge |
-| `gcp` | `git cherry-pick` | Cherry pick |
-| `gcpa` | `git cherry-pick --abort` | Abort cherry pick |
+| Alias  | Command                      | Description          |
+| ------ | ---------------------------- | -------------------- |
+| `gm`   | `git merge`                  | Merge branch         |
+| `gma`  | `git merge --abort`          | Abort merge          |
+| `gms`  | `git merge --squash`         | Squash merge         |
+| `gcp`  | `git cherry-pick`            | Cherry pick          |
+| `gcpa` | `git cherry-pick --abort`    | Abort cherry pick    |
 | `gcpc` | `git cherry-pick --continue` | Continue cherry pick |
 
 ## Git Workflows
@@ -365,12 +365,12 @@ chmod +x .git/hooks/pre-commit
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Merge conflicts | Edit files, `ga`, `grbc` |
-| Wrong branch | `git reflog`, recover |
-| Need to undo | `git undo` or `grh` |
-| Dirty working tree | `gsta` to stash |
+| Issue              | Solution                 |
+| ------------------ | ------------------------ |
+| Merge conflicts    | Edit files, `ga`, `grbc` |
+| Wrong branch       | `git reflog`, recover    |
+| Need to undo       | `git undo` or `grh`      |
+| Dirty working tree | `gsta` to stash          |
 
 ### Emergency Commands
 

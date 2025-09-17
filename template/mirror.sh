@@ -29,124 +29,124 @@ NC='\033[0m' # No Color
 # ═══════════════════════════════════════════════════════════════════════════════
 
 log() {
-    echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $*"
+  echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $*"
 }
 
 success() {
-    echo -e "${GREEN}✓${NC} $*"
+  echo -e "${GREEN}✓${NC} $*"
 }
 
 warn() {
-    echo -e "${YELLOW}⚠${NC} $*"
+  echo -e "${YELLOW}⚠${NC} $*"
 }
 
 # Initialize output directory
 init_output() {
-    log "Initializing output directory..."
-    rm -rf "$OUTPUT_DIR"
-    mkdir -p "$OUTPUT_DIR"
-    mkdir -p "$OUTPUT_DIR/src"
-    success "Output directory created: $OUTPUT_DIR"
+  log "Initializing output directory..."
+  rm -rf "$OUTPUT_DIR"
+  mkdir -p "$OUTPUT_DIR"
+  mkdir -p "$OUTPUT_DIR/src"
+  success "Output directory created: $OUTPUT_DIR"
 }
 
 # Get file language for syntax highlighting
 get_language() {
-    local file="$1"
-    local name="$(basename "$file")"
-    local ext="${name##*.}"
-    
-    case "$ext" in
-        lua) echo "lua" ;;
-        vim) echo "vim" ;;
-        sh|bash|zsh) echo "bash" ;;
-        py) echo "python" ;;
-        js) echo "javascript" ;;
-        ts) echo "typescript" ;;
-        jsx) echo "jsx" ;;
-        tsx) echo "tsx" ;;
-        json) echo "json" ;;
-        yaml|yml) echo "yaml" ;;
-        toml|conf) echo "toml" ;;
-        md) echo "markdown" ;;
-        html) echo "html" ;;
-        css) echo "css" ;;
-        xml) echo "xml" ;;
-        c) echo "c" ;;
-        cpp|cc) echo "cpp" ;;
-        h|hpp) echo "cpp" ;;
-        rs) echo "rust" ;;
-        go) echo "go" ;;
-        rb) echo "ruby" ;;
-        pl) echo "perl" ;;
-        sql) echo "sql" ;;
-        *) 
-            case "$name" in
-                *gitconfig*) echo "ini" ;;
-                *gitignore*) echo "gitignore" ;;
-                *Dockerfile*) echo "dockerfile" ;;
-                *Makefile*) echo "makefile" ;;
-                *rc|.*rc) echo "bash" ;;
-                *) echo "plaintext" ;;
-            esac
-            ;;
-    esac
+  local file="$1"
+  local name="$(basename "$file")"
+  local ext="${name##*.}"
+
+  case "$ext" in
+    lua) echo "lua" ;;
+    vim) echo "vim" ;;
+    sh | bash | zsh) echo "bash" ;;
+    py) echo "python" ;;
+    js) echo "javascript" ;;
+    ts) echo "typescript" ;;
+    jsx) echo "jsx" ;;
+    tsx) echo "tsx" ;;
+    json) echo "json" ;;
+    yaml | yml) echo "yaml" ;;
+    toml | conf) echo "toml" ;;
+    md) echo "markdown" ;;
+    html) echo "html" ;;
+    css) echo "css" ;;
+    xml) echo "xml" ;;
+    c) echo "c" ;;
+    cpp | cc) echo "cpp" ;;
+    h | hpp) echo "cpp" ;;
+    rs) echo "rust" ;;
+    go) echo "go" ;;
+    rb) echo "ruby" ;;
+    pl) echo "perl" ;;
+    sql) echo "sql" ;;
+    *)
+      case "$name" in
+        *gitconfig*) echo "ini" ;;
+        *gitignore*) echo "gitignore" ;;
+        *Dockerfile*) echo "dockerfile" ;;
+        *Makefile*) echo "makefile" ;;
+        *rc | .*rc) echo "bash" ;;
+        *) echo "plaintext" ;;
+      esac
+      ;;
+  esac
 }
 
 # Get file permissions in ls -la format
 get_permissions() {
-    local file="$1"
-    if [[ "$(uname)" == "Darwin" ]]; then
-        stat -f "%Sp" "$file"
-    else
-        stat -c "%A" "$file"
-    fi
+  local file="$1"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    stat -f "%Sp" "$file"
+  else
+    stat -c "%A" "$file"
+  fi
 }
 
 # Get file size in human readable format
 get_size() {
-    local file="$1"
-    if [[ -d "$file" ]]; then
-        echo "-"
-    elif [[ "$(uname)" == "Darwin" ]]; then
-        local size=$(stat -f "%z" "$file")
-        format_size "$size"
-    else
-        stat -c "%s" "$file" | numfmt --to=iec-i --suffix=B
-    fi
+  local file="$1"
+  if [[ -d "$file" ]]; then
+    echo "-"
+  elif [[ "$(uname)" == "Darwin" ]]; then
+    local size=$(stat -f "%z" "$file")
+    format_size "$size"
+  else
+    stat -c "%s" "$file" | numfmt --to=iec-i --suffix=B
+  fi
 }
 
 # Format size in human readable format
 format_size() {
-    local size="$1"
-    if (( size < 1024 )); then
-        echo "${size}B"
-    elif (( size < 1048576 )); then
-        echo "$((size / 1024))K"
-    elif (( size < 1073741824 )); then
-        echo "$((size / 1048576))M"
-    else
-        echo "$((size / 1073741824))G"
-    fi
+  local size="$1"
+  if ((size < 1024)); then
+    echo "${size}B"
+  elif ((size < 1048576)); then
+    echo "$((size / 1024))K"
+  elif ((size < 1073741824)); then
+    echo "$((size / 1048576))M"
+  else
+    echo "$((size / 1073741824))G"
+  fi
 }
 
 # Get file modification time
 get_mtime() {
-    local file="$1"
-    if [[ "$(uname)" == "Darwin" ]]; then
-        stat -f "%Sm" -t "%b %e %H:%M" "$file"
-    else
-        stat -c "%y" "$file" | cut -d' ' -f1
-    fi
+  local file="$1"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    stat -f "%Sm" -t "%b %e %H:%M" "$file"
+  else
+    stat -c "%y" "$file" | cut -d' ' -f1
+  fi
 }
 
 # Get file owner
 get_owner() {
-    local file="$1"
-    if [[ "$(uname)" == "Darwin" ]]; then
-        stat -f "%Su" "$file"
-    else
-        stat -c "%U" "$file"
-    fi
+  local file="$1"
+  if [[ "$(uname)" == "Darwin" ]]; then
+    stat -f "%Su" "$file"
+  else
+    stat -c "%U" "$file"
+  fi
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -155,7 +155,7 @@ get_owner() {
 
 # Generate CSS styles
 generate_css() {
-    cat > "$OUTPUT_DIR/style.css" << 'EOF'
+  cat >"$OUTPUT_DIR/style.css" <<'EOF'
 /* Dotfiles Mirror Styles - Perfect ls-style listing */
 
 :root {
@@ -169,7 +169,7 @@ generate_css() {
     --link-hover: #0056b3;
     --code-bg: #f6f8fa;
     --selection: #b3d4fc;
-    
+
     /* Syntax colors */
     --syntax-comment: #6a737d;
     --syntax-keyword: #d73a49;
@@ -190,7 +190,7 @@ generate_css() {
         --link-hover: #79c0ff;
         --code-bg: #161b22;
         --selection: #3392ff44;
-        
+
         --syntax-comment: #8b949e;
         --syntax-keyword: #ff7b72;
         --syntax-string: #a5d6ff;
@@ -516,21 +516,21 @@ code {
     .container {
         padding: 10px;
     }
-    
+
     .listing {
         font-size: 12px;
     }
-    
+
     .listing th,
     .listing td {
         padding: 4px 8px;
     }
-    
+
     .owner,
     .permissions {
         display: none;
     }
-    
+
     .stats {
         flex-wrap: wrap;
         gap: 15px;
@@ -545,12 +545,12 @@ code {
 .token.function { color: var(--syntax-function); }
 .token.variable { color: var(--syntax-variable); }
 EOF
-    success "Generated style.css"
+  success "Generated style.css"
 }
 
 # Generate JavaScript
 generate_js() {
-    cat > "$OUTPUT_DIR/script.js" << 'EOF'
+  cat >"$OUTPUT_DIR/script.js" <<'EOF'
 // Dotfiles Mirror - Interactive Features
 
 class DotfilesMirror {
@@ -569,13 +569,13 @@ class DotfilesMirror {
         searchBox.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('.listing tbody tr');
-            
+
             rows.forEach(row => {
                 const name = row.querySelector('.name').textContent.toLowerCase();
                 const match = name.includes(query);
                 row.style.display = match ? '' : 'none';
             });
-            
+
             this.updateStats(query);
         });
     }
@@ -609,7 +609,7 @@ class DotfilesMirror {
                     search.focus();
                 }
             }
-            
+
             // Escape to clear search
             if (e.key === 'Escape') {
                 const search = document.getElementById('search');
@@ -626,7 +626,7 @@ class DotfilesMirror {
         const rows = document.querySelectorAll('.listing tbody tr');
         let visible = 0;
         let totalSize = 0;
-        
+
         rows.forEach(row => {
             if (row.style.display !== 'none') {
                 visible++;
@@ -643,11 +643,11 @@ class DotfilesMirror {
                 }
             }
         });
-        
+
         // Update displayed stats
         const itemCount = document.getElementById('item-count');
         const totalCount = document.getElementById('total-count');
-        
+
         if (itemCount && totalCount) {
             itemCount.textContent = visible;
             if (filter) {
@@ -678,43 +678,43 @@ if (typeof Prism !== 'undefined') {
     Prism.highlightAll();
 }
 EOF
-    success "Generated script.js"
+  success "Generated script.js"
 }
 
 # Generate directory index HTML
 generate_directory_index() {
-    local dir="$1"
-    local relative_path="${dir#$SRC_DIR}"
-    relative_path="${relative_path#/}"
-    
-    local output_dir="$OUTPUT_DIR/src"
-    if [[ -n "$relative_path" ]]; then
-        output_dir="$OUTPUT_DIR/src/$relative_path"
-    fi
-    mkdir -p "$output_dir"
-    
-    local output_file="$output_dir/index.html"
-    local title="/${relative_path:-src}"
-    
-    # Generate breadcrumb
-    local breadcrumb="<a href=\"/\">~/.dotfiles</a>"
-    if [[ -n "$relative_path" ]]; then
-        local path=""
-        IFS='/' read -ra PARTS <<< "$relative_path"
-        for part in "${PARTS[@]}"; do
-            if [[ -n "$path" ]]; then
-                path="$path/$part"
-            else
-                path="$part"
-            fi
-            breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/$path/\">$part</a>"
-        done
-    else
-        breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/\">src</a>"
-    fi
-    
-    # Start HTML
-    cat > "$output_file" << EOF
+  local dir="$1"
+  local relative_path="${dir#$SRC_DIR}"
+  relative_path="${relative_path#/}"
+
+  local output_dir="$OUTPUT_DIR/src"
+  if [[ -n "$relative_path" ]]; then
+    output_dir="$OUTPUT_DIR/src/$relative_path"
+  fi
+  mkdir -p "$output_dir"
+
+  local output_file="$output_dir/index.html"
+  local title="/${relative_path:-src}"
+
+  # Generate breadcrumb
+  local breadcrumb="<a href=\"/\">~/.dotfiles</a>"
+  if [[ -n "$relative_path" ]]; then
+    local path=""
+    IFS='/' read -ra PARTS <<<"$relative_path"
+    for part in "${PARTS[@]}"; do
+      if [[ -n "$path" ]]; then
+        path="$path/$part"
+      else
+        path="$part"
+      fi
+      breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/$path/\">$part</a>"
+    done
+  else
+    breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/\">src</a>"
+  fi
+
+  # Start HTML
+  cat >"$output_file" <<EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -730,11 +730,11 @@ generate_directory_index() {
             <h1>Directory Listing: $title</h1>
             <div class="breadcrumb">$breadcrumb</div>
         </header>
-        
+
         <div class="search-container">
             <input type="text" id="search" class="search-box" placeholder="Filter files... (press / to focus)">
         </div>
-        
+
         <div class="stats">
             <div class="stat">
                 <span class="stat-label">Items:</span>
@@ -750,7 +750,7 @@ generate_directory_index() {
                 <span class="stat-value">$(date '+%Y-%m-%d %H:%M')</span>
             </div>
         </div>
-        
+
         <table class="listing">
             <thead>
                 <tr>
@@ -763,10 +763,10 @@ generate_directory_index() {
             </thead>
             <tbody>
 EOF
-    
-    # Add parent directory link if not at root
-    if [[ -n "$relative_path" ]]; then
-        cat >> "$output_file" << EOF
+
+  # Add parent directory link if not at root
+  if [[ -n "$relative_path" ]]; then
+    cat >>"$output_file" <<EOF
                 <tr>
                     <td class="permissions">drwxr-xr-x</td>
                     <td class="size">-</td>
@@ -775,25 +775,25 @@ EOF
                     <td class="name"><a href="../"><span class="icon icon-dir">📁</span> ..</a></td>
                 </tr>
 EOF
-    fi
-    
-    # List directories first
-    local item_count=0
-    local total_size=0
-    
-    for item in "$dir"/*; do
-        [[ -e "$item" ]] || continue
-        
-        local name="$(basename "$item")"
-        [[ "$name" == ".*" ]] && continue
-        
-        if [[ -d "$item" ]]; then
-            local perms="$(get_permissions "$item")"
-            local size="-"
-            local owner="$(get_owner "$item")"
-            local mtime="$(get_mtime "$item")"
-            
-            cat >> "$output_file" << EOF
+  fi
+
+  # List directories first
+  local item_count=0
+  local total_size=0
+
+  for item in "$dir"/*; do
+    [[ -e "$item" ]] || continue
+
+    local name="$(basename "$item")"
+    [[ "$name" == ".*" ]] && continue
+
+    if [[ -d "$item" ]]; then
+      local perms="$(get_permissions "$item")"
+      local size="-"
+      local owner="$(get_owner "$item")"
+      local mtime="$(get_mtime "$item")"
+
+      cat >>"$output_file" <<EOF
                 <tr>
                     <td class="permissions">$perms</td>
                     <td class="size">$size</td>
@@ -802,37 +802,37 @@ EOF
                     <td class="name"><a href="$name/" class="dir-name"><span class="icon icon-dir">📁</span> $name</a></td>
                 </tr>
 EOF
-            ((item_count++))
-        fi
-    done
-    
-    # List files
-    for item in "$dir"/*; do
-        [[ -e "$item" ]] || continue
-        
-        local name="$(basename "$item")"
-        [[ "$name" == ".*" ]] && continue
-        
-        if [[ -f "$item" ]]; then
-            local perms="$(get_permissions "$item")"
-            local size="$(get_size "$item")"
-            local owner="$(get_owner "$item")"
-            local mtime="$(get_mtime "$item")"
-            local icon="📄"
-            
-            # Choose icon based on file type
-            case "$name" in
-                *.lua) icon="🌙" ;;
-                *.sh|*.bash|*.zsh) icon="🐚" ;;
-                *.vim) icon="📝" ;;
-                *.conf|*.toml) icon="⚙️" ;;
-                *.json) icon="📊" ;;
-                *.yaml|*.yml) icon="📋" ;;
-                *.md) icon="📖" ;;
-                *git*) icon="🔧" ;;
-            esac
-            
-            cat >> "$output_file" << EOF
+      ((item_count++))
+    fi
+  done
+
+  # List files
+  for item in "$dir"/*; do
+    [[ -e "$item" ]] || continue
+
+    local name="$(basename "$item")"
+    [[ "$name" == ".*" ]] && continue
+
+    if [[ -f "$item" ]]; then
+      local perms="$(get_permissions "$item")"
+      local size="$(get_size "$item")"
+      local owner="$(get_owner "$item")"
+      local mtime="$(get_mtime "$item")"
+      local icon="📄"
+
+      # Choose icon based on file type
+      case "$name" in
+        *.lua) icon="🌙" ;;
+        *.sh | *.bash | *.zsh) icon="🐚" ;;
+        *.vim) icon="📝" ;;
+        *.conf | *.toml) icon="⚙️" ;;
+        *.json) icon="📊" ;;
+        *.yaml | *.yml) icon="📋" ;;
+        *.md) icon="📖" ;;
+        *git*) icon="🔧" ;;
+      esac
+
+      cat >>"$output_file" <<EOF
                 <tr>
                     <td class="permissions">$perms</td>
                     <td class="size">$size</td>
@@ -841,16 +841,16 @@ EOF
                     <td class="name"><a href="$name.html"><span class="icon icon-file">$icon</span> $name</a></td>
                 </tr>
 EOF
-            ((item_count++))
-        fi
-    done
-    
-    # Close HTML
-    cat >> "$output_file" << EOF
+      ((item_count++))
+    fi
+  done
+
+  # Close HTML
+  cat >>"$output_file" <<EOF
             </tbody>
         </table>
     </div>
-    
+
     <script>
         // Update item count
         document.getElementById('item-count').textContent = '$item_count';
@@ -859,56 +859,56 @@ EOF
 </body>
 </html>
 EOF
-    
-    success "Generated index for $title ($item_count items)"
+
+  success "Generated index for $title ($item_count items)"
 }
 
 # Generate file viewer HTML
 generate_file_viewer() {
-    local file="$1"
-    local relative_path="${file#$SRC_DIR}"
-    relative_path="${relative_path#/}"
-    
-    local output_file="$OUTPUT_DIR/src/$relative_path.html"
-    local output_dir="$(dirname "$output_file")"
-    mkdir -p "$output_dir"
-    
-    local name="$(basename "$file")"
-    local dir_path="$(dirname "$relative_path")"
-    local language="$(get_language "$file")"
-    
-    # File metadata
-    local perms="$(get_permissions "$file")"
-    local size="$(get_size "$file")"
-    local lines="$(wc -l < "$file" 2>/dev/null || echo "0")"
-    local mtime="$(get_mtime "$file")"
-    
-    # Generate breadcrumb
-    local breadcrumb="<a href=\"/\">~/.dotfiles</a> <span>/</span> <a href=\"/src/\">src</a>"
-    if [[ "$dir_path" != "." ]]; then
-        local path=""
-        IFS='/' read -ra PARTS <<< "$dir_path"
-        for part in "${PARTS[@]}"; do
-            if [[ -n "$path" ]]; then
-                path="$path/$part"
-            else
-                path="$part"
-            fi
-            breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/$path/\">$part</a>"
-        done
-    fi
-    breadcrumb="$breadcrumb <span>/</span> <span>$name</span>"
-    
-    # Read and escape file content
-    local content=""
-    if [[ -f "$file" ]]; then
-        # Add line numbers and escape HTML
-        content=$(awk '{printf "<span class=\"line\">%s</span>\n", $0}' "$file" | \
-                  sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
-    fi
-    
-    # Generate HTML
-    cat > "$output_file" << EOF
+  local file="$1"
+  local relative_path="${file#$SRC_DIR}"
+  relative_path="${relative_path#/}"
+
+  local output_file="$OUTPUT_DIR/src/$relative_path.html"
+  local output_dir="$(dirname "$output_file")"
+  mkdir -p "$output_dir"
+
+  local name="$(basename "$file")"
+  local dir_path="$(dirname "$relative_path")"
+  local language="$(get_language "$file")"
+
+  # File metadata
+  local perms="$(get_permissions "$file")"
+  local size="$(get_size "$file")"
+  local lines="$(wc -l <"$file" 2>/dev/null || echo "0")"
+  local mtime="$(get_mtime "$file")"
+
+  # Generate breadcrumb
+  local breadcrumb="<a href=\"/\">~/.dotfiles</a> <span>/</span> <a href=\"/src/\">src</a>"
+  if [[ "$dir_path" != "." ]]; then
+    local path=""
+    IFS='/' read -ra PARTS <<<"$dir_path"
+    for part in "${PARTS[@]}"; do
+      if [[ -n "$path" ]]; then
+        path="$path/$part"
+      else
+        path="$part"
+      fi
+      breadcrumb="$breadcrumb <span>/</span> <a href=\"/src/$path/\">$part</a>"
+    done
+  fi
+  breadcrumb="$breadcrumb <span>/</span> <span>$name</span>"
+
+  # Read and escape file content
+  local content=""
+  if [[ -f "$file" ]]; then
+    # Add line numbers and escape HTML
+    content=$(awk '{printf "<span class=\"line\">%s</span>\n", $0}' "$file" \
+      | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+  fi
+
+  # Generate HTML
+  cat >"$output_file" <<EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -924,7 +924,7 @@ generate_file_viewer() {
             <h1>$name</h1>
             <div class="breadcrumb">$breadcrumb</div>
         </header>
-        
+
         <div class="file-viewer">
             <div class="file-header">
                 <div class="file-info">
@@ -936,7 +936,7 @@ generate_file_viewer() {
                 </div>
                 <div class="file-actions">
                     <button class="btn copy-btn">📋 Copy</button>
-                    <a href="https://github.com/IllyaStarikov/.dotfiles/blob/main/src/$relative_path" 
+                    <a href="https://github.com/IllyaStarikov/.dotfiles/blob/main/src/$relative_path"
                        class="btn" target="_blank">🔗 GitHub</a>
                     <a href="./" class="btn">📁 Directory</a>
                 </div>
@@ -946,7 +946,7 @@ generate_file_viewer() {
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-$language.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
@@ -958,11 +958,11 @@ EOF
 
 # Generate tree view
 generate_tree_view() {
-    local output_file="$OUTPUT_DIR/tree.html"
-    
-    log "Generating tree view..."
-    
-    cat > "$output_file" << 'EOF'
+  local output_file="$OUTPUT_DIR/tree.html"
+
+  log "Generating tree view..."
+
+  cat >"$output_file" <<'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -979,69 +979,69 @@ generate_tree_view() {
                 <a href="/">~/.dotfiles</a> <span>/</span> <span>tree</span>
             </div>
         </header>
-        
+
         <div class="tree-view">
 EOF
-    
-    # Generate tree using tree command or custom implementation
-    if command -v tree &> /dev/null; then
-        cd "$SRC_DIR"
-        tree -H '.' -L 4 --charset utf-8 -I '.git|.DS_Store|*.pyc|__pycache__' \
-             -n --nolinks | sed 's/<[^>]*>//g' | \
-             sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' >> "$output_file"
-    else
-        # Fallback to find-based tree
-        echo "<pre>" >> "$output_file"
-        find "$SRC_DIR" -type d -name ".git" -prune -o -print | \
-            sed "s|$SRC_DIR||" | sort | \
-            awk '
+
+  # Generate tree using tree command or custom implementation
+  if command -v tree &>/dev/null; then
+    cd "$SRC_DIR"
+    tree -H '.' -L 4 --charset utf-8 -I '.git|.DS_Store|*.pyc|__pycache__' \
+      -n --nolinks | sed 's/<[^>]*>//g' \
+      | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' >>"$output_file"
+  else
+    # Fallback to find-based tree
+    echo "<pre>" >>"$output_file"
+    find "$SRC_DIR" -type d -name ".git" -prune -o -print \
+      | sed "s|$SRC_DIR||" | sort \
+      | awk '
                 BEGIN { depth = 0 }
                 {
                     path = $0
                     gsub(/[^\/]/, "", path)
                     new_depth = length(path)
-                    
+
                     if (new_depth > depth) {
                         for (i = depth; i < new_depth; i++) {
                             printf "│   "
                         }
                     }
-                    
+
                     name = $0
                     gsub(/.*\//, "", name)
                     if (name == "") name = "src"
-                    
+
                     printf "├── %s\n", name
                     depth = new_depth
                 }
-            ' >> "$output_file"
-        echo "</pre>" >> "$output_file"
-    fi
-    
-    cat >> "$output_file" << 'EOF'
+            ' >>"$output_file"
+    echo "</pre>" >>"$output_file"
+  fi
+
+  cat >>"$output_file" <<'EOF'
         </div>
     </div>
     <script src="/script.js"></script>
 </body>
 </html>
 EOF
-    
-    success "Generated tree view"
+
+  success "Generated tree view"
 }
 
 # Generate main index
 generate_main_index() {
-    local output_file="$OUTPUT_DIR/index.html"
-    
-    log "Generating main index..."
-    
-    # Count statistics
-    local total_files=$(find "$SRC_DIR" -type f | wc -l)
-    local total_dirs=$(find "$SRC_DIR" -type d | wc -l)
-    local total_size=$(du -sh "$SRC_DIR" 2>/dev/null | cut -f1)
-    local total_lines=$(find "$SRC_DIR" -type f -exec wc -l {} + 2>/dev/null | tail -1 | awk '{print $1}')
-    
-    cat > "$output_file" << EOF
+  local output_file="$OUTPUT_DIR/index.html"
+
+  log "Generating main index..."
+
+  # Count statistics
+  local total_files=$(find "$SRC_DIR" -type f | wc -l)
+  local total_dirs=$(find "$SRC_DIR" -type d | wc -l)
+  local total_size=$(du -sh "$SRC_DIR" 2>/dev/null | cut -f1)
+  local total_lines=$(find "$SRC_DIR" -type f -exec wc -l {} + 2>/dev/null | tail -1 | awk '{print $1}')
+
+  cat >"$output_file" <<EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1140,7 +1140,7 @@ generate_main_index() {
                 <a href="https://github.com/IllyaStarikov/.dotfiles" class="btn" target="_blank">🔗 GitHub</a>
             </div>
         </div>
-        
+
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="value">$total_files</div>
@@ -1159,7 +1159,7 @@ generate_main_index() {
                 <div class="label">Lines of Code</div>
             </div>
         </div>
-        
+
         <h2>Quick Access</h2>
         <div class="quick-links">
             <a href="/src/neovim/" class="quick-link">
@@ -1219,7 +1219,7 @@ generate_main_index() {
                 </div>
             </a>
         </div>
-        
+
         <h2>Recent Activity</h2>
         <table class="listing">
             <thead>
@@ -1231,53 +1231,53 @@ generate_main_index() {
             </thead>
             <tbody>
 EOF
-    
-    # Add 10 most recently modified files
-    find "$SRC_DIR" -type f -exec stat -f "%m %N" {} \; 2>/dev/null | \
-        sort -rn | head -10 | while read -r timestamp filepath; do
-        local name="${filepath#$SRC_DIR/}"
-        local size="$(get_size "$filepath")"
-        local mtime="$(get_mtime "$filepath")"
-        local href="/src/${name}.html"
-        
-        cat >> "$output_file" << EOF
+
+  # Add 10 most recently modified files
+  find "$SRC_DIR" -type f -exec stat -f "%m %N" {} \; 2>/dev/null \
+    | sort -rn | head -10 | while read -r timestamp filepath; do
+    local name="${filepath#$SRC_DIR/}"
+    local size="$(get_size "$filepath")"
+    local mtime="$(get_mtime "$filepath")"
+    local href="/src/${name}.html"
+
+    cat >>"$output_file" <<EOF
                 <tr>
                     <td class="name"><a href="$href">$name</a></td>
                     <td class="mtime">$mtime</td>
                     <td class="size">$size</td>
                 </tr>
 EOF
-    done
-    
-    cat >> "$output_file" << EOF
+  done
+
+  cat >>"$output_file" <<EOF
             </tbody>
         </table>
     </div>
-    
+
     <script src="/script.js"></script>
 </body>
 </html>
 EOF
-    
-    success "Generated main index"
+
+  success "Generated main index"
 }
 
 # Process directory recursively
 process_directory() {
-    local dir="$1"
-    
-    # Generate index for this directory
-    generate_directory_index "$dir"
-    
-    # Process files in this directory
-    for file in "$dir"/*; do
-        if [[ -f "$file" ]]; then
-            generate_file_viewer "$file"
-        elif [[ -d "$file" ]]; then
-            # Recursively process subdirectories
-            process_directory "$file"
-        fi
-    done
+  local dir="$1"
+
+  # Generate index for this directory
+  generate_directory_index "$dir"
+
+  # Process files in this directory
+  for file in "$dir"/*; do
+    if [[ -f "$file" ]]; then
+      generate_file_viewer "$file"
+    elif [[ -d "$file" ]]; then
+      # Recursively process subdirectories
+      process_directory "$file"
+    fi
+  done
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1285,45 +1285,45 @@ process_directory() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 main() {
-    log "Starting Dotfiles Perfect Mirror Generator"
-    log "Source: $SRC_DIR"
-    log "Output: $OUTPUT_DIR"
-    
-    # Initialize
-    init_output
-    
-    # Generate static assets
-    generate_css
-    generate_js
-    
-    # Generate main index
-    generate_main_index
-    
-    # Generate tree view
-    generate_tree_view
-    
-    # Process entire src directory
-    log "Processing directory structure..."
-    process_directory "$SRC_DIR"
-    
-    # Summary
-    local file_count=$(find "$OUTPUT_DIR" -name "*.html" | wc -l)
-    local total_size=$(du -sh "$OUTPUT_DIR" | cut -f1)
-    
-    echo ""
-    echo "═══════════════════════════════════════════════════════════════════"
-    success "Mirror generation complete!"
-    echo "  📁 Files generated: $file_count"
-    echo "  💾 Total size: $total_size"
-    echo "  📍 Output directory: $OUTPUT_DIR"
-    echo ""
-    echo "  To view locally:"
-    echo "    cd $OUTPUT_DIR && python3 -m http.server 8000"
-    echo "    Open: http://localhost:8000"
-    echo "═══════════════════════════════════════════════════════════════════"
+  log "Starting Dotfiles Perfect Mirror Generator"
+  log "Source: $SRC_DIR"
+  log "Output: $OUTPUT_DIR"
+
+  # Initialize
+  init_output
+
+  # Generate static assets
+  generate_css
+  generate_js
+
+  # Generate main index
+  generate_main_index
+
+  # Generate tree view
+  generate_tree_view
+
+  # Process entire src directory
+  log "Processing directory structure..."
+  process_directory "$SRC_DIR"
+
+  # Summary
+  local file_count=$(find "$OUTPUT_DIR" -name "*.html" | wc -l)
+  local total_size=$(du -sh "$OUTPUT_DIR" | cut -f1)
+
+  echo ""
+  echo "═══════════════════════════════════════════════════════════════════"
+  success "Mirror generation complete!"
+  echo "  📁 Files generated: $file_count"
+  echo "  💾 Total size: $total_size"
+  echo "  📍 Output directory: $OUTPUT_DIR"
+  echo ""
+  echo "  To view locally:"
+  echo "    cd $OUTPUT_DIR && python3 -m http.server 8000"
+  echo "    Open: http://localhost:8000"
+  echo "═══════════════════════════════════════════════════════════════════"
 }
 
 # Run if executed directly
 if [[ "${0:t}" == "mirror.sh" ]]; then
-    main "$@"
+  main "$@"
 fi

@@ -195,15 +195,15 @@ function M.setup()
         " Highlight TODO comments
         syntax match texTodo /TODO\|FIXME\|NOTE\|XXX/ containedin=texComment
         highlight link texTodo Todo
-        
+
         " Highlight custom commands
         syntax match texUserCommand /\\[a-zA-Z@]\+/ containedin=ALL
         highlight link texUserCommand Function
-        
+
         " Highlight equation labels
         syntax match texLabel /\\label{[^}]*}/ containedin=ALL
         highlight link texLabel Label
-        
+
         " Highlight references
         syntax match texRef /\\[a-zA-Z]*ref{[^}]*}/ containedin=ALL
         highlight link texRef PreProc

@@ -46,12 +46,7 @@ local function setup_dap_keybindings()
   end, { desc = "Evaluate Expression" })
 
   -- Breakpoint management
-  map(
-    "n",
-    "<leader>dbc",
-    dap.clear_breakpoints,
-    { desc = "Clear All Breakpoints" }
-  )
+  map("n", "<leader>dbc", dap.clear_breakpoints, { desc = "Clear All Breakpoints" })
   map("n", "<leader>dbl", dap.list_breakpoints, { desc = "List Breakpoints" })
 
   -- Run configurations
@@ -75,18 +70,8 @@ local function setup_dap_keybindings()
   -- DAP widgets (if available)
   local ok_widgets, widgets = pcall(require, "dap.ui.widgets")
   if ok_widgets then
-    map(
-      "n",
-      "<leader>de",
-      widgets.hover,
-      { desc = "Evaluate Expression Under Cursor" }
-    )
-    map(
-      "v",
-      "<leader>de",
-      widgets.hover,
-      { desc = "Evaluate Selected Expression" }
-    )
+    map("n", "<leader>de", widgets.hover, { desc = "Evaluate Expression Under Cursor" })
+    map("v", "<leader>de", widgets.hover, { desc = "Evaluate Selected Expression" })
     map("n", "<leader>dS", function()
       local sidebar = widgets.sidebar(widgets.scopes)
       sidebar.open()
