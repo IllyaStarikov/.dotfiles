@@ -1,4 +1,4 @@
-name: Tests
+name: tests
 
 on:
   push:
@@ -19,7 +19,7 @@ env:
 
 jobs:
   unit-tests:
-    name: 🧪 Unit Tests (${{ matrix.os }})
+    name: unit tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -31,12 +31,12 @@ jobs:
         # keep-sorted end
 
     steps:
-      - name: 📥 Checkout Code
+      - name: checkout code
         uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: 🗄️ Cache Dependencies
+      - name: cache dependencies
         uses: actions/cache@v3
         with:
           path: |
@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.os }}-test-
 
-      - name: 🔧 Setup Environment
+      - name: setup environment
         run: |
           echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
           mkdir -p "/tmp/dotfiles-test"
@@ -64,7 +64,7 @@ jobs:
             sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git
           fi
 
-      - name: 🌙 Setup Neovim
+      - name: setup neovim
         run: |
           mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
           ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
@@ -77,12 +77,12 @@ jobs:
               ~/.local/share/nvim/lazy/lazy.nvim
           fi
 
-      - name: ✅ Run Unit Tests
+      - name: run unit tests
         run: |
           chmod +x test/runner.zsh
           cd test && ./runner.zsh --unit
 
-      - name: 📊 Upload Test Results
+      - name: upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -93,7 +93,7 @@ jobs:
           retention-days: 7
 
   functional-tests:
-    name: 🔄 Functional Tests (${{ matrix.os }})
+    name: functional tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     needs: unit-tests
@@ -106,12 +106,12 @@ jobs:
         # keep-sorted end
 
     steps:
-      - name: 📥 Checkout Code
+      - name: checkout code
         uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: 🔧 Setup Environment
+      - name: setup environment
         run: |
           echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
           mkdir -p "/tmp/dotfiles-test"
@@ -126,7 +126,7 @@ jobs:
             sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
           fi
 
-      - name: 🌙 Setup Neovim
+      - name: setup neovim
         run: |
           mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
           ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
@@ -136,12 +136,12 @@ jobs:
             https://github.com/folke/lazy.nvim.git \
             ~/.local/share/nvim/lazy/lazy.nvim || true
 
-      - name: 🔄 Run Functional Tests
+      - name: run functional tests
         run: |
           chmod +x test/runner.zsh
           cd test && ./runner.zsh --functional
 
-      - name: 📊 Upload Test Results
+      - name: upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -152,7 +152,7 @@ jobs:
           retention-days: 7
 
   integration-tests:
-    name: 🔗 Integration Tests (${{ matrix.os }})
+    name: integration tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     needs: functional-tests
@@ -163,18 +163,18 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - name: 📥 Checkout Code
+      - name: checkout code
         uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: 🏗️ Create Test Environment
+      - name: create test environment
         run: |
           export TEST_HOME="/tmp/test-home"
           mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
           echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
 
-      - name: 🔗 Test Symlink Creation
+      - name: test symlink creation
         run: |
           export HOME="$TEST_HOME"
           export DOTFILES_DIR="${{ github.workspace }}"
@@ -183,35 +183,35 @@ jobs:
           bash src/setup/symlinks.sh
 
           # Verify critical symlinks
-          test -L "$HOME/.zshrc" && echo "✅ .zshrc symlink created" || echo "❌ .zshrc symlink missing"
-          test -L "$HOME/.gitconfig" && echo "✅ .gitconfig symlink created" || echo "❌ .gitconfig symlink missing"
-          test -L "$HOME/.tmux.conf" && echo "✅ .tmux.conf symlink created" || echo "❌ .tmux.conf symlink missing"
+          test -L "$HOME/.zshrc" && echo ".zshrc symlink created" || echo "ERROR: .zshrc symlink missing"
+          test -L "$HOME/.gitconfig" && echo ".gitconfig symlink created" || echo "ERROR: .gitconfig symlink missing"
+          test -L "$HOME/.tmux.conf" && echo ".tmux.conf symlink created" || echo "ERROR: .tmux.conf symlink missing"
 
-      - name: 🎨 Test Theme Switcher
+      - name: test theme switcher
         run: |
           mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
-          bash src/theme-switcher/switch-theme.sh || echo "⚠️ Theme switcher test failed"
-          test -f ~/.config/theme-switcher/current-theme.sh || echo "❌ Theme file not created"
+          bash src/theme-switcher/switch-theme.sh || echo "WARNING: Theme switcher test failed"
+          test -f ~/.config/theme-switcher/current-theme.sh || echo "ERROR: Theme file not created"
 
-      - name: 🔍 Validate Configurations
+      - name: validate configurations
         run: |
           # Validate shell configs
-          zsh -n src/zsh/zshrc || echo "⚠️ Zsh config validation failed"
+          zsh -n src/zsh/zshrc || echo "WARNING: Zsh config validation failed"
 
           # Validate git config
-          git config --file=src/git/gitconfig --list > /dev/null || echo "⚠️ Git config validation failed"
+          git config --file=src/git/gitconfig --list > /dev/null || echo "WARNING: Git config validation failed"
 
           # Check for hardcoded paths
-          ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "⚠️ Hardcoded paths found"
+          ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "WARNING: Hardcoded paths found"
 
   test-status:
-    name: ✅ Test Status
+    name: test status summary
     if: always()
     needs: [unit-tests, functional-tests, integration-tests]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Test Results
+      - name: check test results
         run: |
           echo "Unit Tests: ${{ needs.unit-tests.result }}"
           echo "Functional Tests: ${{ needs.functional-tests.result }}"
@@ -220,8 +220,8 @@ jobs:
           if [[ "${{ needs.unit-tests.result }}" == "failure" ]] || \
              [[ "${{ needs.functional-tests.result }}" == "failure" ]] || \
              [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
-            echo "❌ Tests failed"
+            echo "Tests failed"
             exit 1
           fi
 
-          echo "✅ All tests passed"
+          echo "All tests passed"
