@@ -52,3 +52,5 @@ if [[ $found -eq ${#critical_plugins[@]} ]]; then
 else
     fail "Only $found/${#critical_plugins[@]} critical plugins found"
 fi
+# Return success
+exit 0

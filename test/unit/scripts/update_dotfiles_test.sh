@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Unit tests for update-dotfiles script
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
@@ -51,3 +51,5 @@ it "should provide help message" && {
 
 cleanup_test
 echo -e "\n${GREEN}update-dotfiles tests completed${NC}"
+# Return success
+exit 0

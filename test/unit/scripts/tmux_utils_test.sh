@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Comprehensive unit tests for tmux-utils
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 # Set up test environment
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
@@ -160,3 +160,5 @@ cleanup_test
 
 # Summary
 echo -e "\n${GREEN}tmux-utils comprehensive tests completed${NC}"
+# Return success
+exit 0

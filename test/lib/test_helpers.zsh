@@ -83,7 +83,8 @@ unmock_command() {
 cleanup_test() {
     # Remove any test artifacts
     if [[ -n "${TEST_TMP_DIR:-}" ]] && [[ -d "$TEST_TMP_DIR" ]]; then
-        rm -rf "$TEST_TMP_DIR"/* 2>/dev/null || true
+        # Use find to avoid glob errors
+        find "$TEST_TMP_DIR" -mindepth 1 -delete 2>/dev/null || true
     fi
 }
 
@@ -186,7 +187,7 @@ assert_contains() {
     if [[ "$haystack" == *"$needle"* ]]; then
         return 0
     else
-        fail "String does not contain: $needle"
+        fail "String does not contain expected text"
         return 1
     fi
 }
@@ -450,11 +451,74 @@ nvim_key_mapped() {
     "
 }
 
+# Test if a Neovim plugin is loaded
+test_plugin_loaded() {
+    local plugin=$1
+    local module=${2:-$1}
+
+    local result=$(nvim --headless -c "lua local ok = pcall(require, '$module'); print(ok and '✓' or '✗'); vim.cmd('qa!')" 2>&1 | grep -E '✓|✗' | head -1)
+
+    if [[ "$result" == "✓" ]]; then
+        echo "  ✓ $plugin loaded"
+        return 0
+    else
+        echo "  ✗ $plugin not found"
+        return 1
+    fi
+}
+
+# Test if a Neovim command exists
+test_command_exists() {
+    local cmd=$1
+    local result=$(nvim --headless -c "lua print(vim.fn.exists(':$cmd') > 0 and 'exists' or 'missing')" -c "qa!" 2>&1 | grep -E 'exists|missing' | head -1)
+
+    if [[ "$result" == "exists" ]]; then
+        echo "  ✓ $cmd command available"
+        return 0
+    else
+        echo "  ✗ $cmd command not found"
+        return 1
+    fi
+}
+
+# Test suite declaration for compatibility
+test_suite() {
+    describe "$1"
+}
+
+# Neovim test helper with expected output
+nvim_test() {
+    local test_name=$1
+    local lua_code=$2
+    local expected=${3:-}
+
+    local output=$(nvim --headless -c "lua $lua_code" -c "qa!" 2>&1)
+
+    if [[ -n "$expected" ]]; then
+        if [[ "$output" == *"$expected"* ]]; then
+            pass
+            return 0
+        else
+            fail "Expected: $expected, Got: $output"
+            return 1
+        fi
+    else
+        # Just check for no errors
+        if [[ "$output" == *"Error"* ]] || [[ "$output" == *"error"* ]]; then
+            fail "Neovim error: $output"
+            return 1
+        else
+            pass
+            return 0
+        fi
+    fi
+}
+
 # Create a test file with content
 create_test_file() {
     local filename=$1
     local content=$2
-    
+
     cat > "$TEST_TMP_DIR/$filename" << EOF
 $content
 EOF

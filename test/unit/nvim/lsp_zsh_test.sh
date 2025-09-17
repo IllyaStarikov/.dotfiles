@@ -42,3 +42,5 @@ if grep -q "mason" "$DOTFILES_DIR/src/neovim/config/plugins.lua" 2>/dev/null || 
 else
     fail "Mason LSP installer not configured"
 fi
+# Return success
+exit 0

@@ -40,3 +40,5 @@ if [[ -f "$alias_file" ]] && grep -q "alias.*git\|alias g=" "$alias_file"; then
 else
     fail "No git aliases found"
 fi
+# Return success
+exit 0

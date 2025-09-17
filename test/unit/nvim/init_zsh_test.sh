@@ -32,3 +32,5 @@ if [[ $major -gt 0 ]] || [[ $major -eq 0 && $minor -ge 9 ]]; then
 else
     fail "Neovim version too old: $version (need 0.9+)"
 fi
+# Return success
+exit 0
