@@ -52,8 +52,8 @@ fi
 # Test: Zsh vi mode works
 test_case "Zsh vi mode keybindings work"
 # Source zshrc and check if vi mode is enabled
-output=$(zsh -c "source $DOTFILES_DIR/src/zsh/zshrc 2>/dev/null; bindkey | grep -E 'vi-' | wc -l" 2>&1)
-if [[ "$output" -gt 0 ]]; then
+output=$(zsh -c "source $DOTFILES_DIR/src/zsh/zshrc 2>/dev/null; bindkey | grep -E 'vi-' | wc -l" 2>&1 | tr -d '[:space:]')
+if [[ -n "$output" ]] && [[ "$output" -gt 0 ]] 2>/dev/null; then
   pass "Vi mode bindings configured"
 else
   skip "Vi mode not enabled"

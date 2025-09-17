@@ -1,0 +1,115 @@
+# ════════════════════════════════════════════════════════════════════════════════
+# Ubuntu E2E Test Environment
+# ════════════════════════════════════════════════════════════════════════════════
+
+ARG UBUNTU_VERSION=22.04
+FROM ubuntu:${UBUNTU_VERSION}
+
+# Environment setup
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8 \
+    TZ=UTC
+
+# Install system dependencies required for setup script
+RUN apt-get update && apt-get install -y \
+    # Essential tools
+    curl \
+    wget \
+    git \
+    sudo \
+    # Build tools
+    build-essential \
+    cmake \
+    pkg-config \
+    autoconf \
+    automake \
+    libtool \
+    # Development tools
+    python3 \
+    python3-pip \
+    python3-venv \
+    nodejs \
+    npm \
+    # Shell and terminal
+    zsh \
+    tmux \
+    # System utilities
+    locales \
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    # Libraries for Neovim
+    gettext \
+    libtool-bin \
+    unzip \
+    # Additional tools
+    ripgrep \
+    fd-find \
+    fzf \
+    bat \
+    jq \
+    tree \
+    htop \
+    && rm -rf /var/lib/apt/lists/*
+
+# Generate locale
+RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
+
+# Install latest Neovim (required for plugins)
+RUN add-apt-repository ppa:neovim-ppa/unstable -y && \
+    apt-get update && \
+    apt-get install -y neovim && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install language servers for testing
+RUN pip3 install --no-cache-dir \
+    pynvim \
+    neovim \
+    pyright \
+    ruff \
+    black \
+    isort \
+    yapf
+
+# Install Node.js packages
+RUN npm install -g \
+    typescript \
+    typescript-language-server \
+    prettier \
+    eslint \
+    @fsouza/prettierd
+
+# Create test user with sudo privileges
+RUN useradd -m -s /bin/zsh testuser && \
+    usermod -aG sudo testuser && \
+    echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    mkdir -p /home/testuser/.local/share && \
+    mkdir -p /home/testuser/.cache && \
+    mkdir -p /home/testuser/.config && \
+    chown -R testuser:testuser /home/testuser
+
+# Switch to test user
+USER testuser
+WORKDIR /home/testuser
+
+# Pre-create directories that setup will need
+RUN mkdir -p \
+    ~/.local/bin \
+    ~/.local/share/nvim \
+    ~/.config/nvim \
+    ~/.cache/nvim \
+    ~/.local/state/nvim
+
+# Set PATH
+ENV PATH="/home/testuser/.local/bin:/home/testuser/bin:${PATH}"
+
+# Copy test runner script
+COPY --chown=testuser:testuser test/e2e/run_e2e_test.sh /home/testuser/run_e2e_test.sh
+RUN chmod +x /home/testuser/run_e2e_test.sh
+
+# Default command
+CMD ["/bin/bash", "-c", "/home/testuser/run_e2e_test.sh"]
