@@ -192,11 +192,13 @@ run_docker_test() {
 
   log INFO "Running tests in container..."
 
-  # Run the test script in the container
-  docker run --name "$container_name" \
+  # Run the test script in the container with timeout
+  timeout 300 docker run --name "$container_name" \
     --rm \
+    -e NONINTERACTIVE=1 \
+    -e CI=true \
     "dotfiles-test:latest" \
-    -c "cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && zsh test/e2e/docker-e2e-test.zsh" \
+    -c "cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && timeout 240 zsh test/e2e/docker-e2e-test.zsh" \
     >> "$log_file" 2>&1
 
   local result=$?
