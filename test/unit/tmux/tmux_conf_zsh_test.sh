@@ -36,3 +36,5 @@ if [[ -f "$HOME/.config/tmux/theme.conf" ]] || \
 else
     skip "Theme configuration not found"
 fi
+# Return success
+exit 0

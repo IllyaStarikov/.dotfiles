@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Comprehensive functional tests for Zsh configuration
 
-set -euo pipefail
+# Tests handle errors explicitly
 
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"

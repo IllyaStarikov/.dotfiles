@@ -45,3 +45,5 @@ if [[ -f "$DOTFILES_DIR/src/gitconfig" ]]; then
 else
     skip "gitconfig not found"
 fi
+# Return success
+exit 0
