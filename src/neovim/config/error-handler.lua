@@ -142,7 +142,7 @@ function M.init()
   M.setup_error_handler()
 
   -- Add command to view error log
-  vim.api.nvim_create_user_command("ErrorLog", function()
+  compat.create_user_command("ErrorLog", function()
     local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
     if vim.fn.filereadable(error_file) == 1 then
       vim.cmd("split " .. error_file)
