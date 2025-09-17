@@ -59,32 +59,12 @@ map("n", "<leader>fc", telescope_builtin("commands"), { desc = "Commands" })
 map("n", "<leader>fk", telescope_builtin("keymaps"), { desc = "Keymaps" })
 
 -- Advanced pickers
-map(
-  "n",
-  "<leader>f/",
-  telescope_builtin("grep_string"),
-  { desc = "Grep Word Under Cursor" }
-)
-map(
-  "n",
-  "<leader>f:",
-  telescope_builtin("command_history"),
-  { desc = "Command History" }
-)
-map(
-  "n",
-  "<leader>f;",
-  telescope_builtin("resume"),
-  { desc = "Resume Last Picker" }
-)
+map("n", "<leader>f/", telescope_builtin("grep_string"), { desc = "Grep Word Under Cursor" })
+map("n", "<leader>f:", telescope_builtin("command_history"), { desc = "Command History" })
+map("n", "<leader>f;", telescope_builtin("resume"), { desc = "Resume Last Picker" })
 map("n", "<leader>fj", telescope_builtin("jumplist"), { desc = "Jumps" })
 map("n", "<leader>fm", telescope_builtin("marks"), { desc = "Marks" })
-map(
-  "n",
-  "<leader>fq",
-  telescope_builtin("quickfix"),
-  { desc = "Quickfix List" }
-)
+map("n", "<leader>fq", telescope_builtin("quickfix"), { desc = "Quickfix List" })
 map("n", "<leader>fl", telescope_builtin("loclist"), { desc = "Location List" })
 
 -- Specialized pickers
@@ -104,42 +84,19 @@ map(
 -- Git pickers
 map("n", "<leader>gf", telescope_builtin("git_files"), { desc = "Git Files" })
 map("n", "<leader>gs", telescope_builtin("git_status"), { desc = "Git Status" })
-map(
-  "n",
-  "<leader>gc",
-  telescope_builtin("git_commits"),
-  { desc = "Git Commits" }
-)
-map(
-  "n",
-  "<leader>gC",
-  telescope_builtin("git_bcommits"),
-  { desc = "Buffer Git Commits" }
-)
+map("n", "<leader>gc", telescope_builtin("git_commits"), { desc = "Git Commits" })
+map("n", "<leader>gC", telescope_builtin("git_bcommits"), { desc = "Buffer Git Commits" })
 
 -- Visual mode search
 map("v", "<leader>fg", function()
-  local selection = vim.fn.getregion(
-    vim.fn.getpos("'<"),
-    vim.fn.getpos("'>"),
-    { type = vim.fn.mode() }
-  )
+  local selection =
+    vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
   telescope_builtin("grep_string")({ search = table.concat(selection, "\n") })
 end, { desc = "Grep Selection" })
 
 -- LSP Symbol search
-map(
-  "n",
-  "<leader>fs",
-  telescope_builtin("lsp_document_symbols"),
-  { desc = "Document Symbols" }
-)
-map(
-  "n",
-  "<leader>fS",
-  telescope_builtin("lsp_workspace_symbols"),
-  { desc = "Workspace Symbols" }
-)
+map("n", "<leader>fs", telescope_builtin("lsp_document_symbols"), { desc = "Document Symbols" })
+map("n", "<leader>fS", telescope_builtin("lsp_workspace_symbols"), { desc = "Workspace Symbols" })
 map(
   "n",
   "<leader>fws",
@@ -180,12 +137,7 @@ map(
   telescope_builtin("symbols", { sources = { "math", "latex" } }),
   { desc = "Insert Math Symbol" }
 )
-map(
-  "n",
-  "<leader>si",
-  telescope_builtin("symbols"),
-  { desc = "Insert Symbol (All)" }
-)
+map("n", "<leader>si", telescope_builtin("symbols"), { desc = "Insert Symbol (All)" })
 map(
   "n",
   "<leader>sk",
@@ -208,42 +160,17 @@ map("n", "<leader>g", telescope_builtin("live_grep"), { desc = "Live Grep" })
 -- AERIAL.NVIM (Symbol Outline)
 -- ============================================================================
 -- Toggle symbol outline
-map(
-  "n",
-  "<leader>a",
-  "<cmd>AerialToggle<CR>",
-  { desc = "Toggle Symbol Outline" }
-)
-map(
-  "n",
-  "<leader>A",
-  "<cmd>AerialNavToggle<CR>",
-  { desc = "Toggle Symbol Navigator" }
-)
+map("n", "<leader>a", "<cmd>AerialToggle<CR>", { desc = "Toggle Symbol Outline" })
+map("n", "<leader>A", "<cmd>AerialNavToggle<CR>", { desc = "Toggle Symbol Navigator" })
 
 -- Navigation
 map("n", "<leader>an", "<cmd>AerialNext<CR>", { desc = "Next Symbol" })
 map("n", "<leader>ap", "<cmd>AerialPrev<CR>", { desc = "Previous Symbol" })
-map(
-  "n",
-  "<leader>aN",
-  "<cmd>AerialNextUp<CR>",
-  { desc = "Next Symbol (Parent Level)" }
-)
-map(
-  "n",
-  "<leader>aP",
-  "<cmd>AerialPrevUp<CR>",
-  { desc = "Previous Symbol (Parent Level)" }
-)
+map("n", "<leader>aN", "<cmd>AerialNextUp<CR>", { desc = "Next Symbol (Parent Level)" })
+map("n", "<leader>aP", "<cmd>AerialPrevUp<CR>", { desc = "Previous Symbol (Parent Level)" })
 
 -- Go to symbol
-map(
-  "n",
-  "<leader>ag",
-  "<cmd>AerialGo<CR>",
-  { desc = "Go to Symbol (Interactive)" }
-)
+map("n", "<leader>ag", "<cmd>AerialGo<CR>", { desc = "Go to Symbol (Interactive)" })
 
 -- Telescope integration for Aerial
 map("n", "<leader>fa", function()
@@ -288,10 +215,7 @@ map("n", "<leader>e", function()
       snacks.explorer()
     end)
     if not status then
-      vim.notify(
-        "Snacks explorer error: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Snacks explorer error: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
     vim.notify("Snacks not loaded", vim.log.levels.ERROR)
@@ -496,38 +420,13 @@ end, { desc = "Toggle Diagnostics" })
 -- CODECOMPANION
 -- ============================================================================
 -- Chat and interaction
-map(
-  "n",
-  "<leader>cc",
-  "<cmd>CodeCompanionChat<cr>",
-  { desc = "CodeCompanion Chat" }
-)
-map(
-  "v",
-  "<leader>cc",
-  "<cmd>CodeCompanionChat<cr>",
-  { desc = "CodeCompanion Chat with selection" }
-)
-map(
-  "n",
-  "<leader>ca",
-  "<cmd>CodeCompanionActions<cr>",
-  { desc = "CodeCompanion Action Palette" }
-)
-map(
-  "v",
-  "<leader>ca",
-  "<cmd>CodeCompanionActions<cr>",
-  { desc = "CodeCompanion Action Palette" }
-)
+map("n", "<leader>cc", "<cmd>CodeCompanionChat<cr>", { desc = "CodeCompanion Chat" })
+map("v", "<leader>cc", "<cmd>CodeCompanionChat<cr>", { desc = "CodeCompanion Chat with selection" })
+map("n", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { desc = "CodeCompanion Action Palette" })
+map("v", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { desc = "CodeCompanion Action Palette" })
 
 -- Inline assistance
-map(
-  "n",
-  "<leader>ci",
-  "<cmd>CodeCompanionInline<cr>",
-  { desc = "CodeCompanion Inline" }
-)
+map("n", "<leader>ci", "<cmd>CodeCompanionInline<cr>", { desc = "CodeCompanion Inline" })
 map(
   "v",
   "<leader>ci",
@@ -545,85 +444,54 @@ local function codecompanion_action(action_text)
   end
 end
 
-map(
-  "v",
-  "<leader>cr",
-  codecompanion_action("Code Review"),
-  { desc = "Code Review" }
-)
-map(
-  "v",
-  "<leader>co",
-  codecompanion_action("Optimize Code"),
-  { desc = "Optimize Code" }
-)
-map(
-  "v",
-  "<leader>cm",
-  codecompanion_action("Add Comments"),
-  { desc = "Add Comments" }
-)
-map(
-  "v",
-  "<leader>ct",
-  codecompanion_action("Generate Tests"),
-  { desc = "Generate Tests" }
-)
-map(
-  "v",
-  "<leader>ce",
-  codecompanion_action("Explain Code"),
-  { desc = "Explain Code" }
-)
+map("v", "<leader>cr", codecompanion_action("Code Review"), { desc = "Code Review" })
+map("v", "<leader>co", codecompanion_action("Optimize Code"), { desc = "Optimize Code" })
+map("v", "<leader>cm", codecompanion_action("Add Comments"), { desc = "Add Comments" })
+map("v", "<leader>ct", codecompanion_action("Generate Tests"), { desc = "Generate Tests" })
+map("v", "<leader>ce", codecompanion_action("Explain Code"), { desc = "Explain Code" })
 map("v", "<leader>cf", codecompanion_action("Fix Bug"), { desc = "Fix Bug" })
 
 -- Chat management
-map(
-  "n",
-  "<leader>cl",
-  "<cmd>CodeCompanionChat Toggle<cr>",
-  { desc = "Toggle CodeCompanion Chat" }
-)
-map(
-  "n",
-  "<leader>cs",
-  "<cmd>CodeCompanionChat Stop<cr>",
-  { desc = "Stop CodeCompanion" }
-)
-map(
-  "n",
-  "<leader>cn",
-  "<cmd>CodeCompanionChat New<cr>",
-  { desc = "New CodeCompanion Chat" }
-)
+map("n", "<leader>cl", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Toggle CodeCompanion Chat" })
+map("n", "<leader>cs", "<cmd>CodeCompanionChat Stop<cr>", { desc = "Stop CodeCompanion" })
+map("n", "<leader>cn", "<cmd>CodeCompanionChat New<cr>", { desc = "New CodeCompanion Chat" })
 
 -- Model and adapter switching
 local ai_config = require("config.plugins.ai")
 
 -- Quick model size switching
-map("n", "<leader>c1", function() ai_config.use_small_model() end, { desc = "Use Small Model (1-3B)" })
-map("n", "<leader>c2", function() ai_config.use_medium_model() end, { desc = "Use Medium Model (7B)" })
-map("n", "<leader>c3", function() ai_config.use_large_model() end, { desc = "Use Large Model (32B/70B)" })
+map("n", "<leader>c1", function()
+  ai_config.use_small_model()
+end, { desc = "Use Small Model (1-3B)" })
+map("n", "<leader>c2", function()
+  ai_config.use_medium_model()
+end, { desc = "Use Medium Model (7B)" })
+map("n", "<leader>c3", function()
+  ai_config.use_large_model()
+end, { desc = "Use Large Model (32B/70B)" })
 
 -- List available models
-map("n", "<leader>c?", function() ai_config.list_models() end, { desc = "List Available Models" })
+map("n", "<leader>c?", function()
+  ai_config.list_models()
+end, { desc = "List Available Models" })
 
 -- macOS: Switch between MLX and Ollama
-if vim.fn.has('mac') == 1 then
-  map("n", "<leader>cam", function() ai_config.use_mlx() end, { desc = "Switch to MLX (macOS)" })
-  map("n", "<leader>cao", function() ai_config.use_ollama() end, { desc = "Switch to Ollama" })
-  map("n", "<leader>cax", function() ai_config.start_mlx_server() end, { desc = "Start MLX Server" })
+if vim.fn.has("mac") == 1 then
+  map("n", "<leader>cam", function()
+    ai_config.use_mlx()
+  end, { desc = "Switch to MLX (macOS)" })
+  map("n", "<leader>cao", function()
+    ai_config.use_ollama()
+  end, { desc = "Switch to Ollama" })
+  map("n", "<leader>cax", function()
+    ai_config.start_mlx_server()
+  end, { desc = "Start MLX Server" })
 end
 
 -- ============================================================================
 -- OIL.NVIM
 -- ============================================================================
-map(
-  "n",
-  "<leader>N",
-  safe_require("oil", "open"),
-  { desc = "Oil File Explorer" }
-)
+map("n", "<leader>N", safe_require("oil", "open"), { desc = "Oil File Explorer" })
 
 -- ============================================================================
 -- VIMTEX (LaTeX)

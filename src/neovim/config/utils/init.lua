@@ -51,8 +51,7 @@ end
 function M.setup_plugin(plugin_name, config)
   local plugin, ok = M.safe_require(plugin_name)
   if ok and plugin.setup then
-    local setup_ok =
-      M.protected_call(plugin.setup, plugin_name .. ".setup", config)
+    local setup_ok = M.protected_call(plugin.setup, plugin_name .. ".setup", config)
     if setup_ok then
       return plugin, true
     end

@@ -66,9 +66,7 @@ local function load_work_vimrc(profile)
 
     -- Security check: ensure the file is within the work config directory
     if not vim.startswith(resolved_path, expected_base) then
-      error(
-        "Security violation: Attempted to load file outside work config directory"
-      )
+      error("Security violation: Attempted to load file outside work config directory")
     end
 
     if vim.fn.filereadable(path) == 1 then
@@ -82,10 +80,7 @@ local function load_work_vimrc(profile)
   if type(profile) == "string" then
     -- Simple string profile - load from profile directory
     -- Try work_nvim.lua first (preferred naming)
-    local work_nvim_path = WORK_CONFIG_PATH
-      .. "/"
-      .. profile
-      .. "/work_nvim.lua"
+    local work_nvim_path = WORK_CONFIG_PATH .. "/" .. profile .. "/work_nvim.lua"
     if vim.fn.filereadable(work_nvim_path) == 1 then
       local ok, work_config = pcall(dofile, work_nvim_path)
       if ok and work_config and work_config.setup then
@@ -135,10 +130,7 @@ function M.apply_overrides()
   -- Load work-specific configurations with error handling
   local ok, err = pcall(load_work_vimrc, profile)
   if not ok then
-    vim.notify(
-      "Failed to load work profile: " .. tostring(err),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Failed to load work profile: " .. tostring(err), vim.log.levels.ERROR)
     return
   end
 
@@ -183,10 +175,7 @@ function M.reload()
   M.apply_overrides()
 
   if M.is_work_env() then
-    vim.notify(
-      "Work configuration reloaded: " .. vim.g.work_profile,
-      vim.log.levels.INFO
-    )
+    vim.notify("Work configuration reloaded: " .. vim.g.work_profile, vim.log.levels.INFO)
   else
     vim.notify("No work profile detected for this machine", vim.log.levels.WARN)
   end

@@ -3,11 +3,13 @@
 Ensures dotfiles remain fast with regression testing and benchmarks.
 
 ## Test Files
+
 - `benchmarks.zsh` - Core metrics
 - `comprehensive_performance_test.sh` - Full suite
 - `performance_test.sh` - Quick checks
 
 ## Performance Standards
+
 - **Neovim startup**: < 300ms
 - **Zsh init**: < 500ms
 - **Theme switch**: < 500ms
@@ -15,6 +17,7 @@ Ensures dotfiles remain fast with regression testing and benchmarks.
 - **Memory**: < 200MB
 
 ## Running Tests
+
 ```bash
 ./test/test --performance          # Quick performance check
 ./test/performance/comprehensive_performance_test.sh  # Full benchmarks
@@ -24,6 +27,7 @@ Ensures dotfiles remain fast with regression testing and benchmarks.
 ## Key Metrics
 
 ### Neovim Startup (280ms on M1)
+
 ```
 Base Neovim:        20ms
 Core config:        30ms
@@ -36,6 +40,7 @@ Autocommands:       20ms
 ```
 
 ### Optimizations Applied
+
 - **Lazy loading**: Saved 500ms (was 900ms)
 - **Provider disable**: Saved 70ms
 - **Async clipboard**: Saved 30ms
@@ -44,6 +49,7 @@ Autocommands:       20ms
 ## Testing Best Practices
 
 ### Accurate Measurements
+
 ```bash
 # Warm up caches first
 nvim --headless -c "qa!"
@@ -52,9 +58,11 @@ nvim --startuptime log.txt -c "qa!"
 ```
 
 ### Multiple Iterations
+
 Run 5-10 times and use median, not average (outliers skew results).
 
 ### Power State Matters
+
 Tests on battery power are throttled - plug in for consistent results.
 
 ## Common Issues
@@ -66,6 +74,7 @@ Tests on battery power are throttled - plug in for consistent results.
 **Background processes**: Close other apps for accurate results.
 
 ## Regression Prevention
+
 - Baseline recorded in CI
 - 10% degradation triggers alert
 - Performance tracked over time

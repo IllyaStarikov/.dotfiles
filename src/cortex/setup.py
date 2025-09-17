@@ -3,12 +3,15 @@ Cortex - Unified AI Model Management System
 Setup configuration for the Cortex package
 """
 
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages
+from setuptools import setup
 
 # Read the README file
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
+
 
 # Read requirements
 def read_requirements(filename):
@@ -18,6 +21,7 @@ def read_requirements(filename):
         with open(req_path, "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip() and not line.startswith("#")]
     return []
+
 
 setup(
     name="cortex-ai",
@@ -73,14 +77,10 @@ setup(
             "mypy>=1.0.0",
             "pre-commit>=3.0.0",
         ],
-        "mlx": [
-            "mlx-lm>=0.16.0",
-        ],
+        "mlx": ["mlx-lm>=0.16.0",],
     },
     entry_points={
-        "console_scripts": [
-            "cortex=cortex.cli:main",
-        ],
+        "console_scripts": ["cortex=cortex.cli:main",],
     },
     include_package_data=True,
     zip_safe=False,

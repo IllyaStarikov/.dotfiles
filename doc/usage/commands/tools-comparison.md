@@ -44,63 +44,64 @@ real    0m0.038s
 
 ### File Viewers
 
-| Feature | cat | bat |
-|---------|-----|-----|
-| Syntax highlighting | ❌ | ✅ |
-| Line numbers | ❌ | ✅ |
-| Git integration | ❌ | ✅ |
-| Paging | ❌ | ✅ |
-| Binary detection | ❌ | ✅ |
-| Theme support | ❌ | ✅ |
+| Feature             | cat | bat |
+| ------------------- | --- | --- |
+| Syntax highlighting | ❌  | ✅  |
+| Line numbers        | ❌  | ✅  |
+| Git integration     | ❌  | ✅  |
+| Paging              | ❌  | ✅  |
+| Binary detection    | ❌  | ✅  |
+| Theme support       | ❌  | ✅  |
 
 ### Search Tools
 
-| Feature | grep | ripgrep | ag |
-|---------|------|---------|-----|
-| Speed | Slow | Fastest | Fast |
-| .gitignore respect | ❌ | ✅ | ✅ |
-| Parallel search | ❌ | ✅ | ✅ |
-| Unicode support | Limited | ✅ | ✅ |
-| Binary file handling | Basic | Smart | Smart |
-| Memory usage | Low | Medium | High |
+| Feature              | grep    | ripgrep | ag    |
+| -------------------- | ------- | ------- | ----- |
+| Speed                | Slow    | Fastest | Fast  |
+| .gitignore respect   | ❌      | ✅      | ✅    |
+| Parallel search      | ❌      | ✅      | ✅    |
+| Unicode support      | Limited | ✅      | ✅    |
+| Binary file handling | Basic   | Smart   | Smart |
+| Memory usage         | Low     | Medium  | High  |
 
 ### File Finders
 
-| Feature | find | fd |
-|---------|------|-----|
-| Syntax complexity | High | Low |
-| Speed | Slow | Fast |
-| .gitignore respect | ❌ | ✅ |
-| Regex support | ✅ | ✅ |
-| Parallel execution | ❌ | ✅ |
-| Color output | ❌ | ✅ |
+| Feature            | find | fd   |
+| ------------------ | ---- | ---- |
+| Syntax complexity  | High | Low  |
+| Speed              | Slow | Fast |
+| .gitignore respect | ❌   | ✅   |
+| Regex support      | ✅   | ✅   |
+| Parallel execution | ❌   | ✅   |
+| Color output       | ❌   | ✅   |
 
 ### Process Viewers
 
-| Feature | ps | top | htop | procs |
-|---------|----|----|------|-------|
-| Tree view | ❌ | ❌ | ✅ | ✅ |
-| Color output | ❌ | ❌ | ✅ | ✅ |
-| Mouse support | ❌ | ❌ | ✅ | ❌ |
-| Customizable | ❌ | Limited | ✅ | ✅ |
-| Resource usage | Minimal | Low | Low | Low |
+| Feature        | ps      | top     | htop | procs |
+| -------------- | ------- | ------- | ---- | ----- |
+| Tree view      | ❌      | ❌      | ✅   | ✅    |
+| Color output   | ❌      | ❌      | ✅   | ✅    |
+| Mouse support  | ❌      | ❌      | ✅   | ❌    |
+| Customizable   | ❌      | Limited | ✅   | ✅    |
+| Resource usage | Minimal | Low     | Low  | Low   |
 
 ### HTTP Clients
 
-| Feature | curl | wget | xh | httpie |
-|---------|------|------|-----|---------|
-| Syntax simplicity | Low | Medium | High | High |
-| JSON support | Manual | ❌ | ✅ | ✅ |
-| Color output | ❌ | ❌ | ✅ | ✅ |
-| Form handling | Complex | Basic | Easy | Easy |
-| Speed | Fast | Fast | Fast | Slow |
-| Binary size | Small | Small | Small | Large |
+| Feature           | curl    | wget   | xh    | httpie |
+| ----------------- | ------- | ------ | ----- | ------ |
+| Syntax simplicity | Low     | Medium | High  | High   |
+| JSON support      | Manual  | ❌     | ✅    | ✅     |
+| Color output      | ❌      | ❌     | ✅    | ✅     |
+| Form handling     | Complex | Basic  | Easy  | Easy   |
+| Speed             | Fast    | Fast   | Fast  | Slow   |
+| Binary size       | Small   | Small  | Small | Large  |
 
 ## Use Case Recommendations
 
 ### When to Use Traditional Tools
 
 **Use traditional tools when:**
+
 - Working on minimal/embedded systems
 - Scripts need maximum portability
 - System has limited resources
@@ -109,6 +110,7 @@ real    0m0.038s
 ### When to Use Modern Tools
 
 **Use modern tools when:**
+
 - Speed is important
 - Better UX improves productivity
 - Working with git repositories
@@ -172,6 +174,7 @@ command ls   # Alternative syntax
 ## Quick Decision Guide
 
 **Choose modern tools if you want:**
+
 - 🚀 Speed (10-100x improvements)
 - 🎨 Better output (colors, formatting)
 - 🧠 Smarter defaults (.gitignore awareness)
@@ -179,6 +182,7 @@ command ls   # Alternative syntax
 - 🔧 Modern features (parallel processing)
 
 **Stick with traditional if you need:**
+
 - 📦 Zero dependencies
 - 🔒 POSIX compliance
 - 🏢 Corporate approval

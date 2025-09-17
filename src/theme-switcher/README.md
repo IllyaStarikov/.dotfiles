@@ -3,15 +3,18 @@
 Synchronized theme switching across all terminal applications with macOS appearance integration.
 
 ## Features
+
 - **Unified switching** - Change all apps with one command
 - **macOS integration** - Auto-syncs with system dark/light mode
 - **Atomic operations** - Crash-proof with file locking
 - **4 TokyoNight variants** - Day (light), Night, Moon, Storm (dark)
 
 ## Supported Applications
+
 Alacritty, WezTerm, Kitty, tmux, Starship, Neovim, bat, delta
 
 ## Quick Start
+
 ```bash
 theme           # Auto-detect from macOS
 theme day       # Light theme
@@ -21,6 +24,7 @@ theme storm     # Balanced dark (default)
 ```
 
 ## Files
+
 ```
 switch-theme.sh         # Main switching script
 validate-themes.sh      # Theme validator
@@ -32,6 +36,7 @@ themes/
 ```
 
 ## Generated Configs
+
 - `~/.config/alacritty/theme.toml`
 - `~/.config/wezterm/theme.lua`
 - `~/.config/kitty/theme.conf`
@@ -42,6 +47,7 @@ themes/
 ## Integration
 
 ### Shell
+
 ```bash
 # Environment variables available after switching
 source ~/.config/theme-switcher/current-theme.sh
@@ -50,6 +56,7 @@ source ~/.config/theme-switcher/current-theme.sh
 ```
 
 ### Applications
+
 ```toml
 # Alacritty: ~/.config/alacritty/alacritty.toml
 import = ["~/.config/alacritty/theme.toml"]
@@ -66,12 +73,14 @@ vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 ```
 
 ## Custom Themes
+
 1. Create `themes/custom_theme/` directory
 2. Add config files for each application
 3. Validate: `./validate-themes.sh custom_theme`
 4. Apply: `theme custom_theme`
 
 ## Performance
+
 - **< 500ms** switching time
 - Cached theme files
 - Background tmux reloading
@@ -88,6 +97,7 @@ vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 **Debug mode**: `THEME_DEBUG=1 theme storm`
 
 ## Lessons Learned
+
 - File locking prevents race conditions during concurrent switches
 - tmux needs `source-file` not just reload for theme changes
 - Atomic moves prevent partial theme application

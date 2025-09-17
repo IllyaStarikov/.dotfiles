@@ -8,18 +8,18 @@
 #
 # USAGE:
 #   source "${SCRIPT_DIR}/common.sh"
-#   
+#
 #   # OS detection
 #   if is_macos; then
 #     brew install package
 #   elif is_linux; then
 #     apt install package
 #   fi
-#   
+#
 #   # Colored output
 #   print_color green "✓ Success"
 #   print_color red "✗ Failed"
-#   
+#
 #   # Platform-specific commands
 #   platform_command "brew install git" "apt install git"
 #
@@ -46,7 +46,7 @@ set -euo pipefail
 # Example: os="$(detect_os)"; echo "Running on $os"
 detect_os() {
   local os="unknown"
-  
+
   case "${OSTYPE:-}" in
     darwin*)
       os="macos"
@@ -68,7 +68,7 @@ detect_os() {
       esac
       ;;
   esac
-  
+
   echo "${os}"
 }
 
@@ -103,9 +103,9 @@ platform_command() {
   local linux_cmd="${2:-}"
   local fallback_cmd="${3:-true}"
   local os
-  
+
   os="$(detect_os)"
-  
+
   case "${os}" in
     macos)
       if [[ -n "${macos_cmd}" ]]; then
@@ -156,7 +156,7 @@ get_memory_mb() {
 # Example: open_in_default "https://github.com" || open_in_default "README.md"
 open_in_default() {
   local target="${1:?Error: target required}"
-  
+
   platform_command \
     "open '${target}'" \
     "xdg-open '${target}' 2>/dev/null || sensible-browser '${target}' 2>/dev/null"
@@ -229,10 +229,10 @@ install_package() {
   local package="${1:?Error: package name required}"
   local brew_name="${2:-${package}}"
   local apt_name="${3:-${package}}"
-  
+
   local pm
   pm="$(detect_package_manager)"
-  
+
   case "${pm}" in
     brew)
       brew install "${brew_name}"
@@ -240,7 +240,7 @@ install_package() {
     apt)
       sudo apt-get update && sudo apt-get install -y "${apt_name}"
       ;;
-    dnf|yum)
+    dnf | yum)
       sudo "${pm}" install -y "${package}"
       ;;
     pacman)
@@ -271,7 +271,7 @@ install_package() {
 # Example: real="$(realpath_portable ~/.vimrc)"; echo "Actual location: $real"
 realpath_portable() {
   local path="${1:?Error: path required}"
-  
+
   if has_command realpath; then
     realpath "${path}"
   elif has_command readlink; then
@@ -316,7 +316,7 @@ create_temp_dir() {
 # Example: if is_process_running "tmux"; then echo "tmux is running"; fi
 is_process_running() {
   local process="${1:?Error: process name required}"
-  
+
   platform_command \
     "pgrep -x '${process}' &>/dev/null" \
     "pgrep -x '${process}' &>/dev/null"
@@ -331,7 +331,7 @@ is_process_running() {
 kill_process() {
   local process="${1:?Error: process name required}"
   local signal="${2:--TERM}"
-  
+
   platform_command \
     "pkill ${signal} -x '${process}'" \
     "pkill ${signal} -x '${process}'"
@@ -346,20 +346,20 @@ kill_process() {
 # Example: shell="$(get_user_shell)"; echo "Using $shell"
 get_user_shell() {
   local shell
-  
+
   # Try environment variable first
   shell="${SHELL:-}"
-  
+
   if [[ -z "${shell}" ]]; then
     # Fallback to passwd entry
     shell="$(getent passwd "${USER}" 2>/dev/null | cut -d: -f7 || true)"
   fi
-  
+
   if [[ -z "${shell}" ]]; then
     # Final fallback
     shell="/bin/bash"
   fi
-  
+
   echo "${shell}"
 }
 
@@ -379,7 +379,7 @@ get_home_dir() {
 # Example: if supports_colors; then echo -e "\033[32mGreen\033[0m"; fi
 supports_colors() {
   local term="${TERM:-}"
-  
+
   # Check various indicators of color support
   if [[ -t 1 ]] && [[ -n "${term}" ]] && [[ "${term}" != "dumb" ]]; then
     # Check if terminal advertises color support
@@ -398,23 +398,23 @@ supports_colors() {
 print_color() {
   local color="${1:?Error: color required}"
   local message="${2:?Error: message required}"
-  
+
   if ! supports_colors; then
     echo "${message}"
     return
   fi
-  
+
   local color_code
   case "${color}" in
-    red)     color_code="31" ;;
-    green)   color_code="32" ;;
-    yellow)  color_code="33" ;;
-    blue)    color_code="34" ;;
+    red) color_code="31" ;;
+    green) color_code="32" ;;
+    yellow) color_code="33" ;;
+    blue) color_code="34" ;;
     magenta) color_code="35" ;;
-    cyan)    color_code="36" ;;
-    *)       color_code="0" ;;
+    cyan) color_code="36" ;;
+    *) color_code="0" ;;
   esac
-  
+
   echo -e "\033[0;${color_code}m${message}\033[0m"
 }
 

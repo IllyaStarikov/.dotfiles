@@ -1,26 +1,25 @@
 # Ruff configuration file
 # https://docs.astral.sh/ruff/configuration/
 
-line-length = 100  # Default: 88
+line-length = 100 # Default: 88
 
 # Format configuration
 [format]
-quote-style = "single"  # Default: "double"
+quote-style = "single" # Default: "double"
 
 # Lint configuration
 [lint]
 # keep-sorted start
-select = [
-    "E",  # pycodestyle errors
-    "F",  # pyflakes
-    "I",  # isort
-    "W",  # pycodestyle warnings
 ]
+select = [
+  "E", # pycodestyle errors
+  "F", # pyflakes
+  "I", # isort
+  "W", # pycodestyle warnings
 # keep-sorted end
 
 
-
-target-version = "py39"  # Default: "py38"
+target-version = "py39" # Default: "py38"
 
 [lint.isort]
 profile = "google"

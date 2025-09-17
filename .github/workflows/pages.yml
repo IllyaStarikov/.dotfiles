@@ -23,32 +23,32 @@ jobs:
     name: 📄 Build & Deploy Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
-      
+
       - name: 🏗️ Generate Site Content
         run: |
           echo "::group::Creating site structure"
-          
+
           # Create output directory
           mkdir -p _site
-          
+
           # Copy template files (HTML versions of configs)
           if [[ -d template ]]; then
             cp -r template/* _site/
           fi
-          
+
           # Copy documentation
           if [[ -d docs ]]; then
             mkdir -p _site/docs
             cp -r docs/* _site/docs/
           fi
-          
+
           # Generate mirror of source files if mirror.sh exists
           if [[ -f template/mirror.sh ]]; then
             echo "Running mirror.sh to generate file listings..."
@@ -58,12 +58,12 @@ jobs:
               cp -r template/mirror _site/
             fi
           fi
-          
+
           # Copy README as index if no index.html exists
           if [[ ! -f _site/index.html ]] && [[ -f README.md ]]; then
             cp README.md _site/
           fi
-          
+
           # Create 404 page
           cat > _site/404.html << 'EOF'
           <!DOCTYPE html>
@@ -72,7 +72,7 @@ jobs:
               <meta charset="UTF-8">
               <title>404 - Page Not Found</title>
               <style>
-                  body { 
+                  body {
                       font-family: monospace;
                       display: flex;
                       justify-content: center;
@@ -97,22 +97,22 @@ jobs:
           </body>
           </html>
           EOF
-          
+
           # Create .nojekyll file to prevent Jekyll processing
           touch _site/.nojekyll
-          
+
           # List generated files
           echo "Generated site structure:"
           ls -la _site/
-          
+
           echo "::endgroup::"
-      
+
       - name: 🚀 Deploy to GitHub Pages
         run: |
           # Configure git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Check if gh-pages branch exists
           if git ls-remote --exit-code --heads origin gh-pages; then
             echo "gh-pages branch exists, fetching..."
@@ -125,19 +125,19 @@ jobs:
             git push origin gh-pages
             git checkout main
           fi
-          
+
           # Clone just the gh-pages branch into a temp directory
           cd /tmp
           git clone --single-branch --branch gh-pages "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
           cd gh-pages
-          
+
           # Remove old files
           git rm -rf . || true
-          
+
           # Copy new files
           cp -r "${{ github.workspace }}/_site/"* .
           cp "${{ github.workspace }}/_site/.nojekyll" . 2>/dev/null || true
-          
+
           # Commit and push if there are changes
           git add -A
           if git diff --staged --quiet; then

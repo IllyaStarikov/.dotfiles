@@ -79,18 +79,18 @@ mods = "Command"
 # mods = "Command"
 
 [[keyboard.bindings]]
-chars = "\u0001n"  # Ctrl-A n (next tmux window)
+chars = "\u0001n"      # Ctrl-A n (next tmux window)
 key = "]"
 mods = "Command|Shift"
 
 [[keyboard.bindings]]
-chars = "\u0001p"  # Ctrl-A p (previous tmux window)
+chars = "\u0001p"      # Ctrl-A p (previous tmux window)
 key = "["
 mods = "Command|Shift"
 
 # Clear terminal (Cmd+K)
 [[keyboard.bindings]]
-chars = "\u000c"  # Ctrl-L
+chars = "\u000c" # Ctrl-L
 key = "K"
 mods = "Command"
 
@@ -100,9 +100,9 @@ mods = "Command"
 
 [bell]
 animation = "EaseOutExpo"
-color = "0x88c0d0"  # Nord-inspired blue
-duration = 100      # Brief visual feedback
-command = "None"    # No audio bell for productivity
+color = "0x88c0d0"        # Nord-inspired blue
+duration = 100            # Brief visual feedback
+command = "None"          # No audio bell for productivity
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # ⚙️ GENERAL CONFIGURATION
@@ -117,15 +117,15 @@ import = ["~/.config/alacritty/theme.toml"]
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [colors]
-draw_bold_text_with_bright_colors = true  # Default: false (better visibility)
-transparent_background_colors = true       # Default: false (transparency support)
+draw_bold_text_with_bright_colors = true # Default: false (better visibility)
+transparent_background_colors = true     # Default: false (transparency support)
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🌍 ENVIRONMENT VARIABLES
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [env]
-TERM = "alacritty"  # Use alacritty terminfo for better compatibility
+TERM = "alacritty"      # Use alacritty terminfo for better compatibility
 COLORTERM = "truecolor"
 # Ensure UTF-8 locale for proper symbol rendering
 LANG = "en_US.UTF-8"
@@ -137,7 +137,7 @@ LC_CTYPE = "en_US.UTF-8"
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [scrolling]
-history = 50000      # Default: 10000 (more history for debugging)
+history = 50000 # Default: 10000 (more history for debugging)
 # multiplier removed - default 3 is already optimal
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ history = 50000      # Default: 10000 (more history for debugging)
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [selection]
-save_to_clipboard = true  # Default: false (auto-copy is useful)
+save_to_clipboard = true # Default: false (auto-copy is useful)
 # semantic_escape_chars default is already optimal
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -157,19 +157,19 @@ save_to_clipboard = true  # Default: false (auto-copy is useful)
 # dynamic_title true is default
 # opacity 1.0 is default
 # startup_mode "Windowed" is default
-resize_increments = true    # Default: false (resize by character grid)
-option_as_alt = "Both"      # Default: "None" (proper Alt key on macOS)
+resize_increments = true # Default: false (resize by character grid)
+option_as_alt = "Both"   # Default: "None" (proper Alt key on macOS)
 
 # macOS specific window options
 # decorations_theme_variant "None" is default
 
 [window.dimensions]
-columns = 120  # Default: 80 (wider window)
-lines = 40     # Default: 24 (taller window)
+columns = 120 # Default: 80 (wider window)
+lines = 40    # Default: 24 (taller window)
 
 [window.padding]
-x = 8  # Default: 0 (breathing room)
-y = 8  # Default: 0 (breathing room)
+x = 8 # Default: 0 (breathing room)
+y = 8 # Default: 0 (breathing room)
 
 # window.position removed - let window manager decide
 
@@ -178,14 +178,13 @@ y = 8  # Default: 0 (breathing room)
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [font]
-size = 18.0  # More reasonable default font size
+size = 18.0 # More reasonable default font size
 # Enable built-in font fallbacks for better symbol support
-builtin_box_drawing = true   # Enable for better box drawing character rendering
+builtin_box_drawing = true # Enable for better box drawing character rendering
 
 # Enable ligatures for JetBrainsMono
 # IMPORTANT: Use "JetBrainsMono Nerd Font" (NOT "Mono" variant) for ligatures!
 # The "Mono" variant specifically disables ligatures
-
 
 
 [font.normal]
@@ -194,20 +193,20 @@ family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"  # Ligatures work here too
+family = "JetBrainsMono Nerd Font" # Ligatures work here too
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"  # Ligatures work here too
+family = "JetBrainsMono Nerd Font" # Ligatures work here too
 style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"  # Ligatures work here too
+family = "JetBrainsMono Nerd Font" # Ligatures work here too
 style = "Bold Italic"
 
 # Font rendering optimizations
 [font.offset]
-y = 1  # Only non-default value
+y = 1 # Only non-default value
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 # 🖱️ MOUSE CONFIGURATION
@@ -251,7 +250,7 @@ blink_timeout = 15
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 [debug]
-log_level = "Warn"  # Only non-default setting
+log_level = "Warn" # Only non-default setting
 # ref_test = false  # Removed - not a valid config option
 
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────

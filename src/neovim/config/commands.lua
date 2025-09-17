@@ -76,8 +76,7 @@ end, { desc = "Search word under cursor in project" })
 
 -- Search for visual selection in project
 api.nvim_create_user_command("SearchSelection", function()
-  local selection =
-    fn.getregion(fn.getpos("'<"), fn.getpos("'>"), { type = fn.mode() })
+  local selection = fn.getregion(fn.getpos("'<"), fn.getpos("'>"), { type = fn.mode() })
   local ok, builtin = pcall(require, "telescope.builtin")
   if ok then
     builtin.grep_string({ search = table.concat(selection, "\n") })
@@ -168,8 +167,7 @@ end, { desc = "Measure startup time" })
 
 -- Change to project root
 api.nvim_create_user_command("ProjectRoot", function()
-  local root_patterns =
-    { ".git", "package.json", "Makefile", "go.mod", "Cargo.toml" }
+  local root_patterns = { ".git", "package.json", "Makefile", "go.mod", "Cargo.toml" }
   local root = vim.fs.find(root_patterns, {
     upward = true,
     path = vim.fn.expand("%:p:h"),
@@ -279,9 +277,7 @@ api.nvim_create_user_command("ClipboardInfo", function()
   print("Has clipboard: " .. tostring(vim.fn.has("clipboard") == 1))
   print("Has unnamedplus: " .. tostring(vim.fn.has("unnamedplus") == 1))
   print("Clipboard global: " .. tostring(vim.g.clipboard))
-  print(
-    "Loaded clipboard provider: " .. tostring(vim.g.loaded_clipboard_provider)
-  )
+  print("Loaded clipboard provider: " .. tostring(vim.g.loaded_clipboard_provider))
 end, { desc = "Show clipboard configuration info" })
 
 -- Debug yank performance
@@ -326,36 +322,19 @@ api.nvim_create_user_command("RunFile", function()
     cmd = "bash " .. vim.fn.shellescape(filename)
   elseif ft == "c" then
     local output = vim.fn.tempname()
-    cmd = string.format(
-      "gcc %s -o %s && %s",
-      vim.fn.shellescape(filename),
-      output,
-      output
-    )
+    cmd = string.format("gcc %s -o %s && %s", vim.fn.shellescape(filename), output, output)
   elseif ft == "cpp" then
     local output = vim.fn.tempname()
-    cmd = string.format(
-      "g++ %s -o %s && %s",
-      vim.fn.shellescape(filename),
-      output,
-      output
-    )
+    cmd = string.format("g++ %s -o %s && %s", vim.fn.shellescape(filename), output, output)
   elseif ft == "rust" then
     cmd = "cargo run"
   elseif ft == "go" then
     cmd = "go run " .. vim.fn.shellescape(filename)
   elseif ft == "java" then
     local class_name = vim.fn.expand("%:t:r")
-    cmd = string.format(
-      "javac %s && java %s",
-      vim.fn.shellescape(filename),
-      class_name
-    )
+    cmd = string.format("javac %s && java %s", vim.fn.shellescape(filename), class_name)
   else
-    vim.notify(
-      "No run command configured for filetype: " .. ft,
-      vim.log.levels.WARN
-    )
+    vim.notify("No run command configured for filetype: " .. ft, vim.log.levels.WARN)
     return
   end
 
@@ -424,25 +403,25 @@ local function setup_ai_commands()
   if not ok then
     return
   end
-  
+
   -- Model size commands
   api.nvim_create_user_command("AISmall", function()
     ai_config.use_small_model()
   end, { desc = "Use small AI model (1-3B)" })
-  
+
   api.nvim_create_user_command("AIMedium", function()
     ai_config.use_medium_model()
   end, { desc = "Use medium AI model (7B)" })
-  
+
   api.nvim_create_user_command("AILarge", function()
     ai_config.use_large_model()
   end, { desc = "Use large AI model (32B/70B)" })
-  
+
   -- List models command
   api.nvim_create_user_command("AIModels", function()
     ai_config.list_models()
   end, { desc = "List available AI models" })
-  
+
   -- Custom model command with completion
   api.nvim_create_user_command("AIModel", function(opts)
     local model = opts.args
@@ -451,11 +430,11 @@ local function setup_ai_commands()
     else
       ai_config.list_models()
     end
-  end, { 
+  end, {
     nargs = "?",
     desc = "Switch to specific AI model",
     complete = function()
-      local is_macos = vim.fn.has('mac') == 1
+      local is_macos = vim.fn.has("mac") == 1
       if is_macos then
         return {
           -- MLX models (American companies)
@@ -496,30 +475,30 @@ local function setup_ai_commands()
           "starcoder2:3b",
         }
       end
-    end
+    end,
   })
-  
+
   -- macOS specific commands
-  if vim.fn.has('mac') == 1 then
+  if vim.fn.has("mac") == 1 then
     api.nvim_create_user_command("AIMLX", function()
       ai_config.use_mlx()
     end, { desc = "Switch to MLX adapter (macOS)" })
-    
+
     api.nvim_create_user_command("AIOllama", function()
       ai_config.use_ollama()
     end, { desc = "Switch to Ollama adapter" })
-    
+
     api.nvim_create_user_command("AIMLXStart", function()
       ai_config.start_mlx_server()
     end, { desc = "Start MLX server" })
   end
-  
+
   -- Quick info command
   api.nvim_create_user_command("AIInfo", function()
     local adapter = vim.g.codecompanion_adapter or "unknown"
     local model = vim.g.codecompanion_model or "unknown"
-    local is_macos = vim.fn.has('mac') == 1
-    
+    local is_macos = vim.fn.has("mac") == 1
+
     local info = {
       "CodeCompanion AI Configuration:",
       "================================",
@@ -534,13 +513,13 @@ local function setup_ai_commands()
       "  :AIModels   - List all available models",
       "  :AIModel <name> - Switch to specific model",
     }
-    
+
     if is_macos then
       table.insert(info, "  :AIMLX      - Use MLX (Apple Silicon optimized)")
       table.insert(info, "  :AIOllama   - Use Ollama")
       table.insert(info, "  :AIMLXStart - Start MLX server")
     end
-    
+
     table.insert(info, "")
     table.insert(info, "Keybindings:")
     table.insert(info, "  <leader>c1  - Small model")
@@ -549,7 +528,7 @@ local function setup_ai_commands()
     table.insert(info, "  <leader>c?  - List models")
     table.insert(info, "  <leader>cc  - Open chat")
     table.insert(info, "  <leader>ca  - Code actions (visual mode)")
-    
+
     vim.notify(table.concat(info, "\n"), vim.log.levels.INFO)
   end, { desc = "Show AI configuration info" })
 end

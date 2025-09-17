@@ -22,20 +22,20 @@ jobs:
     name: 🧪 Unit Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
-    
+
     strategy:
       fail-fast: false
       matrix:
         # keep-sorted start
         os: [macos-14, macos-latest, ubuntu-latest]
         # keep-sorted end
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🗄️ Cache Dependencies
         uses: actions/cache@v3
         with:
@@ -47,12 +47,12 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/config/plugins.lua') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.os }}-test-
-      
+
       - name: 🔧 Setup Environment
         run: |
           echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
           mkdir -p "/tmp/dotfiles-test"
-          
+
           # Install dependencies based on OS
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             # Install required tools
@@ -63,25 +63,25 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git
           fi
-      
+
       - name: 🌙 Setup Neovim
         run: |
           mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
           ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
           ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
-          
+
           # Install lazy.nvim only if not cached
           if [[ ! -d ~/.local/share/nvim/lazy/lazy.nvim ]]; then
             git clone --filter=blob:none --single-branch \
               https://github.com/folke/lazy.nvim.git \
               ~/.local/share/nvim/lazy/lazy.nvim
           fi
-      
+
       - name: ✅ Run Unit Tests
         run: |
           chmod +x test/test
           cd test && ./test --unit --ci -v
-      
+
       - name: 📊 Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -97,25 +97,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     needs: unit-tests
-    
+
     strategy:
       fail-fast: false
       matrix:
         # keep-sorted start
         os: [macos-14, macos-latest, ubuntu-latest]
         # keep-sorted end
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔧 Setup Environment
         run: |
           echo "TEST_TMP_DIR=/tmp/dotfiles-test" >> $GITHUB_ENV
           mkdir -p "/tmp/dotfiles-test"
-          
+
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             # Install required tools
             brew install bash coreutils findutils gnu-sed neovim
@@ -125,22 +125,22 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
           fi
-      
+
       - name: 🌙 Setup Neovim
         run: |
           mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
           ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
           ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
-          
+
           git clone --filter=blob:none --single-branch \
             https://github.com/folke/lazy.nvim.git \
             ~/.local/share/nvim/lazy/lazy.nvim || true
-      
+
       - name: 🔄 Run Functional Tests
         run: |
           chmod +x test/test
           cd test && ./test --functional --ci -v
-      
+
       - name: 📊 Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -156,51 +156,51 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     needs: functional-tests
-    
+
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🏗️ Create Test Environment
         run: |
           export TEST_HOME="/tmp/test-home"
           mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
           echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
-      
+
       - name: 🔗 Test Symlink Creation
         run: |
           export HOME="$TEST_HOME"
           export DOTFILES_DIR="${{ github.workspace }}"
-          
+
           # Test symlink creation
           bash src/setup/symlinks.sh
-          
+
           # Verify critical symlinks
           test -L "$HOME/.zshrc" && echo "✅ .zshrc symlink created" || echo "❌ .zshrc symlink missing"
           test -L "$HOME/.gitconfig" && echo "✅ .gitconfig symlink created" || echo "❌ .gitconfig symlink missing"
           test -L "$HOME/.tmux.conf" && echo "✅ .tmux.conf symlink created" || echo "❌ .tmux.conf symlink missing"
-      
+
       - name: 🎨 Test Theme Switcher
         run: |
           mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
           bash src/theme-switcher/switch-theme.sh || echo "⚠️ Theme switcher test failed"
           test -f ~/.config/theme-switcher/current-theme.sh || echo "❌ Theme file not created"
-      
+
       - name: 🔍 Validate Configurations
         run: |
           # Validate shell configs
           zsh -n src/zsh/zshrc || echo "⚠️ Zsh config validation failed"
-          
+
           # Validate git config
           git config --file=src/git/gitconfig --list > /dev/null || echo "⚠️ Git config validation failed"
-          
+
           # Check for hardcoded paths
           ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "⚠️ Hardcoded paths found"
 
@@ -209,19 +209,19 @@ jobs:
     if: always()
     needs: [unit-tests, functional-tests, integration-tests]
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check Test Results
         run: |
           echo "Unit Tests: ${{ needs.unit-tests.result }}"
           echo "Functional Tests: ${{ needs.functional-tests.result }}"
           echo "Integration Tests: ${{ needs.integration-tests.result }}"
-          
+
           if [[ "${{ needs.unit-tests.result }}" == "failure" ]] || \
              [[ "${{ needs.functional-tests.result }}" == "failure" ]] || \
              [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
             echo "❌ Tests failed"
             exit 1
           fi
-          
+
           echo "✅ All tests passed"

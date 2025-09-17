@@ -2,12 +2,14 @@
 Tests for anthropic.py provider module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock
 import os
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
 from cortex.providers.anthropic import AnthropicProvider
-from cortex.providers import ModelInfo, ModelCapability
 
 
 class TestAnthropicProvider(unittest.TestCase):

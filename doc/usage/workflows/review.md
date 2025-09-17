@@ -128,13 +128,15 @@ gh pr review 123 --comment \
 
 #### Review Comment Best Practices
 
-```markdown
+````markdown
 ## Effective Comment
 
 ```suggestion
 # More efficient approach
 users = User.objects.filter(active=True).select_related('profile')
 ```
+````
+
 This avoids N+1 queries by using `select_related`.
 
 ## Clear Feedback
@@ -142,6 +144,7 @@ This avoids N+1 queries by using `select_related`.
 **Issue**: This could cause a memory leak in production.
 
 **Suggestion**: Consider using a context manager:
+
 ```python
 with open(file_path) as f:
     data = f.read()
@@ -150,6 +153,7 @@ with open(file_path) as f:
 ## Actionable Request
 
 Could we add error handling here? For example:
+
 ```python
 try:
     result = external_api_call()
@@ -157,7 +161,8 @@ except RequestException as e:
     logger.error(f"API call failed: {e}")
     return None
 ```
-```
+
+````
 
 ### 8. Review Checklist
 
@@ -197,7 +202,7 @@ except RequestException as e:
 - [ ] Complex logic explained
 - [ ] API changes documented
 - [ ] README updated if needed
-```
+````
 
 ## As a PR Author
 
@@ -221,28 +226,34 @@ gh pr create \
 
 ```markdown
 ## Description
+
 Brief description of changes and why they're needed.
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Changes Made
+
 - Implemented OAuth2 authentication
 - Added user session management
 - Created auth middleware
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
 
 ## Screenshots
+
 [If applicable]
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -293,7 +304,7 @@ gh pr review 123 --comment \
   - Added error handling
   - Optimized queries
   - Improved test coverage
-  
+
   Please take another look."
 
 # Re-request review
@@ -308,13 +319,16 @@ gh pr ready 123
 
 ```markdown
 # Positive reinforcement
+
 "Great use of the strategy pattern here! 👍"
 
 # Constructive criticism
+
 "This works, but have you considered using a Set
 for O(1) lookups instead of Array.includes()?"
 
 # Blocking issue
+
 "🚨 This will break production - the API expects
 camelCase but we're sending snake_case."
 ```
@@ -323,13 +337,16 @@ camelCase but we're sending snake_case."
 
 ```markdown
 # Acknowledging feedback
+
 "Good catch! I've updated this in commit abc123"
 
 # Explaining decisions
+
 "I considered that approach but went with this because
 it maintains consistency with our existing patterns"
 
 # Asking for clarification
+
 "I'm not sure I understand - could you provide an
 example of what you mean?"
 ```

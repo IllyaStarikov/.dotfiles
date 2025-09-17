@@ -92,8 +92,7 @@ function M.format_buffer()
 
     -- Save and disable notifier config
     if snacks.config and snacks.config.notifier then
-      notification_state.snacks_state.notifier_enabled =
-        snacks.config.notifier.enabled
+      notification_state.snacks_state.notifier_enabled = snacks.config.notifier.enabled
       snacks.config.notifier.enabled = false
     end
 
@@ -105,8 +104,7 @@ function M.format_buffer()
 
     -- Save and disable notifier module
     if snacks.notifier and snacks.notifier.notify then
-      notification_state.snacks_state.notifier_notify_func =
-        snacks.notifier.notify
+      notification_state.snacks_state.notifier_notify_func = snacks.notifier.notify
       snacks.notifier.notify = function() end
     end
   end
@@ -136,20 +134,17 @@ function M.format_buffer()
   -- Set up a one-time autocmd to capture cursor position right before formatting applies
   local cursor_track_group =
     vim.api.nvim_create_augroup("FixyCursorTrack" .. bufnr, { clear = true })
-  vim.api.nvim_create_autocmd(
-    { "CursorMoved", "CursorMovedI", "TextChanged", "TextChangedI" },
-    {
-      group = cursor_track_group,
-      buffer = bufnr,
-      callback = function()
-        -- Update latest cursor position as user types/moves
-        if vim.api.nvim_get_current_buf() == bufnr then
-          latest_cursor = vim.api.nvim_win_get_cursor(0)
-          latest_view = vim.fn.winsaveview()
-        end
-      end,
-    }
-  )
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "TextChanged", "TextChangedI" }, {
+    group = cursor_track_group,
+    buffer = bufnr,
+    callback = function()
+      -- Update latest cursor position as user types/moves
+      if vim.api.nvim_get_current_buf() == bufnr then
+        latest_cursor = vim.api.nvim_win_get_cursor(0)
+        latest_view = vim.fn.winsaveview()
+      end
+    end,
+  })
 
   -- Function to restore notification state
   local function restore_notifications()
@@ -163,16 +158,11 @@ function M.format_buffer()
         if notification_state.snacks_state.notify_func then
           snacks.notify = notification_state.snacks_state.notify_func
         end
-        if
-          snacks.notifier
-          and notification_state.snacks_state.notifier_notify_func
-        then
-          snacks.notifier.notify =
-            notification_state.snacks_state.notifier_notify_func
+        if snacks.notifier and notification_state.snacks_state.notifier_notify_func then
+          snacks.notifier.notify = notification_state.snacks_state.notifier_notify_func
         end
         if snacks.config and snacks.config.notifier then
-          snacks.config.notifier.enabled =
-            notification_state.snacks_state.notifier_enabled
+          snacks.config.notifier.enabled = notification_state.snacks_state.notifier_enabled
         end
       end
     end
@@ -206,10 +196,7 @@ function M.format_buffer()
       cleanup_formatting_state()
       restore_notifications()
       if config.notify_on_error then
-        notification_state.original_notify(
-          "Fixy formatting timed out",
-          vim.log.levels.WARN
-        )
+        notification_state.original_notify("Fixy formatting timed out", vim.log.levels.WARN)
       end
     end
   end, config.timeout)
@@ -253,10 +240,7 @@ function M.format_buffer()
 
           if content_changed then
             -- Get the absolute latest cursor position right before we update
-            if
-              vim.api.nvim_win_is_valid(winnr)
-              and vim.api.nvim_get_current_buf() == bufnr
-            then
+            if vim.api.nvim_win_is_valid(winnr) and vim.api.nvim_get_current_buf() == bufnr then
               latest_cursor = vim.api.nvim_win_get_cursor(winnr)
               latest_view = vim.fn.winsaveview()
             end
@@ -291,10 +275,7 @@ function M.format_buffer()
             end)
 
             -- Restore cursor to the LATEST position
-            if
-              vim.api.nvim_win_is_valid(winnr)
-              and vim.api.nvim_win_get_buf(winnr) == bufnr
-            then
+            if vim.api.nvim_win_is_valid(winnr) and vim.api.nvim_win_get_buf(winnr) == bufnr then
               vim.api.nvim_win_call(winnr, function()
                 -- Ensure cursor line is within bounds after formatting
                 local line_count = vim.api.nvim_buf_line_count(bufnr)
@@ -316,10 +297,7 @@ function M.format_buffer()
 
           if config.notifications and content_changed then
             -- Use original_notify if we want to show success
-            notification_state.original_notify(
-              "Formatted with fixy",
-              vim.log.levels.INFO
-            )
+            notification_state.original_notify("Formatted with fixy", vim.log.levels.INFO)
           end
         else
           debug_log("Fixy formatting failed with exit code: " .. exit_code)
@@ -343,10 +321,7 @@ function M.format_buffer()
           local error_msg = table.concat(data, "\n")
           debug_log("Fixy stderr: " .. error_msg)
           if config.notify_on_error then
-            notification_state.original_notify(
-              "Fixy error: " .. error_msg,
-              vim.log.levels.ERROR
-            )
+            notification_state.original_notify("Fixy error: " .. error_msg, vim.log.levels.ERROR)
           end
         end)
       end
@@ -356,10 +331,7 @@ function M.format_buffer()
   if job_id <= 0 then
     debug_log("Failed to start fixy job")
     if config.notify_on_error then
-      notification_state.original_notify(
-        "Failed to start fixy",
-        vim.log.levels.ERROR
-      )
+      notification_state.original_notify("Failed to start fixy", vim.log.levels.ERROR)
     end
     -- Clear flags and restore notify if job failed to start
     cleanup_formatting_state()
@@ -416,9 +388,7 @@ function M.toggle_debug()
   config.debug = not config.debug
   local status = config.debug and "enabled" or "disabled"
   vim.notify(
-    "Fixy debug mode "
-      .. status
-      .. (config.debug and " (logs to /tmp/fixy.log)" or ""),
+    "Fixy debug mode " .. status .. (config.debug and " (logs to /tmp/fixy.log)" or ""),
     vim.log.levels.INFO
   )
 end
@@ -465,8 +435,7 @@ function M.setup(opts)
   end, { desc = "Toggle fixy debug mode" })
 
   -- Set up autocommand for format on save
-  local augroup =
-    vim.api.nvim_create_augroup("FixyAutoFormat", { clear = true })
+  local augroup = vim.api.nvim_create_augroup("FixyAutoFormat", { clear = true })
 
   vim.api.nvim_create_autocmd("BufWritePost", {
     group = augroup,
@@ -509,12 +478,7 @@ function M.setup(opts)
   })
 
   -- Optionally set up keybinding
-  vim.keymap.set(
-    "n",
-    "<leader>cf",
-    M.format_buffer,
-    { desc = "Format with fixy" }
-  )
+  vim.keymap.set("n", "<leader>cf", M.format_buffer, { desc = "Format with fixy" })
 end
 
 -- Auto-initialize on module load

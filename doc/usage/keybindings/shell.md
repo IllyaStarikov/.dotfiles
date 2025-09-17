@@ -13,142 +13,143 @@ Our shell uses vi-mode for powerful text editing right in the command line.
 
 ### Switching Modes
 
-| Key | Action | From Mode |
-|-----|--------|-----------|
-| `ESC` | Enter Normal mode | Insert |
-| `i` | Enter Insert mode | Normal |
-| `a` | Append mode | Normal |
-| `A` | Append at line end | Normal |
-| `I` | Insert at line start | Normal |
+| Key   | Action               | From Mode |
+| ----- | -------------------- | --------- |
+| `ESC` | Enter Normal mode    | Insert    |
+| `i`   | Enter Insert mode    | Normal    |
+| `a`   | Append mode          | Normal    |
+| `A`   | Append at line end   | Normal    |
+| `I`   | Insert at line start | Normal    |
 
 ## Normal Mode Commands
 
 ### Movement
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `h` | Move left | Character left |
-| `l` | Move right | Character right |
-| `w` | Next word | Word forward |
-| `b` | Previous word | Word backward |
-| `e` | Word end | End of word |
-| `0` | Line start | Beginning of line |
-| `$` | Line end | End of line |
-| `^` | First non-blank | First character |
+| Key | Action          | Description       |
+| --- | --------------- | ----------------- |
+| `h` | Move left       | Character left    |
+| `l` | Move right      | Character right   |
+| `w` | Next word       | Word forward      |
+| `b` | Previous word   | Word backward     |
+| `e` | Word end        | End of word       |
+| `0` | Line start      | Beginning of line |
+| `$` | Line end        | End of line       |
+| `^` | First non-blank | First character   |
 
 ### Editing
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `x` | Delete char | Delete under cursor |
-| `X` | Delete before | Delete before cursor |
-| `dd` | Delete line | Clear whole line |
-| `D` | Delete to end | Delete to line end |
-| `dw` | Delete word | Delete word forward |
+| Key  | Action           | Description          |
+| ---- | ---------------- | -------------------- |
+| `x`  | Delete char      | Delete under cursor  |
+| `X`  | Delete before    | Delete before cursor |
+| `dd` | Delete line      | Clear whole line     |
+| `D`  | Delete to end    | Delete to line end   |
+| `dw` | Delete word      | Delete word forward  |
 | `db` | Delete word back | Delete word backward |
-| `cc` | Change line | Replace whole line |
-| `C` | Change to end | Replace to line end |
-| `cw` | Change word | Replace word |
+| `cc` | Change line      | Replace whole line   |
+| `C`  | Change to end    | Replace to line end  |
+| `cw` | Change word      | Replace word         |
 
 ### Copy/Paste
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `yy` | Yank line | Copy entire line |
-| `yw` | Yank word | Copy word |
-| `p` | Paste after | Paste after cursor |
-| `P` | Paste before | Paste before cursor |
+| Key  | Action       | Description         |
+| ---- | ------------ | ------------------- |
+| `yy` | Yank line    | Copy entire line    |
+| `yw` | Yank word    | Copy word           |
+| `p`  | Paste after  | Paste after cursor  |
+| `P`  | Paste before | Paste before cursor |
 
 ### Undo/Redo
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `u` | Undo | Undo last change |
-| `C-r` | Redo | Redo undone change |
+| Key   | Action | Description        |
+| ----- | ------ | ------------------ |
+| `u`   | Undo   | Undo last change   |
+| `C-r` | Redo   | Redo undone change |
 
 ## Insert Mode Shortcuts
 
 ### Text Manipulation
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-w` | Delete word | Delete word backward |
+| Key   | Action          | Description             |
+| ----- | --------------- | ----------------------- |
+| `C-w` | Delete word     | Delete word backward    |
 | `C-u` | Delete to start | Clear to line beginning |
-| `C-k` | Delete to end | Clear to line end |
-| `C-a` | Move to start | Jump to line beginning |
-| `C-e` | Move to end | Jump to line end |
-| `C-f` | Move right | Forward one character |
-| `C-b` | Move left | Backward one character |
+| `C-k` | Delete to end   | Clear to line end       |
+| `C-a` | Move to start   | Jump to line beginning  |
+| `C-e` | Move to end     | Jump to line end        |
+| `C-f` | Move right      | Forward one character   |
+| `C-b` | Move left       | Backward one character  |
 
 ### History
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-r` | History search | Fuzzy search history |
-| `C-p` | Previous command | Up in history |
-| `C-n` | Next command | Down in history |
-| `↑` | Previous command | History up |
-| `↓` | Next command | History down |
+| Key   | Action           | Description          |
+| ----- | ---------------- | -------------------- |
+| `C-r` | History search   | Fuzzy search history |
+| `C-p` | Previous command | Up in history        |
+| `C-n` | Next command     | Down in history      |
+| `↑`   | Previous command | History up           |
+| `↓`   | Next command     | History down         |
 
 ### Completion
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `TAB` | Complete | Auto-completion |
-| `TAB TAB` | Show options | List all completions |
-| `C-i` | Complete (alt) | Same as TAB |
-| `C-d` | List choices | Show possibilities |
+| Key       | Action         | Description          |
+| --------- | -------------- | -------------------- |
+| `TAB`     | Complete       | Auto-completion      |
+| `TAB TAB` | Show options   | List all completions |
+| `C-i`     | Complete (alt) | Same as TAB          |
+| `C-d`     | List choices   | Show possibilities   |
 
 ## Special Features
 
 ### FZF Integration
 
-| Key | Action | Description |
-|-----|--------|-------------|
+| Key   | Action         | Description          |
+| ----- | -------------- | -------------------- |
 | `C-r` | History search | Fuzzy history search |
-| `C-t` | File picker | Insert file path |
-| `M-c` | CD widget | Change directory |
+| `C-t` | File picker    | Insert file path     |
+| `M-c` | CD widget      | Change directory     |
 
 ### Directory Navigation
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `M-.` | Last argument | Insert last arg from previous |
-| `M-h` | CD to parent | Go up one directory |
-| `M-l` | Accept suggestion | Complete autosuggest |
+| Key   | Action            | Description                   |
+| ----- | ----------------- | ----------------------------- |
+| `M-.` | Last argument     | Insert last arg from previous |
+| `M-h` | CD to parent      | Go up one directory           |
+| `M-l` | Accept suggestion | Complete autosuggest          |
 
 ## Custom Keybindings
 
 ### Quick Commands
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-g` | Git status | Show git status |
-| `C-x C-e` | Edit command | Open in editor |
+| Key       | Action       | Description     |
+| --------- | ------------ | --------------- |
+| `C-g`     | Git status   | Show git status |
+| `C-x C-e` | Edit command | Open in editor  |
 | `C-x C-r` | Reload shell | Source ~/.zshrc |
 
 ### Productivity
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-o` | Open file | Open with default app |
-| `C-z` | Toggle background | fg/bg last job |
-| `C-l` | Clear screen | Clear terminal |
+| Key   | Action            | Description           |
+| ----- | ----------------- | --------------------- |
+| `C-o` | Open file         | Open with default app |
+| `C-z` | Toggle background | fg/bg last job        |
+| `C-l` | Clear screen      | Clear terminal        |
 
 ## Plugin Shortcuts
 
 ### zsh-autosuggestions
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `→` | Accept suggestion | Complete the suggestion |
-| `M-f` | Accept word | Take one word |
-| `M-l` | Accept line | Take whole suggestion |
-| `C-g` | Clear suggestion | Dismiss suggestion |
+| Key   | Action            | Description             |
+| ----- | ----------------- | ----------------------- |
+| `→`   | Accept suggestion | Complete the suggestion |
+| `M-f` | Accept word       | Take one word           |
+| `M-l` | Accept line       | Take whole suggestion   |
+| `C-g` | Clear suggestion  | Dismiss suggestion      |
 
 ### zsh-syntax-highlighting
 
 Visual feedback only - no keybindings:
+
 - **Green**: Valid commands
 - **Red**: Invalid commands
 - **Yellow**: Strings
@@ -156,32 +157,32 @@ Visual feedback only - no keybindings:
 
 ### z (Directory Jumper)
 
-| Command | Action | Example |
-|---------|--------|---------|
-| `z pattern` | Jump to directory | `z proj` |
-| `z -l pattern` | List matches | `z -l doc` |
+| Command        | Action              | Example    |
+| -------------- | ------------------- | ---------- |
+| `z pattern`    | Jump to directory   | `z proj`   |
+| `z -l pattern` | List matches        | `z -l doc` |
 | `z -c pattern` | Restrict to subdirs | `z -c src` |
-| `z -e pattern` | Echo best match | `z -e dot` |
+| `z -e pattern` | Echo best match     | `z -e dot` |
 
 ## Terminal Control
 
 ### Job Control
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-c` | Interrupt | Kill current process |
-| `C-\` | Quit | Force quit (SIGQUIT) |
-| `C-s` | Stop output | Pause terminal output |
-| `C-q` | Resume output | Continue output |
-| `C-z` | Suspend | Background process |
-| `C-d` | EOF/Exit | Exit shell or send EOF |
+| Key   | Action        | Description            |
+| ----- | ------------- | ---------------------- |
+| `C-c` | Interrupt     | Kill current process   |
+| `C-\` | Quit          | Force quit (SIGQUIT)   |
+| `C-s` | Stop output   | Pause terminal output  |
+| `C-q` | Resume output | Continue output        |
+| `C-z` | Suspend       | Background process     |
+| `C-d` | EOF/Exit      | Exit shell or send EOF |
 
 ### Screen Control
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `C-l` | Clear | Clear screen |
-| `C-j` | New line | Enter/Return |
+| Key   | Action         | Description  |
+| ----- | -------------- | ------------ |
+| `C-l` | Clear          | Clear screen |
+| `C-j` | New line       | Enter/Return |
 | `C-m` | New line (alt) | Enter/Return |
 
 ## Quick Reference Card

@@ -28,6 +28,7 @@ lib_load_everything
 ### Core Libraries
 
 #### colors.zsh
+
 Terminal colors and styling with support for 16-color, 256-color, and true color.
 
 ```zsh
@@ -37,6 +38,7 @@ print_color "Success!" "GREEN" "BOLD"
 ```
 
 #### utils.zsh
+
 General utility functions for string manipulation, file operations, and system checks.
 
 ```zsh
@@ -47,6 +49,7 @@ is_macos && echo "Running on macOS"
 ```
 
 #### logging.zsh
+
 Structured logging with multiple levels and formatting.
 
 ```zsh
@@ -57,6 +60,7 @@ LOG DEBUG "Variable x = $x"
 ```
 
 #### die.zsh
+
 Error handling and graceful exit with cleanup hooks.
 
 ```zsh
@@ -69,6 +73,7 @@ die 1 "Fatal error occurred"
 ### Advanced Libraries
 
 #### callstack.zsh
+
 Stack traces, debugging utilities, and performance profiling.
 
 ```zsh
@@ -82,6 +87,7 @@ profile_report
 ```
 
 #### cli.zsh
+
 Command-line argument parsing with subcommands and automatic help generation.
 
 ```zsh
@@ -93,6 +99,7 @@ cli_parse_with_help "$@"
 ```
 
 #### unit.zsh
+
 Comprehensive unit testing framework with assertions and mocking.
 
 ```zsh
@@ -104,6 +111,7 @@ test_summary
 ```
 
 #### help.zsh
+
 Help text and man page generation utilities.
 
 ```zsh
@@ -115,6 +123,7 @@ help_display
 ```
 
 #### types.zsh
+
 Type checking and validation for safer scripting.
 
 ```zsh
@@ -128,6 +137,7 @@ assert_type "$var" "int"
 ### Utility Libraries
 
 #### ssh.zsh
+
 SSH connection and key management utilities.
 
 ```zsh
@@ -138,6 +148,7 @@ ssh_tunnel 8080 "internal.server" 80 "jump.host"
 ```
 
 #### math.zsh
+
 Advanced mathematical operations and calculations.
 
 ```zsh
@@ -149,6 +160,7 @@ stddev 1 2 3 4 5
 ```
 
 #### textwrap.zsh
+
 Text formatting, wrapping, and alignment utilities.
 
 ```zsh
@@ -161,6 +173,7 @@ text_box "Important message" 40 "double"
 ### Data Structure Libraries
 
 #### array.zsh
+
 Comprehensive array manipulation and operations.
 
 ```zsh
@@ -173,6 +186,7 @@ array_map arr result 'expr $1 \* 2'
 ```
 
 #### hash.zsh
+
 Hash/dictionary operations and manipulations.
 
 ```zsh
@@ -186,6 +200,7 @@ hash_merge hash1 hash2 result
 ### Data Format Libraries
 
 #### json.zsh
+
 JSON parsing and generation (uses jq if available).
 
 ```zsh
@@ -196,6 +211,7 @@ json_pretty "$json_data"
 ```
 
 #### yaml.zsh
+
 YAML parsing and generation (uses yq if available).
 
 ```zsh
@@ -369,6 +385,7 @@ Part of the dotfiles repository - see main LICENSE file.
 ## Contributing
 
 Contributions welcome! Please:
+
 1. Follow existing naming conventions
 2. Add tests for new functionality
 3. Update this README with examples

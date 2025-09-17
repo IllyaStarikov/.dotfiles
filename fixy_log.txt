@@ -1,0 +1,3040 @@
+
+━━━ Processing: ./.dotfiles.private/setup.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/init.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/test/machine_detection/work_env.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/api_keys.yaml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yaml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/spell/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/setup.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/aliases.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/keymaps.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/work_nvim.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/config/lsp/servers.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/config/lsp/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/config/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/buildifier-format.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/google/neovim/autocommand-fix.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/ai.yaml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yaml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/starikov_dot_co.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/dotfiles.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/beam_pair.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/dev.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/tmuxinator/beam.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/brew-packages-backup.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/check-machine.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/machine-detection.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/garmin/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/garmin/neovim/config/lsp/servers.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/garmin/neovim/config/lsp/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/garmin/neovim/config/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/garmin/neovim/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104655/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104831/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104638/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190737/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105231/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/summary.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191105/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104705/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_102859/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_102859/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_102859/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_190406/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/summary.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191054/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_103437/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_103822/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/summary.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_110006/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/summary.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105340/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/sanity/sanity_test.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/summary.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_191017/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104925/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_104518/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/metrics.json ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JSON (.json)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/security.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/machine_type.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/results.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105250/machine_fingerprint.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_102809/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/logs/omni_test_20250911_105151/test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/modules/test-neovim-exhaustive.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/modules/test-preflight-checks.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/modules/test-dotfiles-components.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/reports/omni_test_20250911_191105.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/reports/omni_test_20250911_191017.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/reports/omni_test_20250911_110006.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/reports/omni_test_20250911_191054.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/scripts/reports/omni_test_20250911_105340.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/work-aliases.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/lsp-override.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/setup-work-env.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.dotfiles.private/CLAUDE.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/compatibility/cross_platform.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/smoke/quick_check.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/smoke/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/smoke/README.md 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/smoke/critical_functionality_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/debug-20250914-211108.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/nvim-startup.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/debug-20250914-205108.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/debug-20250914-211613.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/debug-20250914-205538.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/artifacts/debug-20250914-211715.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/keybindings/keybinding_conflicts_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/nvim/plugins_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/nvim/lsp_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/nvim/plugin_loading_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/nvim/init_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/comprehensive_symlinks_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/comprehensive_setup_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/symlinks_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/zsh_compatibility_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/setup_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/setup/theme_switcher_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/core_validation.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/unit/README.md 40ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/theme/comprehensive_theme_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/comprehensive_scripts_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/update_dotfiles_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/theme_switcher_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/other_utils_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/tmux_utils_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/scripts/fixy_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/tmux/tmux_conf_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/zsh/aliases_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/zsh/zshrc_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/git/gitconfig_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/unit/git/git_scripts_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/security/vulnerability_scan.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/security/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/security/README.md 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/theme_switching_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/scripts_functionality.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/keybinding_conflicts.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/integration/README.md 18ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/setup_workflow_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/integration/dotfiles_sync_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/runner.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/installation/setup_scripts.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/README.md 23ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/sanity/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/sanity/README.md 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/sanity/basic_operations_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/sanity/basic_functionality.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/load/heavy_usage.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/acceptance/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/acceptance/README.md 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/examples/test_workflow_integration.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/examples/test_plugin_loading.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/examples/test_performance_benchmarks.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/examples/test_lsp_integration.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/lib/test_helpers.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/lib/framework.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/lib/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/lib/README.md 17ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/lib/simple_framework.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/fixtures/sample.md 45ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.ts ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: TypeScript (.ts)
+check_cmd=prettierd
+  → Running prettier... test/fixtures/sample.ts 39ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.cpp ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: C++ (.cpp)
+  → Running clang-format... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/fixtures/README.md 56ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.py ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 4 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Python (.py)
+  → Running yapf... ✓
+  → Running isort (additional)... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.lua ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Lua (.lua)
+  → Running stylua... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.tex ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: LaTeX (.tex)
+  → Running latexindent... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.rs ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Rust (.rs)
+  → Running rustfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/fixtures/sample.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... test/fixtures/sample.js 26ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/docker-compose.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... test/docker-compose.yml 14ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/regression/key_functionality.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/regression/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/regression/README.md 19ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/performance/performance_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/performance/comprehensive_performance_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/performance/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/performance/README.md 18ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/performance/benchmarks.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/README_PRIVATE.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/README_PRIVATE.md 19ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/e2e/complete_workflows.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/e2e/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/e2e/README.md 20ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/chaos/resilience.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/nvim/comprehensive_nvim_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... test/functional/README.md 34ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/lsp_completion_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/tmux/tmux_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/zsh/comprehensive_zsh_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/functional/git/git_test.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/stress/extreme_conditions.zsh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Zsh (.zsh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/test_report_20250911_222941.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_134016/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_134016/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./test/reports/test_report_20250911_223126.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/test_report_20250911_212343.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_133931/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_133931/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./test/reports/omni_20250913_134034/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_134034/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./test/reports/test_report_20250911_212514.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/test_report_20250911_223118.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/test_report_20250911_222820.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_195546/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_195546/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./test/reports/test_report_20250911_222646.text ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.text)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_134055/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_134055/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./test/reports/omni_20250913_133624/omni-test-error.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./test/reports/omni_20250913_133624/omni-test.log ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.log)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... empty file, skipping
+
+━━━ Processing: ./config/cortex/config.yaml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yaml)
+check_cmd=prettierd
+  → Running prettier... config/cortex/config.yaml 12ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./config/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... config/README.md 45ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/plugins.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/plugins.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/prism.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... template/prism.js 65ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/starship.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/starship.html 12ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/lsp.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/lsp.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/gitconfig.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/gitconfig.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/latexmkrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/latexmkrc.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/prism-tomorrow.css ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: CSS (.css)
+check_cmd=prettierd
+  → Running prettier... template/prism-tomorrow.css 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/vimrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/vimrc.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/zshrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/zshrc.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/404.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/404.html 33ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... template/README.md 83ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/zshenv.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/zshenv.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/starship.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/gitconfig.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/index.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/themes.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/styles.css ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: CSS (.css)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/latexmkrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/nvim_keymaps.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/vimrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/zshrc.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/nvim_lsp.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/scripts.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/nvim_init.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/gitignore.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/tmux.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/alacritty.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/public/nvim_plugins.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/analytics.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/nvim.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/nvim.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/generate.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/_config.yml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: YAML (.yml)
+check_cmd=prettierd
+  → Running prettier... template/_config.yml 12ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/mirror.sh ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Shell (.sh)
+  → Running shfmt... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/keymaps.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/keymaps.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/sitemap.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/gitignore.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/gitignore.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/i3_config.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/i3_config.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/tmux.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/tmux.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/robots.txt ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Text (.txt)
+  → Running text formatter... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./template/alacritty.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... template/alacritty.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./.claude/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... README.md 38ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/shellguide.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/shellguide.md 72ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/_includes/head-custom.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/_includes/head-custom.html 10ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/javaguide.css ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: CSS (.css)
+check_cmd=prettierd
+  → Running prettier... styleguide/javaguide.css 30ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/CODE_OF_CONDUCT.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/CODE_OF_CONDUCT.md 20ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/tsguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/tsguide.html 130ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/jsoncstyleguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/jsguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/objcguide.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/objcguide.md 100ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/google-r-style.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/google-r-style.html 13ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/go/best-practices.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/go/best-practices.md 167ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/go/index.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/go/index.md 31ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/go/guide.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/go/guide.md 52ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/go/decisions.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/go/decisions.md 177ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/shell.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/lispguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/cppguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/htmlcssguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/htmlcssguide.html 45ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/include/styleguide.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... styleguide/include/styleguide.js 35ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/include/jsguide.js ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: JavaScript (.js)
+check_cmd=prettierd
+  → Running prettier... styleguide/include/jsguide.js 24ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/include/styleguide.css ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: CSS (.css)
+check_cmd=prettierd
+  → Running prettier... styleguide/include/styleguide.css 21ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/docguide/READMEs.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/docguide/READMEs.md 19ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/docguide/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/docguide/README.md 14ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/docguide/style.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/docguide/style.md 87ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/docguide/philosophy.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/docguide/philosophy.md 29ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/docguide/best_practices.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/docguide/best_practices.md 29ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/htmlcssguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/vimscriptfull.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/eclipse-cpp-google-style.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/Rguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/README.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/README.md 29ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/javascriptguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/objcguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/vimscriptguide.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/.github/PULL_REQUEST_TEMPLATE.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/.github/PULL_REQUEST_TEMPLATE.md 16ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/.github/ISSUE_TEMPLATE.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/.github/ISSUE_TEMPLATE.md 16ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/xmlstyle.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/intellij-java-google-style.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/jsoncstyleguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/jsoncstyleguide.html 14ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/eclipse-java-google-style.xml ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: XML (.xml)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/angularjs-google-style.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... ✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/styleguide.css ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: CSS (.css)
+check_cmd=prettierd
+  → Running prettier... styleguide/styleguide.css 17ms (unchanged)
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/cppguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/cppguide.html 176ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/javaguide.html ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: HTML (.html)
+check_cmd=prettierd
+  → Running prettier... styleguide/javaguide.html 90ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/csharp-style.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/csharp-style.md 47ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/assets/css/style.scss ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: SCSS (.scss)
+check_cmd=prettierd
+  → Running prettier... styleguide/assets/css/style.scss 17ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/pyguide.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/pyguide.md 157ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./styleguide/Rguide.md ━━━
+  → Removing trailing whitespace... ✓
+  → Converting tabs to 2 spaces... ✓
+  → Normalizing smart quotes... ✓
+  ℹ Detected: Markdown (.md)
+check_cmd=prettierd
+  → Running prettier... styleguide/Rguide.md 21ms
+✓
+  → Running keep-sorted... ✓
+  → Ensuring single trailing newline... ✓
+
+━━━ Processing: ./fixy_log.txt ━━━
+  → Removing trailing whitespace...

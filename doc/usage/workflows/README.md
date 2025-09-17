@@ -9,28 +9,36 @@ This section provides detailed workflows for daily development tasks, from morni
 ## Available Workflows
 
 ### [Daily Development](daily.md)
+
 Complete morning-to-evening workflow:
+
 - System startup and updates
 - Project navigation and setup
 - Development patterns
 - End-of-day procedures
 
 ### [Feature Development](features.md)
+
 From idea to deployment:
+
 - Planning and design
 - Branch management
 - Implementation process
 - Testing and deployment
 
 ### [Code Review](review.md)
+
 Effective PR and review process:
+
 - Reviewing others' code
 - Creating effective PRs
 - Responding to feedback
 - Merge strategies
 
 ### [Debugging](debugging.md)
+
 Systematic troubleshooting:
+
 - Problem reproduction
 - Debugging tools and techniques
 - Performance analysis
@@ -84,16 +92,19 @@ v .
 ## Workflow Principles
 
 ### Efficiency First
+
 - Use aliases and shortcuts
 - Automate repetitive tasks
 - Batch similar operations
 
 ### Quality Focused
+
 - Test before committing
 - Review your own changes
 - Document as you go
 
 ### Tool Integration
+
 - Leverage editor features
 - Use CLI tools effectively
 - Integrate AI assistance

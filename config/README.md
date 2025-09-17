@@ -24,17 +24,20 @@ Comprehensive configuration for the universal code formatting script (`~/. dotfi
 **Purpose**: Defines formatter priorities, commands, and language mappings for automatic code formatting across 20+ programming languages.
 
 **Structure**:
+
 - **formatters**: Detailed formatter definitions with commands and arguments
 - **extensions**: File extension to language and formatter mappings
 - **settings**: Global formatting behavior settings
 
 **Key Features**:
+
 - Priority-based formatter selection (tries formatters in order)
 - Fallback mechanisms for missing formatters
 - Additional formatters for specific operations (e.g., import sorting)
 - Built-in text processing for basic formatting
 
 **Example Configuration**:
+
 ```json
 {
   "extensions": {
@@ -48,6 +51,7 @@ Comprehensive configuration for the universal code formatting script (`~/. dotfi
 ```
 
 This means Python files will:
+
 1. Try Ruff first (fastest, Rust-based)
 2. Fall back to Black if Ruff unavailable
 3. Then yapf, then autopep8
@@ -60,12 +64,14 @@ This means Python files will:
 Configuration and runtime data for the Cortex AI assistant system.
 
 **Contents**:
+
 - Configuration files for AI providers
 - Runtime logs and cache data
 - Model selection preferences
 - API endpoint configurations
 
 **Structure**:
+
 ```
 cortex/
 └── logs/           # Runtime logs
@@ -92,12 +98,14 @@ The fixy.json supports the following languages with priority-based formatters:
 ### Formatter Definitions
 
 Each formatter includes:
+
 - **command**: Executable name
 - **check_command**: Version check command
 - **format_args**: Arguments with `{file}` placeholder
 - **description**: Human-readable description
 
 Example:
+
 ```json
 "ruff": {
   "command": "ruff",
@@ -111,12 +119,14 @@ Example:
 ### Global Settings
 
 **Default Operations**:
+
 1. `trailing_whitespace`: Remove trailing spaces
 2. `tabs_to_spaces`: Convert tabs to spaces
 3. `smart_quotes`: Convert smart quotes to regular quotes
 4. `formatters`: Run language-specific formatters
 
 **Behavior Flags**:
+
 - `show_formatter_fallback`: Display when using fallback formatter
 - `run_additional_formatters`: Execute supplementary formatters (like isort)
 - `verbose`: Enable detailed output
@@ -126,6 +136,7 @@ Example:
 ### Format Script Integration
 
 The fixy script reads this configuration:
+
 ```bash
 # Format a file using configured priority
 ~/. dotfiles/src/scripts/fixy myfile.py
@@ -141,6 +152,7 @@ The fixy script reads this configuration:
 ### Adding New Formatters
 
 1. Add formatter definition:
+
 ```json
 "myformatter": {
   "command": "myformatter",
@@ -151,6 +163,7 @@ The fixy script reads this configuration:
 ```
 
 2. Add to language extensions:
+
 ```json
 "myext": {
   "language": "MyLanguage",
@@ -161,6 +174,7 @@ The fixy script reads this configuration:
 ### Customizing Priorities
 
 Change formatter order to adjust priorities:
+
 ```json
 "py": {
   "language": "Python",
@@ -216,6 +230,7 @@ Change formatter order to adjust priorities:
 ### Formatter Not Found
 
 Check installation:
+
 ```bash
 # Verify formatter is installed
 which ruff
@@ -230,6 +245,7 @@ brew install ruff
 ### Formatting Fails
 
 Debug with verbose mode:
+
 ```bash
 # Edit config/fixy.json
 "verbose": true
@@ -241,6 +257,7 @@ Debug with verbose mode:
 ### Wrong Formatter Used
 
 Check priority order:
+
 ```bash
 # View configuration
 jq '.extensions.py' config/fixy.json
@@ -249,6 +266,7 @@ jq '.extensions.py' config/fixy.json
 ### Performance Issues
 
 Use faster alternatives:
+
 - `prettierd` instead of `prettier`
 - `ruff` instead of `black`
 - Disable additional formatters if not needed
@@ -263,6 +281,7 @@ Use faster alternatives:
 ## Future Enhancements
 
 Planned improvements:
+
 - Parallel formatting for multiple files
 - Custom formatter chains
 - Project-specific overrides

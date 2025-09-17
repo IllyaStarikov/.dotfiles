@@ -349,10 +349,7 @@ function M.open_smart_menu()
       vim.notify("Failed to open menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
-    vim.notify(
-      "No menu configuration available for current context",
-      vim.log.levels.WARN
-    )
+    vim.notify("No menu configuration available for current context", vim.log.levels.WARN)
   end
 end
 
@@ -381,16 +378,10 @@ function M.open_context_menu(opts)
       }, opts)
     )
     if not success then
-      vim.notify(
-        "Failed to open context menu: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Failed to open context menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
-    vim.notify(
-      "No menu configuration available for current context",
-      vim.log.levels.WARN
-    )
+    vim.notify("No menu configuration available for current context", vim.log.levels.WARN)
   end
 end
 
@@ -436,11 +427,7 @@ function M.open_file_menu()
   for _, item in ipairs(M.menus.default) do
     if
       item.name
-      and (
-        item.name:match("File")
-        or item.name:match("Find")
-        or item.name:match("Save")
-      )
+      and (item.name:match("File") or item.name:match("Find") or item.name:match("Save"))
     then
       table.insert(file_menu, item)
     end
@@ -451,10 +438,7 @@ function M.open_file_menu()
       border = true,
     })
     if not success then
-      vim.notify(
-        "Failed to open file menu: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Failed to open file menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
     vim.notify("File menu not found", vim.log.levels.WARN)
@@ -486,10 +470,7 @@ function M.open_git_menu()
       border = true,
     })
     if not success then
-      vim.notify(
-        "Failed to open git menu: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Failed to open git menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
     vim.notify("Git menu not found", vim.log.levels.WARN)
@@ -529,10 +510,7 @@ function M.open_code_menu()
       border = true,
     })
     if not success then
-      vim.notify(
-        "Failed to open code menu: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Failed to open code menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
     vim.notify("Code menu not found", vim.log.levels.WARN)
@@ -564,10 +542,7 @@ function M.open_ai_menu()
       border = true,
     })
     if not success then
-      vim.notify(
-        "Failed to open AI menu: " .. tostring(err),
-        vim.log.levels.ERROR
-      )
+      vim.notify("Failed to open AI menu: " .. tostring(err), vim.log.levels.ERROR)
     end
   else
     vim.notify("AI Assistant menu not found", vim.log.levels.WARN)
@@ -691,10 +666,7 @@ function M.open_debug_menu()
     border = true,
   })
   if not success then
-    vim.notify(
-      "Failed to open debug menu: " .. tostring(err),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Failed to open debug menu: " .. tostring(err), vim.log.levels.ERROR)
   end
 end
 
@@ -780,10 +752,7 @@ function M.open_file_management_menu()
     border = true,
   })
   if not success then
-    vim.notify(
-      "Failed to open file management menu: " .. tostring(err),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Failed to open file management menu: " .. tostring(err), vim.log.levels.ERROR)
   end
 end
 
@@ -816,18 +785,14 @@ function M.open_typing_menu()
     border = true,
   })
   if not success then
-    vim.notify(
-      "Failed to open typing menu: " .. tostring(err),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Failed to open typing menu: " .. tostring(err), vim.log.levels.ERROR)
   end
 end
 
 -- Auto-command setup for enhanced functionality
 function M.setup_autocommands()
   -- Create autocommand group
-  local menu_group =
-    vim.api.nvim_create_augroup("MenuEnhancements", { clear = true })
+  local menu_group = vim.api.nvim_create_augroup("MenuEnhancements", { clear = true })
 
   -- Clean up menus when changing buffers
   vim.api.nvim_create_autocmd("BufEnter", {
@@ -904,10 +869,7 @@ function M.integrate_with_telescope()
   -- are now directly embedded in the menu structure
   local telescope_ok, _ = pcall(require, "telescope")
   if telescope_ok then
-    vim.notify(
-      "Telescope integration active in menu system",
-      vim.log.levels.DEBUG
-    )
+    vim.notify("Telescope integration active in menu system", vim.log.levels.DEBUG)
   end
 end
 
@@ -918,135 +880,90 @@ function M.get_project_specific_menu()
 
   -- Check for specific project types and add relevant menu items
   if vim.fn.filereadable(cwd .. "/package.json") == 1 then
-    table.insert(
-      project_menu,
-      {
-        name = "📦 npm install",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm install') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "i",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "📦 npm start",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm start') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "s",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "📦 npm test",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "t",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "📦 npm build",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm run build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "b",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🔭 Find JS/TS",
-        cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.{js,ts,jsx,tsx}'}})",
-        rtxt = "j",
-      }
-    )
+    table.insert(project_menu, {
+      name = "📦 npm install",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm install') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "i",
+    })
+    table.insert(project_menu, {
+      name = "📦 npm start",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm start') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "s",
+    })
+    table.insert(project_menu, {
+      name = "📦 npm test",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "t",
+    })
+    table.insert(project_menu, {
+      name = "📦 npm build",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('npm run build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "b",
+    })
+    table.insert(project_menu, {
+      name = "🔭 Find JS/TS",
+      cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.{js,ts,jsx,tsx}'}})",
+      rtxt = "j",
+    })
   end
 
   if vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
-    table.insert(
-      project_menu,
-      {
-        name = "🦀 cargo build",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "B",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🦀 cargo run",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo run') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "R",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🦀 cargo test",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "T",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🦀 cargo check",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo check') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "C",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🔭 Find Rust",
-        cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.rs'}})",
-        rtxt = "r",
-      }
-    )
+    table.insert(project_menu, {
+      name = "🦀 cargo build",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo build') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "B",
+    })
+    table.insert(project_menu, {
+      name = "🦀 cargo run",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo run') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "R",
+    })
+    table.insert(project_menu, {
+      name = "🦀 cargo test",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo test') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "T",
+    })
+    table.insert(project_menu, {
+      name = "🦀 cargo check",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('cargo check') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "C",
+    })
+    table.insert(project_menu, {
+      name = "🔭 Find Rust",
+      cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.rs'}})",
+      rtxt = "r",
+    })
   end
 
   if
     vim.fn.filereadable(cwd .. "/requirements.txt") == 1
     or vim.fn.filereadable(cwd .. "/src/pyproject.toml") == 1
   then
-    table.insert(
-      project_menu,
-      {
-        name = "🐍 pip install",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip install -r requirements.txt') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "I",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🐍 pytest",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python -m pytest') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "p",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🐍 run main",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python main.py') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "M",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🐍 pip freeze",
-        cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip freeze') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
-        rtxt = "F",
-      }
-    )
-    table.insert(
-      project_menu,
-      {
-        name = "🔭 Find Python",
-        cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.py'}})",
-        rtxt = "y",
-      }
-    )
+    table.insert(project_menu, {
+      name = "🐍 pip install",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip install -r requirements.txt') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "I",
+    })
+    table.insert(project_menu, {
+      name = "🐍 pytest",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python -m pytest') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "p",
+    })
+    table.insert(project_menu, {
+      name = "🐍 run main",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('python main.py') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "M",
+    })
+    table.insert(project_menu, {
+      name = "🐍 pip freeze",
+      cmd = "lua local ok, s = pcall(require, 'snacks'); if ok and s then s.terminal('pip freeze') else vim.notify('Snacks not loaded', vim.log.levels.WARN) end",
+      rtxt = "F",
+    })
+    table.insert(project_menu, {
+      name = "🔭 Find Python",
+      cmd = "lua require('telescope.builtin').find_files({find_command={'rg','--files','--glob','*.py'}})",
+      rtxt = "y",
+    })
   end
 
   return project_menu
@@ -1059,10 +976,7 @@ function M.safe_execute_command(cmd)
   end)
 
   if not success then
-    vim.notify(
-      "Menu command failed: " .. tostring(result),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Menu command failed: " .. tostring(result), vim.log.levels.ERROR)
   end
 end
 

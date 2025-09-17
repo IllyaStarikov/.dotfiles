@@ -9,28 +9,36 @@ This section provides comprehensive reference documentation for each major tool 
 ## Available Tools
 
 ### [Neovim](neovim.md)
+
 Modern text editor:
+
 - Modal editing system
 - Plugin ecosystem
 - LSP integration
 - AI assistance
 
 ### [tmux](tmux.md)
+
 Terminal multiplexer:
+
 - Session management
 - Window and pane control
 - Copy mode
 - Plugin system
 
 ### [Git](git.md)
+
 Version control:
+
 - Extensive aliases
 - Workflow commands
 - GitHub integration
 - Advanced features
 
 ### [Alacritty](alacritty.md)
+
 GPU-accelerated terminal:
+
 - Performance settings
 - Theme integration
 - Keyboard shortcuts
@@ -40,30 +48,30 @@ GPU-accelerated terminal:
 
 ### Text Editing
 
-| Feature | Neovim | VS Code | Vim |
-|---------|---------|---------|-----|
-| Startup speed | ⚡ Fast | 🐌 Slow | ⚡ Fast |
-| Plugin system | lazy.nvim | Marketplace | Vimscript |
-| LSP support | Native | Native | Plugin |
-| AI integration | CodeCompanion | Copilot | Limited |
+| Feature        | Neovim        | VS Code     | Vim       |
+| -------------- | ------------- | ----------- | --------- |
+| Startup speed  | ⚡ Fast       | 🐌 Slow     | ⚡ Fast   |
+| Plugin system  | lazy.nvim     | Marketplace | Vimscript |
+| LSP support    | Native        | Native      | Plugin    |
+| AI integration | CodeCompanion | Copilot     | Limited   |
 
 ### Terminal Tools
 
-| Feature | Alacritty | iTerm2 | Terminal.app |
-|---------|-----------|---------|--------------|
-| GPU accelerated | ✓ | ✗ | ✗ |
-| Config format | TOML | GUI | GUI |
-| Cross-platform | ✓ | ✗ | ✗ |
-| Resource usage | Low | High | Medium |
+| Feature         | Alacritty | iTerm2 | Terminal.app |
+| --------------- | --------- | ------ | ------------ |
+| GPU accelerated | ✓         | ✗      | ✗            |
+| Config format   | TOML      | GUI    | GUI          |
+| Cross-platform  | ✓         | ✗      | ✗            |
+| Resource usage  | Low       | High   | Medium       |
 
 ### Multiplexing
 
-| Feature | tmux | Screen | Native tabs |
-|---------|------|--------|-------------|
-| Persistent sessions | ✓ | ✓ | ✗ |
-| Split panes | ✓ | Limited | ✗ |
-| Scriptable | ✓ | ✓ | ✗ |
-| Remote work | ✓ | ✓ | ✗ |
+| Feature             | tmux | Screen  | Native tabs |
+| ------------------- | ---- | ------- | ----------- |
+| Persistent sessions | ✓    | ✓       | ✗           |
+| Split panes         | ✓    | Limited | ✗           |
+| Scriptable          | ✓    | ✓       | ✗           |
+| Remote work         | ✓    | ✓       | ✗           |
 
 ## Tool Integration
 
@@ -88,6 +96,7 @@ gs           # Git status in shell
 ### Theme Synchronization
 
 All tools respect the system theme:
+
 - Alacritty loads dynamic theme
 - Neovim detects via environment
 - tmux updates on theme switch
@@ -121,12 +130,12 @@ Our tool choices prioritize:
 
 Each tool can be customized:
 
-| Tool | Config Location | Format |
-|------|-----------------|---------|
-| Neovim | `~/.config/nvim/` | Lua |
-| tmux | `~/.tmux.conf` | Shell |
-| Git | `~/.gitconfig` | INI |
-| Alacritty | `~/.config/alacritty/` | TOML |
+| Tool      | Config Location        | Format |
+| --------- | ---------------------- | ------ |
+| Neovim    | `~/.config/nvim/`      | Lua    |
+| tmux      | `~/.tmux.conf`         | Shell  |
+| Git       | `~/.gitconfig`         | INI    |
+| Alacritty | `~/.config/alacritty/` | TOML   |
 
 ## Quick Commands
 

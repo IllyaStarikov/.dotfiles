@@ -36,13 +36,10 @@ map("n", "<F5>", function()
     local cmd = "python3 " .. vim.fn.shellescape(vim.fn.expand("%"))
     local ok, snacks = pcall(require, "snacks")
     if ok then
-      snacks.terminal(
-        cmd,
-        {
-          cwd = vim.fn.expand("%:p:h"),
-          win = { position = "bottom", height = 0.3 },
-        }
-      )
+      snacks.terminal(cmd, {
+        cwd = vim.fn.expand("%:p:h"),
+        win = { position = "bottom", height = 0.3 },
+      })
     else
       vim.cmd("split | terminal " .. cmd)
     end

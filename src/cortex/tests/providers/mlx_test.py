@@ -2,13 +2,17 @@
 Tests for mlx.py provider module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock, AsyncMock
-import aiohttp
 import json
+import unittest
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+import aiohttp
+
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
 from cortex.providers.mlx import MLXProvider
-from cortex.providers import ModelInfo, ModelCapability
 
 
 class TestMLXProvider(unittest.TestCase):
@@ -31,18 +35,16 @@ class TestMLXProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={
-            "data": [
-                {
+        mock_response.json = AsyncMock(
+            return_value={
+                "data": [{
                     "id": "mlx-community/test-model-7b",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/code-model-13b",
                     "object": "model"
-                }
-            ]
-        })
+                }]
+            })
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -71,26 +73,22 @@ class TestMLXProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={
-            "data": [
-                {
+        mock_response.json = AsyncMock(
+            return_value={
+                "data": [{
                     "id": "mlx-community/model-1b",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/model-7b-4bit",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/model-13b",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/model-70b",
                     "object": "model"
-                }
-            ]
-        })
+                }]
+            })
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -115,22 +113,19 @@ class TestMLXProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={
-            "data": [
-                {
+        mock_response.json = AsyncMock(
+            return_value={
+                "data": [{
                     "id": "mlx-community/CodeLlama-7b",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/Llama-3-8b",
                     "object": "model"
-                },
-                {
+                }, {
                     "id": "mlx-community/phi-3-vision",
                     "object": "model"
-                }
-            ]
-        })
+                }]
+            })
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -187,20 +182,19 @@ class TestMLXProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={
-            "choices": [
-                {
+        mock_response.json = AsyncMock(
+            return_value={
+                "choices": [{
                     "message": {
                         "content": "Test response from MLX"
                     }
+                }],
+                "usage": {
+                    "prompt_tokens": 10,
+                    "completion_tokens": 20,
+                    "total_tokens": 30
                 }
-            ],
-            "usage": {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30
-            }
-        })
+            })
 
         mock_session.post.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -283,14 +277,11 @@ class TestMLXProvider(unittest.TestCase):
             mock_session = AsyncMock()
             mock_response = AsyncMock()
             mock_response.status = 200
-            mock_response.json = AsyncMock(return_value={
-                "data": [
-                    {
-                        "id": "mlx-community/test-model",
-                        "object": "model"
-                    }
-                ]
-            })
+            mock_response.json = AsyncMock(
+                return_value={"data": [{
+                    "id": "mlx-community/test-model",
+                    "object": "model"
+                }]})
 
             mock_session.get.return_value.__aenter__.return_value = mock_response
             mock_session_class.return_value.__aenter__.return_value = mock_session

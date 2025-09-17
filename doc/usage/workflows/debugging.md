@@ -318,17 +318,21 @@ git bisect good v1.0.0
 
 ```markdown
 ## Problem Description
+
 The user authentication fails when...
 
 ## What I've Tried
+
 1. Checked the API endpoint - returns 200
 2. Verified token is sent - yes, in headers
 3. ...
 
 ## Current Understanding
+
 The issue seems to be...
 
 ## Next Steps
+
 - Check token expiration
 - Verify CORS settings
 - ...
@@ -444,18 +448,21 @@ logger.info('Auth attempt', { email, ip: req.ip });
 
 ```markdown
 ## Immediate Checks
+
 - [ ] Can reproduce the issue?
 - [ ] Check error messages/logs
 - [ ] Recent changes (git log)
 - [ ] Environment variables correct?
 
 ## Investigation
+
 - [ ] Add debug logging
 - [ ] Use debugger/breakpoints
 - [ ] Check network requests
 - [ ] Verify data flow
 
 ## Resolution
+
 - [ ] Identify root cause
 - [ ] Implement fix
 - [ ] Add test for regression

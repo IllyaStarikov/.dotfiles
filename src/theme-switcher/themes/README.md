@@ -5,6 +5,7 @@
 This directory contains the four TokyoNight theme variants with pre-generated configuration files for each application. Each theme provides a complete, coordinated color scheme across terminal, tmux, editor, and shell prompt.
 
 ### Theme Variants:
+
 ```
 themes/
 ├── tokyonight_day/     # Light theme for daytime
@@ -18,6 +19,7 @@ themes/
 ```
 
 ### How to use:
+
 ```bash
 # Themes are applied automatically by switch-theme.sh
 theme           # Auto-detect based on macOS appearance
@@ -35,6 +37,7 @@ cp themes/tokyonight_day/alacritty.toml ~/.config/alacritty/theme.toml
 Pre-generated theme files enable atomic, instant theme switching across all applications. Rather than dynamically generating colors (slow, error-prone), we store validated, tested configurations that can be copied instantly.
 
 ### Benefits of pre-generated themes:
+
 - **Atomic updates** - All apps switch simultaneously
 - **No computation** - Simple file copy, < 50ms
 - **Offline capable** - No network or tools needed
@@ -44,6 +47,7 @@ Pre-generated theme files enable atomic, instant theme switching across all appl
 ## Theme Specifications
 
 ### TokyoNight Day (Light)
+
 ```toml
 # Optimized for bright environments
 [colors.primary]
@@ -57,12 +61,14 @@ blue = '#2e7de9'        # Vibrant but not harsh
 ```
 
 **Use cases:**
+
 - Bright office lighting
 - Outdoor coding
 - Reducing eye strain in daylight
 - Presentations and screensharing
 
 ### TokyoNight Moon (Dark - Default)
+
 ```toml
 # Balanced dark theme
 [colors.primary]
@@ -76,12 +82,14 @@ green = '#c3e88d'       # Gentle green
 ```
 
 **Use cases:**
+
 - Evening coding sessions
 - Moderate ambient lighting
 - Extended coding periods
 - Default dark preference
 
 ### TokyoNight Night (Dark - Standard)
+
 ```toml
 # Traditional dark theme
 [colors.primary]
@@ -95,11 +103,13 @@ green = '#9ece6a'       # Terminal green
 ```
 
 **Use cases:**
+
 - Traditional terminal aesthetic
 - Low light environments
 - Classic dark theme preference
 
 ### TokyoNight Storm (Dark - High Contrast)
+
 ```toml
 # Maximum contrast dark theme
 [colors.primary]
@@ -113,6 +123,7 @@ red = '#f7768e'         # More vivid red
 ```
 
 **Use cases:**
+
 - Poor quality displays
 - Accessibility needs
 - Quick code reviews
@@ -121,6 +132,7 @@ red = '#f7768e'         # More vivid red
 ## Application Configurations
 
 ### Alacritty (`alacritty.toml`)
+
 ```toml
 # Terminal emulator colors
 [colors.primary]     # Main background/foreground
@@ -130,6 +142,7 @@ red = '#f7768e'         # More vivid red
 ```
 
 ### Tmux (`tmux.conf`)
+
 ```bash
 # Status bar and pane borders
 set -g status-style "bg=#color,fg=#color"
@@ -138,6 +151,7 @@ set -g message-style "bg=#color,fg=#color"
 ```
 
 ### Starship (`starship.toml`)
+
 ```toml
 # Shell prompt colors
 [palettes.colors]
@@ -148,6 +162,7 @@ green = '#color'
 ```
 
 ### Kitty (`kitty.conf`)
+
 ```conf
 # Kitty terminal colors
 foreground #color
@@ -162,8 +177,10 @@ color1 #red
 ### What NOT to Do
 
 #### ❌ Don't generate colors dynamically
+
 **Problem**: Lua script took 200ms per theme switch
 **Solution**: Pre-generate all configs
+
 ```bash
 # BAD: Generate on switch
 lua generate_colors.lua "$theme" > ~/.config/alacritty/theme.toml
@@ -173,8 +190,10 @@ cp "themes/$theme/alacritty.toml" ~/.config/alacritty/theme.toml
 ```
 
 #### ❌ Don't use symbolic links for themes
+
 **Problem**: Some apps don't follow symlinks, cache issues
 **Solution**: Copy actual files
+
 ```bash
 # BAD: Symlink to theme
 ln -sf "themes/$theme/tmux.conf" ~/.config/tmux/theme.conf
@@ -184,8 +203,10 @@ cp "themes/$theme/tmux.conf" ~/.config/tmux/theme.conf
 ```
 
 #### ❌ Don't forget color accessibility
+
 **Problem**: Low contrast colors hard to read
 **Solution**: Test contrast ratios
+
 ```bash
 # Minimum WCAG AA compliance
 # Normal text: 4.5:1 contrast ratio
@@ -193,8 +214,10 @@ cp "themes/$theme/tmux.conf" ~/.config/tmux/theme.conf
 ```
 
 #### ❌ Don't mix color formats
+
 **Problem**: RGB vs Hex caused inconsistencies
 **Solution**: Use hex everywhere
+
 ```toml
 # BAD: Mixed formats
 color = "rgb(46, 125, 233)"
@@ -248,17 +271,20 @@ Storm (High Contrast):
 To add a new theme variant:
 
 1. **Create theme directory**
+
    ```bash
    mkdir themes/new_theme
    ```
 
 2. **Generate color files**
+
    ```bash
    # Create configs for each app
    touch themes/new_theme/{alacritty.toml,tmux.conf,starship.toml,kitty.conf}
    ```
 
 3. **Define color palette**
+
    ```toml
    # Base colors needed:
    background, foreground
@@ -268,6 +294,7 @@ To add a new theme variant:
    ```
 
 4. **Test readability**
+
    ```bash
    # Apply theme and verify
    ./switch-theme.sh new_theme
@@ -283,6 +310,7 @@ To add a new theme variant:
 ## Theme File Validation
 
 ### Verify colors are correct:
+
 ```bash
 # Check all colors are valid hex
 grep -E '#[0-9a-fA-F]{6}' themes/*/alacritty.toml
@@ -295,6 +323,7 @@ done
 ```
 
 ### Test theme switching:
+
 ```bash
 # Time theme switch
 time theme day

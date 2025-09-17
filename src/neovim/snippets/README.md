@@ -23,7 +23,9 @@ snippets/
 ## 🚀 Snippet Categories
 
 ### C/C++ Snippets
+
 **c.lua & cpp.lua**
+
 - `main` - Main function template
 - `inc` - Include statements
 - `for` - For loop
@@ -34,7 +36,9 @@ snippets/
 - `malloc` - Memory allocation
 
 ### Python Snippets
+
 **python.lua**
+
 - `main` - Main guard
 - `class` - Class definition
 - `def` - Function definition
@@ -46,7 +50,9 @@ snippets/
 - `import` - Import statements
 
 ### JavaScript/TypeScript
+
 **javascript.lua**
+
 - `func` - Function declaration
 - `arrow` - Arrow function
 - `class` - ES6 class
@@ -57,7 +63,9 @@ snippets/
 - `component` - React component
 
 ### Shell/Bash
+
 **sh.lua**
+
 - `bash` - Bash shebang
 - `if` - If statement
 - `for` - For loop
@@ -68,7 +76,9 @@ snippets/
 - `getopts` - Option parsing
 
 ### HTML
+
 **html.lua**
+
 - `html5` - HTML5 boilerplate
 - `div` - Div with class
 - `link` - Link tag
@@ -78,7 +88,9 @@ snippets/
 - `button` - Button element
 
 ### Markdown
+
 **markdown.lua**
+
 - `code` - Code block
 - `link` - Markdown link
 - `img` - Image
@@ -88,7 +100,9 @@ snippets/
 - `badge` - Shield.io badge
 
 ### LaTeX
+
 **tex.lua**
+
 - `doc` - Document template
 - `sec` - Section
 - `eq` - Equation
@@ -99,7 +113,9 @@ snippets/
 - `enumerate` - List
 
 ### TODO Comments
+
 **todo.lua**
+
 - `TODO` - TODO comment
 - `FIXME` - Fix me comment
 - `NOTE` - Note comment
@@ -109,6 +125,7 @@ snippets/
 ## ⚙️ Snippet Structure
 
 ### Basic Snippet Format
+
 ```lua
 local ls = require("luasnip")
 local s = ls.snippet
@@ -126,6 +143,7 @@ return {
 ```
 
 ### Advanced Features
+
 ```lua
 -- Choice node example
 s("for", {
@@ -146,12 +164,14 @@ s("for", {
 ## 🎯 Usage
 
 ### Triggering Snippets
+
 1. Type the trigger text
 2. Press `Tab` to expand
 3. Use `Tab`/`Shift+Tab` to navigate placeholders
 4. Press `Ctrl+k` to jump to next placeholder
 
 ### Snippet Commands
+
 ```vim
 :LuaSnipListAvailable  " List available snippets
 :LuaSnipUnlinkCurrent  " Unlink from current snippet
@@ -160,6 +180,7 @@ s("for", {
 ```
 
 ### Visual Mode Snippets
+
 1. Select text in visual mode
 2. Press `Tab`
 3. Type snippet trigger
@@ -168,11 +189,13 @@ s("for", {
 ## 🔧 Customization
 
 ### Adding New Snippets
+
 1. Create or edit language file
 2. Add snippet definition
 3. Reload with `:source %`
 
 Example:
+
 ```lua
 -- In python.lua
 s("fastapi", {
@@ -188,7 +211,9 @@ s("fastapi", {
 ```
 
 ### Custom Snippet File
+
 Create `~/.config/nvim/snippets/custom.lua`:
+
 ```lua
 return {
   all = {  -- Snippets for all file types
@@ -211,31 +236,35 @@ return {
 ## 🔌 Integration
 
 ### With Completion
+
 Snippets integrate with blink.cmp:
+
 - Appear in completion menu
 - Show snippet preview
 - Expand on selection
 
 ### With LSP
+
 - LSP snippets also available
 - Function signatures
 - Parameter hints
 
 ### With Treesitter
+
 - Context-aware snippets
 - Syntax validation
 - Smart indentation
 
 ## ⌨️ Key Bindings
 
-| Key | Mode | Action |
-|-----|------|--------|
-| `Tab` | Insert | Expand/Jump forward |
-| `Shift+Tab` | Insert | Jump backward |
-| `Ctrl+k` | Insert | Jump to next placeholder |
-| `Ctrl+j` | Insert | Jump to previous placeholder |
-| `Ctrl+l` | Insert | Choose next option |
-| `Ctrl+h` | Insert | Choose previous option |
+| Key         | Mode   | Action                       |
+| ----------- | ------ | ---------------------------- |
+| `Tab`       | Insert | Expand/Jump forward          |
+| `Shift+Tab` | Insert | Jump backward                |
+| `Ctrl+k`    | Insert | Jump to next placeholder     |
+| `Ctrl+j`    | Insert | Jump to previous placeholder |
+| `Ctrl+l`    | Insert | Choose next option           |
+| `Ctrl+h`    | Insert | Choose previous option       |
 
 ## 💡 Tips & Tricks
 
@@ -246,6 +275,7 @@ Snippets integrate with blink.cmp:
 5. **Conditional Snippets**: Show based on context
 
 ### Useful Patterns
+
 ```lua
 -- Date/time insertion
 f(function() return os.date("%Y-%m-%d %H:%M") end)
@@ -260,18 +290,21 @@ f(function(args) return string.upper(args[1][1]) end, {1})
 ## 🐛 Troubleshooting
 
 ### Snippets Not Working
+
 ```vim
 :checkhealth luasnip
 :LuaSnipListAvailable
 ```
 
 ### Reload Snippets
+
 ```vim
 :lua require("luasnip").cleanup()
 :lua require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/snippets"})
 ```
 
 ### Debug Mode
+
 ```lua
 -- In config
 require("luasnip").config.set_config({

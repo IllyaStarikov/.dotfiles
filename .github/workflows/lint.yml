@@ -16,18 +16,18 @@ jobs:
     name: 🐚 Shell Scripts
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔍 Run ShellCheck
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y shellcheck
-          
+
           echo "::group::Checking shell scripts"
           find . -type f -name "*.sh" -not -path "./.git/*" -print0 | xargs -0 shellcheck -x || true
           find src/scripts -type f -exec grep -l '^#!/.*sh' {} \; | xargs shellcheck -x || true
@@ -37,19 +37,19 @@ jobs:
     name: 🌙 Lua Files
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🗄️ Cache Tools
         uses: actions/cache@v3
         with:
           path: /usr/local/bin/stylua
           key: ${{ runner.os }}-stylua-v0.19.1
-      
+
       - name: 🔍 Check Lua Formatting
         run: |
           # Install stylua if not cached
@@ -57,7 +57,7 @@ jobs:
             wget -qO stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/download/v0.19.1/stylua-linux-x86_64.zip
             unzip -q stylua.zip && chmod +x stylua && sudo mv stylua /usr/local/bin/
           fi
-          
+
           echo "::group::Checking Lua formatting"
           find src -name "*.lua" -type f | xargs stylua --check --config-path src/language/stylua.toml || true
           echo "::endgroup::"
@@ -66,17 +66,17 @@ jobs:
     name: 📝 Markdown
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔍 Lint Markdown
         run: |
           npm install -g markdownlint-cli --silent
-          
+
           echo "::group::Checking markdown files"
           markdownlint '**/*.md' --ignore node_modules --ignore .github || true
           echo "::endgroup::"
@@ -85,17 +85,17 @@ jobs:
     name: 📄 YAML Files
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔍 Validate YAML
         run: |
           npm install -g yaml-lint --silent
-          
+
           echo "::group::Checking YAML files"
           find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | xargs -I {} sh -c 'echo "Checking: {}" && yaml-lint {} || true'
           echo "::endgroup::"
@@ -104,18 +104,18 @@ jobs:
     name: 📊 JSON Files
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔍 Validate JSON
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y jq
-          
+
           echo "::group::Checking JSON files"
           find . -name "*.json" -type f -not -path "./.git/*" | while read -r file; do
             echo "Checking: $file"
@@ -127,50 +127,50 @@ jobs:
     name: 🎨 Code Quality
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 🔍 Check Code Quality
         run: |
           echo "::group::Checking for code quality issues"
-          
+
           # Check for trailing whitespace
           echo "Checking for trailing whitespace..."
           ! grep -r '[[:space:]]$' src/ test/ --include="*.sh" --include="*.lua" --include="*.py" 2>/dev/null || echo "⚠️ Trailing whitespace found"
-          
+
           # Check for tabs in space-only files
           echo "Checking for tabs in space-only files..."
           ! grep -r $'\t' src/ --include="*.lua" --include="*.yml" --include="*.yaml" --include="*.json" 2>/dev/null || echo "⚠️ Tabs found in space-only files"
-          
+
           # Check for CRLF line endings
           echo "Checking for Windows line endings..."
           ! find src/ test/ -type f -exec file {} \; | grep CRLF || echo "⚠️ Windows line endings found"
-          
+
           # Check for large files
           echo "Checking for large files..."
           find . -type f -size +1M -not -path "./.git/*" -exec ls -lh {} \; | awk '{print "⚠️ Large file:", $9, "(" $5 ")"}'
-          
+
           echo "::endgroup::"
 
   documentation:
     name: 📚 Documentation
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: 📖 Check Documentation
         run: |
           echo "::group::Checking documentation coverage"
-          
+
           # Check for script documentation
           scripts=(
             "src/setup/setup.sh"
@@ -178,7 +178,7 @@ jobs:
             "src/theme-switcher/switch-theme.sh"
             "src/scripts/update"
           )
-          
+
           for script in "${scripts[@]}"; do
             if [[ -f "$script" ]]; then
               if ! grep -q -E "(usage\(\)|--help|Usage:)" "$script"; then
@@ -188,7 +188,7 @@ jobs:
               fi
             fi
           done
-          
+
           # Check README sections
           required_sections=(
             "Installation"
@@ -196,7 +196,7 @@ jobs:
             "Features"
             "Requirements"
           )
-          
+
           for section in "${required_sections[@]}"; do
             if grep -q "## .*$section" README.md; then
               echo "✅ README section found: $section"
@@ -204,7 +204,7 @@ jobs:
               echo "⚠️ README section missing: $section"
             fi
           done
-          
+
           echo "::endgroup::"
 
   lint-status:
@@ -212,7 +212,7 @@ jobs:
     if: always()
     needs: [shellcheck, lua, markdown, yaml, json, code-quality, documentation]
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check Lint Results
         run: |
@@ -223,6 +223,6 @@ jobs:
           echo "JSON: ${{ needs.json.result }}"
           echo "Code Quality: ${{ needs.code-quality.result }}"
           echo "Documentation: ${{ needs.documentation.result }}"
-          
+
           # All linting jobs are non-blocking (continue-on-error)
           echo "✅ Lint checks completed"

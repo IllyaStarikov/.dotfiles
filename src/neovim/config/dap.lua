@@ -158,10 +158,7 @@ function M.setup()
       local host = (config.connect or config).host or "127.0.0.1"
       cb({
         type = "server",
-        port = assert(
-          port,
-          "`connect.port` is required for a python `attach` configuration"
-        ),
+        port = assert(port, "`connect.port` is required for a python `attach` configuration"),
         host = host,
         options = {
           source_filetype = "python",
@@ -236,11 +233,7 @@ function M.setup()
       type = "lldb",
       request = "launch",
       program = function()
-        return vim.fn.input(
-          "Path to executable: ",
-          vim.fn.getcwd() .. "/",
-          "file"
-        )
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
       end,
       cwd = "${workspaceFolder}",
       stopOnEntry = false,
@@ -251,11 +244,7 @@ function M.setup()
       type = "lldb",
       request = "launch",
       program = function()
-        return vim.fn.input(
-          "Path to executable: ",
-          vim.fn.getcwd() .. "/",
-          "file"
-        )
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
       end,
       cwd = "${workspaceFolder}",
       stopOnEntry = false,
@@ -275,11 +264,7 @@ function M.setup()
       miDebuggerPath = "/usr/bin/gdb",
       cwd = "${workspaceFolder}",
       program = function()
-        return vim.fn.input(
-          "Path to executable: ",
-          vim.fn.getcwd() .. "/",
-          "file"
-        )
+        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
       end,
     },
   }
@@ -383,8 +368,7 @@ function M.setup()
       type = "rust",
       request = "launch",
       program = function()
-        local metadata_json =
-          vim.fn.system("cargo metadata --format-version 1 --no-deps")
+        local metadata_json = vim.fn.system("cargo metadata --format-version 1 --no-deps")
         local metadata = vim.json.decode(metadata_json)
         local target_name = metadata.packages[1].targets[1].name
         local target_dir = metadata.target_directory
@@ -395,8 +379,7 @@ function M.setup()
       args = {},
       initCommands = function()
         -- Find out where to look for the pretty printer Python module
-        local rustc_sysroot =
-          vim.fn.trim(vim.fn.system("rustc --print sysroot"))
+        local rustc_sysroot = vim.fn.trim(vim.fn.system("rustc --print sysroot"))
 
         local script_import = 'command script import "'
           .. rustc_sysroot
@@ -520,19 +503,13 @@ end
 function M.debug_class()
   local dap = require("dap")
   -- This would need to be customized per language
-  vim.notify(
-    "Debug class not implemented for this language",
-    vim.log.levels.WARN
-  )
+  vim.notify("Debug class not implemented for this language", vim.log.levels.WARN)
 end
 
 function M.debug_method()
   local dap = require("dap")
   -- This would need to be customized per language
-  vim.notify(
-    "Debug method not implemented for this language",
-    vim.log.levels.WARN
-  )
+  vim.notify("Debug method not implemented for this language", vim.log.levels.WARN)
 end
 
 return M

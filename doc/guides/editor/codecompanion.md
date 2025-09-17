@@ -189,7 +189,7 @@ pre_req = function(adapter, messages)
   -- Limit context to relevant code
   local max_tokens = 4000
   local current_tokens = 0
-  
+
   for i = #messages, 1, -1 do
     current_tokens = current_tokens + #messages[i].content
     if current_tokens > max_tokens then
@@ -198,7 +198,7 @@ pre_req = function(adapter, messages)
       break
     end
   end
-  
+
   return messages
 end
 ```

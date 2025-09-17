@@ -2,7 +2,7 @@ name: Dependency Updates
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Weekly on Monday
+    - cron: '0 0 * * 1' # Weekly on Monday
   workflow_dispatch:
 
 permissions:
@@ -14,18 +14,18 @@ jobs:
     name: Update Dependencies
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      
+
       - name: Update Git Submodules
         run: |
           echo "::group::Update submodules"
           git submodule update --init --recursive
           git submodule update --remote --merge
-          
+
           # Check if there are changes
           if [[ -n $(git status --porcelain) ]]; then
             echo "Submodule updates available"
@@ -35,13 +35,13 @@ jobs:
             echo "SUBMODULES_UPDATED=false" >> $GITHUB_ENV
           fi
           echo "::endgroup::"
-      
+
       - name: Update GitHub Actions
         uses: actions/dependency-review-action@v3
         continue-on-error: true
         with:
           warn-only: true
-      
+
       - name: Check for Neovim Plugin Updates
         run: |
           echo "::group::Check plugin updates"
@@ -52,9 +52,9 @@ jobs:
               sed 's/"//g' | \
               grep -E '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$' | \
               sort -u > /tmp/plugins.txt
-            
+
             echo "Found $(wc -l < /tmp/plugins.txt) plugins"
-            
+
             # Check each plugin's latest release (limit to first 10 for speed)
             head -10 /tmp/plugins.txt | while read -r plugin; do
               echo -n "Checking $plugin... "
@@ -64,7 +64,7 @@ jobs:
             done
           fi
           echo "::endgroup::"
-      
+
       - name: Update Documentation
         run: |
           echo "::group::Update docs"
@@ -72,33 +72,33 @@ jobs:
           current_year=$(date +%Y)
           find . -type f \( -name "*.md" -o -name "LICENSE" \) -exec \
             sed -i "s/Copyright.*[0-9]\{4\}/Copyright $current_year/g" {} \;
-          
+
           # Update last updated date in README
           if grep -q "Last Updated:" README.md; then
             sed -i "s/Last Updated:.*/Last Updated: $(date '+%B %d, %Y')/g" README.md
           fi
           echo "::endgroup::"
-      
+
       - name: Create Pull Request
         if: env.SUBMODULES_UPDATED == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: update dependencies and submodules"
-          title: "🔄 Weekly Dependency Updates"
+          commit-message: 'chore: update dependencies and submodules'
+          title: '🔄 Weekly Dependency Updates'
           body: |
             ## 🔄 Automated Dependency Updates
-            
+
             This PR contains the following updates:
             - Git submodules updated to latest versions
             - Documentation dates updated
             - Copyright years updated
-            
+
             ### Pre-merge Checklist
             - [ ] Review submodule changes
             - [ ] Test major functionality
             - [ ] Verify no breaking changes
-            
+
             ---
             *This PR was automatically created by the dependency update workflow.*
           branch: deps/weekly-update

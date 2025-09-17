@@ -2,12 +2,14 @@
 Tests for openai.py provider module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock
 import os
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
 from cortex.providers.openai import OpenAIProvider
-from cortex.providers import ModelInfo, ModelCapability
 
 
 class TestOpenAIProvider(unittest.TestCase):

@@ -2,15 +2,20 @@
 Tests for core.py module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock, call
+import json
 from pathlib import Path
 import tempfile
-import json
+import unittest
+from unittest.mock import call
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from cortex.core import Cortex
-from cortex.providers import ModelInfo, ModelCapability
-from cortex.system_utils import SystemType, PerformanceTier, SystemInfo
+from cortex.providers import ModelCapability
+from cortex.providers import ModelInfo
+from cortex.system_utils import PerformanceTier
+from cortex.system_utils import SystemInfo
+from cortex.system_utils import SystemType
 
 
 class TestCortex(unittest.TestCase):
@@ -29,20 +34,18 @@ class TestCortex(unittest.TestCase):
         mock_config = MagicMock()
         mock_config_class.return_value = mock_config
 
-        mock_system_info = SystemInfo(
-            os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model="Apple M1 Max",
-            cpu_cores=10,
-            ram_gb=64.0,
-            ram_available_gb=30.0,
-            gpu_info="Apple M1 Max",
-            gpu_memory_gb=48.0,
-            performance_tier=PerformanceTier.ULTRA,
-            has_neural_engine=True,
-            has_cuda=False,
-            has_metal=True,
-            platform_details={}
-        )
+        mock_system_info = SystemInfo(os_type=SystemType.MACOS_APPLE_SILICON,
+                                      cpu_model="Apple M1 Max",
+                                      cpu_cores=10,
+                                      ram_gb=64.0,
+                                      ram_available_gb=30.0,
+                                      gpu_info="Apple M1 Max",
+                                      gpu_memory_gb=48.0,
+                                      performance_tier=PerformanceTier.ULTRA,
+                                      has_neural_engine=True,
+                                      has_cuda=False,
+                                      has_metal=True,
+                                      platform_details={})
         mock_detector.detect.return_value = mock_system_info
 
         cortex = Cortex()
@@ -60,11 +63,21 @@ class TestCortex(unittest.TestCase):
         mock_config = MagicMock()
         mock_config.data = {
             "providers": {
-                "mlx": {"enabled": True},
-                "ollama": {"enabled": True},
-                "claude": {"enabled": True},
-                "openai": {"enabled": True},
-                "gemini": {"enabled": True}
+                "mlx": {
+                    "enabled": True
+                },
+                "ollama": {
+                    "enabled": True
+                },
+                "claude": {
+                    "enabled": True
+                },
+                "openai": {
+                    "enabled": True
+                },
+                "gemini": {
+                    "enabled": True
+                }
             }
         }
         mock_config_class.return_value = mock_config
@@ -77,17 +90,15 @@ class TestCortex(unittest.TestCase):
         # Mock provider responses
         for provider in cortex.providers.values():
             provider.list_models = MagicMock(return_value=[
-                ModelInfo(
-                    id=f"{provider.name}-model",
-                    name=f"{provider.name.upper()} Model",
-                    provider=provider.name,
-                    size_gb=1.0,
-                    ram_gb=2.0,
-                    context_window=4096,
-                    capabilities=[ModelCapability.CHAT],
-                    online=False,
-                    open_source=True
-                )
+                ModelInfo(id=f"{provider.name}-model",
+                          name=f"{provider.name.upper()} Model",
+                          provider=provider.name,
+                          size_gb=1.0,
+                          ram_gb=2.0,
+                          context_window=4096,
+                          capabilities=[ModelCapability.CHAT],
+                          online=False,
+                          open_source=True)
             ])
 
         models = cortex.list_models()
@@ -102,12 +113,7 @@ class TestCortex(unittest.TestCase):
     def test_list_models_with_provider_filter(self, mock_detector, mock_config_class):
         """Test listing models with provider filter."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "mlx": {"enabled": True},
-                "ollama": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"mlx": {"enabled": True}, "ollama": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -117,31 +123,27 @@ class TestCortex(unittest.TestCase):
 
         # Mock provider responses
         cortex.providers["mlx"].list_models = MagicMock(return_value=[
-            ModelInfo(
-                id="mlx-model",
-                name="MLX Model",
-                provider="mlx",
-                size_gb=1.0,
-                ram_gb=2.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True
-            )
+            ModelInfo(id="mlx-model",
+                      name="MLX Model",
+                      provider="mlx",
+                      size_gb=1.0,
+                      ram_gb=2.0,
+                      context_window=4096,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True)
         ])
 
         cortex.providers["ollama"].list_models = MagicMock(return_value=[
-            ModelInfo(
-                id="ollama-model",
-                name="Ollama Model",
-                provider="ollama",
-                size_gb=2.0,
-                ram_gb=3.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True
-            )
+            ModelInfo(id="ollama-model",
+                      name="Ollama Model",
+                      provider="ollama",
+                      size_gb=2.0,
+                      ram_gb=3.0,
+                      context_window=4096,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True)
         ])
 
         # Filter for MLX only
@@ -155,11 +157,7 @@ class TestCortex(unittest.TestCase):
     def test_list_models_with_capability_filter(self, mock_detector, mock_config_class):
         """Test listing models with capability filter."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "mlx": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"mlx": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -169,28 +167,24 @@ class TestCortex(unittest.TestCase):
 
         # Mock models with different capabilities
         cortex.providers["mlx"].list_models = MagicMock(return_value=[
-            ModelInfo(
-                id="chat-model",
-                name="Chat Model",
-                provider="mlx",
-                size_gb=1.0,
-                ram_gb=2.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True
-            ),
-            ModelInfo(
-                id="code-model",
-                name="Code Model",
-                provider="mlx",
-                size_gb=2.0,
-                ram_gb=3.0,
-                context_window=8192,
-                capabilities=[ModelCapability.CHAT, ModelCapability.CODE],
-                online=False,
-                open_source=True
-            )
+            ModelInfo(id="chat-model",
+                      name="Chat Model",
+                      provider="mlx",
+                      size_gb=1.0,
+                      ram_gb=2.0,
+                      context_window=4096,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True),
+            ModelInfo(id="code-model",
+                      name="Code Model",
+                      provider="mlx",
+                      size_gb=2.0,
+                      ram_gb=3.0,
+                      context_window=8192,
+                      capabilities=[ModelCapability.CHAT, ModelCapability.CODE],
+                      online=False,
+                      open_source=True)
         ])
 
         # Filter for code capability
@@ -205,11 +199,7 @@ class TestCortex(unittest.TestCase):
     def test_list_models_recommended(self, mock_detector, mock_config_class, mock_recommender):
         """Test listing recommended models."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "mlx": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"mlx": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -218,17 +208,15 @@ class TestCortex(unittest.TestCase):
         cortex = Cortex()
 
         test_models = [
-            ModelInfo(
-                id="recommended-model",
-                name="Recommended Model",
-                provider="mlx",
-                size_gb=1.0,
-                ram_gb=2.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True
-            )
+            ModelInfo(id="recommended-model",
+                      name="Recommended Model",
+                      provider="mlx",
+                      size_gb=1.0,
+                      ram_gb=2.0,
+                      context_window=4096,
+                      capabilities=[ModelCapability.CHAT],
+                      online=False,
+                      open_source=True)
         ]
 
         cortex.providers["mlx"].list_models = MagicMock(return_value=test_models)
@@ -245,11 +233,7 @@ class TestCortex(unittest.TestCase):
     def test_switch_model_success(self, mock_detector, mock_config_class):
         """Test successful model switching."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "openai": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"openai": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -258,17 +242,15 @@ class TestCortex(unittest.TestCase):
         cortex = Cortex()
 
         # Mock finding the model
-        test_model = ModelInfo(
-            id="gpt-4",
-            name="GPT-4",
-            provider="openai",
-            size_gb=0,
-            ram_gb=0,
-            context_window=8192,
-            capabilities=[ModelCapability.CHAT],
-            online=True,
-            open_source=False
-        )
+        test_model = ModelInfo(id="gpt-4",
+                               name="GPT-4",
+                               provider="openai",
+                               size_gb=0,
+                               ram_gb=0,
+                               context_window=8192,
+                               capabilities=[ModelCapability.CHAT],
+                               online=True,
+                               open_source=False)
 
         cortex.providers["openai"].list_models = MagicMock(return_value=[test_model])
 
@@ -282,11 +264,7 @@ class TestCortex(unittest.TestCase):
     def test_switch_model_not_found(self, mock_detector, mock_config_class):
         """Test model switching when model not found."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "openai": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"openai": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -331,11 +309,7 @@ class TestCortex(unittest.TestCase):
     def test_download_model_mlx(self, mock_detector, mock_config_class):
         """Test downloading MLX model."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "mlx": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"mlx": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -349,21 +323,15 @@ class TestCortex(unittest.TestCase):
         result = cortex.download_model("mlx-community/test-model")
 
         self.assertTrue(result)
-        cortex.providers["mlx"].download_model.assert_called_once_with(
-            "mlx-community/test-model",
-            force=False
-        )
+        cortex.providers["mlx"].download_model.assert_called_once_with("mlx-community/test-model",
+                                                                       force=False)
 
     @patch('cortex.core.Config')
     @patch('cortex.core.SystemDetector')
     def test_download_model_ollama(self, mock_detector, mock_config_class):
         """Test downloading Ollama model."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "ollama": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"ollama": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -390,7 +358,9 @@ class TestCortex(unittest.TestCase):
                 "provider": "openai"
             },
             "providers": {
-                "openai": {"enabled": True}
+                "openai": {
+                    "enabled": True
+                }
             }
         }
         mock_config_class.return_value = mock_config
@@ -406,21 +376,14 @@ class TestCortex(unittest.TestCase):
         response = cortex.chat("Test prompt")
 
         self.assertEqual(response, "Test response")
-        cortex.providers["openai"].chat.assert_called_once_with(
-            "Test prompt",
-            model="gpt-4"
-        )
+        cortex.providers["openai"].chat.assert_called_once_with("Test prompt", model="gpt-4")
 
     @patch('cortex.core.Config')
     @patch('cortex.core.SystemDetector')
     def test_chat_with_specified_model(self, mock_detector, mock_config_class):
         """Test chat with specified model."""
         mock_config = MagicMock()
-        mock_config.data = {
-            "providers": {
-                "claude": {"enabled": True}
-            }
-        }
+        mock_config.data = {"providers": {"claude": {"enabled": True}}}
         mock_config_class.return_value = mock_config
 
         mock_system_info = MagicMock()
@@ -449,13 +412,11 @@ class TestCortex(unittest.TestCase):
         cortex = Cortex()
 
         # Mock statistics logs
-        cortex.statistics.get_recent_sessions = MagicMock(return_value=[
-            {
-                "session_id": "test-session",
-                "model": "gpt-4",
-                "timestamp": "2024-01-01T12:00:00"
-            }
-        ])
+        cortex.statistics.get_recent_sessions = MagicMock(return_value=[{
+            "session_id": "test-session",
+            "model": "gpt-4",
+            "timestamp": "2024-01-01T12:00:00"
+        }])
 
         logs = cortex.get_logs(lines=5)
 
@@ -476,20 +437,18 @@ class TestCortex(unittest.TestCase):
         }
         mock_config_class.return_value = mock_config
 
-        mock_system_info = SystemInfo(
-            os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model="Apple M1 Max",
-            cpu_cores=10,
-            ram_gb=64.0,
-            ram_available_gb=30.0,
-            gpu_info="Apple M1 Max",
-            gpu_memory_gb=48.0,
-            performance_tier=PerformanceTier.ULTRA,
-            has_neural_engine=True,
-            has_cuda=False,
-            has_metal=True,
-            platform_details={}
-        )
+        mock_system_info = SystemInfo(os_type=SystemType.MACOS_APPLE_SILICON,
+                                      cpu_model="Apple M1 Max",
+                                      cpu_cores=10,
+                                      ram_gb=64.0,
+                                      ram_available_gb=30.0,
+                                      gpu_info="Apple M1 Max",
+                                      gpu_memory_gb=48.0,
+                                      performance_tier=PerformanceTier.ULTRA,
+                                      has_neural_engine=True,
+                                      has_cuda=False,
+                                      has_metal=True,
+                                      platform_details={})
         mock_detector.detect.return_value = mock_system_info
 
         cortex = Cortex()

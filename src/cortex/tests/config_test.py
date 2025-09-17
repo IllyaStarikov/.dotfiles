@@ -2,15 +2,18 @@
 Tests for config.py module.
 """
 
-import unittest
-import tempfile
 import json
-import yaml
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 import os
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from cortex.config import Config, ConfigDefaults
+import yaml
+
+from cortex.config import Config
+from cortex.config import ConfigDefaults
 
 
 class TestConfigDefaults(unittest.TestCase):
@@ -142,12 +145,7 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {
-                    "id": "gpt-4",
-                    "name": "GPT-4",
-                    "provider": "openai",
-                    "online": True
-                }
+                model_info = {"id": "gpt-4", "name": "GPT-4", "provider": "openai", "online": True}
 
                 config.update_current_model(model_info)
 
@@ -196,10 +194,7 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {
-                    "id": "mlx-community/test-model",
-                    "provider": "mlx"
-                }
+                model_info = {"id": "mlx-community/test-model", "provider": "mlx"}
 
                 config.update_current_model(model_info)
 
@@ -218,10 +213,7 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {
-                    "id": "claude-3-opus",
-                    "provider": "claude"
-                }
+                model_info = {"id": "claude-3-opus", "provider": "claude"}
 
                 config.update_current_model(model_info)
 

@@ -58,7 +58,9 @@ config/
 ## 🔧 Core Modules
 
 ### autocmds.lua
+
 **Auto Commands** - Event-driven automation
+
 - File type detection
 - Auto-save functionality
 - Cursor restoration
@@ -67,7 +69,9 @@ config/
 - Highlight on yank
 
 ### fixy.lua
+
 **Production Auto-Formatter** - Silent, robust formatting
+
 - **Silent operation**: No "file reloaded" notifications
 - **Multi-layer suppression**: Handles all notification systems
 - **Cursor preservation**: Maintains position
@@ -75,6 +79,7 @@ config/
 - **Debug mode**: Optional logging to `/tmp/fixy.log`
 
 Commands:
+
 ```vim
 :Fixy          " Format current file
 :FixyAuto      " Toggle auto-format
@@ -83,13 +88,16 @@ Commands:
 ```
 
 ### plugins.lua
+
 **Plugin Specifications** - 500+ plugin references
+
 - Lazy loading configurations
 - Dependency management
 - Event-based loading
 - Performance optimizations
 
 Key plugins:
+
 - **lazy.nvim** - Plugin manager
 - **telescope.nvim** - Fuzzy finder
 - **nvim-treesitter** - Syntax highlighting
@@ -98,7 +106,9 @@ Key plugins:
 - **avante.nvim** - AI chat interface
 
 ### menu.lua
+
 **Context Menus** - Right-click and command menus
+
 - File operations
 - Git actions
 - LSP commands
@@ -108,27 +118,35 @@ Key plugins:
 ## 📂 Subdirectories
 
 ### /core
+
 Foundation settings:
+
 - **globals.lua** - Leader key, Python paths, etc.
 - **options.lua** - Line numbers, tabs, search, etc.
 - **init.lua** - Core module loader
 
 ### /keymaps
+
 Organized key bindings:
+
 - **editing.lua** - Cut, copy, paste, undo
 - **navigation.lua** - Movement, search, jumps
 - **plugins.lua** - Plugin-specific bindings
 - **windows.lua** - Splits, tabs, buffers
 
 ### /lsp
+
 Language Server Protocol:
+
 - **servers.lua** - Server configurations for 20+ languages
 - **handlers.lua** - Hover, signature, diagnostics
 - **keymaps.lua** - Go to definition, references, etc.
 - **init.lua** - LSP initialization and setup
 
 ### /plugins
+
 Plugin categories:
+
 - **ai.lua** - Avante, CodeCompanion, Copilot
 - **coding.lua** - Completion, snippets, formatting
 - **editor.lua** - File explorer, search, replace
@@ -138,19 +156,24 @@ Plugin categories:
 - **ui.lua** - Themes, statusline, notifications
 
 ### /ui
+
 Visual configuration:
+
 - **colors.lua** - TokyoNight theme setup
 - **statusline.lua** - Lualine configuration
 - **init.lua** - UI component initialization
 
 ### /utils
+
 Helper functions:
+
 - **helpers.lua** - Common utility functions
 - **init.lua** - Utility module loader
 
 ## ⚡ Performance Features
 
 ### Lazy Loading
+
 ```lua
 -- Example lazy-loaded plugin
 {
@@ -162,6 +185,7 @@ Helper functions:
 ```
 
 ### Conditional Loading
+
 ```lua
 -- Load only on specific file types
 {
@@ -172,6 +196,7 @@ Helper functions:
 ```
 
 ### Startup Optimization
+
 - Deferred loading for non-essential plugins
 - Compiled Lua modules
 - Minimal initial configuration
@@ -180,12 +205,14 @@ Helper functions:
 ## 🔌 Plugin Management
 
 ### Adding Plugins
+
 1. Add specification to appropriate file in `plugins/`
 2. Configure in relevant config file
 3. Add keymaps if needed
 4. Test loading and performance
 
 ### Removing Plugins
+
 1. Remove from plugin specification
 2. Remove configuration
 3. Remove keymaps
@@ -194,6 +221,7 @@ Helper functions:
 ## 🎯 Configuration Patterns
 
 ### Module Structure
+
 ```lua
 local M = {}
 
@@ -205,6 +233,7 @@ return M
 ```
 
 ### Lazy Specification
+
 ```lua
 return {
   "author/plugin",
@@ -218,6 +247,7 @@ return {
 ```
 
 ### Keymap Definition
+
 ```lua
 vim.keymap.set("n", "<leader>xx", function()
   -- Action
@@ -227,22 +257,26 @@ end, { desc = "Description" })
 ## 🐛 Debugging
 
 ### Health Check
+
 ```vim
 :checkhealth
 ```
 
 ### Plugin Profiling
+
 ```vim
 :Lazy profile
 ```
 
 ### LSP Info
+
 ```vim
 :LspInfo
 :Mason
 ```
 
 ### Debug Logging
+
 ```lua
 -- Enable debug in debug.lua
 vim.g.debug_mode = true
@@ -259,12 +293,14 @@ vim.g.debug_mode = true
 ## 🔗 Integration Points
 
 ### With Private Repo
+
 - Work-specific LSP servers
 - Custom snippets
 - Additional plugins
 - Override configurations
 
 ### With Theme System
+
 - Reads `MACOS_THEME` environment variable
 - Applies appropriate colorscheme
 - Updates on theme switch

@@ -7,7 +7,7 @@ error_symbol = "[❯](bold red)"
 vicmd_symbol = "[❮](bold green)"
 
 [directory]
-style = "cyan bold"  # Brighter cyan for dark backgrounds
+style = "cyan bold" # Brighter cyan for dark backgrounds
 read_only = " 🔒"
 
 [git_branch]

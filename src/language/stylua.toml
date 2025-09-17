@@ -1,9 +1,9 @@
 # Stylua configuration for dotfiles
 # Consistent Lua formatting across the project
 
-indent_type = "Spaces"  # Default: "Tabs"
-indent_width = 2  # Default: 4
-column_width = 100  # Default: 120
+indent_type = "Spaces" # Default: "Tabs"
+indent_width = 2       # Default: 4
+column_width = 100     # Default: 120
 
 
 # Table formatting

@@ -2,13 +2,15 @@
 Statistics tracking and analytics for Cortex.
 """
 
+from dataclasses import asdict
+from dataclasses import dataclass
+from datetime import datetime
+from datetime import timedelta
 import json
-import time
-from pathlib import Path
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
 import logging
+from pathlib import Path
+import time
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -103,47 +105,41 @@ class StatisticsTracker:
         except Exception as e:
             logger.error(f"Failed to save model stats: {e}")
 
-    def start_session(
-        self,
-        model: str,
-        provider: str,
-        temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-        ensemble: bool = False,
-        ensemble_models: List[str] = None
-    ) -> str:
+    def start_session(self,
+                      model: str,
+                      provider: str,
+                      temperature: float = 0.7,
+                      max_tokens: Optional[int] = None,
+                      ensemble: bool = False,
+                      ensemble_models: List[str] = None) -> str:
         """Start a new chat session."""
         session_id = f"{model}_{int(time.time())}"
 
-        self.current_session = ChatSession(
-            session_id=session_id,
-            model=model,
-            provider=provider,
-            start_time=time.time(),
-            end_time=None,
-            duration_seconds=0,
-            input_tokens=0,
-            output_tokens=0,
-            total_tokens=0,
-            messages=0,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            ensemble=ensemble,
-            ensemble_models=ensemble_models or [],
-            error=None,
-            metadata={}
-        )
+        self.current_session = ChatSession(session_id=session_id,
+                                           model=model,
+                                           provider=provider,
+                                           start_time=time.time(),
+                                           end_time=None,
+                                           duration_seconds=0,
+                                           input_tokens=0,
+                                           output_tokens=0,
+                                           total_tokens=0,
+                                           messages=0,
+                                           temperature=temperature,
+                                           max_tokens=max_tokens,
+                                           ensemble=ensemble,
+                                           ensemble_models=ensemble_models or [],
+                                           error=None,
+                                           metadata={})
 
         logger.info(f"Started session {session_id}")
         return session_id
 
-    def update_session(
-        self,
-        input_tokens: int = 0,
-        output_tokens: int = 0,
-        messages: int = 0,
-        metadata: Optional[Dict[str, Any]] = None
-    ):
+    def update_session(self,
+                       input_tokens: int = 0,
+                       output_tokens: int = 0,
+                       messages: int = 0,
+                       metadata: Optional[Dict[str, Any]] = None):
         """Update current session statistics."""
         if not self.current_session:
             logger.warning("No active session to update")
@@ -151,9 +147,8 @@ class StatisticsTracker:
 
         self.current_session.input_tokens += input_tokens
         self.current_session.output_tokens += output_tokens
-        self.current_session.total_tokens = (
-            self.current_session.input_tokens + self.current_session.output_tokens
-        )
+        self.current_session.total_tokens = (self.current_session.input_tokens +
+                                             self.current_session.output_tokens)
         self.current_session.messages += messages
 
         if metadata:
@@ -166,9 +161,8 @@ class StatisticsTracker:
             return
 
         self.current_session.end_time = time.time()
-        self.current_session.duration_seconds = (
-            self.current_session.end_time - self.current_session.start_time
-        )
+        self.current_session.duration_seconds = (self.current_session.end_time -
+                                                 self.current_session.start_time)
         self.current_session.error = error
 
         # Add to sessions list
@@ -189,18 +183,16 @@ class StatisticsTracker:
         model_key = f"{session.provider}:{session.model}"
 
         if model_key not in self.model_stats:
-            self.model_stats[model_key] = ModelUsage(
-                model_id=session.model,
-                provider=session.provider,
-                total_sessions=0,
-                total_tokens=0,
-                total_duration_seconds=0,
-                average_tokens_per_session=0,
-                average_duration_seconds=0,
-                last_used=session.end_time,
-                error_count=0,
-                success_rate=1.0
-            )
+            self.model_stats[model_key] = ModelUsage(model_id=session.model,
+                                                     provider=session.provider,
+                                                     total_sessions=0,
+                                                     total_tokens=0,
+                                                     total_duration_seconds=0,
+                                                     average_tokens_per_session=0,
+                                                     average_duration_seconds=0,
+                                                     last_used=session.end_time,
+                                                     error_count=0,
+                                                     success_rate=1.0)
 
         stats = self.model_stats[model_key]
         stats.total_sessions += 1
@@ -244,7 +236,8 @@ class StatisticsTracker:
 
             model_key = f"{session.provider}:{session.model}"
             daily["models_used"][model_key] = daily["models_used"].get(model_key, 0) + 1
-            daily["providers_used"][session.provider] = daily["providers_used"].get(session.provider, 0) + 1
+            daily["providers_used"][session.provider] = daily["providers_used"].get(
+                session.provider, 0) + 1
 
             if session.error:
                 daily["errors"] += 1

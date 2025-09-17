@@ -35,13 +35,7 @@ local function format_message(level, module, message)
       break
     end
   end
-  return string.format(
-    "[%s] [%s] [%s] %s",
-    timestamp,
-    level_name,
-    module or "GENERAL",
-    message
-  )
+  return string.format("[%s] [%s] [%s] %s", timestamp, level_name, module or "GENERAL", message)
 end
 
 -- Write to log file
@@ -140,10 +134,7 @@ function M.log_work_detection()
   end
 
   -- Log package path
-  M.debug(
-    "LUA",
-    "package.path (first 500 chars):\n" .. package.path:sub(1, 500)
-  )
+  M.debug("LUA", "package.path (first 500 chars):\n" .. package.path:sub(1, 500))
 
   -- Log vim globals related to work
   local work_globals = {
@@ -227,10 +218,7 @@ function M.setup_commands()
   vim.api.nvim_create_user_command("DebugWork", function()
     M.log_work_detection()
     M.log_lsp_state()
-    vim.notify(
-      "Work debugging information logged to " .. M.log_file,
-      vim.log.levels.INFO
-    )
+    vim.notify("Work debugging information logged to " .. M.log_file, vim.log.levels.INFO)
   end, { desc = "Log work environment debugging information" })
 
   vim.api.nvim_create_user_command("DebugViewLog", function()

@@ -9,7 +9,7 @@
 Snacks.nvim is a comprehensive suite of QoL (Quality of Life) improvements for Neovim. In this configuration, we use Snacks for:
 
 - **File Explorer** - Modern, picker-based file browsing
-- **Dashboard** - Beautiful start screen with quick actions  
+- **Dashboard** - Beautiful start screen with quick actions
 - **Terminal Integration** - Floating and split terminals
 - **Git Integration** - LazyGit and git utilities
 - **Buffer Management** - Smart buffer deletion
@@ -22,6 +22,7 @@ Snacks.nvim is a comprehensive suite of QoL (Quality of Life) improvements for N
 ## Key Features
 
 ### File Explorer
+
 The Snacks file explorer provides a modern, fuzzy-searchable alternative to traditional tree explorers:
 
 - **Instant search** - Type to filter files and directories
@@ -30,6 +31,7 @@ The Snacks file explorer provides a modern, fuzzy-searchable alternative to trad
 - **Smart navigation** - Remembers your last location
 
 ### Dashboard
+
 A beautiful, customizable start screen that appears when you open Neovim without a file:
 
 - **Quick actions** - Single-key shortcuts to common tasks
@@ -37,7 +39,8 @@ A beautiful, customizable start screen that appears when you open Neovim without
 - **Project switching** - Jump between projects
 - **Startup time** - Shows how fast Neovim loaded
 
-### Terminal Integration  
+### Terminal Integration
+
 Seamless terminal integration within Neovim:
 
 - **Multiple layouts** - Float, split, or vsplit
@@ -49,51 +52,52 @@ Seamless terminal integration within Neovim:
 
 ### File Operations (Using Telescope)
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>ff` | Find Files | Fast fuzzy file search |
-| `<leader>fF` | Find Files + Hidden | Include hidden files |
-| `<leader>fr` | Recent Files | Quick access to recent files |
-| `<leader>fg` | Live Grep | Search text in all files |
-| `<leader>fG` | Live Grep + Hidden | Search including hidden files |
-| `<leader>f/` | Grep Word | Search word under cursor |
-| `<leader>f;` | Resume Search | Continue last search |
-| `<leader>fb` | Browse Buffers | Switch between open files |
-| `<leader>fh` | Help Tags | Search Neovim help |
-| `<leader>fc` | Commands | Browse available commands |
-| `<leader>fk` | Keymaps | Search keybindings |
+| Key          | Action              | Description                   |
+| ------------ | ------------------- | ----------------------------- |
+| `<leader>ff` | Find Files          | Fast fuzzy file search        |
+| `<leader>fF` | Find Files + Hidden | Include hidden files          |
+| `<leader>fr` | Recent Files        | Quick access to recent files  |
+| `<leader>fg` | Live Grep           | Search text in all files      |
+| `<leader>fG` | Live Grep + Hidden  | Search including hidden files |
+| `<leader>f/` | Grep Word           | Search word under cursor      |
+| `<leader>f;` | Resume Search       | Continue last search          |
+| `<leader>fb` | Browse Buffers      | Switch between open files     |
+| `<leader>fh` | Help Tags           | Search Neovim help            |
+| `<leader>fc` | Commands            | Browse available commands     |
+| `<leader>fk` | Keymaps             | Search keybindings            |
 
 ### Scratch Buffers
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>.` | Toggle Scratch | Quick temporary buffer |
+| Key         | Action         | Description                    |
+| ----------- | -------------- | ------------------------------ |
+| `<leader>.` | Toggle Scratch | Quick temporary buffer         |
 | `<leader>S` | Select Scratch | Choose from existing scratches |
 
 ### Terminal
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>tt` | Toggle Terminal | Main terminal |
-| `<leader>tf` | Float Terminal | Floating terminal |
-| `<leader>ts` | Split Terminal | Horizontal split |
-| `<leader>tv` | VSplit Terminal | Vertical split |
-| `<leader>tg` | Git Terminal | `git status` terminal |
-| `<leader>tp` | Python Terminal | Python REPL |
+| Key          | Action          | Description           |
+| ------------ | --------------- | --------------------- |
+| `<leader>tt` | Toggle Terminal | Main terminal         |
+| `<leader>tf` | Float Terminal  | Floating terminal     |
+| `<leader>ts` | Split Terminal  | Horizontal split      |
+| `<leader>tv` | VSplit Terminal | Vertical split        |
+| `<leader>tg` | Git Terminal    | `git status` terminal |
+| `<leader>tp` | Python Terminal | Python REPL           |
 
 ### File Explorer
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>e` | Explorer | Open file explorer |
+| Key         | Action              | Description                      |
+| ----------- | ------------------- | -------------------------------- |
+| `<leader>e` | Explorer            | Open file explorer               |
 | `<leader>E` | Explorer (file dir) | Open in current file's directory |
-| `<leader>o` | Open Explorer | Alternative binding |
-| `<leader>O` | Float Explorer | Open in floating window |
-| `-` | Open Explorer | Quick access (like vim-vinegar) |
+| `<leader>o` | Open Explorer       | Alternative binding              |
+| `<leader>O` | Float Explorer      | Open in floating window          |
+| `-`         | Open Explorer       | Quick access (like vim-vinegar)  |
 
 **Explorer Navigation**:
+
 - **Type to search** - Instantly filter files and directories
-- **Tab** - Select/deselect files for bulk operations  
+- **Tab** - Select/deselect files for bulk operations
 - **Enter** - Open file or directory
 - **Backspace** - Go to parent directory
 - **Ctrl+v** - Open in vertical split
@@ -108,18 +112,19 @@ Seamless terminal integration within Neovim:
 
 ### Git Integration
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>gg` | LazyGit | Full git interface |
-| `<leader>gG` | LazyGit (cwd) | LazyGit from file's directory |
-| `<leader>gb` | Git Blame Line | Show blame for current line |
-| `<leader>gB` | Git Browse | Open file/line in browser |
-| `<leader>gf` | Git Files | Browse files tracked by git |
-| `<leader>gs` | Git Status | Browse changed files |
-| `<leader>gc` | Git Commits | Browse commit history |
-| `<leader>gC` | Buffer Commits | Commits for current file |
+| Key          | Action         | Description                   |
+| ------------ | -------------- | ----------------------------- |
+| `<leader>gg` | LazyGit        | Full git interface            |
+| `<leader>gG` | LazyGit (cwd)  | LazyGit from file's directory |
+| `<leader>gb` | Git Blame Line | Show blame for current line   |
+| `<leader>gB` | Git Browse     | Open file/line in browser     |
+| `<leader>gf` | Git Files      | Browse files tracked by git   |
+| `<leader>gs` | Git Status     | Browse changed files          |
+| `<leader>gc` | Git Commits    | Browse commit history         |
+| `<leader>gC` | Buffer Commits | Commits for current file      |
 
 **LazyGit Tips**:
+
 - Use `?` for help inside LazyGit
 - `Tab` to switch between panels
 - `x` to open command menu
@@ -128,43 +133,44 @@ Seamless terminal integration within Neovim:
 
 ### Buffer Management
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>bd` | Delete Buffer | Smart delete (keeps window layout) |
-| `<leader>bD` | Delete All Buffers | Clear all buffers |
-| `<leader>bo` | Delete Other Buffers | Keep only current buffer |
+| Key          | Action               | Description                        |
+| ------------ | -------------------- | ---------------------------------- |
+| `<leader>bd` | Delete Buffer        | Smart delete (keeps window layout) |
+| `<leader>bD` | Delete All Buffers   | Clear all buffers                  |
+| `<leader>bo` | Delete Other Buffers | Keep only current buffer           |
 
 **Smart Buffer Deletion**: Unlike `:bd`, Snacks' buffer delete preserves your window layout and switches to a sensible buffer instead of closing the window.
 
 ### Toggles & Settings
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>tw` | Toggle Wrap | Line wrapping on/off |
-| `<leader>tS` | Toggle Spell | Spell checking on/off |
-| `<leader>tn` | Toggle Line Numbers | Absolute line numbers |
-| `<leader>tr` | Toggle Relative Numbers | Relative line numbers |
+| Key          | Action                  | Description             |
+| ------------ | ----------------------- | ----------------------- |
+| `<leader>tw` | Toggle Wrap             | Line wrapping on/off    |
+| `<leader>tS` | Toggle Spell            | Spell checking on/off   |
+| `<leader>tn` | Toggle Line Numbers     | Absolute line numbers   |
+| `<leader>tr` | Toggle Relative Numbers | Relative line numbers   |
 | `<leader>th` | Toggle Search Highlight | Clear search highlights |
-| `<leader>tD` | Toggle Diagnostics | LSP diagnostics on/off |
+| `<leader>tD` | Toggle Diagnostics      | LSP diagnostics on/off  |
 
 **Toggle Indicators**: When you toggle a setting, a notification appears showing the new state.
 
 ### Utilities
 
-| Key | Action | Description |
-|-----|--------|-------------|
+| Key          | Action                | Description             |
+| ------------ | --------------------- | ----------------------- |
 | `<leader>un` | Dismiss Notifications | Clear all notifications |
-| `<leader>nh` | Notification History | View past notifications |
+| `<leader>nh` | Notification History  | View past notifications |
 
 ### Focus & Zen Mode
 
-| Key | Action | Description |
-|-----|--------|-------------|
-| `<leader>z` | Toggle Zen Mode | Distraction-free coding |
-| `<leader>Z` | Zen Zoom | Focus current window only |
-| `<leader>sd` | Show Dashboard | Return to start screen |
+| Key          | Action          | Description               |
+| ------------ | --------------- | ------------------------- |
+| `<leader>z`  | Toggle Zen Mode | Distraction-free coding   |
+| `<leader>Z`  | Zen Zoom        | Focus current window only |
+| `<leader>sd` | Show Dashboard  | Return to start screen    |
 
 **Zen Mode Features**:
+
 - Hides all UI elements except your code
 - Centers the text for comfortable reading
 - Disables distracting plugins
@@ -177,16 +183,19 @@ Seamless terminal integration within Neovim:
 Snacks.nvim is designed for speed and includes several performance optimizations:
 
 ### Big File Handling
+
 - Files over 1MB automatically disable heavy features
 - Syntax highlighting, spell check, and folds are turned off
 - Ensures smooth editing of large files
 
 ### Smart Exclusions
+
 - Automatically ignores: `.git`, `node_modules`, `__pycache__`, `build`, `dist`
 - Speeds up file searching and navigation
 - Reduces memory usage
 
 ### Lazy Loading
+
 - Modules load only when needed
 - Dashboard loads instantly without blocking
 - Terminals start in background
@@ -226,21 +235,25 @@ explorer = {
 ## Pro Tips
 
 ### File Navigation
+
 1. **Quick switching**: Use `<leader>fr` for recent files - faster than browsing
 2. **Project files**: `<leader>gf` shows only git-tracked files, filtering out noise
 3. **Smart explorer**: Type partial filenames in explorer to jump instantly
 
-### Terminal Workflow  
+### Terminal Workflow
+
 1. **Persistent terminals**: Your terminal sessions stay alive when hidden
 2. **Quick commands**: `<leader>tg` for git status, `<leader>tp` for Python REPL
 3. **Multiple terminals**: Open different terminals for different tasks
 
 ### Productivity Boosters
+
 1. **Scratch buffers**: Use `<leader>.` for quick notes that won't clutter your workspace
 2. **Zen mode**: `<leader>z` when you need to focus on just the code
 3. **Smart notifications**: Important messages stay visible, others auto-hide
 
 ### Git Integration
+
 1. **LazyGit power**: `<leader>gg` gives you a full Git UI - learn it once, use everywhere
 2. **Quick blame**: `<leader>gb` shows who changed the current line
 3. **Browser integration**: `<leader>gB` opens the file on GitHub/GitLab
@@ -248,6 +261,7 @@ explorer = {
 ## Common Workflows
 
 ### Starting Your Day
+
 ```vim
 " 1. Open Neovim - see dashboard
 nvim
@@ -257,6 +271,7 @@ nvim
 ```
 
 ### Quick File Edits
+
 ```vim
 " 1. Open explorer in current directory
 <leader>e
@@ -269,6 +284,7 @@ config
 ```
 
 ### Git Workflow
+
 ```vim
 " 1. Check git status
 <leader>gg
@@ -279,6 +295,7 @@ config
 ```
 
 ### Terminal Tasks
+
 ```vim
 " Run tests in floating terminal
 <leader>tf

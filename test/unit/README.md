@@ -5,6 +5,7 @@
 This directory contains isolated unit tests that validate individual components of the dotfiles repository. Each subdirectory tests a specific component in isolation, ensuring basic functionality without dependencies on other systems.
 
 ### Directory Structure:
+
 ```
 unit/
 ├── core_validation.zsh    # Core system validation (9.6KB)
@@ -40,6 +41,7 @@ unit/
 ```
 
 ### How to run unit tests:
+
 ```bash
 # Run all unit tests
 ./test/test --unit
@@ -59,6 +61,7 @@ CI=true ./test/test --unit
 ```
 
 ### Expected output:
+
 ```
 ▶ Testing: Neovim configuration
   ✓ init.lua exists and is valid
@@ -70,9 +73,11 @@ Results: 3 passed, 0 failed, 0 skipped
 ## 2. Why this directory exists
 
 ### Purpose:
+
 Unit tests provide the first line of defense against configuration errors. They catch basic problems before they can cascade into system-wide failures.
 
 ### Why unit tests specifically:
+
 1. **Fast feedback** - Unit tests run in < 5 seconds total
 2. **Isolation** - Test one thing at a time without side effects
 3. **Early detection** - Catch syntax errors and missing files immediately
@@ -80,12 +85,14 @@ Unit tests provide the first line of defense against configuration errors. They 
 5. **Regression prevention** - Ensure fixes stay fixed
 
 ### Why organized by component:
+
 - **Clarity** - Easy to find tests for specific functionality
 - **Parallelization** - Different components can be tested simultaneously
 - **Ownership** - Clear responsibility for test maintenance
 - **Scalability** - New components get their own test directory
 
 ### Why we test these specific things:
+
 - **Configuration syntax** - Invalid syntax breaks everything
 - **File existence** - Missing files cause cascading failures
 - **Version requirements** - Old versions lack required features
@@ -97,7 +104,9 @@ Unit tests provide the first line of defense against configuration errors. They 
 ### Test Categories:
 
 #### Configuration Validation (core_validation.zsh)
+
 Tests fundamental system requirements:
+
 - Shell version (Zsh 5.8+)
 - Required commands (git, nvim, tmux)
 - Directory structure
@@ -107,6 +116,7 @@ Tests fundamental system requirements:
 #### Component-Specific Tests:
 
 **Git Tests** (`git/`)
+
 - Configuration file syntax
 - Hook executability
 - GPG signing setup
@@ -114,6 +124,7 @@ Tests fundamental system requirements:
 - Ignore patterns
 
 **Neovim Tests** (`nvim/`)
+
 - Lua syntax validation
 - Plugin loading checks
 - LSP configuration
@@ -121,6 +132,7 @@ Tests fundamental system requirements:
 - Version requirements
 
 **Script Tests** (`scripts/`)
+
 - Shebang correctness
 - Syntax validation
 - Required dependencies
@@ -128,6 +140,7 @@ Tests fundamental system requirements:
 - Function definitions
 
 **Setup Tests** (`setup/`)
+
 - Installation script integrity
 - Symlink creation logic
 - Backup mechanisms
@@ -135,6 +148,7 @@ Tests fundamental system requirements:
 - Dry-run mode
 
 **Theme Tests** (`theme/`)
+
 - Theme file existence
 - Color scheme validation
 - Application integration
@@ -142,6 +156,7 @@ Tests fundamental system requirements:
 - Lock file handling
 
 **Tmux Tests** (`tmux/`)
+
 - Configuration syntax
 - Plugin availability
 - Key binding conflicts
@@ -149,6 +164,7 @@ Tests fundamental system requirements:
 - Version compatibility
 
 **Zsh Tests** (`zsh/`)
+
 - RC file syntax
 - Plugin loading
 - Alias definitions
@@ -176,6 +192,7 @@ assert_contains "$output" "substring"
 ```
 
 ### Performance Requirements:
+
 - Individual test: < 100ms
 - Component suite: < 1 second
 - Full unit tests: < 5 seconds
@@ -194,6 +211,7 @@ When working with unit tests, understand:
 5. **Deterministic** - Same input always produces same output
 
 ### Writing new tests:
+
 ```bash
 # Template for new unit test
 #!/usr/bin/env zsh
@@ -221,6 +239,7 @@ cleanup_test
 ```
 
 ### Test patterns to follow:
+
 1. **Arrange-Act-Assert** - Setup, execute, verify
 2. **One assertion per test** - Clear what failed
 3. **Descriptive names** - Test name explains what's tested
@@ -228,6 +247,7 @@ cleanup_test
 5. **Cleanup always** - Even after failures
 
 ### Common pitfalls to avoid:
+
 - Don't test external dependencies (internet, servers)
 - Don't rely on user-specific paths
 - Don't assume tool versions
@@ -239,6 +259,7 @@ cleanup_test
 ### What NOT to do:
 
 #### ❌ Don't test with production configs
+
 ```bash
 # BAD - Modifies real config
 echo "test" >> ~/.zshrc
@@ -249,6 +270,7 @@ echo "test" >> "$temp_rc"
 ```
 
 #### ❌ Don't assume environment
+
 ```bash
 # BAD - Assumes brew is installed
 brew list | grep -q package
@@ -262,6 +284,7 @@ fi
 ```
 
 #### ❌ Don't use absolute timeouts
+
 ```bash
 # BAD - Might be too short on slow systems
 timeout 1 nvim --headless -c ':q'
@@ -273,9 +296,11 @@ timeout 10 nvim --headless -c ':q'
 ### Known Issues:
 
 #### Issue: Tests pass locally but fail in CI
+
 **Symptom**: Green locally, red in GitHub Actions
 **Cause**: Different environment (macOS vs Linux)
 **Fix**: Add platform detection
+
 ```bash
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS-specific test
@@ -285,17 +310,21 @@ fi
 ```
 
 #### Issue: Neovim tests hang
+
 **Symptom**: Test never completes
 **Cause**: Plugin trying to download/install
 **Fix**: Use --headless and timeout
+
 ```bash
 timeout 5 nvim --headless -c ':qa' 2>&1
 ```
 
 #### Issue: Permission denied errors
+
 **Symptom**: Scripts fail with permission errors
 **Cause**: Files not marked executable in git
 **Fix**: Check and fix in setup
+
 ```bash
 chmod +x "$DOTFILES_DIR/src/scripts/"*.sh
 ```
@@ -347,21 +376,25 @@ chmod +x "$DOTFILES_DIR/src/scripts/"*.sh
 ### Best practices discovered:
 
 1. **Always set pipefail**
+
    ```bash
    set -euo pipefail  # Fail on any error in pipeline
    ```
 
 2. **Guard against missing variables**
+
    ```bash
    : ${DOTFILES_DIR:?"DOTFILES_DIR must be set"}
    ```
 
 3. **Use process substitution for temp files**
+
    ```bash
    diff <(sort file1) <(sort file2)  # No temp files needed
    ```
 
 4. **Check commands exist before use**
+
    ```bash
    command -v rg >/dev/null || skip "ripgrep not installed"
    ```
@@ -392,6 +425,7 @@ chmod +x "$DOTFILES_DIR/src/scripts/"*.sh
 ### Common Problems:
 
 1. **Test not found**
+
    ```bash
    # Check file is executable
    ls -l test/unit/component/test.sh
@@ -400,6 +434,7 @@ chmod +x "$DOTFILES_DIR/src/scripts/"*.sh
    ```
 
 2. **Helper functions not available**
+
    ```bash
    # Ensure TEST_DIR is set
    export TEST_DIR="$DOTFILES_DIR/test"

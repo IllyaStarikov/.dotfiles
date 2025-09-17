@@ -20,10 +20,7 @@ local function safe_dofile(path)
     if ok then
       return result
     elseif vim.env.NVIM_DEBUG_WORK then
-      vim.notify(
-        "Failed to load file: " .. path .. "\n" .. tostring(result),
-        vim.log.levels.WARN
-      )
+      vim.notify("Failed to load file: " .. path .. "\n" .. tostring(result), vim.log.levels.WARN)
     end
   end
   return nil
@@ -74,10 +71,7 @@ function M.detect_machine_type()
     cached_machine_type = "google"
     vim.g.work_machine_type = cached_machine_type
     return cached_machine_type
-  elseif
-    hostname:match("DELL%-PRECISION")
-    or hostname:match("%.garmin%.com$")
-  then
+  elseif hostname:match("DELL%-PRECISION") or hostname:match("%.garmin%.com$") then
     cached_machine_type = "garmin"
     vim.g.work_machine_type = cached_machine_type
     return cached_machine_type
@@ -94,10 +88,7 @@ function M.init()
   local machine_type = M.detect_machine_type()
 
   if vim.env.NVIM_DEBUG_WORK then
-    vim.notify(
-      "Work init: Detected machine type: " .. machine_type,
-      vim.log.levels.INFO
-    )
+    vim.notify("Work init: Detected machine type: " .. machine_type, vim.log.levels.INFO)
   end
 
   -- Skip if personal machine
@@ -111,17 +102,13 @@ function M.init()
   vim.g.work_lsp_override = true
 
   -- Load work-specific init if available
-  local work_init_path = vim.fn.expand(
-    "~/.dotfiles/.dotfiles.private/" .. machine_type .. "/init.lua"
-  )
+  local work_init_path =
+    vim.fn.expand("~/.dotfiles/.dotfiles.private/" .. machine_type .. "/init.lua")
   local work_init = safe_dofile(work_init_path)
   if work_init and work_init.setup then
     local ok, err = pcall(work_init.setup)
     if not ok and vim.env.NVIM_DEBUG_WORK then
-      vim.notify(
-        "Work init setup failed: " .. tostring(err),
-        vim.log.levels.WARN
-      )
+      vim.notify("Work init setup failed: " .. tostring(err), vim.log.levels.WARN)
     end
   end
 

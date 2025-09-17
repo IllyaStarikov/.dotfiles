@@ -33,7 +33,7 @@ it "should switch themes atomically" && {
 
 it "should update all application configs" && {
     export HOME="$TEST_HOME"
-    
+
     # Check that script would update multiple configs
     local script_content=$(cat "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh")
     assert_contains "$script_content" "alacritty"
@@ -51,7 +51,7 @@ it "should handle tmux session reloading" && {
 it "should track current theme" && {
     export HOME="$TEST_HOME"
     mkdir -p "$TEST_HOME/.config/theme-switcher"
-    
+
     # Script should create current theme tracking
     local script_content=$(cat "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh")
     assert_contains "$script_content" "current" || assert_contains "$script_content" "CURRENT"
@@ -60,11 +60,11 @@ it "should track current theme" && {
 
 it "should be idempotent" && {
     export HOME="$TEST_HOME"
-    
+
     # Running twice should be safe
     output1=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run 2>&1 || true)
     output2=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run 2>&1 || true)
-    
+
     assert_success 0
     pass
 }

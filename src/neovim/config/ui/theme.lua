@@ -154,20 +154,12 @@ local function setup_theme()
     -- Smart comment colors based on background
     if current_bg == "dark" then
       -- Dark background: lighter, more visible comment colors
-      vim.cmd(
-        "highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic"
-      )
-      vim.cmd(
-        "highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic"
-      )
+      vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
+      vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
     else
       -- Light background: darker, high-contrast comment colors
-      vim.cmd(
-        "highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic"
-      )
-      vim.cmd(
-        "highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic"
-      )
+      vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
+      vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
     end
 
     -- Light theme syntax optimizations for better readability
@@ -211,20 +203,12 @@ vim.api.nvim_create_user_command("FixComments", function()
   local current_bg = vim.opt.background:get()
 
   if current_bg == "dark" then
-    vim.cmd(
-      "highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic"
-    )
-    vim.cmd(
-      "highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic"
-    )
+    vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
     -- Dark theme comment colors applied
   else
-    vim.cmd(
-      "highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic"
-    )
-    vim.cmd(
-      "highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic"
-    )
+    vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
     -- Light theme comment colors applied
   end
 end, {

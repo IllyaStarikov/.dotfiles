@@ -65,24 +65,17 @@ if work_init_ok and work_init then
   work_init.init()
 else
   -- Fallback to the old private init method
-  local private_init_path =
-    vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
+  local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
   if vim.fn.filereadable(private_init_path) == 1 then
     local ok, private_init = pcall(dofile, private_init_path)
     if ok and private_init and private_init.init then
       -- Initialize work configuration with error handling
       local init_ok, init_err = pcall(private_init.init)
       if not init_ok and vim.env.NVIM_DEBUG_WORK then
-        vim.notify(
-          "Private init failed: " .. tostring(init_err),
-          vim.log.levels.WARN
-        )
+        vim.notify("Private init failed: " .. tostring(init_err), vim.log.levels.WARN)
       end
     elseif not ok and vim.env.NVIM_DEBUG_WORK then
-      vim.notify(
-        "Failed to load private init: " .. tostring(private_init),
-        vim.log.levels.WARN
-      )
+      vim.notify("Failed to load private init: " .. tostring(private_init), vim.log.levels.WARN)
     end
   end
 end
@@ -176,10 +169,7 @@ local modules = {
 for _, module in ipairs(modules) do
   local ok, err = pcall(require, module)
   if not ok then
-    vim.notify(
-      "Failed to load " .. module .. ": " .. tostring(err),
-      vim.log.levels.ERROR
-    )
+    vim.notify("Failed to load " .. module .. ": " .. tostring(err), vim.log.levels.ERROR)
     -- Continue loading other modules
   end
 end
