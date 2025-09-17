@@ -198,7 +198,7 @@ run_docker_test() {
   if [[ "$DEBUG_MODE" == true ]]; then
     docker_cmd+="DEBUG=true timeout 900 zsh test/e2e/docker-e2e-test.zsh"
   else
-    docker_cmd+="timeout 600 zsh test/e2e/docker-e2e-test.zsh"
+    docker_cmd+="DEBUG=false timeout 600 zsh test/e2e/docker-e2e-test.zsh"
   fi
 
   # Run the test script in the container
@@ -219,6 +219,7 @@ run_docker_test() {
       --rm \
       -e NONINTERACTIVE=1 \
       -e CI=true \
+      -e DEBUG=false \
       "dotfiles-test:latest" \
       -c "$docker_cmd" \
       >> "$log_file" 2>&1
