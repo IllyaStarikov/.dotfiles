@@ -112,12 +112,25 @@ show_progress() {
   local total=$2
   local percent=$((current * 100 / total))
   local filled=$((percent / 2))
+
+  # Ensure filled doesn't exceed 50 and calculate empty correctly
+  if [[ $filled -gt 50 ]]; then
+    filled=50
+  fi
   local empty=$((50 - filled))
+
+  # For 100%, ensure the bar is fully green
+  if [[ $percent -eq 100 ]]; then
+    filled=50
+    empty=0
+  fi
 
   printf "\r[${GREEN}"
   printf "%0.s█" $(seq 1 $filled)
   printf "${NC}"
-  printf "%0.s░" $(seq 1 $empty)
+  if [[ $empty -gt 0 ]]; then
+    printf "%0.s░" $(seq 1 $empty)
+  fi
   printf "] ${percent}%% ($current/$total)"
 }
 
@@ -311,15 +324,19 @@ EOF
 
   # Process result
   if [[ $test_status -eq 0 ]]; then
+    # Clear the rest of the line after the progress bar for clean output
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
     log SUCCESS "$test_name (${duration}s)"
     ((PASSED++))
   elif [[ $test_status -eq 124 ]]; then
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
     log FAIL "$test_name - TIMEOUT"
     ((FAILED++))
     if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
       echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
     fi
   else
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
     log FAIL "$test_name - EXIT $test_status"
     ((FAILED++))
     if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
@@ -355,12 +372,20 @@ run_test_category() {
   local count=0
   for test_file in "${test_files[@]}"; do
     ((count++))
-    [[ $VERBOSE -eq 0 ]] && show_progress $count $total
 
     if [[ $PARALLEL -eq 1 ]]; then
       run_test "$test_file" &
     else
+      # Show progress bar before running test
+      [[ $VERBOSE -eq 0 ]] && show_progress $count $total
+
       run_test "$test_file"
+
+      # After the last test, ensure we have a clean line
+      if [[ $count -eq $total ]] && [[ $VERBOSE -eq 0 ]]; then
+        echo  # Add newline after the completed progress bar
+      fi
+
       if [[ $? -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
         return 1
       fi
