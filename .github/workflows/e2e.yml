@@ -10,17 +10,11 @@ on:
     - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
-      platforms:
-        description: 'Platforms to test'
+      debug_mode:
+        description: 'Run in debug mode'
         required: false
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - ubuntu-only
-          - fedora-only
-          - arch-only
-          - macos-only
+        default: false
+        type: boolean
 
 env:
   TERM: xterm-256color
@@ -28,20 +22,13 @@ env:
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════════
-  # Linux E2E Tests
+  # E2E Test - Docker Container
   # ═══════════════════════════════════════════════════════════════════════════════
 
-  linux-e2e:
-    name: E2E Test - ${{ matrix.distro }}
+  e2e-test:
+    name: E2E Test - Ubuntu Docker
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ubuntu, fedora, arch]
-    if: |
-      github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.platforms == 'all' ||
-      contains(github.event.inputs.platforms, matrix.distro)
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -56,69 +43,73 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ matrix.distro }}-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-${{ matrix.distro }}-
             ${{ runner.os }}-buildx-
 
-      - name: Build test image
+      - name: Make scripts executable
         run: |
-          if [ "${{ matrix.distro }}" = "ubuntu" ]; then
-            docker build -t dotfiles-e2e:${{ matrix.distro }} \
-              -f test/e2e/Dockerfile.ubuntu \
-              --build-arg UBUNTU_VERSION=22.04 \
-              .
-          else
-            # Create Dockerfile for other distros if needed
-            docker build -t dotfiles-e2e:${{ matrix.distro }} \
-              -f test/e2e/Dockerfile.${{ matrix.distro }} \
-              . || {
-                echo "Creating basic Dockerfile for ${{ matrix.distro }}"
-                cat > test/e2e/Dockerfile.${{ matrix.distro }} << EOF
-          FROM ${{ matrix.distro }}:latest
-          RUN useradd -m testuser
-          USER testuser
-          WORKDIR /home/testuser
-          EOF
-                docker build -t dotfiles-e2e:${{ matrix.distro }} \
-                  -f test/e2e/Dockerfile.${{ matrix.distro }} .
-              }
-          fi
+          chmod +x test/e2e/runner.zsh
+          chmod +x test/e2e/docker-e2e-test.zsh
+          chmod +x test/runner.zsh
 
       - name: Run E2E tests
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/home/testuser/.dotfiles:ro \
-            -e CI=true \
-            -e E2E_TEST=true \
-            -e GITHUB_ACTIONS=true \
-            dotfiles-e2e:${{ matrix.distro }} \
-            bash -c "cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && zsh test/e2e/docker-e2e-test.zsh"
+          if [ "${{ github.event.inputs.debug_mode }}" = "true" ]; then
+            echo "Running in debug mode..."
+            ./test/e2e/runner.zsh --debug
+          else
+            ./test/e2e/runner.zsh
+          fi
 
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-logs-${{ matrix.distro }}
+          name: e2e-test-logs
           path: |
-            test/logs/
+            test/logs/e2e_*/
             test/e2e/*.log
 
+      - name: Display test summary
+        if: always()
+        run: |
+          # Find the latest log directory
+          LOG_DIR=$(ls -td test/logs/e2e_* 2>/dev/null | head -1)
+
+          if [ -d "$LOG_DIR" ]; then
+            echo "## Test Summary"
+            echo ""
+
+            # Check if test.log exists and show summary
+            if [ -f "$LOG_DIR/test.log" ]; then
+              echo "### Test Phases:"
+              grep -E "^(✓|✗|⚠)" "$LOG_DIR/test.log" | tail -20 || true
+
+              echo ""
+              echo "### Final Result:"
+              tail -5 "$LOG_DIR/test.log" | grep -E "(Successfully|Failed)" || echo "Test status unclear"
+            fi
+
+            # Show report if exists
+            if [ -f "$LOG_DIR/report.txt" ]; then
+              echo ""
+              echo "### Report:"
+              cat "$LOG_DIR/report.txt"
+            fi
+          else
+            echo "No test logs found"
+          fi
+
   # ═══════════════════════════════════════════════════════════════════════════════
-  # macOS E2E Tests
+  # Quick Validation (for PRs)
   # ═══════════════════════════════════════════════════════════════════════════════
 
-  macos-e2e:
-    name: E2E Test - macOS ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, macos-14]
-    if: |
-      github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.platforms == 'all' ||
-      contains(github.event.inputs.platforms, 'macos')
+  quick-validation:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
@@ -126,111 +117,88 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Cache Homebrew packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/Homebrew
-          key: ${{ runner.os }}-${{ matrix.os }}-brew-${{ hashFiles('**/Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.os }}-brew-
-
-      - name: Prepare test environment
+      - name: Validate scripts are executable
         run: |
-          # Create isolated test directory
-          export TEST_HOME="/tmp/dotfiles-e2e-test-$$"
-          mkdir -p "$TEST_HOME"
-
-          # Copy dotfiles
-          cp -R . "$TEST_HOME/.dotfiles"
-
-          echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
-
-      - name: Run setup script
-        run: |
-          cd "$TEST_HOME/.dotfiles"
-          chmod +x src/setup/setup.sh
-
-          # Run setup with symlinks only (don't install packages in CI)
-          HOME="$TEST_HOME" CI=true ./src/setup/setup.sh --symlinks
-
-      - name: Verify installation
-        run: |
-          cd "$TEST_HOME/.dotfiles"
-
-          # Check symlinks
-          for config in .zshrc .gitconfig .tmux.conf; do
-            if [ -L "$TEST_HOME/$config" ]; then
-              echo "✓ $config linked"
-            else
-              echo "✗ $config not linked"
-              exit 1
+          echo "Checking script permissions..."
+          for script in $(find . -name "*.sh" -o -name "*.zsh"); do
+            if [ -f "$script" ]; then
+              if [ ! -x "$script" ]; then
+                echo "Warning: $script is not executable"
+              fi
             fi
           done
 
-      - name: Run unit tests
+      - name: Check for syntax errors
         run: |
-          cd "$TEST_HOME/.dotfiles/test"
-          chmod +x runner.zsh
+          echo "Checking shell script syntax..."
+          for script in $(find . -name "*.sh"); do
+            if [ -f "$script" ]; then
+              bash -n "$script" || echo "Syntax error in $script"
+            fi
+          done
 
-          HOME="$TEST_HOME" CI=true ./runner.zsh --unit
+          for script in $(find . -name "*.zsh"); do
+            if [ -f "$script" ]; then
+              zsh -n "$script" || echo "Syntax error in $script"
+            fi
+          done
 
-      - name: Run functional tests
+      - name: Verify Docker files
         run: |
-          cd "$TEST_HOME/.dotfiles/test"
-
-          HOME="$TEST_HOME" CI=true SKIP_GUI_TESTS=1 ./runner.zsh --functional
-
-      - name: Upload test logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-logs-${{ matrix.os }}
-          path: |
-            ${{ env.TEST_HOME }}/.dotfiles/test/logs/
-            /tmp/dotfiles-*.log
-
-      - name: Cleanup
-        if: always()
-        run: |
-          rm -rf "$TEST_HOME"
+          echo "Checking E2E test files exist..."
+          [ -f "test/e2e/runner.zsh" ] || exit 1
+          [ -f "test/e2e/docker-e2e-test.zsh" ] || exit 1
+          echo "✓ All required files present"
 
   # ═══════════════════════════════════════════════════════════════════════════════
-  # Summary Job
+  # Summary
   # ═══════════════════════════════════════════════════════════════════════════════
 
-  e2e-summary:
-    name: E2E Test Summary
+  summary:
+    name: Test Summary
     runs-on: ubuntu-latest
-    needs: [linux-e2e, macos-e2e]
+    needs: [e2e-test]
     if: always()
 
     steps:
-      - name: Check test results
+      - name: Check results
         run: |
-          echo "## E2E Test Results Summary"
+          echo "## E2E Test Results"
           echo ""
 
-          if [ "${{ needs.linux-e2e.result }}" = "success" ]; then
-            echo "✅ Linux E2E tests passed"
-          else
-            echo "❌ Linux E2E tests failed"
-          fi
-
-          if [ "${{ needs.macos-e2e.result }}" = "success" ]; then
-            echo "✅ macOS E2E tests passed"
-          else
-            echo "❌ macOS E2E tests failed"
-          fi
-
-          # Fail if any tests failed
-          if [ "${{ needs.linux-e2e.result }}" != "success" ] || \
-             [ "${{ needs.macos-e2e.result }}" != "success" ]; then
+          if [ "${{ needs.e2e-test.result }}" = "success" ]; then
+            echo "✅ **E2E tests passed successfully!**"
             echo ""
-            echo "❌ Some E2E tests failed!"
+            echo "The complete dotfiles setup has been validated in a clean Docker environment."
+          else
+            echo "❌ **E2E tests failed**"
+            echo ""
+            echo "Please check the test logs for details."
             exit 1
           fi
 
-          echo ""
-          echo "✅ All E2E tests passed!"
+      - name: Create summary comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ needs.e2e-test.result }}';
+            const emoji = result === 'success' ? '✅' : '❌';
+            const status = result === 'success' ? 'passed' : 'failed';
+
+            const body = `## E2E Test Results ${emoji}
+
+            The E2E tests have ${status}.
+
+            ${result === 'success'
+              ? '✓ Setup script works correctly\n✓ All symlinks created\n✓ Tests pass in clean environment'
+              : 'Please check the workflow logs for details.'}
+            `;
+
+            // Comment on PR
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

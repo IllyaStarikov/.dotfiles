@@ -79,8 +79,8 @@ jobs:
 
       - name: ✅ Run Unit Tests
         run: |
-          chmod +x test/test
-          cd test && ./test --unit --ci -v
+          chmod +x test/runner.zsh
+          cd test && ./runner.zsh --unit
 
       - name: 📊 Upload Test Results
         if: always()
@@ -138,8 +138,8 @@ jobs:
 
       - name: 🔄 Run Functional Tests
         run: |
-          chmod +x test/test
-          cd test && ./test --functional --ci -v
+          chmod +x test/runner.zsh
+          cd test && ./runner.zsh --functional
 
       - name: 📊 Upload Test Results
         if: always()
