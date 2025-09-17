@@ -5,18 +5,18 @@ E2E TEST SUITE - ZSH SCRIPTS
 This file contains all E2E test functionality ported to Zsh scripts.
 
 FILES:
-1. e2e-runner.zsh - Main E2E test orchestrator (runs on host)
+1. runner.zsh - Main E2E test orchestrator (runs on host)
 2. docker-e2e-test.zsh - Test runner for Docker containers
 
 ════════════════════════════════════════════════════════════════════════════════
-FILE 1: e2e-runner.zsh
+FILE 1: runner.zsh
 PURPOSE: Main orchestrator that manages Docker containers and macOS testing
 ════════════════════════════════════════════════════════════════════════════════
 
-Location: /Users/starikov/.dotfiles/test/e2e/e2e-runner.zsh
+Location: /Users/starikov/.dotfiles/test/e2e/runner.zsh
 
 USAGE:
-  ./e2e-runner.zsh [OPTIONS]
+  ./runner.zsh [OPTIONS]
 
 OPTIONS:
   --linux-only     Run tests only in Linux containers
@@ -88,19 +88,19 @@ USAGE EXAMPLES
 ════════════════════════════════════════════════════════════════════════════════
 
 # Run full E2E test suite (all platforms)
-./test/e2e/e2e-runner.zsh
+./test/e2e/runner.zsh
 
 # Run only macOS tests (no Docker required)
-./test/e2e/e2e-runner.zsh --macos-only
+./test/e2e/runner.zsh --macos-only
 
 # Run only Linux container tests
-./test/e2e/e2e-runner.zsh --linux-only
+./test/e2e/runner.zsh --linux-only
 
 # Quick test (Ubuntu only + macOS)
-./test/e2e/e2e-runner.zsh --quick
+./test/e2e/runner.zsh --quick
 
 # Debug mode with verbose output
-./test/e2e/e2e-runner.zsh --verbose --keep-container
+./test/e2e/runner.zsh --verbose --keep-container
 
 # Run specific platform in Docker manually
 docker build --platform linux/amd64 -t test:ubuntu -f Dockerfile.ubuntu .
@@ -111,7 +111,7 @@ docker run --platform linux/amd64 --rm test:ubuntu \
 DOCKER CONFIGURATION
 ════════════════════════════════════════════════════════════════════════════════
 
-The e2e-runner.zsh script generates Dockerfiles for:
+The runner.zsh script generates Dockerfiles for:
 
 UBUNTU:
 - Base: ubuntu:22.04

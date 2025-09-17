@@ -52,24 +52,24 @@ The E2E test suite ensures that:
 
 Run tests for all Linux distributions:
 ```bash
-./test/e2e/full_setup_test.sh
+./test/e2e/runner.zsh
 ```
 
 Test specific platform:
 ```bash
 # Ubuntu only
-./test/e2e/full_setup_test.sh --linux-only
+./test/e2e/runner.zsh --linux-only
 docker-compose -f test/e2e/docker-compose.yml up ubuntu-e2e
 
 # With debugging
-./test/e2e/full_setup_test.sh --verbose --keep-container
+./test/e2e/runner.zsh --verbose --keep-container
 ```
 
 ### macOS Testing
 
 Run on macOS host:
 ```bash
-./test/e2e/full_setup_test.sh --macos-only
+./test/e2e/runner.zsh --macos-only
 ```
 
 ### Docker Compose
