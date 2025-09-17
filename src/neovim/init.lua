@@ -89,14 +89,16 @@ end
 
 -- Fix for treesitter markdown code fence errors
 -- This must be done very early before any plugins load
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "markdown", "markdown.pandoc" },
-  callback = function()
-    local bufnr = vim.api.nvim_get_current_buf()
+-- Check if nvim_create_autocmd exists (requires Neovim 0.7+)
+if vim.api.nvim_create_autocmd then
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "markdown.pandoc" },
+    callback = function()
+      local bufnr = vim.api.nvim_get_current_buf()
 
-    -- Set up autocmd to detect problematic edits
-    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
-      buffer = bufnr,
+      -- Set up autocmd to detect problematic edits
+      vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+        buffer = bufnr,
       callback = function()
         local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
         local fence_count = 0
@@ -125,6 +127,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   desc = "Workaround for treesitter markdown errors",
 })
+end -- end of nvim_create_autocmd check
 
 -- Enable automatic LSP detection
 -- This must be set before any plugins are loaded
