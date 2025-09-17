@@ -19,19 +19,19 @@ DATA_DIR="$OUTPUT_DIR/data"
 
 # File categories and their patterns
 typeset -a CONFIG_PATTERNS=(
-    "*.lua:Lua Configuration"
-    "*.vim:Vim Script"
-    "*.toml:TOML Configuration"
-    "*.conf:Configuration File"
-    "*.sh:Shell Script"
-    "*.zsh:Zsh Script"
-    "*.bash:Bash Script"
-    "*.json:JSON Data"
-    "*.yaml:YAML Configuration"
-    "*.yml:YAML Configuration"
-    "gitconfig:Git Configuration"
-    "gitignore:Git Ignore"
-    "*rc:RC File"
+  "*.lua:Lua Configuration"
+  "*.vim:Vim Script"
+  "*.toml:TOML Configuration"
+  "*.conf:Configuration File"
+  "*.sh:Shell Script"
+  "*.zsh:Zsh Script"
+  "*.bash:Bash Script"
+  "*.json:JSON Data"
+  "*.yaml:YAML Configuration"
+  "*.yml:YAML Configuration"
+  "gitconfig:Git Configuration"
+  "gitignore:Git Ignore"
+  "*rc:RC File"
 )
 
 # Directories to exclude from scanning
@@ -42,92 +42,92 @@ EXCLUDE_DIRS=".git .github node_modules .cache backup temp tmp"
 # ════════════════════════════════════════════════════════════════════════════
 
 log() {
-    echo "[$(date +'%H:%M:%S')] $*"
+  echo "[$(date +'%H:%M:%S')] $*"
 }
 
 error() {
-    echo "[ERROR] $*" >&2
-    exit 1
+  echo "[ERROR] $*" >&2
+  exit 1
 }
 
 # Create necessary directories
 setup_directories() {
-    log "Setting up output directories..."
-    mkdir -p "$OUTPUT_DIR"
-    mkdir -p "$ASSETS_DIR"/{css,js,icons}
-    mkdir -p "$DATA_DIR"
-    mkdir -p "$OUTPUT_DIR/files"
+  log "Setting up output directories..."
+  mkdir -p "$OUTPUT_DIR"
+  mkdir -p "$ASSETS_DIR"/{css,js,icons}
+  mkdir -p "$DATA_DIR"
+  mkdir -p "$OUTPUT_DIR/files"
 }
 
 # Get file language for syntax highlighting
 get_file_language() {
-    local file="$1"
-    local ext="${file##*.}"
-    local name="$(basename "$file")"
-    
-    case "$ext" in
-        lua) echo "lua" ;;
-        vim) echo "vim" ;;
-        sh|bash|zsh) echo "bash" ;;
-        conf|toml) echo "toml" ;;
-        json) echo "json" ;;
-        yaml|yml) echo "yaml" ;;
-        py) echo "python" ;;
-        js) echo "javascript" ;;
-        md) echo "markdown" ;;
-        *) 
-            case "$name" in
-                *gitconfig*) echo "ini" ;;
-                *gitignore*) echo "gitignore" ;;
-                *rc) echo "bash" ;;
-                *) echo "plaintext" ;;
-            esac
-            ;;
-    esac
+  local file="$1"
+  local ext="${file##*.}"
+  local name="$(basename "$file")"
+
+  case "$ext" in
+    lua) echo "lua" ;;
+    vim) echo "vim" ;;
+    sh | bash | zsh) echo "bash" ;;
+    conf | toml) echo "toml" ;;
+    json) echo "json" ;;
+    yaml | yml) echo "yaml" ;;
+    py) echo "python" ;;
+    js) echo "javascript" ;;
+    md) echo "markdown" ;;
+    *)
+      case "$name" in
+        *gitconfig*) echo "ini" ;;
+        *gitignore*) echo "gitignore" ;;
+        *rc) echo "bash" ;;
+        *) echo "plaintext" ;;
+      esac
+      ;;
+  esac
 }
 
 # Get file category
 get_file_category() {
-    local file="$1"
-    local name="$(basename "$file")"
-    
-    # Check path-based categories
-    if [[ "$file" == *"/neovim/"* ]]; then
-        echo "Neovim"
-    elif [[ "$file" == *"/zsh/"* ]]; then
-        echo "Shell"
-    elif [[ "$file" == *"/git/"* ]]; then
-        echo "Git"
-    elif [[ "$file" == *"/tmux"* ]]; then
-        echo "Terminal"
-    elif [[ "$file" == *"/alacritty/"* ]]; then
-        echo "Terminal"
-    elif [[ "$file" == *"/scripts/"* ]]; then
-        echo "Scripts"
-    elif [[ "$file" == *"/theme-switcher/"* ]]; then
-        echo "Themes"
-    elif [[ "$file" == *"/snippets/"* ]]; then
-        echo "Snippets"
-    else
-        # Fallback to extension-based
-        case "${file##*.}" in
-            lua|vim) echo "Editor" ;;
-            sh|bash|zsh) echo "Scripts" ;;
-            conf|toml) echo "Configuration" ;;
-            *) echo "Other" ;;
-        esac
-    fi
+  local file="$1"
+  local name="$(basename "$file")"
+
+  # Check path-based categories
+  if [[ "$file" == *"/neovim/"* ]]; then
+    echo "Neovim"
+  elif [[ "$file" == *"/zsh/"* ]]; then
+    echo "Shell"
+  elif [[ "$file" == *"/git/"* ]]; then
+    echo "Git"
+  elif [[ "$file" == *"/tmux"* ]]; then
+    echo "Terminal"
+  elif [[ "$file" == *"/alacritty/"* ]]; then
+    echo "Terminal"
+  elif [[ "$file" == *"/scripts/"* ]]; then
+    echo "Scripts"
+  elif [[ "$file" == *"/theme-switcher/"* ]]; then
+    echo "Themes"
+  elif [[ "$file" == *"/snippets/"* ]]; then
+    echo "Snippets"
+  else
+    # Fallback to extension-based
+    case "${file##*.}" in
+      lua | vim) echo "Editor" ;;
+      sh | bash | zsh) echo "Scripts" ;;
+      conf | toml) echo "Configuration" ;;
+      *) echo "Other" ;;
+    esac
+  fi
 }
 
 # Get file metadata
 get_file_metadata() {
-    local file="$1"
-    local relative_path="${file#$SRC_DIR/}"
-    local size=$(wc -c < "$file" 2>/dev/null || echo "0")
-    local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
-    local modified=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$file" 2>/dev/null || echo "Unknown")
-    
-    echo "{
+  local file="$1"
+  local relative_path="${file#$SRC_DIR/}"
+  local size=$(wc -c <"$file" 2>/dev/null || echo "0")
+  local lines=$(wc -l <"$file" 2>/dev/null || echo "0")
+  local modified=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$file" 2>/dev/null || echo "Unknown")
+
+  echo "{
         \"path\": \"$relative_path\",
         \"name\": \"$(basename "$file")\",
         \"size\": $size,
@@ -144,100 +144,100 @@ get_file_metadata() {
 
 # Build exclude pattern for find command
 build_exclude_pattern() {
-    local pattern=""
-    for dir in $EXCLUDE_DIRS; do
-        pattern="$pattern -name $dir -prune -o"
-    done
-    echo "$pattern"
+  local pattern=""
+  for dir in $EXCLUDE_DIRS; do
+    pattern="$pattern -name $dir -prune -o"
+  done
+  echo "$pattern"
 }
 
 # Discover all configuration files
 discover_files() {
-    log "Discovering configuration files..."
-    local exclude_pattern=$(build_exclude_pattern)
-    local files_json="["
-    local first=true
-    
-    # Find all files, excluding certain directories
-    while IFS= read -r file; do
-        if [[ -f "$file" ]]; then
-            # Skip binary files
-            if file "$file" | grep -q "text"; then
-                if [[ "$first" == "false" ]]; then
-                    files_json="$files_json,"
-                fi
-                files_json="$files_json$(get_file_metadata "$file")"
-                first=false
-            fi
+  log "Discovering configuration files..."
+  local exclude_pattern=$(build_exclude_pattern)
+  local files_json="["
+  local first=true
+
+  # Find all files, excluding certain directories
+  while IFS= read -r file; do
+    if [[ -f "$file" ]]; then
+      # Skip binary files
+      if file "$file" | grep -q "text"; then
+        if [[ "$first" == "false" ]]; then
+          files_json="$files_json,"
         fi
-    done < <(eval "find '$SRC_DIR' $exclude_pattern -type f -print")
-    
-    files_json="$files_json]"
-    echo "$files_json" > "$DATA_DIR/files.json"
-    log "Discovered $(echo "$files_json" | grep -o '"path"' | wc -l) files"
+        files_json="$files_json$(get_file_metadata "$file")"
+        first=false
+      fi
+    fi
+  done < <(eval "find '$SRC_DIR' $exclude_pattern -type f -print")
+
+  files_json="$files_json]"
+  echo "$files_json" >"$DATA_DIR/files.json"
+  log "Discovered $(echo "$files_json" | grep -o '"path"' | wc -l) files"
 }
 
 # Generate directory tree structure
 generate_tree() {
-    log "Generating directory tree..."
-    
-    # Use tree command if available, otherwise use find
-    if command -v tree &> /dev/null; then
-        tree -J -a -I '.git|node_modules|*.pyc|__pycache__|.DS_Store' "$SRC_DIR" > "$DATA_DIR/tree.json"
-    else
-        # Fallback to custom tree generation
-        generate_custom_tree "$SRC_DIR" > "$DATA_DIR/tree.json"
-    fi
+  log "Generating directory tree..."
+
+  # Use tree command if available, otherwise use find
+  if command -v tree &>/dev/null; then
+    tree -J -a -I '.git|node_modules|*.pyc|__pycache__|.DS_Store' "$SRC_DIR" >"$DATA_DIR/tree.json"
+  else
+    # Fallback to custom tree generation
+    generate_custom_tree "$SRC_DIR" >"$DATA_DIR/tree.json"
+  fi
 }
 
 # Custom tree generation (fallback)
 generate_custom_tree() {
-    local dir="$1"
-    local prefix="$2"
-    
-    echo "["
-    local first=true
-    for item in "$dir"/*; do
-        if [[ ! "$first" == "true" ]]; then echo ","; fi
-        first=false
-        
-        local name="$(basename "$item")"
-        if [[ -d "$item" ]]; then
-            echo "{\"type\":\"directory\",\"name\":\"$name\",\"contents\":"
-            generate_custom_tree "$item" "  $prefix"
-            echo "}"
-        else
-            local size=$(wc -c < "$item" 2>/dev/null || echo "0")
-            echo "{\"type\":\"file\",\"name\":\"$name\",\"size\":$size}"
-        fi
-    done
-    echo "]"
+  local dir="$1"
+  local prefix="$2"
+
+  echo "["
+  local first=true
+  for item in "$dir"/*; do
+    if [[ ! "$first" == "true" ]]; then echo ","; fi
+    first=false
+
+    local name="$(basename "$item")"
+    if [[ -d "$item" ]]; then
+      echo "{\"type\":\"directory\",\"name\":\"$name\",\"contents\":"
+      generate_custom_tree "$item" "  $prefix"
+      echo "}"
+    else
+      local size=$(wc -c <"$item" 2>/dev/null || echo "0")
+      echo "{\"type\":\"file\",\"name\":\"$name\",\"size\":$size}"
+    fi
+  done
+  echo "]"
 }
 
 # Process individual file to HTML
 process_file() {
-    local file="$1"
-    local relative_path="${file#$SRC_DIR/}"
-    local output_file="$OUTPUT_DIR/files/${relative_path}.html"
-    local output_dir="$(dirname "$output_file")"
-    
-    # Create output directory
-    mkdir -p "$output_dir"
-    
-    # Read and escape file content
-    local content=""
-    if [[ -f "$file" ]]; then
-        content=$(cat "$file" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
-    fi
-    
-    # Get metadata
-    local language=$(get_file_language "$file")
-    local category=$(get_file_category "$file")
-    local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
-    local size=$(wc -c < "$file" 2>/dev/null || echo "0")
-    
-    # Generate HTML
-    cat > "$output_file" << EOF
+  local file="$1"
+  local relative_path="${file#$SRC_DIR/}"
+  local output_file="$OUTPUT_DIR/files/${relative_path}.html"
+  local output_dir="$(dirname "$output_file")"
+
+  # Create output directory
+  mkdir -p "$output_dir"
+
+  # Read and escape file content
+  local content=""
+  if [[ -f "$file" ]]; then
+    content=$(cat "$file" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+  fi
+
+  # Get metadata
+  local language=$(get_file_language "$file")
+  local category=$(get_file_category "$file")
+  local lines=$(wc -l <"$file" 2>/dev/null || echo "0")
+  local size=$(wc -c <"$file" 2>/dev/null || echo "0")
+
+  # Generate HTML
+  cat >"$output_file" <<EOF
 <!DOCTYPE html>
 <html lang="en" data-theme="auto">
 <head>
@@ -261,13 +261,13 @@ process_file() {
                 <!-- Populated by JavaScript -->
             </div>
         </nav>
-        
+
         <main class="content">
             <div class="breadcrumb">
-                <a href="/">Home</a> / 
+                <a href="/">Home</a> /
                 ${relative_path//\// / }
             </div>
-            
+
             <div class="file-header">
                 <h1>$(basename "$file")</h1>
                 <div class="file-meta">
@@ -277,20 +277,20 @@ process_file() {
                     <span class="meta-item">🔤 ${language}</span>
                 </div>
             </div>
-            
+
             <div class="file-actions">
                 <button onclick="copyToClipboard()" class="btn btn-primary">📋 Copy</button>
                 <button onclick="downloadFile()" class="btn">⬇️ Download</button>
-                <a href="https://github.com/IllyaStarikov/.dotfiles/blob/main/src/${relative_path}" 
+                <a href="https://github.com/IllyaStarikov/.dotfiles/blob/main/src/${relative_path}"
                    class="btn" target="_blank">🔗 View on GitHub</a>
             </div>
-            
+
             <div class="code-container">
                 <pre class="line-numbers"><code class="language-${language}" id="code-content">${content}</code></pre>
             </div>
         </main>
     </div>
-    
+
     <script>
         const filePath = '${relative_path}';
         const fileContent = \`${content}\`;
@@ -304,22 +304,22 @@ EOF
 
 # Process all discovered files
 process_all_files() {
-    log "Processing files..."
-    local count=0
-    
-    # Read files from discovery
-    while IFS= read -r file; do
-        if [[ -f "$file" ]]; then
-            process_file "$file"
-            ((count++))
-            if ((count % 10 == 0)); then
-                echo -n "."
-            fi
-        fi
-    done < <(find "$SRC_DIR" -type f)
-    
-    echo ""
-    log "Processed $count files"
+  log "Processing files..."
+  local count=0
+
+  # Read files from discovery
+  while IFS= read -r file; do
+    if [[ -f "$file" ]]; then
+      process_file "$file"
+      ((count++))
+      if ((count % 10 == 0)); then
+        echo -n "."
+      fi
+    fi
+  done < <(find "$SRC_DIR" -type f)
+
+  echo ""
+  log "Processed $count files"
 }
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -328,8 +328,8 @@ process_all_files() {
 
 # Generate main CSS
 generate_css() {
-    log "Generating CSS..."
-    cat > "$ASSETS_DIR/css/main.css" << 'EOF'
+  log "Generating CSS..."
+  cat >"$ASSETS_DIR/css/main.css" <<'EOF'
 /* Modern Dotfiles Documentation Styles */
 
 :root {
@@ -346,7 +346,7 @@ generate_css() {
     --warning: #ffc107;
     --danger: #dc3545;
     --info: #17a2b8;
-    
+
     --sidebar-width: 280px;
     --header-height: 60px;
     --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
@@ -729,24 +729,24 @@ pre.line-numbers > code {
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
     }
-    
+
     .sidebar-toggle {
         display: block;
     }
-    
+
     .content {
         margin-left: 0;
         padding: 1rem;
     }
-    
+
     .file-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         width: 100%;
         justify-content: center;
@@ -786,8 +786,8 @@ EOF
 
 # Generate main JavaScript
 generate_js() {
-    log "Generating JavaScript..."
-    cat > "$ASSETS_DIR/js/app.js" << 'EOF'
+  log "Generating JavaScript..."
+  cat >"$ASSETS_DIR/js/app.js" <<'EOF'
 // Dotfiles Documentation App
 
 class DotfilesApp {
@@ -804,7 +804,7 @@ class DotfilesApp {
         const stored = localStorage.getItem('theme');
         const theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
-        
+
         // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem('theme')) {
@@ -831,7 +831,7 @@ class DotfilesApp {
         // Group files by directory
         const tree = this.buildTreeStructure(files);
         container.innerHTML = this.renderTreeHTML(tree);
-        
+
         // Add expand/collapse functionality
         container.querySelectorAll('.tree-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
@@ -845,11 +845,11 @@ class DotfilesApp {
 
     buildTreeStructure(files) {
         const tree = {};
-        
+
         files.forEach(file => {
             const parts = file.path.split('/');
             let current = tree;
-            
+
             parts.forEach((part, index) => {
                 if (index === parts.length - 1) {
                     // It's a file
@@ -863,16 +863,16 @@ class DotfilesApp {
                 }
             });
         });
-        
+
         return tree;
     }
 
     renderTreeHTML(tree, level = 0) {
         let html = '';
-        
+
         Object.keys(tree).sort().forEach(key => {
             const value = tree[key];
-            
+
             if (value.path) {
                 // It's a file
                 const icon = this.getFileIcon(value.name);
@@ -900,7 +900,7 @@ class DotfilesApp {
                 `;
             }
         });
-        
+
         return html;
     }
 
@@ -922,11 +922,11 @@ class DotfilesApp {
             'gitignore': '🚫',
             'gitconfig': '🔧'
         };
-        
+
         if (filename.includes('gitconfig')) return '🔧';
         if (filename.includes('gitignore')) return '🚫';
         if (filename.endsWith('rc')) return '⚙️';
-        
+
         return icons[ext] || '📄';
     }
 
@@ -953,12 +953,12 @@ class DotfilesApp {
         try {
             const response = await fetch('/data/files.json');
             const files = await response.json();
-            
+
             const filtered = files.filter(file => {
                 return file.name.toLowerCase().includes(query.toLowerCase()) ||
                        file.path.toLowerCase().includes(query.toLowerCase());
             });
-            
+
             this.renderSearchResults(filtered);
         } catch (error) {
             console.error('Search failed:', error);
@@ -987,7 +987,7 @@ class DotfilesApp {
             `;
         });
         html += '</div>';
-        
+
         container.innerHTML = html;
     }
 
@@ -995,12 +995,12 @@ class DotfilesApp {
     initializeSidebar() {
         const toggle = document.getElementById('sidebar-toggle');
         const sidebar = document.getElementById('sidebar');
-        
+
         if (toggle && sidebar) {
             toggle.addEventListener('click', () => {
                 sidebar.classList.toggle('active');
             });
-            
+
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
@@ -1055,9 +1055,9 @@ class DotfilesApp {
             border-radius: 8px;
             z-index: 9999;
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
@@ -1074,8 +1074,8 @@ EOF
 
 # Generate index.html
 generate_index() {
-    log "Generating index.html..."
-    cat > "$OUTPUT_DIR/index.html" << 'EOF'
+  log "Generating index.html..."
+  cat >"$OUTPUT_DIR/index.html" <<'EOF'
 <!DOCTYPE html>
 <html lang="en" data-theme="auto">
 <head>
@@ -1099,13 +1099,13 @@ generate_index() {
                 <!-- Populated by JavaScript -->
             </div>
         </nav>
-        
+
         <main class="content">
             <header class="page-header">
                 <h1>Dotfiles Configuration Reference</h1>
                 <p>Complete documentation and browser for all configuration files</p>
             </header>
-            
+
             <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-value" id="total-files">-</div>
@@ -1124,7 +1124,7 @@ generate_index() {
                     <div class="stat-label">Categories</div>
                 </div>
             </div>
-            
+
             <section class="featured-section">
                 <h2>Featured Configurations</h2>
                 <div class="home-grid">
@@ -1136,7 +1136,7 @@ generate_index() {
                             <span>📝 2000+ lines</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3><span class="card-icon">🐚</span> Shell</h3>
                         <p>Zsh configuration with Zinit, custom functions, and aliases</p>
@@ -1145,7 +1145,7 @@ generate_index() {
                             <span>📝 800+ lines</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3><span class="card-icon">💻</span> Terminal</h3>
                         <p>Alacritty and tmux configurations for the perfect terminal experience</p>
@@ -1154,7 +1154,7 @@ generate_index() {
                             <span>📝 600+ lines</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3><span class="card-icon">🎨</span> Themes</h3>
                         <p>Automatic theme switching system with multiple color schemes</p>
@@ -1163,7 +1163,7 @@ generate_index() {
                             <span>📝 500+ lines</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3><span class="card-icon">🔧</span> Git</h3>
                         <p>Git configuration with aliases, hooks, and global gitignore</p>
@@ -1172,7 +1172,7 @@ generate_index() {
                             <span>📝 400+ lines</span>
                         </div>
                     </div>
-                    
+
                     <div class="card">
                         <h3><span class="card-icon">📜</span> Scripts</h3>
                         <p>Utility scripts for system maintenance and automation</p>
@@ -1183,7 +1183,7 @@ generate_index() {
                     </div>
                 </div>
             </section>
-            
+
             <section class="quick-links">
                 <h2>Quick Links</h2>
                 <ul>
@@ -1197,21 +1197,21 @@ generate_index() {
             </section>
         </main>
     </div>
-    
+
     <script>
         // Load statistics
         fetch('/data/files.json')
             .then(res => res.json())
             .then(files => {
                 document.getElementById('total-files').textContent = files.length;
-                
+
                 const totalLines = files.reduce((sum, file) => sum + (file.lines || 0), 0);
                 document.getElementById('total-lines').textContent = totalLines.toLocaleString();
-                
+
                 const totalSize = files.reduce((sum, file) => sum + (file.size || 0), 0);
                 const sizeInKB = (totalSize / 1024).toFixed(1);
                 document.getElementById('total-size').textContent = sizeInKB + ' KB';
-                
+
                 const categories = new Set(files.map(f => f.category));
                 document.getElementById('categories').textContent = categories.size;
             });
@@ -1227,35 +1227,35 @@ EOF
 # ════════════════════════════════════════════════════════════════════════════
 
 main() {
-    log "Starting Dotfiles Documentation Generator"
-    log "Output directory: $OUTPUT_DIR"
-    
-    # Setup
-    setup_directories
-    
-    # Discovery
-    discover_files
-    generate_tree
-    
-    # Generate assets
-    generate_css
-    generate_js
-    generate_index
-    
-    # Process files
-    process_all_files
-    
-    # Copy additional assets if they exist
-    if [[ -f "$SCRIPT_DIR/prism.js" ]]; then
-        cp "$SCRIPT_DIR/prism.js" "$ASSETS_DIR/js/"
-    fi
-    if [[ -f "$SCRIPT_DIR/prism-tomorrow.css" ]]; then
-        cp "$SCRIPT_DIR/prism-tomorrow.css" "$ASSETS_DIR/css/"
-    fi
-    
-    log "✅ Generation complete!"
-    log "📁 Output: $OUTPUT_DIR"
-    log "🚀 To preview: cd $OUTPUT_DIR && python3 -m http.server 8000"
+  log "Starting Dotfiles Documentation Generator"
+  log "Output directory: $OUTPUT_DIR"
+
+  # Setup
+  setup_directories
+
+  # Discovery
+  discover_files
+  generate_tree
+
+  # Generate assets
+  generate_css
+  generate_js
+  generate_index
+
+  # Process files
+  process_all_files
+
+  # Copy additional assets if they exist
+  if [[ -f "$SCRIPT_DIR/prism.js" ]]; then
+    cp "$SCRIPT_DIR/prism.js" "$ASSETS_DIR/js/"
+  fi
+  if [[ -f "$SCRIPT_DIR/prism-tomorrow.css" ]]; then
+    cp "$SCRIPT_DIR/prism-tomorrow.css" "$ASSETS_DIR/css/"
+  fi
+
+  log "✅ Generation complete!"
+  log "📁 Output: $OUTPUT_DIR"
+  log "🚀 To preview: cd $OUTPUT_DIR && python3 -m http.server 8000"
 }
 
 # Run main function

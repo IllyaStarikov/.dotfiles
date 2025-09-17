@@ -31,6 +31,7 @@
 My personal development environment - a battle-tested, performance-obsessed configuration that transforms any Unix system into a productivity powerhouse. This isn't just a collection of dotfiles; it's a complete development ecosystem with enterprise-grade testing, AI integration, and sub-second everything.
 
 ### 🏆 Key Achievements
+
 - **< 50ms** Neovim startup with 500+ plugin references
 - **< 100ms** Zsh initialization with smart lazy loading
 - **< 500ms** Complete theme switching across all applications
@@ -68,35 +69,41 @@ cd ~/.dotfiles
 ## ✨ Features
 
 ### 🤖 AI-Powered Development
+
 - **Local AI** via Ollama with llama3.1:70b model
 - **CodeCompanion** integration for chat, inline edits, and agents
 - **GitHub Copilot** support with automatic suggestions
 - **Claude/GPT-4** ready configurations
 
 ### 🎨 Intelligent Theme System
+
 - **Automatic switching** based on macOS appearance
 - **4 TokyoNight variants** (Day, Night, Moon, Storm)
 - **Synchronized** across Neovim, Alacritty, WezTerm, tmux, and Starship
 - **< 500ms** switching time with zero flicker
 
 ### 🚀 Performance-First Design
+
 - **Lazy loading** for all plugins and scripts
 - **Compiled Lua** modules for Neovim
 - **Parallel execution** wherever possible
 - **Smart caching** for expensive operations
 
 ### 🔧 Modern CLI Toolchain
-| Traditional | Replacement | Improvement |
-|-------------|-------------|-------------|
-| `ls` | `eza` | Icons, git status, tree view |
-| `cat` | `bat` | Syntax highlighting, git integration |
-| `find` | `fd` | 5-10x faster, intuitive syntax |
-| `grep` | `ripgrep` | 10-50x faster, respects .gitignore |
-| `cd` | `zoxide` | Frecency-based jumping |
-| `diff` | `delta` | Side-by-side, syntax highlighted |
+
+| Traditional | Replacement | Improvement                          |
+| ----------- | ----------- | ------------------------------------ |
+| `ls`        | `eza`       | Icons, git status, tree view         |
+| `cat`       | `bat`       | Syntax highlighting, git integration |
+| `find`      | `fd`        | 5-10x faster, intuitive syntax       |
+| `grep`      | `ripgrep`   | 10-50x faster, respects .gitignore   |
+| `cd`        | `zoxide`    | Frecency-based jumping               |
+| `diff`      | `delta`     | Side-by-side, syntax highlighted     |
 
 ### 📝 Language Support (20+)
+
 Full LSP, formatting, linting, and debugging for:
+
 - **Systems**: C/C++, Rust, Go, Zig
 - **Scripting**: Python, Ruby, Perl, Lua, Shell/Bash
 - **Web**: TypeScript, JavaScript, HTML, CSS, Vue, React
@@ -105,6 +112,7 @@ Full LSP, formatting, linting, and debugging for:
 - **Mobile**: Swift, Kotlin
 
 ### 🧪 Enterprise-Grade Testing
+
 ```bash
 ./test/test           # Standard test suite (< 30s)
 ./test/test --quick   # Sanity check (< 10s)
@@ -117,6 +125,7 @@ Full LSP, formatting, linting, and debugging for:
 ## 📦 What's Included
 
 ### Core Components
+
 - **[Neovim](src/neovim/)** - 500+ plugin references organized in 8 modules
 - **[Zsh](src/zsh/)** - Zinit-powered with turbo mode for instant startup
 - **[Tmux](src/tmux/)** - Minimal config with custom status line
@@ -126,6 +135,7 @@ Full LSP, formatting, linting, and debugging for:
 - **[Starship](src/zsh/starship.toml)** - Minimal, fast, customizable prompt
 
 ### Utility Scripts
+
 - **[`fixy`](src/scripts/fixy)** - Universal formatter supporting 20+ languages
 - **[`theme`](src/scripts/theme)** - Instant theme switching
 - **[`update`](src/scripts/update)** - Update everything with one command
@@ -133,7 +143,9 @@ Full LSP, formatting, linting, and debugging for:
 - **[`extract`](src/scripts/extract)** - Extract any archive format
 
 ### Development Tools
+
 All installed via [Brewfile](src/Brewfile):
+
 - **Modern CLI**: `bat`, `delta`, `eza`, `fd`, `fzf`, `ripgrep`, `zoxide`
 - **Dev Tools**: `gh`, `lazygit`, `jq`, `hyperfine`, `glow`
 - **Languages**: `fnm`, `pyenv`, `rustup`, `go`
@@ -196,6 +208,7 @@ docker run -it ghcr.io/illyastarikov/dotfiles:test
 ```
 
 ### Test Coverage
+
 - ✅ All shell scripts pass ShellCheck
 - ✅ All Lua files pass Stylua
 - ✅ All Python files pass Ruff
@@ -212,7 +225,7 @@ docker run -it ghcr.io/illyastarikov/dotfiles:test
 theme              # Auto-detect and set theme
 update             # Update all tools and plugins
 
-# Navigate efficiently  
+# Navigate efficiently
 z project          # Jump to frecent directory
 ff                 # Fuzzy find files
 fg "pattern"       # Grep with preview
@@ -239,19 +252,21 @@ fixy --all *.js   # Format with normalizations
 ## 🎨 Keybindings
 
 ### Neovim (Leader = `Space`)
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<leader>ff` | Find files | `<leader>ca` | Code actions |
-| `<leader>fg` | Live grep | `<leader>rn` | Rename symbol |
-| `<leader>fb` | Browse buffers | `gd` | Go to definition |
-| `<leader>e` | File explorer | `K` | Show documentation |
+
+| Key          | Action         | Key          | Action             |
+| ------------ | -------------- | ------------ | ------------------ |
+| `<leader>ff` | Find files     | `<leader>ca` | Code actions       |
+| `<leader>fg` | Live grep      | `<leader>rn` | Rename symbol      |
+| `<leader>fb` | Browse buffers | `gd`         | Go to definition   |
+| `<leader>e`  | File explorer  | `K`          | Show documentation |
 
 ### Tmux (Prefix = `Ctrl-a`)
-| Key | Action | Key | Action |
-|-----|--------|-----|--------|
-| `<prefix>c` | New window | `<prefix>z` | Zoom pane |
-| `<prefix>\|` | Split vertical | `<prefix>s` | Choose session |
-| `<prefix>-` | Split horizontal | `<prefix>r` | Reload config |
+
+| Key          | Action           | Key         | Action         |
+| ------------ | ---------------- | ----------- | -------------- |
+| `<prefix>c`  | New window       | `<prefix>z` | Zoom pane      |
+| `<prefix>\|` | Split vertical   | `<prefix>s` | Choose session |
+| `<prefix>-`  | Split horizontal | `<prefix>r` | Reload config  |
 
 ---
 
@@ -280,6 +295,7 @@ Every push triggers comprehensive checks:
 ## 🤝 Contributing
 
 Contributions welcome! This repository follows:
+
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Google Style Guides](styleguide/)
 - Comprehensive testing for all changes

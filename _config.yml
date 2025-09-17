@@ -2,13 +2,13 @@
 
 # Site settings
 title: "Illya Starikov's Dotfiles"
-description: "Lightning-fast developer environment with AI-powered coding and automatic theme switching"
-url: "https://dotfiles.starikov.io"
-baseurl: ""
+description: 'Lightning-fast developer environment with AI-powered coding and automatic theme switching'
+url: 'https://dotfiles.starikov.io'
+baseurl: ''
 
 # Build settings
 markdown: kramdown
-theme: null  # We're using custom HTML
+theme: null # We're using custom HTML
 
 # Exclude directories that shouldn't be processed by Jekyll
 exclude:
@@ -17,7 +17,7 @@ exclude:
   - .github/
   - .dotfiles.private/
   - styleguide/
-  - "*.sh"
+  - '*.sh'
   - .gitmodules
   - .gitignore
   - LICENSE

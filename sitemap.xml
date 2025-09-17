@@ -6,14 +6,14 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
-    
+
     <!-- Documentation -->
     <url>
         <loc>https://dotfiles.starikov.io/doc/</loc>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
-    
+
     <!-- Configuration Files -->
     <url>
         <loc>https://dotfiles.starikov.io/template/nvim.html</loc>
@@ -50,7 +50,7 @@
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
-    
+
     <!-- Key Documentation Pages -->
     <url>
         <loc>https://dotfiles.starikov.io/doc/usage/reference.md</loc>
