@@ -19,8 +19,8 @@ USAGE:
   ./runner.zsh [OPTIONS]
 
 OPTIONS:
-  --linux-only     Run tests only in Linux containers
-  --macos-only     Run tests only on macOS
+  --linux          Run tests only in Linux containers
+  --macos          Run tests only on macOS
   --keep-container Keep containers after test for debugging
   --verbose        Show detailed output
   --quick          Skip slow tests (only run Ubuntu in Docker)
@@ -91,10 +91,10 @@ USAGE EXAMPLES
 ./test/e2e/runner.zsh
 
 # Run only macOS tests (no Docker required)
-./test/e2e/runner.zsh --macos-only
+./test/e2e/runner.zsh --macos
 
 # Run only Linux container tests
-./test/e2e/runner.zsh --linux-only
+./test/e2e/runner.zsh --linux
 
 # Quick test (Ubuntu only + macOS)
 ./test/e2e/runner.zsh --quick

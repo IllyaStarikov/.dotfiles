@@ -11,8 +11,8 @@
 #   ./e2e-runner.zsh [OPTIONS]
 #
 # OPTIONS:
-#   --linux-only    Run tests only in Linux containers
-#   --macos-only    Run tests only on macOS (requires macOS host)
+#   --linux         Run tests only in Linux containers
+#   --macos         Run tests only on macOS (requires macOS host)
 #   --keep-container Keep containers after test for debugging
 #   --verbose       Show detailed output
 #   --quick         Skip slow tests
@@ -410,11 +410,11 @@ EOF
 parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --linux-only)
+      --linux|--linux-only)
         LINUX_ONLY=true
         shift
         ;;
-      --macos-only)
+      --macos|--macos-only)
         MACOS_ONLY=true
         shift
         ;;
@@ -433,8 +433,8 @@ parse_args() {
       --help)
         echo "Usage: $0 [OPTIONS]"
         echo "Options:"
-        echo "  --linux-only     Run tests only in Linux containers"
-        echo "  --macos-only     Run tests only on macOS"
+        echo "  --linux          Run tests only in Linux containers"
+        echo "  --macos          Run tests only on macOS"
         echo "  --keep-container Keep containers after test"
         echo "  --verbose        Show detailed output"
         echo "  --quick          Skip slow tests"
@@ -460,7 +460,7 @@ main() {
   if [[ "$MACOS_ONLY" != true ]]; then
     if ! command -v docker &> /dev/null; then
       log ERROR "Docker not found - required for Linux tests"
-      log INFO "Install Docker or use --macos-only flag"
+      log INFO "Install Docker or use --macos flag"
       exit 1
     fi
 
@@ -516,7 +516,7 @@ main() {
         log INFO "To run Linux E2E tests, you need Docker. Options:"
         log INFO "  1. Start Docker Desktop manually and re-run"
         log INFO "  2. Install and start Colima: brew install colima && colima start"
-        log INFO "  3. Use --macos-only flag to skip Docker tests"
+        log INFO "  3. Use --macos flag to skip Docker tests"
         log INFO ""
         log INFO "Continuing with macOS-only tests..."
         MACOS_ONLY=true

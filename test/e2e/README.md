@@ -58,7 +58,7 @@ Run tests for all Linux distributions:
 Test specific platform:
 ```bash
 # Ubuntu only
-./test/e2e/runner.zsh --linux-only
+./test/e2e/runner.zsh --linux
 docker-compose -f test/e2e/docker-compose.yml up ubuntu-e2e
 
 # With debugging
@@ -69,7 +69,7 @@ docker-compose -f test/e2e/docker-compose.yml up ubuntu-e2e
 
 Run on macOS host:
 ```bash
-./test/e2e/runner.zsh --macos-only
+./test/e2e/runner.zsh --macos
 ```
 
 ### Docker Compose
