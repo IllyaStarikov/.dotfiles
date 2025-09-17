@@ -36,7 +36,7 @@ it "should create symlinks to dotfiles" && {
     export HOME="$test_home"
     
     # Run symlink creation
-    bash "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+    zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
     
     # Check key symlinks
     local created=0
@@ -64,7 +64,7 @@ it "should backup existing files before symlinking" && {
     original_hash=$(shasum "$test_home/.zshrc" | cut -d' ' -f1)
     
     # Run symlink creation
-    bash "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+    zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
     
     # Check if backup was created
     if [[ -d "$BACKUP_DIR" ]]; then
@@ -96,7 +96,7 @@ it "should replace broken symlinks" && {
     ln -s "/nonexistent/path" "$test_home/.zshrc"
     
     # Run symlink creation
-    bash "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+    zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
     
     # Check if symlink was replaced
     if [[ -L "$test_home/.zshrc" ]]; then
@@ -119,7 +119,7 @@ it "should create necessary directories" && {
     export HOME="$test_home"
     
     # Run symlink creation
-    bash "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+    zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
     
     # Check if config directories were created
     local dirs_created=0
@@ -142,7 +142,7 @@ it "should validate symlink targets exist" && {
     export HOME="$test_home"
     
     # Run symlink creation
-    bash "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+    zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
     
     # Check that symlinks point to existing files
     local valid_links=0
@@ -168,7 +168,7 @@ it "should validate symlink targets exist" && {
 
 # Test: Help message
 it "should display help message" && {
-    output=$(bash "$DOTFILES_DIR/src/setup/symlinks.sh" --help 2>&1 || true)
+    output=$(zsh "$DOTFILES_DIR/src/setup/symlinks.sh" --help 2>&1 || true)
     
     assert_contains "$output" "Usage" || assert_contains "$output" "usage" || assert_contains "$output" "symlink"
 }
@@ -184,7 +184,7 @@ it "should support force mode to overwrite without backup" && {
     echo "will be overwritten" > "$test_home/.zshrc"
     
     # Run with force flag
-    output=$(bash "$DOTFILES_DIR/src/setup/symlinks.sh" --force 2>&1 || true)
+    output=$(zsh "$DOTFILES_DIR/src/setup/symlinks.sh" --force 2>&1 || true)
     
     # Check symlink was created
     if [[ -L "$test_home/.zshrc" ]]; then

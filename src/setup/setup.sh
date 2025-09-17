@@ -1296,7 +1296,7 @@ main() {
             
             # Install git hooks
             if [[ -f "$DOTFILES_DIR/git/install-git-hooks" ]]; then
-                bash "$DOTFILES_DIR/git/install-git-hooks"
+                zsh "$DOTFILES_DIR/git/install-git-hooks"
             fi
             ;;
 
