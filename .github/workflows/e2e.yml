@@ -47,6 +47,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Install zsh (required for test runner)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zsh
+
       - name: Make scripts executable
         run: |
           chmod +x test/e2e/runner.zsh
