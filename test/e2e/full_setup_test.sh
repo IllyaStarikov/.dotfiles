@@ -240,7 +240,8 @@ run_docker_test() {
 
   # Build Docker image
   log DEBUG "Building Docker image for $os_type..."
-  if docker build -t "dotfiles-test:$os_type" -f "$dockerfile" "$PROJECT_ROOT" > "$log_file" 2>&1; then
+  # Use platform flag to ensure compatibility (especially for Arch on ARM Mac)
+  if docker build --platform linux/amd64 -t "dotfiles-test:$os_type" -f "$dockerfile" "$PROJECT_ROOT" > "$log_file" 2>&1; then
     log SUCCESS "Docker image built for $os_type"
   else
     log ERROR "Failed to build Docker image for $os_type"
@@ -355,11 +356,13 @@ SCRIPT
   # Copy test script to container and run
   log DEBUG "Running tests in container..."
 
+  # Run the test script in the container
   docker run --name "$container_name" \
-    -v "$test_script:/home/testuser/run_test.sh:ro" \
+    --platform linux/amd64 \
     --rm \
+    -v "$test_script:/tmp/test.sh:ro" \
     "dotfiles-test:$os_type" \
-    -c "chmod +x /home/testuser/run_test.sh && /home/testuser/run_test.sh" \
+    -c "cp /tmp/test.sh /home/testuser/run_test.sh && chmod +x /home/testuser/run_test.sh && /home/testuser/run_test.sh" \
     >> "$log_file" 2>&1
 
   local result=$?
