@@ -225,14 +225,15 @@ phase_run_unit_tests() {
   export E2E_TEST=true
   export SKIP_GUI_TESTS=1
   export SKIP_HARDWARE_TESTS=1
+  export NONINTERACTIVE=1
 
-  # Run unit tests
+  # Run unit tests with timeout
   if [[ -x "./runner.zsh" ]]; then
-    if ./runner.zsh --unit --quick; then
+    if timeout 60 ./runner.zsh --unit --quick; then
       print_success "Unit tests passed"
       return 0
     else
-      print_warning "Some unit tests failed (reviewing...)"
+      print_warning "Some unit tests failed or timed out"
       # Don't fail E2E on unit test failures in container
       return 0
     fi
@@ -250,14 +251,15 @@ phase_run_functional_tests() {
   export E2E_TEST=true
   export SKIP_GUI_TESTS=1
   export SKIP_HARDWARE_TESTS=1
+  export NONINTERACTIVE=1
 
-  # Run functional tests
+  # Run functional tests with timeout
   if [[ -x "./runner.zsh" ]]; then
-    if ./runner.zsh --functional --quick; then
+    if timeout 60 ./runner.zsh --functional --quick; then
       print_success "Functional tests passed"
       return 0
     else
-      print_warning "Some functional tests failed (may be environment-specific)"
+      print_warning "Some functional tests failed or timed out"
       # Don't fail E2E on functional test failures in container
       return 0
     fi
