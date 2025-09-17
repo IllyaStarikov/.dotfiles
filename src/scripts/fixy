@@ -482,7 +482,7 @@ run_formatter_with_priority() {
   # Try formatters in priority order
   for formatter in ${=formatters}; do
     # Check if formatter is available
-    local check_cmd
+    local check_cmd=""
     if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
       check_cmd=$(python3 -c "
 import json
@@ -552,7 +552,7 @@ except:
   additional=$(get_additional_formatters "$ext")
   if [[ -n "$additional" ]] && [[ "$formatted" = true ]]; then
     for formatter in ${=additional}; do
-      local check_cmd
+      local check_cmd=""
       if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
         check_cmd=$(python3 -c "
 import json
