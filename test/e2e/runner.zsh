@@ -8,7 +8,7 @@
 #   setup process in clean Linux environments.
 #
 # USAGE:
-#   ./runner.zsh
+#   ./runner.zsh [--debug]
 #
 # ════════════════════════════════════════════════════════════════════════════════
 
@@ -29,6 +29,7 @@ readonly MAIN_LOG="${LOG_DIR}/main.log"
 
 # Test options
 typeset -g EXIT_CODE=0
+typeset -g DEBUG_MODE=false
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -192,25 +193,47 @@ run_docker_test() {
 
   log INFO "Running tests in container..."
 
-  # Run the test script in the container with timeout
-  timeout 300 docker run --name "$container_name" \
-    --rm \
-    -e NONINTERACTIVE=1 \
-    -e CI=true \
-    "dotfiles-test:latest" \
-    -c "cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && timeout 240 zsh test/e2e/docker-e2e-test.zsh" \
-    >> "$log_file" 2>&1
+  # Build the command based on debug mode
+  local docker_cmd="cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && "
+  if [[ "$DEBUG_MODE" == true ]]; then
+    docker_cmd+="DEBUG=true timeout 900 zsh test/e2e/docker-e2e-test.zsh"
+  else
+    docker_cmd+="timeout 600 zsh test/e2e/docker-e2e-test.zsh"
+  fi
 
-  local result=$?
+  # Run the test script in the container
+  if [[ "$DEBUG_MODE" == true ]]; then
+    # In debug mode, show output in real-time
+    timeout 1000 docker run --name "$container_name" \
+      --rm \
+      -e NONINTERACTIVE=1 \
+      -e CI=true \
+      -e DEBUG=true \
+      "dotfiles-test:latest" \
+      -c "$docker_cmd" 2>&1 | tee -a "$log_file"
+    local result=${PIPESTATUS[0]}
+  else
+    # Normal mode, just log to file
+    timeout 600 docker run --name "$container_name" \
+      --rm \
+      -e NONINTERACTIVE=1 \
+      -e CI=true \
+      "dotfiles-test:latest" \
+      -c "$docker_cmd" \
+      >> "$log_file" 2>&1
+    local result=$?
+  fi
 
   if [[ $result -eq 0 ]]; then
     log SUCCESS "Tests completed successfully"
   else
     log ERROR "Tests failed (exit code: $result)"
-    echo ""
-    echo "--- Last 50 lines of test log ---"
-    tail -50 "$log_file"
-    echo "--- End of log ---"
+    if [[ "$DEBUG_MODE" != true ]]; then
+      echo ""
+      echo "--- Last 50 lines of test log ---"
+      tail -50 "$log_file"
+      echo "--- End of log ---"
+    fi
   fi
 
   # Clean up
@@ -252,10 +275,45 @@ EOF
 # Main Execution
 # ────────────────────────────────────────────────────────────────────────────────
 
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --debug)
+        DEBUG_MODE=true
+        shift
+        ;;
+      --help)
+        echo "Usage: ./runner.zsh [--debug]"
+        echo ""
+        echo "Run end-to-end tests in a Docker container"
+        echo ""
+        echo "Options:"
+        echo "  --debug    Enable debug output and verbose logging"
+        echo "             Shows real-time output and runs full test suite"
+        echo "  --help     Show this help message"
+        echo ""
+        echo "Without --debug: Runs full tests with 10-minute timeout"
+        echo "With --debug: Runs full tests with 15-minute timeout and live output"
+        exit 0
+        ;;
+      *)
+        echo "Unknown option: $1"
+        echo "Use --help for usage information"
+        exit 1
+        ;;
+    esac
+  done
+}
+
 main() {
+  parse_args "$@"
+
   setup_logging
 
   log INFO "Starting E2E Test Suite"
+  if [[ "$DEBUG_MODE" == true ]]; then
+    log INFO "Debug mode enabled"
+  fi
 
   # Check Docker
   check_docker

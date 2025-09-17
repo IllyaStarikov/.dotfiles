@@ -70,6 +70,12 @@ print_info() {
   echo -e "${BLUE}ℹ${NC} $1"
 }
 
+print_debug() {
+  if [[ "$DEBUG" == true ]]; then
+    echo -e "${CYAN}[DEBUG]${NC} $1"
+  fi
+}
+
 run_phase() {
   local phase_name="$1"
   local phase_function="$2"
@@ -127,6 +133,8 @@ phase_prepare_environment() {
 
 phase_run_setup() {
   cd "$DOTFILES_DIR"
+  print_debug "Current directory: $(pwd)"
+  print_debug "Running setup.sh with --core --skip-brew flags"
 
   # Run the setup script with core packages only (skip brew)
   if ./src/setup/setup.sh --core --skip-brew; then
@@ -199,6 +207,7 @@ phase_test_shell_config() {
 }
 
 phase_test_neovim() {
+  print_debug "Testing Neovim startup..."
   # Test that Neovim starts without errors
   if timeout 10 nvim --headless -c ':qa' 2>/dev/null; then
     print_success "Neovim starts successfully"
@@ -227,9 +236,15 @@ phase_run_unit_tests() {
   export SKIP_HARDWARE_TESTS=1
   export NONINTERACTIVE=1
 
-  # Run unit tests with timeout
+  # Run unit tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    if timeout 60 ./runner.zsh --unit --quick; then
+    local timeout_val=180
+    if [[ "$DEBUG" == true ]]; then
+      print_info "Running FULL unit tests (may take several minutes)..."
+      timeout_val=300
+    fi
+
+    if timeout $timeout_val ./runner.zsh --unit; then
       print_success "Unit tests passed"
       return 0
     else
@@ -253,9 +268,15 @@ phase_run_functional_tests() {
   export SKIP_HARDWARE_TESTS=1
   export NONINTERACTIVE=1
 
-  # Run functional tests with timeout
+  # Run functional tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    if timeout 60 ./runner.zsh --functional --quick; then
+    local timeout_val=180
+    if [[ "$DEBUG" == true ]]; then
+      print_info "Running FULL functional tests (may take several minutes)..."
+      timeout_val=300
+    fi
+
+    if timeout $timeout_val ./runner.zsh --functional; then
       print_success "Functional tests passed"
       return 0
     else
@@ -302,6 +323,15 @@ phase_verify_development_tools() {
 main() {
   print_header "Docker E2E Test Runner"
   print_header "Starting E2E Test in Container"
+
+  if [[ "$DEBUG" == true ]]; then
+    print_info "Debug mode enabled - verbose output active"
+    print_debug "Environment variables:"
+    print_debug "  HOME=$HOME"
+    print_debug "  DOTFILES_DIR=$DOTFILES_DIR"
+    print_debug "  CI=$CI"
+    print_debug "  E2E_TEST=$E2E_TEST"
+  fi
 
   # Run all test phases
   run_phase "System Information" phase_system_info
