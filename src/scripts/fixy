@@ -447,8 +447,9 @@ is_extension_allowed() {
   local ext="${1}"
   local allowed
   allowed=$(get_allowed_extensions)
-  
-  for allowed_ext in $allowed; do
+
+  # Split on spaces for zsh compatibility
+  for allowed_ext in ${=allowed}; do
     if [[ "$ext" = "$allowed_ext" ]]; then
       return 0
     fi
@@ -479,7 +480,7 @@ run_formatter_with_priority() {
   fi
   
   # Try formatters in priority order
-  for formatter in $formatters; do
+  for formatter in ${=formatters}; do
     # Check if formatter is available
     local check_cmd
     if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
@@ -547,7 +548,7 @@ except:
   local additional
   additional=$(get_additional_formatters "$ext")
   if [[ -n "$additional" ]] && [[ "$formatted" = true ]]; then
-    for formatter in $additional; do
+    for formatter in ${=additional}; do
       local check_cmd
       if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
         check_cmd=$(python3 -c "
@@ -1093,7 +1094,7 @@ main() {
     else
       # Handle glob patterns
       local found=false
-      for f in $file; do
+      for f in ${=file}; do
         if [[ -f "$f" ]]; then
           found=true
           all_files+=("$f")
