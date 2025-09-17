@@ -775,7 +775,52 @@ collect_nvim_diagnostics() {
         echo "=== LSP Servers ==="
         timeout 5 nvim --headless -c "lua vim.tbl_map(print, vim.lsp.get_clients())" -c "qa!" 2>&1 || echo "Unable to get LSP info (timed out)"
     } > "$REPORT_DIR/config/nvim_lsp.txt"
-    
+
+    # Critical Neovim health checks
+    {
+        echo "=== Critical Neovim Checks ==="
+        echo
+        echo "== Startup Errors =="
+        if [[ -f ~/.local/state/nvim/startup_errors.log ]]; then
+            tail -50 ~/.local/state/nvim/startup_errors.log 2>/dev/null || echo "No recent startup errors"
+        else
+            echo "No startup error log found"
+        fi
+        echo
+        echo "== Provider Health =="
+        timeout 5 nvim --headless -c "echo 'Python3: ' . has('python3')" -c "echo 'Node: ' . has('node')" -c "qa!" 2>&1 || echo "Provider check failed"
+        echo
+        echo "== Critical Plugins Status =="
+        timeout 5 nvim --headless -c "lua local ok, err = pcall(require, 'blink.cmp'); print('blink.cmp:', ok and 'OK' or err)" -c "qa!" 2>&1 || echo "blink.cmp check failed"
+        timeout 5 nvim --headless -c "lua local ok, err = pcall(require, 'lspconfig'); print('lspconfig:', ok and 'OK' or err)" -c "qa!" 2>&1 || echo "lspconfig check failed"
+        timeout 5 nvim --headless -c "lua local ok, err = pcall(require, 'telescope'); print('telescope:', ok and 'OK' or err)" -c "qa!" 2>&1 || echo "telescope check failed"
+        echo
+        echo "== Work Configuration Check =="
+        if [[ -d "$HOME/.dotfiles/.dotfiles.private" ]]; then
+            echo "Private dotfiles: FOUND"
+            if [[ -f "$HOME/.dotfiles/.dotfiles.private/google/neovim/config/lsp/servers.lua" ]]; then
+                echo "Google LSP config: FOUND"
+            else
+                echo "Google LSP config: NOT FOUND"
+            fi
+        else
+            echo "Private dotfiles: NOT FOUND"
+        fi
+        echo
+        echo "== Common Issues Check =="
+        # Check for common Neovim issues
+        echo "Swap files:"
+        find ~/.local/state/nvim/swap -name "*.swp" 2>/dev/null | wc -l || echo "0"
+        echo "Shada file size:"
+        du -h ~/.local/state/nvim/shada/main.shada 2>/dev/null || echo "No shada file"
+        echo "Lazy.nvim lock file:"
+        if [[ -f "$DOTFILES_DIR/src/neovim/lazy-lock.json" ]]; then
+            echo "Present ($(wc -l < "$DOTFILES_DIR/src/neovim/lazy-lock.json") lines)"
+        else
+            echo "Not found"
+        fi
+    } > "$REPORT_DIR/config/nvim_critical_checks.txt"
+
     log SUCCESS "Neovim diagnostics collected"
 }
 
@@ -1021,12 +1066,48 @@ collect_terminal_info() {
     if command -v nvim >/dev/null 2>&1; then
         {
             echo "=== LSP Servers Health Check ==="
-            timeout 5 nvim --headless -c "lua vim.lsp.get_log_path()" -c "qa!" 2>&1 || echo "Unable to get LSP log path"
+            timeout 5 nvim --headless -c "lua print(vim.lsp.get_log_path())" -c "qa!" 2>&1 || echo "Unable to get LSP log path"
             echo
             echo "=== Available LSP Configs ==="
             timeout 5 nvim --headless -c "lua for k,_ in pairs(require('lspconfig').util.available_servers()) do print(k) end" -c "qa!" 2>&1 || echo "Unable to list LSP configs"
+            echo
+            echo "=== Mason Installed Servers ==="
+            if [[ -d ~/.local/share/nvim/mason/bin ]]; then
+                ls -la ~/.local/share/nvim/mason/bin/ 2>/dev/null | head -20 || echo "No Mason binaries found"
+            else
+                echo "Mason not installed or no binaries"
+            fi
         } > "$REPORT_DIR/config/lsp_health.txt"
     fi
+
+    # Font and ligature support check
+    {
+        echo "=== Font Configuration ==="
+        if [[ "$(uname)" == "Darwin" ]]; then
+            echo "Default terminal font:"
+            defaults read com.apple.Terminal "Default Window Settings" 2>/dev/null | grep -A2 Font | head -5 || echo "Unable to get terminal font"
+            echo
+            echo "Installed Nerd Fonts:"
+            fc-list 2>/dev/null | grep -i "nerd" | head -10 || echo "fc-list not available"
+        else
+            echo "Terminal fonts with ligatures:"
+            fc-list :spacing=mono 2>/dev/null | grep -E "Fira|JetBrains|Cascadia|Iosevka|Victor" | head -10 || echo "No ligature fonts found"
+        fi
+    } > "$REPORT_DIR/config/font_info.txt"
+
+    # Performance metrics
+    {
+        echo "=== Performance Metrics ==="
+        echo "Current memory usage:"
+        if [[ "$(uname)" == "Darwin" ]]; then
+            vm_stat 2>/dev/null | head -10 || echo "Unable to get memory stats"
+        else
+            free -h 2>/dev/null || echo "Unable to get memory stats"
+        fi
+        echo
+        echo "=== Top Memory Consumers ==="
+        ps aux | sort -rn -k 4 | head -10 2>/dev/null || echo "Unable to get process memory usage"
+    } > "$REPORT_DIR/debug/performance_metrics.txt"
 
     log SUCCESS "Terminal information and health checks collected"
 }
@@ -1081,11 +1162,21 @@ run_tests() {
     fi
     
     log PROGRESS "Running tests (size: $TEST_SIZE)"
-    
-    local test_runner="$DOTFILES_DIR/test/run"
-    
-    if [[ ! -x "$test_runner" ]]; then
-        log WARN "Test runner not found or not executable"
+
+    # Look for test runner in multiple locations
+    local test_runner=""
+    if [[ -x "$DOTFILES_DIR/test/runner.zsh" ]]; then
+        test_runner="$DOTFILES_DIR/test/runner.zsh"
+    elif [[ -x "$DOTFILES_DIR/test/run" ]]; then
+        test_runner="$DOTFILES_DIR/test/run"
+    elif [[ -x "$DOTFILES_DIR/test/test" ]]; then
+        test_runner="$DOTFILES_DIR/test/test"
+    else
+        log WARN "Test runner not found in any expected location"
+        echo "Test runner not found. Checked:" > "$REPORT_DIR/tests/test_results.txt"
+        echo "  - $DOTFILES_DIR/test/runner.zsh" >> "$REPORT_DIR/tests/test_results.txt"
+        echo "  - $DOTFILES_DIR/test/run" >> "$REPORT_DIR/tests/test_results.txt"
+        echo "  - $DOTFILES_DIR/test/test" >> "$REPORT_DIR/tests/test_results.txt"
         return
     fi
     
@@ -1107,6 +1198,82 @@ run_tests() {
     # Also generate test report in different formats
     $test_runner $test_args --output=json > "$REPORT_DIR/tests/results.json" 2>/dev/null || true
     $test_runner $test_args --output=junit > "$REPORT_DIR/tests/results.xml" 2>/dev/null || true
+}
+
+#######################################
+# Validate dotfiles configuration
+#######################################
+validate_configuration() {
+    log PROGRESS "Validating dotfiles configuration"
+
+    {
+        echo "=== Configuration Validation ==="
+        echo
+        echo "== Symlink Health =="
+        local broken_links=0
+        for link in ~/.zshrc ~/.zshenv ~/.tmux.conf ~/.gitconfig ~/.gitignore ~/.config/nvim; do
+            if [[ -L "$link" ]]; then
+                if [[ ! -e "$link" ]]; then
+                    echo "BROKEN: $link -> $(readlink "$link")"
+                    ((broken_links++))
+                else
+                    echo "OK: $link"
+                fi
+            elif [[ -e "$link" ]]; then
+                echo "WARNING: $link exists but is not a symlink"
+            else
+                echo "MISSING: $link"
+            fi
+        done
+        echo "Broken symlinks: $broken_links"
+
+        echo
+        echo "== Required Directories =="
+        for dir in ~/.config ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
+            if [[ -d "$dir" ]]; then
+                echo "OK: $dir"
+            else
+                echo "MISSING: $dir"
+            fi
+        done
+
+        echo
+        echo "== Critical Files =="
+        for file in "$DOTFILES_DIR/src/neovim/init.lua" "$DOTFILES_DIR/src/zsh/zshrc" "$DOTFILES_DIR/src/scripts/common.sh"; do
+            if [[ -f "$file" ]]; then
+                echo "OK: $file ($(wc -l < "$file") lines)"
+            else
+                echo "MISSING: $file"
+            fi
+        done
+
+        echo
+        echo "== Known Issues from Healthcheck =="
+        # Parse the checkhealth output for errors
+        if [[ -f "$REPORT_DIR/config/nvim_checkhealth.txt" ]]; then
+            grep -E "ERROR|FAIL|WARNING" "$REPORT_DIR/config/nvim_checkhealth.txt" | head -20 || echo "No issues found in checkhealth"
+        else
+            echo "Checkhealth not available"
+        fi
+
+        echo
+        echo "== Git Repository Status =="
+        cd "$DOTFILES_DIR"
+        git status --short | head -20 || echo "Unable to get git status"
+        echo "Uncommitted files: $(git status --short | wc -l)"
+        echo "Untracked files: $(git ls-files --others --exclude-standard | wc -l)"
+
+        echo
+        echo "== Permission Issues =="
+        # Check for permission issues on critical files
+        for file in "$DOTFILES_DIR/src/scripts/"*; do
+            if [[ -f "$file" ]] && [[ ! -x "$file" ]]; then
+                echo "NOT EXECUTABLE: $file"
+            fi
+        done
+    } > "$REPORT_DIR/config/validation_report.txt"
+
+    log SUCCESS "Configuration validation completed"
 }
 
 #######################################
@@ -1215,9 +1382,10 @@ main() {
     collect_nvim_diagnostics
     collect_shell_diagnostics
     collect_terminal_info
+    validate_configuration
     collect_logs
     collect_debug_info
-    
+
     # Run tests if requested
     run_tests
     
