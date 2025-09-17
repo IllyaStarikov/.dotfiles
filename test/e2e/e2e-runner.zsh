@@ -1,15 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 # ════════════════════════════════════════════════════════════════════════════════
-# Full End-to-End Setup Test
+# E2E Test Runner - Main orchestrator for end-to-end testing
 # ════════════════════════════════════════════════════════════════════════════════
 #
 # DESCRIPTION:
 #   Production-ready end-to-end test that validates the complete dotfiles setup
-#   process in containerized environments. Tests full installation, configuration,
-#   and runs comprehensive test suite.
+#   process in containerized environments and native macOS.
 #
 # USAGE:
-#   ./full_setup_test.sh [OPTIONS]
+#   ./e2e-runner.zsh [OPTIONS]
 #
 # OPTIONS:
 #   --linux-only    Run tests only in Linux containers
@@ -18,32 +17,30 @@
 #   --verbose       Show detailed output
 #   --quick         Skip slow tests
 #
-# REQUIREMENTS:
-#   - Docker (for Linux tests)
-#   - macOS host (for macOS native tests)
-#
 # ════════════════════════════════════════════════════════════════════════════════
 
-set -euo pipefail
+setopt ERR_EXIT
+setopt NO_UNSET
+setopt PIPE_FAIL
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ────────────────────────────────────────────────────────────────────────────────
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-readonly TEST_DIR="$PROJECT_ROOT/test"
+readonly SCRIPT_DIR="${0:A:h}"
+readonly PROJECT_ROOT="${SCRIPT_DIR:h:h}"
+readonly TEST_DIR="${PROJECT_ROOT}/test"
 readonly TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-readonly LOG_DIR="${E2E_LOG_DIR:-$TEST_DIR/logs/e2e_$TIMESTAMP}"
-readonly MAIN_LOG="$LOG_DIR/main.log"
+readonly LOG_DIR="${E2E_LOG_DIR:-${TEST_DIR}/logs/e2e_${TIMESTAMP}}"
+readonly MAIN_LOG="${LOG_DIR}/main.log"
 
 # Test options
-LINUX_ONLY=false
-MACOS_ONLY=false
-KEEP_CONTAINER=false
-VERBOSE=false
-QUICK_MODE=false
-EXIT_CODE=0
+typeset -g LINUX_ONLY=false
+typeset -g MACOS_ONLY=false
+typeset -g KEEP_CONTAINER=false
+typeset -g VERBOSE=false
+typeset -g QUICK_MODE=false
+typeset -g EXIT_CODE=0
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -96,7 +93,7 @@ log() {
 
 create_dockerfile() {
   local os_type="$1"
-  local dockerfile="$LOG_DIR/Dockerfile.$os_type"
+  local dockerfile="${LOG_DIR}/Dockerfile.${os_type}"
 
   case "$os_type" in
     ubuntu)
@@ -107,7 +104,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV CI=true
 ENV E2E_TEST=true
 
-# Install base dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -119,23 +115,19 @@ RUN apt-get update && apt-get install -y \
     locales \
     && rm -rf /var/lib/apt/lists/*
 
-# Set locale
 RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-# Create test user with sudo
 RUN useradd -m -s /bin/zsh testuser && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER testuser
 WORKDIR /home/testuser
 
-# Copy dotfiles
 COPY --chown=testuser:testuser . /home/testuser/.dotfiles
 
-# Set environment
 ENV HOME=/home/testuser
 ENV DOTFILES_DIR=/home/testuser/.dotfiles
 ENV PATH="/home/testuser/.local/bin:$PATH"
@@ -143,7 +135,6 @@ ENV PATH="/home/testuser/.local/bin:$PATH"
 ENTRYPOINT ["/bin/bash"]
 EOF
       ;;
-
     fedora)
       cat > "$dockerfile" << 'EOF'
 FROM fedora:39
@@ -151,8 +142,7 @@ FROM fedora:39
 ENV CI=true
 ENV E2E_TEST=true
 
-# Install base dependencies
-RUN dnf install -y \
+RUN dnf update -y && dnf install -y \
     curl \
     git \
     sudo \
@@ -162,25 +152,16 @@ RUN dnf install -y \
     make \
     python3 \
     python3-pip \
-    glibc-langpack-en \
     && dnf clean all
 
-# Set locale
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
-
-# Create test user with sudo
 RUN useradd -m -s /bin/zsh testuser && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER testuser
 WORKDIR /home/testuser
 
-# Copy dotfiles
 COPY --chown=testuser:testuser . /home/testuser/.dotfiles
 
-# Set environment
 ENV HOME=/home/testuser
 ENV DOTFILES_DIR=/home/testuser/.dotfiles
 ENV PATH="/home/testuser/.local/bin:$PATH"
@@ -188,7 +169,6 @@ ENV PATH="/home/testuser/.local/bin:$PATH"
 ENTRYPOINT ["/bin/bash"]
 EOF
       ;;
-
     arch)
       cat > "$dockerfile" << 'EOF'
 FROM archlinux:latest
@@ -196,7 +176,6 @@ FROM archlinux:latest
 ENV CI=true
 ENV E2E_TEST=true
 
-# Install base dependencies
 RUN pacman -Syu --noconfirm && \
     pacman -S --noconfirm \
     curl \
@@ -207,17 +186,14 @@ RUN pacman -Syu --noconfirm && \
     python \
     python-pip
 
-# Create test user with sudo
 RUN useradd -m -s /bin/zsh testuser && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER testuser
 WORKDIR /home/testuser
 
-# Copy dotfiles
 COPY --chown=testuser:testuser . /home/testuser/.dotfiles
 
-# Set environment
 ENV HOME=/home/testuser
 ENV DOTFILES_DIR=/home/testuser/.dotfiles
 ENV PATH="/home/testuser/.local/bin:$PATH"
@@ -232,9 +208,9 @@ EOF
 
 run_docker_test() {
   local os_type="$1"
-  local container_name="dotfiles-e2e-$os_type-$TIMESTAMP"
+  local container_name="dotfiles-e2e-${os_type}-${TIMESTAMP}"
   local dockerfile=$(create_dockerfile "$os_type")
-  local log_file="$LOG_DIR/${os_type}.log"
+  local log_file="${LOG_DIR}/${os_type}.log"
 
   log INFO "Starting Docker test for $os_type..."
 
@@ -248,130 +224,23 @@ run_docker_test() {
     return 1
   fi
 
-  # Create test script
-  local test_script="$LOG_DIR/test_script_$os_type.sh"
-  cat > "$test_script" << 'SCRIPT'
-#!/bin/bash
-set -euo pipefail
-
-echo "════════════════════════════════════════════════════════════════════"
-echo "Starting E2E Test in Container"
-echo "OS: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)"
-echo "User: $(whoami)"
-echo "Home: $HOME"
-echo "════════════════════════════════════════════════════════════════════"
-
-# Phase 1: Run setup script
-echo ""
-echo "──── Phase 1: Running Setup Script ────"
-cd "$DOTFILES_DIR"
-
-# Make scripts executable
-chmod +x src/setup/setup.sh src/setup/symlinks.sh
-
-# Run the main setup script
-if ./src/setup/setup.sh --core --skip-brew; then
-  echo "✓ Setup script completed successfully"
-else
-  echo "✗ Setup script failed"
-  exit 1
-fi
-
-# Phase 2: Verify installations
-echo ""
-echo "──── Phase 2: Verifying Installations ────"
-
-# Check for required tools
-tools=(git zsh tmux nvim)
-missing=()
-
-for tool in "${tools[@]}"; do
-  if command -v "$tool" &> /dev/null; then
-    echo "✓ $tool installed: $(command -v $tool)"
-  else
-    echo "✗ $tool not found"
-    missing+=("$tool")
-  fi
-done
-
-if [ ${#missing[@]} -gt 0 ]; then
-  echo "Missing tools: ${missing[*]}"
-  exit 1
-fi
-
-# Phase 3: Verify symlinks
-echo ""
-echo "──── Phase 3: Verifying Symlinks ────"
-
-symlinks=(
-  "$HOME/.zshrc"
-  "$HOME/.gitconfig"
-  "$HOME/.tmux.conf"
-  "$HOME/.config/nvim"
-)
-
-for link in "${symlinks[@]}"; do
-  if [ -L "$link" ] || [ -f "$link" ]; then
-    echo "✓ $link exists"
-  else
-    echo "✗ $link missing"
-  fi
-done
-
-# Phase 4: Run test suite
-echo ""
-echo "──── Phase 4: Running Test Suite ────"
-
-cd "$DOTFILES_DIR/test"
-
-# Make test runner executable
-chmod +x runner.zsh
-
-# Run unit tests
-echo "Running unit tests..."
-if ./runner.zsh --unit; then
-  echo "✓ Unit tests passed"
-else
-  echo "✗ Unit tests failed"
-  exit 1
-fi
-
-# Run functional tests (skip tests that require X11 or specific hardware)
-echo "Running functional tests..."
-export SKIP_GUI_TESTS=1
-export SKIP_HARDWARE_TESTS=1
-if ./runner.zsh --functional; then
-  echo "✓ Functional tests passed"
-else
-  echo "✗ Functional tests failed"
-  exit 1
-fi
-
-echo ""
-echo "════════════════════════════════════════════════════════════════════"
-echo "E2E Test Completed Successfully!"
-echo "════════════════════════════════════════════════════════════════════"
-SCRIPT
-
-  # Copy test script to container and run
+  # Run the test script in the container
   log DEBUG "Running tests in container..."
 
-  # Run the test script in the container
   docker run --name "$container_name" \
     --platform linux/amd64 \
     --rm \
-    -v "$test_script:/tmp/test.sh:ro" \
     "dotfiles-test:$os_type" \
-    -c "cp /tmp/test.sh /home/testuser/run_test.sh && chmod +x /home/testuser/run_test.sh && /home/testuser/run_test.sh" \
+    -c "cd /home/testuser/.dotfiles && chmod +x test/e2e/docker-e2e-test.zsh && zsh test/e2e/docker-e2e-test.zsh" \
     >> "$log_file" 2>&1
 
   local result=$?
 
-  if [ $result -eq 0 ]; then
+  if [[ $result -eq 0 ]]; then
     log SUCCESS "$os_type test completed successfully"
   else
     log ERROR "$os_type test failed (exit code: $result)"
-    if [ "$VERBOSE" == true ]; then
+    if [[ "$VERBOSE" == true ]]; then
       echo "--- Last 50 lines of $os_type log ---"
       tail -50 "$log_file"
       echo "--- End of log ---"
@@ -379,7 +248,7 @@ SCRIPT
   fi
 
   # Clean up container if not keeping
-  if [ "$KEEP_CONTAINER" != true ]; then
+  if [[ "$KEEP_CONTAINER" != true ]]; then
     docker rm -f "$container_name" 2>/dev/null || true
   fi
 
@@ -397,91 +266,75 @@ run_macos_test() {
   fi
 
   log INFO "Starting macOS native test..."
-  local test_dir="/tmp/dotfiles-e2e-test-$TIMESTAMP"
-  local log_file="$LOG_DIR/macos.log"
 
-  # Create isolated test environment
-  log DEBUG "Creating test environment at $test_dir..."
-  mkdir -p "$test_dir"
+  local test_home="/tmp/dotfiles-e2e-test-${TIMESTAMP}"
+  local log_file="${LOG_DIR}/macos.log"
 
-  # Copy dotfiles to test location
-  cp -r "$PROJECT_ROOT" "$test_dir/dotfiles"
+  {
+    echo "════════════════════════════════════════════════════════════════════"
+    echo "macOS E2E Test"
+    echo "Test Home: $test_home"
+    echo "════════════════════════════════════════════════════════════════════"
 
-  # Create test script
-  cat > "$test_dir/run_test.sh" << 'SCRIPT'
-#!/bin/bash
-set -euo pipefail
+    # Create test environment
+    log DEBUG "Creating test environment at ${test_home}..."
+    mkdir -p "$test_home"
+    cp -R "$PROJECT_ROOT" "${test_home}/.dotfiles"
 
-export HOME="$1"
-export DOTFILES_DIR="$HOME/dotfiles"
-export CI=true
-export E2E_TEST=true
+    # Phase 1: Run setup script
+    echo ""
+    echo "──── Phase 1: Running Setup Script ────"
+    cd "${test_home}/.dotfiles"
+    chmod +x src/setup/setup.sh src/setup/symlinks.sh
 
-echo "════════════════════════════════════════════════════════════════════"
-echo "Starting E2E Test on macOS"
-echo "OS: $(sw_vers -productName) $(sw_vers -productVersion)"
-echo "User: $(whoami)"
-echo "Test Home: $HOME"
-echo "════════════════════════════════════════════════════════════════════"
+    # Run setup with symlinks only (don't install packages in test)
+    HOME="$test_home" ./src/setup/setup.sh --symlinks
 
-cd "$DOTFILES_DIR"
+    # Phase 2: Verify configuration
+    echo ""
+    echo "──── Phase 2: Verifying Configuration ────"
+    for config in .zshrc .gitconfig .tmux.conf; do
+      if [[ -L "${test_home}/${config}" ]]; then
+        echo "✓ $config linked"
+      else
+        echo "✗ $config not linked"
+      fi
+    done
 
-# Phase 1: Setup
-echo ""
-echo "──── Phase 1: Running Setup Script ────"
-chmod +x src/setup/setup.sh src/setup/symlinks.sh
-./src/setup/setup.sh --symlinks  # Only symlinks, don't install packages in test
+    # Phase 3: Run test suite
+    echo ""
+    echo "──── Phase 3: Running Test Suite ────"
+    cd "${test_home}/.dotfiles/test"
+    chmod +x runner.zsh
 
-# Phase 2: Verify
-echo ""
-echo "──── Phase 2: Verifying Configuration ────"
-for config in .zshrc .gitconfig .tmux.conf; do
-  if [ -L "$HOME/$config" ]; then
-    echo "✓ $config linked"
-  else
-    echo "✗ $config not linked"
-  fi
-done
+    # Run tests with CI environment
+    HOME="$test_home" CI=true SKIP_GUI_TESTS=1 ./runner.zsh --unit --quick || {
+      echo "⚠ Some unit tests failed (non-critical for E2E)"
+    }
 
-# Phase 3: Run tests
-echo ""
-echo "──── Phase 3: Running Test Suite ────"
-cd "$DOTFILES_DIR/test"
-chmod +x runner.zsh
+    HOME="$test_home" CI=true SKIP_GUI_TESTS=1 ./runner.zsh --functional --quick
 
-# Run tests but don't fail on individual test failures
-# The E2E test is more about setup working than every test passing
-./runner.zsh --unit || {
-  echo "⚠ Some unit tests failed (non-critical for E2E)"
-  # Continue anyway - we care more about setup working
-}
+    echo ""
+    echo "════════════════════════════════════════════════════════════════════"
+    echo "macOS E2E Test Completed Successfully!"
+    echo "════════════════════════════════════════════════════════════════════"
+  } > "$log_file" 2>&1
 
-# Functional tests are optional in E2E
-./runner.zsh --functional 2>/dev/null || {
-  echo "⚠ Some functional tests failed (expected in test environment)"
-}
+  local result=$?
 
-echo ""
-echo "════════════════════════════════════════════════════════════════════"
-echo "macOS E2E Test Completed Successfully!"
-echo "════════════════════════════════════════════════════════════════════"
-SCRIPT
+  # Cleanup
+  rm -rf "$test_home"
 
-  chmod +x "$test_dir/run_test.sh"
-
-  # Run test
-  if "$test_dir/run_test.sh" "$test_dir" > "$log_file" 2>&1; then
+  if [[ $result -eq 0 ]]; then
     log SUCCESS "macOS test completed successfully"
-    rm -rf "$test_dir"
-    return 0
   else
     log ERROR "macOS test failed"
-    if [ "$VERBOSE" == true ]; then
+    if [[ "$VERBOSE" == true ]]; then
       tail -50 "$log_file"
     fi
-    [ "$KEEP_CONTAINER" != true ] && rm -rf "$test_dir"
-    return 1
   fi
+
+  return $result
 }
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -489,7 +342,7 @@ SCRIPT
 # ────────────────────────────────────────────────────────────────────────────────
 
 generate_report() {
-  local report_file="$LOG_DIR/report.md"
+  local report_file="${LOG_DIR}/report.md"
 
   cat > "$report_file" << EOF
 # E2E Test Report
@@ -510,19 +363,17 @@ Generated: $(date)
 |----------|--------|----------|----------|
 EOF
 
-  for log in "$LOG_DIR"/*.log; do
-    if [[ -f "$log" ]] && [[ "$log" != "$MAIN_LOG" ]]; then
+  # Add test results
+  for log in "${LOG_DIR}"/*.log; do
+    if [[ -f "$log" ]]; then
       local platform=$(basename "$log" .log)
-      local status="❓ Unknown"
-      local duration="N/A"
+      [[ "$platform" == "main" ]] && continue
 
-      if grep -q "Successfully" "$log" 2>/dev/null; then
-        status="✅ Passed"
-      elif grep -q "Failed\|Error" "$log" 2>/dev/null; then
-        status="❌ Failed"
+      if grep -q "Completed Successfully" "$log" 2>/dev/null; then
+        echo "| $platform | ✅ Passed | N/A | [View]($(basename "$log")) |" >> "$report_file"
+      else
+        echo "| $platform | ❌ Failed | N/A | [View]($(basename "$log")) |" >> "$report_file"
       fi
-
-      echo "| $platform | $status | $duration | [View]($(basename $log)) |" >> "$report_file"
     fi
   done
 
@@ -537,11 +388,17 @@ EOF
 - Functional Tests: Executed
 
 ### Notes
-$(cat "$MAIN_LOG" | grep -E "WARN|ERROR" || echo "No warnings or errors")
-
----
-*Report generated by full_setup_test.sh*
 EOF
+
+  if [[ $EXIT_CODE -eq 0 ]]; then
+    echo "All tests passed successfully" >> "$report_file"
+  else
+    echo "Some tests failed - check individual logs for details" >> "$report_file"
+  fi
+
+  echo "" >> "$report_file"
+  echo "---" >> "$report_file"
+  echo "*Report generated by e2e-runner.zsh*" >> "$report_file"
 
   log INFO "Report generated: $report_file"
 }
@@ -549,28 +406,6 @@ EOF
 # ────────────────────────────────────────────────────────────────────────────────
 # Main Execution
 # ────────────────────────────────────────────────────────────────────────────────
-
-usage() {
-  cat << EOF
-Usage: $(basename "$0") [OPTIONS]
-
-End-to-End test for dotfiles setup and configuration
-
-Options:
-  --linux-only     Run tests only in Linux containers
-  --macos-only     Run tests only on macOS (requires macOS host)
-  --keep-container Keep containers after test for debugging
-  --verbose        Show detailed output
-  --quick          Skip slow tests
-  --help           Show this help message
-
-Examples:
-  $(basename "$0")                    # Run all tests
-  $(basename "$0") --linux-only       # Test only Linux environments
-  $(basename "$0") --verbose --keep   # Debug mode
-
-EOF
-}
 
 parse_args() {
   while [[ $# -gt 0 ]]; do
@@ -583,11 +418,11 @@ parse_args() {
         MACOS_ONLY=true
         shift
         ;;
-      --keep-container|--keep)
+      --keep-container)
         KEEP_CONTAINER=true
         shift
         ;;
-      --verbose|-v)
+      --verbose)
         VERBOSE=true
         shift
         ;;
@@ -595,13 +430,18 @@ parse_args() {
         QUICK_MODE=true
         shift
         ;;
-      --help|-h)
-        usage
+      --help)
+        echo "Usage: $0 [OPTIONS]"
+        echo "Options:"
+        echo "  --linux-only     Run tests only in Linux containers"
+        echo "  --macos-only     Run tests only on macOS"
+        echo "  --keep-container Keep containers after test"
+        echo "  --verbose        Show detailed output"
+        echo "  --quick          Skip slow tests"
         exit 0
         ;;
       *)
-        log ERROR "Unknown option: $1"
-        usage
+        echo "Unknown option: $1"
         exit 1
         ;;
     esac
@@ -611,7 +451,6 @@ parse_args() {
 main() {
   parse_args "$@"
 
-  # Setup logging
   setup_logging
 
   log INFO "Starting E2E Test Suite"
@@ -670,18 +509,6 @@ main() {
         done
       fi
 
-      # Method 3: Try systemctl on Linux
-      if [[ "$docker_started" == false ]] && command -v systemctl &>/dev/null; then
-        log INFO "Trying systemctl to start Docker..."
-        if sudo systemctl start docker 2>/dev/null; then
-          sleep 2
-          if docker info &>/dev/null; then
-            log SUCCESS "Docker started via systemctl"
-            docker_started=true
-          fi
-        fi
-      fi
-
       # Final check
       if [[ "$docker_started" == false ]]; then
         log ERROR "Could not start Docker daemon"
@@ -729,7 +556,7 @@ main() {
   if [[ $EXIT_CODE -eq 0 ]]; then
     log SUCCESS "════════════════════════════════════════════════════════════════════"
     log SUCCESS "All E2E tests completed successfully!"
-    log SUCCESS "Report available at: $LOG_DIR/report.md"
+    log SUCCESS "Report available at: ${LOG_DIR}/report.md"
     log SUCCESS "════════════════════════════════════════════════════════════════════"
   else
     log ERROR "════════════════════════════════════════════════════════════════════"
@@ -740,7 +567,7 @@ main() {
   exit $EXIT_CODE
 }
 
-# Run if not sourced
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# Run main function if not being sourced
+if [[ "${ZSH_EVAL_CONTEXT}" == "toplevel" ]]; then
   main "$@"
 fi

@@ -1,0 +1,197 @@
+════════════════════════════════════════════════════════════════════════════════
+E2E TEST SUITE - ZSH SCRIPTS
+════════════════════════════════════════════════════════════════════════════════
+
+This file contains all E2E test functionality ported to Zsh scripts.
+
+FILES:
+1. e2e-runner.zsh - Main E2E test orchestrator (runs on host)
+2. docker-e2e-test.zsh - Test runner for Docker containers
+
+════════════════════════════════════════════════════════════════════════════════
+FILE 1: e2e-runner.zsh
+PURPOSE: Main orchestrator that manages Docker containers and macOS testing
+════════════════════════════════════════════════════════════════════════════════
+
+Location: /Users/starikov/.dotfiles/test/e2e/e2e-runner.zsh
+
+USAGE:
+  ./e2e-runner.zsh [OPTIONS]
+
+OPTIONS:
+  --linux-only     Run tests only in Linux containers
+  --macos-only     Run tests only on macOS
+  --keep-container Keep containers after test for debugging
+  --verbose        Show detailed output
+  --quick          Skip slow tests (only run Ubuntu in Docker)
+
+FUNCTIONALITY:
+- Sets up logging infrastructure
+- Manages Docker container lifecycle
+- Creates Dockerfiles for Ubuntu, Fedora, and Arch Linux
+- Runs native macOS tests in isolated environment
+- Generates comprehensive test reports
+- Handles Docker daemon startup (Colima/Docker Desktop)
+
+KEY FEATURES:
+- Automatic Docker daemon detection and startup
+- Platform-specific Dockerfile generation
+- Isolated test environments (temp directories for macOS)
+- Comprehensive logging with color-coded output
+- Markdown report generation
+- Error recovery and cleanup
+
+TEST FLOW:
+1. Parse command-line arguments
+2. Setup logging directory
+3. Check/start Docker if needed (for Linux tests)
+4. Run Docker tests for each Linux distribution
+5. Run native macOS tests
+6. Generate summary report
+7. Exit with appropriate code
+
+════════════════════════════════════════════════════════════════════════════════
+FILE 2: docker-e2e-test.zsh
+PURPOSE: Runs inside Docker containers to test setup in clean environment
+════════════════════════════════════════════════════════════════════════════════
+
+Location: /Users/starikov/.dotfiles/test/e2e/docker-e2e-test.zsh
+
+ENVIRONMENT REQUIREMENTS:
+- Must run inside Docker container
+- DOTFILES_DIR=/home/testuser/.dotfiles
+- HOME=/home/testuser
+- CI=true
+- E2E_TEST=true
+
+TEST PHASES:
+1. System Information - Display OS, user, paths
+2. Prepare Environment - Set permissions, create directories
+3. Run Setup Script - Execute setup.sh with --core --skip-brew
+4. Verify Installations - Check git, zsh, tmux, nvim
+5. Verify Symlinks - Confirm dotfile links created
+6. Test Shell Configuration - Load zshrc, check aliases
+7. Test Neovim - Start nvim, basic functionality
+8. Run Unit Tests - Execute test/runner.zsh --unit
+9. Run Functional Tests - Execute test/runner.zsh --functional
+10. Verify Development Tools - Check optional tools
+
+FUNCTIONALITY:
+- Color-coded output for success/failure/warnings
+- Phase tracking with pass/fail counts
+- Non-critical failure handling (warnings for optional features)
+- Duration tracking
+- Comprehensive summary report
+
+════════════════════════════════════════════════════════════════════════════════
+USAGE EXAMPLES
+════════════════════════════════════════════════════════════════════════════════
+
+# Run full E2E test suite (all platforms)
+./test/e2e/e2e-runner.zsh
+
+# Run only macOS tests (no Docker required)
+./test/e2e/e2e-runner.zsh --macos-only
+
+# Run only Linux container tests
+./test/e2e/e2e-runner.zsh --linux-only
+
+# Quick test (Ubuntu only + macOS)
+./test/e2e/e2e-runner.zsh --quick
+
+# Debug mode with verbose output
+./test/e2e/e2e-runner.zsh --verbose --keep-container
+
+# Run specific platform in Docker manually
+docker build --platform linux/amd64 -t test:ubuntu -f Dockerfile.ubuntu .
+docker run --platform linux/amd64 --rm test:ubuntu \
+  -c "zsh /home/testuser/.dotfiles/test/e2e/docker-e2e-test.zsh"
+
+════════════════════════════════════════════════════════════════════════════════
+DOCKER CONFIGURATION
+════════════════════════════════════════════════════════════════════════════════
+
+The e2e-runner.zsh script generates Dockerfiles for:
+
+UBUNTU:
+- Base: ubuntu:22.04
+- Packages: curl, git, sudo, zsh, build-essential, python3, locales
+- Locale: en_US.UTF-8
+- User: testuser with sudo rights
+- Shell: /bin/zsh
+
+FEDORA:
+- Base: fedora:39
+- Packages: curl, git, sudo, zsh, gcc, make, python3
+- User: testuser with sudo rights
+- Shell: /bin/zsh
+
+ARCH:
+- Base: archlinux:latest
+- Packages: curl, git, sudo, zsh, base-devel, python
+- User: testuser with sudo rights
+- Shell: /bin/zsh
+
+All containers:
+- Copy dotfiles to /home/testuser/.dotfiles
+- Set proper environment variables
+- Run with --platform linux/amd64 for ARM Mac compatibility
+
+════════════════════════════════════════════════════════════════════════════════
+TEST REPORTS
+════════════════════════════════════════════════════════════════════════════════
+
+Reports are generated in: test/logs/e2e_<timestamp>/
+
+Files created:
+- main.log - Overall execution log
+- ubuntu.log - Ubuntu container test output
+- fedora.log - Fedora container test output
+- arch.log - Arch container test output
+- macos.log - macOS native test output
+- report.md - Markdown summary report
+
+Report includes:
+- Test configuration and options
+- Platform results table
+- Pass/fail status for each platform
+- Links to individual log files
+- Coverage summary
+- Execution notes
+
+════════════════════════════════════════════════════════════════════════════════
+CLEANUP COMMANDS
+════════════════════════════════════════════════════════════════════════════════
+
+# Remove old test logs
+rm -rf test/logs/e2e_*
+
+# Remove Docker test images
+docker rmi dotfiles-test:ubuntu dotfiles-test:fedora dotfiles-test:arch
+
+# Clean Docker system
+docker system prune -a
+
+# Remove old bash scripts (replaced by zsh)
+rm -f test/e2e/full_setup_test.sh
+rm -f test/e2e/run_e2e_test.sh
+
+════════════════════════════════════════════════════════════════════════════════
+MIGRATION NOTES
+════════════════════════════════════════════════════════════════════════════════
+
+Changes from bash to zsh:
+- Used zsh-specific features: setopt, typeset -g, ${0:A:h}
+- Replaced bash arrays with zsh arrays
+- Used zsh parameter expansion features
+- Changed shebang to #!/usr/bin/env zsh
+- Used [[ ]] consistently for conditionals
+- Leveraged zsh's better string handling
+
+Improvements:
+- Better error handling with setopt ERR_EXIT
+- More robust path handling with :A:h modifiers
+- Cleaner array syntax
+- Better variable scoping with typeset
+
+════════════════════════════════════════════════════════════════════════════════
