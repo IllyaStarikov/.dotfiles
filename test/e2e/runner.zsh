@@ -211,7 +211,8 @@ run_docker_test() {
       -e DEBUG=true \
       "dotfiles-test:latest" \
       -c "$docker_cmd" 2>&1 | tee -a "$log_file"
-    local result=${PIPESTATUS[0]}
+    # In zsh, use pipestatus (lowercase) array
+    local result=${pipestatus[1]:-$?}
   else
     # Normal mode, just log to file
     timeout 600 docker run --name "$container_name" \

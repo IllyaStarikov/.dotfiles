@@ -71,7 +71,7 @@ print_info() {
 }
 
 print_debug() {
-  if [[ "$DEBUG" == true ]]; then
+  if [[ "${DEBUG:-false}" == true ]]; then
     echo -e "${CYAN}[DEBUG]${NC} $1"
   fi
 }
@@ -229,28 +229,47 @@ phase_test_neovim() {
 phase_run_unit_tests() {
   cd "${DOTFILES_DIR}/test"
 
-  # Set environment for CI
+  # Set environment for CI - CRITICAL for non-interactive tests
   export CI=true
+  export CI_MODE=1
   export E2E_TEST=true
   export SKIP_GUI_TESTS=1
   export SKIP_HARDWARE_TESTS=1
+  export SKIP_INTERACTIVE_TESTS=1
   export NONINTERACTIVE=1
+  export TERM=dumb
+  export NO_COLOR=1
+
+  # Disable any readline/input features
+  export DEBIAN_FRONTEND=noninteractive
+  unset DISPLAY
+
+  # Make sure stdin is not a TTY to prevent interactive prompts
+  exec < /dev/null
 
   # Run unit tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
     local timeout_val=180
-    if [[ "$DEBUG" == true ]]; then
+    if [[ "${DEBUG:-false}" == true ]]; then
       print_info "Running FULL unit tests (may take several minutes)..."
       timeout_val=300
     fi
 
-    if timeout $timeout_val ./runner.zsh --unit; then
+    # Run with explicit timeout and non-interactive flags
+    print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit"
+    if timeout --kill-after=10 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
       print_success "Unit tests passed"
       return 0
     else
-      print_warning "Some unit tests failed or timed out"
-      # Don't fail E2E on unit test failures in container
-      return 0
+      local exit_code=$?
+      if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
+        print_error "Unit tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
+        return 1  # FAIL on timeout
+      else
+        print_error "Unit tests FAILED (exit code: $exit_code)"
+        # Fail E2E when unit tests fail
+        return 1
+      fi
     fi
   else
     print_error "Test runner not found or not executable"
@@ -261,28 +280,47 @@ phase_run_unit_tests() {
 phase_run_functional_tests() {
   cd "${DOTFILES_DIR}/test"
 
-  # Set environment for CI
+  # Set environment for CI - CRITICAL for non-interactive tests
   export CI=true
+  export CI_MODE=1
   export E2E_TEST=true
   export SKIP_GUI_TESTS=1
   export SKIP_HARDWARE_TESTS=1
+  export SKIP_INTERACTIVE_TESTS=1
   export NONINTERACTIVE=1
+  export TERM=dumb
+  export NO_COLOR=1
+
+  # Disable any readline/input features
+  export DEBIAN_FRONTEND=noninteractive
+  unset DISPLAY
+
+  # Make sure stdin is not a TTY to prevent interactive prompts
+  exec < /dev/null
 
   # Run functional tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
     local timeout_val=180
-    if [[ "$DEBUG" == true ]]; then
+    if [[ "${DEBUG:-false}" == true ]]; then
       print_info "Running FULL functional tests (may take several minutes)..."
       timeout_val=300
     fi
 
-    if timeout $timeout_val ./runner.zsh --functional; then
+    # Run with explicit timeout and non-interactive flags
+    print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional"
+    if timeout --kill-after=10 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
       print_success "Functional tests passed"
       return 0
     else
-      print_warning "Some functional tests failed or timed out"
-      # Don't fail E2E on functional test failures in container
-      return 0
+      local exit_code=$?
+      if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
+        print_error "Functional tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
+        return 1  # FAIL on timeout
+      else
+        print_error "Functional tests FAILED (exit code: $exit_code)"
+        # Fail E2E when functional tests fail
+        return 1
+      fi
     fi
   else
     print_error "Test runner not found or not executable"
@@ -324,7 +362,7 @@ main() {
   print_header "Docker E2E Test Runner"
   print_header "Starting E2E Test in Container"
 
-  if [[ "$DEBUG" == true ]]; then
+  if [[ "${DEBUG:-false}" == true ]]; then
     print_info "Debug mode enabled - verbose output active"
     print_debug "Environment variables:"
     print_debug "  HOME=$HOME"
