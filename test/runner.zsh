@@ -179,7 +179,7 @@ ${BOLD}Examples:${NC}
   $0 --quick                  # Quick sanity check
   $0 --unit nvim              # Run Neovim unit tests
   $0 --full --ci              # Full CI test run
-  $0 --debug "test_*.sh"      # Debug specific tests
+  $0 --debug "test_*.zsh"     # Debug specific tests
 
 ${BOLD}Environment Variables:${NC}
   TEST_TMP_DIR    Temporary directory for tests
@@ -197,7 +197,7 @@ EOF
 
 discover_tests() {
   local category="$1"
-  local pattern="${2:-*.sh}"
+  local pattern="${2:-*.zsh}"
   local test_files=()
 
   case "$category" in
@@ -244,7 +244,7 @@ discover_tests() {
 
 run_test() {
   local test_file="$1"
-  local test_name=$(basename "$test_file" .sh)
+  local test_name=$(basename "$test_file" .zsh)
   local test_dir=$(dirname "$test_file")
   local start_time=$(date +%s)
 
@@ -433,7 +433,7 @@ EOF
 
 run_test_category() {
   local category="$1"
-  local pattern="${TEST_PATTERN:-*.sh}"
+  local pattern="${TEST_PATTERN:-*.zsh}"
 
   log INFO "Running $category tests..."
 

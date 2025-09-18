@@ -3,7 +3,7 @@
 # Tests behavior, not implementation
 
 # Test framework
-source "$(dirname "$0")/../../lib/simple_framework.sh"
+source "$(dirname "$0")/../../lib/simple_framework.zsh"
 
 # Script under test
 SCRIPT_PATH="$DOTFILES_DIR/src/scripts/bugreport"
