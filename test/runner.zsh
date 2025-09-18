@@ -350,24 +350,40 @@ EOF
   # Use timeout command (macOS doesn't support --kill-after)
   # Using arrays to properly handle command and arguments
   local -a timeout_cmd
+  local has_timeout=1
+
   if command -v gtimeout > /dev/null 2>&1; then
     # Use GNU timeout if available (installed via coreutils on macOS)
     timeout_cmd=(gtimeout --kill-after=5)
-  elif [[ "$(uname)" == "Linux" ]]; then
-    # Linux has GNU timeout with --kill-after
-    timeout_cmd=(timeout --kill-after=5)
+  elif command -v timeout > /dev/null 2>&1; then
+    # Check if timeout exists at all
+    if [[ "$(uname)" == "Linux" ]]; then
+      # Linux has GNU timeout with --kill-after
+      timeout_cmd=(timeout --kill-after=5)
+    else
+      # Basic timeout without kill-after
+      timeout_cmd=(timeout)
+    fi
   else
-    # Basic timeout without kill-after
-    timeout_cmd=(timeout)
+    # No timeout command available - will run without timeout
+    has_timeout=0
   fi
 
   if [[ $VERBOSE -eq 1 ]]; then
-    # Run with timeout in verbose mode
-    "${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
+    # Run with or without timeout in verbose mode
+    if [[ $has_timeout -eq 1 ]]; then
+      "${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
+    else
+      zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
+    fi
     test_status=$?
   else
-    # Run with timeout in quiet mode
-    test_output=$("${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
+    # Run with or without timeout in quiet mode
+    if [[ $has_timeout -eq 1 ]]; then
+      test_output=$("${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
+    else
+      test_output=$(zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
+    fi
     test_status=$?
   fi
 
