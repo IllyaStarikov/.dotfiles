@@ -16,9 +16,9 @@ opt.maxmempattern = 50000 -- Default: 1000 (handle complex patterns)
 -- Python host configuration
 local python3_path = vim.fn.exepath("python3")
 if python3_path ~= "" then
-  g.python3_host_prog = python3_path
+	g.python3_host_prog = python3_path
 else
-  g.loaded_python3_provider = 1
+	g.loaded_python3_provider = 1
 end
 
 -- Disable unused providers
@@ -59,18 +59,18 @@ vim.lsp.set_log_level("ERROR")
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation
 -- Only reset if not explicitly set via command line
 if vim.v.verbose == 0 then
-  vim.opt.verbose = 0
-  vim.opt.verbosefile = ""
+	vim.opt.verbose = 0
+	vim.opt.verbosefile = ""
 end
 
 -- Clear startup messages after VimEnter
 vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    vim.defer_fn(function()
-      -- Clear messages and command line
-      vim.cmd("silent! messages clear")
-      vim.cmd("echo ''")
-    end, 100)
-  end,
-  desc = "Clear startup messages",
+	callback = function()
+		vim.defer_fn(function()
+			-- Clear messages and command line
+			vim.cmd("silent! messages clear")
+			vim.cmd("echo ''")
+		end, 100)
+	end,
+	desc = "Clear startup messages",
 })
