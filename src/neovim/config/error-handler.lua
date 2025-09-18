@@ -152,7 +152,7 @@ function M.init()
   end, { desc = "View startup error log" })
 
   -- Add command to clear error counts
-  vim.api.nvim_create_user_command("ClearErrorCounts", function()
+  compat.create_user_command("ClearErrorCounts", function()
     error_counts = {}
     vim.notify("Error counts cleared", vim.log.levels.INFO)
   end, { desc = "Clear error throttling counts" })

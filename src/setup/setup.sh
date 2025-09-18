@@ -665,21 +665,6 @@ install_linux_packages() {
 
   # Core packages (varies by distro)
   local packages=()
-
-  # Check if Neovim is already installed with version >= 0.7
-  local skip_neovim=false
-  if command -v nvim &>/dev/null; then
-    local nvim_version=$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
-    if [[ -n "$nvim_version" ]]; then
-      local major=$(echo "$nvim_version" | cut -d. -f1)
-      local minor=$(echo "$nvim_version" | cut -d. -f2)
-      if [[ "$major" -gt 0 ]] || [[ "$major" -eq 0 && "$minor" -ge 7 ]]; then
-        info "Neovim $nvim_version already installed, skipping package installation"
-        skip_neovim=true
-      fi
-    fi
-  fi
-
   case "$PKG_MANAGER" in
     apt)
       packages=(
@@ -688,6 +673,7 @@ install_linux_packages() {
         "curl"
         "wget"
         "tmux"
+        "neovim"
         "ripgrep"
         "fd-find"
         "bat"
@@ -700,8 +686,6 @@ install_linux_packages() {
         "python3-venv"
         "cargo" # For installing tree-sitter
       )
-      # Only add neovim if not already installed with recent version
-      [[ "$skip_neovim" == false ]] && packages+=("neovim")
       ;;
     dnf | yum)
       packages=(
@@ -712,6 +696,7 @@ install_linux_packages() {
         "curl"
         "wget"
         "tmux"
+        "neovim"
         "ripgrep"
         "fd-find"
         "bat"
@@ -722,8 +707,6 @@ install_linux_packages() {
         "unzip"
         "python3-pip"
       )
-      # Only add neovim if not already installed with recent version
-      [[ "$skip_neovim" == false ]] && packages+=("neovim")
       ;;
     pacman)
       packages=(
@@ -732,6 +715,7 @@ install_linux_packages() {
         "curl"
         "wget"
         "tmux"
+        "neovim"
         "ripgrep"
         "fd"
         "bat"
@@ -742,8 +726,6 @@ install_linux_packages() {
         "unzip"
         "python-pip"
       )
-      # Only add neovim if not already installed with recent version
-      [[ "$skip_neovim" == false ]] && packages+=("neovim")
       ;;
     *)
       warning "Unknown package manager: $PKG_MANAGER"
