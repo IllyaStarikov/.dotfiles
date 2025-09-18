@@ -9,7 +9,7 @@ opt.redrawtime = 10000 -- Default: 2000 (prevent timeouts on syntax highlighting
 opt.ttimeoutlen = 10 -- Default: 50 (faster key sequence timeout)
 
 -- Large file optimizations
-opt.synmaxcol = 4096 -- Default: 3000 (syntax highlighting for longer lines)
+opt.synmaxcol = 4096 -- Default: 3000 (handle minified JS/CSS, long SQL queries)
 g.vimsyn_embed = "lPr" -- Limit vim syntax embedding (Lua, Python, Ruby only)
 opt.maxmempattern = 50000 -- Default: 1000 (handle complex patterns)
 
@@ -53,7 +53,9 @@ g.netrw_localrmdir = "rm -rf"
 
 -- No clipboard integration for better performance
 
--- Reduce LSP logging
+-- Reduce LSP logging for performance
+-- ERROR level only logs critical issues, reducing I/O overhead
+-- Default is WARN which can be noisy with multiple LSP servers
 vim.lsp.set_log_level("ERROR")
 
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation

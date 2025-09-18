@@ -33,13 +33,15 @@ check_requirements() {
   fi
 }
 
-# Get timeout command
+# Get timeout command wrapper for API calls
+# Returns timeout command if available, empty string otherwise
+# This allows graceful fallback on systems without timeout (like macOS)
 get_timeout_cmd() {
   if has_command timeout; then
     echo "timeout ${TIMEOUT_DURATION}"
   else
-    # No timeout available, just use cat to pass through
-    echo "cat"
+    # No timeout available - commands will run without timeout
+    echo ""
   fi
 }
 
@@ -51,45 +53,34 @@ fetch_quotes() {
   
   # Try each API multiple times to ensure we get enough quotes
   while [ $fetched -lt $count ]; do
-    # ZenQuotes
+    # ZenQuotes API
     if [ $fetched -lt $count ]; then
       local quote
-      if [[ "$timeout_cmd" == "cat" ]]; then
-        quote=$(curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
-      else
-        quote=$($timeout_cmd curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
-      fi
-      
+      # Use timeout wrapper if available, otherwise run directly
+      quote=$($timeout_cmd curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
+
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
       fi
     fi
     
-    # Quotable
+    # Quotable API
     if [ $fetched -lt $count ]; then
       local quote
-      if [[ "$timeout_cmd" == "cat" ]]; then
-        quote=$(curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
-      else
-        quote=$($timeout_cmd curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
-      fi
-      
+      quote=$($timeout_cmd curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
+
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
       fi
     fi
     
-    # Advice Slip
+    # Advice Slip API
     if [ $fetched -lt $count ]; then
       local quote
-      if [[ "$timeout_cmd" == "cat" ]]; then
-        quote=$(curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
-      else
-        quote=$($timeout_cmd curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
-      fi
-      
+      quote=$($timeout_cmd curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
+
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
