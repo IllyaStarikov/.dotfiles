@@ -73,9 +73,8 @@ jobs:
 
       - name: Make scripts executable
         run: |
-          chmod +x test/e2e/runner.zsh || true
           chmod +x test/e2e/docker-e2e-test.zsh || true
-          chmod +x test/runner.zsh || true
+          chmod +x test/test || true
           chmod +x src/setup/setup.sh || true
           chmod +x src/setup/symlinks.sh || true
 
@@ -101,7 +100,7 @@ jobs:
           # Run setup script directly on macOS
           ./src/setup/setup.sh --core --skip-brew
           # Run tests
-          ./test/runner.zsh --quick
+          ./test/test --quick
 
       - name: Upload test logs
         if: always()
@@ -183,8 +182,8 @@ jobs:
       - name: Verify Docker files
         run: |
           echo "Checking E2E test files exist..."
-          [ -f "test/e2e/runner.zsh" ] || exit 1
           [ -f "test/e2e/docker-e2e-test.zsh" ] || exit 1
+          [ -f "test/test" ] || exit 1
           echo "All required files present"
 
   test-summary:

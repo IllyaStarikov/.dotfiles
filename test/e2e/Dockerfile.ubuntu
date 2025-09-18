@@ -46,8 +46,6 @@ RUN apt-get update && apt-get install -y \
     gettext \
     libtool-bin \
     unzip \
-    # Neovim (0.9.5 in Ubuntu 24.04)
-    neovim \
     # Additional tools
     ripgrep \
     fd-find \
@@ -57,6 +55,12 @@ RUN apt-get update && apt-get install -y \
     tree \
     htop \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Neovim 0.10+ from official PPA
+RUN add-apt-repository ppa:neovim-ppa/unstable -y && \
+    apt-get update && \
+    apt-get install -y neovim && \
+    rm -rf /var/lib/apt/lists/*
 
 # Generate locale
 RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
@@ -103,9 +107,13 @@ RUN mkdir -p \
 # Set PATH
 ENV PATH="/home/testuser/.local/bin:/home/testuser/bin:${PATH}"
 
-# Copy test runner script
-COPY --chown=testuser:testuser test/e2e/run_e2e_test.sh /home/testuser/run_e2e_test.sh
-RUN chmod +x /home/testuser/run_e2e_test.sh
+# Copy dotfiles repository
+COPY --chown=testuser:testuser . /home/testuser/.dotfiles
+
+# Set environment variables
+ENV HOME=/home/testuser
+ENV DOTFILES_DIR=/home/testuser/.dotfiles
+ENV SHELL=/bin/zsh
 
 # Default command
-CMD ["/bin/bash", "-c", "/home/testuser/run_e2e_test.sh"]
+CMD ["/bin/bash"]
