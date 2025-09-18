@@ -56,12 +56,8 @@ jobs:
 
       - name: Run E2E tests
         run: |
-          if [ "${{ github.event.inputs.debug_mode }}" = "true" ]; then
-            echo "Running in debug mode..."
-            ./test/e2e/runner.zsh --debug
-          else
-            ./test/e2e/runner.zsh
-          fi
+          echo "Running E2E tests in debug mode for better diagnostics..."
+          ./test/e2e/runner.zsh --debug
 
       - name: Upload test logs
         if: always()
