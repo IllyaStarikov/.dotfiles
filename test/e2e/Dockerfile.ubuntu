@@ -1,9 +1,9 @@
 # ════════════════════════════════════════════════════════════════════════════════
-# Ubuntu E2E Test Environment
+# Ubuntu 24.04 E2E Test Environment
 # ════════════════════════════════════════════════════════════════════════════════
+# Ubuntu 24.04 includes Neovim 0.9.5 in official repos
 
-ARG UBUNTU_VERSION=24.04
-FROM ubuntu:${UBUNTU_VERSION}
+FROM ubuntu:24.04
 
 # Environment setup
 ENV DEBIAN_FRONTEND=noninteractive \
