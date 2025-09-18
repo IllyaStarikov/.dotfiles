@@ -86,13 +86,12 @@ list_themes() {
   echo "Available themes:"
   echo ""
   echo "TokyoNight themes:"
-  for theme in "$theme_dir"/tokyonight_*; do
-    if [[ -d "$theme" ]]; then
-      local name=$(basename "$theme")
-      local variant="dark"
-      [[ "$name" =~ day ]] && variant="light"
-      echo "  $name ($variant)"
-    fi
+  # Use glob expansion directly for simplicity
+  for theme in "$theme_dir"/tokyonight_*/; do
+    local name=$(basename "$theme")
+    local variant="dark"
+    [[ "$name" =~ day ]] && variant="light"
+    echo "  $name ($variant)"
   done
   echo ""
   echo "Use any theme name with: $(basename "$0") THEME_NAME"

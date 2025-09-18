@@ -6,15 +6,27 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
+# Cleanup function to handle interrupts gracefully
+cleanup() {
+  # Nothing critical to clean up, but trap ensures clean exit
+  exit 0
+}
+
+# Set up trap for clean exit on interrupt (Ctrl-C)
+trap cleanup INT TERM
+
 # Get file extension if provided
 EXT="${1:+.$1}"
 
-# Generate unique filename
+# Generate unique filename for temporary scratch file
+# Uses uuidgen if available (standard on macOS and most Linux distros)
+# Falls back to timestamp + process ID + random number for uniqueness
 generate_filename() {
   if has_command uuidgen; then
     echo "$(uuidgen)"
   else
-    # Fallback to timestamp + random
+    # Fallback strategy: timestamp-processID-random ensures uniqueness
+    # Format: scratch-YYYYMMDD-HHMMSS-PID-RANDOM
     echo "scratch-$(date +%Y%m%d-%H%M%S)-$$-$RANDOM"
   fi
 }
@@ -24,10 +36,13 @@ TEMP_DIR="${TMPDIR:-${TMP:-/tmp}}"
 FILENAME="$(generate_filename)${EXT}"
 TEMP_FILE="${TEMP_DIR}/${FILENAME}"
 
-# Determine editor
+# Determine editor to use
+# Priority: $EDITOR env var > vim (macOS default) > nano (Linux fallback)
+# Most macOS systems have vim, while nano is more common on minimal Linux installs
 EDITOR="${EDITOR:-$(platform_command 'vim' 'nano')}"
 
 # Create and open the file
+# The editor will create the file if it doesn't exist
 print_color blue "Opening scratchpad: ${TEMP_FILE}"
 "${EDITOR}" "${TEMP_FILE}"
 

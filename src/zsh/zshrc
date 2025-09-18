@@ -12,7 +12,7 @@ setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
 setopt SHARE_HISTORY        # Share history between sessions
 setopt HIST_REDUCE_BLANKS   # Remove blanks from history
 setopt CORRECT              # Command correction
-# NO_BEEP is default in modern zsh
+# NO_BEEP is default in zsh 5.4+ (2017 onwards)
 setopt GLOB_DOTS            # Include dotfiles in globbing
 
 # History
@@ -20,7 +20,9 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=100000  # Default: 10000
 SAVEHIST=100000  # Default: 10000
 
-# Performance: Skip global compinit (we'll do it once)
+# Performance: Skip global compinit to avoid duplicate initialization
+# This prevents system-wide compinit from /etc/zshrc or /usr/share/zsh
+# We'll call it once ourselves with turbo mode for faster startup
 skip_global_compinit=1
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
