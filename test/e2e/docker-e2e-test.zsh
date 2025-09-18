@@ -137,6 +137,8 @@ phase_run_setup() {
   print_debug "Running setup.sh with --core --skip-brew flags"
 
   # Run the setup script with core packages only (skip brew)
+  # Also skip Starship in Docker since it requires sudo to install to /usr/local/bin
+  export SKIP_STARSHIP=1
   if ./src/setup/setup.sh --core --skip-brew; then
     print_success "Setup script completed"
     return 0
