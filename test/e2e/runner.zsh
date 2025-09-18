@@ -134,28 +134,51 @@ create_dockerfile() {
   local dockerfile="${LOG_DIR}/Dockerfile"
 
   cat > "$dockerfile" << 'EOF'
-FROM ubuntu:22.04
+FROM archlinux:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV CI=true
-ENV E2E_TEST=true
-
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    sudo \
-    zsh \
-    build-essential \
-    python3 \
-    python3-pip \
-    locales \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+ENV TZ=UTC
+ENV CI=true
+ENV E2E_TEST=true
 
+# Update system and install packages
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    base-devel \
+    git \
+    curl \
+    wget \
+    sudo \
+    which \
+    python \
+    python-pip \
+    nodejs \
+    npm \
+    zsh \
+    tmux \
+    neovim \
+    ripgrep \
+    fd \
+    fzf \
+    bat \
+    jq \
+    tree \
+    unzip \
+    glibc \
+    && pacman -Scc --noconfirm
+
+# Generate locale
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
+
+# Install Python packages for Neovim
+RUN pip install --break-system-packages \
+    pynvim \
+    neovim
+
+# Create test user with sudo privileges
 RUN useradd -m -s /bin/zsh testuser && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
