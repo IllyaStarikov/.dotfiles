@@ -124,20 +124,22 @@ alias tsgrep="rg --type ts"
 command -v bat &>/dev/null && alias cat='bat' || alias cat='cat'
 
 # Colorful and enhanced utilities
-alias diff="colordiff"
+command -v colordiff &>/dev/null && alias diff="colordiff"
 alias less="less -R"
 alias c="bat --style=header,grid,numbers"
 alias preview="bat --style=header,grid,numbers --color=always"
 
-# Safety aliases
-alias rn='trash' # Move files to trash instead of permanent deletion
+# Safety aliases (only if trash is available)
+command -v trash &>/dev/null && alias rn='trash' # Move files to trash instead of permanent deletion
 
 # System information
 alias df='df -H'
 alias du='du -ch'
 alias free='vm_stat'
-alias top='htop'
-alias ps='procs'
+# Only override top if htop is available
+command -v htop &>/dev/null && alias top='htop'
+# Only override ps if procs is available
+command -v procs &>/dev/null && alias ps='procs'
 
 # Network utilities
 alias ip="curl -s icanhazip.com"

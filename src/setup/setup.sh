@@ -220,7 +220,8 @@ detect_work_environment() {
   # Get current hostname
   CURRENT_HOSTNAME=$(hostname -f 2>/dev/null || hostname)
 
-  # Check for known Google work machines
+  # Check hostname patterns to identify corporate work machines
+  # Pattern matching for various corporate domain suffixes
   case "$CURRENT_HOSTNAME" in
     starikov-mac.roam.internal | \
       starikov.c.googlers.com | \
@@ -229,8 +230,8 @@ detect_work_environment() {
       *.corp.google.com | \
       *.roam.internal)
       IS_WORK_MACHINE=true
-      info "Detected Google work machine: $CURRENT_HOSTNAME"
-      info "Will use work-specific configurations"
+      info "Detected corporate work machine: $CURRENT_HOSTNAME"
+      info "Will use work-specific configurations (PyPy, timeouts, workarounds)"
       ;;
     *)
       info "Personal machine detected: $CURRENT_HOSTNAME"
@@ -293,28 +294,13 @@ setup_homebrew() {
     success "Homebrew directory permissions are correct."
   fi
 
-  info "Checking Homebrew directory permissions..."
-  local brew_dirs=("/usr/local/bin" "/usr/local/etc" "/usr/local/sbin" "/usr/local/share" "/usr/local/share/doc")
-  local non_writable_dirs=()
-  for dir in "${brew_dirs[@]}"; do
-    if [[ -d "$dir" ]] && [[ ! -w "$dir" ]]; then
-      non_writable_dirs+=("$dir")
-    fi
-  done
-
-  if [[ ${#non_writable_dirs[@]} -gt 0 ]]; then
-    warning "Detected non-writable Homebrew directories."
-    info "Attempting to fix permissions with sudo. You may be prompted for your password."
-    sudo chown -R "$USER" "${non_writable_dirs[@]}"
-    chmod u+w "${non_writable_dirs[@]}"
-    success "Homebrew directory permissions fixed."
-  else
-    success "Homebrew directory permissions are correct."
+  # Corporate environment workaround: override Homebrew paths to avoid conflicts
+  # Default Homebrew uses /usr/local on Intel, /opt/homebrew on Apple Silicon
+  # Corporate setups may force /usr/local/Homebrew
+  if [[ "$IS_WORK_MACHINE" == true ]]; then
+    export HOMEBREW_PREFIX="/usr/local/Homebrew"
+    export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
   fi
-
-  # Align Homebrew environment to avoid issues on corporate machines
-  export HOMEBREW_PREFIX="/usr/local/Homebrew"
-  export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
 
   # Update Homebrew (with timeout for work machines)
   if [[ "$IS_WORK_MACHINE" == true ]]; then
@@ -1234,9 +1220,13 @@ setup_tmux() {
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 main() {
-  # Align Homebrew environment to avoid issues on corporate machines
-  export HOMEBREW_PREFIX="/usr/local/Homebrew"
-  export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
+  # Corporate environment workaround: override Homebrew paths to avoid conflicts
+  # Default Homebrew uses /usr/local on Intel, /opt/homebrew on Apple Silicon
+  # Corporate setups may force /usr/local/Homebrew
+  if [[ "$IS_WORK_MACHINE" == true ]]; then
+    export HOMEBREW_PREFIX="/usr/local/Homebrew"
+    export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
+  fi
 
   echo "════════════════════════════════════════════════════════════════════"
   echo "       🚀 DOTFILES UNIFIED SETUP"

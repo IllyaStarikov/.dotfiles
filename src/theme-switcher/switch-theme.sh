@@ -112,12 +112,24 @@ esac
 
 # Configuration
 THEME="${1:-}"
+
+# Default themes (defined early for auto-detection)
+LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
+DARK_THEME="${THEME_DARK:-tokyonight_storm}"
+
+# Auto-detect theme from macOS appearance if no theme specified
 if [[ -z "$THEME" ]]; then
-  echo "Error: No theme specified"
-  echo "Usage: $(basename "$0") [THEME|OPTION]"
-  echo "Try '$(basename "$0") --help' for more information"
-  exit 1
+  # Detect macOS appearance (Dark mode check)
+  # Returns "Dark" if dark mode is enabled, nothing otherwise
+  if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+    THEME="$DARK_THEME"
+  else
+    THEME="$LIGHT_THEME"
+  fi
+  echo "Auto-detected theme: $THEME"
 fi
+
+# Configuration directories
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme-switcher"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/theme-switcher"
 ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
@@ -125,10 +137,6 @@ TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 WEZTERM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/wezterm"
 KITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
-
-# Default themes
-LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
-DARK_THEME="${THEME_DARK:-tokyonight_storm}"
 
 # Lock and log configuration
 LOCK_FILE="$CACHE_DIR/theme-switch.lock"
