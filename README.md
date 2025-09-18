@@ -1,344 +1,133 @@
-# 🚀 Dotfiles
+# dotfiles
 
-<div align="center">
+> A modern, fast, and meticulously crafted development environment for macOS and Linux.
 
-```
-     ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
-     ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
-     ██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗
-     ██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║
-     ██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║
-     ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
-```
+[![CI](https://github.com/starikov/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/starikov/dotfiles/actions)
+[![Security](https://github.com/starikov/dotfiles/actions/workflows/security.yml/badge.svg)](https://github.com/starikov/dotfiles/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**A meticulously engineered development environment that just works™**
-
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143.svg?logo=neovim&logoColor=white)](https://neovim.io)
-[![Tmux](https://img.shields.io/badge/Tmux-3.3+-1BB91F.svg?logo=tmux&logoColor=white)](https://github.com/tmux/tmux)
-[![Shell](https://img.shields.io/badge/Shell-Zsh-4E4E4E.svg?logo=gnu-bash&logoColor=white)](https://www.zsh.org)
-[![Tests](https://img.shields.io/badge/Tests-30+-success.svg)](test/)
-[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF.svg?logo=github-actions&logoColor=white)](.github/workflows)
-
-[**⚡ Quick Start**](#-quick-start) • [**✨ Features**](#-features) • [**📖 Documentation**](https://dotfiles.starikov.io) • [**🧪 Testing**](#-testing)
-
-</div>
-
----
-
-## 🎯 What Is This?
-
-My personal development environment - a battle-tested, performance-obsessed configuration that transforms any Unix system into a productivity powerhouse. This isn't just a collection of dotfiles; it's a complete development ecosystem with enterprise-grade testing, AI integration, and sub-second everything.
-
-### 🏆 Key Achievements
-
-- **< 50ms** Neovim startup with 500+ plugin references
-- **< 100ms** Zsh initialization with smart lazy loading
-- **< 500ms** Complete theme switching across all applications
-- **30+ test files** ensuring everything works perfectly
-- **20+ languages** with full LSP, formatting, and debugging support
-- **100% keyboard-driven** workflow with discoverable keybindings
-
----
-
-## ⚡ Quick Start
-
-### One-Command Installation
+## Quick Install
 
 ```bash
-# For the brave (inspects system and installs everything)
-curl -fsSL https://raw.githubusercontent.com/IllyaStarikov/.dotfiles/main/src/setup/setup.sh | bash
-
-# For the cautious (clone first, inspect, then install)
-git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
+git clone https://github.com/starikov/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./src/setup/setup.sh        # Interactive installation
-./src/setup/setup.sh --dry-run  # Preview changes without installing
+./src/setup/setup.sh
 ```
 
-### System Requirements
+That's it. The installer handles everything else.
 
-- **macOS** 12+ (Intel or Apple Silicon) / **Linux** (Ubuntu 20.04+, Arch, Fedora)
-- **Zsh** 5.8+ (installed automatically if missing)
-- **Git** 2.30+ (for proper delta integration)
-- **4GB RAM** minimum (8GB recommended for full AI features)
-- **500MB** disk space
+## What You Get
 
----
+A complete development environment with:
 
-## ✨ Features
+- **Neovim** - Modern IDE with 80+ plugins, LSP for 20+ languages
+- **Zsh** - Fast shell with smart completions and productivity features
+- **tmux** - Terminal multiplexer with intuitive keybindings
+- **Git** - Enhanced workflows with better diffs and aliases
+- **Theme Switcher** - Automatic light/dark mode across all tools
 
-### 🤖 AI-Powered Development
+Everything works together. Change your system theme, and your entire terminal environment adapts instantly.
 
-- **Local AI** via Ollama with llama3.1:70b model
-- **CodeCompanion** integration for chat, inline edits, and agents
-- **GitHub Copilot** support with automatic suggestions
-- **Claude/GPT-4** ready configurations
+## Key Features
 
-### 🎨 Intelligent Theme System
+### 🚀 Performance First
+- Neovim starts in under 200ms
+- Lazy-loaded plugins and optimized configs
+- Parallel processing wherever possible
 
-- **Automatic switching** based on macOS appearance
-- **4 TokyoNight variants** (Day, Night, Moon, Storm)
-- **Synchronized** across Neovim, Alacritty, WezTerm, tmux, and Starship
-- **< 500ms** switching time with zero flicker
+### 🎨 Beautiful Defaults
+- TokyoNight themes (4 variants)
+- Consistent styling across all applications
+- Automatic theme switching with macOS appearance
 
-### 🚀 Performance-First Design
+### 🛡️ Production Ready
+- Comprehensive test suite (unit, functional, integration)
+- CI/CD pipeline with multi-OS support
+- Security scanning and code quality checks
 
-- **Lazy loading** for all plugins and scripts
-- **Compiled Lua** modules for Neovim
-- **Parallel execution** wherever possible
-- **Smart caching** for expensive operations
+### 🔧 Developer Focused
+- LSP support for 20+ languages out of the box
+- AI integration (Copilot, local LLMs via Ollama)
+- Smart formatting with language detection
 
-### 🔧 Modern CLI Toolchain
+## Documentation
 
-| Traditional | Replacement | Improvement                          |
-| ----------- | ----------- | ------------------------------------ |
-| `ls`        | `eza`       | Icons, git status, tree view         |
-| `cat`       | `bat`       | Syntax highlighting, git integration |
-| `find`      | `fd`        | 5-10x faster, intuitive syntax       |
-| `grep`      | `ripgrep`   | 10-50x faster, respects .gitignore   |
-| `cd`        | `zoxide`    | Frecency-based jumping               |
-| `diff`      | `delta`     | Side-by-side, syntax highlighted     |
+Detailed documentation lives in each component's directory:
 
-### 📝 Language Support (20+)
+- [Neovim Configuration](src/neovim/README.md)
+- [Shell Environment](src/zsh/README.md)
+- [Theme System](src/theme-switcher/README.md)
+- [Scripts & Tools](src/scripts/README.md)
+- [Setup & Installation](src/setup/README.md)
 
-Full LSP, formatting, linting, and debugging for:
+## Tools & Languages
 
-- **Systems**: C/C++, Rust, Go, Zig
-- **Scripting**: Python, Ruby, Perl, Lua, Shell/Bash
-- **Web**: TypeScript, JavaScript, HTML, CSS, Vue, React
-- **Data**: SQL, JSON, YAML, TOML, XML
-- **Docs**: Markdown, LaTeX
-- **Mobile**: Swift, Kotlin
+### Included Tools
+`neovim` `zsh` `tmux` `git` `fzf` `ripgrep` `fd` `bat` `eza` `starship` `lazygit`
 
-### 🧪 Enterprise-Grade Testing
+### Supported Languages
+`python` `javascript` `typescript` `go` `rust` `c/c++` `lua` `bash/zsh` `ruby` `java` `swift` `kotlin` `dart` `elixir` `haskell` `ocaml` `latex` `markdown` `yaml` `json`
+
+### Formatters & Linters
+`ruff` `yapf` `prettier` `stylua` `clang-format` `shfmt` `gofmt` `rustfmt` `rubocop`
+
+## Commands
 
 ```bash
-./test/test           # Standard test suite (< 30s)
-./test/test --quick   # Sanity check (< 10s)
-./test/test --unit    # Unit tests only (< 5s)
-./test/test --full    # Everything including performance tests
+# Daily Use
+theme           # Switch theme based on system appearance
+update          # Update all packages, plugins, and tools
+fixy <file>     # Auto-format any file
+
+# Development
+nvim            # Launch Neovim
+tmux new -s dev # Start tmux session
+lazygit         # Git UI
+
+# Testing
+./test/test --quick     # Run quick tests (< 10s)
+./test/test --full      # Run complete test suite
 ```
 
----
+## System Requirements
 
-## 📦 What's Included
+### macOS
+- macOS 12+ (Monterey or later)
+- Xcode Command Line Tools
+- Homebrew
 
-### Core Components
+### Linux
+- Ubuntu 20.04+, Debian 11+, Fedora 35+, or Arch
+- Git 2.25+
+- Curl or wget
 
-- **[Neovim](src/neovim/)** - 500+ plugin references organized in 8 modules
-- **[Zsh](src/zsh/)** - Zinit-powered with turbo mode for instant startup
-- **[Tmux](src/tmux/)** - Minimal config with custom status line
-- **[Git](src/git/)** - 50+ aliases, delta integration, GPG signing
-- **[Alacritty](src/alacritty/)** - GPU-accelerated terminal
-- **[WezTerm](src/wezterm/)** - Alternative terminal with Lua config
-- **[Starship](src/zsh/starship.toml)** - Minimal, fast, customizable prompt
-
-### Utility Scripts
-
-- **[`fixy`](src/scripts/fixy)** - Universal formatter supporting 20+ languages
-- **[`theme`](src/scripts/theme)** - Instant theme switching
-- **[`update`](src/scripts/update)** - Update everything with one command
-- **[`scratchpad`](src/scripts/scratchpad)** - Quick temporary file editing
-- **[`extract`](src/scripts/extract)** - Extract any archive format
-
-### Development Tools
-
-All installed via [Brewfile](src/Brewfile):
-
-- **Modern CLI**: `bat`, `delta`, `eza`, `fd`, `fzf`, `ripgrep`, `zoxide`
-- **Dev Tools**: `gh`, `lazygit`, `jq`, `hyperfine`, `glow`
-- **Languages**: `fnm`, `pyenv`, `rustup`, `go`
-- **LSPs**: `gopls`, `lua-language-server`, `typescript-language-server`
-
----
-
-## 🏗️ Architecture
+## Project Structure
 
 ```
 ~/.dotfiles/
-├── src/                    # All source configurations
-│   ├── neovim/            # Neovim (500+ plugins, 42 modules)
-│   │   ├── init.lua       # Entry point with smart path detection
-│   │   ├── config/        # Core, UI, keymaps, autocmds
-│   │   └── plugins/       # AI, completion, git, languages, etc.
-│   ├── zsh/               # Shell configuration
-│   ├── theme-switcher/    # Cross-app theme synchronization
-│   ├── scripts/           # Utility scripts (11 tools)
-│   ├── setup/             # Platform-specific installers
-│   ├── language/          # Language-specific configs
-│   └── git/               # Git config with hooks
-├── test/                  # 30+ test files
-│   ├── unit/             # Configuration validation
-│   ├── functional/       # Feature testing
-│   ├── integration/      # Multi-component tests
-│   └── performance/      # Regression benchmarks
-├── config/               # Tool configurations
-│   └── fixy.json        # 631-line formatter config
-└── .github/workflows/    # 6 CI/CD pipelines
+├── src/          # Source configurations
+├── test/         # Test infrastructure
+├── config/       # Tool configurations
+└── .github/      # CI/CD workflows
 ```
 
-### Key Design Principles
+## Contributing
 
-1. **Everything is a symlink** - Source files live in `src/`, symlinked to proper locations
-2. **Lazy by default** - Nothing loads until needed
-3. **Test everything** - Every configuration has tests
-4. **Document inline** - Self-documenting code with examples
-5. **Fail gracefully** - Works even if dependencies are missing
+Contributions are welcome! This project follows:
+- Comprehensive test coverage
+- Code formatting standards (via `fixy`)
+- Security scanning on all commits
 
----
+## Acknowledgments
 
-## 🧪 Testing
+Built with inspiration from the community and powered by outstanding open-source tools. Special thanks to the Neovim, tmux, and Zsh communities.
 
-Our test suite ensures everything works perfectly:
+## License
 
-```bash
-# Quick sanity check (< 10s)
-./test/test --quick
-
-# Run specific test category
-./test/test unit/nvim
-./test/test functional/themes
-
-# Full test suite with performance benchmarks
-./test/test --full
-
-# Test in Docker
-docker run -it ghcr.io/illyastarikov/dotfiles:test
-```
-
-### Test Coverage
-
-- ✅ All shell scripts pass ShellCheck
-- ✅ All Lua files pass Stylua
-- ✅ All Python files pass Ruff
-- ✅ Neovim starts in < 300ms
-- ✅ Themes switch in < 500ms
-- ✅ No memory leaks detected
-
----
-
-## 🎯 Daily Workflow
-
-```bash
-# Start your day
-theme              # Auto-detect and set theme
-update             # Update all tools and plugins
-
-# Navigate efficiently
-z project          # Jump to frecent directory
-ff                 # Fuzzy find files
-fg "pattern"       # Grep with preview
-
-# Code with AI
-# <leader>cc - Open AI chat
-# <leader>ca - Get code actions
-# :AI fix this     # Direct AI commands
-
-# Git workflow
-gs                 # Status with delta
-ga .              # Stage changes
-gc "message"      # Commit with conventional format
-gp                # Push with automatic upstream
-gpr               # Create pull request via gh
-
-# Format anything
-fixy file.py      # Auto-detect and format
-fixy --all *.js   # Format with normalizations
-```
-
----
-
-## 🎨 Keybindings
-
-### Neovim (Leader = `Space`)
-
-| Key          | Action         | Key          | Action             |
-| ------------ | -------------- | ------------ | ------------------ |
-| `<leader>ff` | Find files     | `<leader>ca` | Code actions       |
-| `<leader>fg` | Live grep      | `<leader>rn` | Rename symbol      |
-| `<leader>fb` | Browse buffers | `gd`         | Go to definition   |
-| `<leader>e`  | File explorer  | `K`          | Show documentation |
-
-### Tmux (Prefix = `Ctrl-a`)
-
-| Key          | Action           | Key         | Action         |
-| ------------ | ---------------- | ----------- | -------------- |
-| `<prefix>c`  | New window       | `<prefix>z` | Zoom pane      |
-| `<prefix>\|` | Split vertical   | `<prefix>s` | Choose session |
-| `<prefix>-`  | Split horizontal | `<prefix>r` | Reload config  |
-
----
-
-## 🚦 CI/CD
-
-Every push triggers comprehensive checks:
-
-1. **Testing** - Multi-OS (Ubuntu, macOS Intel/ARM)
-2. **Linting** - ShellCheck, Stylua, Ruff
-3. **Security** - Gitleaks secret scanning
-4. **Performance** - Startup time regression tests
-5. **Deployment** - GitHub Pages documentation
-
----
-
-## 📚 Documentation
-
-- **[Setup Guide](src/setup/README.md)** - Detailed installation instructions
-- **[Script Reference](src/scripts/README.md)** - All utility scripts explained
-- **[Theme System](src/theme-switcher/README.md)** - How theme switching works
-- **[Test Guide](test/TEST_GUIDE.md)** - Writing and running tests
-- **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! This repository follows:
-
-- [Conventional Commits](https://www.conventionalcommits.org/)
-- [Google Style Guides](styleguide/)
-- Comprehensive testing for all changes
-
-```bash
-# Setup development environment
-git clone https://github.com/IllyaStarikov/.dotfiles.git
-cd .dotfiles
-./src/setup/setup.sh --dev
-
-# Run tests before committing
-./test/test --quick
-./src/scripts/fixy --check
-
-# Create feature branch
-git checkout -b feature/amazing-feature
-```
-
----
-
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-Standing on the shoulders of giants:
-
-- [Neovim](https://neovim.io) - The future of vim
-- [folke](https://github.com/folke) - lazy.nvim and incredible plugins
-- [Zinit](https://github.com/zdharma-continuum/zinit) - Fastest Zsh plugin manager
-- [TokyoNight](https://github.com/folke/tokyonight.nvim) - Beautiful theme family
+MIT - See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
-
-**[⬆ Back to Top](#-dotfiles)**
-
-Made with ❤️ and excessive attention to detail
-
-[**Website**](https://dotfiles.starikov.io) • [**Issues**](https://github.com/IllyaStarikov/.dotfiles/issues) • [**Discussions**](https://github.com/IllyaStarikov/.dotfiles/discussions)
-
+  <sub>Crafted with precision for developers who care about their tools.</sub>
 </div>
