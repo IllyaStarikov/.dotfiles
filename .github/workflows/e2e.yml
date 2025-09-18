@@ -99,8 +99,8 @@ jobs:
           echo "Running native E2E tests on ${{ matrix.name }}"
           # Run setup script directly on macOS
           ./src/setup/setup.sh --core --skip-brew
-          # Run tests
-          ./test/test --quick
+          # The setup script copies dotfiles to ~/.dotfiles, so we need to run tests from there
+          cd ~/.dotfiles && ./test/test --quick
 
       - name: Upload test logs
         if: always()
