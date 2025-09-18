@@ -65,8 +65,8 @@ RUN add-apt-repository ppa:neovim-ppa/unstable -y && \
 # Generate locale
 RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
 
-# Install language servers for testing
-RUN pip3 install --no-cache-dir \
+# Install language servers for testing (--break-system-packages for PEP 668)
+RUN pip3 install --break-system-packages --no-cache-dir \
     pynvim \
     neovim \
     pyright \
