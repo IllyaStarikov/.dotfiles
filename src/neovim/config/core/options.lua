@@ -22,13 +22,13 @@ opt.timeoutlen = 500 -- Default: 1000 (faster which-key trigger)
 
 -- Fix for table/box drawing characters
 opt.fillchars = {
-  vert = "│", -- Vertical separator
-  horiz = "─", -- Horizontal separator
-  horizup = "┴", -- Horizontal with up
-  horizdown = "┬", -- Horizontal with down
-  vertleft = "┤", -- Vertical with left
-  vertright = "├", -- Vertical with right
-  verthoriz = "┼", -- Cross
+	vert = "│", -- Vertical separator
+	horiz = "─", -- Horizontal separator
+	horizup = "┴", -- Horizontal with up
+	horizdown = "┬", -- Horizontal with down
+	vertleft = "┤", -- Vertical with left
+	vertright = "├", -- Vertical with right
+	verthoriz = "┼", -- Cross
 }
 
 -- Ensure proper character width handling
@@ -36,12 +36,12 @@ opt.ambiwidth = "single" -- Treat ambiguous width chars as single width
 
 -- Force proper rendering of box-drawing characters
 if vim.fn.has("multi_byte") == 1 then
-  vim.opt.listchars = {
-    tab = "▸ ",
-    trail = "·",
-    extends = "❯",
-    precedes = "❮",
-  }
+	vim.opt.listchars = {
+		tab = "▸ ",
+		trail = "·",
+		extends = "❯",
+		precedes = "❮",
+	}
 end
 
 -- File handling
