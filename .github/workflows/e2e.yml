@@ -21,10 +21,23 @@ env:
   CI: true
 
 jobs:
-  docker-integration:
-    name: docker integration test
-    runs-on: ubuntu-latest
+  e2e-tests:
+    name: e2e test - ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: "Arch Linux (Docker)"
+            dockerfile: "test/e2e/Dockerfile.arch"
+          - os: ubuntu-latest
+            name: "Ubuntu 24.04 (Docker)"
+            dockerfile: "test/e2e/Dockerfile.ubuntu"
+          - os: macos-latest
+            name: "macOS (Native)"
+            dockerfile: ""
 
     steps:
       - name: Checkout repository
@@ -32,10 +45,12 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx (Linux only)
+        if: runner.os == 'Linux'
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
+      - name: Cache Docker layers (Linux only)
+        if: runner.os == 'Linux'
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
@@ -43,21 +58,50 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Install zsh (required for test runner)
+      - name: Install dependencies
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y zsh
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y zsh
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            # macOS already has zsh, but install Homebrew packages if needed
+            brew install neovim || true
+            brew install tmux || true
+            brew install ripgrep || true
+            brew install fd || true
+          fi
 
       - name: Make scripts executable
         run: |
-          chmod +x test/e2e/runner.zsh
-          chmod +x test/e2e/docker-e2e-test.zsh
-          chmod +x test/runner.zsh
+          chmod +x test/e2e/runner.zsh || true
+          chmod +x test/e2e/docker-e2e-test.zsh || true
+          chmod +x test/runner.zsh || true
+          chmod +x src/setup/setup.sh || true
+          chmod +x src/setup/symlinks.sh || true
 
-      - name: Run E2E tests
+      - name: Run E2E tests (Docker)
+        if: runner.os == 'Linux'
         run: |
-          echo "Running E2E tests in debug mode for better diagnostics..."
-          ./test/e2e/runner.zsh --debug
+          echo "Running Docker-based E2E tests on ${{ matrix.name }}"
+          # Build Docker image from the specified Dockerfile
+          docker build -f ${{ matrix.dockerfile }} -t dotfiles-test:latest .
+          # Run the test in Docker
+          docker run --rm \
+            -e CI=true \
+            -e E2E_TEST=true \
+            -e DEBUG=true \
+            -e NONINTERACTIVE=1 \
+            dotfiles-test:latest \
+            bash -c "/home/testuser/.dotfiles/test/e2e/docker-e2e-test.zsh"
+
+      - name: Run E2E tests (Native macOS)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Running native E2E tests on ${{ matrix.name }}"
+          # Run setup script directly on macOS
+          ./src/setup/setup.sh --core --skip-brew
+          # Run tests
+          ./test/runner.zsh --quick
 
       - name: Upload test logs
         if: always()
@@ -146,7 +190,7 @@ jobs:
   test-summary:
     name: test result summary
     runs-on: ubuntu-latest
-    needs: [docker-integration]
+    needs: [e2e-tests]
     if: always()
 
     steps:
@@ -155,12 +199,15 @@ jobs:
           echo "## E2E Test Results"
           echo ""
 
-          if [ "${{ needs.docker-integration.result }}" = "success" ]; then
-            echo "**End-to-end tests passed successfully**"
+          if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
+            echo "**End-to-end tests passed successfully on all platforms**"
             echo ""
-            echo "The complete dotfiles setup has been validated in a clean Docker environment."
+            echo "✅ Tests validated on:"
+            echo "- Arch Linux (Docker)"
+            echo "- Ubuntu 24.04 (Docker)"
+            echo "- macOS (Native)"
           else
-            echo "**End-to-end tests failed**"
+            echo "**End-to-end tests failed on one or more platforms**"
             echo ""
             echo "Please check the test logs for details."
             exit 1
