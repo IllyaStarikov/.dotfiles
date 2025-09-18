@@ -69,6 +69,7 @@ jobs:
             brew install tmux || true
             brew install ripgrep || true
             brew install fd || true
+            brew install coreutils || true  # Provides gtimeout command
           fi
 
       - name: Make scripts executable
