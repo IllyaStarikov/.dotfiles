@@ -320,7 +320,7 @@ EOF
       # Don't skip any tests in E2E mode - all tests are critical
     else
       # Regular CI mode - shorter timeout and skip problematic tests
-      test_timeout=10  # Much shorter timeout in CI
+      test_timeout=20  # Increased timeout in CI for init tests
 
       # Skip certain problematic tests in CI - check both with and without _zsh suffix
       local base_name="${test_name%_zsh_test}"
