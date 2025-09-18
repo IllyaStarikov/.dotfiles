@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# Test runner wrapper for CI compatibility
-# This wraps the actual runner.zsh script
-
-# Get the directory of this script
-TEST_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Execute the actual runner with all arguments
-exec "$TEST_DIR/runner.zsh" "$@"

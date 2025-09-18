@@ -75,7 +75,7 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x test/e2e/docker-e2e-test.zsh || true
-          chmod +x test/test || true
+          chmod +x test/runner.zsh || true
           chmod +x src/setup/setup.sh || true
           chmod +x src/setup/symlinks.sh || true
 
@@ -102,7 +102,7 @@ jobs:
           ./src/setup/setup.sh --core --skip-brew || echo "Setup completed with warnings"
           # Run tests from the current directory (GitHub workspace)
           # The setup script creates symlinks, not a copy of the repo
-          ./test/test --quick
+          ./test/runner.zsh --quick
 
       - name: Upload test logs
         if: always()
@@ -185,7 +185,7 @@ jobs:
         run: |
           echo "Checking E2E test files exist..."
           [ -f "test/e2e/docker-e2e-test.zsh" ] || exit 1
-          [ -f "test/test" ] || exit 1
+          [ -f "test/runner.zsh" ] || exit 1
           echo "All required files present"
 
   test-summary:
