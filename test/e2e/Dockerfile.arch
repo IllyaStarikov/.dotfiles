@@ -91,5 +91,13 @@ RUN mkdir -p \
 # Set PATH
 ENV PATH="/home/testuser/.local/bin:/home/testuser/bin:${PATH}"
 
+# Copy dotfiles repository
+COPY --chown=testuser:testuser . /home/testuser/.dotfiles
+
+# Set environment variables
+ENV HOME=/home/testuser
+ENV DOTFILES_DIR=/home/testuser/.dotfiles
+ENV SHELL=/bin/zsh
+
 # Default command
 CMD ["/bin/bash"]
