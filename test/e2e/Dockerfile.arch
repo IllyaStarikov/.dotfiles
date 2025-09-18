@@ -1,68 +1,56 @@
 # ════════════════════════════════════════════════════════════════════════════════
-# Ubuntu E2E Test Environment
+# Arch Linux E2E Test Environment
 # ════════════════════════════════════════════════════════════════════════════════
+# Uses Arch Linux for the absolute latest packages including Neovim 0.10+
 
-ARG UBUNTU_VERSION=24.04
-FROM ubuntu:${UBUNTU_VERSION}
+FROM archlinux:latest
 
 # Environment setup
-ENV DEBIAN_FRONTEND=noninteractive \
-    LANG=en_US.UTF-8 \
+ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
     TZ=UTC
 
-# Install system dependencies required for setup script
-RUN apt-get update && apt-get install -y \
+# Update system and install packages
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
     # Essential tools
+    base-devel \
+    git \
     curl \
     wget \
-    git \
     sudo \
-    # Build tools
-    build-essential \
-    cmake \
-    pkg-config \
-    autoconf \
-    automake \
-    libtool \
+    which \
     # Development tools
-    python3 \
-    python3-pip \
-    python3-venv \
+    cmake \
+    python \
+    python-pip \
     nodejs \
     npm \
     # Shell and terminal
     zsh \
     tmux \
-    # System utilities
-    locales \
-    software-properties-common \
-    apt-transport-https \
-    ca-certificates \
-    gnupg \
-    lsb-release \
-    # Libraries for Neovim
-    gettext \
-    libtool-bin \
-    unzip \
-    # Neovim (0.9.5 in Ubuntu 24.04)
+    # Neovim (latest version, usually 0.10+)
     neovim \
     # Additional tools
     ripgrep \
-    fd-find \
+    fd \
     fzf \
     bat \
     jq \
     tree \
     htop \
-    && rm -rf /var/lib/apt/lists/*
+    unzip \
+    # Locale
+    glibc \
+    && pacman -Scc --noconfirm
 
 # Generate locale
-RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
 
-# Install language servers for testing
-RUN pip3 install --no-cache-dir \
+# Install Python packages for Neovim
+RUN pip install --break-system-packages \
     pynvim \
     neovim \
     pyright \
@@ -81,7 +69,6 @@ RUN npm install -g \
 
 # Create test user with sudo privileges
 RUN useradd -m -s /bin/zsh testuser && \
-    usermod -aG sudo testuser && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
     mkdir -p /home/testuser/.local/share && \
     mkdir -p /home/testuser/.cache && \
@@ -103,9 +90,5 @@ RUN mkdir -p \
 # Set PATH
 ENV PATH="/home/testuser/.local/bin:/home/testuser/bin:${PATH}"
 
-# Copy test runner script
-COPY --chown=testuser:testuser test/e2e/run_e2e_test.sh /home/testuser/run_e2e_test.sh
-RUN chmod +x /home/testuser/run_e2e_test.sh
-
 # Default command
-CMD ["/bin/bash", "-c", "/home/testuser/run_e2e_test.sh"]
+CMD ["/bin/bash"]
