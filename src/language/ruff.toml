@@ -9,14 +9,14 @@ quote-style = "single" # Default: "double"
 
 # Lint configuration
 [lint]
-# keep-sorted start
-]
 select = [
+  # keep-sorted start
   "E", # pycodestyle errors
   "F", # pyflakes
   "I", # isort
   "W", # pycodestyle warnings
-# keep-sorted end
+  # keep-sorted end
+]
 
 
 target-version = "py39" # Default: "py38"
