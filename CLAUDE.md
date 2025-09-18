@@ -48,19 +48,19 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ### Testing
 ```bash
 # Main test runner with comprehensive test suite
-./test/test            # Run standard test suite
-./test/test --quick    # Quick sanity check (< 10s)
-./test/test --unit     # Unit tests only (< 5s)
-./test/test --functional    # Functional tests (< 30s)
-./test/test --integration   # Integration tests (< 60s)
-./test/test --performance   # Performance regression tests
-./test/test --workflows     # Real-world workflow tests
-./test/test --full          # Complete test suite with all tests
+./test/runner.zsh            # Run standard test suite
+./test/runner.zsh --quick    # Quick sanity check (< 10s)
+./test/runner.zsh --unit     # Unit tests only (< 5s)
+./test/runner.zsh --functional    # Functional tests (< 30s)
+./test/runner.zsh --integration   # Integration tests (< 60s)
+./test/runner.zsh --performance   # Performance regression tests
+./test/runner.zsh --workflows     # Real-world workflow tests
+./test/runner.zsh --full          # Complete test suite with all tests
 
 # Run specific test files
-./test/test unit/nvim/init_test.sh    # Single unit test
-./test/test functional/nvim           # All Neovim functional tests
-./test/test integration/setup         # Setup integration tests
+./test/runner.zsh unit/nvim/init_zsh_test.sh    # Single unit test
+./test/runner.zsh functional/nvim           # All Neovim functional tests
+./test/runner.zsh integration/setup         # Setup integration tests
 ```
 
 ### Linting and Code Quality

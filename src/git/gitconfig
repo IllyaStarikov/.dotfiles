@@ -94,10 +94,7 @@
 
 # maintenance section removed - defaults are already optimal
 
-
 [core]
-    # preloadindex true is already default
-    # fscache is Windows-only
     untrackedCache = true # Default: false (speeds up status)
 
 [diff]

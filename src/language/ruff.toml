@@ -17,8 +17,6 @@ select = [
   "W", # pycodestyle warnings
   # keep-sorted end
 ]
-
-
 target-version = "py39" # Default: "py38"
 
 [lint.isort]
