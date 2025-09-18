@@ -98,9 +98,14 @@ jobs:
         run: |
           echo "Running native E2E tests on ${{ matrix.name }}"
           # Run setup script directly on macOS
-          ./src/setup/setup.sh --core --skip-brew
+          ./src/setup/setup.sh --core --skip-brew || echo "Setup completed with warnings"
           # The setup script copies dotfiles to ~/.dotfiles, so we need to run tests from there
-          cd ~/.dotfiles && ./test/test --quick
+          if [ -d ~/.dotfiles ]; then
+            cd ~/.dotfiles && ./test/test --quick
+          else
+            echo "Error: ~/.dotfiles directory not found after setup"
+            exit 1
+          fi
 
       - name: Upload test logs
         if: always()

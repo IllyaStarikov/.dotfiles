@@ -610,7 +610,10 @@ install_macos_packages() {
   success "Package installation complete"
 
   # Ensure Starship is installed (critical for prompt)
-  if ! command -v starship &>/dev/null; then
+  # Skip if SKIP_STARSHIP is set (e.g., in Docker containers)
+  if [[ -n "${SKIP_STARSHIP:-}" ]]; then
+    info "Skipping Starship installation (SKIP_STARSHIP is set)"
+  elif ! command -v starship &>/dev/null; then
     info "Installing Starship via official installer..."
     curl -sS https://starship.rs/install.sh | sh -s -- -y || {
       warning "Starship installation failed, trying alternative method..."
@@ -751,7 +754,7 @@ install_linux_packages() {
   fi
 
   # Install Starship
-  if ! command -v starship &>/dev/null; then
+  if [[ -z "${SKIP_STARSHIP:-}" ]] && ! command -v starship &>/dev/null; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
   fi
 
