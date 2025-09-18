@@ -1,36 +1,43 @@
 #!/usr/bin/env zsh
-# Extract various archive formats with a single command
+# Universal Archive Extractor
+# Automatically detects and extracts various archive formats
+# Prevents need to remember different extraction commands
 
+# Validate arguments
 if [[ -z "$1" ]]; then
     echo "Usage: extract <archive>"
     echo "Supported formats: tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz"
     exit 1
 fi
 
+# Check if file exists and is readable
 if [[ ! -f "$1" ]]; then
     echo "Error: '$1' is not a valid file"
     exit 1
 fi
 
+# Extract based on file extension
+# Uses most common extraction flags for each format
 case "$1" in
-    *.tar.bz2) tar xjf "$1" ;;
-    *.tar.gz)  tar xzf "$1" ;;
-    *.tar.xz)  tar xJf "$1" ;;
-    *.bz2)     bunzip2 "$1" ;;
-    *.rar)     unrar x "$1" ;;
-    *.gz)      gunzip "$1" ;;
-    *.tar)     tar xf "$1" ;;
-    *.tbz2)    tar xjf "$1" ;;
-    *.tgz)     tar xzf "$1" ;;
-    *.zip)     unzip "$1" ;;
-    *.Z)       uncompress "$1" ;;
-    *.7z)      7z x "$1" ;;
-    *.xz)      xz -d "$1" ;;
-    *)         
+    *.tar.bz2) tar xjf "$1" ;;      # Bzip2 compressed tar
+    *.tar.gz)  tar xzf "$1" ;;      # Gzip compressed tar
+    *.tar.xz)  tar xJf "$1" ;;      # XZ compressed tar
+    *.bz2)     bunzip2 "$1" ;;      # Bzip2 single file
+    *.rar)     unrar x "$1" ;;      # RAR archive (requires unrar)
+    *.gz)      gunzip "$1" ;;       # Gzip single file
+    *.tar)     tar xf "$1" ;;       # Uncompressed tar
+    *.tbz2)    tar xjf "$1" ;;      # Alternative bzip2 tar extension
+    *.tgz)     tar xzf "$1" ;;      # Alternative gzip tar extension
+    *.zip)     unzip "$1" ;;        # ZIP archive
+    *.Z)       uncompress "$1" ;;   # Unix compress format
+    *.7z)      7z x "$1" ;;         # 7-Zip archive (requires p7zip)
+    *.xz)      xz -d "$1" ;;        # XZ single file
+    *)
         echo "Error: '$1' cannot be extracted via extract"
         echo "Unknown archive format"
         exit 1
         ;;
 esac
 
+# Report success
 echo "✓ Extracted: $1"

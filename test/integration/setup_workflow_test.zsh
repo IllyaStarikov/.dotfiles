@@ -4,7 +4,7 @@
 set -euo pipefail
 
 # Set up test environment
-export TEST_DIR="${TEST_DIR:-$(dirname "$0")/.."}"
+export TEST_DIR="${TEST_DIR:-$(dirname "$0")/..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 
 # Source test framework
