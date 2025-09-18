@@ -3,11 +3,13 @@
 [user]
     name = Illya Starikov
     email = illya@starikov.co
+    # Point to your SSH key for signing (update path as needed)
+    signingkey = ~/.ssh/id_rsa.pub
 
 [core]
     editor = nvim
     pager = delta
-	  excludesfile = ~/.gitignore
+    excludesfile = ~/.gitignore
 
 [init]
     defaultBranch = main
@@ -64,9 +66,11 @@
     side-by-side = true   # Default: false (split view)
     line-numbers = true   # Default: false (show line numbers)
 
-# Performance
+# Performance optimizations
 [pack]
-    threads = 0  # Default: 1 (use all CPU cores)
+    threads = 0          # Default: 1 (use all CPU cores)
+    windowMemory = 256m  # Default: unlimited (limit for large repos)
+    packSizeLimit = 2g   # Default: unlimited (GitHub limit)
 
 # Credential helper for GitHub
 [credential "https://github.com"]
@@ -78,9 +82,6 @@
     # Use SSH key for signing if available (easier than GPG)
     format = ssh
 
-[user]
-    # Point to your SSH key for signing (update path as needed)
-	signingkey = ~/.ssh/id_rsa.pub
 
 [transfer]
     fsckobjects = true  # Default: false (verify objects for corruption)
@@ -93,11 +94,6 @@
 
 # maintenance section removed - defaults are already optimal
 
-# Performance optimizations
-[pack]
-    threads = 0          # Already set above, duplicate section
-    windowMemory = 256m  # Default: unlimited (limit for large repos)
-    packSizeLimit = 2g   # Default: unlimited (GitHub limit)
 
 [core]
     # preloadindex true is already default
