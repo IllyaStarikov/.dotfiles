@@ -152,6 +152,7 @@ RUN pacman -Syu --noconfirm && \
     wget \
     sudo \
     which \
+    inetutils \
     python \
     python-pip \
     nodejs \
