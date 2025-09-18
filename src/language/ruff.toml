@@ -1,23 +1,31 @@
-# Ruff configuration file
+# Ruff Configuration - Python Linter and Formatter
+# Fast, Rust-based replacement for Black, isort, and Flake8
 # https://docs.astral.sh/ruff/configuration/
 
-line-length = 100 # Default: 88
+# Maximum line length for code
+line-length = 100  # Default: 88 (matches style guide preference)
 
-# Format configuration
+# Target Python version for compatibility checks
+target-version = "py39"  # Default: "py38" (Python 3.9+ features allowed)
+
+# Code formatting configuration
 [format]
-quote-style = "single" # Default: "double"
+# Use single quotes for strings (matches style guide)
+quote-style = "single"  # Default: "double"
 
-# Lint configuration
+# Linting configuration
 [lint]
+# Selected rule sets to enforce
 select = [
   # keep-sorted start
-  "E", # pycodestyle errors
-  "F", # pyflakes
-  "I", # isort
-  "W", # pycodestyle warnings
+  "E",  # pycodestyle errors (PEP 8 compliance)
+  "F",  # pyflakes (undefined names, unused imports)
+  "I",  # isort (import sorting)
+  "W",  # pycodestyle warnings (PEP 8 style warnings)
   # keep-sorted end
 ]
-target-version = "py39" # Default: "py38"
 
+# Import sorting configuration
 [lint.isort]
+# Use style guide's import ordering conventions
 profile = "google"

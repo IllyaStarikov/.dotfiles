@@ -1,38 +1,46 @@
-# Minimal Git Configuration - Only Essential Settings
+# Git Configuration - Essential Settings with Performance Optimizations
 
 [user]
     name = Illya Starikov
     email = illya@starikov.co
-    # Point to your SSH key for signing (update path as needed)
+    # SSH key for commit signing (update path if using GPG instead)
     signingkey = ~/.ssh/id_rsa.pub
 
 [core]
     editor = nvim
     pager = delta
     excludesfile = ~/.gitignore
+    # Performance: cache untracked files info, speeds up git status by 10-50%
+    untrackedCache = true  # Default: false
 
 [init]
     defaultBranch = main
 
 [pull]
-    rebase = true  # Default: false (cleaner history)
+    # Rebase local commits on top of upstream when pulling
+    rebase = true  # Default: false (creates cleaner linear history)
 
 [push]
-    # default "simple" is already default in Git 2.0+
-    autoSetupRemote = true  # Default: false (auto-track remote branches)
+    # Automatically set upstream tracking for new branches
+    autoSetupRemote = true  # Default: false (eliminates need for --set-upstream)
 
 [merge]
-    conflictstyle = zdiff3  # Default: merge (better conflict markers)
+    # Enhanced conflict markers showing common ancestor
+    conflictstyle = zdiff3  # Default: merge (shows before/after/ancestor)
+    # Handle more file renames in merge operations
+    renameLimit = 10000     # Default: 1000 (prevents "too many files" errors)
 
 [diff]
-    algorithm = histogram  # Default: myers (better diff algorithm)
-    # colorMoved "default" is already default
+    # Better diff algorithm for code changes
+    algorithm = histogram   # Default: myers (produces more readable diffs)
+    # Handle more file renames in diff operations
+    renameLimit = 10000     # Default: 400 (prevents rename detection failures)
 
 [commit]
     template = ~/.gitmessage
     gpgsign = true
 
-# Essential Aliases Only (15 max)
+# Essential Aliases (most commonly used)
 [alias]
     # Status/Info
     s = status -sb
@@ -56,58 +64,49 @@
     main = checkout main
     wip = !git add -A && git commit -m 'WIP'
 
-# Colors
-# color.ui "auto" is already default in modern Git
-
-# Delta configuration (pager for better diffs)
+# Delta pager configuration for better diffs
 [delta]
-    navigate = true       # Default: false (n/N navigation)
-    # light false is default
-    side-by-side = true   # Default: false (split view)
-    line-numbers = true   # Default: false (show line numbers)
+    # Use n/N keys to navigate between diff sections
+    navigate = true       # Default: false
+    # Show diffs in split view (old | new)
+    side-by-side = true   # Default: false
+    # Display line numbers in diffs
+    line-numbers = true   # Default: false
 
-# Performance optimizations
+# Performance optimizations for large repositories
 [pack]
-    threads = 0          # Default: 1 (use all CPU cores)
-    windowMemory = 256m  # Default: unlimited (limit for large repos)
-    packSizeLimit = 2g   # Default: unlimited (GitHub limit)
+    # Use all available CPU cores for packing objects
+    threads = 0          # Default: 1 (0 = auto-detect cores)
+    # Limit memory per packing thread
+    windowMemory = 256m  # Default: unlimited (prevents OOM on large repos)
+    # Split packs at 2GB for GitHub compatibility
+    packSizeLimit = 2g   # Default: unlimited (GitHub's maximum)
 
-# Credential helper for GitHub
+# GitHub CLI credential helper
 [credential "https://github.com"]
     helper =
     helper = !/opt/homebrew/bin/gh auth git-credential
 
-# Security and performance enhancements
+# Use SSH keys for commit signing (simpler than GPG)
 [gpg]
-    # Use SSH key for signing if available (easier than GPG)
     format = ssh
 
-
+# Security: verify object integrity during transfers
 [transfer]
-    fsckobjects = true  # Default: false (verify objects for corruption)
+    fsckobjects = true  # Default: false (detects corruption early)
 
 [receive]
-    fsckobjects = true  # Default: false (verify received objects)
+    fsckobjects = true  # Default: false (verify on receive)
 
 [fetch]
-    fsckobjects = true  # Default: false (verify fetched objects)
+    fsckobjects = true  # Default: false (verify on fetch)
 
-# maintenance section removed - defaults are already optimal
-
-[core]
-    untrackedCache = true # Default: false (speeds up status)
-
-[diff]
-    # algorithm histogram already set above
-    renameLimit = 10000   # Default: 400 (handle more renames)
-
-[merge]
-    # conflictstyle zdiff3 already set above
-    renameLimit = 10000   # Default: 1000 (handle more renames)
-
+# Garbage collection tuning for better performance
 [gc]
-    auto = 256           # Default: 6700 (gc more frequently)
-    # autopacklimit 50 is already default
+    # Run gc after 256 loose objects instead of 6700
+    auto = 256  # Default: 6700 (more frequent gc = smaller operations)
+
+# Git LFS (Large File Storage) configuration
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

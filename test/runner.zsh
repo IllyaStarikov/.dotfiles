@@ -29,6 +29,11 @@ RUN_UNIT=0
 RUN_FUNCTIONAL=0
 RUN_INTEGRATION=0
 RUN_PERFORMANCE=0
+RUN_SMOKE=0
+RUN_SANITY=0
+RUN_E2E=0
+RUN_SECURITY=0
+RUN_REGRESSION=0
 RUN_WORKFLOWS=0
 RUN_ALL=0
 
@@ -158,6 +163,11 @@ ${BOLD}Test Categories:${NC}
   --functional    Run functional tests only
   --integration   Run integration tests only
   --performance   Run performance tests only
+  --smoke         Run smoke tests only
+  --sanity        Run sanity tests only
+  --e2e           Run end-to-end tests only
+  --security      Run security tests only
+  --regression    Run regression tests only
   --workflows     Run workflow tests only
   --all           Run all test categories
 
@@ -213,6 +223,33 @@ discover_tests() {
     performance)
       test_files=($(find "$TEST_DIR/performance" -name "$pattern" -type f 2>/dev/null | sort))
       ;;
+    smoke)
+      test_files=($(find "$TEST_DIR/smoke" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    sanity)
+      test_files=($(find "$TEST_DIR/sanity" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    e2e)
+      test_files=($(find "$TEST_DIR/e2e" -name "$pattern" -type f ! -name "runner.zsh" 2>/dev/null | sort))
+      ;;
+    security)
+      test_files=($(find "$TEST_DIR/security" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    regression)
+      test_files=($(find "$TEST_DIR/regression" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    stress)
+      test_files=($(find "$TEST_DIR/stress" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    load)
+      test_files=($(find "$TEST_DIR/load" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    chaos)
+      test_files=($(find "$TEST_DIR/chaos" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    compatibility)
+      test_files=($(find "$TEST_DIR/compatibility" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
     workflows)
       test_files=($(find "$TEST_DIR/workflows" -name "$pattern" -type f 2>/dev/null | sort))
       ;;
@@ -220,6 +257,10 @@ discover_tests() {
       test_files=($(find "$TEST_DIR" -name "$pattern" -type f \
         ! -path "*/helpers/*" \
         ! -path "*/.git/*" \
+        ! -path "*/lib/*" \
+        ! -path "*/logs/*" \
+        ! -path "*/examples/*" \
+        ! -name "runner.zsh" \
         2>/dev/null | sort))
       ;;
   esac
@@ -689,6 +730,26 @@ main() {
         RUN_PERFORMANCE=1
         shift
         ;;
+      --smoke)
+        RUN_SMOKE=1
+        shift
+        ;;
+      --sanity)
+        RUN_SANITY=1
+        shift
+        ;;
+      --e2e)
+        RUN_E2E=1
+        shift
+        ;;
+      --security)
+        RUN_SECURITY=1
+        shift
+        ;;
+      --regression)
+        RUN_REGRESSION=1
+        shift
+        ;;
       --workflows)
         RUN_WORKFLOWS=1
         shift
@@ -762,8 +823,13 @@ main() {
     RUN_FUNCTIONAL=1
     RUN_INTEGRATION=1
     RUN_PERFORMANCE=1
+    RUN_SMOKE=1
+    RUN_SANITY=1
+    RUN_E2E=1
+    RUN_SECURITY=1
+    RUN_REGRESSION=1
     RUN_WORKFLOWS=1
-  elif [[ $RUN_UNIT -eq 0 && $RUN_FUNCTIONAL -eq 0 && $RUN_INTEGRATION -eq 0 && $RUN_PERFORMANCE -eq 0 && $RUN_WORKFLOWS -eq 0 ]]; then
+  elif [[ $RUN_UNIT -eq 0 && $RUN_FUNCTIONAL -eq 0 && $RUN_INTEGRATION -eq 0 && $RUN_PERFORMANCE -eq 0 && $RUN_SMOKE -eq 0 && $RUN_SANITY -eq 0 && $RUN_E2E -eq 0 && $RUN_SECURITY -eq 0 && $RUN_REGRESSION -eq 0 && $RUN_WORKFLOWS -eq 0 ]]; then
     # No specific category selected, use test level
     case "$TEST_LEVEL" in
       quick)
@@ -798,6 +864,11 @@ main() {
   [[ $RUN_FUNCTIONAL -eq 1 ]] && run_test_category "functional"
   [[ $RUN_INTEGRATION -eq 1 ]] && run_test_category "integration"
   [[ $RUN_PERFORMANCE -eq 1 ]] && run_test_category "performance"
+  [[ $RUN_SMOKE -eq 1 ]] && run_test_category "smoke"
+  [[ $RUN_SANITY -eq 1 ]] && run_test_category "sanity"
+  [[ $RUN_E2E -eq 1 ]] && run_test_category "e2e"
+  [[ $RUN_SECURITY -eq 1 ]] && run_test_category "security"
+  [[ $RUN_REGRESSION -eq 1 ]] && run_test_category "regression"
   [[ $RUN_WORKFLOWS -eq 1 ]] && run_test_category "workflows"
 
   # Calculate total time
