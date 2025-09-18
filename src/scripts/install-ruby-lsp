@@ -20,7 +20,9 @@ if [[ $(echo "$RUBY_VERSION" | cut -d. -f1) -lt 3 ]]; then
     echo -e "${YELLOW}Warning: Ruby $RUBY_VERSION is installed. Ruby 3.0+ is recommended for best compatibility.${NC}"
     echo "Consider using rbenv or rvm to install a newer Ruby version."
     echo ""
-    read -p "Continue anyway? (y/n) " -n 1 -r
+    # Use print/read for zsh compatibility (read -p is bash-specific)
+    print -n "Continue anyway? (y/n) "
+    read -r -k 1 REPLY
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 1

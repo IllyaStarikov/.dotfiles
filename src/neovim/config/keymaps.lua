@@ -3,7 +3,10 @@
 -- Modular key mappings system
 --
 
--- Set leader key
+-- Set leader keys for custom mappings
+-- Both set to space for consistency - mapleader for global mappings,
+-- maplocalleader for buffer-local mappings (like in ftplugin or after/ftplugin)
+-- Space is chosen as it's easily accessible and not used in normal mode
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
