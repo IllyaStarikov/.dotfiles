@@ -4,14 +4,14 @@ local opt = vim.opt
 local g = vim.g
 
 -- Performance settings
-opt.updatecount = 500 -- Default: 200 (less frequent swap file writes)
-opt.redrawtime = 10000 -- Default: 2000 (prevent timeouts on syntax highlighting)
-opt.ttimeoutlen = 10 -- Default: 50 (faster key sequence timeout)
+opt.updatecount = 500 -- Default: 200 (write swap file every 500 chars instead of 200, reduces I/O)
+opt.redrawtime = 10000 -- Default: 2000ms (allow 10s for syntax highlighting complex files before giving up)
+opt.ttimeoutlen = 10 -- Default: 50ms (wait only 10ms for key code sequences, makes Esc more responsive)
 
 -- Large file optimizations
-opt.synmaxcol = 4096 -- Default: 3000 (handle minified JS/CSS, long SQL queries)
-g.vimsyn_embed = "lPr" -- Limit vim syntax embedding (Lua, Python, Ruby only)
-opt.maxmempattern = 50000 -- Default: 1000 (handle complex patterns)
+opt.synmaxcol = 4096 -- Default: 3000 (only syntax highlight first 4096 columns - handles long lines in minified files)
+g.vimsyn_embed = "lPr" -- Only embed Lua, Python, Ruby syntax in vim files (not Perl, mzscheme, tcl, etc.)
+opt.maxmempattern = 50000 -- Default: 1000KB (allow 50MB for pattern matching - needed for very complex regex)
 
 -- Python host configuration
 local python3_path = vim.fn.exepath("python3")
@@ -43,9 +43,9 @@ g.netrw_browse_split = 0
 g.netrw_banner = 0
 g.netrw_winsize = 25
 g.netrw_liststyle = 3
--- Use safer rm command with proper flags
--- The -f flag prevents prompts, -r for recursive
--- Netrw handles path validation, but we use the safest form
+-- Configure netrw file deletion command
+-- rm -rf: recursive deletion with force (no prompts)
+-- Netrw validates paths before passing to this command
 g.netrw_localrmdir = "rm -rf"
 
 -- Matchit is handled by Neovim's built-in runtime/plugin/matchit.vim
@@ -54,8 +54,9 @@ g.netrw_localrmdir = "rm -rf"
 -- No clipboard integration for better performance
 
 -- Reduce LSP logging for performance
--- ERROR level only logs critical issues, reducing I/O overhead
--- Default is WARN which can be noisy with multiple LSP servers
+-- ERROR level only logs critical failures, not warnings or info messages
+-- This significantly reduces disk I/O when multiple LSP servers are active
+-- Default WARN level can generate hundreds of MB of logs with busy LSP servers
 vim.lsp.set_log_level("ERROR")
 
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation

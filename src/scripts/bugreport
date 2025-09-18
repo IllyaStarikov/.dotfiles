@@ -228,7 +228,7 @@ collect_system_info() {
         echo "=== Hardware Information ==="
         if [[ "$(uname)" == "Darwin" ]]; then
             # Use proper sanitize function with command substitution
-            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | while read -r line; do echo "$(sanitize "$line")"; done
+            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | while read -r line; do sanitize "$line"; done
             echo
             echo "=== macOS Version ==="
             sw_vers
@@ -253,7 +253,7 @@ collect_system_info() {
         
         echo
         echo "=== Network Interfaces ==="
-        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | while read -r line; do echo "$(sanitize "$line")"; done || ip addr 2>/dev/null | while read -r line; do echo "$(sanitize "$line")"; done
+        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | while read -r line; do sanitize "$line"; done || ip addr 2>/dev/null | while read -r line; do sanitize "$line"; done
         
         echo
         echo "=== Process Count ==="
@@ -268,7 +268,7 @@ collect_system_info() {
     # Collect environment variables (sanitized)
     {
         echo "=== Environment Variables (Sanitized) ==="
-        env | sort | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL" | while read -r line; do echo "$(sanitize "$line")"; done
+        env | sort | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL" | while read -r line; do sanitize "$line"; done
     } > "$REPORT_DIR/system/environment.txt"
     
     # Collect PATH information
@@ -1189,15 +1189,15 @@ collect_logs() {
     # System logs (last 100 lines, sanitized)
     if [[ "$(uname)" == "Darwin" ]]; then
         log DEBUG "Collecting macOS system logs (limited to 5 seconds)"
-        timeout 5 log show --style syslog --last 5m 2>/dev/null | tail -100 | while read -r line; do echo "$(sanitize "$line")"; done > "$REPORT_DIR/logs/system.log" || {
+        timeout 5 log show --style syslog --last 5m 2>/dev/null | tail -100 | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" || {
             echo "System log collection timed out" > "$REPORT_DIR/logs/system.log"
         }
     else
         # Linux system logs
         if [[ -r /var/log/syslog ]]; then
-            tail -100 /var/log/syslog | while read -r line; do echo "$(sanitize "$line")"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/syslog | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         elif [[ -r /var/log/messages ]]; then
-            tail -100 /var/log/messages | while read -r line; do echo "$(sanitize "$line")"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/messages | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         fi
     fi
     
@@ -1345,14 +1345,14 @@ collect_debug_info() {
     # Open files (with timeout - lsof can be very slow)
     {
         echo "=== Open Files (Sample) ==="
-        timeout 3 lsof 2>/dev/null | head -100 | while read -r line; do echo "$(sanitize "$line")"; done || echo "lsof command timed out"
+        timeout 3 lsof 2>/dev/null | head -100 | while read -r line; do sanitize "$line"; done || echo "lsof command timed out"
     } > "$REPORT_DIR/debug/open_files.txt"
 
     log DEBUG "Collecting network connections"
     # Network connections (with timeout)
     {
         echo "=== Network Connections ==="
-        timeout 2 netstat -an 2>/dev/null | head -50 | while read -r line; do echo "$(sanitize "$line")"; done || timeout 2 ss -an 2>/dev/null | head -50 | while read -r line; do echo "$(sanitize "$line")"; done || echo "Network info collection timed out"
+        timeout 2 netstat -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || timeout 2 ss -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || echo "Network info collection timed out"
     } > "$REPORT_DIR/debug/network.txt"
     
     # Kernel modules (Linux)

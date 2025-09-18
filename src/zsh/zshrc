@@ -12,7 +12,7 @@ setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
 setopt SHARE_HISTORY        # Share history between sessions
 setopt HIST_REDUCE_BLANKS   # Remove blanks from history
 setopt CORRECT              # Command correction
-# NO_BEEP is default in zsh 5.4+ (2017 onwards)
+# NO_BEEP became default in zsh 5.4 (released 2017) - disables terminal bell
 setopt GLOB_DOTS            # Include dotfiles in globbing
 
 # History
@@ -20,9 +20,9 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=100000  # Default: 10000
 SAVEHIST=100000  # Default: 10000
 
-# Performance: Skip global compinit to avoid duplicate initialization
-# This prevents system-wide compinit from /etc/zshrc or /usr/share/zsh
-# We'll call it once ourselves with turbo mode for faster startup
+# Performance: Skip the global compinit that macOS runs from /etc/zshrc
+# Without this, completion gets initialized twice (once by system, once by us)
+# We handle it ourselves with Zinit's turbo mode for 50-100ms faster startup
 skip_global_compinit=1
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -80,12 +80,17 @@ fi
 export EDITOR=nvim
 export VISUAL=nvim
 
-# Language - usually set by system, but ensures consistency
+# Language settings - ensure UTF-8 even if system locale is misconfigured
+# Prevents encoding issues with special characters in files and terminal output
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# Less options (default is no flags)
-export LESS='-R -S -M -i'  # Raw colors, no wrap, long prompt, case-insensitive
+# Less pager options (default has no flags set)
+# -R: display ANSI colors (for colored man pages, git diff, etc.)
+# -S: don't wrap long lines (use arrow keys to scroll horizontally)
+# -M: show more verbose prompt with line numbers and percentage
+# -i: case-insensitive search (unless pattern has uppercase)
+export LESS='-R -S -M -i'
 
 # FZF configuration
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
@@ -181,8 +186,10 @@ export PATH="$HOME/.dotfiles/src/scripts:$HOME/.dotfiles/src/setup:$PATH"
 # Starship Prompt
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Fix for recursive zle-keymap-select issue
-# Clear any existing widget before Starship initialization
+# Fix vim mode indicator conflict with Starship prompt
+# Some plugins create zle-keymap-select widget which Starship also tries to create
+# This causes "maximum nested function level reached" errors
+# Solution: delete any existing widget before Starship initializes
 if (( ${+widgets[zle-keymap-select]} )); then
     zle -D zle-keymap-select 2>/dev/null
 fi
