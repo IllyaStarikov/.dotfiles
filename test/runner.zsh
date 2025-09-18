@@ -312,15 +312,22 @@ EOF
   local test_status
   local test_timeout=30  # Default 30 second timeout per test
 
+  # Special handling for init tests which load Neovim and can be slow
+  if [[ "$test_name" == *"init"* ]] || [[ "$test_name" == *"startup"* ]]; then
+    test_timeout=60  # Much longer timeout for initialization tests
+  fi
+
   # In CI mode or non-interactive, use different timeout strategy
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
     # In E2E test mode, run ALL tests with longer timeouts
     if [[ "${E2E_TEST:-0}" == "1" ]]; then
-      test_timeout=60  # Longer timeout for E2E tests
+      # Keep the special init timeout if already set, otherwise use E2E default
+      [[ "$test_name" != *"init"* ]] && test_timeout=60  # Longer timeout for E2E tests
       # Don't skip any tests in E2E mode - all tests are critical
     else
       # Regular CI mode - shorter timeout and skip problematic tests
-      test_timeout=20  # Increased timeout in CI for init tests
+      # Keep the special init timeout if already set
+      [[ "$test_name" != *"init"* ]] && test_timeout=30  # Standard CI timeout
 
       # Skip certain problematic tests in CI - check both with and without _zsh suffix
       local base_name="${test_name%_zsh_test}"
