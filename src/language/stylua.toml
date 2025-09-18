@@ -1,11 +1,20 @@
-# Stylua configuration for dotfiles
-# Consistent Lua formatting across the project
+# Stylua Configuration - Lua Code Formatter
+# Ensures consistent Lua formatting across Neovim configs
+# https://github.com/JohnnyMorganz/StyLua
 
-indent_type = "Spaces" # Default: "Tabs"
-indent_width = 2       # Default: 4
-column_width = 100     # Default: 120
+# Indentation: Use 2 spaces (matches style guide for Lua)
+indent_type = "Spaces"  # Default: "Tabs"
+indent_width = 2        # Default: 4 (2 spaces is more compact)
 
+# Line width: Match other formatters at 100 characters
+column_width = 100      # Default: 120 (100 fits better on split screens)
 
-# Table formatting
+# Quotes: Keep original quote style (don't force changes)
+# quote_style setting removed - default "AutoPreferDouble" is fine
+
+# Call parentheses: Keep compact style
+# call_parentheses setting removed - default "Always" is standard
+
+# Import sorting: Disabled to preserve logical grouping
 [sort_requires]
-enabled = false
+enabled = false  # Default: false (manual organization often better)
