@@ -99,13 +99,9 @@ jobs:
           echo "Running native E2E tests on ${{ matrix.name }}"
           # Run setup script directly on macOS
           ./src/setup/setup.sh --core --skip-brew || echo "Setup completed with warnings"
-          # The setup script copies dotfiles to ~/.dotfiles, so we need to run tests from there
-          if [ -d ~/.dotfiles ]; then
-            cd ~/.dotfiles && ./test/test --quick
-          else
-            echo "Error: ~/.dotfiles directory not found after setup"
-            exit 1
-          fi
+          # Run tests from the current directory (GitHub workspace)
+          # The setup script creates symlinks, not a copy of the repo
+          ./test/test --quick
 
       - name: Upload test logs
         if: always()
