@@ -297,13 +297,15 @@ setup_homebrew() {
   # Corporate environment workaround: override Homebrew paths to avoid conflicts
   # Default Homebrew uses /usr/local on Intel, /opt/homebrew on Apple Silicon
   # Corporate setups may force /usr/local/Homebrew
-  if [[ "$IS_WORK_MACHINE" == true ]]; then
+  # IMPORTANT: Use parameter expansion to avoid "parameter not set" error in strict mode
+  # IS_WORK_MACHINE is set by detect_work_environment(), but we need a default here
+  if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     export HOMEBREW_PREFIX="/usr/local/Homebrew"
     export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
   fi
 
   # Update Homebrew (with timeout for work machines)
-  if [[ "$IS_WORK_MACHINE" == true ]]; then
+  if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     timeout 30 brew update 2>/dev/null || info "Brew update skipped (timeout or restricted)"
   else
     brew update
@@ -453,7 +455,7 @@ install_macos_packages() {
         info "✓ $pkg already installed"
       else
         # Try to install with timeout, especially for work machines
-        if [[ "$IS_WORK_MACHINE" == true ]]; then
+        if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
           # Use timeout and skip bottle downloads on work machines with issues
           output=$(timeout 60 brew install --build-from-source "$pkg" 2>&1 || timeout 60 brew install "$pkg" 2>&1)
           exit_code=$?
@@ -918,7 +920,7 @@ setup_python() {
   progress "Setting up Python environment..."
 
   # Use PyPy on work machines to avoid compilation issues
-  if [[ "$IS_WORK_MACHINE" == true ]]; then
+  if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     info "Work machine detected - using PyPy to avoid compilation"
 
     if command -v pypy3 &>/dev/null; then
@@ -1220,13 +1222,9 @@ setup_tmux() {
 # ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 main() {
-  # Corporate environment workaround: override Homebrew paths to avoid conflicts
-  # Default Homebrew uses /usr/local on Intel, /opt/homebrew on Apple Silicon
-  # Corporate setups may force /usr/local/Homebrew
-  if [[ "$IS_WORK_MACHINE" == true ]]; then
-    export HOMEBREW_PREFIX="/usr/local/Homebrew"
-    export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
-  fi
+  # Initialize IS_WORK_MACHINE early to avoid "parameter not set" errors
+  # This will be properly set later by detect_work_environment()
+  IS_WORK_MACHINE=false
 
   echo "════════════════════════════════════════════════════════════════════"
   echo "       🚀 DOTFILES UNIFIED SETUP"
@@ -1241,7 +1239,7 @@ main() {
   detect_system
 
   # Show work machine warning if applicable
-  if [[ "$IS_WORK_MACHINE" == true ]]; then
+  if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     echo ""
     warning "═══════════════════════════════════════════════════════════════"
     warning "   WORK MACHINE DETECTED: Corporate Environment Settings Active"
