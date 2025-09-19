@@ -1279,6 +1279,41 @@ require("lazy").setup({
   },
   { "skywind3000/asyncrun.vim" },
   { "tommcdo/vim-lion" },
+
+  -- File path navigation with line:column support (like foo.c:42:10)
+  -- Makes files clickable in terminal output, error messages, stack traces, etc.
+  {
+    "wsdjeg/vim-fetch",
+    lazy = false,  -- Load immediately for command line usage
+  },
+
+  -- Enhanced gx command for opening files/URLs under cursor
+  -- Replaces netrw's gx with a better implementation
+  {
+    "chrishrb/gx.nvim",
+    keys = { { "gx", "<cmd>Browse<cr>", mode = { "n", "x" } } },
+    cmd = { "Browse" },
+    init = function()
+      vim.g.netrw_nogx = 1 -- disable netrw gx
+    end,
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("gx").setup({
+        open_browser_app = "open", -- macOS: "open", Linux: "xdg-open", Windows: "start"
+        handlers = {
+          plugin = true, -- open plugin links in browser
+          github = true, -- open github issues/PRs
+          brewfile = true, -- open Homebrew formulae
+          package_json = true, -- open npm packages
+          search = true, -- search selected text
+        },
+        handler_options = {
+          search_engine = "google", -- google, duckduckgo, bing, ecosia
+        },
+      })
+    end,
+  },
+
   -- Comment.nvim - Smart commenting
   {
     "numToStr/Comment.nvim",
