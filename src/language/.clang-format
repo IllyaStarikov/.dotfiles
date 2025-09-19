@@ -1,7 +1,8 @@
 ---
-# C++ formatting configuration
-# https://google.github.io/styleguide/cppguide.html
+# C/C++ Code Formatter Configuration
+# Based on style guide: https://google.github.io/styleguide/cppguide.html
+# Uses clang-format for consistent C/C++ code formatting
 BasedOnStyle: Google
-IndentWidth: 2
-ColumnLimit: 100
+IndentWidth: 2        # Default in Google style: 2
+ColumnLimit: 100      # Default: 80 (increased for modern displays)
 ...
