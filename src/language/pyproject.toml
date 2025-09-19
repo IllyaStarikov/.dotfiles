@@ -1,5 +1,6 @@
 # Python Project Configuration
-# Tools: Black formatter, isort import sorter, mypy type checker
+# Configures Black formatter, isort import sorter, mypy type checker
+# Style guide: https://google.github.io/styleguide/pyguide.html
 
 [tool.black]
 # Maximum line length (style guide preference)
