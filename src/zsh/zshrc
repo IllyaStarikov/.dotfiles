@@ -189,9 +189,10 @@ fi
 
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
-# Load work configs securely
+# Load private/work configurations if available
+# This integrates with private dotfiles for work-specific settings
 if [[ -d "$HOME/.dotfiles/.dotfiles.private" ]]; then
-    local work_config="$HOME/.dotfiles/.dotfiles.private/work-aliases.zsh"
+    local work_config="$HOME/.dotfiles/.dotfiles.private/lib/shell/work-aliases.zsh"
     if [[ -f "$work_config" ]] && [[ -O "$work_config" ]]; then
         source "$work_config"
     fi
