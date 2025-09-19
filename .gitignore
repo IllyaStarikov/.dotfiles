@@ -15,7 +15,6 @@ Session.vim
 .claude/
 src/.claude/
 **/settings.local.json
-CLAUDE.md
 
 # Debug and log files
 vimlog.txt

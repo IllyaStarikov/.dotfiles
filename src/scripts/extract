@@ -23,14 +23,26 @@ case "$1" in
     *.tar.gz)  tar xzf "$1" ;;      # Gzip compressed tar
     *.tar.xz)  tar xJf "$1" ;;      # XZ compressed tar
     *.bz2)     bunzip2 "$1" ;;      # Bzip2 single file
-    *.rar)     unrar x "$1" ;;      # RAR archive (requires unrar)
+    *.rar)
+        if command -v unrar &>/dev/null; then
+            unrar x "$1"
+        else
+            echo "Error: unrar not installed. Install with: brew install unrar (macOS) or apt install unrar (Linux)"
+            exit 1
+        fi ;;
     *.gz)      gunzip "$1" ;;       # Gzip single file
     *.tar)     tar xf "$1" ;;       # Uncompressed tar
     *.tbz2)    tar xjf "$1" ;;      # Alternative bzip2 tar extension
     *.tgz)     tar xzf "$1" ;;      # Alternative gzip tar extension
     *.zip)     unzip "$1" ;;        # ZIP archive
     *.Z)       uncompress "$1" ;;   # Unix compress format
-    *.7z)      7z x "$1" ;;         # 7-Zip archive (requires p7zip)
+    *.7z)
+        if command -v 7z &>/dev/null; then
+            7z x "$1"
+        else
+            echo "Error: 7z not installed. Install with: brew install p7zip (macOS) or apt install p7zip-full (Linux)"
+            exit 1
+        fi ;;
     *.xz)      xz -d "$1" ;;        # XZ single file
     *)
         echo "Error: '$1' cannot be extracted via extract"
