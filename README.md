@@ -85,8 +85,8 @@ tmux new -s dev # Start tmux session
 lazygit         # Git UI
 
 # Testing
-./test/test --quick     # Run quick tests (< 10s)
-./test/test --full      # Run complete test suite
+./test/runner.zsh --quick     # Run quick tests (< 10s)
+./test/runner.zsh --full      # Run complete test suite
 ```
 
 ## System Requirements
