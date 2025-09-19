@@ -27,7 +27,10 @@ case "$1" in
         if command -v unrar &>/dev/null; then
             unrar x "$1"
         else
-            echo "Error: unrar not installed. Install with: brew install unrar (macOS) or apt install unrar (Linux)"
+            echo "Error: unrar not installed"
+            echo "Install with:"
+            echo "  macOS:  brew install unrar"
+            echo "  Linux:  apt install unrar"
             exit 1
         fi ;;
     *.gz)      gunzip "$1" ;;       # Gzip single file
@@ -40,7 +43,10 @@ case "$1" in
         if command -v 7z &>/dev/null; then
             7z x "$1"
         else
-            echo "Error: 7z not installed. Install with: brew install p7zip (macOS) or apt install p7zip-full (Linux)"
+            echo "Error: 7z not installed"
+            echo "Install with:"
+            echo "  macOS:  brew install p7zip"
+            echo "  Linux:  apt install p7zip-full"
             exit 1
         fi ;;
     *.xz)      xz -d "$1" ;;        # XZ single file
