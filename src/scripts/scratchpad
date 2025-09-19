@@ -36,9 +36,10 @@ TEMP_DIR="${TMPDIR:-${TMP:-/tmp}}"
 FILENAME="$(generate_filename)${EXT}"
 TEMP_FILE="${TEMP_DIR}/${FILENAME}"
 
-# Determine editor to use
-# Priority: $EDITOR env var > vim (macOS default) > nano (Linux fallback)
-# Most macOS systems have vim, while nano is more common on minimal Linux installs
+# Select editor in order of preference:
+# 1. User's $EDITOR environment variable (if set)
+# 2. vim on macOS (pre-installed on all macOS versions)
+# 3. nano on Linux (available on minimal installations)
 EDITOR="${EDITOR:-$(platform_command 'vim' 'nano')}"
 
 # Create and open the file

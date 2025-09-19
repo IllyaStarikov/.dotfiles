@@ -1,4 +1,5 @@
 -- Core Vim options and general settings
+-- Configures fundamental Neovim behavior and performance optimizations
 
 local opt = vim.opt
 local g = vim.g
