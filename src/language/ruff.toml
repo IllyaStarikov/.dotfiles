@@ -10,8 +10,8 @@ target-version = "py39"  # Default: "py38" (Python 3.9+ features allowed)
 
 # Code formatting configuration
 [format]
-# Use single quotes for strings (matches style guide)
-quote-style = "single"  # Default: "double"
+# Use single quotes for strings (project preference for consistency)
+quote-style = "single"  # Default: "double" (style guide is flexible on quotes)
 
 # Linting configuration
 [lint]
