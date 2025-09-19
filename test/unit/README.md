@@ -44,20 +44,20 @@ unit/
 
 ```bash
 # Run all unit tests
-./test/test --unit
+./test/runner.zsh --unit
 
 # Run specific component tests
-./test/test unit/nvim
-./test/test unit/setup
+./test/runner.zsh unit/nvim
+./test/runner.zsh unit/setup
 
 # Run single test file
 ./test/unit/nvim/init_zsh_test.sh
 
 # Run with verbose output
-TEST_DEBUG=1 ./test/test --unit
+TEST_DEBUG=1 ./test/runner.zsh --unit
 
 # Run in CI mode
-CI=true ./test/test --unit
+CI=true ./test/runner.zsh --unit
 ```
 
 ### Expected output:

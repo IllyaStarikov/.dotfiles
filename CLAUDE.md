@@ -246,7 +246,7 @@ config/
 
 **Spell Files**: Neovim spell files are configured to load from `~/.dotfiles/.dotfiles.private/spell/` directly via `spellfile` option in `options.lua`. No symlinks needed.
 
-**Testing Before Commits**: Run `./test/test --quick` before committing. For major changes, use `./test/test --full`.
+**Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
 **Code Formatting**: Always use `./src/scripts/fixy` instead of individual formatters. It uses the priority system defined in `/config/fixy.json`.
 
@@ -371,6 +371,6 @@ All formatters and linters in this repository are configured to follow Google st
 Before committing code changes:
 1. Check the relevant style guide in `styleguide/` directory
 2. Run `./src/scripts/fixy` on modified files
-3. Run `./test/test --quick` to verify configurations
+3. Run `./test/runner.zsh --quick` to verify configurations
 4. Ensure line lengths comply (100 chars - modern preference for all languages)
 5. Verify proper indentation (2 spaces for most, 4 for Python, tabs for Go)

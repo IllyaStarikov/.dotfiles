@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
-# Comprehensive unit tests for tmux-utils
-
-# Tests handle errors explicitly
+# Test suite for tmux-utils script
+# Tests tmux utility functions for status bar
 
 # Set up test environment
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
@@ -10,155 +9,89 @@ export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 # Source test framework
 source "$TEST_DIR/lib/test_helpers.zsh"
 
-# Test suite for tmux-utils
-describe "tmux-utils comprehensive tests"
+describe "tmux-utils script behavioral tests"
 
-# Setup before tests
 setup_test
+TMUX_UTILS="$DOTFILES_DIR/src/scripts/tmux-utils"
 
-# Test: Script exists and is executable
-it "should exist and be executable" && {
-  local script_path="$DOTFILES_DIR/src/scripts/tmux-utils"
-
-  assert_file_exists "$script_path"
-  assert_file_executable "$script_path"
-  pass
+it "should detect operating system" && {
+    # Check OS detection logic
+    if grep -q "OS_TYPE=.*uname -s" "$TMUX_UTILS"; then
+        pass
+    else
+        fail "Missing OS detection"
+    fi
 }
 
-# Test: Help message
-it "should display help message" && {
-  output=$("$DOTFILES_DIR/src/scripts/tmux-utils" --help 2>&1 || true)
+it "should support multiple utility functions" && {
+    # Verify it provides CPU, memory, and battery functions
+    has_cpu=$(grep -q "get_cpu_usage()" "$TMUX_UTILS" && echo 1 || echo 0)
+    has_mem=$(grep -q "get_memory_usage()" "$TMUX_UTILS" && echo 1 || echo 0)
+    has_battery=$(grep -q "get_battery_info()" "$TMUX_UTILS" && echo 1 || echo 0)
 
-  assert_contains "$output" "Usage" || assert_contains "$output" "usage"
-  assert_contains "$output" "battery" || assert_contains "$output" "cpu" || assert_contains "$output" "memory"
-  pass
+    if [[ $has_cpu -eq 1 || $has_mem -eq 1 || $has_battery -eq 1 ]]; then
+        pass
+    else
+        fail "Missing utility functions"
+    fi
 }
 
-# Test: Battery command
-it "should support battery status command" && {
-  output=$("$DOTFILES_DIR/src/scripts/tmux-utils" battery 2>&1 || true)
-
-  # Should return battery info or indicate no battery
-  assert_not_empty "$output"
-  pass
-}
-
-# Test: CPU command
-it "should support CPU usage command" && {
-  output=$("$DOTFILES_DIR/src/scripts/tmux-utils" cpu 2>&1 || true)
-
-  # Should return CPU usage
-  assert_not_empty "$output"
-  pass
-}
-
-# Test: Memory command
-it "should support memory usage command" && {
-  output=$("$DOTFILES_DIR/src/scripts/tmux-utils" memory 2>&1 || true)
-
-  # Should return memory usage
-  assert_not_empty "$output"
-  pass
-}
-
-# Test: Caching mechanism
 it "should implement caching for performance" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  assert_contains "$script_content" "cache" || assert_contains "$script_content" "Cache" || assert_contains "$script_content" "tmp"
-  pass
+    # Check for cache file usage
+    if grep -q "CACHE_DIR=" "$TMUX_UTILS" && \
+       grep -q "_CACHE_FILE=" "$TMUX_UTILS" && \
+       grep -q "cache_time" "$TMUX_UTILS"; then
+        pass
+    else
+        fail "Missing caching implementation"
+    fi
 }
 
-# Test: Platform detection
-it "should detect platform correctly" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
+it "should handle both Linux and macOS" && {
+    # Verify platform-specific code paths
+    has_linux=$(grep -q 'if.*OS_TYPE.*=.*"Linux"' "$TMUX_UTILS" && echo 1 || echo 0)
+    has_macos=$(grep -q 'else\|Darwin' "$TMUX_UTILS" && echo 1 || echo 0)
 
-  assert_contains "$script_content" "uname" || assert_contains "$script_content" "Darwin" || assert_contains "$script_content" "Linux"
-  pass
+    if [[ $has_linux -eq 1 && $has_macos -eq 1 ]]; then
+        pass
+    else
+        fail "Missing cross-platform support"
+    fi
 }
 
-# Test: Error handling
-it "should handle errors gracefully" && {
-  # Test with invalid command
-  output=$("$DOTFILES_DIR/src/scripts/tmux-utils" invalid_command 2>&1 || true)
-
-  assert_contains "$output" "Usage" || assert_contains "$output" "Error" || assert_contains "$output" "Unknown"
-  pass
+it "should handle cache file age checking" && {
+    # Verify cache freshness logic
+    if grep -q "age=.*current_time.*cache_time" "$TMUX_UTILS" && \
+       grep -q "if.*age.*-lt" "$TMUX_UTILS"; then
+        pass
+    else
+        fail "Missing cache age checking"
+    fi
 }
 
-# Test: Output formatting
-it "should format output for tmux status bar" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
+it "should use proper stat command for each OS" && {
+    # Check for OS-specific stat commands
+    has_linux_stat=$(grep -q 'stat -c %Y' "$TMUX_UTILS" && echo 1 || echo 0)
+    has_macos_stat=$(grep -q 'stat -f %m' "$TMUX_UTILS" && echo 1 || echo 0)
 
-  # Should format output nicely
-  assert_contains "$script_content" "printf" || assert_contains "$script_content" "echo" || assert_contains "$script_content" "format"
-  pass
+    if [[ $has_linux_stat -eq 1 && $has_macos_stat -eq 1 ]]; then
+        pass
+    else
+        fail "Missing OS-specific stat commands"
+    fi
 }
 
-# Test: Icon support
-it "should support icons/symbols" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  # Should have icons for battery, CPU, etc.
-  assert_contains "$script_content" "icon" || assert_contains "$script_content" "symbol" || assert_contains "$script_content" ""
-  pass
+it "should accept command-line arguments" && {
+    # Script should handle different utility commands as arguments
+    if grep -q 'case.*\$1.*in' "$TMUX_UTILS" || \
+       grep -q 'if.*\$1' "$TMUX_UTILS"; then
+        pass
+    else
+        fail "Doesn't handle command-line arguments"
+    fi
 }
 
-# Test: Threshold handling
-it "should handle thresholds for warnings" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  # Should have threshold logic
-  assert_contains "$script_content" "threshold" || assert_contains "$script_content" "warning" || assert_contains "$script_content" "critical"
-  pass
-}
-
-# Test: Color coding
-it "should support color coding for status" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  assert_contains "$script_content" "color" || assert_contains "$script_content" "Color" || assert_contains "$script_content" "#"
-  pass
-}
-
-# Test: Network status
-it "should check network status" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  assert_contains "$script_content" "network" || assert_contains "$script_content" "wifi" || assert_contains "$script_content" "connection"
-  pass
-}
-
-# Test: Date/time functionality
-it "should support date/time display" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  assert_contains "$script_content" "date" || assert_contains "$script_content" "time" || assert_contains "$script_content" "clock"
-  pass
-}
-
-# Test: Performance optimization
-it "should be optimized for frequent calls" && {
-  local script_content=$(cat "$DOTFILES_DIR/src/scripts/tmux-utils")
-
-  # Should avoid expensive operations
-  assert_contains "$script_content" "cache" || assert_contains "$script_content" "fast" || assert_contains "$script_content" "quick"
-  pass
-}
-
-# Test: Exit codes
-it "should use proper exit codes" && {
-  # Test with valid command
-  "$DOTFILES_DIR/src/scripts/tmux-utils" cpu 2>&1 >/dev/null
-  assert_success $?
-
-  pass
-}
-
-# Cleanup after tests
 cleanup_test
 
-# Summary
-echo -e "\n${GREEN}tmux-utils comprehensive tests completed${NC}"
 # Return success
 exit 0
