@@ -93,3 +93,11 @@ map("n", "*", "*zz", opts)
 map("n", "#", "#zz", opts)
 map("n", "g*", "g*zz", opts)
 map("n", "g#", "g#zz", opts)
+
+-- Enhanced file navigation with vim-fetch
+-- gF already works with line numbers (foo.c:42), these add convenience
+map("n", "gf", "gF", { desc = "Go to file with line number support" })  -- Make gf behave like gF
+map("n", "gw", "<C-w>gF", { desc = "Open file in new window" })
+map("n", "gv", "<C-w>vgF", { desc = "Open file in vertical split" })
+map("n", "gs", "<C-w>sgF", { desc = "Open file in horizontal split" })
+map("n", "gt", "<C-w>gF<C-w>T", { desc = "Open file in new tab" })
