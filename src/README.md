@@ -245,7 +245,7 @@ nvim ~/.dotfiles/src/zsh/aliases.zsh
 
 - ✅ Always edit files in `src/`, never symlinked versions
 - ✅ Test changes immediately after editing
-- ✅ Run `./test/test --quick` before committing
+- ✅ Run `./test/runner.zsh --quick` before committing
 - ✅ Keep related configs together
 - ✅ Document inline with comments
 - ✅ No secrets in configs (use env vars)
@@ -256,13 +256,13 @@ Validate configuration changes:
 
 ```bash
 # Quick sanity check
-./test/test --quick
+./test/runner.zsh --quick
 
 # Test specific component
-./test/test unit/nvim
+./test/runner.zsh unit/nvim
 
 # Full test suite
-./test/test --full
+./test/runner.zsh --full
 ```
 
 ## 🔒 Security

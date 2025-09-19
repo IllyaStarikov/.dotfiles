@@ -1,4 +1,4 @@
-# macOS
+# macOS system files
 # keep-sorted start
 .DS_Store
 .DS_Store?
@@ -26,7 +26,6 @@ tags.temp
 
 # Build artifacts
 # keep-sorted start
-*.log
 .next/
 .npm
 .pnp.*
@@ -44,13 +43,13 @@ node_modules/
 .env.local
 # keep-sorted end
 
-# IDE
+# IDE files
 # keep-sorted start
 *.iml
 .idea/
 # keep-sorted end
 
-# LaTeX
+# LaTeX build files
 # keep-sorted start
 *-blx.aux
 *-blx.bib
@@ -83,7 +82,6 @@ node_modules/
 *.loa
 *.loe
 *.lof
-*.log
 *.lot
 *.lpz
 *.lzs
@@ -118,13 +116,12 @@ node_modules/
 pythontex-files-*/
 # keep-sorted end
 
-# Python
+# Python artifacts and virtual environments
 # keep-sorted start
 *$py.class
 *.cover
 *.egg
 *.egg-info/
-*.log
 *.manifest
 *.mo
 *.pot
@@ -138,7 +135,6 @@ pythontex-files-*/
 .coverage.*
 .dmypy.json
 .eggs/
-.env
 .hypothesis/
 .installed.cfg
 .ipynb_checkpoints
@@ -164,7 +160,6 @@ pythontex-files-*/
 /site
 __pycache__/
 __pypackages__/
-build/
 celerybeat-schedule
 celerybeat.pid
 cover/
@@ -173,7 +168,6 @@ cython_debug/
 db.sqlite3
 db.sqlite3-journal
 develop-eggs/
-dist/
 dmypy.json
 docs/_build/
 downloads/
@@ -202,7 +196,7 @@ venv/
 wheels/
 # keep-sorted end
 
-# C++
+# C/C++ build artifacts
 # keep-sorted start
 *.a
 *.app
@@ -261,7 +255,6 @@ wheels/
 .settings/
 .tmp_versions/
 .vs/
-.vscode/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 [Bb]in/
@@ -271,7 +264,6 @@ wheels/
 _deps
 bld/
 build-*/
-build/
 CMakeCache.txt
 CMakeFiles
 CMakeLists.txt.user
@@ -290,14 +282,14 @@ x64/
 x86/
 # keep-sorted end
 
-# Rust
+# Rust build artifacts
 # keep-sorted start
 **/*.rs.bk
 *.pdb
 /target/
 # keep-sorted end
 
-# Ruby
+# Ruby artifacts
 # keep-sorted start
 *.gem
 .bundle/
@@ -308,10 +300,10 @@ Gemfile.lock
 vendor/bundle/
 # keep-sorted end
 
-# Lua
+# Lua compiled files
 luac.out
 
-# Backup and temp files
+# Backup and temporary files
 # keep-sorted start
 *.backup
 *.bak
@@ -319,9 +311,10 @@ luac.out
 *.orig
 *.temp
 *.tmp
+*.log
 # keep-sorted end
 
-# Secrets and credentials
+# Secrets and credentials (NEVER commit these)
 # keep-sorted start
 *.crt
 *.key
@@ -336,19 +329,23 @@ id_rsa*
 secrets/
 # keep-sorted end
 
-# tmux
+# tmux session logs
 # keep-sorted start
 tmux-client-*.log
 tmux-server-*.log
 # keep-sorted end
 
-# Miscellaneous
+# Lock files (except those explicitly needed)
 # keep-sorted start
 !Cargo.lock
 !package-lock.json
 !pnpm-lock.yaml
 !yarn.lock
 *.lock
+# keep-sorted end
+
+# History files
+# keep-sorted start
 .history/
 .localhistory/
 # keep-sorted end

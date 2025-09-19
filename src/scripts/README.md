@@ -98,6 +98,6 @@ extract archive.tar.gz # Extract files
 ## Testing
 
 ```bash
-./test/test unit/scripts/fixy
-./test/test functional/scripts
+./test/runner.zsh unit/scripts/fixy
+./test/runner.zsh functional/scripts
 ```

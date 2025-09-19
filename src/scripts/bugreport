@@ -1220,14 +1220,11 @@ run_tests() {
         test_runner="$DOTFILES_DIR/test/runner.zsh"
     elif [[ -x "$DOTFILES_DIR/test/run" ]]; then
         test_runner="$DOTFILES_DIR/test/run"
-    elif [[ -x "$DOTFILES_DIR/test/test" ]]; then
-        test_runner="$DOTFILES_DIR/test/test"
     else
         log WARN "Test runner not found in any expected location"
         echo "Test runner not found. Checked:" > "$REPORT_DIR/tests/test_results.txt"
         echo "  - $DOTFILES_DIR/test/runner.zsh" >> "$REPORT_DIR/tests/test_results.txt"
         echo "  - $DOTFILES_DIR/test/run" >> "$REPORT_DIR/tests/test_results.txt"
-        echo "  - $DOTFILES_DIR/test/test" >> "$REPORT_DIR/tests/test_results.txt"
         return
     fi
     

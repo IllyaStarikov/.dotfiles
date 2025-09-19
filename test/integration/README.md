@@ -13,9 +13,9 @@ Tests interactions between multiple components to ensure they work together corr
 ## Running Tests
 
 ```bash
-./test/test --integration           # All integration tests
+./test/runner.zsh --integration           # All integration tests
 ./test/integration/setup_workflow_test.sh  # Specific test
-TEST_DEBUG=1 ./test/test integration/      # With debugging
+TEST_DEBUG=1 ./test/runner.zsh integration/      # With debugging
 ```
 
 ## What We Test
