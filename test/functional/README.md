@@ -24,20 +24,20 @@ functional/
 
 ```bash
 # Run all functional tests
-./test/test --functional
+./test/runner.zsh --functional
 
 # Run specific category
-./test/test functional/nvim
-./test/test functional/git
+./test/runner.zsh functional/nvim
+./test/runner.zsh functional/git
 
 # Run single test
 ./test/functional/lsp_completion_test.sh
 
 # Run with debugging
-TEST_DEBUG=1 ./test/test --functional
+TEST_DEBUG=1 ./test/runner.zsh --functional
 
 # Skip slow tests
-SKIP_SLOW_TESTS=1 ./test/test --functional
+SKIP_SLOW_TESTS=1 ./test/runner.zsh --functional
 ```
 
 ### Expected output:

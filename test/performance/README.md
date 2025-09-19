@@ -19,9 +19,9 @@ Ensures dotfiles remain fast with regression testing and benchmarks.
 ## Running Tests
 
 ```bash
-./test/test --performance          # Quick performance check
+./test/runner.zsh --performance          # Quick performance check
 ./test/performance/comprehensive_performance_test.sh  # Full benchmarks
-./test/test --performance --baseline  # Compare with baseline
+./test/runner.zsh --performance --baseline  # Compare with baseline
 ```
 
 ## Key Metrics
