@@ -1,6 +1,7 @@
 # Ruff Configuration - Python Linter and Formatter
 # Fast, Rust-based replacement for Black, isort, and Flake8
-# https://docs.astral.sh/ruff/configuration/
+# Documentation: https://docs.astral.sh/ruff/
+# Style guide: https://google.github.io/styleguide/pyguide.html
 
 # Maximum line length for code
 line-length = 100  # Default: 88 (matches style guide preference)

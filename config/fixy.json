@@ -17,7 +17,7 @@
       "command": "yapf",
       "check_command": "yapf --version",
       "format_args": "-i --style='{based_on_style: google, column_limit: 100}' {file}",
-      "description": "Google's Python formatter"
+      "description": "Python formatter with style guide support"
     },
     "autopep8": {
       "command": "autopep8",
@@ -35,7 +35,7 @@
       "command": "clang-format",
       "check_command": "clang-format --version",
       "format_args": "-i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 100}' {file}",
-      "description": "C/C++ formatter"
+      "description": "C/C++ formatter (https://google.github.io/styleguide/cppguide.html)"
     },
     "astyle": {
       "command": "astyle",
