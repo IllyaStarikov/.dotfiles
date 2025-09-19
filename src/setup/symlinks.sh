@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
-# ════════════════════════════════════════════════════════════════════════════════
 # symlinks.sh - Create and manage dotfile symbolic links
-# ════════════════════════════════════════════════════════════════════════════════
 #
 # DESCRIPTION:
 #   Creates symbolic links from dotfiles repository to proper system locations.
@@ -38,7 +36,6 @@
 #   - Backs up existing files before replacing
 #   - Checks if symlinks already point to correct location
 #   - Reports all actions taken
-# ════════════════════════════════════════════════════════════════════════════════
 
 set -uo pipefail # Don't exit on error, continue creating other symlinks
 
