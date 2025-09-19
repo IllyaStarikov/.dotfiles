@@ -1,5 +1,6 @@
 # LaTeX build configuration with LuaLaTeX and automatic PDF preview
 # Supports macOS (Skim) and Linux (zathura, evince, okular)
+# Reference: https://mg.readthedocs.io/latexmk.html
 
 # PDF Generation Settings
 

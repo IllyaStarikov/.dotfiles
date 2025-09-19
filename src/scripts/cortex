@@ -1,5 +1,24 @@
 #!/usr/bin/env zsh
 # Cortex AI Model Management System
+# ==================================
+# Local AI assistant for coding with MLX acceleration on Apple Silicon
+# Manages AI models, provides chat interface, and agent mode for automation
+#
+# USAGE:
+#   cortex              # Interactive chat with AI
+#   cortex status       # Check MLX server status
+#   cortex model <name> # Switch AI model
+#   cortex agent on     # Enable agent mode
+#
+# MODELS:
+#   Default uses Mistral or similar lightweight model
+#   Larger models available with more memory
+#
+# REQUIREMENTS:
+#   Python 3.8+, MLX library (Apple Silicon)
+#   Models downloaded automatically on first use
+#
+# Reference: https://github.com/ml-explore/mlx
 
 # Add the cortex module to Python path
 export PYTHONPATH="$HOME/.dotfiles/src/cortex:$PYTHONPATH"
