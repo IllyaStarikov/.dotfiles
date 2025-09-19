@@ -3,18 +3,20 @@
 # https://google.github.io/styleguide/
 
 # Global settings
-COLUMN_LIMIT=80
+# Note: Project uses 100 char limit, but style guide recommends 80
+COLUMN_LIMIT=100
 
 # C/C++ formatting (Google C++ Style Guide)
 # https://google.github.io/styleguide/cppguide.html
+# Uses standard C++ style with 2-space indentation
 CPP_STYLE="Google"
 CPP_INDENT_WIDTH=2
-CPP_COLUMN_LIMIT=80
+CPP_COLUMN_LIMIT=100  # Project preference: 100 (style guide default: 80)
 
 # Python formatting (Google Python Style Guide)
 # https://google.github.io/styleguide/pyguide.html
-# Google Python style uses 4 spaces
-PYTHON_LINE_LENGTH=80
+# Python style uses 4-space indentation
+PYTHON_LINE_LENGTH=100  # Project preference: 100 (style guide default: 80)
 PYTHON_INDENT_WIDTH=4
 # For isort
 PYTHON_PROFILE="google"
