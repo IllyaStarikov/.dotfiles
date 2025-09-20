@@ -1,12 +1,11 @@
---
--- config/keymaps.lua
--- Modular key mappings system
---
+-- Keymaps Configuration - Modular key mappings system
+-- Loads keybinding modules in order: core → navigation → editing → LSP → plugins → debug
+-- Documentation: https://neovim.io/doc/user/map.html
 
--- Set leader keys for custom mappings
--- Both set to space for consistency - mapleader for global mappings,
--- maplocalleader for buffer-local mappings (like in ftplugin or after/ftplugin)
--- Space is chosen as it's easily accessible and not used in normal mode
+-- Leader key configuration
+-- Space is used as leader for its accessibility and availability in normal mode
+-- mapleader: Global custom mappings (default: backslash)
+-- maplocalleader: Buffer-local mappings in ftplugins (default: backslash)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 

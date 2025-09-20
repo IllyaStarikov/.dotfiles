@@ -1,5 +1,23 @@
 #!/usr/bin/env zsh
-# Install Ruby LSP tools (solargraph, rubocop)
+# install-ruby-lsp - Install Ruby language server and development tools
+#
+# DESCRIPTION:
+#   Installs Ruby development tools for LSP support in editors.
+#   Includes Solargraph (language server), RuboCop (linter), and Rufo (formatter).
+#
+# REQUIREMENTS:
+#   Ruby 3.0+ recommended (will warn if older version detected)
+#   gem package manager
+#
+# INSTALLS:
+#   - solargraph: Ruby language server protocol implementation
+#   - rubocop: Ruby style guide linter and formatter
+#   - rufo: Alternative Ruby formatter
+#
+# USAGE:
+#   ./install-ruby-lsp
+#
+# Documentation: https://solargraph.org/
 
 set -euo pipefail
 

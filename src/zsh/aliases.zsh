@@ -1,6 +1,18 @@
-# ZSH Aliases
+# ZSH Aliases Configuration
+# Provides command shortcuts and enhancements for common operations
+# Style Guide: https://google.github.io/styleguide/shellguide.html
+#
+# Categories:
+#   - Editor: Quick access to configuration files
+#   - File Management: Enhanced ls/tree with eza fallback
+#   - Tmux: Session management shortcuts
+#   - Git: Version control workflows
+#   - System: Package management and utilities
+#   - Development: Language-specific tools
 
+# ============================================================================
 # Editor Aliases
+# ============================================================================
 
 alias vi="nvim"
 # Platform-aware code command
