@@ -2,14 +2,14 @@
 
 > A modern, fast, and meticulously crafted development environment for macOS and Linux.
 
-[![CI](https://github.com/starikov/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/starikov/dotfiles/actions)
-[![Security](https://github.com/starikov/dotfiles/actions/workflows/security.yml/badge.svg)](https://github.com/starikov/dotfiles/actions)
+[![CI](https://github.com/IllyaStarikov/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/IllyaStarikov/dotfiles/actions)
+[![Security](https://github.com/IllyaStarikov/dotfiles/actions/workflows/security.yml/badge.svg)](https://github.com/IllyaStarikov/dotfiles/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Quick Install
 
 ```bash
-git clone https://github.com/starikov/dotfiles.git ~/.dotfiles
+git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./src/setup/setup.sh
 ```
