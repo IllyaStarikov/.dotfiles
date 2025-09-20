@@ -2,12 +2,10 @@
 Configuration management for Cortex.
 """
 
-from dataclasses import asdict
-from dataclasses import dataclass
-from datetime import datetime
-import json
 import logging
 import os
+from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -160,7 +158,8 @@ class Config:
                                     key, value = line.split('=', 1)
                                     # Remove quotes if present
                                     value = value.strip('"\'')
-                                    # Extract provider name from env var (e.g., ANTHROPIC_API_KEY -> anthropic)
+                                    # Extract provider name from env var
+                                    # (e.g., ANTHROPIC_API_KEY -> anthropic)
                                     if key.endswith('_API_KEY'):
                                         provider = key[:-8].lower()
                                         api_keys[provider] = value

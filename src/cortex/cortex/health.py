@@ -5,8 +5,8 @@ Health check and monitoring system for Cortex.
 import asyncio
 import logging
 import os
-from pathlib import Path
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiohttp
@@ -130,7 +130,7 @@ class HealthMonitor:
                             "models": len(data.get("models", [])),
                             "timestamp": time.time()
                         }
-        except:
+        except (ConnectionError, OSError, asyncio.TimeoutError):
             return {"status": "offline", "running": False, "port": port, "timestamp": time.time()}
 
     async def check_api_keys(self) -> Dict[str, Any]:
@@ -167,7 +167,7 @@ class HealthMonitor:
                     try:
                         async with session.head(endpoint, timeout=3) as response:
                             results.append(response.status < 500)
-                    except:
+                    except (ConnectionError, OSError, asyncio.TimeoutError):
                         results.append(False)
 
                 success_rate = sum(results) / len(results)

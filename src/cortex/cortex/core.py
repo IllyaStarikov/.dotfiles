@@ -4,12 +4,11 @@ Core Cortex system orchestrator.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from .config import Config
 from .providers import registry
-from .system_utils import ModelRecommender
-from .system_utils import SystemDetector
+from .system_utils import ModelRecommender, SystemDetector
 
 logger = logging.getLogger(__name__)
 

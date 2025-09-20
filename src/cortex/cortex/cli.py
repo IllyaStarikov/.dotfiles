@@ -3,38 +3,34 @@ Cortex CLI - Command Line Interface for the Cortex system.
 """
 
 import asyncio
-from datetime import datetime
 import json
 import logging
 import os
-from pathlib import Path
 import subprocess
 import sys
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List
 
 import click
 from rich import box
-from rich.columns import Columns
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import BarColumn
-from rich.progress import DownloadColumn
-from rich.progress import Progress
-from rich.progress import SpinnerColumn
-from rich.progress import TextColumn
-from rich.progress import TimeRemainingColumn
+from rich.progress import (
+    BarColumn,
+    DownloadColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeRemainingColumn,
+)
 from rich.prompt import Confirm
+from rich.syntax import Syntax
 from rich.table import Table
-from rich.text import Text
-from rich.tree import Tree
-from tabulate import tabulate
 
 from .config import Config
-from .providers import ModelCapability
-from .providers import ModelInfo
-from .providers import registry
-from .system_utils import ModelRecommender
-from .system_utils import SystemDetector
+from .providers import ModelCapability, ModelInfo, registry
+from .system_utils import ModelRecommender, SystemDetector
 
 # Extended commands are now integrated directly into cli.py
 
@@ -385,7 +381,7 @@ async def _show_recommended_model(config):
 
     # Show how to set the top recommendation
     top_model = recommendations[0]
-    console.print(f"\n[dim]To use the top recommendation:[/dim]")
+    console.print("\n[dim]To use the top recommendation:[/dim]")
     console.print(f"[cyan]cortex model {top_model.id}[/cyan]")
 
 
@@ -480,7 +476,7 @@ async def _set_model(config, model_id, provider_hint, validate):
     # If it's an offline model, check if it needs downloading
     if not model_info.get('online', True) and model_info['provider'] in ['mlx', 'ollama']:
         console.print(
-            f"\n[yellow]Note: This is a local model. Run [cyan]cortex download[/cyan] to download it.[/yellow]"
+            "\n[yellow]Note: This is a local model. Run [cyan]cortex download[/cyan] to download it.[/yellow]"
         )
 
 
@@ -599,7 +595,7 @@ def download(ctx, model, force, no_progress, validate):
 
             # Update current model if this was a new model
             if model and model != config.data.get("current_model", {}).get("id"):
-                console.print(f"\n[dim]To use this model:[/dim]")
+                console.print("\n[dim]To use this model:[/dim]")
                 console.print(f"[cyan]cortex model {model_id}[/cyan]")
         else:
             console.print(f"\n[red]✗[/red] Failed to download {model_id}")
@@ -1043,8 +1039,8 @@ def _display_statistics(filtered_models, all_models, system_info):
 def _export_models(models: List[ModelInfo], format: str):
     """Export models to file."""
     import csv
-    from datetime import datetime
     import json
+    from datetime import datetime
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -1144,7 +1140,9 @@ def health(ctx, verbose, check):
 
         console.print(
             Panel(
-                f"[{overall_color}]Overall Status: {status_emoji.get(summary['overall_status'], '❓')} {summary['overall_status'].upper()}[/{overall_color}]",
+                f"[{overall_color}]Overall Status: "
+                f"{status_emoji.get(summary['overall_status'], '❓')} "
+                f"{summary['overall_status'].upper()}[/{overall_color}]",
                 title="🏥 System Health Report",
                 border_style=overall_color))
 
@@ -1264,7 +1262,7 @@ def start(ctx, model, port, background):
             try:
                 subprocess.run(["ollama", "list"], capture_output=True, check=True)
                 console.print("[green]✓[/green] Ollama server is already running")
-            except:
+            except subprocess.CalledProcessError:
                 console.print("[yellow]Starting Ollama server...[/yellow]")
                 subprocess.Popen(["ollama", "serve"], start_new_session=True)
                 await asyncio.sleep(2)
@@ -1309,7 +1307,7 @@ def stop(ctx, provider):
                 os.kill(pid, 15)  # SIGTERM
                 pid_file.unlink()
                 console.print("[green]✓[/green] MLX server stopped")
-            except:
+            except (OSError, ProcessLookupError):
                 console.print("[red]Failed to stop MLX server[/red]")
         else:
             # Try to find and kill mlx_lm.server process
@@ -1319,7 +1317,7 @@ def stop(ctx, provider):
                     console.print("[green]✓[/green] MLX server stopped")
                 else:
                     console.print("[yellow]No MLX server found running[/yellow]")
-            except:
+            except (OSError, subprocess.CalledProcessError):
                 console.print("[red]Failed to stop MLX server[/red]")
 
     elif provider == 'ollama':
@@ -1383,7 +1381,7 @@ def status(ctx):
                     console.print("[green]✓[/green] Server is responding")
                 else:
                     console.print("[yellow]⚠[/yellow] Server not responding properly")
-            except:
+            except (ConnectionError, OSError):
                 console.print("[red]✗[/red] Cannot connect to server")
     else:
         console.print(Panel("[yellow]No server running[/yellow]", border_style="yellow"))
@@ -1456,7 +1454,7 @@ def logs(ctx, tail, follow, provider):
                 console.print(syntax)
             else:
                 console.print("[yellow]Log file is empty.[/yellow]")
-        except:
+        except (OSError, subprocess.CalledProcessError):
             console.print("[red]Failed to read log file.[/red]")
 
 
@@ -1524,7 +1522,6 @@ def chat(ctx, message, model, ensemble, system, temperature, max_tokens, stream)
 
                     if provider in ['claude', 'openai', 'gemini']:
                         # Use API for online models
-                        import aiohttp
                         result = await _call_api_model(provider, model_id, message or "Hello",
                                                        temperature, max_tokens)
                         responses[model_id] = result
@@ -1600,7 +1597,7 @@ def chat(ctx, message, model, ensemble, system, temperature, max_tokens, stream)
                     cmd.append(message)
                 subprocess.run(cmd)
             else:
-                console.print(f"[yellow]Use ensemble mode for API models[/yellow]")
+                console.print("[yellow]Use ensemble mode for API models[/yellow]")
 
     async def _call_api_model(provider, model_id, prompt, temp, max_tok):
         """Call API-based models."""
@@ -1632,7 +1629,7 @@ def chat(ctx, message, model, ensemble, system, temperature, max_tokens, stream)
     if stats_file.exists():
         try:
             existing_stats = json.loads(stats_file.read_text())
-        except:
+        except (json.JSONDecodeError, OSError):
             pass
 
     existing_stats.append(stats)
