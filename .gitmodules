@@ -1,6 +1,5 @@
-# [submodule ".dotfiles.private"]
-# 	path = .dotfiles.private
-# 	url = git@github.com:IllyaStarikov/.dotfiles.private.git
+# Submodule for style guide references
+# Used for code style compliance checking across all languages
 [submodule "styleguide"]
 	path = styleguide
 	url = https://github.com/google/styleguide.git
