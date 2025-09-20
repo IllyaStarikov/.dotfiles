@@ -6,7 +6,7 @@ to multiple AI providers with seamless terminal and Neovim integration.
 """
 
 __version__ = "0.1.0"
-__author__ = "Cortex Team"
+__author__ = "Illya Starikov"
 
 from .config import Config
 from .core import Cortex

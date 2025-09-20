@@ -1,6 +1,28 @@
 #!/usr/bin/env zsh
-# Universal system update script for macOS and Linux
-# Updates all package managers, plugins, and dependencies
+# update-dotfiles - Universal system update script
+#
+# DESCRIPTION:
+#   Comprehensive update tool for all package managers, development tools,
+#   and plugins across macOS and Linux. Handles failures gracefully.
+#
+# USAGE:
+#   update-dotfiles [OPTIONS]
+#
+# OPTIONS:
+#   --verbose       Show detailed output
+#   --dry-run       Show what would be done without executing
+#   --skip-system   Skip OS system updates
+#   --skip-packages Skip package manager updates
+#   --skip-languages Skip language tool updates
+#   --skip-tools    Skip development tool updates
+#
+# UPDATES:
+#   - System: macOS updates, Linux package managers
+#   - Packages: Homebrew, apt, dnf, pacman
+#   - Languages: Node, Python, Ruby, Go, Rust
+#   - Tools: Neovim plugins, tmux plugins, shell plugins
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 # Exit on error, but continue on individual command failures
 set -euo pipefail
