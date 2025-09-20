@@ -2,11 +2,11 @@
 System utilities for detecting hardware capabilities and making recommendations.
 """
 
-from dataclasses import dataclass
-from enum import Enum
 import logging
 import platform
 import subprocess
+from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import psutil
@@ -118,7 +118,7 @@ class SystemDetector:
                                             text=True,
                                             check=True)
                     cpu_model = result.stdout.strip()
-                except:
+                except (subprocess.CalledProcessError, OSError):
                     pass
             elif platform.system() == "Linux":
                 # Linux
@@ -128,7 +128,7 @@ class SystemDetector:
                             if "model name" in line:
                                 cpu_model = line.split(":")[1].strip()
                                 break
-                except:
+                except (OSError, IOError):
                     pass
 
             return {
@@ -208,7 +208,7 @@ class SystemDetector:
                     mem_info = SystemDetector._get_memory_info()
                     gpu_info["memory_gb"] = round(mem_info["ram_gb"] * 0.75, 1)
 
-                except:
+                except (ImportError, AttributeError, KeyError):
                     pass
 
             elif os_type == SystemType.LINUX:
@@ -228,7 +228,7 @@ class SystemDetector:
                         mem_mb = float(mem_str.split()[0])
                         gpu_info["memory_gb"] = round(mem_mb / 1024, 1)
                         gpu_info["has_cuda"] = True
-                except:
+                except (ImportError, OSError, RuntimeError, subprocess.CalledProcessError):
                     gpu_info["name"] = "CPU only"
                     gpu_info["has_cuda"] = False
 

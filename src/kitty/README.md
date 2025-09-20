@@ -15,8 +15,8 @@ GPU-accelerated terminal emulator with ligatures and image support.
 ### Font
 
 ```conf
-font_family MesloLGS Nerd Font Mono
-font_size 13.0
+font_family JetBrains Mono
+font_size 18.0
 disable_ligatures never
 ```
 

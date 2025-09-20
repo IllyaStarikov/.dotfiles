@@ -1,7 +1,25 @@
 #!/usr/bin/env zsh
-# Comprehensive Bug Report Generator for Dotfiles
-# Collects system fingerprint and diagnostic information
-# Follows Google Shell Style Guide
+# bugreport - Comprehensive bug report generator for dotfiles diagnostics
+#
+# DESCRIPTION:
+#   Collects system information, configuration, and diagnostic data for
+#   troubleshooting dotfiles issues. Sanitizes sensitive information by default.
+#   Creates a compressed archive with all relevant system and configuration data.
+#
+# USAGE:
+#   bugreport [OPTIONS]
+#
+# OPTIONS:
+#   --test[=SIZE]   Run tests and include results (SIZE: small, medium, large)
+#   --no-logs       Exclude log files from report
+#   --no-sanitize   Don't sanitize sensitive information (use with caution)
+#   --debug         Enable debug output
+#   -h, --help      Show detailed help
+#
+# OUTPUT:
+#   Creates compressed archive: dotfiles_bugreport_TIMESTAMP.tar.gz
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 set -euo pipefail
 
@@ -227,8 +245,10 @@ collect_system_info() {
         
         echo "=== Hardware Information ==="
         if [[ "$(uname)" == "Darwin" ]]; then
-            # Use proper sanitize function with command substitution
-            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | while read -r line; do sanitize "$line"; done
+            # Sanitize system profiler output line by line
+            system_profiler SPHardwareDataType 2>/dev/null | grep -E "Model|Processor|Memory|Serial" | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done
             echo
             echo "=== macOS Version ==="
             sw_vers
@@ -253,7 +273,18 @@ collect_system_info() {
         
         echo
         echo "=== Network Interfaces ==="
-        ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | while read -r line; do sanitize "$line"; done || ip addr 2>/dev/null | while read -r line; do sanitize "$line"; done
+        # Network interfaces with sanitization
+        if command -v ifconfig >/dev/null 2>&1; then
+            ifconfig 2>/dev/null | grep -E "^[a-z]|inet" | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done
+        elif command -v ip >/dev/null 2>&1; then
+            ip addr 2>/dev/null | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done
+        else
+            echo "Network interface information not available"
+        fi
         
         echo
         echo "=== Process Count ==="
@@ -268,7 +299,9 @@ collect_system_info() {
     # Collect environment variables (sanitized)
     {
         echo "=== Environment Variables (Sanitized) ==="
-        env | sort | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL" | while read -r line; do sanitize "$line"; done
+        env | sort | grep -v -E "TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL" | while IFS= read -r line; do
+            echo "$(sanitize "$line")"
+        done
     } > "$REPORT_DIR/system/environment.txt"
     
     # Collect PATH information
@@ -1189,15 +1222,21 @@ collect_logs() {
     # System logs (last 100 lines, sanitized)
     if [[ "$(uname)" == "Darwin" ]]; then
         log DEBUG "Collecting macOS system logs (limited to 5 seconds)"
-        timeout 5 log show --style syslog --last 5m 2>/dev/null | tail -100 | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" || {
+        timeout 5 log show --style syslog --last 5m 2>/dev/null | tail -100 | while IFS= read -r line; do
+            echo "$(sanitize "$line")"
+        done > "$REPORT_DIR/logs/system.log" || {
             echo "System log collection timed out" > "$REPORT_DIR/logs/system.log"
         }
     else
         # Linux system logs
         if [[ -r /var/log/syslog ]]; then
-            tail -100 /var/log/syslog | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/syslog | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         elif [[ -r /var/log/messages ]]; then
-            tail -100 /var/log/messages | while read -r line; do sanitize "$line"; done > "$REPORT_DIR/logs/system.log" 2>/dev/null
+            tail -100 /var/log/messages | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done > "$REPORT_DIR/logs/system.log" 2>/dev/null
         fi
     fi
     
@@ -1342,14 +1381,27 @@ collect_debug_info() {
     # Open files (with timeout - lsof can be very slow)
     {
         echo "=== Open Files (Sample) ==="
-        timeout 3 lsof 2>/dev/null | head -100 | while read -r line; do sanitize "$line"; done || echo "lsof command timed out"
+        timeout 3 lsof 2>/dev/null | head -100 | while IFS= read -r line; do
+            echo "$(sanitize "$line")"
+        done || echo "lsof command timed out"
     } > "$REPORT_DIR/debug/open_files.txt"
 
     log DEBUG "Collecting network connections"
     # Network connections (with timeout)
     {
         echo "=== Network Connections ==="
-        timeout 2 netstat -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || timeout 2 ss -an 2>/dev/null | head -50 | while read -r line; do sanitize "$line"; done || echo "Network info collection timed out"
+        # Network connections with sanitization
+        if command -v netstat >/dev/null 2>&1; then
+            timeout 2 netstat -an 2>/dev/null | head -50 | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done
+        elif command -v ss >/dev/null 2>&1; then
+            timeout 2 ss -an 2>/dev/null | head -50 | while IFS= read -r line; do
+                echo "$(sanitize "$line")"
+            done
+        else
+            echo "Network info collection timed out"
+        fi
     } > "$REPORT_DIR/debug/network.txt"
     
     # Kernel modules (Linux)

@@ -1,5 +1,22 @@
 #!/usr/bin/env zsh
-# Debug helper for Neovim work configuration issues
+# nvim-debug - Debug helper for Neovim configuration issues
+#
+# DESCRIPTION:
+#   Diagnostic tool for troubleshooting Neovim configuration problems,
+#   particularly work environment detection and LSP setup issues.
+#
+# USAGE:
+#   nvim-debug [OPTIONS]
+#
+# OPTIONS:
+#   --check   Check work environment detection
+#   --test    Test Neovim startup with debug output
+#   --lsp     Check LSP configuration and active clients
+#   --logs    Show recent Neovim and LSP logs
+#   --clean   Clean Neovim cache and state directories
+#   --help    Show detailed help
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 set -euo pipefail
 

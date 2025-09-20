@@ -2,14 +2,12 @@
 Statistics tracking and analytics for Cortex.
 """
 
-from dataclasses import asdict
-from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
 import json
 import logging
-from pathlib import Path
 import time
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)

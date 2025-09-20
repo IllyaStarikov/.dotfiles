@@ -28,5 +28,7 @@ select = [
 
 # Import sorting configuration
 [lint.isort]
-# Use style guide's import ordering conventions
-profile = "google"
+# Style guide import grouping: standard library, third-party, first-party
+# Default behavior matches style guide requirements
+force-single-line = false
+combine-as-imports = true
