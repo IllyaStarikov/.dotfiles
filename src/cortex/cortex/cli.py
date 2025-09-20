@@ -325,7 +325,7 @@ async def _show_recommended_model(config):
             TextColumn("[progress.description]{task.description}"),
             console=console,
     ) as progress:
-        task = progress.add_task("Analyzing models...", total=None)
+        progress.add_task("Analyzing models...", total=None)
         all_models_dict = await registry.fetch_all_models()
 
     # Flatten all models
@@ -394,7 +394,7 @@ async def _set_model(config, model_id, provider_hint, validate):
                 TextColumn("[progress.description]{task.description}"),
                 console=console,
         ) as progress:
-            task = progress.add_task("Validating model...", total=None)
+            progress.add_task("Validating model...", total=None)
             all_models_dict = await registry.fetch_all_models()
 
         # Find the model
@@ -1112,7 +1112,7 @@ def health(ctx, verbose, check):
                 TextColumn("[progress.description]{task.description}"),
                 console=console,
         ) as progress:
-            task = progress.add_task("Running health checks...", total=None)
+            progress.add_task("Running health checks...", total=None)
             results = await health_monitor.run_health_checks(checks_to_run)
 
         # Get summary
