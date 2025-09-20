@@ -1,6 +1,32 @@
 #!/usr/bin/env zsh
-# Unified theme management script for macOS
-# Handles theme switching across Alacritty, tmux, and shell
+# theme - Unified terminal theme management
+#
+# DESCRIPTION:
+#   Synchronizes themes across terminal emulators (Alacritty, WezTerm, Kitty),
+#   tmux, and shell prompt (Starship). Auto-detects macOS light/dark mode.
+#
+# USAGE:
+#   theme [COMMAND|THEME]
+#
+# COMMANDS:
+#   detect   Auto-detect macOS appearance and apply matching theme
+#   current  Show current active theme
+#   list     List all available themes
+#   help     Show detailed help
+#
+# THEMES:
+#   light    Default light theme (tokyonight_day)
+#   dark     Default dark theme (tokyonight_storm)
+#   day      TokyoNight Day (light)
+#   night    TokyoNight Night (dark)
+#   moon     TokyoNight Moon (dark)
+#   storm    TokyoNight Storm (dark)
+#
+# FILES:
+#   Config: ~/.config/theme-switcher/current-theme.sh
+#   Themes: src/theme-switcher/themes/
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 set -euo pipefail
 

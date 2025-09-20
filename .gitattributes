@@ -1,17 +1,16 @@
-# These settings are for any web project
+# Git Attributes Configuration
+# Manages line ending normalization and file type classification
+# Documentation: https://git-scm.com/docs/gitattributes
 
-# Handle line endings automatically for files detected as text
-# and leave all files detected as binary untouched.
-# * text=auto
-# NOTE - originally I had the above line un-commented.  it caused me a lot of grief related to line endings because I was dealing with WordPress plugins and the website changing line endings out if a user modified a plugin through the web interface.  commenting this line out seems to have alleviated the git chaos where simply switching to a branch caused it to believe 500 files were modified.
+# Line ending strategy:
+# - Text files: Normalize to LF on commit, preserve on checkout
+# - Binary files: Never modify
+# - Default: Let Git auto-detect (text=auto disabled to prevent issues)
+#
+# Note: text=auto can cause problems with web-editable files where
+# line endings may change outside of Git's control
 
-#
-# The above will handle all files NOT found below
-#
-
-#
-## These files are text and should be normalized (Convert crlf => lf)
-#
+# Text files - normalize line endings (CRLF → LF)
 
 # source code
 *.php text

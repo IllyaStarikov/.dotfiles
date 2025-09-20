@@ -1,5 +1,19 @@
 #!/usr/bin/env zsh
 # Pre-commit hook for secret scanning with gitleaks
+#
+# DESCRIPTION:
+#   Scans staged files for potential secrets and sensitive information
+#   before allowing commits. Uses gitleaks for detection.
+#
+# REQUIREMENTS:
+#   gitleaks - Install with: brew install gitleaks
+#
+# CONFIGURATION:
+#   Uses .gitleaks.toml in repo root or ~/.dotfiles/src/gitleaks.toml
+#   See: https://github.com/gitleaks/gitleaks
+#
+# BYPASS:
+#   git commit --no-verify (use only for false positives)
 
 # Colors for output
 RED='\033[0;31m'
