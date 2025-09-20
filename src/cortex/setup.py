@@ -26,12 +26,12 @@ def read_requirements(filename):
 setup(
     name="cortex-ai",
     version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Illya Starikov",
+    author_email="illya@starikov.co",
     description="Unified AI model management system for terminal and Neovim integration",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/cortex",
+    url="https://github.com/IllyaStarikov/.dotfiles/tree/main/src/cortex",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",

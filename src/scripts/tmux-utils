@@ -1,5 +1,20 @@
 #!/usr/bin/env zsh
-# Consolidated tmux utility functions for status bar
+# tmux-utils - System monitoring utilities for tmux status bar
+#
+# DESCRIPTION:
+#   Provides lightweight system monitoring functions for tmux status bar.
+#   Includes CPU, memory, and battery monitoring with caching to minimize overhead.
+#
+# USAGE:
+#   tmux-utils cpu       # Show CPU usage percentage
+#   tmux-utils memory    # Show memory usage percentage
+#   tmux-utils battery   # Show battery percentage and status
+#
+# CACHING:
+#   Results cached for 10 seconds to avoid excessive system calls
+#   Cache files stored in /tmp/.tmux_*_cache
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 # OS detection
 OS_TYPE=$(uname -s)

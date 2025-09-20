@@ -1,24 +1,30 @@
-# Global clangd configuration - cross-platform
+# Clangd Language Server Configuration
+# Documentation: https://clangd.llvm.org/config
+# Style Guide: https://google.github.io/styleguide/cppguide.html
+#
+# Global configuration for C/C++ language server
 # Platform-specific includes are auto-detected by clangd
 CompileFlags:
   Add:
-    - '-std=c++17'
-    - '-I/usr/local/include'
-    - '-I/usr/include'
+    - '-std=c++17'              # C++ standard version (default: compiler-specific)
+    - '-I/usr/local/include'    # Common local include path
+    - '-I/usr/include'          # System include path
   Remove:
     # Remove any system-specific flags that might cause issues cross-platform
-    - '-stdlib=libc++'
+    - '-stdlib=libc++'          # macOS-specific stdlib
 
 Diagnostics:
   ClangTidy:
+    # Enable performance and modernization checks
+    # Full list: https://clang.llvm.org/extra/clang-tidy/checks/list.html
     Add: [performance-*, modernize-*]
-    Remove: [modernize-use-trailing-return-type]
+    Remove: [modernize-use-trailing-return-type]  # Conflicts with style guide
 
 Completion:
-  AllScopes: true
-  DetailedLabel: true
+  AllScopes: true       # Show completions from all namespaces (default: false)
+  DetailedLabel: true   # Show function signatures in completion (default: false)
 
 InlayHints:
-  Enabled: true
-  ParameterNames: true
-  DeducedTypes: true
+  Enabled: true         # Show inline hints in editor (default: false)
+  ParameterNames: true  # Show parameter names at call sites (default: false)
+  DeducedTypes: true    # Show deduced types for auto variables (default: false)
