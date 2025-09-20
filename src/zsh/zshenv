@@ -1,8 +1,12 @@
+# ZSH Environment Configuration - Loaded for all Zsh instances
+# This file is sourced first for all Zsh sessions (login, interactive, scripts)
+# Documentation: https://zsh.sourceforge.io/Intro/intro_3.html
+
 # Unset HOMEBREW_CELLAR to prevent issues with non-standard Homebrew installations
 # on corporate machines. This allows Homebrew to use its default Cellar location.
 unset HOMEBREW_CELLAR
 
-# Basic PATH setup
+# Basic PATH setup - User binaries take precedence
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
 # Add platform-specific paths

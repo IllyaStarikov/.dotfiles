@@ -1,6 +1,27 @@
 #!/usr/bin/env zsh
-# Universal scratchpad - Create temporary files for quick editing
-# Works on both macOS and Linux
+# scratchpad - Create temporary files for quick editing
+#
+# DESCRIPTION:
+#   Creates a unique temporary file and opens it in your preferred editor.
+#   Useful for quick notes, code snippets, or temporary work.
+#   Files persist in temp directory until system cleanup.
+#
+# USAGE:
+#   scratchpad [extension]
+#
+#   scratchpad          # Create temp file with no extension
+#   scratchpad py       # Create temp Python file (.py)
+#   scratchpad md       # Create temp Markdown file (.md)
+#   scratchpad json     # Create temp JSON file (.json)
+#
+# EDITOR:
+#   Uses $EDITOR if set, otherwise vim (macOS) or nano (Linux)
+#
+# FILES:
+#   Created in: $TMPDIR or /tmp
+#   Naming: UUID-based or timestamp-PID-random for uniqueness
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 # Source common library
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
