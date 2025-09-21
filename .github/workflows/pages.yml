@@ -20,18 +20,18 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    name: 📄 Build & Deploy Pages
+    name: build and deploy pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: 📥 Checkout Code
+      - name: checkout code
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
-      - name: 🏗️ Generate Site Content
+      - name: generate site content
         run: |
           echo "::group::Creating site structure"
 
@@ -107,7 +107,7 @@ jobs:
 
           echo "::endgroup::"
 
-      - name: 🚀 Deploy to GitHub Pages
+      - name: deploy to github pages
         run: |
           # Configure git
           git config --global user.name "github-actions[bot]"
