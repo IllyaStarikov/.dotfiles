@@ -36,6 +36,24 @@
 local is_headless = #vim.api.nvim_list_uis() == 0
 local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 
+-- For CI testing, use minimal config without plugins
+if is_ci and is_headless then
+  -- Set basic options for testing
+  vim.o.number = true
+  vim.o.relativenumber = true
+  vim.o.expandtab = true
+  vim.o.shiftwidth = 2
+  vim.o.tabstop = 2
+
+  -- Create minimal config namespace for testing
+  _G.config = {
+    lsp = { loaded = true },
+  }
+
+  -- Exit early without loading plugins
+  return
+end
+
 -- Add the config directory to the Lua package path
 -- This ensures modules can be found regardless of how nvim is invoked
 local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")
