@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   update:
-    name: Update Dependencies
+    name: update dependencies
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -20,7 +20,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Update Git Submodules
+      - name: update git submodules
         run: |
           echo "::group::Update submodules"
           git submodule update --init --recursive
@@ -36,13 +36,13 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Update GitHub Actions
+      - name: update github actions
         uses: actions/dependency-review-action@v3
         continue-on-error: true
         with:
           warn-only: true
 
-      - name: Check for Neovim Plugin Updates
+      - name: check for neovim plugin updates
         run: |
           echo "::group::Check plugin updates"
           # Extract plugin URLs from Neovim config
@@ -65,7 +65,7 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Update Documentation
+      - name: update documentation
         run: |
           echo "::group::Update docs"
           # Update year in copyright notices
@@ -79,7 +79,7 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Create Pull Request
+      - name: create pull request
         if: env.SUBMODULES_UPDATED == 'true'
         uses: peter-evans/create-pull-request@v5
         with:

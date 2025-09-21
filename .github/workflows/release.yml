@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   release:
-    name: Create Release
+    name: create release
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Determine Version
+      - name: determine version
         id: version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -37,7 +37,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
-      - name: Generate Changelog
+      - name: generate changelog
         id: changelog
         run: |
           # Get previous tag
@@ -73,7 +73,7 @@ jobs:
 
           cat CHANGELOG.md
 
-      - name: Create Release Assets
+      - name: create release assets
         run: |
           # Create release directory
           mkdir -p release/dotfiles-${VERSION}
@@ -147,7 +147,7 @@ jobs:
           echo "📦 Release assets created:"
           ls -lh dotfiles-${VERSION}.*
 
-      - name: Create GitHub Release
+      - name: create github release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.version }}

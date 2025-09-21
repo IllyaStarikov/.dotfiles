@@ -24,7 +24,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Secret Detection
+      - name: secret detection
         run: |
           echo "::group::Install and run gitleaks"
           # Install gitleaks
@@ -49,7 +49,7 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Dependency Scan
+      - name: dependency scan
         uses: anchore/scan-action@v3
         continue-on-error: true
         with:
@@ -57,7 +57,7 @@ jobs:
           fail-build: false
           severity-cutoff: high
 
-      - name: SAST Scan
+      - name: sast scan
         run: |
           echo "::group::Static Analysis"
           # Check for common security issues in scripts
@@ -82,7 +82,7 @@ jobs:
 
           echo "::endgroup::"
 
-      - name: License Scan
+      - name: license scan
         run: |
           echo "::group::License Compliance"
           # Basic license check
@@ -105,7 +105,7 @@ jobs:
           done
           echo "::endgroup::"
 
-      - name: Security Report
+      - name: security report
         if: always()
         run: |
           echo "## 🔒 Security Scan Summary"

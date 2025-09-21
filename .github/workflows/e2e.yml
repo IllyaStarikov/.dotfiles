@@ -40,16 +40,16 @@ jobs:
             dockerfile: ""
 
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Set up Docker Buildx (Linux only)
+      - name: set up docker buildx (linux only)
         if: runner.os == 'Linux'
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers (Linux only)
+      - name: cache docker layers (linux only)
         if: runner.os == 'Linux'
         uses: actions/cache@v4
         with:
@@ -58,7 +58,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Install dependencies
+      - name: install dependencies
         run: |
           if [[ "${{ runner.os }}" == "Linux" ]]; then
             sudo apt-get update -qq
@@ -72,14 +72,14 @@ jobs:
             brew install coreutils || true  # Provides gtimeout command
           fi
 
-      - name: Make scripts executable
+      - name: make scripts executable
         run: |
           chmod +x test/e2e/docker-e2e-test.zsh || true
           chmod +x test/runner.zsh || true
           chmod +x src/setup/setup.sh || true
           chmod +x src/setup/symlinks.sh || true
 
-      - name: Run E2E tests (Docker)
+      - name: run e2e tests (docker)
         if: runner.os == 'Linux'
         run: |
           echo "Running Docker-based E2E tests on ${{ matrix.name }}"
@@ -94,7 +94,7 @@ jobs:
             dotfiles-test:latest \
             bash -c "/home/testuser/.dotfiles/test/e2e/docker-e2e-test.zsh"
 
-      - name: Run E2E tests (Native macOS)
+      - name: run e2e tests (native macos)
         if: runner.os == 'macOS'
         run: |
           echo "Running native E2E tests on ${{ matrix.name }}"
@@ -104,7 +104,7 @@ jobs:
           # The setup script creates symlinks, not a copy of the repo
           ./test/runner.zsh --quick
 
-      - name: Upload test logs
+      - name: upload test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -113,7 +113,7 @@ jobs:
             test/logs/e2e_*/
             test/e2e/*.log
 
-      - name: Display test summary
+      - name: display test summary
         if: always()
         run: |
           # Find the latest log directory
@@ -150,12 +150,12 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Validate scripts are executable
+      - name: validate scripts are executable
         run: |
           echo "Checking script permissions..."
           for script in $(find . -name "*.sh" -o -name "*.zsh"); do
@@ -166,7 +166,7 @@ jobs:
             fi
           done
 
-      - name: Check for syntax errors
+      - name: check for syntax errors
         run: |
           echo "Checking shell script syntax..."
           for script in $(find . -name "*.sh"); do
@@ -181,7 +181,7 @@ jobs:
             fi
           done
 
-      - name: Verify Docker files
+      - name: verify docker files
         run: |
           echo "Checking E2E test files exist..."
           [ -f "test/e2e/docker-e2e-test.zsh" ] || exit 1
@@ -195,7 +195,7 @@ jobs:
     if: always()
 
     steps:
-      - name: Check results
+      - name: check results
         run: |
           echo "## E2E Test Results"
           echo ""
@@ -214,7 +214,7 @@ jobs:
             exit 1
           fi
 
-      - name: Create summary comment
+      - name: create summary comment
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
