@@ -57,8 +57,14 @@ jobs:
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             # Install required tools
             brew install bash coreutils findutils gnu-sed neovim shellcheck
-            echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
-            echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            # Handle both Intel (/usr/local) and ARM64 (/opt/homebrew) paths
+            if [[ -d "/opt/homebrew" ]]; then
+              echo "/opt/homebrew/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+              echo "/opt/homebrew/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            else
+              echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+              echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            fi
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update -qq
             sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git
@@ -119,8 +125,14 @@ jobs:
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             # Install required tools
             brew install bash coreutils findutils gnu-sed neovim
-            echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
-            echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            # Handle both Intel (/usr/local) and ARM64 (/opt/homebrew) paths
+            if [[ -d "/opt/homebrew" ]]; then
+              echo "/opt/homebrew/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+              echo "/opt/homebrew/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            else
+              echo "/usr/local/opt/coreutils/libexec/gnubin" >> $GITHUB_PATH
+              echo "/usr/local/opt/findutils/libexec/gnubin" >> $GITHUB_PATH
+            fi
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update -qq
             sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
