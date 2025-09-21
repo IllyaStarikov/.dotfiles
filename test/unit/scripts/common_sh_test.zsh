@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
 # Test suite for common.sh library
-# Tests cross-platform utility functions
+# Tests cross-platform utility functions to ensure portability
+# Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 
-# Set up test environment
+# Initialize test environment paths
+# Handles both standalone and runner execution contexts
 export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 
@@ -15,39 +17,45 @@ setup_test
 COMMON_LIB="$DOTFILES_DIR/src/scripts/common.sh"
 
 it "should provide OS detection functions" && {
-    # Source the library in a subshell to test
-    if (source "$COMMON_LIB" && type detect_os >/dev/null 2>&1); then
-        pass
-    else
-        fail "Missing OS detection functions"
-    fi
+  # Source the library in a subshell to avoid polluting test environment
+  # Tests that core OS detection functions are properly exported
+  if (source "$COMMON_LIB" && type detect_os >/dev/null 2>&1); then
+    pass
+  else
+    fail "Missing OS detection functions"
+  fi
 }
 
 it "should detect current OS correctly" && {
-    # Source and check OS detection matches uname
-    os_result=$( source "$COMMON_LIB" && detect_os )
+  # Verify OS detection matches system uname output
+  # Ensures cross-platform compatibility functions work correctly
+  os_result=$(source "$COMMON_LIB" && detect_os)
 
-    if [[ "$(uname)" == "Darwin" ]] && [[ "$os_result" == "macos" ]]; then
-        pass
-    elif [[ "$(uname)" == "Linux" ]] && [[ "$os_result" == "linux" ]]; then
-        pass
-    else
-        fail "OS detection mismatch"
-    fi
+  if [[ "$(uname)" == "Darwin" ]] && [[ "$os_result" == "macos" ]]; then
+    pass
+  elif [[ "$(uname)" == "Linux" ]] && [[ "$os_result" == "linux" ]]; then
+    pass
+  else
+    fail "OS detection mismatch: expected $(uname), got $os_result"
+  fi
 }
 
 it "should provide color printing functions" && {
-    if (source "$COMMON_LIB" && type print_color >/dev/null 2>&1); then
-        pass
-    else
-        fail "Missing print_color function"
-    fi
+  # Test that color output utilities are available
+  # These functions provide consistent user feedback across scripts
+  if (source "$COMMON_LIB" && type print_color >/dev/null 2>&1); then
+    pass
+  else
+    fail "Missing print_color function"
+  fi
 }
 
 it "should provide command existence checking" && {
-    if (source "$COMMON_LIB" && type has_command >/dev/null 2>&1); then
-        pass
-    else
+  # Verify command detection utilities are present
+  # Critical for conditional functionality based on available tools
+  if (source "$COMMON_LIB" && type has_command >/dev/null 2>&1); then
+    pass
+  else
         fail "Missing has_command function"
     fi
 }

@@ -10,7 +10,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Any
 
 import click
 from rich import box
@@ -447,7 +447,8 @@ async def _set_model(config, model_id, provider_hint, validate):
                 provider_hint = 'ollama'
             else:
                 console.print(
-                    "[yellow]Warning: Could not infer provider. Please specify with --provider[/yellow]"
+                    "[yellow]Warning: Could not infer provider. "
+                    "Please specify with --provider[/yellow]"
                 )
                 return
 
@@ -476,7 +477,8 @@ async def _set_model(config, model_id, provider_hint, validate):
     # If it's an offline model, check if it needs downloading
     if not model_info.get('online', True) and model_info['provider'] in ['mlx', 'ollama']:
         console.print(
-            "\n[yellow]Note: This is a local model. Run [cyan]cortex download[/cyan] to download it.[/yellow]"
+            "\n[yellow]Note: This is a local model. "
+            "Run [cyan]cortex download[/cyan] to download it.[/yellow]"
         )
 
 
@@ -627,7 +629,8 @@ def _display_system_info(system_info):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  OS: [green]{system_info.os_type.value}[/green]
  CPU: {system_info.cpu_model} ({system_info.cpu_cores} cores)
- RAM: [yellow]{system_info.ram_gb}GB[/yellow] (Available: [green]{system_info.ram_available_gb}GB[/green])
+ RAM: [yellow]{system_info.ram_gb}GB[/yellow] \
+(Available: [green]{system_info.ram_available_gb}GB[/green])
  GPU: [cyan]{system_info.gpu_info}[/cyan]
  Performance Tier: [bold]{system_info.performance_tier.value.upper()}[/bold]
 """
@@ -976,7 +979,8 @@ def _display_models_detailed(models: List[ModelInfo], system_info):
             f"[bold]Context:[/bold] {model.context_window:,} tokens",
             f"[bold]Capabilities:[/bold] {', '.join([c.value for c in model.capabilities])}",
             f"[bold]Score:[/bold] {model.score:.0f}/100",
-            f"[bold]Type:[/bold] {'Open Source' if model.open_source else 'Proprietary'} | {'Online' if model.online else 'Offline'}",
+            f"[bold]Type:[/bold] {'Open Source' if model.open_source else 'Proprietary'} | "
+            f"{'Online' if model.online else 'Offline'}",
         ]
 
         if model.description:

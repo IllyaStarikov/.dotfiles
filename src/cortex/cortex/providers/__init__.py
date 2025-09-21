@@ -4,14 +4,12 @@ Provider Registry System for Cortex
 Manages all AI model providers and their dynamic model discovery.
 """
 
-from abc import ABC
-from abc import abstractmethod
 import asyncio
-from dataclasses import dataclass
-from dataclasses import field
-from enum import Enum
 import logging
-from typing import Any, Dict, List, Optional, Type
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
