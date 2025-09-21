@@ -32,6 +32,10 @@
 --   - Comprehensive error handling
 --------------------------------------------------------------------------------
 
+-- Detect if we're running in headless mode or CI
+local is_headless = #vim.api.nvim_list_uis() == 0
+local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
+
 -- Add the config directory to the Lua package path
 -- This ensures modules can be found regardless of how nvim is invoked
 local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")
@@ -89,8 +93,9 @@ end
 
 -- Fix for treesitter markdown code fence errors
 -- This must be done very early before any plugins load
+-- Skip in headless/CI mode to avoid defer_fn delays
 -- Check if nvim_create_autocmd exists (requires Neovim 0.7+)
-if vim.api.nvim_create_autocmd then
+if vim.api.nvim_create_autocmd and not is_headless and not is_ci then
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "markdown.pandoc" },
     callback = function()
@@ -178,12 +183,17 @@ for _, module in ipairs(modules) do
 end
 
 -- Load theme after plugins are available
-vim.api.nvim_create_autocmd("User", {
-  pattern = "LazyVimStarted",
-  callback = function()
-    utils.safe_require("config.ui.theme")
-  end,
-})
+-- In headless mode, load immediately instead of waiting for autocmd
+if is_headless or is_ci then
+  -- Don't load theme in headless/CI mode
+else
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "LazyVimStarted",
+    callback = function()
+      utils.safe_require("config.ui.theme")
+    end,
+  })
+end
 
 -- Apply work-specific overrides if available
 -- This should happen after base config but before LSP setup

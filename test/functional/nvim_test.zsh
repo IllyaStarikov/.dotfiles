@@ -10,11 +10,8 @@ export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 # Source test framework
 source "$TEST_DIR/lib/test_helpers.zsh"
 
-# Skip entire test file in CI to prevent timeouts
-if [[ -n "$CI" ]] || [[ -n "$CI_MODE" ]] || [[ -n "$GITHUB_ACTIONS" ]]; then
-    echo "[SKIP] Neovim tests disabled in CI environment"
-    exit 0
-fi
+# Note: CI detection is now handled properly in Neovim config
+# Tests should work in CI with the headless mode fixes
 
 # Timeout wrapper that works on macOS and Linux
 timeout_cmd() {
@@ -44,10 +41,6 @@ setup_test
 
 # Test: Neovim starts without errors
 it "should start without errors" && {
-  if is_ci; then
-    skip "Skipping Neovim tests in CI"
-  fi
-
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -c "qa!" 2>&1 || true)
 
   # Check for critical errors
@@ -59,7 +52,6 @@ it "should start without errors" && {
 
 # Test: LSP configuration loads
 it "should load LSP configuration" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(vim.inspect(require('config.lsp')))" -c "qa!" 2>&1 || true)
 
@@ -70,7 +62,6 @@ it "should load LSP configuration" && {
 
 # Test: Plugin manager (lazy.nvim) loads
 it "should load lazy.nvim plugin manager" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(vim.fn.exists('*lazy'))" -c "qa!" 2>&1 || true)
 
@@ -81,7 +72,6 @@ it "should load lazy.nvim plugin manager" && {
 
 # Test: Key mappings are set
 it "should set custom key mappings" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(vim.inspect(vim.api.nvim_get_keymap('n')))" -c "qa!" 2>&1 || true)
 
@@ -92,7 +82,6 @@ it "should set custom key mappings" && {
 
 # Test: Options are configured
 it "should set Neovim options" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(vim.o.number)" -c "qa!" 2>&1 || true)
 
@@ -103,7 +92,6 @@ it "should set Neovim options" && {
 
 # Test: Autocommands are registered
 it "should register autocommands" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(#vim.api.nvim_get_autocmds({}))" -c "qa!" 2>&1 || true)
 
@@ -114,7 +102,6 @@ it "should register autocommands" && {
 
 # Test: Theme configuration loads
 it "should load theme configuration" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
     -c "lua print(vim.g.colors_name or 'none')" -c "qa!" 2>&1 || true)
 
@@ -125,7 +112,6 @@ it "should load theme configuration" && {
 
 # Test: Snippet configuration
 it "should configure snippets" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   if [[ -f "$DOTFILES_DIR/src/neovim/config/snippets.lua" ]]; then
     output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
       -c "lua require('config.snippets')" -c "qa!" 2>&1 || true)
@@ -139,7 +125,6 @@ it "should configure snippets" && {
 
 # Test: AI integration (Avante/CodeCompanion)
 it "should configure AI assistants" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local ai_configs=("avante" "codecompanion" "ai")
   local found=0
 
@@ -157,7 +142,6 @@ it "should configure AI assistants" && {
 
 # Test: Completion engine (blink.cmp)
 it "should configure completion engine" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   if [[ -f "$DOTFILES_DIR/src/neovim/config/blink.lua" ]]; then
     output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
       -c "lua require('config.blink')" -c "qa!" 2>&1 || true)
@@ -171,7 +155,6 @@ it "should configure completion engine" && {
 
 # Test: Telescope configuration
 it "should configure Telescope" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local telescope_config=$(find "$DOTFILES_DIR/src/neovim" -name "*telescope*" -o -name "*Telescope*" | head -1)
 
   if [[ -n "$telescope_config" ]]; then
@@ -184,7 +167,6 @@ it "should configure Telescope" && {
 
 # Test: Treesitter configuration
 it "should configure Treesitter" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local treesitter_config=$(find "$DOTFILES_DIR/src/neovim" -name "*treesitter*" -o -name "*Treesitter*" | head -1)
 
   if [[ -n "$treesitter_config" ]]; then
@@ -197,7 +179,6 @@ it "should configure Treesitter" && {
 
 # Test: Git integration (Gitsigns)
 it "should configure Git integration" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local git_config=$(find "$DOTFILES_DIR/src/neovim" -name "*git*" -o -name "*Git*" | head -1)
 
   if [[ -n "$git_config" ]]; then
@@ -210,7 +191,6 @@ it "should configure Git integration" && {
 
 # Test: File type detection
 it "should detect file types correctly" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   echo "#!/bin/bash" >"$TEST_TMP_DIR/test.sh"
 
   output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
@@ -223,7 +203,6 @@ it "should detect file types correctly" && {
 
 # Test: Performance - startup time
 it "should start quickly" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local start_time=$(date +%s%N)
   timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -c "qa!" 2>&1 >/dev/null
   local end_time=$(date +%s%N)
@@ -237,7 +216,6 @@ it "should start quickly" && {
 
 # Test: Module loading
 it "should load all config modules" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local config_files=$(ls "$DOTFILES_DIR/src/neovim/config/"*.lua 2>/dev/null | wc -l)
 
   if [[ "$config_files" -gt 0 ]]; then
@@ -250,7 +228,6 @@ it "should load all config modules" && {
 
 # Test: Plugin specifications
 it "should have valid plugin specifications" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   if [[ -f "$DOTFILES_DIR/src/neovim/config/plugins.lua" ]]; then
     output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
       -c "lua require('config.plugins')" -c "qa!" 2>&1 || true)
@@ -264,7 +241,6 @@ it "should have valid plugin specifications" && {
 
 # Test: LaTeX support (VimTeX)
 it "should configure LaTeX support" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   if [[ -f "$DOTFILES_DIR/src/neovim/config/vimtex.lua" ]]; then
     output=$(timeout_cmd 3 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" \
       -c "lua require('config.vimtex')" -c "qa!" 2>&1 || true)
@@ -278,7 +254,6 @@ it "should configure LaTeX support" && {
 
 # Test: Dashboard/startup screen
 it "should configure dashboard" && {
-  if is_ci; then skip "Skipping Neovim tests in CI"; fi
   local dashboard_config=$(find "$DOTFILES_DIR/src/neovim" -name "*dashboard*" -o -name "*snacks*" | head -1)
 
   if [[ -n "$dashboard_config" ]]; then
