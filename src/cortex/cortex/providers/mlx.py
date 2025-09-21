@@ -5,22 +5,15 @@ Provides access to MLX models optimized for Apple Silicon.
 """
 
 import asyncio
-from datetime import datetime
-from datetime import timedelta
 import json
 import logging
-import os
-from pathlib import Path
 import re
-import subprocess
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiohttp
 
-from . import BaseProvider
-from . import ModelCapability
-from . import ModelInfo
-from . import ProviderType
+from . import BaseProvider, ModelCapability, ModelInfo, ProviderType
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +139,7 @@ class MLXProvider(BaseProvider):
             # Get description from model card
             description = model_details.get("cardData", {}).get("description", "")
             if not description:
-                description = f"MLX model optimized for Apple Silicon"
+                description = "MLX model optimized for Apple Silicon"
 
             return ModelInfo(
                 id=model_id,
@@ -161,7 +154,7 @@ class MLXProvider(BaseProvider):
                 recommended_ram=(size_gb if size_gb > 0 else
                                  self._extract_size_from_name(model_name)) * 1.2,
                 description=description[:200]
-                if description else f"MLX model optimized for Apple Silicon",
+                if description else "MLX model optimized for Apple Silicon",
                 score=score,
                 downloads=downloads,
                 likes=likes,
@@ -314,7 +307,7 @@ class MLXProvider(BaseProvider):
                                                online=False,
                                                open_source=True,
                                                recommended_ram=size_gb * 1.2,
-                                               description=f"Local MLX model",
+                                               description="Local MLX model",
                                                score=70,
                                                metadata={
                                                    "downloaded": True,

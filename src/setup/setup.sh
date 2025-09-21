@@ -4,6 +4,8 @@
 # DESCRIPTION:
 #   Complete development environment setup for macOS and Linux. Installs packages,
 #   creates symlinks, configures shells, and initializes all development tools.
+#   Based on Google's best practices for shell scripting:
+#   https://google.github.io/styleguide/shellguide.html
 #
 # USAGE:
 #   ./setup.sh [MODE] [OPTIONS]
@@ -41,13 +43,15 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# 🎨 CONFIGURATION
+# Configuration constants
+# Define paths early to avoid repeated calculations and ensure consistency
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly LOG_FILE="$HOME/.dotfiles-setup-$(date +%Y%m%d_%H%M%S).log"
 
-# Color codes
+# ANSI color codes for user feedback
+# Standard colors following Google Shell Style Guide conventions
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
@@ -56,7 +60,8 @@ readonly MAGENTA='\033[0;35m'
 readonly CYAN='\033[0;36m'
 readonly NC='\033[0m'
 
-# Parse command line arguments
+# Command line argument defaults
+# Initialize early to prevent undefined variable errors in strict mode
 INSTALL_MODE="full" # full, core, symlinks
 VERBOSE="${VERBOSE:-false}"
 SKIP_BREW_PACKAGES=""
@@ -109,7 +114,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# 📝 LOGGING
+# Logging utilities
+# Provide consistent output format with timestamps and color coding
 
 log() {
   local level="$1"
@@ -126,7 +132,8 @@ warning() { log "${YELLOW}[⚠]${NC}" "$@"; }
 error() { log "${RED}[✗]${NC}" "$@" >&2; }
 progress() { log "${CYAN}[➜]${NC}" "$@"; }
 
-# 🔍 SYSTEM DETECTION
+# System detection utilities
+# Determine OS, architecture, and environment configuration
 
 detect_system() {
   info "Detecting system configuration..."
@@ -187,11 +194,13 @@ detect_system() {
       PKG_INSTALL="sudo pacman -S --noconfirm"
       PKG_UPDATE="sudo pacman -Syu --noconfirm"
     else
-      error "Unsupported package manager"
+      error "No supported package manager found. Please install one of: apt-get, dnf, or pacman"
+      error "For manual installation, see: https://github.com/yourusername/dotfiles#manual-setup"
       exit 1
     fi
   else
-    error "Unsupported operating system: $OSTYPE"
+    error "Unsupported operating system: $OSTYPE. This script supports macOS and Linux only."
+    error "For other platforms, please install packages manually or contribute support."
     exit 1
   fi
 
@@ -201,7 +210,8 @@ detect_system() {
   detect_work_environment
 }
 
-# 🏢 WORK ENVIRONMENT DETECTION
+# Corporate environment detection
+# Apply special configurations for work machines with restricted environments
 
 detect_work_environment() {
   IS_WORK_MACHINE=false
@@ -230,7 +240,8 @@ detect_work_environment() {
   export IS_WORK_MACHINE
 }
 
-# 🍎 MACOS SETUP
+# macOS-specific setup functions
+# Handle Xcode CLI tools, Homebrew, and platform-specific packages
 
 setup_macos_xcode() {
   progress "Installing Xcode Command Line Tools..."
@@ -281,11 +292,10 @@ setup_homebrew() {
     success "Homebrew directory permissions are correct."
   fi
 
-  # Corporate environment workaround: override Homebrew paths to avoid conflicts
-  # Default Homebrew uses /usr/local on Intel, /opt/homebrew on Apple Silicon
-  # Corporate setups may force /usr/local/Homebrew
-  # IMPORTANT: Use parameter expansion to avoid "parameter not set" error in strict mode
-  # IS_WORK_MACHINE is set by detect_work_environment(), but we need a default here
+  # Apply corporate environment workarounds to prevent conflicts
+  # Corporate networks often redirect Homebrew to non-standard paths like /usr/local/Homebrew
+  # Reference: https://docs.brew.sh/Installation for standard paths
+  # Use parameter expansion to prevent "unbound variable" errors in strict mode
   if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     export HOMEBREW_PREFIX="/usr/local/Homebrew"
     export HOMEBREW_CELLAR="/usr/local/Homebrew/Cellar"
@@ -441,9 +451,10 @@ install_macos_packages() {
       if brew list --formula "$pkg" &>/dev/null || true; then
         info "✓ $pkg already installed"
       else
-        # Try to install with timeout, especially for work machines
+        # Apply timeouts and fallbacks for corporate environments
+        # Work machines often have proxy/firewall issues that cause hangs
         if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
-          # Use timeout and skip bottle downloads on work machines with issues
+          # Try building from source first, then fall back to bottles with timeout
           output=$(timeout 60 brew install --build-from-source "$pkg" 2>&1 || timeout 60 brew install "$pkg" 2>&1)
           exit_code=$?
         else
@@ -451,22 +462,25 @@ install_macos_packages() {
           exit_code=$?
         fi
 
+        # Provide detailed feedback based on installation results
+        # Different exit codes and output patterns indicate specific issues
         if [[ $exit_code -eq 0 ]]; then
           success "✓ $pkg installed successfully"
         elif [[ $exit_code -eq 124 ]]; then
-          warning "✗ $pkg installation timed out (corporate restrictions?)"
+          warning "✗ $pkg installation timed out (likely corporate network restrictions)"
         elif echo "$output" | grep -q "already installed"; then
           info "✓ $pkg already installed"
         elif echo "$output" | grep -q "Rosetta 2\|no bottle available"; then
-          warning "✗ $pkg skipped (architecture/bottle issue)"
+          warning "✗ $pkg skipped (architecture/bottle compatibility issue)"
         else
           warning "✗ $pkg installation failed"
+          # Special handling for critical packages with alternative installation methods
           if [[ "$pkg" == "starship" ]]; then
-            info "Brew installation failed for Starship, trying official installer..."
+            info "Homebrew failed for Starship, trying official installer..."
             if curl -sS https://starship.rs/install.sh | sh -s -- -y; then
-              success "✓ Starship installed via official installer."
+              success "✓ Starship installed via official installer"
             else
-              error "✗ Starship installation failed completely."
+              error "✗ Starship installation failed completely"
             fi
           fi
         fi
@@ -626,7 +640,8 @@ setup_macos() {
   fi
 }
 
-# 🐧 LINUX SETUP
+# Linux-specific setup functions
+# Support multiple distributions with appropriate package managers
 
 install_linux_packages() {
   progress "Installing packages for Linux..."
@@ -859,7 +874,8 @@ setup_linux() {
   info "Using native package manager for Linux (Homebrew not required)"
 }
 
-# 🔧 COMMON SETUP
+# Cross-platform setup functions
+# Common functionality for shell, languages, and development tools
 
 setup_shell() {
   progress "Setting up Zsh and Zinit..."
@@ -903,6 +919,8 @@ setup_python() {
   progress "Setting up Python environment..."
 
   # Use PyPy on work machines to avoid compilation issues
+  # Corporate environments often have restricted build tools or network access
+  # PyPy provides a faster alternative that doesn't require compilation
   if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     info "Work machine detected - using PyPy to avoid compilation"
 
@@ -963,7 +981,8 @@ setup_python() {
       info "Press Ctrl+C within 5 seconds to skip Python installation..."
       sleep 5
 
-      # First update pyenv to get latest Python versions
+      # Update pyenv to ensure latest Python versions are available
+      # Corporate firewalls may block updates, so continue on failure
       info "Updating pyenv to get latest Python versions..."
       brew update && brew upgrade pyenv 2>/dev/null || true
 
@@ -984,9 +1003,10 @@ setup_python() {
         warning "Python is being compiled from source. This is normal but can be slow."
         info "To speed up future installs, consider using python-build with precompiled binaries"
 
-        # Use verbose mode so user sees progress, and add a timeout
+        # Use verbose mode to show compilation progress and timeout for stuck builds
+        # Python compilation can hang on corporate networks or fail due to security restrictions
         if command -v timeout &>/dev/null; then
-          # Use timeout command if available (10 minutes)
+          # Timeout prevents indefinite hangs during compilation (10 minutes max)
           timeout 600 pyenv install -v "$PYTHON_VERSION" || {
             warning "Python installation timed out or failed"
             info "This can happen due to corporate security or network issues"
@@ -1200,11 +1220,12 @@ setup_tmux() {
   success "tmux configured"
 }
 
-# 🎯 MAIN EXECUTION
+# Main execution flow
+# Coordinate setup based on detected system and user preferences
 
 main() {
-  # Initialize IS_WORK_MACHINE early to avoid "parameter not set" errors
-  # This will be properly set later by detect_work_environment()
+    # Initialize IS_WORK_MACHINE early to prevent unbound variable errors in strict mode
+  # Will be properly detected later by detect_work_environment() function
   IS_WORK_MACHINE=false
 
   echo "════════════════════════════════════════════════════════════════════"
@@ -1219,7 +1240,8 @@ main() {
   # Detect system
   detect_system
 
-  # Show work machine warning if applicable
+  # Display corporate environment warnings to help users understand potential issues
+  # Work environments often have restrictive security policies that affect installation
   if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
     echo ""
     warning "═══════════════════════════════════════════════════════════════"
@@ -1231,7 +1253,8 @@ main() {
     info "• Work-specific configurations will be applied"
     echo ""
 
-    # Check for problematic Homebrew configuration
+    # Check for corporate Homebrew configurations that need special handling
+    # Some corporate environments force non-standard Homebrew paths
     if [[ -n "${HOMEBREW_CELLAR:-}" ]] && [[ "${HOMEBREW_CELLAR:-}" == "/usr/local/Homebrew/Cellar" ]]; then
       warning "Corporate Homebrew environment detected. Applying workarounds."
     fi
@@ -1300,8 +1323,8 @@ main() {
       ;;
 
     *)
-      error "Unknown install mode: $INSTALL_MODE"
-      echo "Usage: $0 [full|core|symlinks]"
+      error "Unknown install mode: '$INSTALL_MODE'. Supported modes: full, core, symlinks"
+      error "Run '$0 --help' for usage information"
       exit 1
       ;;
   esac

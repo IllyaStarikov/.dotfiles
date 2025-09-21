@@ -5,6 +5,7 @@
 #   Provides cross-platform utilities for OS detection, command execution,
 #   colored output, and error handling. All dotfiles scripts source this
 #   library for consistent functionality across macOS and Linux.
+#   Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 #
 # USAGE:
 #   source "${SCRIPT_DIR}/common.sh"
@@ -38,11 +39,13 @@
 set -euo pipefail
 
 # ============================================================================
-# OS Detection
+# Operating System Detection
+# Cross-platform compatibility layer for different Unix-like systems
 # ============================================================================
 
-# Detect the operating system
+# Detect the operating system reliably across environments
 # Returns: "macos", "linux", or "unknown"
+# Uses both OSTYPE and uname fallback for maximum compatibility
 # Example: os="$(detect_os)"; echo "Running on $os"
 detect_os() {
   local os="unknown"
@@ -55,7 +58,8 @@ detect_os() {
       os="linux"
       ;;
     *)
-      # Fallback detection using uname
+      # Fallback detection using uname for unknown OSTYPE values
+      # Some environments don't set OSTYPE or use non-standard values
       local uname_output
       uname_output="$(uname -s 2>/dev/null || true)"
       case "${uname_output}" in
@@ -88,9 +92,11 @@ is_linux() {
 
 # ============================================================================
 # Cross-Platform Command Execution
+# Abstracts platform-specific commands for consistent script behavior
 # ============================================================================
 
-# Execute platform-specific commands
+# Execute platform-specific commands with automatic OS detection
+# Provides unified interface for cross-platform operations
 # Usage: platform_command "macos_command" "linux_command" [fallback_command]
 # Args:
 #   $1 - Command to run on macOS
@@ -128,10 +134,12 @@ platform_command() {
 }
 
 # ============================================================================
-# Platform-Specific Utilities
+# Platform-Specific System Information
+# Hardware and system utilities that vary between operating systems
 # ============================================================================
 
-# Get number of CPU cores across platforms
+# Get number of CPU cores for parallel processing
+# Different systems expose this information through different interfaces
 # Returns: Number of CPU cores (minimum 1)
 # Example: cores="$(get_cpu_count)"; make -j"$cores"
 get_cpu_count() {
@@ -140,7 +148,8 @@ get_cpu_count() {
     "nproc 2>/dev/null || grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 1"
 }
 
-# Get total memory in MB across platforms
+# Get total system memory for resource planning
+# Memory information location varies between platforms
 # Returns: Total memory in megabytes
 # Example: mem="$(get_memory_mb)"; echo "${mem}MB available"
 get_memory_mb() {
@@ -181,10 +190,12 @@ paste_from_clipboard() {
 }
 
 # ============================================================================
-# Package Manager Detection
+# Package Manager Detection and Operations
+# Abstracts different Linux distributions' package management systems
 # ============================================================================
 
-# Check if a command exists in PATH
+# Check if a command exists in PATH efficiently
+# Uses command -v which is POSIX-compliant and faster than which
 # Usage: has_command "command_name"
 # Args:
 #   $1 - Name of command to check
@@ -194,7 +205,8 @@ has_command() {
   command -v "${1}" &>/dev/null
 }
 
-# Detect system package manager
+# Detect system package manager for automated installations
+# Checks in order of preference and availability
 # Returns: "brew", "apt", "dnf", "yum", "pacman", "zypper", or "unknown"
 # Example: pm="$(detect_package_manager)"; echo "Using $pm"
 detect_package_manager() {
@@ -217,7 +229,8 @@ detect_package_manager() {
   fi
 }
 
-# Install package using system package manager
+# Install package using appropriate system package manager
+# Handles package name variations across different systems
 # Usage: install_package "package_name" ["brew_name"] ["apt_name"]
 # Args:
 #   $1 - Default package name
@@ -253,7 +266,8 @@ install_package() {
       sudo apk add "${package}"
       ;;
     *)
-      echo "Error: Unknown package manager" >&2
+      echo "Error: No supported package manager found. Install packages manually." >&2
+      echo "Supported: brew (macOS), apt (Debian/Ubuntu), dnf/yum (RHEL/Fedora), pacman (Arch), zypper (openSUSE), apk (Alpine)" >&2
       return 1
       ;;
   esac
@@ -261,9 +275,11 @@ install_package() {
 
 # ============================================================================
 # File System Utilities
+# Cross-platform file operations with fallbacks for older systems
 # ============================================================================
 
-# Get real path (resolving symlinks) - portable version
+# Get real path resolving symlinks across platforms
+# Provides fallbacks for systems without realpath command
 # Usage: realpath_portable "path"
 # Args:
 #   $1 - Path to resolve
@@ -275,9 +291,9 @@ realpath_portable() {
   if has_command realpath; then
     realpath "${path}"
   elif has_command readlink; then
-    # macOS compatibility
+    # Handle macOS vs Linux readlink differences
     if is_macos; then
-      # macOS readlink doesn't have -f by default
+      # macOS readlink doesn't have -f flag by default
       local dir file
       dir="$(dirname "${path}")"
       file="$(basename "${path}")"
@@ -295,7 +311,8 @@ realpath_portable() {
   fi
 }
 
-# Create temporary directory with platform-appropriate command
+# Create temporary directory with platform-appropriate flags
+# macOS and Linux mktemp have different syntax requirements
 # Returns: Path to created temporary directory
 # Example: tmpdir="$(create_temp_dir)"; echo "Working in $tmpdir"
 create_temp_dir() {
