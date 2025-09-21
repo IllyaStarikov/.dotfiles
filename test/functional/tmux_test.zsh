@@ -3,7 +3,7 @@
 
 # Tests handle errors explicitly
 
-export TEST_DIR="${TEST_DIR:-$(dirname "$0")/../..}"
+export TEST_DIR="${TEST_DIR:-$(dirname "$0")/..}"
 export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 
 source "$TEST_DIR/lib/test_helpers.zsh"
