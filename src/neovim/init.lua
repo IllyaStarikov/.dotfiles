@@ -36,8 +36,11 @@
 local is_headless = #vim.api.nvim_list_uis() == 0
 local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 
--- For CI testing, use minimal config without plugins
-if is_ci and is_headless then
+-- For CI testing, check if we want full plugin testing
+local ci_full_test = vim.env.NVIM_CI_FULL_TEST == "1"
+
+-- Use minimal config in CI unless full test is requested
+if is_ci and is_headless and not ci_full_test then
   -- Set basic options for testing
   vim.o.number = true
   vim.o.relativenumber = true
@@ -52,6 +55,23 @@ if is_ci and is_headless then
 
   -- Exit early without loading plugins
   return
+end
+
+-- For full CI testing, set up autocmd to quit after plugins load
+if is_ci and is_headless and ci_full_test then
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "LazyDone",
+    callback = function()
+      -- Write a marker file to indicate successful load
+      local marker = vim.fn.stdpath("data") .. "/ci_test_complete.txt"
+      vim.fn.writefile({"Plugins loaded successfully at " .. os.date()}, marker)
+
+      -- Quit after a short delay to ensure everything settles
+      vim.defer_fn(function()
+        vim.cmd("qa!")
+      end, 2000)
+    end,
+  })
 end
 
 -- Add the config directory to the Lua package path
