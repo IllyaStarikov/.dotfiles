@@ -16,13 +16,19 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     lazypath,
   })
   if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
+    -- In headless mode, don't wait for input
+    if #vim.api.nvim_list_uis() == 0 then
+      vim.api.nvim_err_writeln("Failed to clone lazy.nvim: " .. out)
+      os.exit(1)
+    else
+      vim.api.nvim_echo({
+        { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+        { out, "WarningMsg" },
+        { "\nPress any key to exit..." },
+      }, true, {})
+      vim.fn.getchar()
+      os.exit(1)
+    end
   end
 end
 vim.opt.runtimepath:prepend(lazypath)
@@ -1333,6 +1339,26 @@ require("lazy").setup({
   -- Lazy.nvim options
   defaults = {
     lazy = false, -- Default to not lazy for now, until all plugins are properly configured
+    -- Skip UI plugins in headless mode
+    cond = function(plugin)
+      if #vim.api.nvim_list_uis() == 0 then
+        -- Skip UI-specific plugins in headless mode
+        local skip_patterns = { "dressing", "noice", "notify", "dashboard", "alpha" }
+        for _, pattern in ipairs(skip_patterns) do
+          if plugin.name and plugin.name:match(pattern) then
+            return false
+          end
+        end
+      end
+      return true
+    end,
+  },
+  -- Headless mode configuration for CI
+  headless = {
+    process = true,  -- show output from process commands
+    log = true,      -- show log messages
+    task = true,     -- show task start/end
+    colors = true,   -- use ANSI colors
   },
   ui = {
     icons = {
