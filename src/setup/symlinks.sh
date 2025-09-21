@@ -4,6 +4,7 @@
 # DESCRIPTION:
 #   Creates symbolic links from dotfiles repository to proper system locations.
 #   Backs up existing files before replacing. Safe to run multiple times.
+#   Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 #
 # USAGE:
 #   ./symlinks.sh [OPTIONS]
@@ -55,12 +56,18 @@ declare -i created=0
 declare -i skipped=0
 declare -i backed_up=0
 
-# Helper functions
+# Utility functions for colored output
+# Provide consistent user feedback across all operations
 info() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[⚠]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1" >&2; }
 
-# Create a symlink with backup if needed
+# Create symlink with atomic backup to prevent data loss
+# Args:
+#   $1 - Source file path (must exist)
+#   $2 - Target symlink path
+#   $3 - Human-readable name for logging
+# Returns: 0 on success, 1 on failure
 create_link() {
   local source="$1"
   local target="$2"
@@ -70,65 +77,75 @@ create_link() {
   echo "    From: $source"
   echo "    To:   $target"
 
-  # Check if source exists
+  # Validate source file exists before proceeding
+  # Prevents creation of broken symlinks
   if [[ ! -e "$source" ]]; then
-    error "    ✗ Source not found (skipping)"
+    error "    ✗ Source not found: $source (skipping)"
     ((skipped++))
     return 1
   fi
 
   # If target already exists
   if [[ -e "$target" || -L "$target" ]]; then
-    # If it's already the correct symlink, skip
+    # Skip if symlink already points to correct location
+    # Avoids unnecessary backup operations
     if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$source" ]]; then
       info "    ✓ Already linked correctly (skipping)"
       ((skipped++))
       return 0
     fi
 
-    # Backup existing file/directory
+    # Create backup with timestamp to prevent conflicts
+    # Preserves existing data before replacement
     mkdir -p "$BACKUP_DIR"
-    mv "$target" "$BACKUP_DIR/$(basename "$target")" 2>/dev/null || {
-      error "    ✗ Failed to backup existing file"
+    local backup_name="$(basename "$target")"
+    mv "$target" "$BACKUP_DIR/$backup_name" 2>/dev/null || {
+      error "    ✗ Failed to backup existing file to $BACKUP_DIR/$backup_name"
       return 1
     }
-    warn "    ⚠ Backed up existing file"
+    warn "    ⚠ Backed up existing file to $BACKUP_DIR/$backup_name"
     ((backed_up++))
   fi
 
-  # Create parent directory if needed
+  # Ensure parent directory exists for target symlink
+  # Required for nested configuration paths like ~/.config/nvim/
   mkdir -p "$(dirname "$target")" 2>/dev/null || {
-    error "    ✗ Failed to create parent directory"
+    error "    ✗ Failed to create parent directory: $(dirname "$target")"
     return 1
   }
 
-  # Create symlink
+  # Create symlink with force flag to overwrite existing links
+  # Uses absolute paths to ensure links work from any directory
   if ln -sf "$source" "$target" 2>/dev/null; then
     info "    ✓ Successfully linked"
     ((created++))
   else
-    error "    ✗ Failed to create symlink"
+    error "    ✗ Failed to create symlink from $source to $target"
     return 1
   fi
   echo "" # Add spacing between items
 }
 
-# Main execution
+# Main execution function
+# Process all dotfile symlinks in order of dependencies
 main() {
   echo "════════════════════════════════════════════════════════════════════"
   echo "       🔗 Creating Dotfile Symlinks"
   echo "════════════════════════════════════════════════════════════════════"
   echo ""
 
-  # Debug: Show dotfiles directory
+  # Display configuration root for troubleshooting
+  # Helps users verify correct repository detection
   info "Dotfiles directory: $DOTFILES_DIR"
 
-  # Core dotfiles
+  # Core shell and terminal multiplexer configurations
+  # Order matters: zshenv loads first, then zshrc
   create_link "$DOTFILES_DIR/src/zsh/zshrc" "$HOME/.zshrc" "Zsh config"
   create_link "$DOTFILES_DIR/src/zsh/zshenv" "$HOME/.zshenv" "Zsh environment"
   create_link "$DOTFILES_DIR/src/tmux.conf" "$HOME/.tmux.conf" "tmux config"
 
-  # Git configurations
+  # Version control configurations
+  # gitconfig contains user settings, gitignore provides global exclusions
   create_link "$DOTFILES_DIR/src/git/gitconfig" "$HOME/.gitconfig" "Git config"
   create_link "$DOTFILES_DIR/src/git/gitignore" "$HOME/.gitignore" "Global gitignore"
   create_link "$DOTFILES_DIR/src/git/gitmessage" "$HOME/.gitmessage" "Git commit template"
@@ -143,14 +160,15 @@ main() {
   # Neovim - Link the entire neovim directory
   # This preserves the exact structure needed by the config
   if [[ -d "$DOTFILES_DIR/src/neovim" ]]; then
-    # Check if Neovim config exists and is not a broken symlink
+    # Validate Neovim configuration structure integrity
+    # Broken symlinks can occur during development or git operations
     if [[ -L "$DOTFILES_DIR/src/neovim/config" ]]; then
       warn "Found symlink at $DOTFILES_DIR/src/neovim/config - this should be a directory!"
-      warn "Attempting to restore from git..."
+      warn "Attempting to restore from git repository..."
       rm -f "$DOTFILES_DIR/src/neovim/config" 2>/dev/null
       (cd "$DOTFILES_DIR" && git checkout HEAD -- src/neovim/config/) || {
-        error "Could not restore config from git"
-        error "Please run manually: cd $DOTFILES_DIR && git checkout HEAD -- src/neovim/"
+        error "Could not restore config from git. Repository may be corrupted."
+        error "Manual fix: cd $DOTFILES_DIR && git checkout HEAD -- src/neovim/"
       }
     fi
 
@@ -180,6 +198,7 @@ main() {
     # Spell files are now configured directly in Neovim options.lua to use private dotfiles
   else
     error "Neovim directory not found at $DOTFILES_DIR/src/neovim"
+    error "This may indicate a corrupted dotfiles repository or incorrect path detection."
   fi
 
   # Spell files are now handled via the neovim directory symlink above

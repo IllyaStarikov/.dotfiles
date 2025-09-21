@@ -7,6 +7,7 @@
 #   Synchronizes terminal application themes with macOS appearance settings.
 #   Changes Alacritty, tmux, Starship, and Neovim themes atomically to prevent
 #   visual inconsistencies during switching.
+#   Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 #
 # USAGE:
 #   switch-theme.sh [THEME|auto]
@@ -47,7 +48,8 @@
 
 set -euo pipefail
 
-# Show usage/help
+# Display usage information and available options
+# Provides comprehensive help for theme selection
 show_usage() {
   cat <<EOF
 Usage: $(basename "$0") [THEME|OPTION]
@@ -80,7 +82,8 @@ EXAMPLES:
 EOF
 }
 
-# List available themes
+# Enumerate all available theme variants
+# Scans theme directory to provide current options
 list_themes() {
   local theme_dir="$(dirname "$0")/themes"
   echo "Available themes:"
@@ -116,10 +119,11 @@ THEME="${1:-}"
 LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
 DARK_THEME="${THEME_DARK:-tokyonight_storm}"
 
-# Auto-detect theme from macOS appearance if no theme specified
+# Auto-detect theme from macOS system appearance preferences
+# Respects user's system-wide dark/light mode setting for consistency
 if [[ -z "$THEME" ]]; then
-  # Detect macOS appearance (Dark mode check)
-  # Returns "Dark" if dark mode is enabled, nothing otherwise
+  # Query macOS appearance setting via defaults command
+  # AppleInterfaceStyle returns "Dark" in dark mode, undefined in light mode
   if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
     THEME="$DARK_THEME"
   else
@@ -143,16 +147,19 @@ LOCK_ACQUIRED=0
 LOG_FILE="$CACHE_DIR/theme-switch.log"
 MAX_LOG_SIZE=1048576 # 1MB
 
-# Ensure secure directories exist
+# Create required directories with appropriate permissions
+# Cache directory needs restricted access for lock files and logs
 mkdir -p "$CONFIG_DIR" "$CACHE_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR"
 chmod 700 "$CACHE_DIR"
 
-# Function to log messages
+# Log messages with timestamps for debugging theme switches
+# Provides audit trail for troubleshooting theme issues
 log() {
   local level="${2:-INFO}"
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$level] $1" >>"$LOG_FILE"
 
-  # Rotate log if too large
+  # Prevent log files from growing indefinitely
+  # Rotates when exceeding size limit to maintain performance
   if [[ -f "$LOG_FILE" ]] && [[ $(stat -f%z "$LOG_FILE" 2>/dev/null || stat -c%s "$LOG_FILE" 2>/dev/null) -gt $MAX_LOG_SIZE ]]; then
     mv "$LOG_FILE" "$LOG_FILE.old"
     touch "$LOG_FILE"
@@ -160,7 +167,8 @@ log() {
   fi
 }
 
-# Function to acquire lock
+# Acquire exclusive lock to prevent concurrent theme switches
+# Prevents race conditions that could corrupt theme configurations
 acquire_lock() {
   local timeout=10
   local elapsed=0
@@ -176,7 +184,7 @@ acquire_lock() {
   done
 
   if [[ -f "$LOCK_FILE" ]]; then
-    echo "Error: Another theme switch is in progress" >&2
+    echo "Error: Another theme switch is in progress. If stuck, remove: $LOCK_FILE" >&2
     exit 1
   fi
 
@@ -195,7 +203,8 @@ release_lock() {
 # Cleanup on exit
 trap release_lock EXIT
 
-# Determine theme based on input
+# Map user input to canonical theme names
+# Handles both short names (day, night) and full names (tokyonight_day)
 determine_theme() {
   case "$THEME" in
     light)
@@ -206,7 +215,7 @@ determine_theme() {
       THEME="$DARK_THEME"
       VARIANT="dark"
       ;;
-    # Handle short theme names
+    # Map convenient short names to full theme identifiers
     moon)
       THEME="tokyonight_moon"
       VARIANT="dark"
@@ -224,7 +233,8 @@ determine_theme() {
       VARIANT="light"
       ;;
     *)
-      # Detect variant from theme name
+      # Auto-detect variant from theme name patterns
+      # Light themes typically contain 'day' or 'light' in name
       if [[ "$THEME" =~ (day|light)$ ]]; then
         VARIANT="light"
       else
@@ -234,18 +244,20 @@ determine_theme() {
   esac
 }
 
-# Check if already using the requested theme
+# Avoid unnecessary operations if theme already active
+# Still allows reapplication to fix potential inconsistencies
 check_current_theme() {
   if [[ -f "$CONFIG_DIR/current-theme.sh" ]]; then
     source "$CONFIG_DIR/current-theme.sh"
     if [[ "${MACOS_THEME:-}" == "$THEME" ]]; then
-      echo "Already using theme: $THEME (reapplying)"
-      # Continue to reapply the theme instead of exiting
+      echo "Already using theme: $THEME (reapplying to ensure consistency)"
+      # Continue processing to fix any potential configuration drift
     fi
   fi
 }
 
-# Save current theme atomically
+# Save theme state atomically to prevent corruption
+# Other processes can safely read current theme during switches
 save_theme_state() {
   local theme_file_tmp="$CONFIG_DIR/current-theme.sh.tmp.$$"
   cat >"$theme_file_tmp" <<EOF
@@ -257,7 +269,8 @@ EOF
   chmod 644 "$CONFIG_DIR/current-theme.sh"
 }
 
-# Update Alacritty theme safely
+# Update Alacritty configuration with atomic file replacement
+# Prevents terminal corruption during theme application
 update_alacritty_theme() {
   local theme_source="$1"
   local theme_dest="$2"
@@ -270,7 +283,8 @@ update_alacritty_theme() {
   local temp_file="${theme_dest}.tmp.$$"
   cp "$theme_source" "$temp_file"
 
-  # Atomic replacement
+  # Atomic move ensures configuration consistency
+  # Prevents partial writes that could break terminal rendering
   mv -f "$temp_file" "$theme_dest"
   chmod 644 "$theme_dest"
 
@@ -281,7 +295,8 @@ update_alacritty_theme() {
   return 0
 }
 
-# Update WezTerm theme
+# Generate WezTerm theme configuration dynamically
+# Creates Lua module that loads appropriate theme from dotfiles
 update_wezterm_theme() {
   local wezterm_theme_file="$WEZTERM_DIR/theme.lua"
   local temp_file="${wezterm_theme_file}.tmp.$$"
@@ -313,7 +328,8 @@ EOF
   return 0
 }
 
-# Atomic file update helper
+# Utility for safe configuration file updates
+# Ensures atomicity and proper permissions for all theme files
 atomic_update() {
   local source="$1"
   local dest="$2"

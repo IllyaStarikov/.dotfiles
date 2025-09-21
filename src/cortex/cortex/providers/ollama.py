@@ -2,20 +2,14 @@
 Ollama Provider for local model hosting.
 """
 
-import asyncio
-from datetime import datetime
-from datetime import timedelta
 import json
 import logging
-from pathlib import Path
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import aiohttp
 
-from . import BaseProvider
-from . import ModelCapability
-from . import ModelInfo
-from . import ProviderType
+from . import BaseProvider, ModelCapability, ModelInfo, ProviderType
 
 logger = logging.getLogger(__name__)
 

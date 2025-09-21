@@ -1,26 +1,32 @@
 #!/usr/bin/env zsh
 # Theme validation script - ensures all themes have required files
+# Validates theme completeness and symlink integrity for theme switcher
+# Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 
 set -euo pipefail
 
-# Colors for output
+# ANSI color codes for user feedback
+# Provides visual distinction for validation results
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-# Script directory
+# Path detection for theme directory location
+# Uses BASH_SOURCE for compatibility with sourced execution
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 THEMES_DIR="$SCRIPT_DIR/themes"
 
-# Required files for each theme
+# Core files that every theme must provide
+# These ensure complete application coverage for theme switching
 REQUIRED_FILES=(
   "alacritty.toml"
   "tmux.conf"
   "starship.toml"
 )
 
-# Optional files
+# Additional files that enhance theme functionality
+# Not required but provide extended editor support
 OPTIONAL_FILES=(
   "vim.vim"
 )
@@ -29,18 +35,22 @@ echo "🔍 Validating theme configurations..."
 echo "===================================="
 echo ""
 
-# Check if themes directory exists
+# Validate themes directory exists before proceeding
+# Prevents script execution with invalid theme setup
 if [[ ! -d "$THEMES_DIR" ]]; then
   echo -e "${RED}❌ Themes directory not found: $THEMES_DIR${NC}"
+  echo "Please run this script from the theme-switcher directory or fix the path."
   exit 1
 fi
 
-# Track validation results
+# Counters for validation summary statistics
+# Provides clear overview of theme directory health
 TOTAL_THEMES=0
 VALID_THEMES=0
 INVALID_THEMES=0
 
-# Validate each theme
+# Process each theme directory for completeness
+# Checks both required files and symlink integrity
 for theme_dir in "$THEMES_DIR"/*; do
   if [[ -d "$theme_dir" ]]; then
     THEME_NAME=$(basename "$theme_dir")
@@ -51,7 +61,8 @@ for theme_dir in "$THEMES_DIR"/*; do
     THEME_VALID=true
     MISSING_FILES=()
 
-    # Check required files
+    # Verify all required configuration files exist
+    # Missing files prevent theme from working across all applications
     for file in "${REQUIRED_FILES[@]}"; do
       if [[ ! -f "$theme_dir/$file" ]]; then
         THEME_VALID=false
@@ -64,10 +75,11 @@ for theme_dir in "$THEMES_DIR"/*; do
       echo -e "  ${GREEN}✅ Valid${NC}"
       VALID_THEMES=$((VALID_THEMES + 1))
 
-      # Check optional files
+      # Report presence of optional enhancements
+      # These provide additional functionality but aren't required
       for file in "${OPTIONAL_FILES[@]}"; do
         if [[ -f "$theme_dir/$file" ]]; then
-          echo -e "  ${GREEN}+${NC} Has $file"
+          echo -e "  ${GREEN}+${NC} Has optional $file"
         fi
       done
     else
@@ -80,7 +92,8 @@ for theme_dir in "$THEMES_DIR"/*; do
       done
     fi
 
-    # Check for extra/unexpected files
+    # Detect unexpected files that might indicate issues
+    # Helps maintain clean theme directory structure
     while IFS= read -r -d '' file; do
       relative_file="${file#$theme_dir/}"
       is_expected=false
@@ -101,7 +114,8 @@ for theme_dir in "$THEMES_DIR"/*; do
   fi
 done
 
-# Summary
+# Display validation summary with color-coded results
+# Provides quick overview of theme directory health
 echo "===================================="
 echo "Summary:"
 echo "  Total themes:   $TOTAL_THEMES"
@@ -112,23 +126,27 @@ else
   echo -e "  Invalid themes: ${GREEN}0${NC}"
 fi
 
-# Check for symlink integrity
+# Verify active theme symlinks are in place
+# These symlinks are created by switch-theme.sh and consumed by applications
 echo ""
 echo "Checking theme symlinks..."
 if [[ -L "$HOME/.config/alacritty/theme.toml" ]]; then
   echo -e "  ${GREEN}✅${NC} Alacritty theme symlink exists"
 else
-  echo -e "  ${YELLOW}⚠️${NC}  No Alacritty theme symlink"
+  echo -e "  ${YELLOW}⚠️${NC}  No Alacritty theme symlink (run switch-theme.sh to create)"
 fi
 
 if [[ -L "$HOME/.config/tmux/theme.conf" ]]; then
   echo -e "  ${GREEN}✅${NC} Tmux theme symlink exists"
 else
-  echo -e "  ${YELLOW}⚠️${NC}  No Tmux theme symlink"
+  echo -e "  ${YELLOW}⚠️${NC}  No Tmux theme symlink (run switch-theme.sh to create)"
 fi
 
-# Exit with appropriate code
+# Exit with status code indicating validation results
+# Non-zero exit allows integration with CI/CD pipelines
 if [[ $INVALID_THEMES -gt 0 ]]; then
+  echo ""
+  echo -e "${RED}Validation failed. Fix missing files before using theme switcher.${NC}"
   exit 1
 else
   echo ""
