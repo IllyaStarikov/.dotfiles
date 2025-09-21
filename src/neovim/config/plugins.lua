@@ -33,10 +33,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
--- Detect CI environment for special handling
-local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
-local ci_full_test = vim.env.NVIM_CI_FULL_TEST == "1"
-
 -- Plugin specifications
 require("lazy").setup({
   -- Telescope fuzzy finder
@@ -1364,14 +1360,15 @@ require("lazy").setup({
     task = true,     -- show task start/end
     colors = true,   -- use ANSI colors
   },
-  -- Install missing plugins on startup (useful for CI)
+  -- Install missing plugins on startup
   install = {
-    missing = is_ci and ci_full_test, -- Auto-install in full CI test mode
+    missing = false, -- Don't auto-install by default
     colorscheme = { "tokyonight", "habamax" },
   },
-  -- Checker configuration (disable in CI)
+  -- Checker configuration
   checker = {
-    enabled = not is_ci, -- Don't check for updates in CI
+    enabled = true, -- Check for updates
+    notify = false, -- Don't notify about updates
   },
   ui = {
     icons = {
