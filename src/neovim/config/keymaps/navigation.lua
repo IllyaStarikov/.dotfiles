@@ -44,25 +44,25 @@ map("n", "<leader>c", ":Kwbd<cr>", { desc = "Delete buffer (keep window)" })
 
 -- Buffer navigation by number
 for i = 1, 9 do
-  map("n", "<leader>" .. i, function()
-    vim.cmd("buffer " .. i)
-  end, { desc = "Go to buffer " .. i })
+	map("n", "<leader>" .. i, function()
+		vim.cmd("buffer " .. i)
+	end, { desc = "Go to buffer " .. i })
 end
 map("n", "<leader>0", ":bprevious<cr>", { desc = "Go to previous buffer" })
 
 -- Show buffer list
 map("n", "<leader>bb", function()
-  local buffers = vim.fn.getbufinfo({ buflisted = 1 })
-  local lines = {}
-  for i, buf in ipairs(buffers) do
-    local name = vim.fn.fnamemodify(buf.name, ":t")
-    if name == "" then
-      name = "[No Name]"
-    end
-    local modified = buf.changed == 1 and " [+]" or ""
-    table.insert(lines, string.format("%d: %s%s", i, name, modified))
-  end
-  vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "Open Buffers" })
+	local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+	local lines = {}
+	for i, buf in ipairs(buffers) do
+		local name = vim.fn.fnamemodify(buf.name, ":t")
+		if name == "" then
+			name = "[No Name]"
+		end
+		local modified = buf.changed == 1 and " [+]" or ""
+		table.insert(lines, string.format("%d: %s%s", i, name, modified))
+	end
+	vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "Open Buffers" })
 end, { desc = "Show buffer list" })
 
 -- Tab navigation
@@ -96,7 +96,7 @@ map("n", "g#", "g#zz", opts)
 
 -- Enhanced file navigation with vim-fetch
 -- gF already works with line numbers (foo.c:42), these add convenience
-map("n", "gf", "gF", { desc = "Go to file with line number support" })  -- Make gf behave like gF
+map("n", "gf", "gF", { desc = "Go to file with line number support" }) -- Make gf behave like gF
 map("n", "gw", "<C-w>gF", { desc = "Open file in new window" })
 map("n", "gv", "<C-w>vgF", { desc = "Open file in vertical split" })
 map("n", "gs", "<C-w>sgF", { desc = "Open file in horizontal split" })

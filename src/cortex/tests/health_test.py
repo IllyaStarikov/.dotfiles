@@ -5,9 +5,7 @@ Tests for health.py module.
 import asyncio
 import time
 import unittest
-from unittest.mock import AsyncMock
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from cortex.health import HealthMonitor
 
@@ -22,13 +20,13 @@ class TestHealthMonitor(unittest.TestCase):
     def test_initialization(self):
         """Test HealthMonitor initialization."""
         self.assertIsInstance(self.monitor.checks, dict)
-        self.assertIn("system", self.monitor.checks)
-        self.assertIn("mlx_server", self.monitor.checks)
-        self.assertIn("ollama_server", self.monitor.checks)
-        self.assertIn("api_keys", self.monitor.checks)
-        self.assertIn("network", self.monitor.checks)
-        self.assertIn("disk_space", self.monitor.checks)
-        self.assertIn("model_cache", self.monitor.checks)
+        self.assertIn('system', self.monitor.checks)
+        self.assertIn('mlx_server', self.monitor.checks)
+        self.assertIn('ollama_server', self.monitor.checks)
+        self.assertIn('api_keys', self.monitor.checks)
+        self.assertIn('network', self.monitor.checks)
+        self.assertIn('disk_space', self.monitor.checks)
+        self.assertIn('model_cache', self.monitor.checks)
 
     @patch('psutil.cpu_percent')
     @patch('psutil.virtual_memory')
@@ -49,10 +47,10 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = asyncio.run(self.monitor.check_system_resources())
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertEqual(result["cpu_percent"], 25.0)
-        self.assertEqual(result["memory_percent"], 50.0)
-        self.assertEqual(len(result["issues"]), 0)
+        self.assertEqual(result['status'], 'healthy')
+        self.assertEqual(result['cpu_percent'], 25.0)
+        self.assertEqual(result['memory_percent'], 50.0)
+        self.assertEqual(len(result['issues']), 0)
 
     @patch('psutil.cpu_percent')
     @patch('psutil.virtual_memory')
@@ -73,10 +71,10 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = asyncio.run(self.monitor.check_system_resources())
 
-        self.assertEqual(result["status"], "warning")
-        self.assertGreater(len(result["issues"]), 0)
-        self.assertIn("High CPU usage", result["issues"][0])
-        self.assertIn("High memory usage", result["issues"][1])
+        self.assertEqual(result['status'], 'warning')
+        self.assertGreater(len(result['issues']), 0)
+        self.assertIn('High CPU usage', result['issues'][0])
+        self.assertIn('High memory usage', result['issues'][1])
 
     @patch('psutil.cpu_percent')
     @patch('psutil.virtual_memory')
@@ -97,8 +95,8 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = asyncio.run(self.monitor.check_system_resources())
 
-        self.assertEqual(result["status"], "critical")
-        self.assertGreater(len(result["issues"]), 0)
+        self.assertEqual(result['status'], 'critical')
+        self.assertGreater(len(result['issues']), 0)
 
     @patch('aiohttp.ClientSession')
     async def test_check_mlx_server_running(self, mock_session_class):
@@ -106,47 +104,47 @@ class TestHealthMonitor(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json.return_value = {"data": [{"id": "model1"}, {"id": "model2"}]}
+        mock_response.json.return_value = {'data': [{'id': 'model1'}, {'id': 'model2'}]}
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
         result = await self.monitor.check_mlx_server()
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertTrue(result["running"])
-        self.assertEqual(result["models"], 2)
+        self.assertEqual(result['status'], 'healthy')
+        self.assertTrue(result['running'])
+        self.assertEqual(result['models'], 2)
 
     @patch('aiohttp.ClientSession')
     async def test_check_mlx_server_offline(self, mock_session_class):
         """Test MLX server check when offline."""
         mock_session = AsyncMock()
-        mock_session.get.side_effect = Exception("Connection refused")
+        mock_session.get.side_effect = Exception('Connection refused')
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
         result = await self.monitor.check_mlx_server()
 
-        self.assertEqual(result["status"], "offline")
-        self.assertFalse(result["running"])
+        self.assertEqual(result['status'], 'offline')
+        self.assertFalse(result['running'])
 
     @patch('os.environ.get')
     def test_check_api_keys_configured(self, mock_env_get):
         """Test API keys check when configured."""
         mock_env_get.side_effect = lambda key: {
-            "ANTHROPIC_API_KEY": "test-key",
-            "OPENAI_API_KEY": "test-key",
-            "GEMINI_API_KEY": None,
-            "GOOGLE_API_KEY": "test-key"
+            'ANTHROPIC_API_KEY': 'test-key',
+            'OPENAI_API_KEY': 'test-key',
+            'GEMINI_API_KEY': None,
+            'GOOGLE_API_KEY': 'test-key',
         }.get(key)
 
         result = asyncio.run(self.monitor.check_api_keys())
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertEqual(result["configured"], 3)
-        self.assertEqual(result["total"], 3)
-        self.assertTrue(result["details"]["anthropic"])
-        self.assertTrue(result["details"]["openai"])
-        self.assertTrue(result["details"]["gemini"])  # Has Google key
+        self.assertEqual(result['status'], 'healthy')
+        self.assertEqual(result['configured'], 3)
+        self.assertEqual(result['total'], 3)
+        self.assertTrue(result['details']['anthropic'])
+        self.assertTrue(result['details']['openai'])
+        self.assertTrue(result['details']['gemini'])  # Has Google key
 
     @patch('os.environ.get')
     def test_check_api_keys_none_configured(self, mock_env_get):
@@ -155,8 +153,8 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = asyncio.run(self.monitor.check_api_keys())
 
-        self.assertEqual(result["status"], "warning")
-        self.assertEqual(result["configured"], 0)
+        self.assertEqual(result['status'], 'warning')
+        self.assertEqual(result['configured'], 0)
 
     @patch('aiohttp.ClientSession')
     async def test_check_network_healthy(self, mock_session_class):
@@ -170,8 +168,8 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = await self.monitor.check_network()
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertEqual(result["connectivity"], 100.0)
+        self.assertEqual(result['status'], 'healthy')
+        self.assertEqual(result['connectivity'], 100.0)
 
     @patch('aiohttp.ClientSession')
     async def test_check_network_degraded(self, mock_session_class):
@@ -179,7 +177,7 @@ class TestHealthMonitor(unittest.TestCase):
         mock_session = AsyncMock()
 
         # Simulate mixed results
-        responses = [AsyncMock(status=200), Exception("timeout"), AsyncMock(status=200)]
+        responses = [AsyncMock(status=200), Exception('timeout'), AsyncMock(status=200)]
         mock_session.head.side_effect = [
             AsyncMock(__aenter__=AsyncMock(return_value=r)) if not isinstance(r, Exception) else r
             for r in responses
@@ -190,8 +188,8 @@ class TestHealthMonitor(unittest.TestCase):
         result = await self.monitor.check_network()
 
         # Should be healthy as 2/3 succeeded
-        self.assertIn(result["status"], ["healthy", "degraded"])
-        self.assertGreater(result["connectivity"], 50)
+        self.assertIn(result['status'], ['healthy', 'degraded'])
+        self.assertGreater(result['connectivity'], 50)
 
     @patch('pathlib.Path.exists')
     @patch('pathlib.Path.rglob')
@@ -218,10 +216,10 @@ class TestHealthMonitor(unittest.TestCase):
 
         result = asyncio.run(self.monitor.check_disk_space())
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertAlmostEqual(result["free_space_gb"], 50.0, places=1)
+        self.assertEqual(result['status'], 'healthy')
+        self.assertAlmostEqual(result['free_space_gb'], 50.0, places=1)
         # 3 paths * 3GB = 9GB total
-        self.assertAlmostEqual(result["model_cache_gb"], 9.0, places=1)
+        self.assertAlmostEqual(result['model_cache_gb'], 9.0, places=1)
 
     @patch('pathlib.Path.exists')
     @patch('pathlib.Path.glob')
@@ -231,23 +229,23 @@ class TestHealthMonitor(unittest.TestCase):
 
         # Mock MLX models
         mock_glob.side_effect = [
-            ["model1", "model2", "model3"],  # 3 MLX models
-            ["model4", "model5"]  # 2 Ollama models
+            ['model1', 'model2', 'model3'],  # 3 MLX models
+            ['model4', 'model5'],  # 2 Ollama models
         ]
 
         result = asyncio.run(self.monitor.check_model_cache())
 
-        self.assertEqual(result["status"], "healthy")
-        self.assertEqual(result["mlx_models"], 3)
-        self.assertEqual(result["ollama_models"], 2)
-        self.assertEqual(result["total_models"], 5)
+        self.assertEqual(result['status'], 'healthy')
+        self.assertEqual(result['mlx_models'], 3)
+        self.assertEqual(result['ollama_models'], 2)
+        self.assertEqual(result['total_models'], 5)
 
     def test_run_health_checks_all(self):
         """Test running all health checks."""
 
         # Mock all check methods
         async def mock_check():
-            return {"status": "healthy", "timestamp": time.time()}
+            return {'status': 'healthy', 'timestamp': time.time()}
 
         for check_name in self.monitor.checks:
             self.monitor.checks[check_name] = mock_check
@@ -256,85 +254,70 @@ class TestHealthMonitor(unittest.TestCase):
 
         self.assertEqual(len(results), len(self.monitor.checks))
         for result in results.values():
-            self.assertEqual(result["status"], "healthy")
+            self.assertEqual(result['status'], 'healthy')
 
     def test_run_health_checks_specific(self):
         """Test running specific health checks."""
 
         # Mock check methods
         async def mock_check():
-            return {"status": "healthy", "timestamp": time.time()}
+            return {'status': 'healthy', 'timestamp': time.time()}
 
         for check_name in self.monitor.checks:
             self.monitor.checks[check_name] = mock_check
 
-        results = asyncio.run(self.monitor.run_health_checks(["system", "api_keys"]))
+        results = asyncio.run(self.monitor.run_health_checks(['system', 'api_keys']))
 
         self.assertEqual(len(results), 2)
-        self.assertIn("system", results)
-        self.assertIn("api_keys", results)
+        self.assertIn('system', results)
+        self.assertIn('api_keys', results)
 
     def test_get_summary_healthy(self):
         """Test getting summary when all healthy."""
         self.monitor.status = {
-            "system": {
-                "status": "healthy"
-            },
-            "api_keys": {
-                "status": "healthy"
-            },
-            "network": {
-                "status": "healthy"
-            }
+            'system': {'status': 'healthy'},
+            'api_keys': {'status': 'healthy'},
+            'network': {'status': 'healthy'},
         }
         self.monitor.last_check = {
-            "system": time.time(),
-            "api_keys": time.time(),
-            "network": time.time()
+            'system': time.time(),
+            'api_keys': time.time(),
+            'network': time.time(),
         }
 
         summary = self.monitor.get_summary()
 
-        self.assertEqual(summary["overall_status"], "healthy")
-        self.assertEqual(summary["checks_run"], 3)
-        self.assertEqual(len(summary["issues"]), 0)
+        self.assertEqual(summary['overall_status'], 'healthy')
+        self.assertEqual(summary['checks_run'], 3)
+        self.assertEqual(len(summary['issues']), 0)
 
     def test_get_summary_with_issues(self):
         """Test getting summary with issues."""
         self.monitor.status = {
-            "system": {
-                "status": "warning",
-                "message": "High CPU"
-            },
-            "api_keys": {
-                "status": "critical",
-                "message": "No keys"
-            },
-            "network": {
-                "status": "error",
-                "message": "No connection"
-            }
+            'system': {'status': 'warning', 'message': 'High CPU'},
+            'api_keys': {'status': 'critical', 'message': 'No keys'},
+            'network': {'status': 'error', 'message': 'No connection'},
         }
         self.monitor.last_check = {
-            "system": time.time(),
-            "api_keys": time.time(),
-            "network": time.time()
+            'system': time.time(),
+            'api_keys': time.time(),
+            'network': time.time(),
         }
 
         summary = self.monitor.get_summary()
 
-        self.assertEqual(summary["overall_status"], "critical")
-        self.assertEqual(summary["checks_run"], 3)
-        self.assertGreater(len(summary["issues"]), 0)
+        self.assertEqual(summary['overall_status'], 'critical')
+        self.assertEqual(summary['checks_run'], 3)
+        self.assertGreater(len(summary['issues']), 0)
 
     def test_get_summary_empty(self):
         """Test getting summary with no checks run."""
         summary = self.monitor.get_summary()
 
-        self.assertEqual(summary["overall_status"], "healthy")
-        self.assertEqual(summary["checks_run"], 0)
-        self.assertEqual(len(summary["issues"]), 0)
-        self.assertIsNone(summary["last_update"])
+        self.assertEqual(summary['overall_status'], 'healthy')
+        self.assertEqual(summary['checks_run'], 0)
+        self.assertEqual(len(summary['issues']), 0)
+        self.assertIsNone(summary['last_update'])
 
 
 if __name__ == '__main__':

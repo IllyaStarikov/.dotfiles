@@ -4,11 +4,9 @@ Tests for anthropic.py provider module.
 
 import os
 import unittest
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from cortex.providers import ModelCapability
-from cortex.providers import ModelInfo
 from cortex.providers.anthropic import AnthropicProvider
 
 
@@ -18,17 +16,17 @@ class TestAnthropicProvider(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Set mock API key
-        os.environ["ANTHROPIC_API_KEY"] = "test-key"
+        os.environ['ANTHROPIC_API_KEY'] = 'test-key'
         self.provider = AnthropicProvider()
 
     def tearDown(self):
         """Clean up."""
-        if "ANTHROPIC_API_KEY" in os.environ:
-            del os.environ["ANTHROPIC_API_KEY"]
+        if 'ANTHROPIC_API_KEY' in os.environ:
+            del os.environ['ANTHROPIC_API_KEY']
 
     def test_initialization(self):
         """Test Anthropic provider initialization."""
-        self.assertEqual(self.provider.name, "claude")
+        self.assertEqual(self.provider.name, 'claude')
         self.assertFalse(self.provider.supports_download)
         self.assertTrue(self.provider.requires_api_key)
 
@@ -40,12 +38,12 @@ class TestAnthropicProvider(unittest.TestCase):
 
         # Check for known models
         model_ids = [m.id for m in models]
-        self.assertIn("claude-3-5-sonnet-20241022", model_ids)
-        self.assertIn("claude-3-opus-20240229", model_ids)
+        self.assertIn('claude-3-5-sonnet-20241022', model_ids)
+        self.assertIn('claude-3-opus-20240229', model_ids)
 
         # Check model properties
         for model in models:
-            self.assertEqual(model.provider, "claude")
+            self.assertEqual(model.provider, 'claude')
             self.assertTrue(model.online)
             self.assertFalse(model.open_source)
             self.assertIn(ModelCapability.CHAT, model.capabilities)
@@ -57,26 +55,26 @@ class TestAnthropicProvider(unittest.TestCase):
         mock_anthropic_class.return_value = mock_client
 
         mock_response = MagicMock()
-        mock_response.content = [MagicMock(text="Claude response")]
+        mock_response.content = [MagicMock(text='Claude response')]
         mock_client.messages.create.return_value = mock_response
 
-        response = self.provider.chat("Test prompt", model="claude-3-opus")
+        response = self.provider.chat('Test prompt', model='claude-3-opus')
 
-        self.assertEqual(response, "Claude response")
+        self.assertEqual(response, 'Claude response')
         mock_client.messages.create.assert_called_once()
 
     def test_chat_no_api_key(self):
         """Test chat without API key."""
-        del os.environ["ANTHROPIC_API_KEY"]
+        del os.environ['ANTHROPIC_API_KEY']
         provider = AnthropicProvider()
 
-        response = provider.chat("Test prompt", model="claude-3-opus")
+        response = provider.chat('Test prompt', model='claude-3-opus')
 
-        self.assertIn("API key not found", response)
+        self.assertIn('API key not found', response)
 
     def test_download_not_supported(self):
         """Test that download is not supported."""
-        result = self.provider.download_model("claude-3-opus")
+        result = self.provider.download_model('claude-3-opus')
 
         self.assertFalse(result)
 

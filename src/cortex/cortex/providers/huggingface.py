@@ -6,7 +6,6 @@ from . import BaseProvider, ModelInfo, ProviderType
 
 
 class HuggingFaceProvider(BaseProvider):
-
     @property
     def provider_type(self) -> ProviderType:
         return ProviderType.HYBRID  # Can be both online (Inference API) and offline
@@ -32,4 +31,4 @@ class HuggingFaceProvider(BaseProvider):
         return True
 
     async def get_server_status(self) -> Dict[str, Any]:
-        return {"running": False, "type": "hybrid"}
+        return {'running': False, 'type': 'hybrid'}

@@ -5,11 +5,11 @@ A production-grade AI model management system that provides unified access
 to multiple AI providers with seamless terminal and Neovim integration.
 """
 
-__version__ = "0.1.0"
-__author__ = "Illya Starikov"
+__version__ = '0.1.0'
+__author__ = 'Illya Starikov'
 
 from .config import Config
 from .core import Cortex
 from .providers import ProviderRegistry
 
-__all__ = ["Cortex", "Config", "ProviderRegistry"]
+__all__ = ['Cortex', 'Config', 'ProviderRegistry']

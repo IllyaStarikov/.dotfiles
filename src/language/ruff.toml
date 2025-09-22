@@ -4,7 +4,7 @@
 # Style guide: https://google.github.io/styleguide/pyguide.html
 
 # Maximum line length for code
-line-length = 100  # Default: 88 (matches style guide preference)
+line-length = 100  # Default: 88 (Black's default). Using 100 for better readability on modern displays
 
 # Target Python version for compatibility checks
 target-version = "py39"  # Default: "py38" (Python 3.9+ features allowed)
