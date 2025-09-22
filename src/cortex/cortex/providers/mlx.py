@@ -109,7 +109,8 @@ class MLXProvider(BaseProvider):
                 async with session.get(detail_url) as resp:
                     if resp.status == 200:
                         model_details = await resp.json()
-            except:
+            except (aiohttp.ClientError, asyncio.TimeoutError):
+                # HuggingFace API errors are expected for some models
                 pass
 
             # Extract from model details or infer

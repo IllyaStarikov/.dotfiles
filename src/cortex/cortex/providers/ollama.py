@@ -2,6 +2,7 @@
 Ollama Provider for local model hosting.
 """
 
+import asyncio
 import json
 import logging
 from datetime import datetime
@@ -303,7 +304,8 @@ class OllamaProvider(BaseProvider):
                         data = await response.json()
                         models = data.get('models', [])
                         return any(m.get('name') == model_id for m in models)
-        except:
+        except (aiohttp.ClientError, asyncio.TimeoutError):
+            # Ollama API may be unavailable
             pass
         return False
 
@@ -316,7 +318,7 @@ class OllamaProvider(BaseProvider):
                     if response.status == 200:
                         logger.info('Ollama server is already running')
                         return True
-        except:
+        except (aiohttp.ClientError, asyncio.TimeoutError):
             logger.error("Ollama server is not running. Please start it with 'ollama serve'")
             return False
 
@@ -336,7 +338,8 @@ class OllamaProvider(BaseProvider):
                         status['running'] = True
                         data = await response.json()
                         status['models'] = [m.get('name') for m in data.get('models', [])]
-        except:
+        except (aiohttp.ClientError, asyncio.TimeoutError):
+            # Server status might be unavailable
             pass
 
         return status

@@ -248,7 +248,8 @@ class OpenAIProvider(BaseProvider):
                         'Dec',
                     ]
                     formatted.append(f'({months[month]})')
-                except:
+                except (ValueError, IndexError, KeyError):
+                    # Date parsing failed, keep original
                     formatted.append(part)
             else:
                 formatted.append(part.title())
