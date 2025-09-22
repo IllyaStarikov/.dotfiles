@@ -35,8 +35,8 @@
 #   check_command()     - Check if command exists
 #   error_exit()        - Exit with error message
 
-# Strict mode - exit on error, undefined vars, pipe failures
-set -euo pipefail
+# Note: Strict mode (set -euo pipefail) should be set in individual scripts,
+# not here, as this file is sourced and would affect the calling script's behavior
 
 # ============================================================================
 # Operating System Detection
