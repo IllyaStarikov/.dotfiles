@@ -406,7 +406,8 @@ class GoogleProvider(BaseProvider):
                     score += 15
                 elif v >= 1.0:
                     score += 5
-            except:
+            except (ValueError, KeyError):
+                # Version parsing failed, continue with base score
                 pass
 
         # Adjust based on context size

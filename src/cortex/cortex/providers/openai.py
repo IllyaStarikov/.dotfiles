@@ -152,7 +152,7 @@ class OpenAIProvider(BaseProvider):
         # OpenAI API provides: id, object, created, owned_by, parent, root, permission
         created = api_data.get('created')
         owned_by = api_data.get('owned_by', 'openai')
-        parent = api_data.get('parent')
+        # parent field exists in API but not currently used
 
         # Format name from ID
         name = self._format_model_name(model_id)

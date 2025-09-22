@@ -10,9 +10,7 @@ source "${SCRIPT_DIR}/common.sh"
 QUOTES_COUNT=${1:-5}
 TIMEOUT_DURATION=3
 
-# Colors
-CYAN='\033[0;36m'
-NC='\033[0m'
+# Colors are already available from common.sh
 
 # Check for required tools
 check_requirements() {

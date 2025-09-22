@@ -4,6 +4,7 @@ Anthropic Claude Provider
 Provides access to Claude models via Anthropic API.
 """
 
+import asyncio
 import logging
 import os
 from typing import Any, Dict, List, Optional
@@ -202,7 +203,8 @@ class AnthropicProvider(BaseProvider):
                 ) as response:
                     if response.status in [200, 400]:
                         models.append(self._create_model_info(variant_id, {}))
-            except:
+            except (aiohttp.ClientError, asyncio.TimeoutError):
+                # Expected errors when model doesn't exist or network issues
                 pass
 
     def _get_fallback_models(self) -> List[ModelInfo]:
@@ -254,7 +256,8 @@ class AnthropicProvider(BaseProvider):
 
         # Use created_at from API to determine relative age/capability
         created_at = api_data.get('created_at')
-        score = self._calculate_score_from_created_date(created_at, model_id)
+        # Score calculation is used internally by the model ranking system
+        self._calculate_score_from_created_date(created_at, model_id)
 
         description = f'{name} - Anthropic language model'
 
@@ -313,7 +316,8 @@ class AnthropicProvider(BaseProvider):
                         'Dec',
                     ]
                     formatted_parts.append(f'({months[month]} {year})')
-                except:
+                except (ValueError, IndexError, KeyError):
+                    # Date parsing failed, skip this part
                     pass
             else:
                 formatted_parts.append(part.title())
@@ -357,7 +361,8 @@ class AnthropicProvider(BaseProvider):
                     base_score += 2
                 elif days_old < 90:
                     base_score += 1
-            except:
+            except (ValueError, TypeError):
+                # Date parsing failed, use base score
                 pass
 
         return min(99, base_score)  # Cap at 99
