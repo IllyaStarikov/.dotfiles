@@ -20,6 +20,7 @@ src/.claude/
 vimlog.txt
 debug-neovim-config.sh
 *.log
+test/logs/e2e_*/
 
 # Backup and temporary files
 *.backup
