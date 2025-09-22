@@ -5,21 +5,18 @@ local opt = vim.opt
 local g = vim.g
 
 -- General settings
-opt.history = 10000 -- Default: 1000 (more command history)
-opt.scrolloff = 8 -- Default: 0 (keep cursor centered)
-opt.sidescrolloff = 8 -- Default: 0 (horizontal scrolling context)
--- regexpengine removed - default 0 is already automatic
+opt.history = 10000 -- Default: 1000 - store more command/search history for better recall
+opt.scrolloff = 8 -- Default: 0 - keep 8 lines visible above/below cursor when scrolling
+opt.sidescrolloff = 8 -- Default: 0 - keep 8 columns visible when scrolling horizontally
 
 -- Large file performance settings
-opt.maxmempattern = 50000 -- Default: 1000 (needed for large files)
-opt.redrawtime = 20000 -- Default: 2000 (prevent timeouts on large files)
--- NOTE: synmaxcol removed - we handle it per-filetype in autocmds
-opt.clipboard:append("unnamedplus") -- Use system clipboard
--- backspace default is already "indent,eol,start" in Neovim
--- autoread removed - already true by default in Neovim
-opt.virtualedit = "block" -- Default: "" (better visual block editing)
-opt.updatetime = 300 -- Default: 4000 (faster CursorHold & completion)
-opt.timeoutlen = 500 -- Default: 1000 (faster which-key trigger)
+opt.maxmempattern = 50000 -- Default: 1000 - increase memory for pattern matching (KB)
+opt.redrawtime = 20000 -- Default: 2000 - allow more time for syntax highlighting (ms)
+-- NOTE: synmaxcol handled per-filetype in autocmds for better performance tuning
+opt.clipboard:append("unnamedplus") -- Use system clipboard for all yank/delete/paste operations
+opt.virtualedit = "block" -- Default: "" - allow cursor to move freely in visual block mode
+opt.updatetime = 300 -- Default: 4000 - faster CursorHold events and diagnostic updates (ms)
+opt.timeoutlen = 500 -- Default: 1000 - faster key sequence timeout for which-key (ms)
 
 -- Fix for table/box drawing characters
 opt.fillchars = {
@@ -32,8 +29,8 @@ opt.fillchars = {
 	verthoriz = "┼", -- Cross
 }
 
--- Ensure proper character width handling
-opt.ambiwidth = "single" -- Treat ambiguous width chars as single width
+-- Ensure proper character width handling for Unicode
+opt.ambiwidth = "single" -- Default: "single" - treat ambiguous width Unicode chars as single width
 
 -- Force proper rendering of box-drawing characters
 if vim.fn.has("multi_byte") == 1 then
@@ -49,8 +46,8 @@ end
 -- fileformats default is already "unix,dos"
 -- hidden removed - already true by default in Neovim
 
--- Wild menu
-opt.wildmode = { "longest:list", "full" } -- Default: "full" (better completion)
+-- Wild menu (command-line completion)
+opt.wildmode = { "longest:list", "full" } -- Default: "full" - first tab shows list, second tab cycles
 
 -- Disable sounds
 -- belloff "all" is already default in Neovim
@@ -66,11 +63,11 @@ opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/spell/en.utf-8.add"
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.shortmess:append("c")
 
--- Production optimizations
-opt.shortmess:append("IcCsS") -- I=no intro, c=no completion msg, C=no scan msg, s=no search wrap, S=no search count
-opt.report = 9999 -- Default: 2 (suppress "N lines changed" messages)
-opt.showcmd = false -- Default: true (hide partial commands)
-opt.ruler = false -- Default: true (hide cursor position)
+-- Production optimizations (reduce visual noise)
+opt.shortmess:append("IcCsS") -- Suppress: intro screen (I), completion messages (cC), search wrap (s), search count (S)
+opt.report = 9999 -- Default: 2 - suppress "N lines changed" messages for smoother experience
+opt.showcmd = false -- Default: true - hide partial command display in bottom-right
+opt.ruler = false -- Default: true - hide line/column display (shown in statusline instead)
 
 -- Mouse settings
 -- mouse "a" is already default in Neovim
@@ -85,4 +82,4 @@ opt.ruler = false -- Default: true (hide cursor position)
 -- laststatus 2 is default in Neovim
 
 -- Language-specific settings
-g.tex_flavor = "latex"
+g.tex_flavor = "latex" -- Default: "plain" - treat .tex files as LaTeX instead of plain TeX

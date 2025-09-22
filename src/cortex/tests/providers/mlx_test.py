@@ -2,16 +2,11 @@
 Tests for mlx.py provider module.
 """
 
-import json
 import unittest
-from unittest.mock import AsyncMock
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import aiohttp
-
-from cortex.providers import ModelCapability
-from cortex.providers import ModelInfo
+from cortex.providers import ModelCapability, ModelInfo
 from cortex.providers.mlx import MLXProvider
 
 
@@ -24,8 +19,8 @@ class TestMLXProvider(unittest.TestCase):
 
     def test_initialization(self):
         """Test MLX provider initialization."""
-        self.assertEqual(self.provider.name, "mlx")
-        self.assertEqual(self.provider.base_url, "http://localhost:8080")
+        self.assertEqual(self.provider.name, 'mlx')
+        self.assertEqual(self.provider.base_url, 'http://localhost:8080')
         self.assertTrue(self.provider.supports_download)
         self.assertFalse(self.provider.requires_api_key)
 
@@ -37,14 +32,12 @@ class TestMLXProvider(unittest.TestCase):
         mock_response.status = 200
         mock_response.json = AsyncMock(
             return_value={
-                "data": [{
-                    "id": "mlx-community/test-model-7b",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/code-model-13b",
-                    "object": "model"
-                }]
-            })
+                'data': [
+                    {'id': 'mlx-community/test-model-7b', 'object': 'model'},
+                    {'id': 'mlx-community/code-model-13b', 'object': 'model'},
+                ]
+            }
+        )
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -53,14 +46,14 @@ class TestMLXProvider(unittest.TestCase):
 
         self.assertEqual(len(models), 2)
         self.assertIsInstance(models[0], ModelInfo)
-        self.assertEqual(models[0].id, "mlx-community/test-model-7b")
-        self.assertEqual(models[0].provider, "mlx")
+        self.assertEqual(models[0].id, 'mlx-community/test-model-7b')
+        self.assertEqual(models[0].provider, 'mlx')
 
     @patch('aiohttp.ClientSession')
     def test_list_models_server_offline(self, mock_session_class):
         """Test listing models when MLX server is offline."""
         mock_session = AsyncMock()
-        mock_session.get.side_effect = aiohttp.ClientConnectionError("Connection refused")
+        mock_session.get.side_effect = aiohttp.ClientConnectionError('Connection refused')
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
         models = self.provider.list_models()
@@ -75,20 +68,14 @@ class TestMLXProvider(unittest.TestCase):
         mock_response.status = 200
         mock_response.json = AsyncMock(
             return_value={
-                "data": [{
-                    "id": "mlx-community/model-1b",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/model-7b-4bit",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/model-13b",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/model-70b",
-                    "object": "model"
-                }]
-            })
+                'data': [
+                    {'id': 'mlx-community/model-1b', 'object': 'model'},
+                    {'id': 'mlx-community/model-7b-4bit', 'object': 'model'},
+                    {'id': 'mlx-community/model-13b', 'object': 'model'},
+                    {'id': 'mlx-community/model-70b', 'object': 'model'},
+                ]
+            }
+        )
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -115,17 +102,13 @@ class TestMLXProvider(unittest.TestCase):
         mock_response.status = 200
         mock_response.json = AsyncMock(
             return_value={
-                "data": [{
-                    "id": "mlx-community/CodeLlama-7b",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/Llama-3-8b",
-                    "object": "model"
-                }, {
-                    "id": "mlx-community/phi-3-vision",
-                    "object": "model"
-                }]
-            })
+                'data': [
+                    {'id': 'mlx-community/CodeLlama-7b', 'object': 'model'},
+                    {'id': 'mlx-community/Llama-3-8b', 'object': 'model'},
+                    {'id': 'mlx-community/phi-3-vision', 'object': 'model'},
+                ]
+            }
+        )
 
         mock_session.get.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
@@ -147,21 +130,21 @@ class TestMLXProvider(unittest.TestCase):
         """Test downloading MLX model successfully."""
         mock_run.return_value = MagicMock(returncode=0)
 
-        result = self.provider.download_model("mlx-community/test-model")
+        result = self.provider.download_model('mlx-community/test-model')
 
         self.assertTrue(result)
         mock_run.assert_called_once()
         call_args = mock_run.call_args[0][0]
-        self.assertIn("mlx_lm.convert", call_args)
-        self.assertIn("--hf-path", call_args)
-        self.assertIn("mlx-community/test-model", call_args)
+        self.assertIn('mlx_lm.convert', call_args)
+        self.assertIn('--hf-path', call_args)
+        self.assertIn('mlx-community/test-model', call_args)
 
     @patch('subprocess.run')
     def test_download_model_with_force(self, mock_run):
         """Test downloading MLX model with force flag."""
         mock_run.return_value = MagicMock(returncode=0)
 
-        result = self.provider.download_model("mlx-community/test-model", force=True)
+        result = self.provider.download_model('mlx-community/test-model', force=True)
 
         self.assertTrue(result)
         # Force flag doesn't change MLX convert command
@@ -170,9 +153,9 @@ class TestMLXProvider(unittest.TestCase):
     @patch('subprocess.run')
     def test_download_model_failure(self, mock_run):
         """Test MLX model download failure."""
-        mock_run.return_value = MagicMock(returncode=1, stderr="Error downloading")
+        mock_run.return_value = MagicMock(returncode=1, stderr='Error downloading')
 
-        result = self.provider.download_model("mlx-community/test-model")
+        result = self.provider.download_model('mlx-community/test-model')
 
         self.assertFalse(result)
 
@@ -184,46 +167,39 @@ class TestMLXProvider(unittest.TestCase):
         mock_response.status = 200
         mock_response.json = AsyncMock(
             return_value={
-                "choices": [{
-                    "message": {
-                        "content": "Test response from MLX"
-                    }
-                }],
-                "usage": {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30
-                }
-            })
+                'choices': [{'message': {'content': 'Test response from MLX'}}],
+                'usage': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30},
+            }
+        )
 
         mock_session.post.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
-        response = self.provider.chat("Test prompt", model="mlx-community/test-model")
+        response = self.provider.chat('Test prompt', model='mlx-community/test-model')
 
-        self.assertEqual(response, "Test response from MLX")
+        self.assertEqual(response, 'Test response from MLX')
 
         # Check request was made correctly
         mock_session.post.assert_called_once()
         call_args = mock_session.post.call_args
-        self.assertEqual(call_args[0][0], "http://localhost:8080/v1/chat/completions")
+        self.assertEqual(call_args[0][0], 'http://localhost:8080/v1/chat/completions')
 
         # Check request body
-        request_data = call_args[1]["json"]
-        self.assertEqual(request_data["model"], "mlx-community/test-model")
-        self.assertEqual(request_data["messages"][0]["role"], "user")
-        self.assertEqual(request_data["messages"][0]["content"], "Test prompt")
+        request_data = call_args[1]['json']
+        self.assertEqual(request_data['model'], 'mlx-community/test-model')
+        self.assertEqual(request_data['messages'][0]['role'], 'user')
+        self.assertEqual(request_data['messages'][0]['content'], 'Test prompt')
 
     @patch('aiohttp.ClientSession')
     def test_chat_server_offline(self, mock_session_class):
         """Test chat when MLX server is offline."""
         mock_session = AsyncMock()
-        mock_session.post.side_effect = aiohttp.ClientConnectionError("Connection refused")
+        mock_session.post.side_effect = aiohttp.ClientConnectionError('Connection refused')
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
-        response = self.provider.chat("Test prompt", model="mlx-community/test-model")
+        response = self.provider.chat('Test prompt', model='mlx-community/test-model')
 
-        self.assertEqual(response, "Error: MLX server is not running")
+        self.assertEqual(response, 'Error: MLX server is not running')
 
     @patch('aiohttp.ClientSession')
     def test_chat_error_response(self, mock_session_class):
@@ -231,28 +207,28 @@ class TestMLXProvider(unittest.TestCase):
         mock_session = AsyncMock()
         mock_response = AsyncMock()
         mock_response.status = 500
-        mock_response.text = AsyncMock(return_value="Internal server error")
+        mock_response.text = AsyncMock(return_value='Internal server error')
 
         mock_session.post.return_value.__aenter__.return_value = mock_response
         mock_session_class.return_value.__aenter__.return_value = mock_session
 
-        response = self.provider.chat("Test prompt", model="mlx-community/test-model")
+        response = self.provider.chat('Test prompt', model='mlx-community/test-model')
 
-        self.assertIn("Error", response)
+        self.assertIn('Error', response)
 
     def test_parse_model_info(self):
         """Test parsing model information from ID."""
         # Test standard model
-        info = self.provider._parse_model_info("mlx-community/Llama-3-8b-Instruct-4bit")
+        info = self.provider._parse_model_info('mlx-community/Llama-3-8b-Instruct-4bit')
 
-        self.assertEqual(info.name, "Llama 3 8B Instruct (4-bit)")
+        self.assertEqual(info.name, 'Llama 3 8B Instruct (4-bit)')
         self.assertAlmostEqual(info.size_gb, 4.0, places=1)
         self.assertAlmostEqual(info.ram_gb, 5.0, places=1)
         self.assertEqual(info.context_window, 8192)
         self.assertIn(ModelCapability.CHAT, info.capabilities)
 
         # Test code model
-        info = self.provider._parse_model_info("mlx-community/CodeLlama-13b")
+        info = self.provider._parse_model_info('mlx-community/CodeLlama-13b')
 
         self.assertIn(ModelCapability.CODE, info.capabilities)
         self.assertAlmostEqual(info.size_gb, 13.0, places=1)
@@ -278,10 +254,8 @@ class TestMLXProvider(unittest.TestCase):
             mock_response = AsyncMock()
             mock_response.status = 200
             mock_response.json = AsyncMock(
-                return_value={"data": [{
-                    "id": "mlx-community/test-model",
-                    "object": "model"
-                }]})
+                return_value={'data': [{'id': 'mlx-community/test-model', 'object': 'model'}]}
+            )
 
             mock_session.get.return_value.__aenter__.return_value = mock_response
             mock_session_class.return_value.__aenter__.return_value = mock_session

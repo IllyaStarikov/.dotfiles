@@ -17,8 +17,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ConfigDefaults:
     """Default configuration values."""
-    version: str = "0.1.0"
-    mode: str = "offline"
+
+    version: str = '0.1.0'
+    mode: str = 'offline'
 
     # Provider defaults
     providers: Dict[str, Dict[str, Any]] = None
@@ -36,52 +37,35 @@ class ConfigDefaults:
         """Initialize default values."""
         if self.providers is None:
             self.providers = {
-                "mlx": {
-                    "enabled": True,
-                    "models_dir": "~/.cache/mlx_models",
-                    "port": 8080
-                },
-                "ollama": {
-                    "enabled": True,
-                    "models_dir": "~/.ollama/models",
-                    "port": 11434
-                },
-                "claude": {
-                    "enabled": True,
-                    "api_key_env": "ANTHROPIC_API_KEY"
-                },
-                "openai": {
-                    "enabled": True,
-                    "api_key_env": "OPENAI_API_KEY"
-                },
-                "gemini": {
-                    "enabled": True,
-                    "api_key_env": "GEMINI_API_KEY"
-                }
+                'mlx': {'enabled': True, 'models_dir': '~/.cache/mlx_models', 'port': 8080},
+                'ollama': {'enabled': True, 'models_dir': '~/.ollama/models', 'port': 11434},
+                'claude': {'enabled': True, 'api_key_env': 'ANTHROPIC_API_KEY'},
+                'openai': {'enabled': True, 'api_key_env': 'OPENAI_API_KEY'},
+                'gemini': {'enabled': True, 'api_key_env': 'GEMINI_API_KEY'},
             }
 
         if self.preferences is None:
-            self.preferences = {"auto_download": False, "verbose_default": False, "theme": "dark"}
+            self.preferences = {'auto_download': False, 'verbose_default': False, 'theme': 'dark'}
 
         if self.current_model is None:
             self.current_model = {}
 
         if self.ensemble is None:
-            self.ensemble = {"enabled": False, "models": []}
+            self.ensemble = {'enabled': False, 'models': []}
 
 
 class Config:
     """Configuration manager for Cortex."""
 
-    DEFAULT_CONFIG_DIR = Path.home() / ".dotfiles" / "config" / "cortex"
-    DEFAULT_PRIVATE_DIR = Path.home() / ".dotfiles" / ".dotfiles.private"
+    DEFAULT_CONFIG_DIR = Path.home() / '.dotfiles' / 'config' / 'cortex'
+    DEFAULT_PRIVATE_DIR = Path.home() / '.dotfiles' / '.dotfiles.private'
 
     def __init__(self, config_path: Optional[Path] = None):
         """Initialize configuration."""
         self.config_dir = config_path or self.DEFAULT_CONFIG_DIR
-        self.config_file = self.config_dir / "config.yaml"
-        self.env_file = self.config_dir / "cortex.env"
-        self.models_cache_file = self.config_dir / "models.yaml"
+        self.config_file = self.config_dir / 'config.yaml'
+        self.env_file = self.config_dir / 'cortex.env'
+        self.models_cache_file = self.config_dir / 'models.yaml'
         self.private_dir = self.DEFAULT_PRIVATE_DIR
 
         # Ensure directories exist
@@ -89,7 +73,7 @@ class Config:
         # Only create private dir if it doesn't exist - it's managed by the dotfiles repo
         if not self.private_dir.exists():
             logger.warning(
-                f"Private directory {self.private_dir} does not exist. API keys will not be loaded."
+                f'Private directory {self.private_dir} does not exist. API keys will not be loaded.'
             )
 
         # Load configuration
@@ -104,9 +88,9 @@ class Config:
             try:
                 with open(self.config_file, 'r') as f:
                     config = yaml.safe_load(f) or {}
-                logger.info(f"Loaded configuration from {self.config_file}")
+                logger.info(f'Loaded configuration from {self.config_file}')
             except Exception as e:
-                logger.error(f"Failed to load config: {e}")
+                logger.error(f'Failed to load config: {e}')
                 config = {}
         else:
             config = {}
@@ -134,8 +118,10 @@ class Config:
 
         # Try multiple possible locations for API keys
         possible_files = [
-            self.private_dir / "api_keys.yaml", self.private_dir / "api_keys.toml",
-            self.private_dir / ".env", self.private_dir / "config" / "api_keys.yaml"
+            self.private_dir / 'api_keys.yaml',
+            self.private_dir / 'api_keys.toml',
+            self.private_dir / '.env',
+            self.private_dir / 'config' / 'api_keys.yaml',
         ]
 
         for api_keys_file in possible_files:
@@ -146,6 +132,7 @@ class Config:
                             api_keys = yaml.safe_load(f) or {}
                     elif api_keys_file.suffix == '.toml':
                         import toml
+
                         with open(api_keys_file, 'r') as f:
                             api_keys = toml.load(f)
                     elif api_keys_file.name == '.env':
@@ -169,15 +156,15 @@ class Config:
                     # Set environment variables for API keys
                     for key, value in api_keys.items():
                         if isinstance(value, str) and value:
-                            env_var = f"{key.upper()}_API_KEY"
+                            env_var = f'{key.upper()}_API_KEY'
                             os.environ[env_var] = value
-                            logger.debug(f"Loaded API key for {key}")
+                            logger.debug(f'Loaded API key for {key}')
 
-                    logger.info(f"Loaded API keys from {api_keys_file}")
+                    logger.info(f'Loaded API keys from {api_keys_file}')
                     break  # Stop after first successful load
 
                 except Exception as e:
-                    logger.warning(f"Failed to load API keys from {api_keys_file}: {e}")
+                    logger.warning(f'Failed to load API keys from {api_keys_file}: {e}')
                     continue
 
     def save(self):
@@ -185,14 +172,14 @@ class Config:
         try:
             with open(self.config_file, 'w') as f:
                 yaml.dump(self.data, f, default_flow_style=False, sort_keys=False)
-            logger.info(f"Saved configuration to {self.config_file}")
+            logger.info(f'Saved configuration to {self.config_file}')
         except Exception as e:
-            logger.error(f"Failed to save config: {e}")
+            logger.error(f'Failed to save config: {e}')
             raise
 
     def update_current_model(self, model_info: Dict[str, Any]):
         """Update the current model configuration."""
-        self.data["current_model"] = model_info
+        self.data['current_model'] = model_info
         self.save()
         self._update_env_file(model_info)
 
@@ -256,13 +243,13 @@ export AVANTE_GEMINI_MODEL="{model_info.get('id', '')}"
         try:
             with open(self.env_file, 'w') as f:
                 f.write(env_content)
-            logger.info(f"Updated environment file: {self.env_file}")
+            logger.info(f'Updated environment file: {self.env_file}')
         except Exception as e:
-            logger.error(f"Failed to update env file: {e}")
+            logger.error(f'Failed to update env file: {e}')
 
     def get_api_key(self, provider: str) -> Optional[str]:
         """Get API key for a provider."""
-        env_var = self.data.get("providers", {}).get(provider, {}).get("api_key_env")
+        env_var = self.data.get('providers', {}).get(provider, {}).get('api_key_env')
         if env_var:
             return os.environ.get(env_var)
         return None
@@ -270,12 +257,12 @@ export AVANTE_GEMINI_MODEL="{model_info.get('id', '')}"
     def cache_models(self, models_data: Dict[str, Any]):
         """Cache model data to file."""
         try:
-            cache_data = {"timestamp": datetime.now().isoformat(), "models": models_data}
+            cache_data = {'timestamp': datetime.now().isoformat(), 'models': models_data}
             with open(self.models_cache_file, 'w') as f:
                 yaml.dump(cache_data, f, default_flow_style=False)
-            logger.debug(f"Cached model data to {self.models_cache_file}")
+            logger.debug(f'Cached model data to {self.models_cache_file}')
         except Exception as e:
-            logger.warning(f"Failed to cache models: {e}")
+            logger.warning(f'Failed to cache models: {e}')
 
     def load_models_cache(self) -> Optional[Dict[str, Any]]:
         """Load cached model data."""
@@ -284,5 +271,5 @@ export AVANTE_GEMINI_MODEL="{model_info.get('id', '')}"
                 with open(self.models_cache_file, 'r') as f:
                     return yaml.safe_load(f)
             except Exception as e:
-                logger.warning(f"Failed to load models cache: {e}")
+                logger.warning(f'Failed to load models cache: {e}')
         return None

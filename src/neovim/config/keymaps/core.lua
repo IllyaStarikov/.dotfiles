@@ -8,10 +8,10 @@ local opts = { noremap = true, silent = true }
 
 -- Ensure VIMRUNTIME is properly set for health checks
 if not vim.env.VIMRUNTIME or vim.env.VIMRUNTIME == "" then
-  local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h") .. "/share/nvim/runtime"
-  if vim.fn.isdirectory(runtime_path) == 1 then
-    vim.env.VIMRUNTIME = runtime_path
-  end
+	local runtime_path = vim.fn.fnamemodify(vim.v.progpath, ":h:h") .. "/share/nvim/runtime"
+	if vim.fn.isdirectory(runtime_path) == 1 then
+		vim.env.VIMRUNTIME = runtime_path
+	end
 end
 
 -- Commands for common typos
@@ -51,17 +51,17 @@ map("c", "<D-v>", "<C-r>+", { desc = "Paste (Cmd+V)" })
 -- Fix visual mode yank to be instant (no waiting for additional keys)
 -- This must be set to override any plugin mappings
 vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    vim.defer_fn(function()
-      -- Ensure visual mode 'y' is a direct yank
-      vim.keymap.set({ "v", "x" }, "y", "y", {
-        noremap = true,
-        silent = true,
-        desc = "Yank selection (instant)",
-      })
-    end, 100)
-  end,
-  desc = "Ensure visual yank is instant",
+	callback = function()
+		vim.defer_fn(function()
+			-- Ensure visual mode 'y' is a direct yank
+			vim.keymap.set({ "v", "x" }, "y", "y", {
+				noremap = true,
+				silent = true,
+				desc = "Yank selection (instant)",
+			})
+		end, 100)
+	end,
+	desc = "Ensure visual yank is instant",
 })
 
 -- Better line joins
@@ -86,9 +86,4 @@ map("n", ",cl", ":let @+=expand('%:p')<CR>", { desc = "Copy absolute path" })
 map("n", "<Leader>cp", ":let @+=expand('%:p')<CR>", { desc = "Copy full path" })
 
 -- Replace word under cursor
-map(
-  "n",
-  "<leader>sw",
-  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-  { desc = "Replace word under cursor" }
-)
+map("n", "<leader>sw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word under cursor" })

@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Code Style Preferences
 
-**Line Length**: 100 characters maximum (modern preference over traditional 80 chars)
+**Line Length**: 100 characters maximum (modern preference over traditional 80 characters)
 - All formatters and linters are configured for 100-character line length
 - This applies to all languages: Python, C/C++, Lua, JavaScript/TypeScript, Shell, etc.
+- Rationale: Modern monitors support wider lines, improves readability for complex expressions
+- Default in most style guides was 80 (terminal width from 1970s hardware)
 
 ## Important: README Documentation
 
@@ -117,14 +119,14 @@ cortex agent on/off    # Toggle AI agent mode
 ## Repository Statistics
 
 ### Actual Metrics (December 2024)
-- **500+ plugin references** across 8 Neovim configuration files
-- **5 Zsh plugins** via Zinit (not 20+ as documentation may suggest)
-- **0 tmux plugins** (pure config, no TPM despite mentions)
-- **30+ test files** with 4-level testing infrastructure
-- **11 utility scripts** in src/scripts/
-- **7 language configs** in src/language/
-- **4 TokyoNight theme variants**
-- **20+ languages** with LSP support
+- **80+ Neovim plugins** managed by lazy.nvim (500+ plugin references across config files)
+- **5 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions, etc.)
+- **0 tmux plugins** (pure configuration, no TPM - simpler and faster)
+- **40+ test files** with comprehensive 4-level testing infrastructure
+- **14 utility scripts** in src/scripts/ (bugreport, cortex, extract, fixy, etc.)
+- **7 language configs** in src/language/ (ruff, stylua, clang-format, etc.)
+- **4 TokyoNight theme variants** (day, night, moon, storm)
+- **20+ languages** with full LSP support
 
 ## High-Level Architecture
 
@@ -293,9 +295,9 @@ Many scripts have shorter aliases defined in `src/zsh/aliases.zsh`:
 - `gc` → git commit
 - `gp` → git push
 
-## Google Style Guide Reference
+## Style Guide Reference
 
-The Google style guides are included as a submodule at `/Users/starikov/.dotfiles/styleguide/`. These should be consulted before any code refactoring or commits.
+The style guides are included as a submodule at `/Users/starikov/.dotfiles/styleguide/`. These should be consulted before any code refactoring or commits. We follow industry-standard style guides for consistency and readability.
 
 ### Style Guide Locations
 
@@ -338,15 +340,17 @@ All formatters and linters in this repository are configured to follow Google st
 #### Python
 - Line length: 100 characters (modern preference)
 - Indentation: 4 spaces
-- Formatter priority: yapf (Google's formatter) → ruff → black
-- Import sorting: Google profile via isort
+- Formatter priority: yapf → ruff → black
+- Import sorting: isort with profile configured
 - Config: `src/language/ruff.toml`
+- Style reference: https://google.github.io/styleguide/pyguide.html
 
 #### C/C++
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces
-- Base style: Google (via clang-format)
+- Base style: Industry standard (via clang-format)
 - Config: `src/language/.clang-format`
+- Style reference: https://google.github.io/styleguide/cppguide.html
 
 #### Lua
 - Line length: 100 characters (modern preference)
@@ -358,6 +362,7 @@ All formatters and linters in this repository are configured to follow Google st
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces (via shfmt)
 - Always use `#!/usr/bin/env zsh` or `#!/bin/bash`
+- Style reference: https://google.github.io/styleguide/shellguide.html
 
 #### JavaScript/TypeScript
 - Line length: 100 characters (modern preference)
@@ -372,5 +377,7 @@ Before committing code changes:
 1. Check the relevant style guide in `styleguide/` directory
 2. Run `./src/scripts/fixy` on modified files
 3. Run `./test/runner.zsh --quick` to verify configurations
-4. Ensure line lengths comply (100 chars - modern preference for all languages)
+4. Ensure line lengths comply (100 characters for all languages except Go)
 5. Verify proper indentation (2 spaces for most, 4 for Python, tabs for Go)
+6. Run `shellcheck` for shell scripts
+7. Run `ruff check` for Python files

@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 # Unified Test Runner for Dotfiles
 # Consolidates all test functionality into a single, comprehensive runner
+# Usage: ./test/runner.zsh [OPTIONS]
+# Reference: https://google.github.io/styleguide/shellguide.html
 
 set -uo pipefail
 
