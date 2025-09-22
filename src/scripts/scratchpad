@@ -27,14 +27,8 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-# Cleanup function to handle interrupts gracefully
-cleanup() {
-  # Nothing critical to clean up, but trap ensures clean exit
-  exit 0
-}
-
-# Set up trap for clean exit on interrupt (Ctrl-C)
-trap cleanup INT TERM
+# No cleanup needed for this simple script
+# Trap removed as it adds no value
 
 # Get file extension if provided
 EXT="${1:+.$1}"

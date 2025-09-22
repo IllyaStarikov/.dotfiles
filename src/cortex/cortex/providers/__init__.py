@@ -16,23 +16,26 @@ logger = logging.getLogger(__name__)
 
 class ModelCapability(Enum):
     """Model capability categories."""
-    CHAT = "chat"
-    CODE = "code"
-    VISION = "vision"
-    EMBEDDING = "embedding"
-    MULTIMODAL = "multimodal"
+
+    CHAT = 'chat'
+    CODE = 'code'
+    VISION = 'vision'
+    EMBEDDING = 'embedding'
+    MULTIMODAL = 'multimodal'
 
 
 class ProviderType(Enum):
     """Provider categories."""
-    ONLINE = "online"
-    OFFLINE = "offline"
-    HYBRID = "hybrid"
+
+    ONLINE = 'online'
+    OFFLINE = 'offline'
+    HYBRID = 'hybrid'
 
 
 @dataclass
 class ModelInfo:
     """Information about a specific model."""
+
     id: str
     name: str
     provider: str
@@ -57,7 +60,7 @@ class BaseProvider(ABC):
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize provider with configuration."""
         self.config = config or {}
-        self.name = self.__class__.__name__.replace("Provider", "").lower()
+        self.name = self.__class__.__name__.replace('Provider', '').lower()
         self.models_cache: List[ModelInfo] = []
         self.last_fetch = None
 
@@ -165,13 +168,13 @@ class ProviderRegistry:
     def register(self, provider: BaseProvider) -> None:
         """Register a new provider."""
         self._providers[provider.name] = provider
-        logger.info(f"Registered provider: {provider.name}")
+        logger.info(f'Registered provider: {provider.name}')
 
     def unregister(self, name: str) -> None:
         """Unregister a provider."""
         if name in self._providers:
             del self._providers[name]
-            logger.info(f"Unregistered provider: {name}")
+            logger.info(f'Unregistered provider: {name}')
 
     def get_provider(self, name: str) -> Optional[BaseProvider]:
         """Get a specific provider by name."""
@@ -193,15 +196,16 @@ class ProviderRegistry:
 
         for name, models in zip(self._providers.keys(), provider_results):
             if isinstance(models, Exception):
-                logger.error(f"Failed to fetch models from {name}: {models}")
+                logger.error(f'Failed to fetch models from {name}: {models}')
                 results[name] = []
             else:
                 results[name] = models
 
         return results
 
-    async def _fetch_provider_models(self, name: str, provider: BaseProvider,
-                                     force_refresh: bool) -> List[ModelInfo]:
+    async def _fetch_provider_models(
+        self, name: str, provider: BaseProvider, force_refresh: bool
+    ) -> List[ModelInfo]:
         """Fetch models from a single provider."""
         try:
             models = await provider.fetch_models(force_refresh)
@@ -210,27 +214,28 @@ class ProviderRegistry:
                 model.score = provider.calculate_model_score(model)
             return models
         except Exception as e:
-            logger.error(f"Error fetching models from {name}: {e}")
+            logger.error(f'Error fetching models from {name}: {e}')
             raise
 
-    def categorize_models(self, all_models: Dict[str,
-                                                 List[ModelInfo]]) -> Dict[str, List[ModelInfo]]:
+    def categorize_models(
+        self, all_models: Dict[str, List[ModelInfo]]
+    ) -> Dict[str, List[ModelInfo]]:
         """Categorize models by online/offline/open-source."""
-        categorized = {"online": [], "offline": [], "open_source": [], "proprietary": [], "all": []}
+        categorized = {'online': [], 'offline': [], 'open_source': [], 'proprietary': [], 'all': []}
 
         for provider_models in all_models.values():
             for model in provider_models:
-                categorized["all"].append(model)
+                categorized['all'].append(model)
 
                 if model.online:
-                    categorized["online"].append(model)
+                    categorized['online'].append(model)
                 else:
-                    categorized["offline"].append(model)
+                    categorized['offline'].append(model)
 
                 if model.open_source:
-                    categorized["open_source"].append(model)
+                    categorized['open_source'].append(model)
                 else:
-                    categorized["proprietary"].append(model)
+                    categorized['proprietary'].append(model)
 
         # Sort each category by score
         for category in categorized:
@@ -248,26 +253,26 @@ class ProviderRegistry:
         from .openai import OpenAIProvider
 
         # Register providers based on configuration
-        if config.get("providers", {}).get("mlx", {}).get("enabled", True):
-            self.register(MLXProvider(config.get("providers", {}).get("mlx", {})))
+        if config.get('providers', {}).get('mlx', {}).get('enabled', True):
+            self.register(MLXProvider(config.get('providers', {}).get('mlx', {})))
 
-        if config.get("providers", {}).get("ollama", {}).get("enabled", True):
-            self.register(OllamaProvider(config.get("providers", {}).get("ollama", {})))
+        if config.get('providers', {}).get('ollama', {}).get('enabled', True):
+            self.register(OllamaProvider(config.get('providers', {}).get('ollama', {})))
 
-        if config.get("providers", {}).get("claude", {}).get("enabled", False):
-            self.register(AnthropicProvider(config.get("providers", {}).get("claude", {})))
+        if config.get('providers', {}).get('claude', {}).get('enabled', False):
+            self.register(AnthropicProvider(config.get('providers', {}).get('claude', {})))
 
-        if config.get("providers", {}).get("openai", {}).get("enabled", False):
-            self.register(OpenAIProvider(config.get("providers", {}).get("openai", {})))
+        if config.get('providers', {}).get('openai', {}).get('enabled', False):
+            self.register(OpenAIProvider(config.get('providers', {}).get('openai', {})))
 
-        if config.get("providers", {}).get("gemini", {}).get("enabled", False):
-            self.register(GoogleProvider(config.get("providers", {}).get("gemini", {})))
+        if config.get('providers', {}).get('gemini', {}).get('enabled', False):
+            self.register(GoogleProvider(config.get('providers', {}).get('gemini', {})))
 
         # HuggingFace is always enabled for model discovery
-        self.register(HuggingFaceProvider(config.get("providers", {}).get("huggingface", {})))
+        self.register(HuggingFaceProvider(config.get('providers', {}).get('huggingface', {})))
 
         self._initialized = True
-        logger.info("Provider registry initialized")
+        logger.info('Provider registry initialized')
 
 
 # Global registry instance

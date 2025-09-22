@@ -7,131 +7,131 @@
 local M = {}
 
 function M.setup()
-  -- Enable Snacks.nvim with file explorer support
-  local ok, snacks = pcall(require, "snacks")
-  if not ok then
-    vim.notify("Failed to load snacks.nvim", vim.log.levels.WARN)
-    return
-  end
+	-- Enable Snacks.nvim with file explorer support
+	local ok, snacks = pcall(require, "snacks")
+	if not ok then
+		vim.notify("Failed to load snacks.nvim", vim.log.levels.WARN)
+		return
+	end
 
-  snacks.setup({
-    -- Core modules
-    bigfile = { enabled = true },
+	snacks.setup({
+		-- Core modules
+		bigfile = { enabled = true },
 
-    -- Picker configuration with vim.ui overrides
-    picker = {
-      enabled = true,
-      on_show = function()
-        vim.ui.select = require("snacks.picker").select
-      end,
-    },
+		-- Picker configuration with vim.ui overrides
+		picker = {
+			enabled = true,
+			on_show = function()
+				vim.ui.select = require("snacks.picker").select
+			end,
+		},
 
-    explorer = {
-      enabled = true,
-      replace_netrw = true, -- Replace netrw with Snacks explorer
-    },
+		explorer = {
+			enabled = true,
+			replace_netrw = true, -- Replace netrw with Snacks explorer
+		},
 
-    -- Dashboard configuration with proper setup
-    dashboard = {
-      enabled = true,
-      width = 64, -- Increased width to accommodate ASCII art
-      preset = {
-        header = [[
+		-- Dashboard configuration with proper setup
+		dashboard = {
+			enabled = true,
+			width = 64, -- Increased width to accommodate ASCII art
+			preset = {
+				header = [[
 ███╗   ███╗██╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗
 ████╗ ████║██║   ██║╚══██╔══╝██║████╗  ██║╚██╗ ██╔╝
 ██╔████╔██║██║   ██║   ██║   ██║██╔██╗ ██║ ╚████╔╝
 ██║╚██╔╝██║██║   ██║   ██║   ██║██║╚██╗██║  ╚██╔╝
 ██║ ╚═╝ ██║╚██████╔╝   ██║   ██║██║ ╚████║   ██║
 ╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝   ╚═╝   ]],
-      },
-      sections = {
-        { section = "header" },
-        {
-          section = "keys",
-          gap = 1,
-          padding = 1,
-          keys = {
-            -- Use telescope for all file operations to avoid picker conflicts
-            {
-              icon = " ",
-              key = "f",
-              desc = "Find File",
-              action = ":Telescope find_files",
-            },
-            {
-              icon = " ",
-              key = "r",
-              desc = "Recent Files",
-              action = ":Telescope oldfiles",
-            },
-            {
-              icon = " ",
-              key = "g",
-              desc = "Find Text",
-              action = ":Telescope live_grep",
-            },
-            {
-              icon = " ",
-              key = "b",
-              desc = "Buffers",
-              action = ":Telescope buffers",
-            },
-            {
-              icon = " ",
-              key = "c",
-              desc = "Config",
-              action = function()
-                require("telescope.builtin").find_files({
-                  cwd = vim.fn.stdpath("config"),
-                })
-              end,
-            },
-            {
-              icon = " ",
-              key = ".",
-              desc = "Browse Files",
-              action = function()
-                local ok, snacks = pcall(require, "snacks")
-                if ok and snacks then
-                  snacks.explorer()
-                else
-                  vim.notify("Snacks not loaded", vim.log.levels.WARN)
-                end
-              end,
-            },
-            { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
-          },
-        },
-        { section = "startup" },
-      },
-    },
+			},
+			sections = {
+				{ section = "header" },
+				{
+					section = "keys",
+					gap = 1,
+					padding = 1,
+					keys = {
+						-- Use telescope for all file operations to avoid picker conflicts
+						{
+							icon = " ",
+							key = "f",
+							desc = "Find File",
+							action = ":Telescope find_files",
+						},
+						{
+							icon = " ",
+							key = "r",
+							desc = "Recent Files",
+							action = ":Telescope oldfiles",
+						},
+						{
+							icon = " ",
+							key = "g",
+							desc = "Find Text",
+							action = ":Telescope live_grep",
+						},
+						{
+							icon = " ",
+							key = "b",
+							desc = "Buffers",
+							action = ":Telescope buffers",
+						},
+						{
+							icon = " ",
+							key = "c",
+							desc = "Config",
+							action = function()
+								require("telescope.builtin").find_files({
+									cwd = vim.fn.stdpath("config"),
+								})
+							end,
+						},
+						{
+							icon = " ",
+							key = ".",
+							desc = "Browse Files",
+							action = function()
+								local ok, snacks = pcall(require, "snacks")
+								if ok and snacks then
+									snacks.explorer()
+								else
+									vim.notify("Snacks not loaded", vim.log.levels.WARN)
+								end
+							end,
+						},
+						{ icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
+					},
+				},
+				{ section = "startup" },
+			},
+		},
 
-    -- Enable only safe modules that don't use picker
-    indent = { enabled = true },
-    scroll = { enabled = false }, -- Disabled for instant scrolling
-    notifier = { enabled = true },
-    words = { enabled = true },
-    terminal = { enabled = true },
-    toggle = { enabled = true },
+		-- Enable only safe modules that don't use picker
+		indent = { enabled = true },
+		scroll = { enabled = false }, -- Disabled for instant scrolling
+		notifier = { enabled = true },
+		words = { enabled = true },
+		terminal = { enabled = true },
+		toggle = { enabled = true },
 
-    -- Input with vim.ui.input override
-    input = {
-      enabled = true,
-      on_show = function()
-        vim.ui.input = require("snacks.input")
-      end,
-    },
+		-- Input with vim.ui.input override
+		input = {
+			enabled = true,
+			on_show = function()
+				vim.ui.input = require("snacks.input")
+			end,
+		},
 
-    git = { enabled = true },
-    rename = { enabled = true },
-    bufdelete = { enabled = true },
-    scratch = { enabled = true },
-    lazygit = { enabled = false }, -- Disable until lazygit is installed
-  })
+		git = { enabled = true },
+		rename = { enabled = true },
+		bufdelete = { enabled = true },
+		scratch = { enabled = true },
+		lazygit = { enabled = false }, -- Disable until lazygit is installed
+	})
 
-  -- Set up vim.ui overrides after setup
-  vim.ui.select = require("snacks.picker").select
-  vim.ui.input = require("snacks.input")
+	-- Set up vim.ui overrides after setup
+	vim.ui.select = require("snacks.picker").select
+	vim.ui.input = require("snacks.input")
 end
 
 return M

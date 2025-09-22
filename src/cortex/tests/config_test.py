@@ -2,18 +2,14 @@
 Tests for config.py module.
 """
 
-import json
 import os
-from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import MagicMock
+from pathlib import Path
 from unittest.mock import patch
 
 import yaml
-
-from cortex.config import Config
-from cortex.config import ConfigDefaults
+from cortex.config import Config, ConfigDefaults
 
 
 class TestConfigDefaults(unittest.TestCase):
@@ -23,23 +19,23 @@ class TestConfigDefaults(unittest.TestCase):
         """Test that defaults are properly initialized."""
         defaults = ConfigDefaults()
 
-        self.assertEqual(defaults.version, "0.1.0")
-        self.assertEqual(defaults.mode, "offline")
+        self.assertEqual(defaults.version, '0.1.0')
+        self.assertEqual(defaults.mode, 'offline')
 
         # Check providers
-        self.assertIn("mlx", defaults.providers)
-        self.assertIn("ollama", defaults.providers)
-        self.assertIn("claude", defaults.providers)
-        self.assertIn("openai", defaults.providers)
-        self.assertIn("gemini", defaults.providers)
+        self.assertIn('mlx', defaults.providers)
+        self.assertIn('ollama', defaults.providers)
+        self.assertIn('claude', defaults.providers)
+        self.assertIn('openai', defaults.providers)
+        self.assertIn('gemini', defaults.providers)
 
         # Check MLX is enabled by default
-        self.assertTrue(defaults.providers["mlx"]["enabled"])
-        self.assertEqual(defaults.providers["mlx"]["port"], 8080)
+        self.assertTrue(defaults.providers['mlx']['enabled'])
+        self.assertEqual(defaults.providers['mlx']['port'], 8080)
 
         # Check preferences
-        self.assertFalse(defaults.preferences["auto_download"])
-        self.assertEqual(defaults.preferences["theme"], "dark")
+        self.assertFalse(defaults.preferences['auto_download'])
+        self.assertEqual(defaults.preferences['theme'], 'dark')
 
 
 class TestConfig(unittest.TestCase):
@@ -48,14 +44,15 @@ class TestConfig(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
-        self.config_dir = Path(self.temp_dir) / "config"
-        self.private_dir = Path(self.temp_dir) / "private"
+        self.config_dir = Path(self.temp_dir) / 'config'
+        self.private_dir = Path(self.temp_dir) / 'private'
         self.config_dir.mkdir(parents=True)
         self.private_dir.mkdir(parents=True)
 
     def tearDown(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir)
 
     def test_config_initialization(self):
@@ -72,15 +69,12 @@ class TestConfig(unittest.TestCase):
         """Test loading configuration from existing file."""
         # Create a config file
         config_data = {
-            "version": "0.2.0",
-            "mode": "online",
-            "current_model": {
-                "id": "test-model",
-                "provider": "test"
-            }
+            'version': '0.2.0',
+            'mode': 'online',
+            'current_model': {'id': 'test-model', 'provider': 'test'},
         }
 
-        config_file = self.config_dir / "config.yaml"
+        config_file = self.config_dir / 'config.yaml'
         with open(config_file, 'w') as f:
             yaml.dump(config_data, f)
 
@@ -88,20 +82,20 @@ class TestConfig(unittest.TestCase):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                self.assertEqual(config.data["version"], "0.2.0")
-                self.assertEqual(config.data["mode"], "online")
-                self.assertEqual(config.data["current_model"]["id"], "test-model")
+                self.assertEqual(config.data['version'], '0.2.0')
+                self.assertEqual(config.data['mode'], 'online')
+                self.assertEqual(config.data['current_model']['id'], 'test-model')
 
     def test_load_api_keys_from_yaml(self):
         """Test loading API keys from YAML file."""
         # Create API keys file
         api_keys = {
-            "anthropic": "test-anthropic-key",
-            "openai": "test-openai-key",
-            "gemini": "test-gemini-key"
+            'anthropic': 'test-anthropic-key',
+            'openai': 'test-openai-key',
+            'gemini': 'test-gemini-key',
         }
 
-        api_keys_file = self.private_dir / "api_keys.yaml"
+        api_keys_file = self.private_dir / 'api_keys.yaml'
         with open(api_keys_file, 'w') as f:
             yaml.dump(api_keys, f)
 
@@ -110,9 +104,9 @@ class TestConfig(unittest.TestCase):
                 config = Config()
 
                 # Check environment variables were set
-                self.assertEqual(os.environ.get("ANTHROPIC_API_KEY"), "test-anthropic-key")
-                self.assertEqual(os.environ.get("OPENAI_API_KEY"), "test-openai-key")
-                self.assertEqual(os.environ.get("GEMINI_API_KEY"), "test-gemini-key")
+                self.assertEqual(os.environ.get('ANTHROPIC_API_KEY'), 'test-anthropic-key')
+                self.assertEqual(os.environ.get('OPENAI_API_KEY'), 'test-openai-key')
+                self.assertEqual(os.environ.get('GEMINI_API_KEY'), 'test-gemini-key')
 
     def test_load_api_keys_from_env_file(self):
         """Test loading API keys from .env file."""
@@ -126,7 +120,7 @@ INVALID_LINE
 KEY_WITHOUT_VALUE=
 """
 
-        env_file = self.private_dir / ".env"
+        env_file = self.private_dir / '.env'
         with open(env_file, 'w') as f:
             f.write(env_content)
 
@@ -135,9 +129,9 @@ KEY_WITHOUT_VALUE=
                 config = Config()
 
                 # Check environment variables were set
-                self.assertEqual(os.environ.get("ANTHROPIC_API_KEY"), "env-anthropic-key")
-                self.assertEqual(os.environ.get("OPENAI_API_KEY"), "env-openai-key")
-                self.assertEqual(os.environ.get("GEMINI_API_KEY"), "env-gemini-key")
+                self.assertEqual(os.environ.get('ANTHROPIC_API_KEY'), 'env-anthropic-key')
+                self.assertEqual(os.environ.get('OPENAI_API_KEY'), 'env-openai-key')
+                self.assertEqual(os.environ.get('GEMINI_API_KEY'), 'env-gemini-key')
 
     def test_update_current_model(self):
         """Test updating current model configuration."""
@@ -145,12 +139,12 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {"id": "gpt-4", "name": "GPT-4", "provider": "openai", "online": True}
+                model_info = {'id': 'gpt-4', 'name': 'GPT-4', 'provider': 'openai', 'online': True}
 
                 config.update_current_model(model_info)
 
-                self.assertEqual(config.data["current_model"]["id"], "gpt-4")
-                self.assertEqual(config.data["current_model"]["provider"], "openai")
+                self.assertEqual(config.data['current_model']['id'], 'gpt-4')
+                self.assertEqual(config.data['current_model']['provider'], 'openai')
 
                 # Check that env file was created
                 self.assertTrue(config.env_file.exists())
@@ -162,14 +156,14 @@ KEY_WITHOUT_VALUE=
                 config = Config()
 
                 # Modify configuration
-                config.data["test_key"] = "test_value"
+                config.data['test_key'] = 'test_value'
                 config.save()
 
                 # Load the saved file
                 with open(config.config_file, 'r') as f:
                     saved_data = yaml.safe_load(f)
 
-                self.assertEqual(saved_data["test_key"], "test_value")
+                self.assertEqual(saved_data['test_key'], 'test_value')
 
     def test_merge_configs(self):
         """Test configuration merging."""
@@ -177,16 +171,16 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                base = {"a": 1, "b": {"c": 2, "d": 3}}
-                override = {"b": {"c": 4, "e": 5}, "f": 6}
+                base = {'a': 1, 'b': {'c': 2, 'd': 3}}
+                override = {'b': {'c': 4, 'e': 5}, 'f': 6}
 
                 result = config._merge_configs(base, override)
 
-                self.assertEqual(result["a"], 1)
-                self.assertEqual(result["b"]["c"], 4)  # Overridden
-                self.assertEqual(result["b"]["d"], 3)  # Preserved
-                self.assertEqual(result["b"]["e"], 5)  # Added
-                self.assertEqual(result["f"], 6)  # Added
+                self.assertEqual(result['a'], 1)
+                self.assertEqual(result['b']['c'], 4)  # Overridden
+                self.assertEqual(result['b']['d'], 3)  # Preserved
+                self.assertEqual(result['b']['e'], 5)  # Added
+                self.assertEqual(result['f'], 6)  # Added
 
     def test_env_file_generation_for_mlx(self):
         """Test environment file generation for MLX provider."""
@@ -194,7 +188,7 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {"id": "mlx-community/test-model", "provider": "mlx"}
+                model_info = {'id': 'mlx-community/test-model', 'provider': 'mlx'}
 
                 config.update_current_model(model_info)
 
@@ -202,10 +196,10 @@ KEY_WITHOUT_VALUE=
                 with open(config.env_file, 'r') as f:
                     env_content = f.read()
 
-                self.assertIn("CORTEX_PROVIDER=\"mlx\"", env_content)
-                self.assertIn("CORTEX_MODEL=\"mlx-community/test-model\"", env_content)
-                self.assertIn("AVANTE_PROVIDER=\"openai\"", env_content)
-                self.assertIn("AVANTE_OPENAI_ENDPOINT=", env_content)
+                self.assertIn('CORTEX_PROVIDER="mlx"', env_content)
+                self.assertIn('CORTEX_MODEL="mlx-community/test-model"', env_content)
+                self.assertIn('AVANTE_PROVIDER="openai"', env_content)
+                self.assertIn('AVANTE_OPENAI_ENDPOINT=', env_content)
 
     def test_env_file_generation_for_claude(self):
         """Test environment file generation for Claude provider."""
@@ -213,7 +207,7 @@ KEY_WITHOUT_VALUE=
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
                 config = Config()
 
-                model_info = {"id": "claude-3-opus", "provider": "claude"}
+                model_info = {'id': 'claude-3-opus', 'provider': 'claude'}
 
                 config.update_current_model(model_info)
 
@@ -221,9 +215,9 @@ KEY_WITHOUT_VALUE=
                 with open(config.env_file, 'r') as f:
                     env_content = f.read()
 
-                self.assertIn("CORTEX_PROVIDER=\"claude\"", env_content)
-                self.assertIn("CORTEX_MODEL=\"claude-3-opus\"", env_content)
-                self.assertIn("AVANTE_PROVIDER=\"claude\"", env_content)
+                self.assertIn('CORTEX_PROVIDER="claude"', env_content)
+                self.assertIn('CORTEX_MODEL="claude-3-opus"', env_content)
+                self.assertIn('AVANTE_PROVIDER="claude"', env_content)
 
 
 if __name__ == '__main__':
