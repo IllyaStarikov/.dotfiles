@@ -59,7 +59,7 @@ class TestConfig(unittest.TestCase):
         """Test Config initialization."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 self.assertEqual(config.config_dir, self.config_dir)
                 self.assertTrue(config.config_file.exists())
@@ -80,7 +80,7 @@ class TestConfig(unittest.TestCase):
 
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 self.assertEqual(config.data['version'], '0.2.0')
                 self.assertEqual(config.data['mode'], 'online')
@@ -101,7 +101,7 @@ class TestConfig(unittest.TestCase):
 
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 # Check environment variables were set
                 self.assertEqual(os.environ.get('ANTHROPIC_API_KEY'), 'test-anthropic-key')
@@ -126,7 +126,7 @@ KEY_WITHOUT_VALUE=
 
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 # Check environment variables were set
                 self.assertEqual(os.environ.get('ANTHROPIC_API_KEY'), 'env-anthropic-key')
@@ -137,7 +137,7 @@ KEY_WITHOUT_VALUE=
         """Test updating current model configuration."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 model_info = {'id': 'gpt-4', 'name': 'GPT-4', 'provider': 'openai', 'online': True}
 
@@ -153,7 +153,7 @@ KEY_WITHOUT_VALUE=
         """Test saving configuration to file."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 # Modify configuration
                 config.data['test_key'] = 'test_value'
@@ -169,7 +169,7 @@ KEY_WITHOUT_VALUE=
         """Test configuration merging."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 base = {'a': 1, 'b': {'c': 2, 'd': 3}}
                 override = {'b': {'c': 4, 'e': 5}, 'f': 6}
@@ -186,7 +186,7 @@ KEY_WITHOUT_VALUE=
         """Test environment file generation for MLX provider."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 model_info = {'id': 'mlx-community/test-model', 'provider': 'mlx'}
 
@@ -205,7 +205,7 @@ KEY_WITHOUT_VALUE=
         """Test environment file generation for Claude provider."""
         with patch.object(Config, 'DEFAULT_CONFIG_DIR', self.config_dir):
             with patch.object(Config, 'DEFAULT_PRIVATE_DIR', self.private_dir):
-                config = Config()
+                Config()  # Config initialization sets environment variables
 
                 model_info = {'id': 'claude-3-opus', 'provider': 'claude'}
 
