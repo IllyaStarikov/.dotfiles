@@ -1,7 +1,17 @@
 #!/usr/bin/env zsh
-# Universal Archive Extractor
-# Automatically detects and extracts various archive formats
-# Prevents need to remember different extraction commands
+# extract - Universal Archive Extractor
+#
+# DESCRIPTION:
+#   Automatically detects and extracts various archive formats.
+#   Eliminates need to remember different extraction commands.
+#
+# USAGE:
+#   extract <archive>
+#
+# SUPPORTED FORMATS:
+#   tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 # Validate arguments
 if [[ -z "$1" ]]; then
