@@ -17,11 +17,9 @@ opt.undodir = fn.stdpath("data") .. "/undo"
 local data_dir = fn.stdpath("data")
 local config_dir = fn.stdpath("config")
 local required_dirs = {
-	data_dir .. "/undo",
-	data_dir .. "/backup",
-	data_dir .. "/swap",
-	data_dir .. "/sessions",
-	config_dir .. "/spell",
+	data_dir .. "/undo", -- For persistent undo (enabled above)
+	data_dir .. "/sessions", -- For session management
+	config_dir .. "/spell", -- For spell checking
 }
 
 for _, dir in ipairs(required_dirs) do
