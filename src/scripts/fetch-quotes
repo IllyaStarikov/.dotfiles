@@ -1,6 +1,30 @@
 #!/usr/bin/env zsh
-# Fetch inspirational quotes from multiple sources
-# Works on both macOS and Linux
+# fetch-quotes - Fetch inspirational quotes from multiple sources
+#
+# DESCRIPTION:
+#   Fetches random inspirational quotes, advice, and wisdom from public APIs.
+#   Gracefully handles timeouts and API failures with automatic retries.
+#   Cross-platform compatible (macOS and Linux).
+#
+# USAGE:
+#   fetch-quotes [COUNT]
+#
+#   COUNT - Number of quotes to fetch (default: 5)
+#
+# REQUIREMENTS:
+#   - curl: HTTP client for API requests
+#   - jq: JSON processor for parsing API responses
+#
+# APIS USED:
+#   - ZenQuotes: General inspirational quotes
+#   - Quotable: Curated famous quotes
+#   - Advice Slip: Life advice and tips
+#
+# EXAMPLES:
+#   fetch-quotes      # Fetch 5 quotes
+#   fetch-quotes 10   # Fetch 10 quotes
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
 
 # Source common library
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
