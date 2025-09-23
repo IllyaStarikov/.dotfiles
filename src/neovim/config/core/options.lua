@@ -29,8 +29,8 @@ opt.fillchars = {
 	verthoriz = "┼", -- Cross
 }
 
--- Ensure proper character width handling for Unicode
-opt.ambiwidth = "single" -- Default: "single" - treat ambiguous width Unicode chars as single width
+-- Character width handling for Unicode
+-- ambiwidth is already "single" by default (correct for most cases)
 
 -- Force proper rendering of box-drawing characters
 if vim.fn.has("multi_byte") == 1 then
