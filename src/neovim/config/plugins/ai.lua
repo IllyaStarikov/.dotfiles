@@ -134,8 +134,11 @@ function M.setup()
 	end
 
 	codecompanion.setup({
-		-- Adapter configuration
-		adapters = adapters,
+		-- Adapter configuration (new format for v18.0.0)
+		adapters = {
+			http = adapters,  -- HTTP adapters now need to be under .http
+			opts = {}  -- Any adapter-specific options
+		},
 
 		-- Strategy configuration (use MLX on macOS, Ollama on Linux)
 		strategies = {
