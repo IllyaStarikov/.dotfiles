@@ -6,7 +6,7 @@
 local M = {}
 local compat = require("config.compat")
 
--- Store original notify function
+-- Store original notify function (might already be wrapped by init.lua)
 local original_notify = vim.notify
 
 -- Track error frequency to prevent spam
