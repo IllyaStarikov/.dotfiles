@@ -93,10 +93,10 @@ local function setup_lsp()
 		end
 	end
 
-	-- Suppress deprecation warning until nvim-lspconfig v3.0.0 migration
-	-- The plugin still uses the old API internally
-	-- Use lspconfig for now, will migrate to vim.lsp.config in Neovim 0.11+
-	-- The deprecation warning is expected until we fully migrate
+	-- TODO(starikov): Migrate to vim.lsp.config when nvim-lspconfig v3.0.0 is released
+	-- Currently using the old require('lspconfig') pattern which triggers a deprecation
+	-- warning on Neovim 0.11+. The warning is filtered in config/error-handler.lua
+	-- until the migration path is available.
 	local lspconfig = require("lspconfig")
 
 	-- 1. Setup Mason for LSP management (skip if work override is active)
