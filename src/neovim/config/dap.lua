@@ -33,6 +33,10 @@ function M.setup()
 	local dapui = require("dapui")
 	local dap_virtual_text = require("nvim-dap-virtual-text")
 
+	-- Detect OS for proper paths
+	local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
+	local is_linux = vim.fn.has("unix") == 1 and not is_macos
+
 	-- ⚡ PERFORMANCE & UI SETTINGS
 	-- Configure DAP UI for optimal experience
 	dapui.setup({
@@ -214,11 +218,50 @@ function M.setup()
 	}
 
 	-- 🔧 C/C++ DEBUGGING CONFIGURATION
-	dap.adapters.lldb = {
-		type = "executable",
-		command = "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap", -- Updated to use lldb-dap from LLVM
-		name = "lldb",
-	}
+	-- Determine lldb-dap path based on OS
+	local lldb_cmd
+	if is_macos then
+		lldb_cmd = "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap" -- macOS with Homebrew
+	elseif is_linux then
+		-- Try common Linux locations
+		if vim.fn.executable("lldb-dap") == 1 then
+			lldb_cmd = "lldb-dap"
+		elseif vim.fn.executable("lldb-vscode") == 1 then
+			lldb_cmd = "lldb-vscode" -- Some distributions use this name
+		elseif vim.fn.executable("/usr/bin/lldb-dap") == 1 then
+			lldb_cmd = "/usr/bin/lldb-dap"
+		elseif vim.fn.executable("/usr/local/bin/lldb-dap") == 1 then
+			lldb_cmd = "/usr/local/bin/lldb-dap"
+		else
+			-- Fallback to codelldb from Mason if available
+			local mason_codelldb = vim.fn.stdpath("data") .. "/mason/bin/codelldb"
+			if vim.fn.executable(mason_codelldb) == 1 then
+				lldb_cmd = mason_codelldb
+			end
+		end
+	end
+
+	-- Only configure lldb adapter if command is available
+	if lldb_cmd then
+		dap.adapters.lldb = {
+			type = "executable",
+			command = lldb_cmd,
+			name = "lldb",
+		}
+	else
+		-- Use codelldb as fallback
+		local codelldb_cmd = vim.fn.stdpath("data") .. "/mason/bin/codelldb"
+		if vim.fn.executable(codelldb_cmd) == 1 then
+			dap.adapters.lldb = {
+				type = "server",
+				port = "${port}",
+				executable = {
+					command = codelldb_cmd,
+					args = { "--port", "${port}" },
+				},
+			}
+		end
+	end
 
 	-- Alternative GDB adapter
 	dap.adapters.gdb = {
@@ -356,11 +399,27 @@ function M.setup()
   --]]
 
 	-- 🦀 RUST DEBUGGING CONFIGURATION
-	dap.adapters.rust = {
-		type = "executable",
-		command = lldb_cmd or "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap",
-		name = "rust_lldb",
-	}
+	-- Use the same lldb_cmd determined above or use codelldb
+	if lldb_cmd then
+		dap.adapters.rust = {
+			type = "executable",
+			command = lldb_cmd,
+			name = "rust_lldb",
+		}
+	else
+		-- Use codelldb for Rust if available
+		local codelldb_cmd = vim.fn.stdpath("data") .. "/mason/bin/codelldb"
+		if vim.fn.executable(codelldb_cmd) == 1 then
+			dap.adapters.rust = {
+				type = "server",
+				port = "${port}",
+				executable = {
+					command = codelldb_cmd,
+					args = { "--port", "${port}" },
+				},
+			}
+		end
+	end
 
 	dap.configurations.rust = {
 		{

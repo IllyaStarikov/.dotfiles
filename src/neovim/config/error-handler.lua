@@ -22,22 +22,7 @@ function M.setup_notify()
 			level = vim.log.levels[level:upper()] or vim.log.levels.INFO
 		end
 
-		-- Filter out known Google vim plugin errors that are harmless
-		if type(msg) == "string" then
-			-- Skip known harmless errors from Google vim plugins
-			if msg:match("AutoFormatBuffer") and msg:match("Not an editor command") then
-				-- AutoFormatBuffer not available yet, skip error
-				return
-			end
-			if msg:match("ERROR%(NotFound%): plugin or package csimporter") then
-				-- csimporter not available, skip error
-				return
-			end
-			if msg:match("Error parsing Glug settings") then
-				-- Glug parsing errors for comments, skip
-				return
-			end
-		end
+		-- No error filtering - show all errors to the user
 
 		-- For errors, check if we should throttle
 		if level == vim.log.levels.ERROR then
