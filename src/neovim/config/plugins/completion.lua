@@ -87,9 +87,7 @@ return {
 	-- Fuzzy matching configuration
 	fuzzy = {
 		implementation = "prefer_rust_with_warning", -- Use Rust for 6x performance
-		frecency = {
-			enabled = true, -- Prioritize frequently used items
-		},
+		-- frecency is now built into the Rust implementation automatically
 		use_proximity = true, -- Boost nearby matches
 		sorts = { "score", "sort_text" },
 	},
