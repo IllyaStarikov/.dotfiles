@@ -37,8 +37,23 @@ local is_headless = #vim.api.nvim_list_uis() == 0
 local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 
 -- TODO(starikov): Remove this early filter when nvim-lspconfig v3.0.0 is released
--- Set up early notification filter for unavoidable lspconfig deprecation warning
+-- Set up early filter for unavoidable lspconfig deprecation warning
 -- This must be done before any plugins load to catch the warning
+
+-- First, wrap vim.deprecate to catch it at the source
+local original_deprecate = vim.deprecate
+vim.deprecate = function(name, alternative, version, plugin, show_message)
+	-- Filter the specific lspconfig framework deprecation
+	if plugin == "nvim-lspconfig" and version == "v3.0.0" and
+	   type(name) == "string" and name:find("require%('lspconfig'%)") and name:find("framework") then
+		-- Silently ignore this specific deprecation
+		return
+	end
+	-- Pass through all other deprecations
+	return original_deprecate(name, alternative, version, plugin, show_message)
+end
+
+-- Also wrap vim.notify as a backup (in case deprecate is bypassed)
 local original_notify = vim.notify
 vim.notify = function(msg, level, opts)
 	-- Convert level to number if it's not already
