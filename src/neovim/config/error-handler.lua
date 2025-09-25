@@ -27,9 +27,19 @@ function M.setup_notify()
 		-- that cannot be avoided until the plugin provides a migration path
 		if level == vim.log.levels.WARN and type(msg) == "string" then
 			-- Check for the exact deprecation message from nvim-lspconfig
-			if msg:match("^The `require%('lspconfig'%)` \"framework\" is deprecated")
-				and msg:match("use vim%.lsp%.config")
-				and msg:match("Feature will be removed in nvim%-lspconfig v3%.0%.0") then
+			-- The message appears to come with exact text including backticks and quotes
+			local is_lspconfig_deprecation = false
+
+			-- Check if message contains all the key parts of the deprecation warning
+			if msg:find("require%('lspconfig'%)", 1, false) and
+			   msg:find("framework", 1, true) and
+			   msg:find("deprecated", 1, true) and
+			   msg:find("vim%.lsp%.config", 1, false) and
+			   msg:find("nvim%-lspconfig v3%.0%.0", 1, false) then
+				is_lspconfig_deprecation = true
+			end
+
+			if is_lspconfig_deprecation then
 				-- Silently ignore this specific deprecation warning
 				return
 			end
