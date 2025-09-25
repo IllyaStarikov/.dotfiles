@@ -89,12 +89,14 @@ function M.setup()
 		return
 	end
 
-	-- Configure adapters based on OS
-	local adapters = {}
+	-- Configure adapters based on OS (using new http structure)
+	local adapters = {
+		http = {}  -- Use the new http namespace for adapters
+	}
 
 	if is_macos then
 		-- MLX adapter for macOS (OpenAI-compatible API)
-		adapters.mlx = function()
+		adapters.http.mlx = function()
 			return require("codecompanion.adapters").extend("openai_compatible", {
 				name = "mlx",
 				schema = {
@@ -116,7 +118,7 @@ function M.setup()
 	end
 
 	-- Always include Ollama as fallback
-	adapters.ollama = function()
+	adapters.http.ollama = function()
 		return require("codecompanion.adapters").extend("ollama", {
 			name = "ollama",
 			schema = {

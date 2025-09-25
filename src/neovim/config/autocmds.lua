@@ -15,40 +15,11 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
--- Fix for treesitter _range.lua get_offset errors when deleting code fences
--- This is a known issue with treesitter parsing markdown with incomplete code blocks
--- Solution: Override error handler to suppress these specific errors
-
--- Global error handler for treesitter decoration provider errors
-_G.__treesitter_decoration_error_handler = function(err)
-	if
-		err
-		and type(err) == "string"
-		and (
-			err:match("Invalid 'index': Expected Lua number")
-			or err:match("get_offset")
-			or err:match("treesitter/_range.lua")
-		)
-	then
-		-- Silently ignore these specific errors
-		return true
-	end
-	return false
-end
-
--- Override vim.notify to catch and suppress these errors
-local original_notify = vim.notify
-vim.notify = function(msg, level, opts)
-	if
-		type(msg) == "string"
-		and msg:match("Error in decoration provider")
-		and msg:match("nvim.treesitter.highlighter")
-	then
-		-- Don't show this notification
-		return
-	end
-	return original_notify(msg, level, opts)
-end
+-- Known issue: Treesitter has errors with markdown code fences
+-- When editing markdown with incomplete code blocks, treesitter may throw
+-- "Invalid 'index': Expected Lua number" or "get_offset" errors
+-- This is a known upstream bug in treesitter's markdown parser
+-- Users will see these errors but they are harmless and can be ignored
 
 -- Safer markdown editing with code fences
 vim.api.nvim_create_autocmd({ "FileType" }, {
