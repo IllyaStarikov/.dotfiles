@@ -69,7 +69,7 @@ if work_init_ok and work_init then
 	work_init.init()
 else
 	-- Fallback to the old private init method
-	local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/init.lua")
+	local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/neovim/init.lua")
 	if vim.fn.filereadable(private_init_path) == 1 then
 		local ok, private_init = pcall(dofile, private_init_path)
 		if ok and private_init and private_init.init then
