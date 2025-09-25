@@ -36,6 +36,34 @@
 local is_headless = #vim.api.nvim_list_uis() == 0
 local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 
+-- TODO(starikov): Remove this early filter when nvim-lspconfig v3.0.0 is released
+-- Set up early notification filter for unavoidable lspconfig deprecation warning
+-- This must be done before any plugins load to catch the warning
+local original_notify = vim.notify
+vim.notify = function(msg, level, opts)
+	-- Convert level to number if it's not already
+	level = level or vim.log.levels.INFO
+	if type(level) == "string" then
+		level = vim.log.levels[level:upper()] or vim.log.levels.INFO
+	end
+
+	-- Filter the specific lspconfig deprecation warning
+	if level == vim.log.levels.WARN and type(msg) == "string" then
+		-- Check if message contains all the key parts of the deprecation warning
+		if msg:find("require%('lspconfig'%)", 1, false) and
+		   msg:find("framework", 1, true) and
+		   msg:find("deprecated", 1, true) and
+		   msg:find("vim%.lsp%.config", 1, false) and
+		   msg:find("nvim%-lspconfig v3%.0%.0", 1, false) then
+			-- Silently ignore this specific deprecation warning
+			return
+		end
+	end
+
+	-- Pass through all other notifications
+	return original_notify(msg, level, opts)
+end
+
 -- Add the config directory to the Lua package path
 -- This ensures modules can be found regardless of how nvim is invoked
 local config_path = vim.fn.stdpath("config") or vim.fn.expand("~/.config/nvim")
