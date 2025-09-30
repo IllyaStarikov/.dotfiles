@@ -134,7 +134,7 @@ return {
 	-- Fuzzy matching configuration
 	fuzzy = {
 		implementation = "prefer_rust_with_warning", -- Use Rust for 6x performance
-		use_frecency = true, -- Prioritize frequently used items
+		use_frecency = true, -- Prioritize frequently used items (uses file storage if SQLite unavailable)
 		use_proximity = true, -- Boost nearby matches
 		sorts = { "score", "sort_text" },
 	},
