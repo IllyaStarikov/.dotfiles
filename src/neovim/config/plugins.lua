@@ -652,23 +652,11 @@ require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 
-	-- UI enhancements
-	{
-		"stevearc/dressing.nvim",
-		lazy = true,
-		init = function()
-			---@diagnostic disable-next-line: duplicate-set-field
-			vim.ui.select = function(...)
-				require("lazy").load({ plugins = { "dressing.nvim" } })
-				return vim.ui.select(...)
-			end
-			---@diagnostic disable-next-line: duplicate-set-field
-			vim.ui.input = function(...)
-				require("lazy").load({ plugins = { "dressing.nvim" } })
-				return vim.ui.input(...)
-			end
-		end,
-	},
+	-- UI enhancements - Disabled in favor of Snacks.nvim
+	-- {
+	-- 	"stevearc/dressing.nvim",
+	-- 	enabled = false,  -- Using Snacks.nvim for vim.ui overrides instead
+	-- },
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",

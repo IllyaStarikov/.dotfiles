@@ -21,9 +21,6 @@ function M.setup()
 		-- Picker configuration with vim.ui overrides
 		picker = {
 			enabled = true,
-			on_show = function()
-				vim.ui.select = require("snacks.picker").select
-			end,
 		},
 
 		explorer = {
@@ -117,9 +114,6 @@ function M.setup()
 		-- Input with vim.ui.input override
 		input = {
 			enabled = true,
-			on_show = function()
-				vim.ui.input = require("snacks.input")
-			end,
 		},
 
 		git = { enabled = true },
@@ -129,7 +123,7 @@ function M.setup()
 		lazygit = { enabled = false }, -- Disable until lazygit is installed
 	})
 
-	-- Set up vim.ui overrides after setup
+	-- Set up vim.ui overrides after setup (dressing.nvim is now disabled)
 	vim.ui.select = require("snacks.picker").select
 	vim.ui.input = require("snacks.input")
 end
