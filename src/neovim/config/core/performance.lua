@@ -54,10 +54,10 @@ g.netrw_localrmdir = "rm -rf"
 -- No clipboard integration for better performance
 
 -- Reduce LSP logging for performance
--- ERROR level only logs critical failures, not warnings or info messages
+-- WARN level logs warnings and errors, but not info or debug messages
 -- This significantly reduces disk I/O when multiple LSP servers are active
--- Default WARN level can generate hundreds of MB of logs with busy LSP servers
-vim.lsp.set_log_level("ERROR")
+-- Default WARN level balances useful information with performance
+vim.lsp.set_log_level("WARN")
 
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation
 -- Only reset if not explicitly set via command line
