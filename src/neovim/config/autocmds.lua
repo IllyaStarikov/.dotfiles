@@ -1436,8 +1436,13 @@ autocmd({ "BufReadPre", "FileReadPre" }, {
 		local lines = 0
 		if vim.fn.filereadable(file) == 1 then
 			local line_count_str = vim.fn.system("wc -l < " .. vim.fn.shellescape(file))
-			line_count_str = line_count_str:gsub("%s+", "")
-			lines = tonumber(line_count_str) or 0
+			-- Strip all whitespace and newlines
+			line_count_str = line_count_str:gsub("^%s*(.-)%s*$", "%1")
+			-- Safely convert to number, ensuring we only get digits
+			local num_str = line_count_str:match("^(%d+)")
+			if num_str then
+				lines = tonumber(num_str) or 0
+			end
 		end
 
 		-- For BUILD files over 20000 lines or 50MB, optimize settings
@@ -1523,6 +1528,29 @@ autocmd({ "BufReadPost", "FileReadPost" }, {
 -- =============================================================================
 
 -- Additional debug commands can be added here
+
+-- =============================================================================
+-- TREESITTER SAFETY - Ensure parsers are installed
+-- =============================================================================
+
+-- Auto-install markdown parser if it fails
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = { "*.md", "*.markdown" },
+	callback = function()
+		-- Check if markdown parser is available
+		local ok, parsers = pcall(require, "nvim-treesitter.parsers")
+		if ok then
+			local has_parser = parsers.has_parser("markdown")
+			if not has_parser then
+				-- Try to install it silently
+				vim.defer_fn(function()
+					vim.cmd("silent! TSInstall markdown markdown_inline")
+				end, 100)
+			end
+		end
+	end,
+	desc = "Auto-install markdown treesitter parser if missing",
+})
 
 -- =============================================================================
 -- TABLINE - Now handled by bufferline.nvim plugin
