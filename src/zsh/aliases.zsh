@@ -109,8 +109,13 @@ alias gwip="git add -A && git commit -m 'WIP: work in progress'"
 
 # Search & Find Utilities
 
-# Modern search tools
-alias find-file="fd"
+# Modern search tools with fallbacks
+# Use fd if available and executable, otherwise use find
+if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then
+    alias find-file="fd"
+else
+    alias find-file="find . -type f -name"
+fi
 alias find-content="rg"
 alias search="rg -i --pretty --context=3"
 
