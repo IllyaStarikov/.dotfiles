@@ -39,11 +39,28 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Initialize completion system immediately (not deferred)
 # This ensures completions work right away in new shells/tmux/ssh
 autoload -Uz compinit
-compinit -C  # -C skips security check for faster startup
+# Force immediate initialization with full path setup
+if [[ -n "$ZDOTDIR" ]]; then
+    compinit -i -d "$ZDOTDIR/.zcompdump"
+else
+    compinit -i -d "$HOME/.zcompdump"
+fi
+
+# Set up completion paths BEFORE loading completions
+fpath=(
+    /usr/local/share/zsh/site-functions
+    /usr/share/zsh/site-functions
+    $fpath
+)
 
 # Essential completions (load immediately for first tab to work)
-zinit ice blockf atload"zicompinit; zicdreplay"
+zinit ice blockf
 zinit light zsh-users/zsh-completions
+
+# Rebuild completion dump immediately
+autoload -Uz compinit && compinit -C
+zicompinit
+zicdreplay
 
 # Force rebuild completion dump to ensure all completions are available
 autoload -Uz bashcompinit && bashcompinit  # For compatibility with bash completions
@@ -93,10 +110,15 @@ export LESS='-R -S -M -i'
 
 # FZF configuration
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
-if command -v fd &>/dev/null; then
+# Use fd if available and not blocked by Santa, otherwise use find
+# Check if fd is actually executable, not just present
+if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 else
-    export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*"'
+    # Fallback to find with proper exclusions
+    export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*" -not -path "*/node_modules/*" -not -path "*/__pycache__/*" 2>/dev/null'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
 # Key Bindings
