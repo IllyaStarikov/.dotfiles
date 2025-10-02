@@ -36,22 +36,26 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Essential Plugins Only
 
-# Fast syntax highlighting (turbo mode for speed)
+# Initialize completion system immediately (not deferred)
+# This ensures completions work right away in new shells/tmux/ssh
+autoload -Uz compinit
+compinit -C  # -C skips security check for faster startup
+
+# Essential completions (load immediately for first tab to work)
+zinit ice blockf
+zinit light zsh-users/zsh-completions
+
+# Fast syntax highlighting (still deferred for speed)
 zinit wait lucid for \
-    atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
     zdharma-continuum/fast-syntax-highlighting
 
-# Autosuggestions (turbo mode)
+# Autosuggestions (still deferred)
 zinit wait lucid atload"!_zsh_autosuggest_start" for \
     zsh-users/zsh-autosuggestions
 
-# Better directory navigation
+# Better directory navigation (still deferred)
 zinit ice wait"0" lucid
 zinit light agkozak/zsh-z
-
-# Essential completions
-zinit ice wait"0" lucid blockf
-zinit light zsh-users/zsh-completions
 
 # Git aliases (minimal, not the full oh-my-zsh plugin)
 zinit snippet OMZ::lib/git.zsh

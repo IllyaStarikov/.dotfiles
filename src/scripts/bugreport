@@ -515,7 +515,8 @@ collect_software_versions() {
         echo "=== File Utilities ==="
 
         echo -n "fd: "
-        fd --version 2>/dev/null || echo "not found"
+        # Suppress Santa blocking messages on macOS
+        { fd --version 2>&1 | grep -v "Santa" | grep -v "blocked" | head -1; } 2>/dev/null || echo "not found"
 
         echo -n "rg (ripgrep): "
         rg --version 2>/dev/null | head -1 || echo "not found"
@@ -1452,12 +1453,18 @@ EOF
     cd "$(dirname "$REPORT_DIR")"
     tar -czf "$ARCHIVE_NAME" "$(basename "$REPORT_DIR")"
     
-    # Calculate size
+    # Calculate size and file count before cleanup
     local size=$(du -h "$ARCHIVE_NAME" | cut -f1)
-    
+    local file_count=$(find "$REPORT_DIR" -type f 2>/dev/null | wc -l)
+    local error_count=$(grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0")
+
+    # Store these values for the summary
+    export _BUGREPORT_FILE_COUNT="$file_count"
+    export _BUGREPORT_ERROR_COUNT="$error_count"
+
     # Clean up directory
     rm -rf "$REPORT_DIR"
-    
+
     log SUCCESS "Archive created: $ARCHIVE_NAME (${size})"
 }
 
@@ -1517,8 +1524,8 @@ main() {
     echo
     echo "Summary:"
     echo "  - System: $(uname -s) $(uname -r)"
-    echo "  - Files collected: $(find "$REPORT_DIR" -type f | wc -l)"
-    echo "  - Errors/warnings found: $(grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0")"
+    echo "  - Files collected: ${_BUGREPORT_FILE_COUNT:-0}"
+    echo "  - Errors/warnings found: ${_BUGREPORT_ERROR_COUNT:-0}"
     echo
     echo "You can now share this file for debugging purposes."
     echo "All sensitive information has been sanitized."
