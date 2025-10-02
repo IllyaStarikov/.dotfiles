@@ -1458,9 +1458,10 @@ EOF
     local file_count=$(find "$REPORT_DIR" -type f 2>/dev/null | wc -l)
     local error_count=$(grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0")
 
-    # Store these values for the summary
-    export _BUGREPORT_FILE_COUNT="$file_count"
-    export _BUGREPORT_ERROR_COUNT="$error_count"
+    # Store these values globally for the summary (use readonly to prevent issues)
+    readonly _BUGREPORT_FILE_COUNT="$file_count"
+    readonly _BUGREPORT_ERROR_COUNT="$error_count"
+    export _BUGREPORT_FILE_COUNT _BUGREPORT_ERROR_COUNT
 
     # Clean up directory
     rm -rf "$REPORT_DIR"
@@ -1530,10 +1531,14 @@ main() {
     echo "You can now share this file for debugging purposes."
     echo "All sensitive information has been sanitized."
     echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
+
+    # Ensure we exit with success
+    return 0 2>/dev/null || exit 0
 }
 
 # Run main function only if script is executed directly
 # Zsh way to check if script is being sourced
 if [[ "${ZSH_EVAL_CONTEXT}" != *":file" ]] && [[ "${ZSH_EVAL_CONTEXT}" != *":source" ]]; then
     main "$@"
+    exit $?
 fi

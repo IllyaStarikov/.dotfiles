@@ -42,8 +42,11 @@ autoload -Uz compinit
 compinit -C  # -C skips security check for faster startup
 
 # Essential completions (load immediately for first tab to work)
-zinit ice blockf
+zinit ice blockf atload"zicompinit; zicdreplay"
 zinit light zsh-users/zsh-completions
+
+# Force rebuild completion dump to ensure all completions are available
+autoload -Uz bashcompinit && bashcompinit  # For compatibility with bash completions
 
 # Fast syntax highlighting (still deferred for speed)
 zinit wait lucid for \
