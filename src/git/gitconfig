@@ -9,7 +9,7 @@
 [core]
     editor = nvim
     pager = delta
-    excludesfile = ~/.gitignore
+	excludesfile = ~/.gitignore
     # Performance: cache untracked files info, speeds up git status by 10-50%
     untrackedCache = true  # Default: false
 
