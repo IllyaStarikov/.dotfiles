@@ -1613,6 +1613,7 @@ main() {
         # - Google infrastructure warnings (LOAS, gcert)
         # - Process listings with old dates (Sep, Aug, etc.)
         grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | \
+            grep -v "collection_summary.txt" | \
             grep -v "I\[" | \
             grep -v "E\[" | \
             grep -v "\[.*INF\]" | \
@@ -1633,7 +1634,7 @@ main() {
             grep -v "tonumber.*base out of range" | \
             grep -v "gcertstatus.*WARNING\|LOAS.*WARNING" | \
             grep -v "Sep30\|Aug[0-9]" | \
-            wc -l || echo "0"
+            wc -l
     } > "$REPORT_DIR/collection_summary.txt"
 
     # Create final archive
