@@ -6,16 +6,16 @@ A focused, signal-driven test suite for validating dotfiles functionality.
 
 ```bash
 # Run all tests
-./test/runner.py
+./test/runner.zsh
 
 # Run with debug output
-./test/runner.py --debug
+./test/runner.zsh --debug
 
 # Run in CI mode
-./test/runner.py --ci
+CI=1 ./test/runner.zsh
 
-# Save artifacts to specific directory
-./test/runner.py --artifacts /tmp/test-results
+# Run quick tests only
+./test/runner.zsh --quick
 ```
 
 ## Test Philosophy
@@ -49,18 +49,22 @@ This test suite focuses on **meaningful signal** rather than exhaustive coverage
 
 ## Test Artifacts
 
-The test runner generates artifacts in `test/artifacts/`:
+Test results are logged to standard output with color-coded status:
 
-- **test-report-TIMESTAMP.json** - Machine-readable test results
-- **debug-TIMESTAMP.log** - Detailed debug output (when using --debug)
-- **nvim-startup.log** - Neovim startup timing details
+- **Green** - Tests passed
+- **Red** - Tests failed
+- **Yellow** - Warnings or skipped tests
 
 ## Architecture
 
 ```
 test/
-├── runner.py           # Main test runner (Python 3.6+)
-├── artifacts/          # Test results and logs
+├── runner.zsh          # Main test runner (Zsh)
+├── unit/               # Unit tests (< 5s)
+├── functional/         # Functional tests (< 30s)
+├── integration/        # Integration tests (< 60s)
+├── performance/        # Performance regression tests
+├── lib/                # Test framework and helpers
 ├── fixtures/           # Test files for LSP/formatter testing
 │   ├── sample.py
 │   ├── sample.js
@@ -71,49 +75,39 @@ test/
 
 ## Key Features
 
-- **Fast** - All tests complete in <1 second
-- **Focused** - Only tests that provide real signal
-- **Debuggable** - Comprehensive debug mode and artifacts
-- **CI-Ready** - Supports CI mode with JSON reporting
-- **Portable** - Pure Python, no external dependencies
+- **Fast** - Quick tests complete in <10 seconds
+- **Comprehensive** - Unit, functional, integration, and performance tests
+- **Debuggable** - Detailed error messages and logging
+- **CI-Ready** - Runs in GitHub Actions on multiple platforms
+- **Modular** - Easy to add new tests in appropriate category
 
 ## Exit Codes
 
 - `0` - All tests passed
 - `1` - One or more tests failed
-- `130` - Interrupted by user (Ctrl+C)
-- `1` - Test runner error
 
 ## Adding New Tests
 
-To add a new test, create a method in the `TestRunner` class:
+Create a new test file in the appropriate category:
 
-```python
-def test_my_feature(self) -> TestResult:
-    """One-line description of what this tests."""
-    start = time.time()
+```bash
+#!/usr/bin/env zsh
+set -euo pipefail
 
-    # Your test logic here
-    passed = check_something()
+# Source test framework
+source "$TEST_DIR/lib/test_helpers.zsh"
 
-    return TestResult(
-        name="My feature test",
-        passed=passed,
-        duration=time.time() - start,
-        output="What succeeded",
-        error="What failed" if not passed else ""
-    )
+describe "My Feature"
+
+test_case "Feature should work"
+if [[ condition ]]; then
+    pass
+else
+    fail "Expected X but got Y"
+fi
 ```
 
-Then add it to the appropriate suite in `run_all()`:
-
-```python
-self.run_suite("Core Validation", [
-    'test_essential_files',
-    'test_my_feature',  # Add here
-    ...
-])
-```
+Make it executable and run via `runner.zsh`.
 
 ## Design Principles
 
@@ -123,13 +117,13 @@ self.run_suite("Core Validation", [
 4. **No Dependencies** - Use only Python stdlib
 5. **Reproducible** - Tests should be deterministic
 
-## Legacy Tests
+## Test Coverage
 
-The old test framework files are preserved but deprecated. They contained:
+The suite includes:
 
-- Over 50 individual test files
-- Complex categorization (unit/functional/integration/performance/etc.)
-- Redundant tests that didn't provide signal
-- Slow execution (some tests took minutes)
-
-The new `runner.py` consolidates all meaningful tests into a single, fast, maintainable suite.
+- **40+ test files** across all categories
+- **Unit tests** for each script and configuration
+- **Functional tests** for plugin functionality
+- **Integration tests** for multi-component workflows
+- **Performance benchmarks** with < 300ms Neovim startup target
+- **Security scanning** with Gitleaks integration

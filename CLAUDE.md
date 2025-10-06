@@ -32,13 +32,9 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ### Setup and Installation
 ```bash
 # Unified setup script with different modes
-./src/setup/setup.sh           # Full installation (interactive)
+./src/setup/setup.sh           # Full installation (interactive, auto-detects platform)
 ./src/setup/setup.sh --core    # Core packages only
 ./src/setup/setup.sh --symlinks # Just create symlinks
-
-# Platform-specific setup (called by setup.sh)
-./src/setup/mac.sh     # macOS setup (Intel/Apple Silicon)
-./src/setup/linux.sh   # Linux setup (Ubuntu/Debian/Fedora/Arch)
 
 # Create symlinks for all dotfiles
 ./src/setup/symlinks.sh
@@ -169,7 +165,7 @@ cortex agent on/off    # Toggle AI agent mode
 - `.dotfiles.private/` submodule for work-specific configurations
 - Contains: Google/Garmin detection, tmuxinator templates, sensitive settings
 - Work overrides loaded conditionally in Neovim and shell configs
-- Spell files stored in private repo: `~/.dotfiles/.dotfiles.private/spell/`
+- Spell files stored in private repo: `~/.dotfiles/.dotfiles.private/config/spell/`
 
 **3. Theme System Architecture**
 - Atomic switching across all applications (Alacritty, tmux, Neovim, WezTerm, Starship)
@@ -246,7 +242,7 @@ config/
 
 **Language Configurations**: All language-specific configs are in `/src/language/`. References in symlinks.sh, fixy, and CI workflows have been updated accordingly.
 
-**Spell Files**: Neovim spell files are configured to load from `~/.dotfiles/.dotfiles.private/spell/` directly via `spellfile` option in `options.lua`. No symlinks needed.
+**Spell Files**: Neovim spell files are configured to load from `~/.dotfiles/.dotfiles.private/config/spell/` directly via `spellfile` option in `options.lua`. No symlinks needed.
 
 **Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
@@ -259,7 +255,7 @@ config/
 
 **Theme Changes**: When modifying theme code, test all four TokyoNight variants. The system handles tmux reloading automatically.
 
-**Git Commits**: Pre-commit hooks run Gitleaks for secret detection. The configuration is at `/src/gitleaks.toml`.
+**Git Commits**: Pre-commit hooks run Gitleaks for secret detection using Gitleaks default configuration.
 
 **Neovim Debugging**:
 ```bash

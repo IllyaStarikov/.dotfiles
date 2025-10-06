@@ -44,8 +44,13 @@ local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 local original_deprecate = vim.deprecate
 vim.deprecate = function(name, alternative, version, plugin, show_message)
 	-- Filter the specific lspconfig framework deprecation
-	if plugin == "nvim-lspconfig" and version == "v3.0.0" and
-	   type(name) == "string" and name:find("require%('lspconfig'%)") and name:find("framework") then
+	if
+		plugin == "nvim-lspconfig"
+		and version == "v3.0.0"
+		and type(name) == "string"
+		and name:find("require%('lspconfig'%)")
+		and name:find("framework")
+	then
 		-- Silently ignore this specific deprecation
 		return
 	end
@@ -65,11 +70,13 @@ vim.notify = function(msg, level, opts)
 	-- Filter the specific lspconfig deprecation warning
 	if level == vim.log.levels.WARN and type(msg) == "string" then
 		-- Check if message contains all the key parts of the deprecation warning
-		if msg:find("require%('lspconfig'%)", 1, false) and
-		   msg:find("framework", 1, true) and
-		   msg:find("deprecated", 1, true) and
-		   msg:find("vim%.lsp%.config", 1, false) and
-		   msg:find("nvim%-lspconfig v3%.0%.0", 1, false) then
+		if
+			msg:find("require%('lspconfig'%)", 1, false)
+			and msg:find("framework", 1, true)
+			and msg:find("deprecated", 1, true)
+			and msg:find("vim%.lsp%.config", 1, false)
+			and msg:find("nvim%-lspconfig v3%.0%.0", 1, false)
+		then
 			-- Silently ignore this specific deprecation warning
 			return
 		end

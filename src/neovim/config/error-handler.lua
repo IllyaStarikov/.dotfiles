@@ -31,11 +31,13 @@ function M.setup_notify()
 			local is_lspconfig_deprecation = false
 
 			-- Check if message contains all the key parts of the deprecation warning
-			if msg:find("require%('lspconfig'%)", 1, false) and
-			   msg:find("framework", 1, true) and
-			   msg:find("deprecated", 1, true) and
-			   msg:find("vim%.lsp%.config", 1, false) and
-			   msg:find("nvim%-lspconfig v3%.0%.0", 1, false) then
+			if
+				msg:find("require%('lspconfig'%)", 1, false)
+				and msg:find("framework", 1, true)
+				and msg:find("deprecated", 1, true)
+				and msg:find("vim%.lsp%.config", 1, false)
+				and msg:find("nvim%-lspconfig v3%.0%.0", 1, false)
+			then
 				is_lspconfig_deprecation = true
 			end
 

@@ -91,7 +91,7 @@ function M.setup()
 
 	-- Configure adapters based on OS (using new http structure)
 	local adapters = {
-		http = {}  -- Use the new http namespace for adapters
+		http = {}, -- Use the new http namespace for adapters
 	}
 
 	if is_macos then

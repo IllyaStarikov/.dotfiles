@@ -9,7 +9,7 @@
 #   gitleaks - Install with: brew install gitleaks
 #
 # CONFIGURATION:
-#   Uses .gitleaks.toml in repo root or ~/.dotfiles/src/gitleaks.toml
+#   Uses .gitleaks.toml in repo root or Gitleaks default configuration
 #   See: https://github.com/gitleaks/gitleaks
 #
 # BYPASS:
@@ -29,12 +29,10 @@ if ! command -v gitleaks &> /dev/null; then
     exit 0
 fi
 
-# Find gitleaks config
+# Find gitleaks config (check local repo only)
 GITLEAKS_CONFIG=""
 if [[ -f ".gitleaks.toml" ]]; then
     GITLEAKS_CONFIG=".gitleaks.toml"
-elif [[ -f "$HOME/.dotfiles/src/gitleaks.toml" ]]; then
-    GITLEAKS_CONFIG="$HOME/.dotfiles/src/gitleaks.toml"
 fi
 
 # Run gitleaks on staged files

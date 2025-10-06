@@ -18,56 +18,56 @@ indent_size = 2
 indent_size = 4
 max_line_length = 100
 
-# C/C++ files (Google C++ Style Guide: 2 spaces)
+# C/C++ files (2 spaces, 100-char modern preference)
 [*.{c,h,cpp,hpp,cc,cxx,hxx}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
-# Shell scripts (Google Shell Style Guide: 2 spaces)
+# Shell scripts (2 spaces, 100-char modern preference)
 [*.{sh,bash,zsh,fish}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
-# JavaScript/TypeScript (Google JS Style Guide: 2 spaces)
+# JavaScript/TypeScript (2 spaces, 100-char modern preference)
 [*.{js,jsx,ts,tsx,mjs,cjs}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
-# Web files (Google HTML/CSS Style Guide: 2 spaces)
+# Web files (2 spaces, 100-char modern preference)
 [*.{html,htm,css,scss,sass,less,xml}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
 # Swift files (2 spaces)
 [*.swift]
 indent_size = 2
 max_line_length = 100
 
-# Lua files (2 spaces)
+# Lua files (2 spaces, 100-char modern preference)
 [*.lua]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
-# LaTeX files (2 spaces)
+# LaTeX files (2 spaces, 100-char modern preference)
 [*.{tex,bib,cls,sty}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
-# Ruby files (2 spaces)
+# Ruby files (2 spaces, 100-char modern preference)
 [*.{rb,rake,gemspec}]
 indent_size = 2
-max_line_length = 80
+max_line_length = 100
 
 # Rust files (4 spaces)
 [*.rs]
 indent_size = 4
 max_line_length = 100
 
-# Go files (tabs)
+# Go files (tabs, no line limit per style guide)
 [*.go]
 indent_style = tab
 indent_size = 4
-max_line_length = 80
+# max_line_length intentionally omitted - Go style guide has no limit
 
 # Makefiles (tabs required)
 [{Makefile,makefile,*.mk,*.mak}]

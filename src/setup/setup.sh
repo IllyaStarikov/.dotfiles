@@ -1288,8 +1288,8 @@ main() {
       git config --global core.excludesfile '~/.gitignore' || true
 
       # Install git hooks
-      if [[ -f "$DOTFILES_DIR/git/install-git-hooks" ]]; then
-        zsh "$DOTFILES_DIR/git/install-git-hooks"
+      if [[ -f "$DOTFILES_DIR/src/git/install-git-hooks" ]]; then
+        zsh "$DOTFILES_DIR/src/git/install-git-hooks"
       fi
       ;;
 

@@ -11,15 +11,17 @@ This directory contains configuration files that control the behavior of various
 ```
 config/
 ├── cortex/             # AI assistant configuration
-│   └── logs/          # Runtime logs for cortex AI system
-└── fixy.json  # Universal code formatter configuration
+│   ├── config.yaml    # Cortex provider and model settings
+│   ├── cortex.env     # Environment variables for shell integration
+│   └── stats/         # Usage statistics and metrics
+└── fixy.json          # Universal code formatter configuration
 ```
 
 ## Files
 
 ### fixy.json
 
-Comprehensive configuration for the universal code formatting script (`~/. dotfiles/src/scripts/fixy`).
+Comprehensive configuration for the universal code formatting script (`~/.dotfiles/src/scripts/fixy`).
 
 **Purpose**: Defines formatter priorities, commands, and language mappings for automatic code formatting across 20+ programming languages.
 
@@ -139,12 +141,12 @@ The fixy script reads this configuration:
 
 ```bash
 # Format a file using configured priority
-~/. dotfiles/src/scripts/fixy myfile.py
+~/.dotfiles/src/scripts/fixy myfile.py
 
 # The script will:
 # 1. Read config/fixy.json
 # 2. Identify file as Python
-# 3. Try formatters in order: ruff, black, yapf, autopep8
+# 3. Try formatters in order: yapf, ruff, black, autopep8
 # 4. Run isort if available
 # 5. Apply text normalizations
 ```
@@ -187,7 +189,6 @@ Change formatter order to adjust priorities:
 ### With Scripts
 
 - `src/scripts/fixy`: Primary consumer of fixy.json
-- `src/scripts/fixy-all`: Batch formatting using configuration
 - Git hooks: Pre-commit formatting
 
 ### With Editors
@@ -251,7 +252,7 @@ Debug with verbose mode:
 "verbose": true
 
 # Run formatter
-~/. dotfiles/src/scripts/fixy --verbose myfile.py
+~/.dotfiles/src/scripts/fixy --verbose myfile.py
 ```
 
 ### Wrong Formatter Used
