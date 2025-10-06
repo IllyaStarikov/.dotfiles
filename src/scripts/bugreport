@@ -1503,8 +1503,9 @@ collect_debug_info() {
 # Create final archive
 #######################################
 create_archive() {
+    local FINAL_ERROR_COUNT="${1:-0}"
     log PROGRESS "Creating archive"
-    
+
     # Create README
     cat > "$REPORT_DIR/README.txt" << EOF
 Dotfiles Bug Report
@@ -1541,8 +1542,9 @@ EOF
     
     # Calculate size and file count before cleanup
     local size=$(du -h "$ARCHIVE_NAME" | cut -f1)
-    local file_count=$(find "$REPORT_DIR" -type f 2>/dev/null | wc -l)
-    local error_count=$(grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | wc -l || echo "0")
+    local file_count=$(find "$REPORT_DIR" -type f ! -path "*/test_logs/*" 2>/dev/null | wc -l)
+    # Use the pre-calculated error count from main() - avoids slow duplicate grep
+    local error_count="$FINAL_ERROR_COUNT"
 
     # Store these values globally for the summary (use readonly to prevent issues)
     readonly _BUGREPORT_FILE_COUNT="$file_count"
@@ -1582,41 +1584,16 @@ main() {
 
     # Run tests if requested
     run_tests
-    
-    # Create summary of what was collected
-    {
-        echo "=== Collection Summary ==="
-        echo "Report generated at: $(date)"
-        echo
-        echo "Files collected:"
-        find "$REPORT_DIR" -type f \( -name "*.txt" -o -name "*.json" \) ! -path "*/test_logs/*" | while read -r file; do
-            local size=$(du -h "$file" | cut -f1)
-            local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
-            echo "  - $(basename "$file"): ${lines} lines (${size})"
-        done
-        echo
-        echo "Errors and warnings found:"
-        # Count actual errors/warnings, excluding historical logs and benign messages
-        # Excluded patterns:
-        # - I[timestamp] - LSP info messages
-        # - E[timestamp] - clangd/LSP server error logs
-        # - [timestamp INF/WRN] - Marksman logs
-        # - "stderr" lines - LSP server output
-        # - IncludeCleaner - clangd include messages
-        # - ON_ATTACH_ERROR - old attachment errors
-        # - "Cannot find request" - benign cancellation messages
-        # - Healthcheck symbols (⚠️ ❌) - expected warnings from plugins
-        # - Historical errors (all past months)
-        # - Installation messages (Downloading, Creating, Successfully)
-        # - Old vim plugin errors (csimporter, Glug, maktaba)
-        # - Mason missing dependencies (npm, composer, php, julia, go)
-        # - Google infrastructure warnings (LOAS, gcert)
-        # - Process listings with old dates (Sep, Aug, Oct, etc.)
-        # - ImageMagick deprecation warnings (convert → magick)
-        # - LSP parsing errors for temporary files
-        grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | \
+
+    # Calculate error count before summary (used in both summary and archive)
+    # This grep is slow so we only do it once and reuse the result
+    log PROGRESS "Calculating error statistics"
+    local FINAL_ERROR_COUNT
+    FINAL_ERROR_COUNT=$(
+        # Use find with --exclude to avoid searching test_logs entirely
+        find "$REPORT_DIR" -type f ! -path "*/test_logs/*" -exec grep -l "ERROR\|FAIL\|WARNING" {} \; 2>/dev/null | \
+        xargs grep "ERROR\|FAIL\|WARNING" 2>/dev/null | \
             grep -v "collection_summary.txt" | \
-            grep -v "/test_logs/" | \
             grep -v "I\[" | \
             grep -v "E\[" | \
             grep -v "\[.*INF\]" | \
@@ -1641,10 +1618,26 @@ main() {
             grep -v "Error while parsing.*tmp.*zsh.*syntax error" | \
             grep -v "WARN.*handlers.lua.*syntax error" | \
             wc -l
+    )
+
+    # Create summary of what was collected
+    {
+        echo "=== Collection Summary ==="
+        echo "Report generated at: $(date)"
+        echo
+        echo "Files collected:"
+        find "$REPORT_DIR" -type f \( -name "*.txt" -o -name "*.json" \) ! -path "*/test_logs/*" | while read -r file; do
+            local size=$(du -h "$file" | cut -f1)
+            local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
+            echo "  - $(basename "$file"): ${lines} lines (${size})"
+        done
+        echo
+        echo "Errors and warnings found:"
+        echo "$FINAL_ERROR_COUNT"
     } > "$REPORT_DIR/collection_summary.txt"
 
     # Create final archive
-    create_archive
+    create_archive "$FINAL_ERROR_COUNT"
 
     echo
     echo "${BOLD}═══════════════════════════════════════════════════════${NC}"
