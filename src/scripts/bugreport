@@ -791,7 +791,43 @@ collect_nvim_diagnostics() {
     
     # Basic info
     nvim --version > "$REPORT_DIR/config/nvim_version.txt" 2>&1
-    
+
+    # Verbose logging (V9 = maximum verbosity for debugging)
+    log DEBUG "Generating verbose Neovim log"
+    {
+        echo "=== Neovim Verbose Startup Log (V9) ==="
+        echo "Generated: $(date)"
+        echo "Command: nvim -V9 --headless +qa!"
+        echo
+        # Run with maximum verbosity to capture all startup details
+        timeout 10 nvim -V9 --headless +qa! 2>&1 || {
+            echo "Verbose log generation timed out after 10 seconds"
+        }
+    } > "$REPORT_DIR/logs/nvim_verbose.log" 2>&1
+
+    # Startup profiling
+    log DEBUG "Profiling Neovim startup"
+    {
+        echo "=== Neovim Startup Profiling ==="
+        echo "Generated: $(date)"
+        echo
+        timeout 10 nvim --startuptime "$REPORT_DIR/logs/nvim_startuptime.log" --headless +qa! 2>&1 || {
+            echo "Startup profiling timed out" > "$REPORT_DIR/logs/nvim_startuptime.log"
+        }
+    }
+
+    # Capture any existing vimlog.txt files from user's directory
+    if [[ -f ~/vimlog.txt ]]; then
+        log DEBUG "Found existing vimlog.txt in home directory"
+        cp ~/vimlog.txt "$REPORT_DIR/logs/nvim_vimlog_home.txt" 2>/dev/null
+    fi
+
+    # Capture vimlog from current directory if exists
+    if [[ -f "$DOTFILES_DIR/vimlog.txt" ]]; then
+        log DEBUG "Found existing vimlog.txt in dotfiles directory"
+        cp "$DOTFILES_DIR/vimlog.txt" "$REPORT_DIR/logs/nvim_vimlog_dotfiles.txt" 2>/dev/null
+    fi
+
     # Checkhealth (with timeout to prevent hanging)
     log DEBUG "Running Neovim checkhealth"
     timeout 10 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
@@ -1226,10 +1262,34 @@ collect_logs() {
         cp -r "$DOTFILES_DIR/test/logs" "$REPORT_DIR/logs/test_logs" 2>/dev/null
     fi
     
-    # Neovim logs
+    # Neovim logs (comprehensive collection)
     if [[ -d ~/.local/state/nvim ]]; then
-        log DEBUG "Collecting Neovim logs"
+        log DEBUG "Collecting Neovim state logs"
+        # Collect all .log files from the last 7 days
         find ~/.local/state/nvim -name "*.log" -type f -mtime -7 -exec cp {} "$REPORT_DIR/logs/" \; 2>/dev/null
+
+        # Copy startup_errors.log even if older
+        if [[ -f ~/.local/state/nvim/startup_errors.log ]]; then
+            cp ~/.local/state/nvim/startup_errors.log "$REPORT_DIR/logs/nvim_startup_errors.log" 2>/dev/null
+        fi
+    fi
+
+    # Neovim cache logs
+    if [[ -d ~/.cache/nvim ]]; then
+        log DEBUG "Collecting Neovim cache logs"
+        find ~/.cache/nvim -name "*.log" -type f -mtime -7 -exec cp {} "$REPORT_DIR/logs/" \; 2>/dev/null
+    fi
+
+    # Lazy.nvim log (if exists)
+    if [[ -f ~/.local/state/nvim/lazy.log ]]; then
+        log DEBUG "Found Lazy.nvim log"
+        cp ~/.local/state/nvim/lazy.log "$REPORT_DIR/logs/lazy.log" 2>/dev/null
+    fi
+
+    # Tree-sitter parser compilation logs
+    if [[ -f ~/.local/share/nvim/tree-sitter.log ]]; then
+        log DEBUG "Found Tree-sitter log"
+        cp ~/.local/share/nvim/tree-sitter.log "$REPORT_DIR/logs/tree-sitter.log" 2>/dev/null
     fi
     
     # System logs (last 100 lines, sanitized)
@@ -1458,11 +1518,21 @@ Contents:
 - metadata.json: Report metadata and options
 - system/: System and hardware information
 - config/: Dotfiles and application configuration
-- logs/: Recent log files (if included)
+- logs/: Comprehensive log collection including:
+  * nvim_verbose.log: Maximum verbosity Neovim startup (V9)
+  * nvim_startuptime.log: Detailed startup profiling
+  * nvim_vimlog_*.txt: Any existing vimlog.txt files
+  * lsp.log, mason.log, luasnip.log: Plugin-specific logs
+  * lazy.log, tree-sitter.log: Package manager logs
+  * system.log: Recent system log entries
 - tests/: Test results (if run)
-- debug/: Additional debug information
+- debug/: Additional debug information and performance metrics
 
 To extract: tar -xzf $ARCHIVE_NAME
+
+Debug Logs:
+The logs/ directory contains extensive debugging information generated with
+maximum verbosity (nvim -V9) to help diagnose Neovim configuration issues.
 EOF
     
     # Create archive
