@@ -41,7 +41,8 @@ class AnthropicProvider(BaseProvider):
         """Fetch available Claude models."""
         models = []
 
-        # Always use the known Claude models list since Anthropic doesn't have a public models endpoint
+        # Always use the known Claude models list
+        # (Anthropic doesn't have a public models endpoint)
         # These are the current Claude models as of January 2025
         known_models = [
             # Claude 3.5 Models

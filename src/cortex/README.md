@@ -1,4 +1,4 @@
-# brAIn - Unified AI Model Management System
+# Cortex - Unified AI Model Management System
 
 A production-grade AI model management system that provides unified access to multiple AI providers (MLX, Ollama, Anthropic, OpenAI, Google, HuggingFace) with seamless integration for terminal usage and Neovim.
 
@@ -15,26 +15,26 @@ A production-grade AI model management system that provides unified access to mu
 ## Installation
 
 ```bash
-pip install -e /Users/starikov/.dotfiles/src/brain
+pip install -e ~/.dotfiles/src/cortex
 ```
 
 ## Quick Start
 
 ```bash
 # List all available models
-brain list
+cortex list
 
 # Set a model
-brain model mlx-community/Meta-Llama-3.1-8B-Instruct-4bit
+cortex model mlx-community/Meta-Llama-3.1-8B-Instruct-4bit
 
 # Start the model server
-brain start
+cortex start
 
 # Chat with the model
-brain chat
+cortex chat
 
 # Check status
-brain status
+cortex status
 ```
 
 ## Commands
@@ -50,21 +50,22 @@ brain status
 
 ## Configuration
 
-Configuration files are stored in `~/.dotfiles/config/brain/`:
+Configuration files are stored in `~/.dotfiles/config/cortex/`:
 
 - `config.yaml` - Main configuration
-- `brain.env` - Environment variables for shell integration
-- `models.yaml` - Model metadata cache
+- `cortex.env` - Environment variables for shell integration
+- `stats/` - Usage statistics and metrics
 
 API keys are stored securely in `~/.dotfiles/.dotfiles.private/`
 
 ## Neovim Integration
 
-brAIn automatically sets environment variables that are picked up by CodeCompanion and Avante.nvim:
+Cortex automatically sets environment variables that are picked up by CodeCompanion and Avante.nvim:
 
-- `BRAIN_PROVIDER` - Current provider (mlx, ollama, etc.)
-- `BRAIN_MODEL` - Current model name
-- `BRAIN_ENDPOINT` - API endpoint URL
+- `CORTEX_PROVIDER` - Current provider (mlx, ollama, etc.)
+- `CORTEX_MODEL` - Current model name
+- `CORTEX_ENDPOINT` - API endpoint URL
+- `AVANTE_PROVIDER`, `AVANTE_OPENAI_MODEL`, `AVANTE_OPENAI_ENDPOINT` - For Avante.nvim integration
 
 ## System Requirements
 

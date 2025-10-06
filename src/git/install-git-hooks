@@ -122,11 +122,11 @@ set -euo pipefail
 
 echo "🔄 Updating symlinks after merge..."
 
-# Run aliases script if it exists
-if [[ -x "${HOME}/.dotfiles/src/setup/aliases.sh" ]]; then
-  "${HOME}/.dotfiles/src/setup/aliases.sh"
+# Run symlinks script if it exists
+if [[ -x "${HOME}/.dotfiles/src/setup/symlinks.sh" ]]; then
+  "${HOME}/.dotfiles/src/setup/symlinks.sh"
 else
-  echo "⚠️  Could not find aliases.sh to update symlinks"
+  echo "⚠️  Could not find symlinks.sh to update symlinks"
 fi
 EOF
   

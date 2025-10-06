@@ -7,9 +7,8 @@ Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 - `gitconfig` - Main configuration
 - `gitignore` - Global ignore patterns
 - `gitmessage` - Commit template
-- `gitleaks.toml` - Secret scanning
 - `install-git-hooks` - Hook installer
-- `pre-commit-hook` - Validation script
+- `pre-commit-hook` - Validation script (includes Gitleaks secret scanning)
 - `setup-git-signing` - GPG/SSH setup
 
 ## Quick Setup
@@ -76,7 +75,7 @@ Beautiful side-by-side diffs with syntax highlighting:
 
 ## Common Issues
 
-**Gitleaks blocking commits**: False positive? Update `.gitleaks.toml`.
+**Gitleaks blocking commits**: False positive? Use Gitleaks default configuration or create `.gitleaks.toml` in project root.
 
 **Delta not working**: Install with `brew install git-delta`.
 

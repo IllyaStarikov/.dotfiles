@@ -6,7 +6,7 @@ Formatters, linters, and build tools for consistent code quality.
 
 | File                 | Language | Tool         | Purpose                              |
 | -------------------- | -------- | ------------ | ------------------------------------ |
-| `.clang-format`      | C/C++    | clang-format | Google style, 4 spaces, 100 cols     |
+| `.clang-format`      | C/C++    | clang-format | Google style, 2 spaces, 100 cols     |
 | `clangd_config.yaml` | C/C++    | clangd       | LSP with C++17, warnings, clang-tidy |
 | `pyproject.toml`     | Python   | Multiple     | Black, isort, project metadata       |
 | `ruff.toml`          | Python   | Ruff         | Fast linting and formatting          |
@@ -42,10 +42,10 @@ fixy file.cpp  # Uses clang-format settings
 
 ## Key Settings
 
-**Python**: 88 char lines (Black standard), comprehensive linting
-**C/C++**: Google style base, C++17 default, modernize checks
-**Lua**: 2-space indent, expanded tables, call parentheses
-**Markdown**: No bare URLs, consistent headers, 100 char limit
+**Python**: 100 char lines (modern preference), comprehensive linting
+**C/C++**: Google style base, 2-space indent, C++17 default, modernize checks
+**Lua**: 2-space indent, expanded tables, call parentheses, 100 char limit
+**Markdown**: ATX-style headers, 2-space list indent, 100 char limit
 
 ## Customization
 

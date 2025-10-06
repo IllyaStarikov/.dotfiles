@@ -13,9 +13,9 @@ themes/
 │   ├── kitty.conf      # Kitty terminal colors
 │   ├── starship.toml   # Shell prompt theme
 │   └── tmux.conf       # Tmux status bar colors
-├── tokyonight_moon/    # Soft dark theme (default dark)
+├── tokyonight_moon/    # Soft dark theme
 ├── tokyonight_night/   # Standard dark theme
-└── tokyonight_storm/   # High contrast dark theme
+└── tokyonight_storm/   # High contrast dark theme (default dark)
 ```
 
 ### How to use:
@@ -25,8 +25,8 @@ themes/
 theme           # Auto-detect based on macOS appearance
 theme day       # Force light theme
 theme night     # Force dark night variant
-theme moon      # Force dark moon variant (default)
-theme storm     # Force dark storm variant
+theme moon      # Force dark moon variant
+theme storm     # Force dark storm variant (default dark)
 
 # Manual application (not recommended)
 cp themes/tokyonight_day/alacritty.toml ~/.config/alacritty/theme.toml

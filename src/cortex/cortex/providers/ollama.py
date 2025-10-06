@@ -46,7 +46,8 @@ class OllamaProvider(BaseProvider):
                 async with session.get(f'{self.api_url}/tags') as response:
                     if response.status == 200:
                         data = await response.json()
-                        # API returns: models array with name, model, modified_at, size, digest, details
+                        # API returns: models array with name, model, modified_at,
+                        # size, digest, details
                         for model_data in data.get('models', []):
                             # For each model, get detailed info from /api/show
                             model_info = await self._get_model_details(session, model_data)
