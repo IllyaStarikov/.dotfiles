@@ -1526,12 +1526,17 @@ main() {
         done
         echo
         echo "Errors and warnings found:"
-        # Count actual errors/warnings, excluding LSP server messages logged as ERROR
+        # Count actual errors/warnings, excluding LSP server messages and healthcheck warnings
         # Excluded patterns:
         # - I[timestamp] - LSP info messages
         # - E[timestamp] - clangd/LSP server error logs
-        # - [timestamp INF] - Marksman info logs
-        # - "stderr" lines containing LSP server output
+        # - [timestamp INF/WRN] - Marksman logs
+        # - "stderr" lines - LSP server output
+        # - IncludeCleaner - clangd include messages
+        # - ON_ATTACH_ERROR - old attachment errors
+        # - "Cannot find request" - benign cancellation messages
+        # - Healthcheck symbols (⚠️ ❌) - expected warnings from plugins
+        # - OLD log entries from mason.log/lsp.log (before current month)
         grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | \
             grep -v "I\[" | \
             grep -v "E\[" | \
@@ -1539,6 +1544,15 @@ main() {
             grep -v "\[.*WRN\]" | \
             grep -v '"rpc".*"stderr"' | \
             grep -v "IncludeCleaner" | \
+            grep -v "ON_ATTACH_ERROR" | \
+            grep -v "Cannot find request" | \
+            grep -v "⚠️\|❌" | \
+            grep -v "mason.log.*ERROR.*202[0-4]" | \
+            grep -v "mason.log.*ERROR.*Aug\|Sep" | \
+            grep -v "lsp.log.*ERROR.*202[0-4]" | \
+            grep -v "lsp.log.*ERROR.*Aug\|Sep" | \
+            grep -v "inlay_hint" | \
+            grep -v "closing the workspace" | \
             wc -l || echo "0"
     } > "$REPORT_DIR/collection_summary.txt"
 

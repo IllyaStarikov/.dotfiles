@@ -126,7 +126,8 @@ function M.setup()
 	-- Set up vim.ui overrides after setup (dressing.nvim is now disabled)
 	-- Set directly to Snacks modules (required for healthcheck to pass)
 	vim.ui.select = snacks.picker.select
-	vim.ui.input = snacks.input
+	-- Snacks.input is a callable that returns the input handler
+	vim.ui.input = require("snacks").input
 end
 
 return M
