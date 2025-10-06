@@ -1526,11 +1526,19 @@ main() {
         done
         echo
         echo "Errors and warnings found:"
-        # Count actual errors/warnings, excluding LSP info messages logged as ERROR
-        # LSP info messages start with patterns like: I[timestamp] or "I[timestamp]
+        # Count actual errors/warnings, excluding LSP server messages logged as ERROR
+        # Excluded patterns:
+        # - I[timestamp] - LSP info messages
+        # - E[timestamp] - clangd/LSP server error logs
+        # - [timestamp INF] - Marksman info logs
+        # - "stderr" lines containing LSP server output
         grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | \
             grep -v "I\[" | \
-            grep -v '"rpc".*"stderr".*"I\[' | \
+            grep -v "E\[" | \
+            grep -v "\[.*INF\]" | \
+            grep -v "\[.*WRN\]" | \
+            grep -v '"rpc".*"stderr"' | \
+            grep -v "IncludeCleaner" | \
             wc -l || echo "0"
     } > "$REPORT_DIR/collection_summary.txt"
 
