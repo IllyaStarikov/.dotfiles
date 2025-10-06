@@ -325,6 +325,9 @@ config.keys = {
 
   -- Command palette
   { key = "p", mods = "CMD|SHIFT", action = wezterm.action.ActivateCommandPalette },
+
+  -- Shift+Enter sends Escape+Enter (for tmux/vim)
+  { key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\x1b\r") },
 }
 
 -- 🎯 HYPERLINK RULES
