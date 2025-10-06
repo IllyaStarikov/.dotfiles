@@ -124,13 +124,9 @@ function M.setup()
 	})
 
 	-- Set up vim.ui overrides after setup (dressing.nvim is now disabled)
-	-- Note: These are set as functions to ensure Snacks is fully loaded
-	vim.ui.select = function(...)
-		return require("snacks.picker").select(...)
-	end
-	vim.ui.input = function(...)
-		return require("snacks.input")(...)
-	end
+	-- Set directly to Snacks modules (required for healthcheck to pass)
+	vim.ui.select = snacks.picker.select
+	vim.ui.input = snacks.input
 end
 
 return M
