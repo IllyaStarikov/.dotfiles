@@ -15,9 +15,9 @@ Automatically switches based on macOS appearance or manual selection:
 ```bash
 theme          # Auto-detect from macOS
 theme day      # Light theme
-theme moon     # Dark (default)
+theme moon     # Dark variant
 theme night    # Dark variant
-theme storm    # High contrast dark
+theme storm    # High contrast dark (default)
 ```
 
 ## Visual Settings

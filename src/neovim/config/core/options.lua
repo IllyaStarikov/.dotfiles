@@ -55,7 +55,7 @@ opt.wildmode = { "longest:list", "full" } -- Default: "full" - first tab shows l
 -- Spell checking configuration
 -- spell false is default
 opt.spelllang = { "en_us" } -- Default: "en" (US English specifically)
-opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/spell/en.utf-8.add") -- Custom spell file
+opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/config/spell/en.utf-8.add") -- Custom spell file
 -- errorbells false is default in Neovim
 -- visualbell doesn't exist in Neovim
 
