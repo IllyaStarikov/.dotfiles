@@ -830,8 +830,8 @@ collect_nvim_diagnostics() {
 
     # Checkhealth (with timeout to prevent hanging)
     log DEBUG "Running Neovim checkhealth"
-    timeout 10 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
-        echo "Neovim checkhealth timed out after 10 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
+    timeout 30 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
+        echo "Neovim checkhealth timed out after 30 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
     }
     
     # Plugin list (with timeout and better error handling)
@@ -1589,7 +1589,7 @@ main() {
         echo "Report generated at: $(date)"
         echo
         echo "Files collected:"
-        find "$REPORT_DIR" -type f -name "*.txt" -o -name "*.json" | while read -r file; do
+        find "$REPORT_DIR" -type f \( -name "*.txt" -o -name "*.json" \) ! -path "*/test_logs/*" | while read -r file; do
             local size=$(du -h "$file" | cut -f1)
             local lines=$(wc -l < "$file" 2>/dev/null || echo "0")
             echo "  - $(basename "$file"): ${lines} lines (${size})"
@@ -1609,11 +1609,14 @@ main() {
         # - Historical errors (all past months)
         # - Installation messages (Downloading, Creating, Successfully)
         # - Old vim plugin errors (csimporter, Glug, maktaba)
-        # - Mason missing dependencies (npm, composer, php, julia)
+        # - Mason missing dependencies (npm, composer, php, julia, go)
         # - Google infrastructure warnings (LOAS, gcert)
-        # - Process listings with old dates (Sep, Aug, etc.)
+        # - Process listings with old dates (Sep, Aug, Oct, etc.)
+        # - ImageMagick deprecation warnings (convert → magick)
+        # - LSP parsing errors for temporary files
         grep -r "ERROR\|FAIL\|WARNING" "$REPORT_DIR" 2>/dev/null | \
             grep -v "collection_summary.txt" | \
+            grep -v "/test_logs/" | \
             grep -v "I\[" | \
             grep -v "E\[" | \
             grep -v "\[.*INF\]" | \
@@ -1623,17 +1626,20 @@ main() {
             grep -v "ON_ATTACH_ERROR" | \
             grep -v "Cannot find request" | \
             grep -v "⚠️\|❌" | \
-            grep -v "ERROR.*Jan\|ERROR.*Feb\|ERROR.*Mar\|ERROR.*Apr\|ERROR.*May\|ERROR.*Jun\|ERROR.*Jul\|ERROR.*Aug\|ERROR.*Sep" | \
-            grep -v "WARNING.*Jan\|WARNING.*Feb\|WARNING.*Mar\|WARNING.*Apr\|WARNING.*May\|WARNING.*Jun\|WARNING.*Jul\|WARNING.*Aug\|WARNING.*Sep" | \
+            grep -v "ERROR.*Jan\|ERROR.*Feb\|ERROR.*Mar\|ERROR.*Apr\|ERROR.*May\|ERROR.*Jun\|ERROR.*Jul\|ERROR.*Aug\|ERROR.*Sep\|ERROR.*Oct.*202[0-4]" | \
+            grep -v "WARNING.*Jan\|WARNING.*Feb\|WARNING.*Mar\|WARNING.*Apr\|WARNING.*May\|WARNING.*Jun\|WARNING.*Jul\|WARNING.*Aug\|WARNING.*Sep\|WARNING.*Oct.*202[0-4]" | \
             grep -v "inlay_hint" | \
             grep -v "closing the workspace" | \
             grep -v "Downloading\|Creating temporary\|Successfully" | \
             grep -v "csimporter\|Glug settings\|maktaba" | \
-            grep -v "Failed to spawn.*npm\|Failed to spawn.*composer\|Failed to spawn.*php\|Failed to spawn.*julia" | \
-            grep -v "Installation failed.*npm" | \
+            grep -v "Failed to spawn.*npm\|Failed to spawn.*composer\|Failed to spawn.*php\|Failed to spawn.*julia\|Failed to spawn.*go" | \
+            grep -v "Installation failed.*npm\|Installation failed.*go" | \
             grep -v "tonumber.*base out of range" | \
             grep -v "gcertstatus.*WARNING\|LOAS.*WARNING" | \
-            grep -v "Sep30\|Aug[0-9]" | \
+            grep -v "Sep30\|Aug[0-9]\|Oct0[1-5]" | \
+            grep -v "convert.*deprecated.*magick" | \
+            grep -v "Error while parsing.*tmp.*zsh.*syntax error" | \
+            grep -v "WARN.*handlers.lua.*syntax error" | \
             wc -l
     } > "$REPORT_DIR/collection_summary.txt"
 
