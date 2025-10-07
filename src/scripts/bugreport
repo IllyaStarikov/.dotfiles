@@ -1586,14 +1586,15 @@ main() {
     run_tests
 
     # Calculate error count before summary (used in both summary and archive)
-    # This grep is slow so we only do it once and reuse the result
+    # Use timeout to prevent hanging on machines with large log directories
     log PROGRESS "Calculating error statistics"
-    local FINAL_ERROR_COUNT
-    FINAL_ERROR_COUNT=$(
-        # Use find with --exclude to avoid searching test_logs entirely
-        find "$REPORT_DIR" -type f ! -path "*/test_logs/*" -exec grep -l "ERROR\|FAIL\|WARNING" {} \; 2>/dev/null | \
-        xargs grep "ERROR\|FAIL\|WARNING" 2>/dev/null | \
-            grep -v "collection_summary.txt" | \
+    local FINAL_ERROR_COUNT="unknown"
+
+    # Run with timeout - if it takes more than 10 seconds, skip it
+    FINAL_ERROR_COUNT=$(timeout 10 bash -c '
+        find "$1" -type f ! -path "*/test_logs/*" -name "*.txt" -o -name "*.log" 2>/dev/null | \
+        head -100 | \
+        xargs grep -h "ERROR\|FAIL\|WARNING" 2>/dev/null | \
             grep -v "I\[" | \
             grep -v "E\[" | \
             grep -v "\[.*INF\]" | \
@@ -1603,14 +1604,12 @@ main() {
             grep -v "ON_ATTACH_ERROR" | \
             grep -v "Cannot find request" | \
             grep -v "⚠️\|❌" | \
-            grep -v "ERROR.*Jan\|ERROR.*Feb\|ERROR.*Mar\|ERROR.*Apr\|ERROR.*May\|ERROR.*Jun\|ERROR.*Jul\|ERROR.*Aug\|ERROR.*Sep\|ERROR.*Oct.*202[0-4]" | \
-            grep -v "WARNING.*Jan\|WARNING.*Feb\|WARNING.*Mar\|WARNING.*Apr\|WARNING.*May\|WARNING.*Jun\|WARNING.*Jul\|WARNING.*Aug\|WARNING.*Sep\|WARNING.*Oct.*202[0-4]" | \
-            grep -v "inlay_hint" | \
-            grep -v "closing the workspace" | \
+            grep -v "202[0-4].*ERROR\|202[0-4].*WARNING\|.*Jan.*ERROR\|.*Feb.*ERROR\|.*Mar.*ERROR\|.*Apr.*ERROR\|.*May.*ERROR\|.*Jun.*ERROR\|.*Jul.*ERROR\|.*Aug.*ERROR\|.*Sep.*ERROR" | \
+            grep -v "inlay_hint\|closing the workspace" | \
             grep -v "Downloading\|Creating temporary\|Successfully" | \
             grep -v "csimporter\|Glug settings\|maktaba" | \
             grep -v "Failed to spawn.*npm\|Failed to spawn.*composer\|Failed to spawn.*php\|Failed to spawn.*julia\|Failed to spawn.*go" | \
-            grep -v "Installation failed.*npm\|Installation failed.*go" | \
+            grep -v "Installation failed" | \
             grep -v "tonumber.*base out of range" | \
             grep -v "gcertstatus.*WARNING\|LOAS.*WARNING" | \
             grep -v "Sep30\|Aug[0-9]\|Oct0[1-5]" | \
@@ -1618,7 +1617,9 @@ main() {
             grep -v "Error while parsing.*tmp.*zsh.*syntax error" | \
             grep -v "WARN.*handlers.lua.*syntax error" | \
             wc -l
-    )
+    ' _ "$REPORT_DIR" 2>/dev/null) || FINAL_ERROR_COUNT="timeout"
+
+    [[ "$FINAL_ERROR_COUNT" == "timeout" || "$FINAL_ERROR_COUNT" == "" ]] && FINAL_ERROR_COUNT="skipped (calculation timeout)"
 
     # Create summary of what was collected
     {
