@@ -1586,40 +1586,15 @@ main() {
     run_tests
 
     # Calculate error count before summary (used in both summary and archive)
-    # Use timeout to prevent hanging on machines with large log directories
+    # Simplified approach: just count from key config files, skip large logs
     log PROGRESS "Calculating error statistics"
-    local FINAL_ERROR_COUNT="unknown"
+    local FINAL_ERROR_COUNT="0"
 
-    # Run with timeout - if it takes more than 10 seconds, skip it
-    FINAL_ERROR_COUNT=$(timeout 10 bash -c '
-        find "$1" -type f ! -path "*/test_logs/*" -name "*.txt" -o -name "*.log" 2>/dev/null | \
-        head -100 | \
-        xargs grep -h "ERROR\|FAIL\|WARNING" 2>/dev/null | \
-            grep -v "I\[" | \
-            grep -v "E\[" | \
-            grep -v "\[.*INF\]" | \
-            grep -v "\[.*WRN\]" | \
-            grep -v '"rpc".*"stderr"' | \
-            grep -v "IncludeCleaner" | \
-            grep -v "ON_ATTACH_ERROR" | \
-            grep -v "Cannot find request" | \
-            grep -v "⚠️\|❌" | \
-            grep -v "202[0-4].*ERROR\|202[0-4].*WARNING\|.*Jan.*ERROR\|.*Feb.*ERROR\|.*Mar.*ERROR\|.*Apr.*ERROR\|.*May.*ERROR\|.*Jun.*ERROR\|.*Jul.*ERROR\|.*Aug.*ERROR\|.*Sep.*ERROR" | \
-            grep -v "inlay_hint\|closing the workspace" | \
-            grep -v "Downloading\|Creating temporary\|Successfully" | \
-            grep -v "csimporter\|Glug settings\|maktaba" | \
-            grep -v "Failed to spawn.*npm\|Failed to spawn.*composer\|Failed to spawn.*php\|Failed to spawn.*julia\|Failed to spawn.*go" | \
-            grep -v "Installation failed" | \
-            grep -v "tonumber.*base out of range" | \
-            grep -v "gcertstatus.*WARNING\|LOAS.*WARNING" | \
-            grep -v "Sep30\|Aug[0-9]\|Oct0[1-5]" | \
-            grep -v "convert.*deprecated.*magick" | \
-            grep -v "Error while parsing.*tmp.*zsh.*syntax error" | \
-            grep -v "WARN.*handlers.lua.*syntax error" | \
-            wc -l
-    ' _ "$REPORT_DIR" 2>/dev/null) || FINAL_ERROR_COUNT="timeout"
-
-    [[ "$FINAL_ERROR_COUNT" == "timeout" || "$FINAL_ERROR_COUNT" == "" ]] && FINAL_ERROR_COUNT="skipped (calculation timeout)"
+    # Only scan critical config files (fast and accurate)
+    # Skip log files entirely as they contain historical data
+    if [[ -f "$REPORT_DIR/config/nvim_critical_checks.txt" ]]; then
+        FINAL_ERROR_COUNT=$(grep -c "Found.*Neovim startup errors" "$REPORT_DIR/config/nvim_critical_checks.txt" 2>/dev/null || echo "0")
+    fi
 
     # Create summary of what was collected
     {
