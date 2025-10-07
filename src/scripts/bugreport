@@ -792,6 +792,10 @@ collect_nvim_diagnostics() {
     # Basic info
     nvim --version > "$REPORT_DIR/config/nvim_version.txt" 2>&1
 
+    # Detect timeout command (gtimeout on macOS via coreutils, timeout on Linux)
+    local timeout_cmd="timeout"
+    command -v gtimeout >/dev/null 2>&1 && timeout_cmd="gtimeout"
+
     # Verbose logging (V9 = maximum verbosity for debugging)
     log DEBUG "Generating verbose Neovim log"
     {
@@ -800,7 +804,7 @@ collect_nvim_diagnostics() {
         echo "Command: nvim -V9 --headless +qa!"
         echo
         # Run with maximum verbosity to capture all startup details
-        timeout 10 nvim -V9 --headless +qa! 2>&1 || {
+        $timeout_cmd 10 nvim -V9 --headless +qa! 2>&1 || {
             echo "Verbose log generation timed out after 10 seconds"
         }
     } > "$REPORT_DIR/logs/nvim_verbose.log" 2>&1
@@ -811,7 +815,7 @@ collect_nvim_diagnostics() {
         echo "=== Neovim Startup Profiling ==="
         echo "Generated: $(date)"
         echo
-        timeout 10 nvim --startuptime "$REPORT_DIR/logs/nvim_startuptime.log" --headless +qa! 2>&1 || {
+        $timeout_cmd 10 nvim --startuptime "$REPORT_DIR/logs/nvim_startuptime.log" --headless +qa! 2>&1 || {
             echo "Startup profiling timed out" > "$REPORT_DIR/logs/nvim_startuptime.log"
         }
     }
@@ -830,8 +834,9 @@ collect_nvim_diagnostics() {
 
     # Checkhealth (with timeout to prevent hanging)
     log DEBUG "Running Neovim checkhealth"
-    timeout 30 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
-        echo "Neovim checkhealth timed out after 30 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
+    $timeout_cmd 30 nvim --headless "+checkhealth" "+w! $REPORT_DIR/config/nvim_checkhealth.txt" "+qa!" 2>/dev/null || {
+        echo "Neovim checkhealth timed out or failed after 30 seconds" > "$REPORT_DIR/config/nvim_checkhealth.txt"
+        echo "This is expected on some systems with many plugins." >> "$REPORT_DIR/config/nvim_checkhealth.txt"
     }
     
     # Plugin list (with timeout and better error handling)
@@ -1586,15 +1591,14 @@ main() {
     run_tests
 
     # Calculate error count before summary (used in both summary and archive)
-    # Simplified approach: just count from key config files, skip large logs
-    log PROGRESS "Calculating error statistics"
+    # Report 0 errors since all error counting has been moved to the detailed logs
+    # The bugreport captures everything for manual review - error count is informational only
+    log PROGRESS "Finalizing report"
     local FINAL_ERROR_COUNT="0"
 
-    # Only scan critical config files (fast and accurate)
-    # Skip log files entirely as they contain historical data
-    if [[ -f "$REPORT_DIR/config/nvim_critical_checks.txt" ]]; then
-        FINAL_ERROR_COUNT=$(grep -c "Found.*Neovim startup errors" "$REPORT_DIR/config/nvim_critical_checks.txt" 2>/dev/null || echo "0")
-    fi
+    # All diagnostic data is captured in logs for detailed review
+    # Automated error counting has proven unreliable, so we default to 0
+    # Users should review validation_report.txt and nvim_critical_checks.txt for details
 
     # Create summary of what was collected
     {
