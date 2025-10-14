@@ -83,19 +83,38 @@ EOF
 }
 
 # Enumerate all available theme variants
-# Scans theme directory to provide current options
+# Scans theme directories to provide current options
 list_themes() {
-  local theme_dir="$(dirname "$0")/themes"
+  local theme_switcher_dir="$(dirname "$0")/themes"
+  local wezterm_themes_dir="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes"
+  local themes=()
+
   echo "Available themes:"
   echo ""
-  echo "TokyoNight themes:"
-  # Use glob expansion directly for simplicity
-  for theme in "$theme_dir"/tokyonight_*/; do
-    local name=$(basename "$theme")
-    local variant="dark"
-    [[ "$name" =~ day ]] && variant="light"
-    echo "  $name ($variant)"
+
+  # Scan theme-switcher themes
+  local switcher_themes=(${theme_switcher_dir}/*(N-/))
+  for theme_path in $switcher_themes; do
+    themes+=("$(basename "$theme_path")")
   done
+
+  # Scan WezTerm themes
+  local wezterm_themes=(${wezterm_themes_dir}/*.lua(N.))
+  for theme_file in $wezterm_themes; do
+    themes+=("$(basename "$theme_file" .lua)")
+  done
+
+  # Unique sorted list
+  if (( ${#themes[@]} > 0 )); then
+    local unique_themes=($(printf "%s\n" "${themes[@]}" | sort -u))
+    for theme in "${unique_themes[@]}"; do
+      local variant="dark"
+      [[ "$theme" =~ (day|light) ]] && variant="light"
+      echo "  $theme ($variant)"
+    done
+  else
+    echo "  No themes found."
+  fi
   echo ""
   echo "Use any theme name with: $(basename "$0") THEME_NAME"
 }
@@ -500,9 +519,10 @@ restore_config() {
 \
 # Validate theme exists
 validate_theme() {
-  local theme_base_dir="$(dirname "$0")/themes"
-  local theme_dir="$theme_base_dir/$THEME"
-  local wezterm_theme_file="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes/$THEME.lua" # Absolute path
+  local theme_switcher_dir="$(dirname "$0")/themes"
+  local theme_dir="$theme_switcher_dir/$THEME"
+  local wezterm_themes_dir="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes"
+  local wezterm_theme_file="$wezterm_themes_dir/$THEME.lua"
 
   if [[ ! -d "$theme_dir" && ! -f "$wezterm_theme_file" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
