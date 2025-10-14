@@ -86,7 +86,7 @@ EOF
 # Scans theme directories to provide current options
 list_themes() {
   local theme_switcher_dir="$(dirname "$0")/themes"
-  local wezterm_themes_dir="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes"
+  local wezterm_themes_dir="$HOME/.dotfiles/src/wezterm/themes"
   local themes=()
 
   echo "Available themes:"
@@ -521,7 +521,7 @@ restore_config() {
 validate_theme() {
   local theme_switcher_dir="$(dirname "$0")/themes"
   local theme_dir="$theme_switcher_dir/$THEME"
-  local wezterm_themes_dir="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes"
+  local wezterm_themes_dir="$HOME/.dotfiles/src/wezterm/themes"
   local wezterm_theme_file="$wezterm_themes_dir/$THEME.lua"
 
   if [[ ! -d "$theme_dir" && ! -f "$wezterm_theme_file" ]]; then
