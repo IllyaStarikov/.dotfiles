@@ -322,7 +322,7 @@ EOF
   chmod 644 "$wezterm_theme_file"
 
   # Clean up any leftover temp files
-  rm -f "${wezterm_theme_file}.tmp."* 2>/dev/null || true
+  find "$(dirname "${wezterm_theme_file}")" -name "$(basename "${wezterm_theme_file}").tmp.*" -delete 2>/dev/null || true
 
   log "Updated WezTerm theme"
   return 0
@@ -497,11 +497,17 @@ restore_config() {
   fi
 }
 
+\
 # Validate theme exists
 validate_theme() {
-  local theme_dir="$(dirname "$0")/themes/$THEME"
-  if [[ ! -d "$theme_dir" ]]; then
+  local theme_base_dir="$(dirname "$0")/themes"
+  local theme_dir="$theme_base_dir/$THEME"
+  local wezterm_theme_file="/usr/local/google/home/starikov/.dotfiles/src/wezterm/themes/$THEME.lua" # Absolute path
+
+  if [[ ! -d "$theme_dir" && ! -f "$wezterm_theme_file" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
+    echo "Checked for directory: $theme_dir" >&2
+    echo "Checked for WezTerm theme: $wezterm_theme_file" >&2
     echo "Use '$(basename "$0") --list' to see available themes" >&2
     exit 1
   fi
