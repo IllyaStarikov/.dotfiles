@@ -48,6 +48,9 @@
 
 set -euo pipefail
 
+# Get the absolute directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd)"
+
 # Display usage information and available options
 # Provides comprehensive help for theme selection
 show_usage() {
@@ -85,7 +88,7 @@ EOF
 # Enumerate all available theme variants
 # Scans theme directories to provide current options
 list_themes() {
-  local theme_switcher_dir="$(dirname "$0")/themes"
+  local theme_switcher_dir="$SCRIPT_DIR/themes"
   local wezterm_themes_dir="$HOME/.dotfiles/src/wezterm/themes"
   local themes=()
 
@@ -347,6 +350,7 @@ EOF
   return 0
 }
 
+\
 # Utility for safe configuration file updates
 # Ensures atomicity and proper permissions for all theme files
 atomic_update() {
@@ -384,7 +388,7 @@ atomic_update() {
 
 # Update other application themes
 update_app_themes() {
-  local theme_dir="$(dirname "$0")/themes/$THEME"
+  local theme_dir="$SCRIPT_DIR/themes/$THEME"
   local success=0
 
   # Update Alacritty
@@ -519,7 +523,7 @@ restore_config() {
 \
 # Validate theme exists
 validate_theme() {
-  local theme_switcher_dir="$(dirname "$0")/themes"
+  local theme_switcher_dir="$SCRIPT_DIR/themes"
   local theme_dir="$theme_switcher_dir/$THEME"
   local wezterm_themes_dir="$HOME/.dotfiles/src/wezterm/themes"
   local wezterm_theme_file="$wezterm_themes_dir/$THEME.lua"
