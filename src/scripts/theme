@@ -16,14 +16,25 @@
 # This is a convenience wrapper - the main implementation is in:
 # ~/.dotfiles/src/theme-switcher/switch-theme.sh
 
-# Get the directory of this script to find the theme switcher
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-THEME_SWITCHER="${SCRIPT_DIR}/../theme-switcher/switch-theme.sh"
+# Find the theme switcher script using multiple methods for robustness
+if [[ -f "$HOME/.dotfiles/src/theme-switcher/switch-theme.sh" ]]; then
+    THEME_SWITCHER="$HOME/.dotfiles/src/theme-switcher/switch-theme.sh"
+elif [[ -f "$(dirname "$0")/../theme-switcher/switch-theme.sh" ]]; then
+    THEME_SWITCHER="$(dirname "$0")/../theme-switcher/switch-theme.sh"
+else
+    echo "Error: Theme switcher not found" >&2
+    echo "Expected location: ~/.dotfiles/src/theme-switcher/switch-theme.sh" >&2
+    exit 1
+fi
 
-# Verify the theme switcher exists
-if [[ ! -x "$THEME_SWITCHER" ]]; then
+# Verify the theme switcher exists and is executable
+if [[ ! -f "$THEME_SWITCHER" ]]; then
     echo "Error: Theme switcher not found at $THEME_SWITCHER" >&2
     exit 1
+fi
+
+if [[ ! -x "$THEME_SWITCHER" ]]; then
+    chmod +x "$THEME_SWITCHER"
 fi
 
 # Delegate all arguments to the main theme switcher
