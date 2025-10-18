@@ -49,7 +49,25 @@
 set -euo pipefail
 
 # Get the absolute directory of the script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd)"
+# This needs to work in multiple contexts: direct execution, sourced, symlinked, etc.
+DEBUG=${DEBUG:-0}
+if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
+  # Running in bash compatibility mode
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using BASH_SOURCE, SCRIPT_DIR=$SCRIPT_DIR" >&2
+elif [[ -n "${(%):-%x}" ]] && [[ "${(%):-%x}" != "-zsh" ]]; then
+  # Zsh with %x prompt expansion (works when sourced)
+  SCRIPT_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using zsh %x, SCRIPT_DIR=$SCRIPT_DIR" >&2
+elif [[ -n "${0}" ]] && [[ "${0}" != "-zsh" ]] && [[ "${0}" != "zsh" ]]; then
+  # Standard $0 approach (works for direct execution)
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using \$0, SCRIPT_DIR=$SCRIPT_DIR" >&2
+else
+  # Ultimate fallback: assume we're in ~/.dotfiles structure
+  SCRIPT_DIR="$HOME/.dotfiles/src/theme-switcher"
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using fallback, SCRIPT_DIR=$SCRIPT_DIR" >&2
+fi
 
 # Display usage information and available options
 # Provides comprehensive help for theme selection
@@ -119,7 +137,7 @@ list_themes() {
     echo "  No themes found."
   fi
   echo ""
-  echo "Use any theme name with: $(basename "$0") THEME_NAME"
+  echo "Use any theme name with: switch-theme.sh THEME_NAME"
 }
 
 # Check for help or list options
@@ -182,17 +200,26 @@ log() {
 
   # Prevent log files from growing indefinitely
   # Rotates when exceeding size limit to maintain performance
-  if [[ -f "$LOG_FILE" ]] && [[ $(stat -f%z "$LOG_FILE" 2>/dev/null || stat -c%s "$LOG_FILE" 2>/dev/null) -gt $MAX_LOG_SIZE ]]; then
-    mv "$LOG_FILE" "$LOG_FILE.old"
-    touch "$LOG_FILE"
-    chmod 600 "$LOG_FILE"
+  if [[ -f "$LOG_FILE" ]]; then
+    local log_size
+    if [[ "$(uname)" == "Darwin" ]]; then
+      log_size=$(stat -f%z "$LOG_FILE" 2>/dev/null || echo 0)
+    else
+      log_size=$(stat -c%s "$LOG_FILE" 2>/dev/null || echo 0)
+    fi
+
+    if [[ $log_size -gt $MAX_LOG_SIZE ]]; then
+      mv "$LOG_FILE" "$LOG_FILE.old"
+      touch "$LOG_FILE"
+      chmod 600 "$LOG_FILE"
+    fi
   fi
 }
 
 # Acquire exclusive lock to prevent concurrent theme switches
 # Prevents race conditions that could corrupt theme configurations
 acquire_lock() {
-  local timeout=10
+  local timeout=100  # 10 seconds in 0.1 second increments
   local elapsed=0
 
   while [[ -f "$LOCK_FILE" ]] && [[ $elapsed -lt $timeout ]]; do
@@ -310,8 +337,9 @@ update_alacritty_theme() {
   mv -f "$temp_file" "$theme_dest"
   chmod 644 "$theme_dest"
 
-  # Clean up any leftover temp files
-  rm -f "${theme_dest}.tmp."* 2>/dev/null || true
+  # Clean up any leftover temp files (zsh-safe glob)
+  setopt localoptions nullglob
+  rm -f "${theme_dest}".tmp.* 2>/dev/null || true
 
   log "Updated Alacritty theme"
   return 0
@@ -350,7 +378,6 @@ EOF
   return 0
 }
 
-\
 # Utility for safe configuration file updates
 # Ensures atomicity and proper permissions for all theme files
 atomic_update() {
@@ -380,8 +407,9 @@ atomic_update() {
     return 1
   }
 
-  # Clean up any leftover temp files
-  rm -f "${dest}.tmp."* 2>/dev/null || true
+  # Clean up any leftover temp files (zsh-safe glob)
+  setopt localoptions nullglob
+  rm -f "${dest}".tmp.* 2>/dev/null || true
 
   return 0
 }
@@ -391,6 +419,8 @@ update_app_themes() {
   local theme_dir="$SCRIPT_DIR/themes/$THEME"
   local success=0
 
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
+
   # Update Alacritty
   if [[ -f "$theme_dir/alacritty.toml" ]]; then
     update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
@@ -398,6 +428,16 @@ update_app_themes() {
 
   # Update WezTerm
   update_wezterm_theme || success=1
+
+  # Trigger WezTerm config reload by touching the main config file
+  # WezTerm watches this file and automatically reloads when it changes
+  if [[ -f "$HOME/.wezterm.lua" ]]; then
+    touch "$HOME/.wezterm.lua"
+    log "Triggered WezTerm config reload"
+    [[ $DEBUG -eq 1 ]] && echo "DEBUG: Triggered WezTerm config reload" >&2
+    # Give WezTerm a moment to detect the change
+    sleep 0.1
+  fi
 
   # Update Kitty
   if [[ -f "$theme_dir/kitty.conf" ]]; then
@@ -449,8 +489,11 @@ reload_tmux() {
     # Check if tmux server is running
     if ! tmux info &>/dev/null; then
       log "No tmux server running"
+      [[ $DEBUG -eq 1 ]] && echo "DEBUG: No tmux server found" >&2
       return 0
     fi
+
+    [[ $DEBUG -eq 1 ]] && echo "DEBUG: Reloading tmux configuration" >&2
 
     # Source the config file first
     if [[ -n "${TMUX:-}" ]]; then
@@ -485,11 +528,11 @@ backup_config() {
   local backup_dir="$CACHE_DIR/backup.$$"
   mkdir -p "$backup_dir"
 
-  # Backup current files
+  # Backup current files (preserving structure for easy restore)
   [[ -f "$CONFIG_DIR/current-theme.sh" ]] && cp "$CONFIG_DIR/current-theme.sh" "$backup_dir/"
   [[ -f "$ALACRITTY_DIR/theme.toml" ]] && cp "$ALACRITTY_DIR/theme.toml" "$backup_dir/"
   [[ -f "$WEZTERM_DIR/theme.lua" ]] && cp "$WEZTERM_DIR/theme.lua" "$backup_dir/"
-  [[ -f "$KITTY_DIR/theme.conf" ]] && cp "$KITTY_DIR/theme.conf" "$backup_dir/"
+  [[ -f "$KITTY_DIR/theme.conf" ]] && cp "$KITTY_DIR/theme.conf" "$backup_dir/kitty-theme.conf"
   [[ -f "$TMUX_DIR/theme.conf" ]] && cp "$TMUX_DIR/theme.conf" "$backup_dir/"
   [[ -f "$STARSHIP_DIR/starship.toml" ]] && cp "$STARSHIP_DIR/starship.toml" "$backup_dir/"
 
@@ -501,18 +544,15 @@ restore_config() {
   local backup_dir="$1"
 
   if [[ -d "$backup_dir" ]]; then
+    # Restore all backed up files to their original locations
     [[ -f "$backup_dir/current-theme.sh" ]] && cp "$backup_dir/current-theme.sh" "$CONFIG_DIR/"
     [[ -f "$backup_dir/theme.toml" ]] && cp "$backup_dir/theme.toml" "$ALACRITTY_DIR/"
     [[ -f "$backup_dir/theme.lua" ]] && cp "$backup_dir/theme.lua" "$WEZTERM_DIR/"
-    # Restore Kitty theme - note the file name in backup dir needs checking
-    if [[ -f "$backup_dir/theme.conf" ]]; then
-      # Check if it's Kitty or tmux theme based on content or separate files
-      [[ -f "$KITTY_DIR/theme.conf" ]] && cp "$backup_dir/theme.conf" "$KITTY_DIR/"
-    fi
+    [[ -f "$backup_dir/kitty-theme.conf" ]] && cp "$backup_dir/kitty-theme.conf" "$KITTY_DIR/theme.conf"
     [[ -f "$backup_dir/theme.conf" ]] && cp "$backup_dir/theme.conf" "$TMUX_DIR/"
     [[ -f "$backup_dir/starship.toml" ]] && cp "$backup_dir/starship.toml" "$STARSHIP_DIR/"
 
-    # Archive the backup instead of deleting
+    # Archive the backup after restore (keeping for debugging)
     local archive_dir="$HOME/.dotfiles-theme-backups/$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$archive_dir"
     mv "$backup_dir" "$archive_dir/restored-backup" 2>/dev/null || true
@@ -520,13 +560,16 @@ restore_config() {
   fi
 }
 
-\
 # Validate theme exists
 validate_theme() {
   local theme_switcher_dir="$SCRIPT_DIR/themes"
   local theme_dir="$theme_switcher_dir/$THEME"
   local wezterm_themes_dir="$HOME/.dotfiles/src/wezterm/themes"
   local wezterm_theme_file="$wezterm_themes_dir/$THEME.lua"
+
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Validating theme '$THEME'" >&2
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Checking directory: $theme_dir" >&2
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Checking WezTerm file: $wezterm_theme_file" >&2
 
   if [[ ! -d "$theme_dir" && ! -f "$wezterm_theme_file" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
@@ -554,10 +597,8 @@ main() {
     reload_tmux
     release_lock
 
-    # Archive backup on success instead of deleting
-    local archive_dir="$HOME/.dotfiles-theme-backups/$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "$archive_dir"
-    mv "$backup_dir" "$archive_dir/success-backup" 2>/dev/null || true
+    # Clean up backup on success (no need to keep it)
+    rm -rf "$backup_dir" 2>/dev/null || true
 
     log "Theme switch completed successfully"
     echo "✅ Theme switched to $THEME ($VARIANT mode)"
