@@ -1,0 +1,59 @@
+#!/usr/bin/env zsh
+# calibre-web.service - Calibre Web server service definition
+#
+# DESCRIPTION:
+#   Runs Calibre-Web server for managing and reading ebooks through a web interface.
+#   Activates the Python virtual environment and starts the cps server.
+#
+# REQUIREMENTS:
+#   - Python virtual environment at ~/calibre-web/venv/
+#   - Calibre-Web installed (pip install calibre-web or cps)
+#
+# ACCESS:
+#   Default: http://localhost:8083
+
+SERVICE_NAME="calibre-web"
+SERVICE_DESC="Calibre Web ebook server"
+SERVICE_PIDFILE="$HOME/.local/state/services/pids/calibre-web.pid"
+
+# Check if cps is already running (started outside of services manager)
+service_is_running() {
+  pgrep -f "cps" >/dev/null 2>&1
+}
+
+# Get PID of running cps process
+service_get_pid() {
+  pgrep -f "cps" | head -1
+}
+
+service_start() {
+  local venv_path="$HOME/calibre-web/venv"
+
+  # Check if already running (either via services or manually)
+  if service_is_running; then
+    local existing_pid
+    existing_pid=$(pgrep -f "cps" | head -1)
+    echo "calibre-web is already running (PID: $existing_pid)"
+    # Adopt the existing process
+    echo "$existing_pid" > "$SERVICE_PIDFILE"
+    return 0
+  fi
+
+  if [[ ! -d "$venv_path" ]]; then
+    echo "Error: Virtual environment not found at $venv_path"
+    return 1
+  fi
+
+  # Activate virtual environment and start cps
+  source "$venv_path/bin/activate"
+
+  # Start cps (calibre-web server)
+  # It will run in foreground, which is what we want for the service wrapper
+  exec cps
+}
+
+service_stop() {
+  # Default SIGTERM handling is usually sufficient for cps
+  # The main services script will handle sending signals
+  :
+}
