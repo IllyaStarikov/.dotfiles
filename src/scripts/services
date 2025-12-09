@@ -1,0 +1,625 @@
+#!/usr/bin/env zsh
+# services - Background service manager for personal applications
+#
+# DESCRIPTION:
+#   Manages background services that should run persistently. Each service is
+#   defined as a separate script in ~/.dotfiles/src/services/. Services are
+#   started with duplicate detection to prevent multiple instances.
+#
+# USAGE:
+#   services                    # Show status of all services
+#   services start [name]       # Start all services or specific service
+#   services stop [name]        # Stop all services or specific service
+#   services restart [name]     # Restart all services or specific service
+#   services status [name]      # Show status of all or specific service
+#   services list               # List available services
+#   services logs [name]        # Show logs for a service
+#   services install            # Install LaunchAgent for auto-start on login
+#   services uninstall          # Remove LaunchAgent
+#
+# SERVICE DEFINITION:
+#   Each service is a script in ~/.dotfiles/src/services/ with:
+#   - SERVICE_NAME: Unique identifier
+#   - SERVICE_DESC: Human-readable description
+#   - SERVICE_PIDFILE: Path to PID file (optional, auto-generated)
+#   - service_start(): Function to start the service
+#   - service_stop(): Function to stop the service (optional)
+#   - service_status(): Function to check status (optional)
+#
+# EXAMPLES:
+#   services start calibre-web  # Start Calibre Web server
+#   services stop               # Stop all services
+#   services logs calibre-web   # View Calibre Web logs
+
+set -uo pipefail
+
+# Configuration
+readonly SCRIPT_NAME="services"
+readonly DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+readonly SERVICES_DIR="$DOTFILES_DIR/src/services"
+readonly LOG_DIR="$HOME/.local/state/services"
+readonly PID_DIR="$HOME/.local/state/services/pids"
+readonly FAIL_DIR="$HOME/.local/state/services/failed"
+readonly LAUNCHAGENT_PLIST="$HOME/Library/LaunchAgents/io.starikov.services.plist"
+
+# Colors
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[0;33m'
+readonly RED='\033[0;31m'
+readonly BLUE='\033[0;34m'
+readonly BOLD='\033[1m'
+readonly NC='\033[0m'
+
+# Logging functions
+info() { echo -e "${GREEN}[✓]${NC} $1"; }
+warn() { echo -e "${YELLOW}[⚠]${NC} $1"; }
+error() { echo -e "${RED}[✗]${NC} $1" >&2; }
+header() { echo -e "${BOLD}${BLUE}$1${NC}"; }
+
+# Ensure directories exist
+init_dirs() {
+  mkdir -p "$LOG_DIR" "$PID_DIR" "$FAIL_DIR"
+}
+
+# Check if a service has failed and shouldn't be retried
+has_failed() {
+  local name="$1"
+  [[ -f "$FAIL_DIR/${name}.failed" ]]
+}
+
+# Mark a service as failed
+mark_failed() {
+  local name="$1"
+  local reason="${2:-unknown}"
+  echo "$(date): $reason" > "$FAIL_DIR/${name}.failed"
+}
+
+# Clear failed status for a service
+clear_failed() {
+  local name="$1"
+  rm -f "$FAIL_DIR/${name}.failed"
+}
+
+# Get list of available services
+get_services() {
+  if [[ ! -d "$SERVICES_DIR" ]]; then
+    return
+  fi
+  for service in "$SERVICES_DIR"/*.service; do
+    [[ -f "$service" ]] && basename "$service" .service
+  done
+}
+
+# Check if a service exists
+service_exists() {
+  local name="$1"
+  [[ -f "$SERVICES_DIR/${name}.service" ]]
+}
+
+# Load a service definition
+load_service() {
+  local name="$1"
+  local service_file="$SERVICES_DIR/${name}.service"
+
+  if [[ ! -f "$service_file" ]]; then
+    error "Service not found: $name"
+    return 1
+  fi
+
+  # Reset service variables
+  unset SERVICE_NAME SERVICE_DESC SERVICE_PIDFILE
+  unset -f service_start service_stop service_status 2>/dev/null || true
+
+  # Source the service definition
+  source "$service_file"
+
+  # Set defaults
+  SERVICE_NAME="${SERVICE_NAME:-$name}"
+  SERVICE_DESC="${SERVICE_DESC:-No description}"
+  SERVICE_PIDFILE="${SERVICE_PIDFILE:-$PID_DIR/${name}.pid}"
+}
+
+# Check if a service is running
+is_running() {
+  local name="$1"
+  local pidfile="$PID_DIR/${name}.pid"
+
+  # First check PID file
+  if [[ -f "$pidfile" ]]; then
+    local pid
+    pid=$(cat "$pidfile" 2>/dev/null)
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+    # Stale PID file, remove it
+    rm -f "$pidfile"
+  fi
+
+  # Check if service has custom is_running function (in subshell to avoid polluting env)
+  local service_file="$SERVICES_DIR/${name}.service"
+  if [[ -f "$service_file" ]]; then
+    (
+      source "$service_file"
+      if declare -f service_is_running >/dev/null 2>&1; then
+        service_is_running
+      else
+        exit 1
+      fi
+    ) && return 0
+  fi
+
+  return 1
+}
+
+# Get PID of running service
+get_pid() {
+  local name="$1"
+  local pidfile="$PID_DIR/${name}.pid"
+
+  if [[ -f "$pidfile" ]]; then
+    local pid
+    pid=$(cat "$pidfile" 2>/dev/null)
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      echo "$pid"
+      return
+    fi
+  fi
+
+  # Check if service has custom get_pid function (in subshell)
+  local service_file="$SERVICES_DIR/${name}.service"
+  if [[ -f "$service_file" ]]; then
+    (
+      source "$service_file"
+      if declare -f service_get_pid >/dev/null 2>&1; then
+        service_get_pid
+      fi
+    )
+  fi
+}
+
+# Start a service
+# Args:
+#   $1 - service name
+#   $2 - optional: "force" to ignore failed status
+start_service() {
+  local name="$1"
+  local force="${2:-}"
+
+  if ! service_exists "$name"; then
+    error "Service not found: $name"
+    return 1
+  fi
+
+  # Check if service previously failed (skip if force)
+  if [[ "$force" != "force" ]] && has_failed "$name"; then
+    local fail_reason
+    fail_reason=$(cat "$FAIL_DIR/${name}.failed" 2>/dev/null)
+    warn "$name previously failed, skipping (use 'services restart $name' to retry)"
+    warn "  Failed: $fail_reason"
+    return 1
+  fi
+
+  if is_running "$name"; then
+    local pid
+    pid=$(get_pid "$name")
+    warn "$name is already running (PID: $pid)"
+    return 0
+  fi
+
+  load_service "$name" || return 1
+
+  info "Starting $SERVICE_NAME..."
+
+  local logfile="$LOG_DIR/${name}.log"
+
+  # Run service_start in background and capture PID
+  if declare -f service_start >/dev/null; then
+    (
+      # Redirect output to log file
+      exec >> "$logfile" 2>&1
+      echo "=== Service started at $(date) ==="
+      service_start
+    ) &
+    local pid=$!
+
+    # Wait a moment to check if it started successfully
+    sleep 1
+
+    if kill -0 "$pid" 2>/dev/null; then
+      echo "$pid" > "$PID_DIR/${name}.pid"
+      clear_failed "$name"
+      info "$SERVICE_NAME started (PID: $pid)"
+      info "Logs: $logfile"
+    else
+      mark_failed "$name" "Process exited immediately"
+      error "Failed to start $SERVICE_NAME"
+      error "Check logs: $logfile"
+      return 1
+    fi
+  else
+    error "Service $name has no service_start function"
+    return 1
+  fi
+}
+
+# Stop a service
+stop_service() {
+  local name="$1"
+
+  if ! service_exists "$name"; then
+    error "Service not found: $name"
+    return 1
+  fi
+
+  # Always clear failed status when stopping (allows restart)
+  clear_failed "$name"
+
+  if ! is_running "$name"; then
+    warn "$name is not running"
+    return 0
+  fi
+
+  load_service "$name" || return 1
+
+  local pid
+  pid=$(get_pid "$name")
+
+  info "Stopping $SERVICE_NAME (PID: $pid)..."
+
+  # Try custom stop function first
+  if declare -f service_stop >/dev/null; then
+    service_stop
+  fi
+
+  # Send SIGTERM
+  if kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null
+    # Wait up to 5 seconds for graceful shutdown
+    local count=0
+    while kill -0 "$pid" 2>/dev/null && [[ $count -lt 50 ]]; do
+      sleep 0.1
+      ((count++))
+    done
+  fi
+
+  # Force kill if still running
+  if kill -0 "$pid" 2>/dev/null; then
+    warn "Sending SIGKILL to $SERVICE_NAME..."
+    kill -9 "$pid" 2>/dev/null
+  fi
+
+  rm -f "$PID_DIR/${name}.pid"
+  info "$SERVICE_NAME stopped"
+}
+
+# Show status of a service
+show_status() {
+  local name="$1"
+
+  if ! service_exists "$name"; then
+    error "Service not found: $name"
+    return 1
+  fi
+
+  load_service "$name" || return 1
+
+  local status_icon status_text extra_info=""
+
+  if is_running "$name"; then
+    local pid
+    pid=$(get_pid "$name")
+    status_icon="${GREEN}●${NC}"
+    status_text="running"
+    extra_info=" (PID: $pid)"
+  elif has_failed "$name"; then
+    status_icon="${RED}✗${NC}"
+    status_text="failed"
+    extra_info=" (won't retry)"
+  else
+    status_icon="${RED}○${NC}"
+    status_text="stopped"
+  fi
+
+  printf "  %b %-20s %s%s\n" "$status_icon" "$name" "$SERVICE_DESC" "$extra_info"
+}
+
+# Show logs for a service
+show_logs() {
+  local name="$1"
+  local lines="${2:-50}"
+  local logfile="$LOG_DIR/${name}.log"
+
+  if [[ ! -f "$logfile" ]]; then
+    warn "No logs found for $name"
+    return 0
+  fi
+
+  header "=== Logs for $name (last $lines lines) ==="
+  tail -n "$lines" "$logfile"
+}
+
+# Start all services
+start_all() {
+  local found=0
+
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    found=1
+    break
+  done
+
+  if [[ $found -eq 0 ]]; then
+    warn "No services defined in $SERVICES_DIR"
+    return 0
+  fi
+
+  header "Starting all services..."
+  echo
+
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    local service
+    service=$(basename "$service_file" .service)
+    start_service "$service"
+  done
+}
+
+# Stop all services
+stop_all() {
+  header "Stopping all services..."
+  echo
+
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    local service
+    service=$(basename "$service_file" .service)
+    if is_running "$service"; then
+      stop_service "$service"
+    fi
+  done
+}
+
+# Show status of all services
+status_all() {
+  header "Service Status"
+  echo
+
+  local found=0 service
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    service=$(basename "$service_file" .service)
+    show_status "$service"
+    found=1
+  done
+
+  if [[ $found -eq 0 ]]; then
+    warn "No services defined in $SERVICES_DIR"
+  fi
+  echo
+}
+
+# List available services
+list_services() {
+  header "Available Services"
+  echo
+
+  local found=0
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    local service
+    service=$(basename "$service_file" .service)
+    load_service "$service"
+    printf "  %-20s %s\n" "$service" "$SERVICE_DESC"
+    found=1
+  done
+
+  if [[ $found -eq 0 ]]; then
+    warn "No services defined in $SERVICES_DIR"
+    echo "Create service files in: $SERVICES_DIR"
+  fi
+  echo
+}
+
+# Install LaunchAgent for auto-start on login
+install_launchagent() {
+  header "Installing LaunchAgent..."
+  echo
+
+  # Find the services script
+  local services_script
+  if [[ -f "$HOME/.local/bin/services" ]]; then
+    services_script="$HOME/.local/bin/services"
+  elif [[ -f "$DOTFILES_DIR/src/scripts/services" ]]; then
+    services_script="$DOTFILES_DIR/src/scripts/services"
+  else
+    error "Cannot find services script"
+    return 1
+  fi
+
+  mkdir -p "$(dirname "$LAUNCHAGENT_PLIST")"
+
+  cat > "$LAUNCHAGENT_PLIST" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>io.starikov.services</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-c</string>
+        <string>$services_script start</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$LOG_DIR/launchagent.log</string>
+    <key>StandardErrorPath</key>
+    <string>$LOG_DIR/launchagent.error.log</string>
+</dict>
+</plist>
+EOF
+
+  info "Created LaunchAgent: $LAUNCHAGENT_PLIST"
+
+  # Load the agent
+  launchctl unload "$LAUNCHAGENT_PLIST" 2>/dev/null
+  if launchctl load "$LAUNCHAGENT_PLIST"; then
+    info "LaunchAgent loaded - services will start on login"
+  else
+    error "Failed to load LaunchAgent"
+    return 1
+  fi
+}
+
+# Uninstall LaunchAgent
+uninstall_launchagent() {
+  header "Uninstalling LaunchAgent..."
+  echo
+
+  if [[ -f "$LAUNCHAGENT_PLIST" ]]; then
+    launchctl unload "$LAUNCHAGENT_PLIST" 2>/dev/null
+    rm -f "$LAUNCHAGENT_PLIST"
+    info "LaunchAgent removed"
+  else
+    warn "LaunchAgent not installed"
+  fi
+}
+
+# Reset failed status for a service
+reset_service() {
+  local name="$1"
+
+  if ! service_exists "$name"; then
+    error "Service not found: $name"
+    return 1
+  fi
+
+  if has_failed "$name"; then
+    clear_failed "$name"
+    info "Cleared failed status for $name"
+  else
+    warn "$name was not marked as failed"
+  fi
+}
+
+# Reset all failed services
+reset_all() {
+  for service_file in "$SERVICES_DIR"/*.service(N); do
+    [[ -f "$service_file" ]] || continue
+    local service
+    service=$(basename "$service_file" .service)
+    if has_failed "$service"; then
+      clear_failed "$service"
+      info "Cleared failed status for $service"
+    fi
+  done
+}
+
+# Show help
+show_help() {
+  cat << 'EOF'
+services - Background service manager
+
+USAGE:
+  services                    # Show status of all services
+  services start [name]       # Start all services or specific service
+  services stop [name]        # Stop all services or specific service
+  services restart [name]     # Restart all services or specific service
+  services status [name]      # Show status of all or specific service
+  services list               # List available services
+  services logs [name]        # Show logs for a service
+  services reset [name]       # Clear failed status (allows retry)
+  services install            # Install LaunchAgent for auto-start on login
+  services uninstall          # Remove LaunchAgent
+
+FAILURE HANDLING:
+  If a service fails to start, it won't be retried automatically.
+  Use 'services restart <name>' or 'services reset <name>' to retry.
+
+EXAMPLES:
+  services start calibre-web  # Start Calibre Web server
+  services stop               # Stop all services
+  services logs calibre-web   # View Calibre Web logs
+  services reset calibre-web  # Clear failed status and allow retry
+
+SERVICE DIRECTORY:
+  Services are defined in: ~/.dotfiles/src/services/
+  Each service is a .service file with start/stop functions.
+EOF
+}
+
+# Main entry point
+main() {
+  init_dirs
+
+  local command="${1:-status}"
+  local target="${2:-}"
+
+  case "$command" in
+    start)
+      if [[ -n "$target" ]]; then
+        start_service "$target"
+      else
+        start_all
+      fi
+      ;;
+    stop)
+      if [[ -n "$target" ]]; then
+        stop_service "$target"
+      else
+        stop_all
+      fi
+      ;;
+    restart)
+      if [[ -n "$target" ]]; then
+        stop_service "$target"
+        start_service "$target"
+      else
+        stop_all
+        start_all
+      fi
+      ;;
+    status)
+      if [[ -n "$target" ]]; then
+        show_status "$target"
+      else
+        status_all
+      fi
+      ;;
+    list)
+      list_services
+      ;;
+    logs)
+      if [[ -z "$target" ]]; then
+        error "Usage: services logs <service-name>"
+        return 1
+      fi
+      show_logs "$target" "${3:-50}"
+      ;;
+    reset)
+      if [[ -n "$target" ]]; then
+        reset_service "$target"
+      else
+        reset_all
+      fi
+      ;;
+    install)
+      install_launchagent
+      ;;
+    uninstall)
+      uninstall_launchagent
+      ;;
+    help|--help|-h)
+      show_help
+      ;;
+    *)
+      error "Unknown command: $command"
+      show_help
+      return 1
+      ;;
+  esac
+}
+
+main "$@"
