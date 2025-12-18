@@ -6,6 +6,8 @@
 [![Security](https://github.com/IllyaStarikov/dotfiles/actions/workflows/security.yml/badge.svg)](https://github.com/IllyaStarikov/dotfiles/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+![dotfiles](template/dotfiles.png)
+
 ## Quick Install
 
 ```bash
