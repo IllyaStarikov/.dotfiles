@@ -122,6 +122,21 @@ function M.setup()
 		scratch = { enabled = true },
 		lazygit = { enabled = false }, -- Disable until lazygit is installed
 
+		-- Git browse - open files in GitHub/GitLab
+		gitbrowse = { enabled = true },
+
+		-- Dim inactive code scopes for focus
+		dim = { enabled = true },
+
+		-- Scope detection with text objects and navigation
+		scope = { enabled = true },
+
+		-- Fast file rendering before plugins load
+		quickfile = { enabled = true },
+
+		-- Image display in terminal (WezTerm supports Kitty protocol)
+		image = { enabled = true },
+
 		-- Zen mode for distraction-free writing (iA Writer-style)
 		zen = {
 			enabled = true,
