@@ -205,7 +205,9 @@ autocmd("FileType", {
 	callback = function()
 		-- Enable treesitter highlighting for embedded code blocks
 		vim.opt_local.conceallevel = 2
-		vim.opt_local.concealcursor = ""
+		-- Set concealcursor to "nc" to avoid concealment issues in insert mode
+		-- n = normal mode, c = command line mode (no concealment in insert/visual modes)
+		vim.opt_local.concealcursor = "nc"
 
 		-- Set up syntax highlighting for code blocks with enhanced visual borders
 		vim.cmd([[
@@ -680,6 +682,17 @@ autocmd("FileType", {
 		vim.keymap.set("v", "k", "gk", buf_opts)
 		vim.keymap.set("v", "0", "g0", buf_opts)
 		vim.keymap.set("v", "$", "g$", buf_opts)
+
+		-- Auto-enable zen mode for distraction-free writing
+		vim.defer_fn(function()
+			local ok, snacks = pcall(require, "snacks")
+			if ok and snacks and snacks.zen then
+				-- Only enable if buffer is still a markdown file
+				if vim.bo.filetype == "markdown" or vim.bo.filetype == "pandoc" then
+					snacks.zen()
+				end
+			end
+		end, 100) -- Small delay to ensure buffer is ready
 	end,
 })
 

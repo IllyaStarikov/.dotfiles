@@ -121,6 +121,27 @@ function M.setup()
 		bufdelete = { enabled = true },
 		scratch = { enabled = true },
 		lazygit = { enabled = false }, -- Disable until lazygit is installed
+
+		-- Zen mode for distraction-free writing (iA Writer-style)
+		zen = {
+			enabled = true,
+			toggles = {
+				dim = true,
+				git_signs = false,
+				mini_diff_signs = false,
+				diagnostics = false,
+				inlay_hints = false,
+			},
+			center = true,
+			show = {
+				statusline = false,
+				tabline = false,
+			},
+			win = {
+				style = "zen",
+				width = 100, -- 100 column centered width for writing
+			},
+		},
 	})
 
 	-- Set up vim.ui overrides after setup (dressing.nvim is now disabled)
