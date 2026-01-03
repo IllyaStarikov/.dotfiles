@@ -434,13 +434,18 @@ install_macos_packages() {
     "shfmt"
     "stylua"
     "clang-format"
+    "astyle"
     "swiftformat"
     "taplo"
     "shellcheck"
     "yamllint"
     "xmlstarlet"
     "perl"
+    "perltidy"
+    "latexindent"
     "postgresql@14"
+    "pgformatter"
+    "nasm"
   )
 
   # Install based on mode
@@ -850,6 +855,11 @@ install_linux_packages() {
     source "$HOME/.cargo/env"
   fi
 
+  # Ensure rustfmt is installed (comes with rustup but make sure it's available)
+  if command -v rustup &>/dev/null; then
+    rustup component add rustfmt 2>/dev/null || info "rustfmt already installed"
+  fi
+
   # Install tree-sitter CLI via cargo
   if command -v cargo &>/dev/null; then
     if ! command -v tree-sitter &>/dev/null; then
@@ -1074,7 +1084,7 @@ setup_python() {
     }
 
     # Install other Python packages
-    for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort; do
+    for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort beautysh xmlformatter; do
       pip3 install --user "$pkg" 2>/dev/null || {
         info "Could not install $pkg with pip, trying system package manager..."
         if [[ "$OS" == "linux" ]]; then
@@ -1103,6 +1113,9 @@ setup_go_tools() {
     # Install keep-sorted
     go install github.com/google/keep-sorted@latest 2>/dev/null || warning "Failed to install keep-sorted"
 
+    # Install asmfmt for assembly formatting
+    go install github.com/klauspost/asmfmt/cmd/asmfmt@latest 2>/dev/null || warning "Failed to install asmfmt"
+
     success "Go tools installed"
   else
     warning "Go not found, skipping Go tools installation"
@@ -1123,6 +1136,39 @@ setup_ruby_tools() {
     success "Ruby tools installed"
   else
     warning "Ruby/gem not found, skipping Ruby tools installation"
+  fi
+}
+
+setup_latex_tools() {
+  progress "Setting up LaTeX tools (latexindent dependencies)..."
+
+  # Check if perl and cpan are available
+  if command -v perl &>/dev/null && command -v cpan &>/dev/null; then
+    info "Installing Perl modules required for latexindent..."
+
+    # Install required CPAN modules for latexindent
+    # These modules are required for latexindent to work properly with fixy
+    local cpan_modules=(
+      "YAML::Tiny"
+      "File::HomeDir"
+      "Log::Log4perl"
+      "Log::Dispatch::File"
+      "Unicode::GCString"
+    )
+
+    for module in "${cpan_modules[@]}"; do
+      info "Installing $module..."
+      # Use yes to auto-answer prompts and redirect output to reduce noise
+      yes | sudo cpan install "$module" &>/dev/null 2>&1 && \
+        success "✓ $module installed" || \
+        warning "✗ $module installation failed (may already be installed)"
+    done
+
+    success "LaTeX tools configured"
+  else
+    warning "Perl or CPAN not found, skipping LaTeX tools installation"
+    info "To use latexindent with fixy, install Perl and run:"
+    info "  sudo cpan install YAML::Tiny File::HomeDir Log::Log4perl Log::Dispatch::File Unicode::GCString"
   fi
 }
 
@@ -1166,12 +1212,15 @@ setup_node() {
     fi
   fi
 
-  # Install global npm packages for Neovim, regardless of OS
+  # Install global npm packages for Neovim and formatters, regardless of OS
   if command -v npm &>/dev/null; then
-    info "Installing global npm packages for Neovim..."
+    info "Installing global npm packages for Neovim and formatters..."
     npm install -g neovim &>/dev/null || warning "Failed to install neovim npm package"
+    npm install -g eslint &>/dev/null || warning "Failed to install eslint"
+    npm install -g @fsouza/prettierd &>/dev/null || warning "Failed to install prettierd"
+    npm install -g lua-fmt &>/dev/null || warning "Failed to install lua-fmt (lua-format)"
   else
-    warning "npm not found, skipping global package installation for Neovim."
+    warning "npm not found, skipping global package installation for Neovim and formatters."
   fi
 
   success "Node.js environment configured"
@@ -1280,6 +1329,7 @@ main() {
       setup_python
       setup_go_tools
       setup_ruby_tools
+      setup_latex_tools
       setup_node
       setup_neovim
       setup_tmux

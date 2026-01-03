@@ -74,6 +74,7 @@ src/language/*.toml → ~/.*
 - Docker, kubectl
 - GitHub CLI
 - Language servers via Mason
+- LaTeX tools (latexindent with Perl dependencies)
 
 ### macOS Specific
 
