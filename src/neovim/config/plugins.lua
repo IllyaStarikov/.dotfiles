@@ -468,10 +468,16 @@ require("lazy").setup({
 				strategy = {
 					[""] = rainbow_delimiters.strategy["global"],
 					vim = rainbow_delimiters.strategy["local"],
+					-- Disable for markdown to avoid conflicts with markview's LaTeX parsing
+					markdown = rainbow_delimiters.strategy["noop"],
+					markdown_inline = rainbow_delimiters.strategy["noop"],
 				},
 				query = {
 					[""] = "rainbow-delimiters",
 					lua = "rainbow-blocks",
+					-- Explicitly disable for markdown
+					markdown = "",
+					markdown_inline = "",
 				},
 				highlight = {
 					"RainbowDelimiterRed",
@@ -482,6 +488,8 @@ require("lazy").setup({
 					"RainbowDelimiterViolet",
 					"RainbowDelimiterCyan",
 				},
+				-- Blacklist markdown filetypes to prevent conflicts
+				blacklist = { "markdown", "md", "mdx", "tex", "latex" },
 			})
 		end,
 	},

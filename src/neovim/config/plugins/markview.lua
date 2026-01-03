@@ -50,9 +50,9 @@ function M.setup()
 			draw_range = { 100, 100 },
 			-- Mode configuration - enable preview in these modes
 			modes = { "n", "no", "v", "V", "i" },
-			-- Show raw markdown on cursor line/selection in these modes (hybrid mode)
-			-- Modes in hybrid_modes show raw markdown on cursor line
-			hybrid_modes = { "n", "v", "V", "i" },
+			-- Hybrid modes: Show raw markdown syntax on cursor line for better editing
+			-- Insert mode excluded to maintain proper syntax highlighting while typing
+			hybrid_modes = { "n", "v", "V" },
 
 			-- Don't show virtual text for non-existent frontmatter
 			show_virtual = false,
