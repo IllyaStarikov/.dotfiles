@@ -676,7 +676,7 @@ function M.setup()
 			vim.defer_fn(apply_markview_highlights, 100)
 
 			-- Smart toggle between rich preview and ligatures
-			vim.keymap.set("n", "<leader>mp", function()
+			vim.keymap.set("n", "<leader>lmp", function()
 				if vim.b.markview_enabled then
 					vim.cmd("Markview disable")
 					vim.b.markview_enabled = false
@@ -713,14 +713,14 @@ function M.setup()
 			end, { buffer = true, desc = "Open all details folds" })
 
 			-- Additional keybinding to toggle fold visibility globally
-			vim.keymap.set("n", "<leader>mf", function()
+			vim.keymap.set("n", "<leader>lmf", function()
 				vim.opt_local.foldenable = not vim.opt_local.foldenable:get()
 				local state = vim.opt_local.foldenable:get() and "enabled" or "disabled"
 				vim.notify("Folding " .. state, vim.log.levels.INFO)
 			end, { buffer = true, desc = "Toggle folding on/off" })
 
 			-- Auto-expand fold when cursor enters it
-			vim.keymap.set("n", "<leader>me", function()
+			vim.keymap.set("n", "<leader>lme", function()
 				if vim.b.auto_expand_folds == nil then
 					vim.b.auto_expand_folds = false
 				end
