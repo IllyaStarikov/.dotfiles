@@ -19,10 +19,7 @@ map("n", "]W", function()
 	vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR, float = true })
 end, { desc = "Go to next error" })
 
--- LSP functionality
+-- LSP functionality (Ctrl shortcuts)
 map("n", "<C-]>", vim.lsp.buf.definition, { desc = "Go to definition" })
 map("n", "<C-\\>", vim.lsp.buf.references, { desc = "Find references" })
 map("n", "<C-[>", vim.lsp.buf.hover, { desc = "Show hover information" })
-
--- LSP rename
-map("n", "<leader>re", vim.lsp.buf.rename, { desc = "LSP Rename Symbol" })

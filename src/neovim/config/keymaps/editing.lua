@@ -26,9 +26,6 @@ map("v", "p", '"_dP', opts)
 -- Select to end of line
 map("n", "<leader><leader>", "v$h", opts)
 
--- Code execution
-map("n", "<leader>r", "<cmd>RunFile<cr>", { desc = "Run current file" })
-
 -- Python specific run command (F5)
 map("n", "<F5>", function()
 	if vim.bo.filetype == "python" then
