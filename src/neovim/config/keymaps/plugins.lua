@@ -135,6 +135,10 @@ end
 -- Run
 map("n", "<leader>cr", "<cmd>RunFile<cr>", { desc = "Code Run" })
 
+-- Just task runner
+map("n", "<leader>cj", "<cmd>JustPicker<cr>", { desc = "Code Just (pick recipe)" })
+map("n", "<leader>cJ", "<cmd>Just test<cr>", { desc = "Code Just Test" })
+
 -- Symbol outline (Aerial)
 map("n", "<leader>cs", "<cmd>AerialToggle<CR>", { desc = "Code Symbols" })
 map("n", "<leader>cS", "<cmd>AerialNavToggle<CR>", { desc = "Code Symbol Navigator" })
