@@ -219,7 +219,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const result = '${{ needs.docker-integration.result }}';
+            const result = '${{ needs.e2e-tests.result }}';
             const status = result === 'success' ? 'passed' : 'failed';
 
             const body = `## End-to-End Test Results
