@@ -381,15 +381,17 @@ update_languages() {
     fi
   fi
   
-  # Ruby/gem
+  # Ruby/gem - Skip system Ruby (macOS built-in is read-only and deprecated)
   if has_command gem; then
-    echo "Updating Ruby gems..."
-    if [[ "${DRY_RUN}" == true ]]; then
-        gem outdated
+    # Check if using system Ruby
+    if [[ "$(which ruby)" == "/usr/bin/ruby" ]]; then
+      echo "Skipping gem updates (system Ruby is read-only, use rbenv/asdf)"
     else
-        update_with_fallback "gem system update" gem update --system
-        update_with_fallback "gem update" gem update --user-install
+      echo "Updating Ruby gems..."
+      if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "gem update" gem update
         update_with_fallback "gem cleanup" gem cleanup
+      fi
     fi
   fi
   
