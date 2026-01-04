@@ -139,7 +139,7 @@ cortex agent on/off    # Toggle AI agent mode
 │   │   ├── pyproject.toml # Python project config
 │   │   ├── ruff.toml      # Python linter/formatter
 │   │   └── stylua.toml    # Lua formatter
-│   ├── neovim/            # Neovim configuration (42 modules)
+│   ├── neovim/            # Neovim configuration (47 modules)
 │   │   ├── config/        # Modular configuration system
 │   │   ├── init.lua       # Entry point with path detection
 │   │   └── snippets/      # Language-specific snippets
