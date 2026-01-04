@@ -377,7 +377,10 @@ update_languages() {
         npm outdated -g
     else
         update_with_fallback "npm global update" npm update -g
-        update_with_fallback "npm self-update" npm install -g npm@latest
+        # Skip npm self-update if managed by Homebrew (causes EEXIST errors)
+        if [[ "$(which npm)" != /opt/homebrew/* ]]; then
+            update_with_fallback "npm self-update" npm install -g npm@latest
+        fi
     fi
   fi
   
