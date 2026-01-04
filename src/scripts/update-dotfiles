@@ -630,6 +630,10 @@ main() {
   # Show summary first, then cleanup
   show_summary
   cleanup
+
+  # Final success message
+  echo ""
+  print_color green "✅ Update complete!"
 }
 
 main "$@"
