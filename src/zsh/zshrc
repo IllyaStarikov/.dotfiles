@@ -36,16 +36,6 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Essential Plugins Only
 
-# Initialize completion system immediately (not deferred)
-# This ensures completions work right away in new shells/tmux/ssh
-autoload -Uz compinit
-# Force immediate initialization with full path setup
-if [[ -n "$ZDOTDIR" ]]; then
-    compinit -i -d "$ZDOTDIR/.zcompdump"
-else
-    compinit -i -d "$HOME/.zcompdump"
-fi
-
 # Set up completion paths BEFORE loading completions
 fpath=(
     /usr/local/share/zsh/site-functions
@@ -57,13 +47,17 @@ fpath=(
 zinit ice blockf
 zinit light zsh-users/zsh-completions
 
-# Rebuild completion dump immediately
-autoload -Uz compinit && compinit -C
+# Initialize completion system once (after fpath and plugins are set up)
+# Using zinit's compinit wrapper for proper integration
+autoload -Uz compinit bashcompinit
+if [[ -n "$ZDOTDIR" ]]; then
+    compinit -i -d "$ZDOTDIR/.zcompdump"
+else
+    compinit -i -d "$HOME/.zcompdump"
+fi
+bashcompinit  # For compatibility with bash completions
 zicompinit
 zicdreplay
-
-# Force rebuild completion dump to ensure all completions are available
-autoload -Uz bashcompinit && bashcompinit  # For compatibility with bash completions
 
 # Fast syntax highlighting (still deferred for speed)
 zinit wait lucid for \
@@ -145,17 +139,9 @@ bindkey '^W' backward-kill-word
 # Completion System
 
 # Load completion fix for hanging issues
-[[ -f "$HOME/.dotfiles/src/zsh/completion-fix.zsh" ]] && source "$HOME/.dotfiles/src/zsh/completion-fix.zsh"
+[[ -f "$DOTFILES/src/zsh/completion-fix.zsh" ]] && source "$DOTFILES/src/zsh/completion-fix.zsh"
 
-# Initialize completion system
-autoload -Uz compinit
-if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qNmh+24) ]]; then
-    compinit
-else
-    compinit -C
-fi
-
-# Completion options
+# Completion options (compinit already initialized earlier with zinit)
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
@@ -193,7 +179,7 @@ fi
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # Add dotfiles scripts to PATH
-export PATH="$HOME/.dotfiles/src/scripts:$HOME/.dotfiles/src/setup:$PATH"
+export PATH="$DOTFILES/src/scripts:$DOTFILES/src/setup:$PATH"
 
 # Starship Prompt
 
@@ -212,7 +198,7 @@ fi
 # Aliases
 
 # Source comprehensive aliases file
-[[ -f "$HOME/.dotfiles/src/zsh/aliases.zsh" ]] && source "$HOME/.dotfiles/src/zsh/aliases.zsh"
+[[ -f "$DOTFILES/src/zsh/aliases.zsh" ]] && source "$DOTFILES/src/zsh/aliases.zsh"
 
 # Local Overrides
 
@@ -220,8 +206,8 @@ fi
 
 # Load private/work configurations if available
 # This integrates with private dotfiles for work-specific settings
-if [[ -d "$HOME/.dotfiles/.dotfiles.private" ]]; then
-    local work_config="$HOME/.dotfiles/.dotfiles.private/lib/shell/work-aliases.zsh"
+if [[ -d "$DOTFILES/.dotfiles.private" ]]; then
+    local work_config="$DOTFILES/.dotfiles.private/lib/shell/work-aliases.zsh"
     if [[ -f "$work_config" ]] && [[ -O "$work_config" ]]; then
         source "$work_config"
     fi
