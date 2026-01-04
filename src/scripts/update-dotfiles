@@ -544,13 +544,7 @@ update_tools() {
     fi
   fi
   
-  # Starship Prompt Config Check
-  if has_command starship; then
-    echo "Checking Starship configuration..."
-    if [[ "${DRY_RUN}" == false ]]; then
-        update_with_fallback "Starship config check" starship config
-    fi
-  fi
+  # Starship Prompt - no update needed (config is part of dotfiles)
   
   # FZF Updates (if installed via git)
   if [[ -d "$HOME/.fzf" ]]; then
