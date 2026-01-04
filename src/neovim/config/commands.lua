@@ -344,6 +344,88 @@ api.nvim_create_user_command("RunFile", function()
 	vim.cmd("startinsert")
 end, { desc = "Run current file" })
 
+-- Run a just recipe
+api.nvim_create_user_command("Just", function(opts)
+	local recipe = opts.args ~= "" and opts.args or "test"
+	vim.cmd("write")
+	vim.cmd("botright new")
+	vim.cmd("resize 15")
+	vim.cmd("terminal just " .. recipe)
+	vim.cmd("startinsert")
+end, { nargs = "?", desc = "Run just recipe", complete = function()
+	-- Get available recipes from just --list
+	local handle = io.popen("just --list --list-heading='' --list-prefix='' 2>/dev/null")
+	if not handle then return {} end
+	local result = handle:read("*a")
+	handle:close()
+	local recipes = {}
+	for line in result:gmatch("[^\r\n]+") do
+		local recipe = line:match("^(%S+)")
+		if recipe then table.insert(recipes, recipe) end
+	end
+	return recipes
+end })
+
+-- Telescope picker for just recipes
+api.nvim_create_user_command("JustPicker", function()
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local conf = require("telescope.config").values
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+
+	-- Get recipes with descriptions
+	local handle = io.popen("just --list 2>/dev/null")
+	if not handle then
+		vim.notify("just not found", vim.log.levels.ERROR)
+		return
+	end
+	local result = handle:read("*a")
+	handle:close()
+
+	local recipes = {}
+	for line in result:gmatch("[^\r\n]+") do
+		-- Skip header line
+		if not line:match("^Available") then
+			local recipe, desc = line:match("^%s*(%S+)%s+#%s*(.+)$")
+			if recipe then
+				table.insert(recipes, { recipe = recipe, desc = desc })
+			else
+				recipe = line:match("^%s*(%S+)")
+				if recipe then
+					table.insert(recipes, { recipe = recipe, desc = "" })
+				end
+			end
+		end
+	end
+
+	pickers.new({}, {
+		prompt_title = "Just Recipes",
+		finder = finders.new_table({
+			results = recipes,
+			entry_maker = function(entry)
+				local display = entry.desc ~= "" and (entry.recipe .. " - " .. entry.desc) or entry.recipe
+				return {
+					value = entry.recipe,
+					display = display,
+					ordinal = entry.recipe .. " " .. entry.desc,
+				}
+			end,
+		}),
+		sorter = conf.generic_sorter({}),
+		attach_mappings = function(prompt_bufnr)
+			actions.select_default:replace(function()
+				actions.close(prompt_bufnr)
+				local selection = action_state.get_selected_entry()
+				if selection then
+					vim.cmd("Just " .. selection.value)
+				end
+			end)
+			return true
+		end,
+	}):find()
+end, { desc = "Pick just recipe with Telescope" })
+
 -- =============================================================================
 -- MESSAGES UTILITIES
 -- =============================================================================

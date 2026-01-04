@@ -58,6 +58,8 @@
 | Key | Action |
 |-----|--------|
 | `cr` | Run file |
+| `cj` | Just (pick recipe) |
+| `cJ` | Just test |
 | `cs` | Symbol outline |
 | `cS` | Symbol navigator |
 | `cn` | Next symbol |
