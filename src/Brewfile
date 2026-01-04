@@ -11,7 +11,6 @@ tap "vladdoster/formulae"
 # Core Tools
 # keep-sorted start
 brew "git"
-brew "just"      # Task runner
 brew "neovim"
 brew "starship"  # Fast prompt
 brew "tmux"

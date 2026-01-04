@@ -344,71 +344,84 @@ api.nvim_create_user_command("RunFile", function()
 	vim.cmd("startinsert")
 end, { desc = "Run current file" })
 
--- Run a just recipe
-api.nvim_create_user_command("Just", function(opts)
-	local recipe = opts.args ~= "" and opts.args or "test"
+-- Run a make target
+api.nvim_create_user_command("Make", function(opts)
+	local target = opts.args ~= "" and opts.args or ""
 	vim.cmd("write")
 	vim.cmd("botright new")
 	vim.cmd("resize 15")
-	vim.cmd("terminal just " .. recipe)
+	vim.cmd("terminal make " .. target)
 	vim.cmd("startinsert")
-end, { nargs = "?", desc = "Run just recipe", complete = function()
-	-- Get available recipes from just --list
-	local handle = io.popen("just --list --list-heading='' --list-prefix='' 2>/dev/null")
-	if not handle then return {} end
-	local result = handle:read("*a")
-	handle:close()
-	local recipes = {}
-	for line in result:gmatch("[^\r\n]+") do
-		local recipe = line:match("^(%S+)")
-		if recipe then table.insert(recipes, recipe) end
-	end
-	return recipes
-end })
+end, {
+	nargs = "?",
+	desc = "Run make target",
+	complete = function()
+		-- Parse Makefile for targets
+		local makefile = vim.fn.getcwd() .. "/Makefile"
+		if vim.fn.filereadable(makefile) == 0 then
+			return {}
+		end
+		local targets = {}
+		for line in io.lines(makefile) do
+			-- Match target definitions (name: or name::), skip variables and comments
+			local target = line:match("^([a-zA-Z_][a-zA-Z0-9_-]*)%s*:")
+			if target and not line:match("^%s*#") and not line:match(":=") then
+				table.insert(targets, target)
+			end
+		end
+		return targets
+	end,
+})
 
--- Telescope picker for just recipes
-api.nvim_create_user_command("JustPicker", function()
+-- Telescope picker for make targets
+api.nvim_create_user_command("MakePicker", function()
 	local pickers = require("telescope.pickers")
 	local finders = require("telescope.finders")
 	local conf = require("telescope.config").values
 	local actions = require("telescope.actions")
 	local action_state = require("telescope.actions.state")
 
-	-- Get recipes with descriptions
-	local handle = io.popen("just --list 2>/dev/null")
-	if not handle then
-		vim.notify("just not found", vim.log.levels.ERROR)
+	-- Find Makefile
+	local makefile = vim.fn.getcwd() .. "/Makefile"
+	if vim.fn.filereadable(makefile) == 0 then
+		vim.notify("No Makefile found in current directory", vim.log.levels.WARN)
 		return
 	end
-	local result = handle:read("*a")
-	handle:close()
 
-	local recipes = {}
-	for line in result:gmatch("[^\r\n]+") do
-		-- Skip header line
-		if not line:match("^Available") then
-			local recipe, desc = line:match("^%s*(%S+)%s+#%s*(.+)$")
-			if recipe then
-				table.insert(recipes, { recipe = recipe, desc = desc })
-			else
-				recipe = line:match("^%s*(%S+)")
-				if recipe then
-					table.insert(recipes, { recipe = recipe, desc = "" })
-				end
+	-- Parse targets with comments
+	local targets = {}
+	local prev_comment = nil
+	for line in io.lines(makefile) do
+		-- Capture comments that might describe the next target
+		local comment = line:match("^#%s*(.+)$")
+		if comment then
+			prev_comment = comment
+		else
+			local target = line:match("^([a-zA-Z_][a-zA-Z0-9_-]*)%s*:")
+			if target and not line:match(":=") then
+				table.insert(targets, { target = target, desc = prev_comment or "" })
+				prev_comment = nil
+			elseif not line:match("^%s*$") then
+				prev_comment = nil
 			end
 		end
 	end
 
+	if #targets == 0 then
+		vim.notify("No targets found in Makefile", vim.log.levels.WARN)
+		return
+	end
+
 	pickers.new({}, {
-		prompt_title = "Just Recipes",
+		prompt_title = "Make Targets",
 		finder = finders.new_table({
-			results = recipes,
+			results = targets,
 			entry_maker = function(entry)
-				local display = entry.desc ~= "" and (entry.recipe .. " - " .. entry.desc) or entry.recipe
+				local display = entry.desc ~= "" and (entry.target .. " - " .. entry.desc) or entry.target
 				return {
-					value = entry.recipe,
+					value = entry.target,
 					display = display,
-					ordinal = entry.recipe .. " " .. entry.desc,
+					ordinal = entry.target .. " " .. entry.desc,
 				}
 			end,
 		}),
@@ -418,13 +431,13 @@ api.nvim_create_user_command("JustPicker", function()
 				actions.close(prompt_bufnr)
 				local selection = action_state.get_selected_entry()
 				if selection then
-					vim.cmd("Just " .. selection.value)
+					vim.cmd("Make " .. selection.value)
 				end
 			end)
 			return true
 		end,
 	}):find()
-end, { desc = "Pick just recipe with Telescope" })
+end, { desc = "Pick make target with Telescope" })
 
 -- =============================================================================
 -- MESSAGES UTILITIES
