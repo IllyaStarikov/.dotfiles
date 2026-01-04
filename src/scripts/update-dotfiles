@@ -436,15 +436,7 @@ update_languages() {
 # Update development tools function
 update_tools() {
   print_color blue "🛠️  Updating development tools..."
-  
-  # tmux plugins (TPM)
-  if [[ -d "${HOME}/.tmux/plugins/tpm" ]]; then
-    echo "Updating tmux plugins..."
-    if [[ "${DRY_RUN}" == false ]]; then
-        update_with_fallback "tmux plugins" "${HOME}/.tmux/plugins/tpm/bin/update_plugins" all
-    fi
-  fi
-  
+
   # Neovim plugins
   if has_command nvim; then
     echo "Updating Neovim plugins..."
