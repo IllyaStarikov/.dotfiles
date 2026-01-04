@@ -19,11 +19,11 @@
 #   --verbose  - Show detailed output for each operation
 #
 # SYMLINKS CREATED:
-#   Shell:     ~/.zshrc, ~/.bashrc, ~/.zshenv
-#   Editor:    ~/.config/nvim/, ~/.vimrc
-#   Terminal:  ~/.config/alacritty/, ~/.config/wezterm/, ~/.tmux.conf
-#   Git:       ~/.gitconfig, ~/.gitignore_global
-#   Tools:     ~/.ripgreprc, ~/.config/starship.toml
+#   Shell:     ~/.zshrc, ~/.zshenv
+#   Editor:    ~/.config/nvim/
+#   Terminal:  ~/.config/alacritty/, ~/.config/wezterm/, ~/.config/kitty/, ~/.tmux.conf
+#   Git:       ~/.gitconfig, ~/.gitignore, ~/.gitmessage
+#   Tools:     ~/.ripgreprc, ~/.editorconfig, ~/.config/starship.toml
 #
 # BACKUP:
 #   Existing files backed up to: ~/.dotfiles.backups/YYYYMMDD_HHMMSS/
@@ -210,6 +210,17 @@ main() {
   if [[ -d "$DOTFILES_DIR/src/wezterm" ]]; then
     create_link "$DOTFILES_DIR/src/wezterm" "$HOME/.config/wezterm" "WezTerm config"
   fi
+
+  # Kitty (if exists)
+  if [[ -d "$DOTFILES_DIR/src/kitty" ]]; then
+    create_link "$DOTFILES_DIR/src/kitty" "$HOME/.config/kitty" "Kitty terminal config"
+  fi
+
+  # Ripgrep
+  create_link "$DOTFILES_DIR/src/ripgreprc" "$HOME/.ripgreprc" "Ripgrep config"
+
+  # EditorConfig
+  create_link "$DOTFILES_DIR/src/editorconfig" "$HOME/.editorconfig" "EditorConfig"
 
   # LaTeX
   create_link "$DOTFILES_DIR/src/language/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
