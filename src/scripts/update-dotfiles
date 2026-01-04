@@ -358,28 +358,17 @@ fi
 update_languages() {
   print_color blue "📦 Updating language package managers..."
   
-  # Python/pip
+  # Python/pip - Skip for Homebrew-managed Python (PEP 668)
+  # Use pipx for CLI tools, or virtual environments for project dependencies
   if has_command pip3; then
-    echo "Updating pip packages..."
-    if [[ "${DRY_RUN}" == true ]]; then
-        pip3 list --outdated
-    else
-        update_with_fallback "pip upgrade" pip3 install --upgrade pip setuptools wheel
-        # Update outdated packages
-        outdated_packages=()
-        while IFS= read -r pkg; do
-            if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
-                outdated_packages+=("$pkg")
-            fi
-        done < <(pip3 list --outdated --format=json | jq -r '.[].name' 2>/dev/null || true)
-        
-        if [[ ${#outdated_packages[@]} -gt 0 ]]; then
-            for pkg in "${outdated_packages[@]}"; do
-                if [[ "$pkg" =~ ^[a-zA-Z0-9._-]+$ ]]; then
-                    update_with_fallback "pip package: $pkg" pip3 install -U -- "$pkg"
-                fi
-            done
-        fi
+    echo "Skipping pip upgrades (Homebrew-managed Python, use pipx for CLI tools)"
+  fi
+
+  # pipx - Python CLI tool manager
+  if has_command pipx; then
+    echo "Updating pipx packages..."
+    if [[ "${DRY_RUN}" == false ]]; then
+        update_with_fallback "pipx upgrade-all" pipx upgrade-all
     fi
   fi
   
@@ -576,8 +565,8 @@ update_tools() {
 echo ""
 echo "💾 Disk Space Report:"
 echo "===================="
-# Show disk usage
-df -h ~ | grep -E "Filesystem|$HOME" || df -h / | head -2
+# Show disk usage for root filesystem (use 'command' to bypass aliases like duf)
+command df -h / | head -2
 
 echo ""
 echo "📦 Large directories in home:"
