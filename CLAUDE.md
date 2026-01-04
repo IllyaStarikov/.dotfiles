@@ -29,19 +29,6 @@ This is a comprehensive dotfiles repository serving dual purposes:
 
 ## Key Commands
 
-### Quick Reference (just)
-```bash
-just              # Show all available commands
-just test         # Run quick tests
-just test-full    # Run full test suite
-just fmt          # Format all code
-just lint         # Run linters
-just setup        # Full installation
-just symlinks     # Create/update symlinks
-just update       # Update packages and plugins
-just theme        # Auto-detect theme from macOS
-```
-
 ### Setup and Installation
 ```bash
 # Unified setup script with different modes
