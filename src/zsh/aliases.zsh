@@ -292,7 +292,7 @@ alias reset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 
 # System maintenance
-alias update="~/.dotfiles/src/scripts/update" # Use the comprehensive update script
+alias update="~/.dotfiles/src/scripts/update-dotfiles" # Update packages and plugins
 alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
 alias update-dotfiles="~/.dotfiles/src/scripts/update-dotfiles" # Pull latest dotfiles changes
 alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"           # Re-run setup
