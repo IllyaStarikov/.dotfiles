@@ -93,67 +93,72 @@ cleanup() {
     # Create backup directory with timestamp
     local CLEANUP_BACKUP_DIR="$HOME/.dotfiles-cleanup-backups/$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$CLEANUP_BACKUP_DIR"
-    
+
     # Backup and clean tmux cache files
-    if ls /tmp/.tmux_*_cache 2>/dev/null; then
+    if ls /tmp/.tmux_*_cache &>/dev/null; then
         mkdir -p "$CLEANUP_BACKUP_DIR/tmux-cache"
         mv /tmp/.tmux_*_cache "$CLEANUP_BACKUP_DIR/tmux-cache/" 2>/dev/null || true
     fi
-    
+
     # Backup and clean Neovim swap files and backups
-    if [[ -d ~/.local/state/nvim/swap ]] && ls ~/.local/state/nvim/swap/* 2>/dev/null; then
-        mkdir -p "$CLEANUP_BACKUP_DIR/nvim-swap"
-        mv ~/.local/state/nvim/swap/* "$CLEANUP_BACKUP_DIR/nvim-swap/" 2>/dev/null || true
+    if [[ -d ~/.local/state/nvim/swap ]]; then
+        local swap_files=(~/.local/state/nvim/swap/*(N))
+        if (( ${#swap_files[@]} > 0 )); then
+            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-swap"
+            mv ~/.local/state/nvim/swap/* "$CLEANUP_BACKUP_DIR/nvim-swap/" 2>/dev/null || true
+        fi
     fi
-    if [[ -d ~/.local/state/nvim/backup ]] && ls ~/.local/state/nvim/backup/* 2>/dev/null; then
-        mkdir -p "$CLEANUP_BACKUP_DIR/nvim-backup"
-        mv ~/.local/state/nvim/backup/* "$CLEANUP_BACKUP_DIR/nvim-backup/" 2>/dev/null || true
+    if [[ -d ~/.local/state/nvim/backup ]]; then
+        local backup_files=(~/.local/state/nvim/backup/*(N))
+        if (( ${#backup_files[@]} > 0 )); then
+            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-backup"
+            mv ~/.local/state/nvim/backup/* "$CLEANUP_BACKUP_DIR/nvim-backup/" 2>/dev/null || true
+        fi
     fi
-    
+
     # Archive old Neovim log files (keep last 5 active)
     if [[ -d ~/.local/state/nvim ]]; then
-        local old_logs=$(find ~/.local/state/nvim -name "*.log" -type f | sort -r | tail -n +6)
+        local old_logs
+        old_logs=$(find ~/.local/state/nvim -name "*.log" -type f 2>/dev/null | sort -r | tail -n +6)
         if [[ -n "$old_logs" ]]; then
             mkdir -p "$CLEANUP_BACKUP_DIR/nvim-logs"
             echo "$old_logs" | xargs -I {} mv {} "$CLEANUP_BACKUP_DIR/nvim-logs/" 2>/dev/null || true
         fi
     fi
-    
+
     # Backup zsh completion dump for regeneration
-    if ls ~/.zcompdump* 2>/dev/null; then
+    local zcompdump_files=(~/.zcompdump*(N))
+    if (( ${#zcompdump_files[@]} > 0 )); then
         mkdir -p "$CLEANUP_BACKUP_DIR/zsh"
         mv ~/.zcompdump* "$CLEANUP_BACKUP_DIR/zsh/" 2>/dev/null || true
     fi
-    
-    # Clean pip cache
-    if command -v pip3 &> /dev/null; then
-        pip3 cache purge 2>/dev/null || true
+
+    # Clean pip cache (silently)
+    if command -v pip3 &>/dev/null; then
+        pip3 cache purge &>/dev/null || true
     fi
-    
-    # Clean npm cache
-    if command -v npm &> /dev/null; then
-        npm cache clean --force 2>/dev/null || true
+
+    # Clean npm cache (silently)
+    if command -v npm &>/dev/null; then
+        npm cache clean --force &>/dev/null || true
     fi
-    
-    # Clean yarn cache
-    if command -v yarn &> /dev/null; then
-        yarn cache clean 2>/dev/null || true
+
+    # Clean yarn cache (silently)
+    if command -v yarn &>/dev/null; then
+        yarn cache clean &>/dev/null || true
     fi
-    
-    # Clean pnpm store
-    if command -v pnpm &> /dev/null; then
-        pnpm store prune 2>/dev/null || true
+
+    # Clean pnpm store (silently)
+    if command -v pnpm &>/dev/null; then
+        pnpm store prune &>/dev/null || true
     fi
-    
-    # Clean macOS specific caches (non-sudo only)
-    echo "Cleaning macOS caches..."
-    
+
+    # Clean macOS specific caches (silently)
     # Remove .DS_Store files from dotfiles directory
     find ~/.dotfiles -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
-    
-    # Clean shell history duplicates
+
+    # Backup shell history
     if [[ -f ~/.zsh_history ]]; then
-        # Create backup
         cp ~/.zsh_history ~/.zsh_history.bak 2>/dev/null || true
     fi
 }
