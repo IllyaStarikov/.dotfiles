@@ -88,10 +88,8 @@ update_with_fallback() {
     return 0
 }
 
-# Cleanup function
+# Cleanup function (runs silently)
 cleanup() {
-    echo "🧹 Performing cleanup..."
-    
     # Create backup directory with timestamp
     local CLEANUP_BACKUP_DIR="$HOME/.dotfiles-cleanup-backups/$(date +%Y%m%d_%H%M%S)"
     mkdir -p "$CLEANUP_BACKUP_DIR"
@@ -231,8 +229,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Set trap to cleanup on exit
-trap cleanup EXIT INT TERM
+# Set trap to cleanup on interrupt only (not normal exit)
+trap 'cleanup; exit 130' INT TERM
 
 print_color green "🚀 Universal System Update"
 echo "OS: $(detect_os)"
@@ -583,36 +581,34 @@ echo "   - Archive macOS caches: mv ~/Library/Caches/* ~/Archive/Caches-$(date +
 # Show summary
 show_summary() {
   echo
-  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  
+  echo
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
   if [[ "${DRY_RUN}" == true ]]; then
-    print_color yellow "DRY RUN COMPLETE"
+    print_color yellow "🔍 DRY RUN COMPLETE"
     echo "Run without --dry-run to apply updates"
   else
-    print_color green "✅ UPDATE COMPLETE"
-    
+    if [[ -z "${FAILED_LIST}" ]]; then
+      print_color green "✅ UPDATE COMPLETED SUCCESSFULLY"
+    else
+      print_color yellow "⚠️  UPDATE COMPLETED WITH WARNINGS"
+    fi
+
     if [[ -n "${UPDATED_LIST}" ]]; then
       echo
-      echo "Successfully updated:"
+      print_color green "Successfully updated:"
       echo -e "${UPDATED_LIST}" | grep -v '^$' | sed 's/^/  ✓ /' | sort -u
     fi
-    
+
     if [[ -n "${FAILED_LIST}" ]]; then
       echo
-      print_color red "Failed to update:"
-      echo -e "${FAILED_LIST}" | grep -v '^$' | sed 's/^/  ✗ /' | sort -u
+      print_color yellow "Skipped/Failed (non-critical):"
+      echo -e "${FAILED_LIST}" | grep -v '^$' | sed 's/^/  ⚠ /' | sort -u
     fi
   fi
-  
-  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  
-  echo ""
-  echo "📝 Manual updates may be required for:"
-  echo "   - macOS system updates (if available)"
-  echo "   - TeX Live packages (sudo tlmgr update --all)"
-  echo "   - Python versions via pyenv (pyenv install x.x.x)"
-  echo "   - Old Python versions cleanup (pyenv uninstall x.x.x)"
-  echo ""
+
+  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo
 }
 
 # Main execution
@@ -621,21 +617,22 @@ main() {
   if [[ "${SKIP_SYSTEM}" != true ]]; then
     update_system
   fi
-  
+
   if [[ "${SKIP_PACKAGES}" != true ]]; then
     update_homebrew
   fi
-  
+
   if [[ "${SKIP_LANGUAGES}" != true ]]; then
     update_languages
   fi
-  
+
   if [[ "${SKIP_TOOLS}" != true ]]; then
     update_tools
   fi
-  
-  # Show summary
+
+  # Show summary first, then cleanup
   show_summary
+  cleanup
 }
 
 main "$@"
