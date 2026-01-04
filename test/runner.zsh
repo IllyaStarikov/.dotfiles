@@ -372,7 +372,13 @@ EOF
       # Keep the special init timeout if already set
       [[ "$test_name" != *"init"* ]] && test_timeout=30  # Standard CI timeout
 
-      # Skip certain problematic tests in CI - check both with and without _zsh suffix
+      # Skip certain tests in CI that require special conditions:
+      # - keybinding_conflicts: Requires interactive Neovim session
+      # - comprehensive_*: Long-running tests better suited for local dev
+      # - *_interactive_*: Require user interaction
+      # - plugin_loading: Requires full Neovim plugin environment
+      # - lsp_completion: Requires LSP servers to be installed
+      # Run these locally with: ./runner.zsh --full
       local base_name="${test_name%_zsh_test}"
       base_name="${base_name%_test}"
 
