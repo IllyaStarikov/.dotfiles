@@ -3,6 +3,12 @@
 
 # Core Settings
 
+# Fix TERM if incorrectly set to tmux-256color outside of tmux
+# This can happen if terminal emulator config is cached or misconfigured
+if [[ "$TERM" == "tmux-256color" && -z "$TMUX" ]]; then
+  export TERM="xterm-256color"
+fi
+
 # Essential options (only non-defaults)
 setopt AUTO_CD              # cd by typing directory name
 setopt INTERACTIVE_COMMENTS # Allow comments in interactive mode
