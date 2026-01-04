@@ -238,7 +238,7 @@ config.show_new_tab_button_in_tab_bar = false
 
 config.set_environment_variables = {
   TERM_PROGRAM = "WezTerm",
-  TERM = "wezterm",
+  TERM = "xterm-256color",  -- wezterm terminfo not available on macOS, use xterm-256color
   COLORTERM = "truecolor",
   LANG = "en_US.UTF-8",
   LC_ALL = "en_US.UTF-8",
