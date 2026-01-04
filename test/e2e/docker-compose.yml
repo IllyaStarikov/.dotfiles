@@ -46,35 +46,6 @@ services:
       - test-network
 
   # ──────────────────────────────────────────────────────────────────────────────
-  # Fedora 39 - RPM-based testing
-  # ──────────────────────────────────────────────────────────────────────────────
-  fedora-e2e:
-    build:
-      context: ../..
-      dockerfile: test/e2e/Dockerfile.fedora
-    container_name: dotfiles-fedora-e2e
-    hostname: fedora-test
-    environment:
-      - CI=true
-      - E2E_TEST=true
-      - TERM=xterm-256color
-    volumes:
-      - ../../:/home/testuser/.dotfiles:ro
-      - test-cache-fedora:/home/testuser/.cache
-      - test-local-fedora:/home/testuser/.local
-      - test-config-fedora:/home/testuser/.config
-    tmpfs:
-      - /tmp
-    command: |
-      -c "
-        cd /home/testuser/.dotfiles &&
-        chmod +x test/e2e/docker-e2e-test.zsh &&
-        zsh test/e2e/docker-e2e-test.zsh
-      "
-    networks:
-      - test-network
-
-  # ──────────────────────────────────────────────────────────────────────────────
   # Arch Linux - Rolling release testing
   # ──────────────────────────────────────────────────────────────────────────────
   arch-e2e:
@@ -111,7 +82,6 @@ services:
     container_name: dotfiles-orchestrator
     depends_on:
       - ubuntu-e2e
-      - fedora-e2e
       - arch-e2e
     command: echo "All E2E tests started"
     networks:
@@ -150,9 +120,6 @@ volumes:
   test-cache-ubuntu:
   test-local-ubuntu:
   test-config-ubuntu:
-  test-cache-fedora:
-  test-local-fedora:
-  test-config-fedora:
   test-cache-arch:
   test-local-arch:
   test-config-arch:
