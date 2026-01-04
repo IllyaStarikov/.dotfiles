@@ -6,7 +6,7 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 
 - `zshrc` - Main configuration with plugins
 - `zshenv` - Environment variables
-- `aliases.zsh` - 200+ command aliases
+- `aliases.zsh` - 160+ command aliases
 - `starship.toml` - Prompt configuration
 
 ## Key Features
