@@ -33,6 +33,9 @@ test/logs/e2e_*/
 wezterm_*.txt
 src/wezterm/theme.lua
 
+# Kitty generated theme
+src/kitty/theme.conf
+
 # Private dotfiles (now untracked)
 .dotfiles.private/
 template/public/
