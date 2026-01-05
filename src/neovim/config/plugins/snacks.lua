@@ -31,16 +31,7 @@ function M.setup()
 		-- Dashboard configuration with proper setup
 		dashboard = {
 			enabled = true,
-			width = 64, -- Increased width to accommodate ASCII art
-			preset = {
-				header = [[
-███╗   ███╗██╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗
-████╗ ████║██║   ██║╚══██╔══╝██║████╗  ██║╚██╗ ██╔╝
-██╔████╔██║██║   ██║   ██║   ██║██╔██╗ ██║ ╚████╔╝
-██║╚██╔╝██║██║   ██║   ██║   ██║██║╚██╗██║  ╚██╔╝
-██║ ╚═╝ ██║╚██████╔╝   ██║   ██║██║ ╚████║   ██║
-╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝   ╚═╝   ]],
-			},
+			width = 60,
 			sections = {
 				{ section = "header" },
 				{
