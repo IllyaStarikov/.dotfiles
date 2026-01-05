@@ -90,7 +90,7 @@ jobs:
 
       - name: upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: unit-test-results-${{ matrix.os }}
           path: |
@@ -155,7 +155,7 @@ jobs:
 
       - name: upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: functional-test-results-${{ matrix.os }}
           path: |
