@@ -322,6 +322,40 @@ local function setup_lsp()
 	-- Enable language servers only if they exist
 	local servers = {
 		pyright = {
+			-- Prevent pyright from using home directory as workspace root
+			-- Note: ~/pyproject.toml exists for global ruff config, which breaks default detection
+			root_dir = function(fname)
+				local home = vim.fn.expand("~")
+				-- Check Python-specific markers first (more specific, excludes .git)
+				local python_root = lspconfig.util.root_pattern(
+					"pyproject.toml",
+					"setup.py",
+					"setup.cfg",
+					"requirements.txt",
+					"Pipfile",
+					"pyrightconfig.json"
+				)(fname)
+				-- If found root is home directory, try to find a more specific one
+				if python_root == home then
+					-- Try without pyproject.toml (since ~/pyproject.toml is global config)
+					python_root = lspconfig.util.root_pattern(
+						"setup.py",
+						"setup.cfg",
+						"requirements.txt",
+						"Pipfile",
+						"pyrightconfig.json"
+					)(fname)
+				end
+				-- Fall back to .git if no Python markers found
+				if not python_root then
+					python_root = lspconfig.util.root_pattern(".git")(fname)
+				end
+				-- If still home or nil, use file's directory
+				if not python_root or python_root == home then
+					python_root = vim.fn.fnamemodify(fname, ":h")
+				end
+				return python_root
+			end,
 			settings = {
 				python = {
 					analysis = {
