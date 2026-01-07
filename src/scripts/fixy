@@ -82,7 +82,12 @@ print_if_not_parallel() {
 # Returns: 0 if binary, 1 if text
 is_binary_file() {
   local file="${1:?Error: file required}"
-  file "$file" | grep -q "binary\|data"
+  if command -v file &>/dev/null; then
+    file "$file" | grep -q "binary\|data"
+  else
+    # Fallback: check for null bytes (common in binary files)
+    grep -qP '\x00' "$file" 2>/dev/null || head -c 8000 "$file" | LC_ALL=C grep -q '[^[:print:][:space:]]'
+  fi
 }
 
 # Remove trailing whitespace from file

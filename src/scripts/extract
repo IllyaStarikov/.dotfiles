@@ -32,7 +32,13 @@ case "$1" in
     *.tar.bz2) tar xjf "$1" ;;      # Bzip2 compressed tar
     *.tar.gz)  tar xzf "$1" ;;      # Gzip compressed tar
     *.tar.xz)  tar xJf "$1" ;;      # XZ compressed tar
-    *.bz2)     bunzip2 "$1" ;;      # Bzip2 single file
+    *.bz2)
+        if command -v bunzip2 &>/dev/null; then
+            bunzip2 "$1"
+        else
+            echo "Error: bunzip2 not installed. Install bzip2 package."
+            exit 1
+        fi ;;                        # Bzip2 single file
     *.rar)
         if command -v unrar &>/dev/null; then
             unrar x "$1"
@@ -43,12 +49,30 @@ case "$1" in
             echo "  Linux:  apt install unrar"
             exit 1
         fi ;;
-    *.gz)      gunzip "$1" ;;       # Gzip single file
+    *.gz)
+        if command -v gunzip &>/dev/null; then
+            gunzip "$1"
+        else
+            echo "Error: gunzip not installed. Install gzip package."
+            exit 1
+        fi ;;                        # Gzip single file
     *.tar)     tar xf "$1" ;;       # Uncompressed tar
     *.tbz2)    tar xjf "$1" ;;      # Alternative bzip2 tar extension
     *.tgz)     tar xzf "$1" ;;      # Alternative gzip tar extension
-    *.zip)     unzip "$1" ;;        # ZIP archive
-    *.Z)       uncompress "$1" ;;   # Unix compress format
+    *.zip)
+        if command -v unzip &>/dev/null; then
+            unzip "$1"
+        else
+            echo "Error: unzip not installed. Install unzip package."
+            exit 1
+        fi ;;                        # ZIP archive
+    *.Z)
+        if command -v uncompress &>/dev/null; then
+            uncompress "$1"
+        else
+            echo "Error: uncompress not installed. Install ncompress package."
+            exit 1
+        fi ;;                        # Unix compress format
     *.7z)
         if command -v 7z &>/dev/null; then
             7z x "$1"
@@ -59,7 +83,13 @@ case "$1" in
             echo "  Linux:  apt install p7zip-full"
             exit 1
         fi ;;
-    *.xz)      xz -d "$1" ;;        # XZ single file
+    *.xz)
+        if command -v xz &>/dev/null; then
+            xz -d "$1"
+        else
+            echo "Error: xz not installed. Install xz-utils package."
+            exit 1
+        fi ;;                        # XZ single file
     *)
         echo "Error: '$1' cannot be extracted via extract"
         echo "Unknown archive format"
