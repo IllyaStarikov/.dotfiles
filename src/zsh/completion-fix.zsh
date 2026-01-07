@@ -35,8 +35,8 @@ _cancel_async_autosuggest() {
 
 # Reset ZLE display state (call only when ZLE is active)
 _reset_zle_display_state() {
-  # Clear autosuggestion display
-  POSTDISPLAY=
+  # Clear autosuggestion display (may be read-only in some contexts)
+  { POSTDISPLAY=; } 2>/dev/null
 
   # Clear highlight tracking
   unset _ZSH_AUTOSUGGEST_LAST_HIGHLIGHT 2>/dev/null
@@ -92,23 +92,6 @@ _zle_line_init_recovery() {
 }
 
 # ============================================================================
-# Hook: TRAPINT - handles Ctrl+C
-# ============================================================================
-
-_completion_fix_TRAPINT() {
-  _cancel_async_autosuggest
-
-  # If ZLE is active, reset display state
-  if zle 2>/dev/null; then
-    _reset_zle_display_state
-    zle -R
-  fi
-
-  # Return 128 + signal number to indicate interrupt
-  return $(( 128 + $1 ))
-}
-
-# ============================================================================
 # Manual Reset Widget (fallback for stuck states)
 # ============================================================================
 
@@ -140,19 +123,6 @@ if (( ${+widgets[zle-line-init]} )); then
   fi
 else
   zle -N zle-line-init _zle_line_init_recovery
-fi
-
-# Register TRAPINT (chain with existing if present)
-if (( ${+functions[TRAPINT]} )); then
-  functions[_preserved_TRAPINT]=$functions[TRAPINT]
-  TRAPINT() {
-    _completion_fix_TRAPINT "$@"
-    local ret=$?
-    _preserved_TRAPINT "$@" 2>/dev/null
-    return $ret
-  }
-else
-  TRAPINT() { _completion_fix_TRAPINT "$@" }
 fi
 
 # Register manual reset widget
