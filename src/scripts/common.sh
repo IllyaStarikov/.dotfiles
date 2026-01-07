@@ -205,6 +205,24 @@ has_command() {
   command -v "${1}" &>/dev/null
 }
 
+# Find and return the first available command from a list
+# Useful for implementing silent fallback chains
+# Usage: cmd=$(first_available_command nvim vim vi)
+# Args:
+#   $@ - List of commands to try in order of preference
+# Returns: Name of first available command (stdout), 0 if found, 1 if none found
+# Example: editor=$(first_available_command nvim vim vi nano)
+first_available_command() {
+  local cmd
+  for cmd in "$@"; do
+    if command -v "${cmd}" &>/dev/null; then
+      echo "${cmd}"
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Detect system package manager for automated installations
 # Checks in order of preference and availability
 # Returns: "brew", "apt", "dnf", "yum", "pacman", "zypper", or "unknown"

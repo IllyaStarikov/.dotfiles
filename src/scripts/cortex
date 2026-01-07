@@ -23,5 +23,15 @@
 # Add the cortex module to Python path
 export PYTHONPATH="$HOME/.dotfiles/src/cortex:$PYTHONPATH"
 
+# Find Python (prefer python3 over python)
+if command -v python3 &>/dev/null; then
+  PYTHON_CMD="python3"
+elif command -v python &>/dev/null; then
+  PYTHON_CMD="python"
+else
+  echo "Error: Python not found. Please install Python 3." >&2
+  exit 1
+fi
+
 # Run cortex with all arguments
-exec python -m cortex.cli "$@"
+exec "$PYTHON_CMD" -m cortex.cli "$@"

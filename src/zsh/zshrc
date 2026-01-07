@@ -92,9 +92,17 @@ if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]]; then
     [[ -x "/opt/homebrew/bin/brew" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# Editor
-export EDITOR=nvim
-export VISUAL=nvim
+# Editor (fallback chain: nvim → vim → vi)
+if command -v nvim &>/dev/null; then
+  export EDITOR=nvim
+  export VISUAL=nvim
+elif command -v vim &>/dev/null; then
+  export EDITOR=vim
+  export VISUAL=vim
+else
+  export EDITOR=vi
+  export VISUAL=vi
+fi
 
 # Language settings - ensure UTF-8 even if system locale is misconfigured
 # Prevents encoding issues with special characters in files and terminal output

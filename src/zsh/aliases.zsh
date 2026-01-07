@@ -14,7 +14,8 @@
 # Editor Aliases
 # ============================================================================
 
-alias vi="nvim"
+# Use nvim if available, otherwise vim
+command -v nvim &>/dev/null && alias vi="nvim" || alias vi="vim"
 # Platform-aware code command
 if command -v code >/dev/null 2>&1; then
   alias code="code ."
@@ -116,24 +117,39 @@ if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then
 else
     alias find-file="find . -type f -name"
 fi
-alias find-content="rg"
-alias search="rg -i --pretty --context=3"
-
-# Project-specific searches
-alias todos="rg -n --no-heading '(TODO|FIX(ME)?|NOTE|HACK|XXX)'"
-alias fixmes="rg -n --no-heading '(FIXME|FIX)'"
-alias notes="rg -n --no-heading '(NOTE|NOTES)'"
-
-# File type specific searches
-# keep-sorted start
-alias cssgrep="rg --type css"
-alias htmlgrep="rg --type html"
-alias jsgrep="rg --type js"
-alias luagrep="rg --type lua"
-alias mdgrep="rg --type md"
-alias pygrep="rg --type py"
-alias tsgrep="rg --type ts"
-# keep-sorted end
+# ripgrep aliases with grep fallback
+if command -v rg &>/dev/null; then
+  alias find-content="rg"
+  alias search="rg -i --pretty --context=3"
+  # Project-specific searches
+  alias todos="rg -n --no-heading '(TODO|FIX(ME)?|NOTE|HACK|XXX)'"
+  alias fixmes="rg -n --no-heading '(FIXME|FIX)'"
+  alias notes="rg -n --no-heading '(NOTE|NOTES)'"
+  # File type specific searches
+  # keep-sorted start
+  alias cssgrep="rg --type css"
+  alias htmlgrep="rg --type html"
+  alias jsgrep="rg --type js"
+  alias luagrep="rg --type lua"
+  alias mdgrep="rg --type md"
+  alias pygrep="rg --type py"
+  alias tsgrep="rg --type ts"
+  # keep-sorted end
+else
+  # Fallback to grep
+  alias find-content="grep -r"
+  alias search="grep -ri --color=auto"
+  alias todos="grep -rn 'TODO\|FIXME\|NOTE\|HACK\|XXX'"
+  alias fixmes="grep -rn 'FIXME\|FIX'"
+  alias notes="grep -rn 'NOTE\|NOTES'"
+  alias cssgrep="grep -r --include='*.css'"
+  alias htmlgrep="grep -r --include='*.html'"
+  alias jsgrep="grep -r --include='*.js'"
+  alias luagrep="grep -r --include='*.lua'"
+  alias mdgrep="grep -r --include='*.md'"
+  alias pygrep="grep -r --include='*.py'"
+  alias tsgrep="grep -r --include='*.ts'"
+fi
 
 # System Utilities
 
@@ -158,8 +174,12 @@ command -v htop &>/dev/null && alias top='htop'
 # Only override ps if procs is available
 command -v procs &>/dev/null && alias ps='procs'
 
-# Network utilities
-alias ip="curl -s icanhazip.com"
+# Network utilities (curl with wget fallback)
+if command -v curl &>/dev/null; then
+  alias ip="curl -s icanhazip.com"
+elif command -v wget &>/dev/null; then
+  alias ip="wget -qO- icanhazip.com"
+fi
 alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, ""); print }'"
 # Install speedtest-cli safely: brew install speedtest-cli
@@ -387,8 +407,8 @@ alias fix-ssh="chmod 700 ~/.ssh && chmod 600 ~/.ssh/* && chmod 644 ~/.ssh/*.pub 
 # Quick file sharing
 alias share="python3 -m http.server 8000"
 
-# Lazy git - interactive git UI
-alias lg="lazygit"
+# Lazy git - interactive git UI (only if available)
+command -v lazygit &>/dev/null && alias lg="lazygit"
 
 # Better df with duf if available
 if command -v duf &>/dev/null; then
