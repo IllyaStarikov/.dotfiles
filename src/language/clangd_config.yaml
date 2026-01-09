@@ -6,9 +6,9 @@
 # Platform-specific includes are auto-detected by clangd
 CompileFlags:
   Add:
-    - '-std=c++17'              # C++ standard version (default: compiler-specific)
-    - '-I/usr/local/include'    # Common local include path
-    - '-I/usr/include'          # System include path
+    - '-std=c++17'
+    - '-I/usr/local/include'
+    - '-I/usr/include'
   Remove:
     # Remove any system-specific flags that might cause issues cross-platform
     - '-stdlib=libc++'          # macOS-specific stdlib
@@ -21,10 +21,10 @@ Diagnostics:
     Remove: [modernize-use-trailing-return-type]  # Conflicts with style guide
 
 Completion:
-  AllScopes: true       # Show completions from all namespaces (default: false)
-  DetailedLabel: true   # Show function signatures in completion (default: false)
+  AllScopes: true
+  DetailedLabel: true
 
 InlayHints:
-  Enabled: true         # Show inline hints in editor (default: false)
-  ParameterNames: true  # Show parameter names at call sites (default: false)
-  DeducedTypes: true    # Show deduced types for auto variables (default: false)
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true

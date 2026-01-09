@@ -4,15 +4,14 @@
 # Style guide: https://google.github.io/styleguide/pyguide.html
 
 # Maximum line length for code
-line-length = 100  # Default: 88 (Black's default). Using 100 for better readability on modern displays
+line-length = 100
 
 # Target Python version for compatibility checks
-target-version = "py39"  # Default: "py38" (Python 3.9+ features allowed)
+target-version = "py39"
 
 # Code formatting configuration
 [format]
-# Use single quotes for strings (project preference for consistency)
-quote-style = "single"  # Default: "double" (style guide is flexible on quotes)
+quote-style = "single"
 
 # Linting configuration
 [lint]
@@ -28,7 +27,5 @@ select = [
 
 # Import sorting configuration
 [lint.isort]
-# Style guide import grouping: standard library, third-party, first-party
-# Default behavior matches style guide requirements
 force-single-line = false
 combine-as-imports = true
