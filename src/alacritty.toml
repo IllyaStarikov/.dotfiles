@@ -101,13 +101,12 @@ command = "None"          # No audio bell for productivity
 
 [general]
 import = ["~/.config/alacritty/theme.toml"]
-# live_config_reload true is default
 
 # 🎨 COLOR CONFIGURATION
 
 [colors]
-draw_bold_text_with_bright_colors = true # Default: false (better visibility)
-transparent_background_colors = true     # Default: false (transparency support)
+draw_bold_text_with_bright_colors = true
+transparent_background_colors = true
 
 # 🌍 ENVIRONMENT VARIABLES
 
@@ -122,75 +121,57 @@ LC_CTYPE = "en_US.UTF-8"
 # 📜 SCROLLING & HISTORY
 
 [scrolling]
-history = 50000 # Default: 10000 (more history for debugging)
-# multiplier removed - default 3 is already optimal
+history = 50000
 
 # 📝 TEXT SELECTION & CLIPBOARD
 
 [selection]
-save_to_clipboard = true # Default: false (auto-copy is useful)
-# semantic_escape_chars default is already optimal
+save_to_clipboard = true
 
 # 🖼️ WINDOW CONFIGURATION
 
 [window]
-# decorations "full" is default
-# dynamic_title true is default
-# opacity 1.0 is default
-# startup_mode "Windowed" is default
-resize_increments = true # Default: false (resize by character grid)
-option_as_alt = "Both"   # Default: "None" (proper Alt key on macOS)
-
-# macOS specific window options
-# decorations_theme_variant "None" is default
+resize_increments = true
+option_as_alt = "Both" # proper Alt key on macOS
 
 [window.dimensions]
-columns = 120 # Default: 80 (wider window)
-lines = 40    # Default: 24 (taller window)
+columns = 120
+lines = 40
 
 [window.padding]
-x = 8 # Default: 0 (breathing room)
-y = 8 # Default: 0 (breathing room)
+x = 8
+y = 8
 
-# window.position removed - let window manager decide
-
-# 🖋️ FONT CONFIGURATION (Enhanced)
+# 🖋️ FONT CONFIGURATION
 
 [font]
-size = 18.0 # More reasonable default font size
-# Enable built-in font fallbacks for better symbol support
-builtin_box_drawing = true # Enable for better box drawing character rendering
+size = 18.0
+builtin_box_drawing = true
 
-# Enable ligatures for JetBrainsMono
 # IMPORTANT: Use "JetBrainsMono Nerd Font" (NOT "Mono" variant) for ligatures!
-# The "Mono" variant specifically disables ligatures
-
 
 [font.normal]
-# JetBrainsMono Nerd Font with ligatures enabled
 family = "JetBrainsMono Nerd Font"
 style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font" # Ligatures work here too
+family = "JetBrainsMono Nerd Font"
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font" # Ligatures work here too
+family = "JetBrainsMono Nerd Font"
 style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font" # Ligatures work here too
+family = "JetBrainsMono Nerd Font"
 style = "Bold Italic"
 
-# Font rendering optimizations
 [font.offset]
-y = 1 # Only non-default value
+y = 1
 
 # 🖱️ MOUSE CONFIGURATION
 
 [mouse]
-# hide_when_typing true is default
 
 [[mouse.bindings]]
 mouse = "Middle"
@@ -223,8 +204,7 @@ blink_timeout = 15
 # 🐞 DEBUG CONFIGURATION
 
 [debug]
-log_level = "Warn" # Only non-default setting
-# ref_test = false  # Removed - not a valid config option
+log_level = "Warn"
 
 # 📝 VI MODE CONFIGURATION
 

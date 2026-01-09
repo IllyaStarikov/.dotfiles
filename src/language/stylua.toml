@@ -2,19 +2,13 @@
 # Ensures consistent Lua formatting across Neovim configs
 # https://github.com/JohnnyMorganz/StyLua
 
-# Indentation: Use 2 spaces (standard for Lua and matches Neovim conventions)
-indent_type = "Spaces"  # Default: "Tabs" - spaces ensure consistency across editors
-indent_width = 2        # Default: 4 - 2 spaces is standard for Lua
+# Indentation: 2 spaces (standard for Lua, matches Neovim conventions)
+indent_type = "Spaces"
+indent_width = 2
 
-# Line width: Match other formatters at 100 characters
-column_width = 100      # Default: 120 (100 fits better on split screens)
-
-# Quotes: Keep original quote style (don't force changes)
-# quote_style setting removed - default "AutoPreferDouble" is fine
-
-# Call parentheses: Keep compact style
-# call_parentheses setting removed - default "Always" is standard
+# Line width
+column_width = 100
 
 # Import sorting: Disabled to preserve logical grouping
 [sort_requires]
-enabled = false  # Default: false (manual organization often better)
+enabled = false

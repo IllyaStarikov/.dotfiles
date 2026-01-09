@@ -3,9 +3,7 @@
 # Style guide: https://google.github.io/styleguide/pyguide.html
 
 [tool.black]
-# Maximum line length (style guide preference)
-line-length = 100  # Default: 88
-# Minimum Python version to support
+line-length = 100
 target-version = ['py38']
 # Only format Python files
 include = '\.pyi?$'
