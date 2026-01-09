@@ -1361,11 +1361,6 @@ require("lazy").setup({
 		missing = false, -- Don't auto-install by default
 		colorscheme = { "tokyonight", "habamax" },
 	},
-	-- Checker configuration
-	checker = {
-		enabled = true, -- Check for updates
-		notify = false, -- Don't notify about updates
-	},
 	ui = {
 		icons = {
 			cmd = "⌘",
@@ -1382,8 +1377,8 @@ require("lazy").setup({
 		},
 	},
 	checker = {
-		enabled = true, -- check for plugin updates periodically
-		notify = false, -- don't notify on update (less intrusive)
+		enabled = true,
+		notify = false,
 	},
 	change_detection = {
 		notify = false, -- Don't notify about config changes
@@ -1392,10 +1387,9 @@ require("lazy").setup({
 		cache = {
 			enabled = true,
 		},
-		reset_packpath = true, -- reset the package path to improve startup time
+		reset_packpath = true,
 		rtp = {
-			reset = true, -- reset the runtime path to improve startup time
-			-- disable some rtp plugins for faster startup
+			reset = true,
 			disabled_plugins = {
 				"gzip",
 				"matchit",
@@ -1410,14 +1404,3 @@ require("lazy").setup({
 	},
 })
 
--- Plugin-specific configurations
-local g = vim.g
-local opt = vim.opt
-
--- Theme is set dynamically in config/theme.lua
-
--- Plugin configurations have been moved to their respective setup functions
-
--- Telescope is now configured in config/telescope.lua
-
--- Theme settings are handled in config/theme.lua

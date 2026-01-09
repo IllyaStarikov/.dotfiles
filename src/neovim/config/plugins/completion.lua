@@ -42,7 +42,7 @@ return {
 			show_on_insert_on_trigger_character = true,
 			show_in_snippet = true,
 			show_on_accept_on_trigger_character = true,
-			prefetch_on_insert = true, -- Enable prefetch
+			prefetch_on_insert = true,
 			show_on_blocked_trigger_characters = {}, -- Don't block any characters
 			show_on_x_blocked_trigger_characters = {}, -- Don't block any characters
 		},
@@ -51,8 +51,8 @@ return {
 		list = {
 			max_items = 200,
 			selection = {
-				preselect = true, -- Preselect first item
-				auto_insert = true, -- Auto-insert on selection
+				preselect = true,
+				auto_insert = true,
 			},
 		},
 
@@ -86,9 +86,8 @@ return {
 
 	-- Fuzzy matching configuration
 	fuzzy = {
-		implementation = "prefer_rust_with_warning", -- Use Rust for 6x performance
-		-- frecency is now built into the Rust implementation automatically
-		use_proximity = true, -- Boost nearby matches
+		implementation = "prefer_rust_with_warning",
+		use_proximity = true,
 		sorts = { "score", "sort_text" },
 	},
 
