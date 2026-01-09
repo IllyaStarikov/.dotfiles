@@ -36,7 +36,10 @@
 - [Neovim](usage/tools/neovim.md)
 - [tmux](usage/tools/tmux.md)
 - [Alacritty](usage/tools/alacritty.md)
+- [WezTerm](usage/tools/wezterm.md)
+- [Kitty](usage/tools/kitty.md)
 - [Git](usage/tools/git.md)
+- [Services Manager](guides/tools/services.md)
 
 ### 📚 Workflows
 
@@ -53,6 +56,7 @@
 
 ### 🤖 AI & Completion
 
+- [Cortex AI Management](guides/editor/cortex.md)
 - [CodeCompanion Setup](guides/editor/codecompanion.md)
 - [Blink.cmp Configuration](guides/editor/blink.md)
 - [Snippet System](guides/editor/snippets.md)
@@ -62,11 +66,6 @@
 - [Code Formatting](guides/development/format_guide.md)
 - [Indentation Rules](guides/development/indentation_guide.md)
 - [Style Guide](guides/development/style_guide.md)
-
-### 🏗️ Architecture
-
-- [System Design](architecture/README.md)
-- [Component Integration](architecture/integration.md)
 
 ## By Tool
 
@@ -83,6 +82,8 @@
 ### Terminal
 
 - [Alacritty Configuration](usage/tools/alacritty.md)
+- [WezTerm Configuration](usage/tools/wezterm.md)
+- [Kitty Configuration](usage/tools/kitty.md)
 - [Theme System](guides/terminal/theme-system.md)
 - [tmux Setup](usage/tools/tmux.md)
 - [tmux Keybindings](usage/keybindings/tmux.md)
@@ -112,7 +113,7 @@
 
 #### Learn the keybindings
 
-1. [Quick Reference Card](usage/QUICK_REFERENCE.md)
+1. [Quick Reference Card](usage/reference.md)
 2. [Keybinding Overview](usage/keybindings/README.md)
 3. Tool-specific: [Neovim](usage/keybindings/neovim.md) | [tmux](usage/keybindings/tmux.md) | [Shell](usage/keybindings/shell.md)
 
@@ -136,9 +137,9 @@
 
 #### Work with AI assistance
 
-1. [CodeCompanion Setup](guides/editor/codecompanion.md)
-2. [AI Keybindings](usage/keybindings/neovim.md#ai-assistant)
-3. [Local LLM Configuration](guides/editor/codecompanion.md#default-local-ollama)
+1. [Cortex AI Management](guides/editor/cortex.md)
+2. [CodeCompanion Setup](guides/editor/codecompanion.md)
+3. [AI Keybindings](usage/keybindings/neovim.md#ai-leadera)
 
 ## Quick Links
 
