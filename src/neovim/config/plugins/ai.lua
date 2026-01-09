@@ -7,7 +7,6 @@ local M = {}
 
 -- Detect operating system
 local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
-local is_linux = vim.fn.has("unix") == 1 and not is_macos
 
 -- MLX model configurations for macOS (optimized for Apple Silicon)
 -- Using American tech company models only
@@ -71,7 +70,8 @@ local ollama_models = {
 	},
 }
 
--- Select appropriate models based on OS
+-- Select appropriate models based on OS (used for model list command)
+---@diagnostic disable-next-line: unused-local
 local model_configs = is_macos and mlx_models or ollama_models
 
 -- Default model selection based on OS (American tech companies)

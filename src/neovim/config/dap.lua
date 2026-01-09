@@ -553,18 +553,15 @@ end
 
 -- 🚀 UTILITY FUNCTIONS
 function M.debug_nearest()
-	local dap = require("dap")
-	dap.run_to_cursor()
+	require("dap").run_to_cursor()
 end
 
 function M.debug_class()
-	local dap = require("dap")
 	-- This would need to be customized per language
 	vim.notify("Debug class not implemented for this language", vim.log.levels.WARN)
 end
 
 function M.debug_method()
-	local dap = require("dap")
 	-- This would need to be customized per language
 	vim.notify("Debug method not implemented for this language", vim.log.levels.WARN)
 end

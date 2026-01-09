@@ -9,8 +9,7 @@ local M = {}
 -- Enhanced menu configuration function
 function M.setup()
 	-- Ensure Menu is loaded
-	local menu_ok, menu = pcall(require, "menu")
-	if not menu_ok then
+	if not pcall(require, "menu") then
 		vim.notify("Menu plugin not available", vim.log.levels.WARN)
 		return
 	end

@@ -79,9 +79,9 @@ function M.setup()
 							key = ".",
 							desc = "Browse Files",
 							action = function()
-								local ok, snacks = pcall(require, "snacks")
-								if ok and snacks then
-									snacks.explorer()
+								local snacks_ok, snacks_mod = pcall(require, "snacks")
+								if snacks_ok and snacks_mod then
+									snacks_mod.explorer()
 								else
 									vim.notify("Snacks not loaded", vim.log.levels.WARN)
 								end

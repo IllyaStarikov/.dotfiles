@@ -613,9 +613,12 @@ local function setup_lsp()
 				config.on_attach = on_attach
 
 				-- Use pcall to handle servers that might not be installed
-				local ok, err = pcall(function()
+				local ok = pcall(function()
 					lspconfig[server].setup(config)
 				end)
+				if not ok and vim.env.NVIM_DEBUG then
+					vim.notify("LSP setup failed for: " .. server, vim.log.levels.DEBUG)
+				end
 			end
 		end
 	end

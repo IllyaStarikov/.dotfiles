@@ -525,9 +525,6 @@ function M.setup()
 		end
 	end
 
-	-- Get current theme colors
-	local colors = get_theme_colors()
-
 	-- Create a single function to apply highlights to avoid repetition
 	local function apply_markview_highlights()
 		local colors = get_theme_colors()
