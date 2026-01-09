@@ -73,20 +73,22 @@ Shell     Ctrl-r             Search history
 ```
 CONTEXT   KEYS               ACTION
 ────────────────────────────────────────
-Editing   <leader>f          Format code
-          <leader>ca         AI actions
-          <leader>cc         AI chat
-          <leader>/          Comment toggle
+AI        <leader>ac         AI chat
+          <leader>aa         AI actions palette
+          <leader>ae         Explain code (visual)
+
+Code      <leader>ca         Code action
+          <leader>cR         Rename symbol
+          <leader>cr         Run file
 
 Windows   Ctrl-h/j/k/l       Navigate panes
           <leader>bd         Delete buffer
-          Ctrl-w s/v         Split window
-          <leader>q          Close window
+          <leader>w-         Split horizontal
+          <leader>w|         Split vertical
 
-Terminal  <leader>te         Float terminal
+Open      <leader>oe         File explorer
+          <leader>ot         Terminal
           <leader>gg         LazyGit
-          Ctrl-a [           Copy mode
-          Ctrl-a z           Zoom pane
 ```
 
 ## Learning Path

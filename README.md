@@ -33,7 +33,7 @@ Everything works together. Change your system theme, and your entire terminal en
 ## Key Features
 
 ### 🚀 Performance First
-- Neovim starts in under 300ms
+- Neovim starts in ~150ms
 - Lazy-loaded plugins and optimized configs
 - Parallel processing wherever possible
 

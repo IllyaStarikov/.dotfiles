@@ -185,7 +185,7 @@ Test Levels:
 Test Categories:
 - Configuration validation
 - Plugin functionality (Telescope, Gitsigns, Treesitter)
-- Performance benchmarks (startup < 300ms, plugin < 500ms)
+- Performance benchmarks (startup ~150ms, plugin < 500ms)
 - Memory leak detection
 - Real-world workflows
 ```
@@ -232,7 +232,7 @@ config/
 - Alacritty imports `~/.config/alacritty/theme.toml`
 
 **Performance Standards:**
-- Neovim startup: < 300ms
+- Neovim startup: ~150ms
 - Plugin loading: < 500ms
 - Theme switching: < 500ms
 - Memory usage: < 200MB
