@@ -169,9 +169,9 @@ local function setup_lsp()
 					[vim.diagnostic.severity.INFO] = " ",
 				},
 			},
-			underline = true, -- Underline diagnostic locations
-			update_in_insert = false, -- Don't update diagnostics in insert mode
-			severity_sort = true, -- Sort diagnostics by severity
+			underline = true,
+			update_in_insert = false,
+			severity_sort = true,
 			float = {
 				border = "rounded",
 				source = "always",

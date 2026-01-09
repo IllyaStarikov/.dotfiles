@@ -4,7 +4,7 @@ local opt = vim.opt
 local g = vim.g
 
 -- Display settings
-opt.linebreak = true -- Default: false (wrap at word boundaries)
+opt.linebreak = true -- wrap at word boundaries
 opt.formatoptions:remove("t") -- Don't auto-wrap text
 
 -- GUI font settings with ligature support
@@ -17,7 +17,7 @@ if vim.fn.has("gui_running") == 1 or vim.g.neovide then
 end
 
 -- Unicode and encoding
-opt.fileencoding = "utf-8" -- Default: "" (ensure files saved as UTF-8)
+opt.fileencoding = "utf-8"
 
 -- Ensure terminal supports unicode
 if vim.fn.has("multi_byte") == 1 then
@@ -30,19 +30,19 @@ end
 g.have_nerd_font = true
 
 -- UI elements
-opt.number = true -- Default: false (show line numbers)
-opt.relativenumber = true -- Default: false (relative line numbers)
-opt.signcolumn = "yes" -- Default: "auto" (always show to avoid shifting)
-opt.cursorline = true -- Default: false (highlight current line)
-opt.colorcolumn = "100" -- Default: "" (visual line length guide)
-opt.termguicolors = true -- Default: false (24-bit RGB colors)
-opt.pumheight = 10 -- Default: 0 (limit popup menu height)
-opt.splitbelow = true -- Default: false (new splits below)
-opt.splitright = true -- Default: false (new splits right)
-opt.splitkeep = "screen" -- Default: "cursor" (keep screen position on split)
+opt.number = true
+opt.relativenumber = true
+opt.signcolumn = "yes" -- always show to avoid text shifting
+opt.cursorline = true
+opt.colorcolumn = "100"
+opt.termguicolors = true
+opt.pumheight = 10
+opt.splitbelow = true
+opt.splitright = true
+opt.splitkeep = "screen" -- keep screen position on split
 
 -- Text display
-opt.showbreak = "↪ " -- Default: "" (visual indicator for wrapped lines)
+opt.showbreak = "↪ "
 
 -- Whitespace visibility
 opt.list = true
@@ -56,8 +56,8 @@ opt.listchars = {
 }
 
 -- Bracket/parenthesis matching
-opt.showmatch = true -- Default: false (highlight matching brackets)
-opt.matchtime = 2 -- Default: 5 (faster match display, in tenths of second)
+opt.showmatch = true
+opt.matchtime = 2 -- tenths of a second
 
 -- Cursor behavior
 opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"

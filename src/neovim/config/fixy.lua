@@ -11,7 +11,7 @@ local config = {
 	timeout = 5000, -- 5 seconds timeout
 	notifications = false, -- Disable notifications for silent operation
 	notify_on_error = true, -- Still notify on errors
-	debug = false, -- Enable debug logging to /tmp/fixy.log
+	debug = false, -- logs to /tmp/fixy.log when enabled
 }
 
 -- Debug logging helper
