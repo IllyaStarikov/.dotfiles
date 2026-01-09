@@ -466,13 +466,12 @@ end, { desc = "Show messages in buffer" })
 -- Bufferline refresh command
 api.nvim_create_user_command("BufferLineRefresh", function()
 	-- Force reload bufferline with current theme colors
-	local ok, bufferline = pcall(require, "bufferline")
-	if ok then
-		-- Get fresh colors
-		local colors = {}
+	if pcall(require, "bufferline") then
+		-- Check if theme is available and force re-setup
 		local theme_ok, theme = pcall(require, "tokyonight.colors")
 		if theme_ok then
-			colors = theme.setup()
+			-- Initialize theme colors (side effect updates global state)
+			theme.setup()
 			-- Force re-setup
 			vim.schedule(function()
 				vim.cmd("Lazy reload bufferline.nvim")

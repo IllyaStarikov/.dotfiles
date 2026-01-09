@@ -302,6 +302,7 @@ require("lazy").setup({
 					max_height = 0.9,
 					height = nil,
 					min_height = { 8, 0.1 },
+					---@diagnostic disable-next-line: unused-local
 					override = function(conf, source_winid, source_bufnr)
 						conf.anchor = "NE"
 						conf.col = vim.fn.winwidth(source_winid)

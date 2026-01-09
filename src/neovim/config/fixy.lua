@@ -119,6 +119,7 @@ function M.format_buffer()
 	end
 
 	-- Replace vim.notify to suppress ALL notifications
+	---@diagnostic disable-next-line: unused-local
 	vim.notify = function(msg, level)
 		-- Complete silence during formatting
 		-- Log suppressed notifications for debugging
@@ -152,16 +153,16 @@ function M.format_buffer()
 
 		-- Restore Snacks.nvim
 		if notification_state.snacks_state then
-			local snacks_ok, snacks = pcall(require, "snacks")
-			if snacks_ok and snacks then
+			local snacks_restore_ok, snacks_restore = pcall(require, "snacks")
+			if snacks_restore_ok and snacks_restore then
 				if notification_state.snacks_state.notify_func then
-					snacks.notify = notification_state.snacks_state.notify_func
+					snacks_restore.notify = notification_state.snacks_state.notify_func
 				end
-				if snacks.notifier and notification_state.snacks_state.notifier_notify_func then
-					snacks.notifier.notify = notification_state.snacks_state.notifier_notify_func
+				if snacks_restore.notifier and notification_state.snacks_state.notifier_notify_func then
+					snacks_restore.notifier.notify = notification_state.snacks_state.notifier_notify_func
 				end
-				if snacks.config and snacks.config.notifier then
-					snacks.config.notifier.enabled = notification_state.snacks_state.notifier_enabled
+				if snacks_restore.config and snacks_restore.config.notifier then
+					snacks_restore.config.notifier.enabled = notification_state.snacks_state.notifier_enabled
 				end
 			end
 		end

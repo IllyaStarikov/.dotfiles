@@ -29,6 +29,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 
 		-- Create error-resistant wrapper for this buffer
 		vim.api.nvim_buf_attach(bufnr, false, {
+			---@diagnostic disable-next-line: unused-local
 			on_lines = function(_, _, _, first_line, last_line, new_last_line)
 				-- Use vim.schedule to defer the check
 				vim.schedule(function()
@@ -104,6 +105,7 @@ autocmd("FileType", {
 			local ns = vim.api.nvim_get_namespaces()["nvim.treesitter.highlighter"]
 			if ns then
 				-- Override the decoration provider
+				---@diagnostic disable-next-line: unused-local
 				local orig_provider = vim.api.nvim_buf_get_extmarks
 
 				-- Create a safe wrapper for get_offset
@@ -639,7 +641,7 @@ autocmd("BufWinEnter", {
 -- =============================================================================
 
 -- Professional markdown writing configuration with optimized display settings
-local markdown_group = augroup("markdown_writing", { clear = true })
+local markdown_writing_group = augroup("markdown_writing", { clear = true })
 
 local markdown_settings = {
 	"setlocal wrap", -- Enable word wrap
@@ -660,7 +662,7 @@ local markdown_settings = {
 }
 
 autocmd("FileType", {
-	group = markdown_group,
+	group = markdown_writing_group,
 	pattern = { "markdown", "pandoc" },
 	callback = function()
 		for _, setting in ipairs(markdown_settings) do
@@ -685,11 +687,11 @@ autocmd("FileType", {
 
 		-- Auto-enable zen mode for distraction-free writing
 		vim.defer_fn(function()
-			local ok, snacks = pcall(require, "snacks")
-			if ok and snacks and snacks.zen then
+			local snacks_ok, snacks_mod = pcall(require, "snacks")
+			if snacks_ok and snacks_mod and snacks_mod.zen then
 				-- Only enable if buffer is still a markdown file
 				if vim.bo.filetype == "markdown" or vim.bo.filetype == "pandoc" then
-					snacks.zen()
+					snacks_mod.zen()
 				end
 			end
 		end, 100) -- Small delay to ensure buffer is ready
@@ -1510,8 +1512,7 @@ autocmd({ "BufReadPost", "FileReadPost" }, {
 		-- For large files, ensure treesitter is used instead of regex-based syntax
 		if vim.b.large_build_file then
 			-- Use Treesitter for highlighting if available
-			local ok, ts_configs = pcall(require, "nvim-treesitter.configs")
-			if ok then
+			if pcall(require, "nvim-treesitter.configs") then
 				-- Ensure starlark parser is installed and active
 				local ts_parsers = require("nvim-treesitter.parsers")
 				if ts_parsers.has_parser("starlark") then

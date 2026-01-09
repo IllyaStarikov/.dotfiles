@@ -223,6 +223,7 @@ function M.setup()
 			},
 
 			live_grep = {
+				---@diagnostic disable-next-line: unused-local
 				additional_args = function(opts)
 					return { "--hidden" }
 				end,
@@ -230,6 +231,7 @@ function M.setup()
 			},
 
 			grep_string = {
+				---@diagnostic disable-next-line: unused-local
 				additional_args = function(opts)
 					return { "--hidden" }
 				end,
@@ -352,6 +354,7 @@ function M.setup()
 	-- Live grep with args
 	M.live_grep_args = function()
 		require("telescope.builtin").live_grep({
+			---@diagnostic disable-next-line: unused-local
 			additional_args = function(opts)
 				return { "--hidden", "--no-ignore" }
 			end,
