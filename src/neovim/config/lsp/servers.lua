@@ -174,7 +174,7 @@ local function setup_lsp()
 			severity_sort = true,
 			float = {
 				border = "rounded",
-				source = "always",
+				source = true, -- always show diagnostic source
 				header = "",
 				prefix = "",
 			},
@@ -315,8 +315,8 @@ local function setup_lsp()
 		map("n", "<F2>", buf.rename, "Rename symbol")
 		map("n", "<F4>", buf.code_action, "Code actions")
 		map("n", "gl", vim.diagnostic.open_float, "Show diagnostics") -- Show diagnostics in floating window
-		map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
-		map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+		map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Prev diagnostic")
+		map("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next diagnostic")
 	end
 
 	-- Enable language servers only if they exist
@@ -392,7 +392,7 @@ local function setup_lsp()
 					".git"
 				)(fname)
 				-- If no root found, use the file's directory
-				return root or lspconfig.util.path.dirname(fname)
+				return root or vim.fs.dirname(fname)
 			end,
 			single_file_support = true,
 		},
@@ -597,7 +597,7 @@ local function setup_lsp()
 			filetypes = { "swift", "objc", "objcpp" },
 			root_dir = function(fname)
 				return lspconfig.util.root_pattern("Package.swift", ".git", "*.xcodeproj", "*.xcworkspace")(fname)
-					or lspconfig.util.find_git_ancestor(fname)
+					or vim.fs.dirname(vim.fs.find(".git", { path = fname, upward = true })[1])
 					or vim.fn.getcwd()
 			end,
 		} or nil,

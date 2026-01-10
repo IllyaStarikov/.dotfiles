@@ -124,7 +124,8 @@ function M.setup()
 		all_references = false, -- show virtual text on all all references of the variable (not only definitions)
 		clear_on_continue = false, -- might cause flickering when stepping
 		-- A callback that determines how a variable is displayed or whether it should be omitted
-		display_callback = function(variable, buf, stackframe, node, options)
+		---@diagnostic disable-next-line: unused-local
+		display_callback = function(variable, _buf, _stackframe, _node, options)
 			if options.virt_text_pos == "inline" then
 				return " = " .. variable.value
 			else

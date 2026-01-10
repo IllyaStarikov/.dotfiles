@@ -93,7 +93,7 @@ function M.check()
 		vim.health.ok("nvim-lspconfig is available")
 
 		-- Check for active LSP clients
-		local clients = vim.lsp.get_active_clients()
+		local clients = vim.lsp.get_clients()
 		if #clients > 0 then
 			vim.health.ok(string.format("%d LSP client(s) active", #clients))
 			for _, client in ipairs(clients) do

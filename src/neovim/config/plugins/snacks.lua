@@ -14,6 +14,7 @@ function M.setup()
 		return
 	end
 
+	---@diagnostic disable-next-line: redundant-parameter
 	snacks.setup({
 		-- Core modules
 		bigfile = { enabled = true },

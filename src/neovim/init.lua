@@ -42,6 +42,7 @@ local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
 
 -- First, wrap vim.deprecate to catch it at the source
 local original_deprecate = vim.deprecate
+---@diagnostic disable-next-line: duplicate-set-field
 vim.deprecate = function(name, alternative, version, plugin, show_message)
 	-- Filter the specific lspconfig framework deprecation
 	if
@@ -60,6 +61,7 @@ end
 
 -- Also wrap vim.notify as a backup (in case deprecate is bypassed)
 local original_notify = vim.notify
+---@diagnostic disable-next-line: duplicate-set-field
 vim.notify = function(msg, level, opts)
 	-- Convert level to number if it's not already
 	level = level or vim.log.levels.INFO
@@ -136,7 +138,7 @@ end
 
 -- Disable verbose logging for normal operation
 -- Only disable if not already set via command line
-if vim.opt.verbose:get() == 0 then
+if vim.o.verbose == 0 then
 	vim.opt.verbose = 0
 	vim.opt.verbosefile = ""
 end
@@ -248,7 +250,9 @@ end
 -- Apply work-specific overrides if available
 -- This should happen after base config but before LSP setup
 local work = utils.safe_require("config.work")
+---@diagnostic disable-next-line: undefined-field
 if work and work.apply_overrides then
+	---@diagnostic disable-next-line: undefined-field
 	work.apply_overrides()
 end
 

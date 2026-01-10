@@ -5,6 +5,7 @@
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+---@diagnostic disable-next-line: undefined-field
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({
@@ -18,7 +19,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	if vim.v.shell_error ~= 0 then
 		-- In headless mode, don't wait for input
 		if #vim.api.nvim_list_uis() == 0 then
-			vim.api.nvim_err_writeln("Failed to clone lazy.nvim: " .. out)
+			io.stderr:write("Failed to clone lazy.nvim: " .. out .. "\n")
 			os.exit(1)
 		else
 			vim.api.nvim_echo({
@@ -675,10 +676,7 @@ require("lazy").setup({
 				mode = { "n", "v" },
 			},
 		},
-		config = function(_, opts)
-			local wk = require("which-key")
-			wk.setup(opts)
-		end,
+		-- lazy.nvim automatically calls setup(opts) when opts is provided
 	},
 
 	-- Trouble.nvim - Pretty diagnostics, references, quickfix, loclist
@@ -916,20 +914,11 @@ require("lazy").setup({
 		"nvzone/typr",
 		lazy = true,
 		dependencies = { "nvzone/volt" },
-		config = function()
-			require("config.plugins.typr").setup()
-		end,
-		cmd = {
-			"Typr",
-			"TyprStats",
-			"TyprQuick",
-			"TyprLong",
-			"TyprTimed",
-			"TyprProgramming",
-			"TyprHistory",
-			"TyprDashboard",
-			"TyprConfig",
+		opts = {
+			wpm_goal = 130,
+			insert_on_start = false,
 		},
+		cmd = { "Typr", "TyprStats" },
 	},
 
 	-- Aerial.nvim - Modern code outline window
@@ -1172,6 +1161,8 @@ require("lazy").setup({
 		build = ":TSUpdate",
 		config = function()
 			require("nvim-treesitter.configs").setup({
+				modules = {},
+				ignore_install = {},
 				ensure_installed = {
 					"markdown",
 					"markdown_inline",
@@ -1211,7 +1202,8 @@ require("lazy").setup({
 					-- Disable for large files
 					disable = function(lang, buf)
 						local max_filesize = 10 * 1024 * 1024 -- 10 MB
-						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						---@diagnostic disable-next-line: undefined-field
+						local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(buf))
 						if ok and stats and stats.size > max_filesize then
 							return true
 						end
@@ -1223,9 +1215,10 @@ require("lazy").setup({
 				},
 				indent = {
 					enable = true,
-					disable = function(lang, buf)
+					disable = function(_, buf)
 						local max_filesize = 10 * 1024 * 1024 -- 10 MB
-						local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+						---@diagnostic disable-next-line: undefined-field
+						local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(buf))
 						if ok and stats and stats.size > max_filesize then
 							return true
 						end
@@ -1256,7 +1249,7 @@ require("lazy").setup({
 		},
 		config = function()
 			-- FIRST: Load markview modules to ensure they're available
-			local markview = require("markview")
+			require("markview") -- Load module (no variable needed)
 			local spec = require("markview.spec")
 			local filetypes = require("markview.filetypes")
 

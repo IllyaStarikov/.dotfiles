@@ -234,7 +234,12 @@ map("n", "<leader>fG", telescope_builtin("live_grep", { additional_args = { "--h
 map("n", "<leader>f/", telescope_builtin("grep_string"), { desc = "Find Word" })
 map("v", "<leader>fg", function()
   local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
-  telescope_builtin("grep_string")({ search = table.concat(selection, "\n") })
+  local ok, builtin = pcall(require, "telescope.builtin")
+  if ok and builtin.grep_string then
+    builtin.grep_string({ search = table.concat(selection, "\n") })
+  else
+    vim.notify("Telescope not available", vim.log.levels.WARN)
+  end
 end, { desc = "Find Grep Selection" })
 
 -- Navigation

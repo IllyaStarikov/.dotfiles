@@ -4,7 +4,6 @@
 --
 
 local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
 
 -- Only set up DAP keybindings if DAP is available
 local function setup_dap_keybindings()

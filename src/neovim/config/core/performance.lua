@@ -61,6 +61,7 @@ vim.lsp.set_log_level("WARN")
 
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation
 -- Only reset if not explicitly set via command line
+---@diagnostic disable-next-line: undefined-field
 if vim.v.verbose == 0 then
 	vim.opt.verbose = 0
 	vim.opt.verbosefile = ""

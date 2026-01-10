@@ -87,8 +87,10 @@ end
 M.exec2 = function(cmd, opts)
 	if vim.api.nvim_exec2 then
 		return vim.api.nvim_exec2(cmd, opts)
+	---@diagnostic disable-next-line: deprecated
 	elseif vim.api.nvim_exec then
 		-- Fallback for 0.7-0.8
+		---@diagnostic disable-next-line: deprecated
 		local output = vim.api.nvim_exec(cmd, opts and opts.output or false)
 		return { output = output or "" }
 	else

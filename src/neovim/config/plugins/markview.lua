@@ -29,8 +29,8 @@ function M.setup()
 	vim.g.have_nerd_font = true
 
 	local markview = require("markview")
-	local presets = require("markview.presets")
 
+	---@diagnostic disable-next-line: redundant-parameter
 	markview.setup({
 
 		-- Preserve ligatures
@@ -711,8 +711,8 @@ function M.setup()
 
 			-- Additional keybinding to toggle fold visibility globally
 			vim.keymap.set("n", "<leader>lmf", function()
-				vim.opt_local.foldenable = not vim.opt_local.foldenable:get()
-				local state = vim.opt_local.foldenable:get() and "enabled" or "disabled"
+				vim.wo.foldenable = not vim.wo.foldenable
+				local state = vim.wo.foldenable and "enabled" or "disabled"
 				vim.notify("Folding " .. state, vim.log.levels.INFO)
 			end, { buffer = true, desc = "Toggle folding on/off" })
 
@@ -757,7 +757,7 @@ function M.setup()
 		group = augroup,
 		callback = function()
 			-- Store current fold state and unfold all when entering insert mode
-			vim.b.fold_state_before_insert = vim.opt_local.foldenable:get()
+			vim.b.fold_state_before_insert = vim.wo.foldenable
 			if vim.b.fold_state_before_insert then
 				-- Unfold all details blocks
 				vim.opt_local.foldenable = false
@@ -828,6 +828,7 @@ function M.setup()
 end
 
 -- Global functions for folding <details> elements
+---@diagnostic disable-next-line: duplicate-set-field
 function _G.markview_details_fold()
 	local line = vim.fn.getline(vim.v.lnum)
 	if line:match("^<details>") then
@@ -839,8 +840,8 @@ function _G.markview_details_fold()
 	end
 end
 
+---@diagnostic disable-next-line: duplicate-set-field
 function _G.markview_details_foldtext()
-	local line = vim.fn.getline(vim.v.foldstart)
 	local summary_line = vim.fn.getline(vim.v.foldstart + 1)
 
 	-- Extract summary text if available

@@ -15,6 +15,7 @@ local error_window = 60 -- seconds
 
 -- Custom notify function with error throttling
 function M.setup_notify()
+	---@diagnostic disable-next-line: duplicate-set-field
 	vim.notify = function(msg, level, opts)
 		-- Convert level to number if it's not already
 		level = level or vim.log.levels.INFO
@@ -81,6 +82,7 @@ end
 function M.setup_error_handler()
 	-- Handle errors in scheduled callbacks
 	local schedule_wrap = vim.schedule_wrap
+	---@diagnostic disable-next-line: duplicate-set-field
 	vim.schedule_wrap = function(fn)
 		return schedule_wrap(function(...)
 			local ok, err = pcall(fn, ...)

@@ -179,10 +179,7 @@ function M.log_lsp_state()
 			M.info("LSP", "No active LSP clients")
 		else
 			for _, client in ipairs(clients) do
-				M.info(
-					"LSP",
-					string.format("Active client: %s (id: %d, pid: %s)", client.name, client.id, tostring(client.pid))
-				)
+				M.info("LSP", string.format("Active client: %s (id: %d)", client.name, client.id))
 			end
 		end
 	end, 1000)
