@@ -692,17 +692,6 @@ autocmd("FileType", {
     vim.keymap.set("v", "k", "gk", buf_opts)
     vim.keymap.set("v", "0", "g0", buf_opts)
     vim.keymap.set("v", "$", "g$", buf_opts)
-
-    -- Auto-enable zen mode for distraction-free writing
-    vim.defer_fn(function()
-      local snacks_ok, snacks_mod = pcall(require, "snacks")
-      if snacks_ok and snacks_mod and snacks_mod.zen then
-        -- Only enable if buffer is still a markdown file
-        if vim.bo.filetype == "markdown" or vim.bo.filetype == "pandoc" then
-          snacks_mod.zen()
-        end
-      end
-    end, 100) -- Small delay to ensure buffer is ready
   end,
 })
 
