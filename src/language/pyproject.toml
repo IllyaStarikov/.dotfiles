@@ -18,14 +18,14 @@ extend-exclude = '''
 
 [tool.isort]
 # Use Black-compatible import formatting
-profile = "black"   # Ensures compatibility with Black formatter
-line_length = 100   # Match Black's line length setting
+profile = "black" # Ensures compatibility with Black formatter
+line_length = 100 # Match Black's line length setting
 
 [tool.pylsp-mypy]
 # Python LSP mypy plugin configuration
-enabled = true      # Enable type checking
-live_mode = true    # Check types as you type
-strict = true       # Enable all strict type checking flags
+enabled = true   # Enable type checking
+live_mode = true # Check types as you type
+strict = true    # Enable all strict type checking flags
 
 [tool.pycodestyle]
 # PEP 8 style checker configuration
@@ -33,7 +33,7 @@ max-line-length = 100
 # Ignore specific warnings that conflict with Black
 ignore = [
   # keep-sorted start
-  "E203",  # Whitespace before ':' (Black handles this differently)
-  "W503",  # Line break before binary operator (outdated PEP 8 rule)
+  "E203", # Whitespace before ':' (Black handles this differently)
+  "W503", # Line break before binary operator (outdated PEP 8 rule)
   # keep-sorted end
 ]

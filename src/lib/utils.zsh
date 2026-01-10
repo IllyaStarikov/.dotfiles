@@ -86,7 +86,7 @@ join() {
 }
 
 # Repeat string n times
-repeat() {
+str_repeat() {
     local string="$1"
     local count="$2"
     local result=""

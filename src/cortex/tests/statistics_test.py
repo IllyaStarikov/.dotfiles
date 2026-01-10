@@ -328,8 +328,7 @@ class TestStatisticsTracker(unittest.TestCase):
         """Test session duration is calculated correctly."""
         stats = StatisticsTracker(self.stats_file)
 
-        session = stats.start_session('test-model')
-        start_time = session.start_time
+        stats.start_session('test-model')
         time.sleep(0.5)  # 500ms delay
         stats.end_session()
 

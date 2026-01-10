@@ -132,7 +132,7 @@ save_to_clipboard = true
 
 [window]
 resize_increments = true
-option_as_alt = "Both" # proper Alt key on macOS
+option_as_alt = "Both"   # proper Alt key on macOS
 
 [window.dimensions]
 columns = 120

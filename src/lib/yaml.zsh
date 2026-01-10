@@ -413,7 +413,7 @@ yaml_validate_schema() {
 }
 
 # Helper to repeat character
-repeat() {
+str_repeat() {
     local char="${1:- }"
     local count="${2:-1}"
     local result=""

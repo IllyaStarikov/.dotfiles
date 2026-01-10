@@ -257,7 +257,7 @@ banner() {
   local width="${2:-$TEXTWRAP_WIDTH}"
   local char="${3:-=}"
 
-  local border=$(repeat "$char" "$width")
+  local border=$(str_repeat "$char" "$width")
   local centered=$(center "$text" "$width")
 
   echo "$border"
@@ -301,7 +301,7 @@ columns() {
 }
 
 # Repeat string
-repeat() {
+str_repeat() {
   local string="$1"
   local count="${2:-1}"
   local result=""

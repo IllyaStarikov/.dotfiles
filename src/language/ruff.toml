@@ -18,10 +18,10 @@ quote-style = "single"
 # Selected rule sets to enforce
 select = [
   # keep-sorted start
-  "E",  # pycodestyle errors (PEP 8 compliance)
-  "F",  # pyflakes (undefined names, unused imports)
-  "I",  # isort (import sorting)
-  "W",  # pycodestyle warnings (PEP 8 style warnings)
+  "E", # pycodestyle errors (PEP 8 compliance)
+  "F", # pyflakes (undefined names, unused imports)
+  "I", # isort (import sorting)
+  "W", # pycodestyle warnings (PEP 8 style warnings)
   # keep-sorted end
 ]
 

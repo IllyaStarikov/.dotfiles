@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  shellcheck:
-    name: shell scripts
+  zsh:
+    name: zsh syntax
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -23,15 +23,34 @@ jobs:
         with:
           submodules: true
 
-      - name: run shellcheck
+      - name: validate zsh syntax
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y shellcheck
+          echo "::group::Checking Zsh syntax"
+          errors=0
 
-          echo "::group::Checking shell scripts"
-          find . -type f -name "*.sh" -not -path "./.git/*" -print0 | xargs -0 shellcheck -x || true
-          find src/scripts -type f -exec grep -l '^#!/.*sh' {} \; | xargs shellcheck -x || true
+          # Check .zsh files
+          while IFS= read -r -d '' file; do
+            if ! zsh -n "$file" 2>/dev/null; then
+              echo "❌ Syntax error: $file"
+              ((errors++))
+            fi
+          done < <(find src test -name "*.zsh" -type f -print0 2>/dev/null)
+
+          # Check scripts with zsh shebang
+          while IFS= read -r file; do
+            if ! zsh -n "$file" 2>/dev/null; then
+              echo "❌ Syntax error: $file"
+              ((errors++))
+            fi
+          done < <(grep -rl '^#!/usr/bin/env zsh' src/scripts 2>/dev/null || true)
+
           echo "::endgroup::"
+
+          if [[ $errors -gt 0 ]]; then
+            echo "❌ Found $errors Zsh syntax errors"
+            exit 1
+          fi
+          echo "✅ All Zsh files pass syntax validation"
 
   lua:
     name: lua files
@@ -44,7 +63,32 @@ jobs:
         with:
           submodules: true
 
-      - name: cache tools
+      - name: install lua
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y lua5.4
+
+      - name: validate lua syntax
+        run: |
+          echo "::group::Checking Lua syntax"
+          errors=0
+
+          while IFS= read -r -d '' file; do
+            if ! luac -p "$file" 2>/dev/null; then
+              echo "❌ Syntax error: $file"
+              ((errors++))
+            fi
+          done < <(find src/neovim src/wezterm -name "*.lua" -type f -print0 2>/dev/null)
+
+          echo "::endgroup::"
+
+          if [[ $errors -gt 0 ]]; then
+            echo "❌ Found $errors Lua syntax errors"
+            exit 1
+          fi
+          echo "✅ All Lua files pass syntax validation"
+
+      - name: cache stylua
         uses: actions/cache@v4
         with:
           path: /usr/local/bin/stylua
@@ -59,8 +103,75 @@ jobs:
           fi
 
           echo "::group::Checking Lua formatting"
-          find src -name "*.lua" -type f | xargs stylua --check --config-path src/language/stylua.toml || true
+          stylua --check src/neovim src/wezterm --config-path src/language/stylua.toml
           echo "::endgroup::"
+          echo "✅ All Lua files are properly formatted"
+
+  python:
+    name: python files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: install ruff
+        run: pip install ruff
+
+      - name: lint python
+        run: |
+          echo "::group::Checking Python linting"
+          ruff check src/cortex
+          echo "::endgroup::"
+          echo "✅ All Python files pass linting"
+
+      - name: check python formatting
+        run: |
+          echo "::group::Checking Python formatting"
+          ruff format --check src/cortex
+          echo "::endgroup::"
+          echo "✅ All Python files are properly formatted"
+
+  toml:
+    name: toml files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: cache taplo
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/taplo
+          key: ${{ runner.os }}-taplo-v0.9.0
+
+      - name: validate toml
+        run: |
+          # Install taplo if not cached
+          if ! command -v taplo &> /dev/null; then
+            wget -qO taplo.gz https://github.com/tamasfe/taplo/releases/download/0.9.0/taplo-full-linux-x86_64.gz
+            gunzip taplo.gz && chmod +x taplo && sudo mv taplo /usr/local/bin/
+          fi
+
+          echo "::group::Checking TOML files"
+          find . -name "*.toml" -type f -not -path "./.git/*" | while read -r file; do
+            echo "Validating: $file"
+            taplo format --check "$file"
+          done
+          echo "::endgroup::"
+          echo "✅ All TOML files are valid"
 
   markdown:
     name: markdown
@@ -78,7 +189,7 @@ jobs:
           npm install -g markdownlint-cli --silent
 
           echo "::group::Checking markdown files"
-          markdownlint '**/*.md' --ignore node_modules --ignore .github || true
+          markdownlint '**/*.md' --ignore node_modules --ignore .github --ignore styleguide || true
           echo "::endgroup::"
 
   yaml:
@@ -97,8 +208,21 @@ jobs:
           npm install -g yaml-lint --silent
 
           echo "::group::Checking YAML files"
-          find . -name "*.yml" -o -name "*.yaml" | grep -v node_modules | xargs -I {} sh -c 'echo "Checking: {}" && yaml-lint {} || true'
+          errors=0
+          while IFS= read -r file; do
+            echo "Checking: $file"
+            if ! yaml-lint "$file" 2>/dev/null; then
+              ((errors++))
+            fi
+          done < <(find . \( -name "*.yml" -o -name "*.yaml" \) -not -path "./.git/*" -not -path "./node_modules/*")
+
           echo "::endgroup::"
+
+          if [[ $errors -gt 0 ]]; then
+            echo "⚠️ Found $errors YAML validation warnings (non-blocking)"
+          else
+            echo "✅ All YAML files are valid"
+          fi
 
   json:
     name: json files
@@ -113,15 +237,23 @@ jobs:
 
       - name: validate json
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y jq
-
           echo "::group::Checking JSON files"
-          find . -name "*.json" -type f -not -path "./.git/*" | while read -r file; do
+          errors=0
+          while IFS= read -r file; do
             echo "Checking: $file"
-            jq . "$file" > /dev/null || echo "❌ Invalid JSON: $file"
-          done
+            if ! jq . "$file" > /dev/null 2>&1; then
+              echo "❌ Invalid JSON: $file"
+              ((errors++))
+            fi
+          done < <(find . -name "*.json" -type f -not -path "./.git/*")
+
           echo "::endgroup::"
+
+          if [[ $errors -gt 0 ]]; then
+            echo "❌ Found $errors invalid JSON files"
+            exit 1
+          fi
+          echo "✅ All JSON files are valid"
 
   code-quality:
     name: code quality
@@ -137,18 +269,28 @@ jobs:
       - name: check code quality
         run: |
           echo "::group::Checking for code quality issues"
+          errors=0
 
           # Check for trailing whitespace
           echo "Checking for trailing whitespace..."
-          ! grep -r '[[:space:]]$' src/ test/ --include="*.sh" --include="*.lua" --include="*.py" 2>/dev/null || echo "⚠️ Trailing whitespace found"
+          if grep -r '[[:space:]]$' src/ test/ --include="*.sh" --include="*.lua" --include="*.py" --include="*.zsh" 2>/dev/null; then
+            echo "⚠️ Trailing whitespace found"
+            ((errors++))
+          fi
 
           # Check for tabs in space-only files
           echo "Checking for tabs in space-only files..."
-          ! grep -r $'\t' src/ --include="*.lua" --include="*.yml" --include="*.yaml" --include="*.json" 2>/dev/null || echo "⚠️ Tabs found in space-only files"
+          if grep -r $'\t' src/ --include="*.lua" --include="*.yml" --include="*.yaml" --include="*.json" 2>/dev/null; then
+            echo "⚠️ Tabs found in space-only files"
+            ((errors++))
+          fi
 
           # Check for CRLF line endings
           echo "Checking for Windows line endings..."
-          ! find src/ test/ -type f -exec file {} \; | grep CRLF || echo "⚠️ Windows line endings found"
+          if find src/ test/ -type f -exec file {} \; 2>/dev/null | grep -q CRLF; then
+            echo "⚠️ Windows line endings found"
+            ((errors++))
+          fi
 
           # Check for large files
           echo "Checking for large files..."
@@ -156,73 +298,37 @@ jobs:
 
           echo "::endgroup::"
 
-  documentation:
-    name: documentation
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: check documentation
-        run: |
-          echo "::group::Checking documentation coverage"
-
-          # Check for script documentation
-          scripts=(
-            "src/setup/setup.sh"
-            "src/setup/symlinks.sh"
-            "src/theme-switcher/switch-theme.sh"
-            "src/scripts/update"
-          )
-
-          for script in "${scripts[@]}"; do
-            if [[ -f "$script" ]]; then
-              if ! grep -q -E "(usage\(\)|--help|Usage:)" "$script"; then
-                echo "⚠️ No usage documentation in $script"
-              else
-                echo "✅ Documentation found in $script"
-              fi
-            fi
-          done
-
-          # Check README sections
-          required_sections=(
-            "Installation"
-            "Usage"
-            "Features"
-            "Requirements"
-          )
-
-          for section in "${required_sections[@]}"; do
-            if grep -q "## .*$section" README.md; then
-              echo "✅ README section found: $section"
-            else
-              echo "⚠️ README section missing: $section"
-            fi
-          done
-
-          echo "::endgroup::"
+          if [[ $errors -gt 0 ]]; then
+            echo "⚠️ Found $errors code quality issues (non-blocking)"
+          else
+            echo "✅ No code quality issues found"
+          fi
 
   lint-status:
     name: lint status
     if: always()
-    needs: [shellcheck, lua, markdown, yaml, json, code-quality, documentation]
+    needs: [zsh, lua, python, toml, markdown, yaml, json, code-quality]
     runs-on: ubuntu-latest
 
     steps:
       - name: check lint results
         run: |
-          echo "ShellCheck: ${{ needs.shellcheck.result }}"
+          echo "Zsh: ${{ needs.zsh.result }}"
           echo "Lua: ${{ needs.lua.result }}"
+          echo "Python: ${{ needs.python.result }}"
+          echo "TOML: ${{ needs.toml.result }}"
           echo "Markdown: ${{ needs.markdown.result }}"
           echo "YAML: ${{ needs.yaml.result }}"
           echo "JSON: ${{ needs.json.result }}"
           echo "Code Quality: ${{ needs.code-quality.result }}"
-          echo "Documentation: ${{ needs.documentation.result }}"
 
-          # All linting jobs are non-blocking (continue-on-error)
-          echo "✅ Lint checks completed"
+          # Check for blocking failures
+          if [[ "${{ needs.zsh.result }}" == "failure" ]] || \
+             [[ "${{ needs.lua.result }}" == "failure" ]] || \
+             [[ "${{ needs.python.result }}" == "failure" ]] || \
+             [[ "${{ needs.json.result }}" == "failure" ]]; then
+            echo "❌ Blocking lint checks failed"
+            exit 1
+          fi
+
+          echo "✅ All blocking lint checks passed"

@@ -178,9 +178,6 @@ class OpenAIProvider(BaseProvider):
             output = 0
             context = 8191
 
-        # Calculate score based on creation date and model family
-        score = self._calculate_score(created, model_id)
-
         # Generate description from model type
         description = self._generate_description(model_id, owned_by)
 

@@ -92,16 +92,30 @@ map("n", "<leader>al", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "AI Toggle 
 map("n", "<leader>as", "<cmd>CodeCompanionChat Stop<cr>", { desc = "AI Stop" })
 
 -- Model switching
-map("n", "<leader>a1", function() ai_config.use_small_model() end, { desc = "AI Small Model" })
-map("n", "<leader>a2", function() ai_config.use_medium_model() end, { desc = "AI Medium Model" })
-map("n", "<leader>a3", function() ai_config.use_large_model() end, { desc = "AI Large Model" })
-map("n", "<leader>a?", function() ai_config.list_models() end, { desc = "AI List Models" })
+map("n", "<leader>a1", function()
+  ai_config.use_small_model()
+end, { desc = "AI Small Model" })
+map("n", "<leader>a2", function()
+  ai_config.use_medium_model()
+end, { desc = "AI Medium Model" })
+map("n", "<leader>a3", function()
+  ai_config.use_large_model()
+end, { desc = "AI Large Model" })
+map("n", "<leader>a?", function()
+  ai_config.list_models()
+end, { desc = "AI List Models" })
 
 -- macOS: MLX/Ollama switching
 if vim.fn.has("mac") == 1 then
-  map("n", "<leader>aM", function() ai_config.use_mlx() end, { desc = "AI Use MLX" })
-  map("n", "<leader>aO", function() ai_config.use_ollama() end, { desc = "AI Use Ollama" })
-  map("n", "<leader>aX", function() ai_config.start_mlx_server() end, { desc = "AI Start MLX" })
+  map("n", "<leader>aM", function()
+    ai_config.use_mlx()
+  end, { desc = "AI Use MLX" })
+  map("n", "<leader>aO", function()
+    ai_config.use_ollama()
+  end, { desc = "AI Use Ollama" })
+  map("n", "<leader>aX", function()
+    ai_config.start_mlx_server()
+  end, { desc = "AI Start MLX" })
 end
 
 -- ============================================================================
@@ -109,17 +123,23 @@ end
 -- ============================================================================
 map("n", "<leader>bd", function()
   local s = get_snacks()
-  if s then s.bufdelete() end
+  if s then
+    s.bufdelete()
+  end
 end, { desc = "Buffer Delete" })
 
 map("n", "<leader>bD", function()
   local s = get_snacks()
-  if s then s.bufdelete.all() end
+  if s then
+    s.bufdelete.all()
+  end
 end, { desc = "Buffer Delete All" })
 
 map("n", "<leader>bo", function()
   local s = get_snacks()
-  if s then s.bufdelete.other() end
+  if s then
+    s.bufdelete.other()
+  end
 end, { desc = "Buffer Delete Others" })
 
 map("n", "<leader>bb", telescope_builtin("buffers"), { desc = "Buffer List" })
@@ -173,48 +193,66 @@ map("n", "<leader>ct", vim.lsp.buf.type_definition, { desc = "Code Type Definiti
 -- Zen mode
 map("n", "<leader>ez", function()
   local s = get_snacks()
-  if s then s.zen() end
+  if s then
+    s.zen()
+  end
 end, { desc = "Editor Zen Mode" })
 
 map("n", "<leader>eZ", function()
   local s = get_snacks()
-  if s then s.zen.zoom() end
+  if s then
+    s.zen.zoom()
+  end
 end, { desc = "Editor Zen Zoom" })
 
 -- Toggles
 map("n", "<leader>ew", function()
   local s = get_snacks()
-  if s then s.toggle.option("wrap", { name = "Wrap" })() end
+  if s then
+    s.toggle.option("wrap", { name = "Wrap" })()
+  end
 end, { desc = "Editor Toggle Wrap" })
 
 map("n", "<leader>es", function()
   local s = get_snacks()
-  if s then s.toggle.option("spell", { name = "Spell" })() end
+  if s then
+    s.toggle.option("spell", { name = "Spell" })()
+  end
 end, { desc = "Editor Toggle Spell" })
 
 map("n", "<leader>en", function()
   local s = get_snacks()
-  if s then s.toggle.option("number", { name = "Number" })() end
+  if s then
+    s.toggle.option("number", { name = "Number" })()
+  end
 end, { desc = "Editor Toggle Numbers" })
 
 map("n", "<leader>er", function()
   local s = get_snacks()
-  if s then s.toggle.option("relativenumber", { name = "Relative Number" })() end
+  if s then
+    s.toggle.option("relativenumber", { name = "Relative Number" })()
+  end
 end, { desc = "Editor Toggle Relative" })
 
 map("n", "<leader>eh", function()
   local s = get_snacks()
-  if s then s.toggle.option("hlsearch")() end
+  if s then
+    s.toggle.option("hlsearch")()
+  end
 end, { desc = "Editor Toggle Highlight" })
 
 map("n", "<leader>ed", function()
   local s = get_snacks()
-  if s then s.toggle.diagnostics() end
+  if s then
+    s.toggle.diagnostics()
+  end
 end, { desc = "Editor Toggle Diagnostics" })
 
 map("n", "<leader>ec", function()
   local s = get_snacks()
-  if s then s.toggle.option("conceallevel", { off = 0, on = 2, name = "Conceal" })() end
+  if s then
+    s.toggle.option("conceallevel", { off = 0, on = 2, name = "Conceal" })()
+  end
 end, { desc = "Editor Toggle Conceal" })
 
 -- ============================================================================
@@ -223,17 +261,38 @@ end, { desc = "Editor Toggle Conceal" })
 -- Files
 map("n", "<C-p>", telescope_builtin("find_files"), { desc = "Find Files" })
 map("n", "<leader>ff", telescope_builtin("find_files"), { desc = "Find Files" })
-map("n", "<leader>fF", telescope_builtin("find_files", { hidden = true }), { desc = "Find Files (+hidden)" })
+map(
+  "n",
+  "<leader>fF",
+  telescope_builtin("find_files", { hidden = true }),
+  { desc = "Find Files (+hidden)" }
+)
 map("n", "<leader>fr", telescope_builtin("oldfiles"), { desc = "Find Recent" })
-map("n", "<leader>fd", telescope_builtin("find_files", { cwd = vim.fn.stdpath("config") }), { desc = "Find Dotfiles" })
-map("n", "<leader>fp", telescope_builtin("find_files", { cwd = vim.fn.stdpath("data") .. "/lazy" }), { desc = "Find Plugins" })
+map(
+  "n",
+  "<leader>fd",
+  telescope_builtin("find_files", { cwd = vim.fn.stdpath("config") }),
+  { desc = "Find Dotfiles" }
+)
+map(
+  "n",
+  "<leader>fp",
+  telescope_builtin("find_files", { cwd = vim.fn.stdpath("data") .. "/lazy" }),
+  { desc = "Find Plugins" }
+)
 
 -- Grep
 map("n", "<leader>fg", telescope_builtin("live_grep"), { desc = "Find Grep" })
-map("n", "<leader>fG", telescope_builtin("live_grep", { additional_args = { "--hidden" } }), { desc = "Find Grep (+hidden)" })
+map(
+  "n",
+  "<leader>fG",
+  telescope_builtin("live_grep", { additional_args = { "--hidden" } }),
+  { desc = "Find Grep (+hidden)" }
+)
 map("n", "<leader>f/", telescope_builtin("grep_string"), { desc = "Find Word" })
 map("v", "<leader>fg", function()
-  local selection = vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
+  local selection =
+    vim.fn.getregion(vim.fn.getpos("'<"), vim.fn.getpos("'>"), { type = vim.fn.mode() })
   local ok, builtin = pcall(require, "telescope.builtin")
   if ok and builtin.grep_string then
     builtin.grep_string({ search = table.concat(selection, "\n") })
@@ -256,12 +315,32 @@ map("n", "<leader>fk", telescope_builtin("keymaps"), { desc = "Find Keymaps" })
 
 -- Symbols
 map("n", "<leader>fs", telescope_builtin("lsp_document_symbols"), { desc = "Find Symbols (doc)" })
-map("n", "<leader>fS", telescope_builtin("lsp_workspace_symbols"), { desc = "Find Symbols (workspace)" })
+map(
+  "n",
+  "<leader>fS",
+  telescope_builtin("lsp_workspace_symbols"),
+  { desc = "Find Symbols (workspace)" }
+)
 
 -- Insert symbols
-map("n", "<leader>fie", telescope_builtin("symbols", { sources = { "emoji" } }), { desc = "Find Insert Emoji" })
-map("n", "<leader>fim", telescope_builtin("symbols", { sources = { "math", "latex" } }), { desc = "Find Insert Math" })
-map("n", "<leader>fig", telescope_builtin("symbols", { sources = { "gitmoji" } }), { desc = "Find Insert Gitmoji" })
+map(
+  "n",
+  "<leader>fie",
+  telescope_builtin("symbols", { sources = { "emoji" } }),
+  { desc = "Find Insert Emoji" }
+)
+map(
+  "n",
+  "<leader>fim",
+  telescope_builtin("symbols", { sources = { "math", "latex" } }),
+  { desc = "Find Insert Math" }
+)
+map(
+  "n",
+  "<leader>fig",
+  telescope_builtin("symbols", { sources = { "gitmoji" } }),
+  { desc = "Find Insert Gitmoji" }
+)
 
 -- ============================================================================
 -- GIT (<leader>g)
@@ -269,23 +348,31 @@ map("n", "<leader>fig", telescope_builtin("symbols", { sources = { "gitmoji" } }
 -- Lazygit
 map("n", "<leader>gg", function()
   local s = get_snacks()
-  if s then s.lazygit() end
+  if s then
+    s.lazygit()
+  end
 end, { desc = "Git Lazygit" })
 
 map("n", "<leader>gG", function()
   local s = get_snacks()
-  if s then s.lazygit({ cwd = vim.fn.expand("%:p:h") }) end
+  if s then
+    s.lazygit({ cwd = vim.fn.expand("%:p:h") })
+  end
 end, { desc = "Git Lazygit (file dir)" })
 
 -- Browse/Blame
 map("n", "<leader>gb", function()
   local s = get_snacks()
-  if s then s.git.blame_line() end
+  if s then
+    s.git.blame_line()
+  end
 end, { desc = "Git Blame Line" })
 
 map("n", "<leader>gB", function()
   local s = get_snacks()
-  if s then s.gitbrowse() end
+  if s then
+    s.gitbrowse()
+  end
 end, { desc = "Git Browse" })
 
 -- Telescope git pickers
@@ -304,21 +391,86 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = { "tex", "latex", "plaintex" },
   callback = function()
     local buf_opts = { buffer = true, silent = true }
-    map("n", "<leader>llc", "<cmd>VimtexCompile<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Compile" }))
-    map("n", "<leader>llv", "<cmd>VimtexView<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX View" }))
-    map("n", "<leader>lls", "<cmd>VimtexStop<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Stop" }))
-    map("n", "<leader>llt", "<cmd>VimtexTocToggle<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX TOC" }))
-    map("n", "<leader>llk", "<cmd>VimtexClean<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Clean" }))
-    map("n", "<leader>llK", "<cmd>VimtexClean!<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Clean All" }))
-    map("n", "<leader>lli", "<cmd>VimtexInfo<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Info" }))
-    map("n", "<leader>llr", "<cmd>VimtexReverse<cr>", vim.tbl_extend("force", buf_opts, { desc = "LaTeX Reverse" }))
+    map(
+      "n",
+      "<leader>llc",
+      "<cmd>VimtexCompile<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Compile" })
+    )
+    map(
+      "n",
+      "<leader>llv",
+      "<cmd>VimtexView<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX View" })
+    )
+    map(
+      "n",
+      "<leader>lls",
+      "<cmd>VimtexStop<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Stop" })
+    )
+    map(
+      "n",
+      "<leader>llt",
+      "<cmd>VimtexTocToggle<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX TOC" })
+    )
+    map(
+      "n",
+      "<leader>llk",
+      "<cmd>VimtexClean<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Clean" })
+    )
+    map(
+      "n",
+      "<leader>llK",
+      "<cmd>VimtexClean!<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Clean All" })
+    )
+    map(
+      "n",
+      "<leader>lli",
+      "<cmd>VimtexInfo<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Info" })
+    )
+    map(
+      "n",
+      "<leader>llr",
+      "<cmd>VimtexReverse<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Reverse" })
+    )
     -- Formatting
-    map("v", "<leader>llb", 'c\\textbf{<C-r>"}<Esc>', vim.tbl_extend("force", buf_opts, { desc = "LaTeX Bold" }))
-    map("v", "<leader>lli", 'c\\textit{<C-r>"}<Esc>', vim.tbl_extend("force", buf_opts, { desc = "LaTeX Italic" }))
-    map("v", "<leader>ll$", 'c$<C-r>"$<Esc>', vim.tbl_extend("force", buf_opts, { desc = "LaTeX Math" }))
+    map(
+      "v",
+      "<leader>llb",
+      'c\\textbf{<C-r>"}<Esc>',
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Bold" })
+    )
+    map(
+      "v",
+      "<leader>lli",
+      'c\\textit{<C-r>"}<Esc>',
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Italic" })
+    )
+    map(
+      "v",
+      "<leader>ll$",
+      'c$<C-r>"$<Esc>',
+      vim.tbl_extend("force", buf_opts, { desc = "LaTeX Math" })
+    )
     -- Navigation
-    map("n", "]]", "<cmd>VimtexSectionNext<cr>", vim.tbl_extend("force", buf_opts, { desc = "Next Section" }))
-    map("n", "[[", "<cmd>VimtexSectionPrev<cr>", vim.tbl_extend("force", buf_opts, { desc = "Previous Section" }))
+    map(
+      "n",
+      "]]",
+      "<cmd>VimtexSectionNext<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "Next Section" })
+    )
+    map(
+      "n",
+      "[[",
+      "<cmd>VimtexSectionPrev<cr>",
+      vim.tbl_extend("force", buf_opts, { desc = "Previous Section" })
+    )
   end,
 })
 
@@ -327,28 +479,38 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================================
 map("n", "<leader>nn", function()
   local s = get_snacks()
-  if s then s.scratch() end
+  if s then
+    s.scratch()
+  end
 end, { desc = "Notes New Scratch" })
 
 map("n", "<leader>ns", function()
   local s = get_snacks()
-  if s then s.scratch.select() end
+  if s then
+    s.scratch.select()
+  end
 end, { desc = "Notes Select Scratch" })
 
 map("n", "<leader>nh", function()
   local s = get_snacks()
-  if s then s.notifier.show_history() end
+  if s then
+    s.notifier.show_history()
+  end
 end, { desc = "Notes Notification History" })
 
 map("n", "<leader>nd", function()
   local s = get_snacks()
-  if s then s.notifier.hide() end
+  if s then
+    s.notifier.hide()
+  end
 end, { desc = "Notes Dismiss Notifications" })
 
 -- Dashboard
 map("n", "<leader>nD", function()
   local s = get_snacks()
-  if s then s.dashboard() end
+  if s then
+    s.dashboard()
+  end
 end, { desc = "Notes Dashboard" })
 
 -- ============================================================================
@@ -357,17 +519,23 @@ end, { desc = "Notes Dashboard" })
 -- Explorer
 map("n", "<leader>oe", function()
   local s = get_snacks()
-  if s then s.explorer() end
+  if s then
+    s.explorer()
+  end
 end, { desc = "Open Explorer" })
 
 map("n", "<leader>oE", function()
   local s = get_snacks()
-  if s then s.explorer({ cwd = vim.fn.expand("%:p:h") }) end
+  if s then
+    s.explorer({ cwd = vim.fn.expand("%:p:h") })
+  end
 end, { desc = "Open Explorer (file dir)" })
 
 map("n", "<leader>of", function()
   local s = get_snacks()
-  if s then s.explorer({ float = true }) end
+  if s then
+    s.explorer({ float = true })
+  end
 end, { desc = "Open Explorer Float" })
 
 map("n", "<leader>oo", safe_require("oil", "open"), { desc = "Open Oil" })
@@ -375,39 +543,53 @@ map("n", "<leader>oo", safe_require("oil", "open"), { desc = "Open Oil" })
 -- Shortcut: - opens explorer
 map("n", "-", function()
   local s = get_snacks()
-  if s then s.explorer() end
+  if s then
+    s.explorer()
+  end
 end, { desc = "Open Explorer" })
 
 -- Terminal
 map("n", "<leader>ot", function()
   local s = get_snacks()
-  if s then s.terminal() end
+  if s then
+    s.terminal()
+  end
 end, { desc = "Open Terminal" })
 
 map("n", "<leader>oT", function()
   local s = get_snacks()
-  if s then s.terminal.float() end
+  if s then
+    s.terminal.float()
+  end
 end, { desc = "Open Terminal Float" })
 
 map("n", "<leader>os", function()
   local s = get_snacks()
-  if s then s.terminal.split() end
+  if s then
+    s.terminal.split()
+  end
 end, { desc = "Open Terminal Split" })
 
 map("n", "<leader>ov", function()
   local s = get_snacks()
-  if s then s.terminal.split({ position = "right" }) end
+  if s then
+    s.terminal.split({ position = "right" })
+  end
 end, { desc = "Open Terminal Vsplit" })
 
 -- Language-specific terminals
 map("n", "<leader>otp", function()
   local s = get_snacks()
-  if s then s.terminal("python3") end
+  if s then
+    s.terminal("python3")
+  end
 end, { desc = "Open Terminal Python" })
 
 map("n", "<leader>otn", function()
   local s = get_snacks()
-  if s then s.terminal("node") end
+  if s then
+    s.terminal("node")
+  end
 end, { desc = "Open Terminal Node" })
 
 -- ============================================================================
