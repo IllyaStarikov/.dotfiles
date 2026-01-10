@@ -7,12 +7,6 @@ local M = {}
 -- Cache the machine type detection result
 local cached_machine_type = nil
 
--- Check if a module can be loaded
-local function can_require(module_name)
-	local ok = pcall(require, module_name)
-	return ok
-end
-
 -- Safe dofile with error handling
 local function safe_dofile(path)
 	if vim.fn.filereadable(path) == 1 then

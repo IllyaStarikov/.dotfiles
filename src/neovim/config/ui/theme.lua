@@ -58,7 +58,7 @@ local function setup_theme()
 					},
 				})
 			end
-			pcall(vim.cmd, "colorscheme tokyonight-moon")
+			pcall(function() vim.cmd("colorscheme tokyonight-moon") end)
 		-- vim.g.airline_theme = 'base16'
 		elseif theme == "tokyonight_storm" then
 			vim.opt.background = "dark"
@@ -73,7 +73,7 @@ local function setup_theme()
 					},
 				})
 			end
-			pcall(vim.cmd, "colorscheme tokyonight-storm")
+			pcall(function() vim.cmd("colorscheme tokyonight-storm") end)
 		-- vim.g.airline_theme = 'base16'
 		elseif theme == "tokyonight_night" then
 			vim.opt.background = "dark"
@@ -92,7 +92,7 @@ local function setup_theme()
 			-- Set the style global for compatibility
 			vim.g.tokyonight_style = "night"
 			-- Try to load the colorscheme with error handling
-			local status_ok, _ = pcall(vim.cmd, "colorscheme tokyonight-night")
+			local status_ok = pcall(function() vim.cmd("colorscheme tokyonight-night") end)
 			if not status_ok then
 				-- Fallback to basic tokyonight command
 				vim.cmd("colorscheme tokyonight")
@@ -111,7 +111,7 @@ local function setup_theme()
 					},
 				})
 			end
-			pcall(vim.cmd, "colorscheme tokyonight-day")
+			pcall(function() vim.cmd("colorscheme tokyonight-day") end)
 		-- vim.g.airline_theme = 'base16'
 		else
 			-- Default fallback to Tokyo Night Moon
@@ -127,7 +127,7 @@ local function setup_theme()
 					},
 				})
 			end
-			pcall(vim.cmd, "colorscheme tokyonight-moon")
+			pcall(function() vim.cmd("colorscheme tokyonight-moon") end)
 		end
 	else
 		-- Default to dark theme if config file doesn't exist
@@ -149,7 +149,7 @@ local function setup_theme()
 
 	-- Apply intelligent syntax highlighting optimizations
 	vim.schedule(function()
-		local current_bg = vim.opt.background:get()
+		local current_bg = vim.o.background
 
 		-- Smart comment colors based on background
 		if current_bg == "dark" then
@@ -200,7 +200,7 @@ vim.api.nvim_create_user_command("ReloadTheme", setup_theme, {
 })
 
 vim.api.nvim_create_user_command("FixComments", function()
-	local current_bg = vim.opt.background:get()
+	local current_bg = vim.o.background
 
 	if current_bg == "dark" then
 		vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")

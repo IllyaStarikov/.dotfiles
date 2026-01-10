@@ -68,11 +68,13 @@ end, { desc = "Reset treesitter for current buffer" })
 -- Workaround for treesitter highlighter out of range errors
 -- This wraps the problematic function to handle invalid positions gracefully
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
+---@diagnostic disable-next-line: duplicate-set-field
 vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
 	local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
 	if not ok then
 		-- Silently ignore out of range errors from treesitter highlighter
-		if result:match("Invalid 'end_col': out of range") or result:match("Invalid 'col': out of range") then
+		local err = tostring(result)
+		if err:match("Invalid 'end_col': out of range") or err:match("Invalid 'col': out of range") then
 			return 0 -- Return a dummy extmark id
 		else
 			-- Re-throw other errors
@@ -84,6 +86,7 @@ end
 
 -- Workaround for treesitter get_offset errors when deleting code fences
 local ts_utils = vim.treesitter.get_node
+---@diagnostic disable-next-line: duplicate-set-field
 vim.treesitter.get_node = function(...)
 	local ok, result = pcall(ts_utils, ...)
 	if not ok then
@@ -128,6 +131,7 @@ autocmd("FileType", {
 				local hl = highlighter.active[bufnr]
 				if hl.on_line_impl then
 					local orig_on_line = hl.on_line_impl
+					---@diagnostic disable-next-line: inject-field
 					hl.on_line_impl = function(self, ...)
 						local ok, result = pcall(orig_on_line, self, ...)
 						if not ok then
@@ -628,7 +632,8 @@ autocmd("BufWinEnter", {
 	pattern = "*",
 	callback = function()
 		local max_filesize = 100 * 1024 -- 100KB
-		local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(0))
+		---@diagnostic disable-next-line: undefined-field
+		local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(0))
 		if ok and stats and stats.size > max_filesize then
 			vim.opt_local.wrap = false
 			vim.opt_local.synmaxcol = 200
@@ -796,7 +801,8 @@ if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM then
 	vim.opt.updatetime = 1000 -- Trigger CursorHold after 1 second
 
 	-- Watch for changes using timer (checks every 2 seconds)
-	local timer = vim.loop.new_timer()
+	---@diagnostic disable-next-line: undefined-field
+	local timer = (vim.uv or vim.loop).new_timer()
 	timer:start(
 		2000,
 		2000,

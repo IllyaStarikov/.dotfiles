@@ -19,6 +19,7 @@ function M.setup()
 	end
 
 	-- ⚡ PERFORMANCE & UI SETTINGS
+	---@diagnostic disable-next-line: redundant-parameter
 	telescope.setup({
 		defaults = {
 			-- UI Configuration
@@ -485,6 +486,7 @@ function M.setup()
 	-- Set up integration points for existing keybindings and menu system
 
 	-- Global telescope functions for easy access
+	---@diagnostic disable: duplicate-set-field
 	_G.telescope_find_files = function()
 		require("telescope.builtin").find_files()
 	end
@@ -524,6 +526,7 @@ function M.setup()
 	_G.telescope_lsp_dynamic_workspace_symbols = function()
 		M.lsp_dynamic_workspace_symbols()
 	end
+	---@diagnostic enable: duplicate-set-field
 
 	-- 🎨 THEME INTEGRATION
 	-- Integrate with existing theme switching system

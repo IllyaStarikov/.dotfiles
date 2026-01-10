@@ -50,7 +50,7 @@ end
 -- Usage: utils.setup_plugin("plugin_name", config_table)
 function M.setup_plugin(plugin_name, config)
 	local plugin, ok = M.safe_require(plugin_name)
-	if ok and plugin.setup then
+	if ok and plugin and plugin.setup then
 		local setup_ok = M.protected_call(plugin.setup, plugin_name .. ".setup", config)
 		if setup_ok then
 			return plugin, true
@@ -81,7 +81,7 @@ end
 function M.safe_keymap(mode, lhs, module_name, method_name, opts)
 	vim.keymap.set(mode, lhs, function()
 		local module, ok = M.silent_require(module_name)
-		if ok and module[method_name] then
+		if ok and module and module[method_name] then
 			module[method_name](opts and opts.args or {})
 		else
 			vim.notify(

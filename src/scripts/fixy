@@ -86,7 +86,8 @@ is_binary_file() {
     file "$file" | grep -q "binary\|data"
   else
     # Fallback: check for null bytes (common in binary files)
-    grep -qP '\x00' "$file" 2>/dev/null || head -c 8000 "$file" | LC_ALL=C grep -q '[^[:print:][:space:]]'
+    # Use perl for portable null byte detection (grep -P is not portable)
+    head -c 8000 "$file" 2>/dev/null | perl -ne 'exit 0 if /\x00/' || head -c 8000 "$file" | LC_ALL=C grep -q '[^[:print:][:space:]]'
   fi
 }
 
@@ -968,7 +969,8 @@ load_config
 if [[ ${#FILES[@]} -eq 0 ]]; then
   if git rev-parse --git-dir > /dev/null 2>&1; then
     print_color blue "No files specified, formatting all tracked files..."
-    mapfile -t FILES < <(git ls-files)
+    # Use zsh array assignment instead of bash-only mapfile
+    FILES=("${(@f)$(git ls-files)}")
   else
     print_color red "No files specified and not in a git repository"
     exit 1

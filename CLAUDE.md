@@ -2,6 +2,44 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Linting Tools
+
+When checking code for errors, always use these tools in order:
+
+**Lua files:**
+1. `luac -p <file>` - Syntax validation (catches parse errors only)
+2. `stylua --check <file>` - Formatting validation (2-space indent, no tabs)
+3. For semantic errors (unused variables, wrong API usage, type mismatches), these CLI tools won't help. Ask the user to check lua_ls diagnostics in Neovim, or test the code by running it.
+
+**Important Lua gotchas CLI tools won't catch:**
+- `vim.defer_fn()` returns a libuv timer userdata, stop with `timer:stop(); timer:close()` NOT `vim.fn.timer_stop()`
+- `vim.fn.timer_start()` returns a number ID, stop with `vim.fn.timer_stop(id)`
+- Unused variables (lua_ls catches these)
+- Wrong function signatures
+- Overriding vim API functions triggers `duplicate-set-field` - use `---@diagnostic disable-next-line: duplicate-set-field`
+
+**When to suppress vs fix lua_ls errors:**
+- **Fix first**: Always try to fix the actual issue before suppressing
+  - API changed? Update the code (e.g., which-key v3 no longer uses `setup()`)
+  - Deprecated function? Use the replacement
+  - Wrong usage? Fix the code
+- **Suppress only when**: The code is correct but lua_ls can't verify it
+  - Type inference limitations: `(vim.uv or vim.loop).fs_stat` - lua_ls can't infer conditional types
+  - Missing/wrong type definitions: Some plugins (conform.nvim, etc.) have incorrect annotations
+  - Intentional overrides: `vim.notify = function()` requires `duplicate-set-field`
+- **CRITICAL - Always Google/WebSearch first**: Before ANY suppression, you MUST use WebSearch to verify the plugin/API documentation. Every single time. No exceptions. You could be wrong - suppression might hide a real bug or outdated API usage. Search for "<plugin> setup arguments" or "<function> signature" to verify.
+- **Always add a comment** explaining why suppression is necessary
+
+**Shell scripts (zsh/bash):**
+1. `zsh -n <file>` or `bash -n <file>` - Syntax validation
+2. `shellcheck <file>` - Static analysis (note: shellcheck doesn't support zsh, only sh/bash)
+
+**Python files:**
+1. `ruff check <file>` - Linting (catches most issues)
+2. `ruff format --check <file>` - Formatting
+
+**Always run stylua on Lua files after making changes** - the codebase uses 2-space indentation.
+
 ## Code Style Preferences
 
 **Line Length**: 100 characters maximum (modern preference over traditional 80 characters)

@@ -14,7 +14,7 @@ local fn = vim.fn
 api.nvim_create_user_command("BufOnly", function()
 	local current = api.nvim_get_current_buf()
 	for _, buf in ipairs(api.nvim_list_bufs()) do
-		if buf ~= current and api.nvim_buf_is_valid(buf) and api.nvim_buf_get_option(buf, "buflisted") then
+		if buf ~= current and api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
 			api.nvim_buf_delete(buf, { force = false })
 		end
 	end
@@ -23,11 +23,7 @@ end, { desc = "Delete all buffers except current" })
 -- Delete all unmodified buffers
 api.nvim_create_user_command("BufClean", function()
 	for _, buf in ipairs(api.nvim_list_bufs()) do
-		if
-			api.nvim_buf_is_valid(buf)
-			and api.nvim_buf_get_option(buf, "buflisted")
-			and not api.nvim_buf_get_option(buf, "modified")
-		then
+		if api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted and not vim.bo[buf].modified then
 			api.nvim_buf_delete(buf, { force = false })
 		end
 	end
@@ -119,11 +115,7 @@ end, { desc = "Format JSON file" })
 local diagnostics_active = true
 api.nvim_create_user_command("DiagnosticsToggle", function()
 	diagnostics_active = not diagnostics_active
-	if diagnostics_active then
-		vim.diagnostic.enable()
-	else
-		vim.diagnostic.disable()
-	end
+	vim.diagnostic.enable(diagnostics_active)
 end, { desc = "Toggle diagnostics" })
 
 -- =============================================================================
@@ -185,12 +177,12 @@ end, { desc = "Change to project root directory" })
 -- Create a scratch buffer
 api.nvim_create_user_command("Scratch", function(opts)
 	local buf = api.nvim_create_buf(false, true)
-	api.nvim_buf_set_option(buf, "buftype", "nofile")
-	api.nvim_buf_set_option(buf, "bufhidden", "hide")
-	api.nvim_buf_set_option(buf, "swapfile", false)
+	vim.bo[buf].buftype = "nofile"
+	vim.bo[buf].bufhidden = "hide"
+	vim.bo[buf].swapfile = false
 
 	if opts.args ~= "" then
-		api.nvim_buf_set_option(buf, "filetype", opts.args)
+		vim.bo[buf].filetype = opts.args
 	end
 
 	api.nvim_set_current_buf(buf)
@@ -278,10 +270,13 @@ end, { desc = "Show clipboard configuration info" })
 
 -- Debug yank performance
 api.nvim_create_user_command("YankDebug", function()
-	-- Test internal yank
-	local start = vim.loop.hrtime()
+	---@diagnostic disable: undefined-field
+	-- Test internal yank (vim.uv is newer, vim.loop is deprecated fallback)
+	local uv = vim.uv or vim.loop
+	local start = uv.hrtime()
 	vim.cmd("normal! yy")
-	local internal_time = (vim.loop.hrtime() - start) / 1e6
+	local internal_time = (uv.hrtime() - start) / 1e6
+	---@diagnostic enable: undefined-field
 
 	print(string.format("Internal yank took: %.2fms", internal_time))
 	print("Clipboard: " .. vim.o.clipboard)
@@ -453,9 +448,9 @@ api.nvim_create_user_command("Messages", function()
 	local messages = fn.execute("messages")
 	local buf = api.nvim_create_buf(false, true)
 	api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(messages, "\n"))
-	api.nvim_buf_set_option(buf, "buftype", "nofile")
-	api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-	api.nvim_buf_set_option(buf, "filetype", "vim")
+	vim.bo[buf].buftype = "nofile"
+	vim.bo[buf].bufhidden = "wipe"
+	vim.bo[buf].filetype = "vim"
 	api.nvim_buf_set_name(buf, "Messages")
 	api.nvim_set_current_buf(buf)
 end, { desc = "Show messages in buffer" })
