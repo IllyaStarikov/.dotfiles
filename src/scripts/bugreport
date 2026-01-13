@@ -1010,7 +1010,7 @@ collect_shell_diagnostics() {
         echo "=== Shell Environment ==="
         echo "Aliases: $(alias | wc -l)"
         echo "Functions: $(functions | wc -l)"
-        echo "Completion functions: $(print -l $fpath | wc -l)"
+        echo "Completion functions: $(print -l "$fpath" | wc -l)"
     } > "$REPORT_DIR/config/shell_env.txt"
     
     log SUCCESS "Shell diagnostics collected"
@@ -1193,7 +1193,7 @@ collect_terminal_info() {
         echo "$fpath" | tr ' ' '\n' | head -20
         echo
         echo "=== Completion Files Count ==="
-        for dir in ${fpath[@]}; do
+        for dir in "${fpath[@]}"; do
             if [[ -d "$dir" ]]; then
                 echo "$dir: $(ls "$dir" 2>/dev/null | wc -l) files"
             fi
@@ -1354,15 +1354,15 @@ run_tests() {
     log INFO "Executing: $test_runner $test_args"
     
     # Run tests and capture output
-    if $test_runner $test_args > "$test_output" 2>&1; then
+    if "$test_runner" "$test_args" > "$test_output" 2>&1; then
         log SUCCESS "Tests completed successfully"
     else
         log WARN "Some tests failed (see test_results.txt)"
     fi
     
     # Also generate test report in different formats
-    $test_runner $test_args --output=json > "$REPORT_DIR/tests/results.json" 2>/dev/null || true
-    $test_runner $test_args --output=junit > "$REPORT_DIR/tests/results.xml" 2>/dev/null || true
+    "$test_runner" "$test_args" --output=json > "$REPORT_DIR/tests/results.json" 2>/dev/null || true
+    "$test_runner" "$test_args" --output=junit > "$REPORT_DIR/tests/results.xml" 2>/dev/null || true
 }
 
 #######################################

@@ -254,7 +254,7 @@ show_palette() {
 show_256_palette() {
   echo "256-color palette:"
   for i in {0..255}; do
-    printf "$(color256 $i)%3d${STYLES[RESET]}" $i
+    printf "$(color256 "$i")%3d${STYLES[RESET]}" "$i"
     if (((i + 1) % 16 == 0)); then
       echo
     else

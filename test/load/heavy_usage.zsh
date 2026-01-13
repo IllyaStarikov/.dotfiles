@@ -121,7 +121,7 @@ test_many_processes() {
 
   # Kill all background processes
   for pid in "${pids[@]}"; do
-    kill $pid 2>/dev/null || true
+    kill "$pid" 2>/dev/null || true
   done
   wait
 
@@ -217,7 +217,7 @@ test_shell_startup_under_load() {
 
   # Kill load generators
   for pid in "${load_pids[@]}"; do
-    kill $pid 2>/dev/null || true
+    kill "$pid" 2>/dev/null || true
   done
 
   local avg_time=$((total_time / iterations))

@@ -101,7 +101,7 @@ phase_system_info() {
   print_info "User: $(whoami)"
   print_info "Home Directory: $HOME"
   print_info "Dotfiles Directory: $DOTFILES_DIR"
-  print_info "Shell: $(echo $SHELL)"
+  print_info "Shell: $(echo "$SHELL")"
   print_info "Zsh Version: $ZSH_VERSION"
   return 0
 }
@@ -118,7 +118,7 @@ phase_prepare_environment() {
   for script in $scripts; do
     if [[ -f "$script" ]]; then
       chmod +x "$script"
-      print_success "Made executable: $(basename $script)"
+      print_success "Made executable: $(basename "$script")"
     else
       print_warning "Script not found: $script"
     fi
@@ -154,7 +154,7 @@ phase_verify_installations() {
 
   for tool in $tools; do
     if command -v "$tool" &> /dev/null; then
-      print_success "$tool installed: $(command -v $tool)"
+      print_success "$tool installed: $(command -v "$tool")"
     else
       print_error "$tool not found"
       missing+=("$tool")
@@ -180,14 +180,14 @@ phase_verify_symlinks() {
   local failed=0
   for link in $symlinks; do
     if [[ -L "$link" ]] || [[ -f "$link" ]] || [[ -d "$link" ]]; then
-      print_success "$(basename $link) exists"
+      print_success "$(basename "$link") exists"
     else
-      print_error "$(basename $link) missing"
+      print_error "$(basename "$link") missing"
       failed=1
     fi
   done
 
-  return $failed
+  return "$failed"
 }
 
 phase_test_shell_config() {
@@ -259,7 +259,7 @@ phase_run_unit_tests() {
 
     # Run with explicit timeout and non-interactive flags
     print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit"
-    if timeout --kill-after=30 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
+    if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
       print_success "Unit tests passed"
       return 0
     else
@@ -310,7 +310,7 @@ phase_run_functional_tests() {
 
     # Run with explicit timeout and non-interactive flags
     print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional"
-    if timeout --kill-after=30 --preserve-status $timeout_val zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
+    if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
       print_success "Functional tests passed"
       return 0
     else
@@ -336,7 +336,7 @@ phase_verify_development_tools() {
 
   for tool in $dev_tools; do
     if command -v "$tool" &> /dev/null; then
-      print_success "$tool available: $(command -v $tool)"
+      print_success "$tool available: $(command -v "$tool")"
     else
       print_info "$tool not installed (optional)"
     fi

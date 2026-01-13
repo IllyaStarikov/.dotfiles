@@ -521,7 +521,7 @@ validate_schema() {
             continue
         fi
 
-        if ! validate "${data_ref[$field]}" ${(s:,:)constraints}; then
+        if ! validate "${data_ref[$field]}" "${(s:,:)constraints}"; then
             echo "Validation failed for field: $field" >&2
             return 1
         fi

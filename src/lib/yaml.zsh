@@ -62,7 +62,7 @@ yaml_quote_string() {
 yaml_encode_array() {
     local -n arr_ref=$1
     local indent="${2:-0}"
-    local indent_str="$(repeat ' ' $indent)"
+    local indent_str="$(repeat ' ' "$indent")"
 
     if [[ $YAML_FLOW_STYLE -eq 1 ]]; then
         # Flow style [item1, item2, ...]
@@ -86,7 +86,7 @@ yaml_encode_array() {
 yaml_encode_hash() {
     local -n hash_ref=$1
     local indent="${2:-0}"
-    local indent_str="$(repeat ' ' $indent)"
+    local indent_str="$(repeat ' ' "$indent")"
     local inner_indent=$((indent + YAML_INDENT))
 
     if [[ $YAML_FLOW_STYLE -eq 1 ]]; then

@@ -2,8 +2,8 @@
 # Shared test helpers and utilities
 
 # Ensure we have required variables
-: ${DOTFILES_DIR:?"DOTFILES_DIR must be set"}
-: ${TEST_TMP_DIR:?"TEST_TMP_DIR must be set"}
+: "${DOTFILES_DIR:?"DOTFILES_DIR must be set"}"
+: "${TEST_TMP_DIR:?"TEST_TMP_DIR must be set"}"
 
 # Colors (only define if not already defined)
 : ${RED:='\033[0;31m'}

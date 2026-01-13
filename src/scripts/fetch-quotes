@@ -74,9 +74,9 @@ fetch_quotes() {
   local timeout_cmd=$(get_timeout_cmd)
   
   # Try each API multiple times to ensure we get enough quotes
-  while [ $fetched -lt $count ]; do
+  while [ "$fetched" -lt "$count" ]; do
     # ZenQuotes API
-    if [ $fetched -lt $count ]; then
+    if [ "$fetched" -lt "$count" ]; then
       local quote
       # Use timeout wrapper if available, otherwise run directly
       quote=$($timeout_cmd curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
@@ -88,7 +88,7 @@ fetch_quotes() {
     fi
     
     # Quotable API
-    if [ $fetched -lt $count ]; then
+    if [ "$fetched" -lt "$count" ]; then
       local quote
       quote=$($timeout_cmd curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
 
@@ -99,7 +99,7 @@ fetch_quotes() {
     fi
     
     # Advice Slip API
-    if [ $fetched -lt $count ]; then
+    if [ "$fetched" -lt "$count" ]; then
       local quote
       quote=$($timeout_cmd curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
 
@@ -110,7 +110,7 @@ fetch_quotes() {
     fi
     
     # If we still need more quotes, add a small delay before retrying
-    if [ $fetched -lt $count ]; then
+    if [ "$fetched" -lt "$count" ]; then
       sleep 0.5
     fi
   done
@@ -127,7 +127,7 @@ main() {
   echo ""
   
   # Fetch quotes
-  fetch_quotes $QUOTES_COUNT
+  fetch_quotes "$QUOTES_COUNT"
   
   echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════════${NC}"
 }

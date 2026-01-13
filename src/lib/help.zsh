@@ -135,7 +135,7 @@ help_generate() {
         # Section content
         local content="${HELP_SECTION_CONTENT[$section]}"
         if command -v wrap >/dev/null 2>&1; then
-            content=$(wrap "$content" $((HELP_WIDTH - HELP_INDENT)) "$(repeat ' ' $HELP_INDENT)")
+            content=$(wrap "$content" $((HELP_WIDTH - HELP_INDENT)) "$(repeat ' ' "$HELP_INDENT")")
         else
             # Simple indentation if textwrap not available
             content="  $content"
@@ -430,7 +430,7 @@ _${program}() {
     COMPREPLY=()
     cur="\${COMP_WORDS[COMP_CWORD]}"
     prev="\${COMP_WORDS[COMP_CWORD-1]}"
-    opts="$(echo ${(k)USAGE_OPTIONS} ${(k)USAGE_COMMANDS})"
+    opts="$(echo "${(k)USAGE_OPTIONS}" "${(k)USAGE_COMMANDS}")"
 
     COMPREPLY=( \$(compgen -W "\${opts}" -- \${cur}) )
     return 0

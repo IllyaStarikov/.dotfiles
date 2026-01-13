@@ -76,7 +76,7 @@ test_random_process_kills() {
   local killed=0
   for pid in "${pids[@]}"; do
     if [[ $((RANDOM % 2)) -eq 0 ]]; then
-      kill $pid 2>/dev/null && ((killed++))
+      kill "$pid" 2>/dev/null && ((killed++))
       [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Killed process $pid"
     fi
   done
@@ -85,7 +85,7 @@ test_random_process_kills() {
 
   # Clean up remaining
   for pid in "${pids[@]}"; do
-    kill $pid 2>/dev/null || true
+    kill "$pid" 2>/dev/null || true
   done
 
   # System should still be responsive
@@ -336,13 +336,13 @@ test_resource_limit_chaos() {
   fi
 
   # Restore
-  ulimit -s $orig_stack 2>/dev/null
+  ulimit -s "$orig_stack" 2>/dev/null
 
   # Test with reduced process limit (careful not to lock ourselves out)
   local current_procs=$(ps aux | wc -l)
   local new_limit=$((current_procs + 10))
 
-  ulimit -u $new_limit 2>/dev/null
+  ulimit -u "$new_limit" 2>/dev/null
 
   # Try to create a process
   (echo "test") 2>/dev/null
@@ -351,7 +351,7 @@ test_resource_limit_chaos() {
   fi
 
   # Restore
-  ulimit -u $orig_nproc 2>/dev/null
+  ulimit -u "$orig_nproc" 2>/dev/null
 
   [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Survived resource limit chaos"
 

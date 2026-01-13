@@ -202,7 +202,7 @@ test_concurrent_operations() {
 
   # Wait for all to complete
   for pid in "${pids[@]}"; do
-    wait $pid
+    wait "$pid"
   done
 
   local end_time=$(date +%s%N)

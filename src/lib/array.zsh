@@ -257,7 +257,7 @@ array_sort() {
     [[ "$numeric" == "true" ]] && sort_flags="-n"
     [[ "$order" == "desc" ]] && sort_flags="$sort_flags -r"
 
-    arr_ref=($(printf '%s\n' "${arr_ref[@]}" | sort $sort_flags))
+    arr_ref=($(printf '%s\n' "${arr_ref[@]}" | sort "$sort_flags"))
 }
 
 array_unique() {

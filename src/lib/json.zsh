@@ -124,7 +124,7 @@ json_encode_array() {
             first=0
         done
 
-        output+="\n$(repeat ' ' $indent)]"
+        output+="\n$(repeat ' ' "$indent")]"
     else
         local first=1
         for item in "${arr_ref[@]}"; do
@@ -156,7 +156,7 @@ json_encode_object() {
             first=0
         done
 
-        output+="\n$(repeat ' ' $indent)}"
+        output+="\n$(repeat ' ' "$indent")}"
     else
         local first=1
         for key in ${(k)hash_ref}; do

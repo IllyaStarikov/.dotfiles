@@ -17,7 +17,7 @@ test_extreme_file_sizes() {
     [[ $VERBOSE -ge 1 ]] && log "INFO" "Testing ${size}MB file"
 
     # Create file
-    dd if=/dev/zero bs=1048576 count=$size of="$test_file" 2>/dev/null
+    dd if=/dev/zero bs=1048576 count="$size" of="$test_file" 2>/dev/null
 
     # Try to open in Neovim
     local start_time=$(date +%s%N)
@@ -261,7 +261,7 @@ test_signal_handling() {
   local signals=(USR1 USR2 HUP)
 
   for sig in "${signals[@]}"; do
-    if kill -$sig $nvim_pid 2>/dev/null; then
+    if kill "-$sig" "$nvim_pid" 2>/dev/null; then
       [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Sent signal $sig to Neovim"
     fi
     sleep 0.5

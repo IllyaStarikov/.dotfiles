@@ -383,7 +383,7 @@ hash_sort_by_value() {
     [[ "$numeric" == "true" ]] && sort_flags="-n"
     [[ "$order" == "desc" ]] && sort_flags="$sort_flags -r"
 
-    local -a sorted_pairs=($(printf '%s\n' "${pairs[@]}" | sort $sort_flags))
+    local -a sorted_pairs=($(printf '%s\n' "${pairs[@]}" | sort "$sort_flags"))
 
     # Rebuild hash
     for pair in "${sorted_pairs[@]}"; do

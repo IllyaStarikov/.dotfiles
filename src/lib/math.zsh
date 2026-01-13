@@ -32,7 +32,7 @@ divide() {
     return 1
   fi
 
-  printf "%.${precision}f\n" $(echo "scale=$precision; $dividend / $divisor" | bc -l 2>/dev/null || echo "$dividend $divisor" | awk '{printf "%.'"$precision"'f", $1/$2}')
+  printf "%.${precision}f\n" "$(echo "scale=$precision; $dividend / $divisor" | bc -l 2>/dev/null || echo "$dividend $divisor" | awk '{printf "%.'"$precision"'f", $1/$2}')"
 }
 
 # Modulo operation
@@ -53,7 +53,7 @@ power() {
 sqrt() {
   local number="$1"
   local precision="${2:-2}"
-  printf "%.${precision}f\n" $(echo "scale=$precision; sqrt($number)" | bc -l 2>/dev/null || echo "$number" | awk '{printf "%.'"$precision"'f", sqrt($1)}')
+  printf "%.${precision}f\n" "$(echo "scale=$precision; sqrt($number)" | bc -l 2>/dev/null || echo "$number" | awk '{printf "%.'"$precision"'f", sqrt($1)}')"
 }
 
 # Absolute value
@@ -232,7 +232,8 @@ percentage() {
   local total="$2"
   local precision="${3:-2}"
 
-  local percent=$(divide $(multiply "$value" 100) "$total" "$precision")
+  local percent
+  percent=$(divide "$(multiply "$value" 100)" "$total" "$precision")
   echo "$percent"
 }
 
@@ -298,7 +299,7 @@ random_int() {
 # Random float between 0 and 1
 random_float() {
   local precision="${1:-4}"
-  printf "%.${precision}f\n" $(echo "scale=$precision; $RANDOM / 32767" | bc -l)
+  printf "%.${precision}f\n" "$(echo "scale=$precision; $RANDOM / 32767" | bc -l)"
 }
 
 # Random float between min and max
@@ -307,9 +308,10 @@ random_range() {
   local max="$2"
   local precision="${3:-4}"
 
-  local random=$(random_float "$precision")
-  local range=$(subtract "$max" "$min")
-  local result=$(add "$min" $(multiply "$random" "$range"))
+  local random range result
+  random=$(random_float "$precision")
+  range=$(subtract "$max" "$min")
+  result=$(add "$min" "$(multiply "$random" "$range")")
   printf "%.${precision}f\n" "$result"
 }
 
@@ -320,7 +322,7 @@ random_range() {
 hypotenuse() {
   local a="$1"
   local b="$2"
-  sqrt $(add $(power "$a" 2) $(power "$b" 2))
+  sqrt "$(add "$(power "$a" 2)" "$(power "$b" 2)")"
 }
 
 # Calculate distance between two points
@@ -338,7 +340,7 @@ distance_2d() {
 # Calculate area of circle
 circle_area() {
   local radius="$1"
-  multiply 3.14159265359 $(power "$radius" 2)
+  multiply 3.14159265359 "$(power "$radius" 2)"
 }
 
 # Calculate circumference of circle
@@ -357,10 +359,11 @@ compound_interest() {
   local time="$3"
   local n="${4:-1}" # Compounding frequency (default: annually)
 
-  local rate_decimal=$(divide "$rate" 100)
-  local base=$(add 1 $(divide "$rate_decimal" "$n"))
-  local exponent=$(multiply "$n" "$time")
-  multiply "$principal" $(power "$base" "$exponent")
+  local rate_decimal base exponent
+  rate_decimal=$(divide "$rate" 100)
+  base=$(add 1 "$(divide "$rate_decimal" "$n")")
+  exponent=$(multiply "$n" "$time")
+  multiply "$principal" "$(power "$base" "$exponent")"
 }
 
 # Simple interest
@@ -407,8 +410,9 @@ lcm() {
   local a="$1"
   local b="$2"
 
-  local gcd_val=$(gcd "$a" "$b")
-  divide $(multiply "$a" "$b") "$gcd_val" 0
+  local gcd_val
+  gcd_val=$(gcd "$a" "$b")
+  divide "$(multiply "$a" "$b")" "$gcd_val" 0
 }
 
 # Check if number is prime

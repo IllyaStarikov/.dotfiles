@@ -123,7 +123,7 @@ it "Utility scripts should execute quickly" && {
             local duration=$(( (end_time - start_time) / 1000000 ))
 
             if [[ $duration -gt 100 ]]; then
-                fail "$(basename $script) took ${duration}ms"
+                fail "$(basename "$script") took ${duration}ms"
                 return
             fi
         fi
@@ -161,7 +161,7 @@ it "Configuration files should parse quickly" && {
             local duration=$(( (end_time - start_time) / 1000000 ))
 
             if [[ $duration -gt 50 ]]; then
-                fail "$(basename $config) parsing took ${duration}ms"
+                fail "$(basename "$config") parsing took ${duration}ms"
                 return
             fi
         fi

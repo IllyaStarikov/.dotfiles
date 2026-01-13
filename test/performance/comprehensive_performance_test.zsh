@@ -23,11 +23,11 @@ readonly SCRIPT_EXEC_THRESHOLD=100
 init_perf_logging() {
   echo "Performance Test Run - $(date)" >"${PERF_LOG}"
   echo "{" >"${METRICS_FILE}"
-  echo '  "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",' >>"${METRICS_FILE}"
+  echo '  "timestamp": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",' >>"${METRICS_FILE}"
   echo '  "system": {' >>"${METRICS_FILE}"
-  echo '    "os": "'$(uname -s)'",' >>"${METRICS_FILE}"
-  echo '    "arch": "'$(uname -m)'",' >>"${METRICS_FILE}"
-  echo '    "cpu_cores": '$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo 1)',' >>"${METRICS_FILE}"
+  echo '    "os": "'"$(uname -s)"'",' >>"${METRICS_FILE}"
+  echo '    "arch": "'"$(uname -m)"'",' >>"${METRICS_FILE}"
+  echo '    "cpu_cores": '"$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo 1)"',' >>"${METRICS_FILE}"
   echo '    "memory_gb": '$(($(sysctl -n hw.memsize 2>/dev/null || grep MemTotal /proc/meminfo | awk '{print $2}') / 1024 / 1024 / 1024)) >>"${METRICS_FILE}"
   echo '  },' >>"${METRICS_FILE}"
   echo '  "metrics": {' >>"${METRICS_FILE}"
@@ -65,7 +65,7 @@ log_metric() {
   else
     echo ',' >>"${METRICS_FILE}"
   fi
-  echo -n '    "'${component}_${metric}'": '${value} >>"${METRICS_FILE}"
+  echo -n '    "'"${component}_${metric}"'": '"${value}" >>"${METRICS_FILE}"
 }
 
 #######################################
@@ -339,7 +339,7 @@ test_script_performance() {
       continue
     fi
 
-    local time_ms=$(measure_time "${path}" ${args})
+    local time_ms=$(measure_time "${path}" "${args}")
     log_metric "script_${name}" "execution_time" "${time_ms}"
 
     if [[ "${time_ms}" -lt "${SCRIPT_EXEC_THRESHOLD}" ]]; then

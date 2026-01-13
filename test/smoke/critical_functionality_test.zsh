@@ -45,7 +45,7 @@ essential_files=(
 
 missing_files=()
 for file in "${essential_files[@]}"; do
-  [[ ! -f "$file" ]] && missing_files+=("$(basename $file)")
+  [[ ! -f "$file" ]] && missing_files+=("$(basename "$file")")
 done
 
 if [[ ${#missing_files[@]} -eq 0 ]]; then

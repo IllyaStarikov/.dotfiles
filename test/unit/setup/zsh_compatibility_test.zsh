@@ -121,7 +121,7 @@ it "zsh scripts should not use BASH_SOURCE" && {
     "$DOTFILES_DIR/template/mirror.sh"; do
     if [[ -f "$script" ]]; then
       if grep -q 'BASH_SOURCE' "$script"; then
-        fail "$(basename $script) still contains BASH_SOURCE"
+        fail "$(basename "$script") still contains BASH_SOURCE"
         return 1
       fi
     fi
@@ -136,9 +136,9 @@ it "scripts should use proper zsh directory detection" && {
     "$DOTFILES_DIR/src/setup/symlinks.sh"; do
     if [[ -f "$script" ]]; then
       if grep -q 'dirname.*\${0}' "$script" || grep -q 'dirname.*\$0' "$script"; then
-        pass "$(basename $script) uses zsh-style directory detection"
+        pass "$(basename "$script") uses zsh-style directory detection"
       else
-        fail "$(basename $script) may not detect directory correctly"
+        fail "$(basename "$script") may not detect directory correctly"
         return 1
       fi
     fi

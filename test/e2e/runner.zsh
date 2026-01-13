@@ -265,7 +265,7 @@ run_docker_test() {
   # Clean up
   docker rm -f "$container_name" 2>/dev/null || true
 
-  return $result
+  return "$result"
 }
 
 # ────────────────────────────────────────────────────────────────────────────────

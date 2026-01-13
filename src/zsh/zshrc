@@ -35,7 +35,7 @@ skip_global_compinit=1
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d "$ZINIT_HOME" ]]; then
     print -P "%F{33}▓▒░ Installing zinit...%f"
-    command mkdir -p "$(dirname $ZINIT_HOME)"
+    command mkdir -p "$(dirname "$ZINIT_HOME")"
     command git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 source "${ZINIT_HOME}/zinit.zsh"
@@ -170,7 +170,7 @@ zstyle ':completion:*:warnings' format 'No matches for: %d'
 # Quick server
 serve() {
     local port=${1:-8000}
-    python3 -m http.server $port
+    python3 -m http.server "$port"
 }
 
 # Extract function moved to scripts/extract

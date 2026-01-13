@@ -44,8 +44,8 @@ fi
 
 test_case "Required Neovim version"
 version=$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+')
-major=$(echo $version | cut -d. -f1)
-minor=$(echo $version | cut -d. -f2)
+major=$(echo "$version" | cut -d. -f1)
+minor=$(echo "$version" | cut -d. -f2)
 
 if [[ $major -gt 0 ]] || [[ $major -eq 0 && $minor -ge 9 ]]; then
   pass

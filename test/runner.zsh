@@ -504,7 +504,7 @@ run_test_category() {
       run_test "$test_file" &
     else
       # Show progress bar before running test
-      [[ $VERBOSE -eq 0 ]] && show_progress $count $total
+      [[ $VERBOSE -eq 0 ]] && show_progress "$count" "$total"
 
       run_test "$test_file"
 
