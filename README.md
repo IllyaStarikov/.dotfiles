@@ -1,128 +1,124 @@
 # dotfiles
 
-> A modern, fast, and meticulously crafted development environment for macOS and Linux.
+> Power of an IDE, speed of a text editor.
 
-[![CI](https://github.com/IllyaStarikov/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/IllyaStarikov/dotfiles/actions)
-[![Security](https://github.com/IllyaStarikov/dotfiles/actions/workflows/security.yml/badge.svg)](https://github.com/IllyaStarikov/dotfiles/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![macOS](https://img.shields.io/badge/macOS-black?logo=apple)
+![Linux](https://img.shields.io/badge/Linux-black?logo=linux&logoColor=white)
+![Neovim](https://img.shields.io/badge/Neovim-black?logo=neovim)
+![License](https://img.shields.io/github/license/IllyaStarikov/dotfiles)
 
 ![dotfiles](template/dotfiles.png)
 
-## Quick Install
+## Demo
+
+*Coming soon - animated demo of key features*
+
+## Requirements
+
+| Platform | Version |
+|----------|---------|
+| macOS | 12.0+ (Intel or Apple Silicon) |
+| Ubuntu | 20.04+ |
+| Debian | 11+ |
+| Fedora | 35+ |
+| Arch | Rolling |
+
+**Prerequisites:**
+- `git` 2.30+
+- `curl` or `wget`
+- `zsh` shell (macOS default, install on Linux)
+- ~5GB disk space (full install)
+- Internet connection
+
+## Install
+
+### Quick Start
 
 ```bash
-git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-./src/setup/setup.sh
+git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/setup.sh
 ```
 
-That's it. The installer handles everything else.
+| Mode | Command | Time | Description |
+|------|---------|------|-------------|
+| Full | `./src/setup/setup.sh` | 15-30 min | Complete environment |
+| Core | `./src/setup/setup.sh --core` | 5-10 min | Essential tools only |
+| Symlinks | `./src/setup/setup.sh --symlinks` | 30 sec | Link configs only |
 
-## What You Get
+**Options:** `--skip-brew` (corporate machines) · `--verbose` · `--help`
 
-A complete development environment with:
+## Features
 
-- **Neovim** - Modern IDE with 80+ plugins, LSP for 20+ languages
-- **Zsh** - Fast shell with smart completions and productivity features
-- **tmux** - Terminal multiplexer with intuitive keybindings
-- **Git** - Enhanced workflows with better diffs and aliases
-- **Theme Switcher** - Automatic light/dark mode across all tools
+- **Neovim**
+  - 80+ plugins, lazy-loaded
+  - LSP for 20+ languages
+  - ~150ms startup
+  - AI integration (Copilot, Ollama)
+- **Zsh**
+  - Starship prompt
+  - Fast completions, syntax highlighting, autosuggestions
+- **Theme System** TokyoNight (4 variants)
+- **fzf** + **ripgrep** for fast fuzzy search
+- **tmux**
+  - Intuitive bindings
+  - Session management
 
-Everything works together. Change your system theme, and your entire terminal environment adapts instantly.
+`neovim` `zsh` `tmux` `git` `fzf` `ripgrep` `starship`
 
-## Key Features
+`python` `javascript` `typescript` `go` `rust` `c/c++` `lua` `bash/zsh` `swift` `kotlin` `latex` `markdown`
 
-### 🚀 Performance First
-- Neovim starts in ~150ms
-- Lazy-loaded plugins and optimized configs
-- Parallel processing wherever possible
+## Performance
 
-### 🎨 Beautiful Defaults
-- TokyoNight themes (4 variants)
-- Consistent styling across all applications
-- Automatic theme switching with macOS appearance
-
-### 🛡️ Production Ready
-- Comprehensive test suite (unit, functional, integration)
-- CI/CD pipeline with multi-OS support
-- Security scanning and code quality checks
-
-### 🔧 Developer Focused
-- LSP support for 20+ languages out of the box
-- AI integration (Copilot, local LLMs via Ollama)
-- Smart formatting with language detection
+| Component | Measured | Notes |
+|-----------|----------|-------|
+| Neovim startup | 150ms | M1 Mac, 80+ plugins |
+| Zsh startup | 50-150ms | Zinit turbo mode |
+| tmux startup | ~125ms | New session |
+| Theme switching | <500ms | All apps synced |
+| Memory usage | <200MB | Under normal load |
 
 ## Documentation
 
-Detailed documentation lives in each component's directory:
+### Core Components
 
-- [Neovim Configuration](src/neovim/README.md)
-- [Shell Environment](src/zsh/README.md)
-- [Theme System](src/theme-switcher/README.md)
-- [Scripts & Tools](src/scripts/README.md)
-- [Setup & Installation](src/setup/README.md)
+| Component | Description |
+|-----------|-------------|
+| [Neovim](src/neovim/README.md) | 80+ plugins, LSP, AI integration |
+| [Zsh](src/zsh/README.md) | Zinit, completions, prompt |
+| [Git](src/git/README.md) | SSH signing, delta, hooks |
+| [Scripts](src/scripts/README.md) | fixy, theme, update, utilities |
+| [Setup](src/setup/README.md) | Installation, platform detection |
+| [Themes](src/theme-switcher/README.md) | TokyoNight, app sync |
 
-## Tools & Languages
+### Guides
 
-### Included Tools
-`neovim` `zsh` `tmux` `git` `fzf` `ripgrep` `fd` `bat` `eza` `starship` `lazygit`
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](doc/setup/README.md) | Get up and running |
+| [Customization](doc/guides/README.md) | Make it yours |
+| [Usage Reference](doc/usage/README.md) | Commands & keybindings |
 
-### Supported Languages
-`python` `javascript` `typescript` `go` `rust` `c/c++` `lua` `bash/zsh` `ruby` `java` `swift` `kotlin` `dart` `elixir` `haskell` `ocaml` `latex` `markdown` `yaml` `json`
+### Development
 
-### Formatters & Linters
-`ruff` `yapf` `prettier` `stylua` `clang-format` `shfmt` `gofmt` `rustfmt` `rubocop`
+| Resource | Description |
+|----------|-------------|
+| [Language Tools](src/language/README.md) | Formatters, linters |
+| [Testing](test/README.md) | Test infrastructure |
+| [CI/CD](.github/workflows/README.md) | GitHub Actions |
 
-## Commands
+## Uninstall / Reset
 
 ```bash
-# Daily Use
-theme           # Switch theme based on system appearance
-update          # Update all packages, plugins, and tools
-fixy <file>     # Auto-format any file
-
-# Development
-nvim            # Launch Neovim
-tmux new -s dev # Start tmux session
-lazygit         # Git UI
-
-# Testing
-./test/runner.zsh --quick     # Run quick tests (< 10s)
-./test/runner.zsh --full      # Run complete test suite
+./src/setup/uninstall.sh             # Remove symlinks only
+./src/setup/uninstall.sh --restore   # Remove symlinks + restore backups
+./src/setup/uninstall.sh --full      # Complete removal
+./src/setup/uninstall.sh --dry-run   # Preview changes
 ```
 
-## System Requirements
-
-### macOS
-- macOS 12+ (Monterey or later)
-- Xcode Command Line Tools
-- Homebrew
-
-### Linux
-- Ubuntu 20.04+, Debian 11+, Fedora 35+, or Arch
-- Git 2.25+
-- Curl or wget
-
-## Project Structure
-
-```
-~/.dotfiles/
-├── src/          # Source configurations
-├── test/         # Test infrastructure
-├── config/       # Tool configurations
-└── .github/      # CI/CD workflows
-```
+Backups are at `~/.dotfiles.backups/`
 
 ## Contributing
 
-Contributions are welcome! This project follows:
-- Comprehensive test coverage
-- Code formatting standards (via `fixy`)
-- Security scanning on all commits
-
-## Acknowledgments
-
-Built with inspiration from the community and powered by outstanding open-source tools. Special thanks to the Neovim, tmux, and Zsh communities.
+Bug fixes and improvements welcome. These are personal dotfiles, so features may be declined if they don't fit my workflow.
 
 ## License
 
@@ -131,5 +127,5 @@ MIT - See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-  <sub>Crafted with precision for developers who care about their tools.</sub>
+  <sub>A decade of vim, mostly because I couldn't figure out how to exit.</sub>
 </div>
