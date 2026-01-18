@@ -80,6 +80,8 @@ Theme Switcher - Synchronize terminal themes with macOS appearance
 OPTIONS:
     -h, --help, help    Show this help message
     -l, --list          List all available themes
+    -s, --shell THEME   Output shell exports for local theming (no config changes)
+    -t, --terminal THEME  Change THIS terminal's colors only (OSC sequences)
 
 THEMES:
     light              Use default light theme (tokyonight_day)
@@ -99,6 +101,14 @@ EXAMPLES:
     $(basename "$0") moon      # Use TokyoNight Moon theme
     $(basename "$0") day       # Use TokyoNight Day theme (light)
     $(basename "$0") --list    # List all available themes
+
+    # Shell-local theming (env vars only):
+    source <($(basename "$0") --shell day)   # Light theme env vars
+    source <($(basename "$0") --shell moon)  # Dark theme env vars
+
+    # Per-terminal theming (changes THIS terminal's colors):
+    $(basename "$0") --terminal day   # Light colors in this terminal
+    $(basename "$0") --terminal moon  # Dark colors in this terminal
 
 EOF
 }
@@ -138,6 +148,47 @@ list_themes() {
   fi
   echo ""
   echo "Use any theme name with: switch-theme.sh THEME_NAME"
+}
+
+# Print shell export commands for local theming
+# Used with: source <(switch-theme.sh --shell THEME)
+print_shell_exports() {
+  local starship_config="$SCRIPT_DIR/themes/$THEME/starship.toml"
+  cat <<EOF
+export MACOS_THEME="$THEME"
+export MACOS_VARIANT="$VARIANT"
+export BAT_THEME="tokyonight_${VARIANT}"
+export STARSHIP_CONFIG="$starship_config"
+EOF
+}
+
+# Send OSC escape sequences to change THIS terminal's colors
+# Only affects the current terminal instance, not all terminals
+set_terminal_colors() {
+  local colors_file="$SCRIPT_DIR/themes/$THEME/colors.sh"
+
+  if [[ ! -f "$colors_file" ]]; then
+    echo "Error: Colors file not found: $colors_file" >&2
+    return 1
+  fi
+
+  # Source the colors
+  source "$colors_file"
+
+  # OSC 10: Set foreground color
+  printf '\033]10;%s\033\\' "$FOREGROUND"
+
+  # OSC 11: Set background color
+  printf '\033]11;%s\033\\' "$BACKGROUND"
+
+  # OSC 4: Set palette colors 0-15
+  local i color
+  for i in {0..15}; do
+    eval "color=\$COLOR_$i"
+    if [[ -n "$color" ]]; then
+      printf '\033]4;%d;%s\033\\' "$i" "$color"
+    fi
+  done
 }
 
 # Check for help or list options
@@ -613,5 +664,37 @@ main() {
     exit 1
   fi
 }
+
+# Handle --shell flag for shell-local theming
+# Must be after function definitions but before main()
+if [[ "${1:-}" == "-s" || "${1:-}" == "--shell" ]]; then
+  shift
+  THEME="${1:-}"
+  if [[ -z "$THEME" ]]; then
+    echo "Error: --shell requires a theme name" >&2
+    echo "Usage: source <($(basename "$0") --shell THEME)" >&2
+    exit 1
+  fi
+  determine_theme
+  validate_theme
+  print_shell_exports
+  exit 0
+fi
+
+# Handle --terminal flag for per-terminal theming via OSC sequences
+# Changes only THIS terminal's colors, not all terminals
+if [[ "${1:-}" == "-t" || "${1:-}" == "--terminal" ]]; then
+  shift
+  THEME="${1:-}"
+  if [[ -z "$THEME" ]]; then
+    echo "Error: --terminal requires a theme name" >&2
+    echo "Usage: $(basename "$0") --terminal THEME" >&2
+    exit 1
+  fi
+  determine_theme
+  validate_theme
+  set_terminal_colors
+  exit 0
+fi
 
 main

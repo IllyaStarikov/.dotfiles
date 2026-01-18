@@ -211,6 +211,12 @@ alias projects="cd ~/Projects"
 alias dark="theme dark"
 alias light="theme light"
 
+# Shell-local theme (for per-pane theming in tmux demos)
+# Usage: theme-local day  OR  theme-local moon
+theme-local() {
+  source <("$HOME/.dotfiles/src/theme-switcher/switch-theme.sh" --shell "$@")
+}
+
 # Development Tools
 
 # Programming language shortcuts
