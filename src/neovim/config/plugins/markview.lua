@@ -656,6 +656,77 @@ function M.setup()
 
   -- JetBrainsMono Nerd Font has excellent ligature support!
 
+  -- Spell overlay system: shows spell errors even when markview conceals text
+  -- Uses signs (gutter) + virtual text since underlines don't show through concealment
+  local spell_ns = vim.api.nvim_create_namespace("markview_spell")
+
+  -- Define spell highlight and sign (matches diagnostic style)
+  vim.api.nvim_set_hl(0, "MarkviewSpellError", { fg = "#ff5555", italic = true })
+  vim.api.nvim_set_hl(0, "MarkviewSpellSign", { fg = "#ff5555" })
+  vim.fn.sign_define("MarkviewSpellBad", { text = "󰓆", texthl = "MarkviewSpellSign" })
+
+  local function update_spell_overlay(bufnr)
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+      return
+    end
+
+    -- Clear existing signs and extmarks
+    vim.fn.sign_unplace("markview_spell", { buffer = bufnr })
+    vim.api.nvim_buf_clear_namespace(bufnr, spell_ns, 0, -1)
+
+    -- Only show overlay when markview is enabled (concealment active)
+    if not vim.b[bufnr].markview_enabled then
+      return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local lines_with_errors = {}
+
+    for lnum, line in ipairs(lines) do
+      local spell_errors = vim.spell.check(line)
+      local line_errors = {}
+
+      for _, err in ipairs(spell_errors) do
+        local word, err_type = err[1], err[2]
+        if err_type == "bad" or err_type == "rare" then
+          table.insert(line_errors, word)
+        end
+      end
+
+      if #line_errors > 0 then
+        lines_with_errors[lnum] = line_errors
+      end
+    end
+
+    -- Add signs and virtual text for lines with errors
+    for lnum, errors in pairs(lines_with_errors) do
+      -- Sign in gutter
+      vim.fn.sign_place(0, "markview_spell", "MarkviewSpellBad", bufnr, { lnum = lnum })
+
+      -- Virtual text showing misspelled words at end of line (diagnostic style)
+      local virt_text = {
+        { " 󰓆 ", "MarkviewSpellSign" },
+        { table.concat(errors, ", "), "MarkviewSpellError" },
+      }
+      vim.api.nvim_buf_set_extmark(bufnr, spell_ns, lnum - 1, 0, {
+        virt_text = virt_text,
+        virt_text_pos = "eol",
+      })
+    end
+  end
+
+  -- Debounced update function
+  local spell_timer = nil
+  local function schedule_spell_update(bufnr)
+    if spell_timer then
+      spell_timer:stop()
+    end
+    spell_timer = vim.defer_fn(function()
+      update_spell_overlay(bufnr)
+    end, 200)
+  end
+
   -- Auto-enable for markdown files
   local markdown_augroup = vim.api.nvim_create_augroup("MarkviewMarkdown", { clear = true })
   vim.api.nvim_create_autocmd("FileType", {
@@ -672,15 +743,42 @@ function M.setup()
       -- Apply highlights only once after a delay
       vim.defer_fn(apply_markview_highlights, 100)
 
+      -- Initial spell overlay
+      local bufnr = vim.api.nvim_get_current_buf()
+      vim.defer_fn(function()
+        update_spell_overlay(bufnr)
+      end, 300)
+
+      -- Update spell overlay on text changes
+      vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+        buffer = bufnr,
+        group = markdown_augroup,
+        callback = function()
+          schedule_spell_update(bufnr)
+        end,
+      })
+
+      -- Refresh spell overlay when adding/removing words from dictionary
+      for _, key in ipairs({ "zg", "zG", "zw", "zW", "zug", "zuG", "zuw", "zuW" }) do
+        vim.keymap.set("n", key, function()
+          vim.cmd("normal! " .. key)
+          vim.defer_fn(function()
+            update_spell_overlay(bufnr)
+          end, 50)
+        end, { buffer = bufnr, desc = "Spell: " .. key .. " + refresh" })
+      end
+
       -- Smart toggle between rich preview and ligatures
       vim.keymap.set("n", "<leader>lmp", function()
         if vim.b.markview_enabled then
           vim.cmd("Markview disable")
           vim.b.markview_enabled = false
+          update_spell_overlay(bufnr) -- Clear spell overlay (native spell shows)
           vim.notify("Ligatures enabled ✓ (markview disabled)", vim.log.levels.INFO)
         else
           vim.cmd("Markview enable")
           vim.b.markview_enabled = true
+          update_spell_overlay(bufnr) -- Re-enable spell overlay
           vim.notify("Rich preview enabled (ligatures disabled)", vim.log.levels.INFO)
         end
       end, {
@@ -759,6 +857,8 @@ function M.setup()
     pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
     group = augroup,
     callback = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+
       -- Store current fold state and unfold all when entering insert mode
       vim.b.fold_state_before_insert = vim.wo.foldenable
       if vim.b.fold_state_before_insert then
@@ -770,6 +870,9 @@ function M.setup()
       if vim.b.markview_enabled then
         vim.cmd("Markview disable")
         vim.b.markview_insert_disabled = true
+        -- Clear spell overlay (native spell works in insert mode)
+        vim.fn.sign_unplace("markview_spell", { buffer = bufnr })
+        vim.api.nvim_buf_clear_namespace(bufnr, spell_ns, 0, -1)
       end
     end,
   })
@@ -778,6 +881,8 @@ function M.setup()
     pattern = { "*.md", "*.markdown", "*.rmd", "*.qmd" },
     group = augroup,
     callback = function()
+      local bufnr = vim.api.nvim_get_current_buf()
+
       -- Restore fold state when leaving insert mode
       if vim.b.fold_state_before_insert then
         vim.opt_local.foldenable = true
@@ -787,6 +892,10 @@ function M.setup()
       if vim.b.markview_insert_disabled then
         vim.cmd("Markview enable")
         vim.b.markview_insert_disabled = false
+        -- Restore spell overlay after markview re-enables
+        vim.defer_fn(function()
+          update_spell_overlay(bufnr)
+        end, 100)
       end
     end,
   })
