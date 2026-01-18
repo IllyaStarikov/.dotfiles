@@ -453,6 +453,10 @@ install_launchagent() {
     </array>
     <key>RunAtLoad</key>
     <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
     <key>StandardOutPath</key>
     <string>$LOG_DIR/launchagent.log</string>
     <key>StandardErrorPath</key>
