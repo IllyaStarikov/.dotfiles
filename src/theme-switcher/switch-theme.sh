@@ -240,7 +240,7 @@ MAX_LOG_SIZE=1048576 # 1MB
 
 # Create required directories with appropriate permissions
 # Cache directory needs restricted access for lock files and logs
-mkdir -p "$CONFIG_DIR" "$CACHE_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR"
+mkdir -p "$CONFIG_DIR" "$CACHE_DIR" "$ALACRITTY_DIR" "$TMUX_DIR" "$WEZTERM_DIR" "$KITTY_DIR"
 chmod 700 "$CACHE_DIR"
 
 # Log messages with timestamps for debugging theme switches
