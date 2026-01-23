@@ -1,0 +1,62 @@
+#!/usr/bin/env zsh
+# ollama.service - Ollama local LLM server
+#
+# DESCRIPTION:
+#   Runs Ollama server for local LLM inference. This service is NOT auto-started
+#   to avoid unnecessary CPU/GPU usage. It should be started on-demand via cortex
+#   or manually when needed.
+#
+# REQUIREMENTS:
+#   - Ollama installed (brew install ollama)
+#
+# ACCESS:
+#   Default: http://localhost:11434
+#
+# USAGE:
+#   Preferred: Use cortex to manage (auto-starts/stops as needed)
+#     cortex start -m llama3.2
+#     cortex stop
+#
+#   Manual:
+#     services start ollama
+#     services stop ollama
+
+SERVICE_NAME="ollama"
+SERVICE_DESC="Ollama local LLM server (on-demand)"
+SERVICE_PIDFILE="$HOME/.local/state/services/pids/ollama.pid"
+
+# Check if ollama serve is already running
+service_is_running() {
+  pgrep -f "ollama serve" >/dev/null 2>&1
+}
+
+# Get PID of running ollama serve process
+service_get_pid() {
+  pgrep -f "ollama serve" | head -1
+}
+
+service_start() {
+  # Check if already running (either via services or manually)
+  if service_is_running; then
+    local existing_pid
+    existing_pid=$(pgrep -f "ollama serve" | head -1)
+    echo "ollama is already running (PID: $existing_pid)"
+    # Adopt the existing process
+    echo "$existing_pid" > "$SERVICE_PIDFILE"
+    return 0
+  fi
+
+  # Check if ollama is installed
+  if ! command -v ollama >/dev/null 2>&1; then
+    echo "Error: ollama not found. Install with: brew install ollama"
+    return 1
+  fi
+
+  # Start ollama serve
+  exec ollama serve
+}
+
+service_stop() {
+  # Default SIGTERM handling is usually sufficient
+  :
+}
