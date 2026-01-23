@@ -1,0 +1,137 @@
+#!/usr/bin/env zsh
+# ai-evolution - Animated demonstration of AI assistant evolution
+#
+# Shows the progression of AI assistants from 1968 to present day,
+# ending with launching Claude Code.
+
+set -euo pipefail
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+DIM='\033[2m'
+NC='\033[0m'
+
+# Typing animation
+type_text() {
+  local text="$1"
+  local delay="${2:-0.03}"
+  for ((i=0; i<${#text}; i++)); do
+    printf '%s' "${text:$i:1}"
+    sleep "$delay"
+  done
+  echo
+}
+
+# Clear and position
+clear_section() {
+  printf "\n"
+}
+
+# HAL 9000 (1968)
+hal_9000() {
+  echo -e "${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${RED}${BOLD}  HAL 9000${NC} ${DIM}(2001: A Space Odyssey, 1968)${NC}"
+  echo -e "${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo
+  echo -e "         ${RED}●${NC}"
+  echo -e "       ${DIM}╭───╮${NC}"
+  echo -e "       ${DIM}│${NC} ${RED}◉${NC} ${DIM}│${NC}"
+  echo -e "       ${DIM}╰───╯${NC}"
+  echo
+  type_text "  > HAL, open the pod bay doors." 0.02
+  sleep 0.5
+  echo -e "  ${RED}I'm sorry, Dave. I'm afraid I can't do that.${NC}"
+  sleep 1.5
+}
+
+# ELIZA (1966)
+eliza() {
+  echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${GREEN}${BOLD}  ELIZA${NC} ${DIM}(MIT, 1966)${NC}"
+  echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo
+  echo -e "  ${DIM}┌─────────────────────────────────────┐${NC}"
+  echo -e "  ${DIM}│${NC}  ${GREEN}ELIZA - DOCTOR${NC}                    ${DIM}│${NC}"
+  echo -e "  ${DIM}│${NC}  How do you do. Please tell me     ${DIM}│${NC}"
+  echo -e "  ${DIM}│${NC}  your problem.                     ${DIM}│${NC}"
+  echo -e "  ${DIM}└─────────────────────────────────────┘${NC}"
+  echo
+  type_text "  > I need help with my code." 0.02
+  sleep 0.5
+  echo -e "  ${GREEN}Why do you need help with your code?${NC}"
+  sleep 0.3
+  echo -e "  ${GREEN}Tell me more about that.${NC}"
+  sleep 1.5
+}
+
+# Clippy (1997)
+clippy() {
+  echo -e "${YELLOW}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${YELLOW}${BOLD}  Clippy${NC} ${DIM}(Microsoft Office, 1997)${NC}"
+  echo -e "${YELLOW}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo
+  echo -e "       ${YELLOW}╭──╮${NC}"
+  echo -e "       ${YELLOW}│◕◕│${NC}  ╭──────────────────────────────────╮"
+  echo -e "       ${YELLOW}│  │${NC}  │ It looks like you're writing a   │"
+  echo -e "       ${YELLOW}│╰─│${NC}  │ function! Would you like help?   │"
+  echo -e "       ${YELLOW}╰┬─╯${NC}  │                                  │"
+  echo -e "        ${YELLOW}│${NC}    │ ${DIM}○ Get help writing the function${NC}  │"
+  echo -e "        ${YELLOW}╰${NC}    │ ${DIM}○ Just type without help${NC}         │"
+  echo -e "             ╰──────────────────────────────────╯"
+  echo
+  type_text "  > *clicks 'X' button*" 0.02
+  sleep 1.5
+}
+
+# Claude (2024)
+claude_intro() {
+  echo -e "${MAGENTA}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${MAGENTA}${BOLD}  Claude Code${NC} ${DIM}(Anthropic, 2024)${NC}"
+  echo -e "${MAGENTA}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo
+  echo -e "  ${CYAN}╭─────────────────────────────────────────────────────╮${NC}"
+  echo -e "  ${CYAN}│${NC}  ${MAGENTA}◈${NC} An agentic coding assistant that lives in your   ${CYAN}│${NC}"
+  echo -e "  ${CYAN}│${NC}    terminal, understands your codebase, and helps  ${CYAN}│${NC}"
+  echo -e "  ${CYAN}│${NC}    you code faster through natural conversation.   ${CYAN}│${NC}"
+  echo -e "  ${CYAN}╰─────────────────────────────────────────────────────╯${NC}"
+  echo
+  type_text "  Launching Claude Code..." 0.03
+  sleep 1
+}
+
+# Main
+main() {
+  clear
+  echo -e "${BOLD}The Evolution of AI Assistants${NC}"
+  echo -e "${DIM}From HAL 9000 to Claude Code${NC}"
+  echo
+  sleep 1
+
+  hal_9000
+  clear_section
+  sleep 0.5
+
+  eliza
+  clear_section
+  sleep 0.5
+
+  clippy
+  clear_section
+  sleep 0.5
+
+  claude_intro
+  echo
+
+  # Launch Claude Code if available (optional - can be disabled for demo)
+  if [[ "${LAUNCH_CLAUDE:-false}" == "true" ]] && command -v claude &>/dev/null; then
+    exec claude
+  fi
+}
+
+main "$@"

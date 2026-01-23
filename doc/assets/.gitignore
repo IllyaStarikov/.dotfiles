@@ -1,0 +1,10 @@
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+
+# Extract demo output
+sample.txt
+demo_project/
