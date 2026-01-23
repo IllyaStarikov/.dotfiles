@@ -311,8 +311,11 @@ class OllamaProvider(BaseProvider):
         return False
 
     async def start_server(self, model_id: str, **kwargs) -> bool:
-        """Ollama server runs as a system service."""
-        # Check if Ollama is running
+        """Start Ollama server on-demand."""
+        import subprocess
+        from pathlib import Path
+
+        # Check if Ollama is already running
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f'{self.api_url}/tags') as response:
@@ -320,12 +323,59 @@ class OllamaProvider(BaseProvider):
                         logger.info('Ollama server is already running')
                         return True
         except (aiohttp.ClientError, asyncio.TimeoutError):
-            logger.error("Ollama server is not running. Please start it with 'ollama serve'")
+            pass
+
+        # Start Ollama server
+        logger.info('Starting Ollama server...')
+        try:
+            log_file = Path.home() / '.dotfiles/config/cortex/logs/ollama_server.log'
+            log_file.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(log_file, 'a') as log:
+                process = subprocess.Popen(
+                    ['ollama', 'serve'], stdout=log, stderr=log, start_new_session=True
+                )
+
+            # Save PID for later stop
+            pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+            pid_file.write_text(str(process.pid))
+
+            # Wait for server to be ready
+            await asyncio.sleep(2)
+            logger.info(f'Ollama server started (PID: {process.pid})')
+            return True
+        except FileNotFoundError:
+            logger.error('Ollama not found. Install with: brew install ollama')
+            return False
+        except Exception as e:
+            logger.error(f'Failed to start Ollama server: {e}')
             return False
 
     async def stop_server(self) -> bool:
-        """Ollama server is managed externally."""
-        logger.info('Ollama server is managed as a system service')
+        """Stop Ollama server."""
+        import os
+        import subprocess
+        from pathlib import Path
+
+        pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+        if pid_file.exists():
+            try:
+                pid = int(pid_file.read_text())
+                os.kill(pid, 15)  # SIGTERM
+                pid_file.unlink()
+                logger.info('Ollama server stopped')
+                return True
+            except (OSError, ProcessLookupError, ValueError):
+                logger.warning('Ollama process not found, cleaning up PID file')
+                pid_file.unlink(missing_ok=True)
+        else:
+            # Fallback: try pkill
+            result = subprocess.run(['pkill', '-f', 'ollama serve'], capture_output=True)
+            if result.returncode == 0:
+                logger.info('Ollama server stopped')
+                return True
+            else:
+                logger.info('No Ollama server found running')
         return True
 
     async def get_server_status(self) -> Dict[str, Any]:

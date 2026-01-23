@@ -23,6 +23,12 @@
 # Add the cortex module to Python path
 export PYTHONPATH="$HOME/.dotfiles/src/cortex:$PYTHONPATH"
 
+# Initialize pyenv if available (needed for non-interactive shells)
+if [[ -d "$HOME/.pyenv" ]]; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+fi
+
 # Find Python (prefer python3 over python)
 if command -v python3 &>/dev/null; then
   PYTHON_CMD="python3"

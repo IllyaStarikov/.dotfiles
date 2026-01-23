@@ -2,6 +2,8 @@
 Cortex CLI - Command Line Interface for the Cortex system.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
@@ -1335,9 +1337,21 @@ def start(ctx, model, port, background):
                 console.print('[green]✓[/green] Ollama server is already running')
             except subprocess.CalledProcessError:
                 console.print('[yellow]Starting Ollama server...[/yellow]')
-                subprocess.Popen(['ollama', 'serve'], start_new_session=True)
+                log_file = Path.home() / '.dotfiles/config/cortex/logs/ollama_server.log'
+                log_file.parent.mkdir(parents=True, exist_ok=True)
+
+                with open(log_file, 'a') as log:
+                    process = subprocess.Popen(
+                        ['ollama', 'serve'], stdout=log, stderr=log, start_new_session=True
+                    )
+
+                # Save PID for later stop
+                pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+                pid_file.write_text(str(process.pid))
+
                 await asyncio.sleep(2)
-                console.print('[green]✓[/green] Ollama server started')
+                console.print(f'[green]✓[/green] Ollama server started (PID: {process.pid})')
+                console.print(f'[dim]Logs: {log_file}[/dim]')
 
         # Update server status in config
         config.data['server_status'] = {
@@ -1392,9 +1406,23 @@ def stop(ctx, provider):
                 console.print('[red]Failed to stop MLX server[/red]')
 
     elif provider == 'ollama':
-        console.print(
-            '[yellow]Ollama runs as a system service. Use system commands to stop it.[/yellow]'
-        )
+        pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+        if pid_file.exists():
+            try:
+                pid = int(pid_file.read_text())
+                os.kill(pid, 15)  # SIGTERM
+                pid_file.unlink()
+                console.print('[green]✓[/green] Ollama server stopped')
+            except (OSError, ProcessLookupError, ValueError):
+                console.print('[yellow]Ollama process not found, cleaning up...[/yellow]')
+                pid_file.unlink(missing_ok=True)
+        else:
+            # Fallback: try pkill
+            result = subprocess.run(['pkill', '-f', 'ollama serve'], capture_output=True)
+            if result.returncode == 0:
+                console.print('[green]✓[/green] Ollama server stopped')
+            else:
+                console.print('[yellow]No Ollama server found running[/yellow]')
 
     # Update config
     if 'server_status' in config.data:
