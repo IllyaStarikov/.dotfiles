@@ -572,7 +572,10 @@ install_macos_packages() {
     local extra_packages=(
       "cmatrix"
       "cowsay"
+      "figlet"
+      "htop"
       "neofetch"
+      "ranger"
       "ffmpeg"
       "imagemagick"
       "yt-dlp"
