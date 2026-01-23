@@ -6,16 +6,33 @@
 #   Eliminates need to remember different extraction commands.
 #
 # USAGE:
-#   extract <archive>
+#   extract [-v|--verbose] <archive>
+#
+# OPTIONS:
+#   -v, --verbose   Show files being extracted
 #
 # SUPPORTED FORMATS:
 #   tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz
 #
 # Style Guide: https://google.github.io/styleguide/shellguide.html
 
+VERBOSE=false
+
+# Parse options
+while [[ "$1" == -* ]]; do
+    case "$1" in
+        -v|--verbose) VERBOSE=true; shift ;;
+        -h|--help)
+            echo "Usage: extract [-v|--verbose] <archive>"
+            echo "Supported formats: tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz"
+            exit 0 ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+done
+
 # Validate arguments
 if [[ -z "$1" ]]; then
-    echo "Usage: extract <archive>"
+    echo "Usage: extract [-v|--verbose] <archive>"
     echo "Supported formats: tar.bz2, tar.gz, tar.xz, bz2, rar, gz, tar, tbz2, tgz, zip, Z, 7z, xz"
     exit 1
 fi
@@ -26,12 +43,29 @@ if [[ ! -f "$1" ]]; then
     exit 1
 fi
 
+# Set verbose flag for commands
+TAR_VERBOSE=""
+UNZIP_VERBOSE="-q"
+if [[ "$VERBOSE" == true ]]; then
+    TAR_VERBOSE="v"
+    UNZIP_VERBOSE=""
+fi
+
+# Helper to format tar verbose output (replace 'x ' with '→ ')
+format_tar_output() {
+    if [[ "$VERBOSE" == true ]]; then
+        sed 's/^x /→ /'
+    else
+        cat
+    fi
+}
+
 # Extract based on file extension
 # Uses most common extraction flags for each format
 case "$1" in
-    *.tar.bz2) tar xjf "$1" ;;      # Bzip2 compressed tar
-    *.tar.gz)  tar xzf "$1" ;;      # Gzip compressed tar
-    *.tar.xz)  tar xJf "$1" ;;      # XZ compressed tar
+    *.tar.bz2) tar x${TAR_VERBOSE}jf "$1" 2>&1 | format_tar_output ;;  # Bzip2 compressed tar
+    *.tar.gz)  tar x${TAR_VERBOSE}zf "$1" 2>&1 | format_tar_output ;;  # Gzip compressed tar
+    *.tar.xz)  tar x${TAR_VERBOSE}Jf "$1" 2>&1 | format_tar_output ;;  # XZ compressed tar
     *.bz2)
         if command -v bunzip2 &>/dev/null; then
             bunzip2 "$1"
@@ -56,12 +90,12 @@ case "$1" in
             echo "Error: gunzip not installed. Install gzip package."
             exit 1
         fi ;;                        # Gzip single file
-    *.tar)     tar xf "$1" ;;       # Uncompressed tar
-    *.tbz2)    tar xjf "$1" ;;      # Alternative bzip2 tar extension
-    *.tgz)     tar xzf "$1" ;;      # Alternative gzip tar extension
+    *.tar)     tar x${TAR_VERBOSE}f "$1" 2>&1 | format_tar_output ;;   # Uncompressed tar
+    *.tbz2)    tar x${TAR_VERBOSE}jf "$1" 2>&1 | format_tar_output ;;  # Alternative bzip2 tar extension
+    *.tgz)     tar x${TAR_VERBOSE}zf "$1" 2>&1 | format_tar_output ;;  # Alternative gzip tar extension
     *.zip)
         if command -v unzip &>/dev/null; then
-            unzip "$1"
+            unzip $UNZIP_VERBOSE "$1"
         else
             echo "Error: unzip not installed. Install unzip package."
             exit 1
