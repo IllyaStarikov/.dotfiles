@@ -40,6 +40,7 @@ opt.pumheight = 10
 opt.splitbelow = true
 opt.splitright = true
 opt.splitkeep = "screen" -- keep screen position on split
+opt.equalalways = true -- always keep splits equal size
 
 -- Text display
 opt.showbreak = "↪ "

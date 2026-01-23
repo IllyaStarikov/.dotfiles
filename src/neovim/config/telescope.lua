@@ -212,15 +212,8 @@ function M.setup()
         theme = "dropdown",
         previewer = false,
         hidden = false,
-        find_command = {
-          "find",
-          ".",
-          "-type",
-          "f",
-          "-not",
-          "-path",
-          "./.git/*",
-        },
+        -- Use ripgrep for better performance and submodule support
+        find_command = { "rg", "--files", "--color", "never" },
       },
 
       live_grep = {
@@ -274,6 +267,7 @@ function M.setup()
       git_files = {
         theme = "dropdown",
         previewer = false,
+        recurse_submodules = true,
       },
 
       git_commits = {

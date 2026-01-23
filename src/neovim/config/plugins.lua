@@ -342,6 +342,14 @@ require("lazy").setup({
       },
     },
   },
+  -- Undotree - Visual undo history
+  {
+    "mbbill/undotree",
+    cmd = "UndotreeToggle",
+    keys = {
+      { "<leader>u", "<cmd>UndotreeToggle<cr>", desc = "Toggle Undotree" },
+    },
+  },
   {
     "tpope/vim-fugitive",
     cmd = {
