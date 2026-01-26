@@ -5,13 +5,25 @@
 ![macOS](https://img.shields.io/badge/macOS-black?logo=apple)
 ![Linux](https://img.shields.io/badge/Linux-black?logo=linux&logoColor=white)
 ![Neovim](https://img.shields.io/badge/Neovim-black?logo=neovim)
-![License](https://img.shields.io/github/license/IllyaStarikov/dotfiles)
+![License](https://img.shields.io/github/license/IllyaStarikov/.dotfiles)
 
 ![dotfiles](template/dotfiles.png)
 
-## Demo
+## Why This?
 
-*Coming soon - animated demo of key features*
+- Themes sync across terminal, editor, tmux, and prompt in one command
+- 40+ automated tests prevent configuration drift
+- Private repo support for private configs
+- One-liner install, clean uninstall
+- 20+ languages with LSP, linting, and formatting out of the box
+
+| | |
+|:---:|:---:|
+| ![Editor](template/editor.png) | ![Tools](template/tools.png) |
+| **Editor** as capable as an IDE, as fast as vim | **Tools** that make the daily grind disappear |
+| ![Theme](template/theme.png) | ![Write](template/write.png) |
+| **Theme** switching that keeps every app in sync | **Write** Markdown and LaTeX without the friction |
+
 
 ## Requirements
 
@@ -46,25 +58,38 @@ git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfil
 
 **Options:** `--skip-brew` (corporate machines) · `--verbose` · `--help`
 
+## Try This First
+
+```bash
+theme moon              # Dark mode, everywhere, instantly
+fixy messy_code.py      # Auto-format any file
+nvim +Telescope\ files  # Fuzzy find everything
+```
+
 ## Features
 
-- **Neovim**
-  - 80+ plugins, lazy-loaded
-  - LSP for 20+ languages
-  - ~150ms startup
-  - AI integration (Copilot, Ollama)
-- **Zsh**
-  - Starship prompt
-  - Fast completions, syntax highlighting, autosuggestions
-- **Theme System** TokyoNight (4 variants)
-- **fzf** + **ripgrep** for fast fuzzy search
-- **tmux**
-  - Intuitive bindings
-  - Session management
+| Tool | What You Get |
+|------|--------------|
+| **Neovim** | 80+ plugins, 150ms startup, LSP for 20+ languages, AI built-in |
+| **Zsh** | Starship prompt, syntax highlighting, completions that actually work |
+| **tmux** | Intuitive bindings, session persistence, theme-aware |
+| **Theme** | 4 TokyoNight variants, one command syncs everything |
+| **Search** | fzf + ripgrep = find anything, fast |
 
-`neovim` `zsh` `tmux` `git` `fzf` `ripgrep` `starship`
+**Languages:** Python · JavaScript · TypeScript · Go · Rust · C/C++ · Lua · Swift · Kotlin · LaTeX
 
-`python` `javascript` `typescript` `go` `rust` `c/c++` `lua` `bash/zsh` `swift` `kotlin` `latex` `markdown`
+## Keybindings
+
+| Key | Action |
+|-----|--------|
+| `<Space>ff` | Find files |
+| `<Space>fg` | Live grep |
+| `<Space>e` | File explorer |
+| `<Space>ac` | AI chat |
+| `<C-h/j/k/l>` | Navigate splits |
+| `gcc` | Toggle comment |
+
+Full reference: [keymaps](src/neovim/config/keymaps/KEYMAPS.md)
 
 ## Performance
 
@@ -127,5 +152,5 @@ MIT - See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-  <sub>A decade of vim, mostly because I couldn't figure out how to exit.</sub>
+  <sub>A decade of Vim, because I never figured out how to exit.</sub>
 </div>
