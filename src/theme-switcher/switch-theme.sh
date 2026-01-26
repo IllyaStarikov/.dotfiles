@@ -80,8 +80,13 @@ Theme Switcher - Synchronize terminal themes with macOS appearance
 OPTIONS:
     -h, --help, help    Show this help message
     -l, --list          List all available themes
-    -s, --shell THEME   Output shell exports for local theming (no config changes)
-    -t, --terminal THEME  Change THIS terminal's colors only (OSC sequences)
+    --local THEME       Change terminal + tmux for THIS session (no global config)
+    --local --tmux THEME    Just tmux for this session
+    --local --terminal THEME  Just terminal colors for this pane
+    --local --shell THEME   Just shell exports
+    -t, --terminal THEME  Alias for --local --terminal
+    -s, --shell THEME   Alias for --local --shell
+    --tmux THEME        Alias for --local --tmux
 
 THEMES:
     light              Use default light theme (tokyonight_day)
@@ -164,6 +169,7 @@ EOF
 
 # Send OSC escape sequences to change THIS terminal's colors
 # Only affects the current terminal instance, not all terminals
+# Handles tmux passthrough automatically when inside tmux
 set_terminal_colors() {
   local colors_file="$SCRIPT_DIR/themes/$THEME/colors.sh"
 
@@ -172,21 +178,55 @@ set_terminal_colors() {
     return 1
   fi
 
+  # Determine output target: prefer stdout if it's a TTY, else try /dev/tty
+  local tty_target=""
+  if [[ -t 1 ]]; then
+    tty_target="/dev/stdout"
+  elif { echo -n "" > /dev/tty; } 2>/dev/null; then
+    tty_target="/dev/tty"
+  else
+    echo "Error: No TTY available for OSC sequences" >&2
+    return 1
+  fi
+
   # Source the colors
   source "$colors_file"
 
+  # Helper: convert #RRGGBB to rgb:RR/GG/BB format for OSC sequences
+  _hex_to_osc_rgb() {
+    local hex="${1#\#}"
+    local r="${hex:0:2}" g="${hex:2:2}" b="${hex:4:2}"
+    echo "rgb:$r/$g/$b"
+  }
+
+  # Helper: send OSC sequence with tmux passthrough if needed
+  # Uses doubled escapes for tmux passthrough as per WezTerm/terminal docs
+  _osc() {
+    local code="$1" value="$2"
+    if [[ -n "${TMUX:-}" ]]; then
+      # tmux passthrough: \033P tmux; \033\033]code;value\007 \033\\
+      # All inner escapes must be doubled for tmux to pass through correctly
+      printf '\033Ptmux;\033\033]%s;%s\007\033\\' "$code" "$value" > "$tty_target"
+    else
+      printf '\033]%s;%s\007' "$code" "$value" > "$tty_target"
+    fi
+  }
+
   # OSC 10: Set foreground color
-  printf '\033]10;%s\033\\' "$FOREGROUND"
+  _osc "10" "$(_hex_to_osc_rgb "$FOREGROUND")"
 
   # OSC 11: Set background color
-  printf '\033]11;%s\033\\' "$BACKGROUND"
+  _osc "11" "$(_hex_to_osc_rgb "$BACKGROUND")"
+
+  # OSC 12: Set cursor color (use foreground if not specified)
+  _osc "12" "$(_hex_to_osc_rgb "${CURSOR:-$FOREGROUND}")"
 
   # OSC 4: Set palette colors 0-15
   local i color
   for i in {0..15}; do
     eval "color=\$COLOR_$i"
     if [[ -n "$color" ]]; then
-      printf '\033]4;%d;%s\033\\' "$i" "$color"
+      _osc "4;$i" "$(_hex_to_osc_rgb "$color")"
     fi
   done
 }
@@ -396,36 +436,80 @@ update_alacritty_theme() {
   return 0
 }
 
-# Generate WezTerm theme configuration dynamically
-# Creates Lua module that loads appropriate theme from dotfiles
+# Update WezTerm theme globally using a hybrid approach:
+# 1. Update current-theme file (new windows read this at creation time)
+# 2. OSC sequences to current pane (fixes focused window - bypasses bug #5451)
+# 3. User-var triggers OSC injection to ALL panes via Lua handler
+# See: https://github.com/wezterm/wezterm/issues/5451
 update_wezterm_theme() {
-  local wezterm_theme_file="$WEZTERM_DIR/theme.lua"
-  local temp_file="${wezterm_theme_file}.tmp.$$"
-  local home="\$HOME"
+  local colors_file="$SCRIPT_DIR/themes/$THEME/colors.sh"
 
-  # Create the WezTerm theme configuration
-  cat >"$temp_file" <<EOF
--- Auto-generated WezTerm theme configuration
--- Theme: $THEME
--- Generated: $(date)
+  # Helper: convert #RRGGBB to rgb:RR/GG/BB format for OSC sequences
+  _hex_to_osc_rgb() {
+    local hex="${1#\#}"
+    local r="${hex:0:2}" g="${hex:2:2}" b="${hex:4:2}"
+    echo "rgb:$r/$g/$b"
+  }
 
--- Load the theme module from dotfiles
-local home = os.getenv("HOME")
-package.path = package.path .. ";" .. home .. "/.dotfiles/src/wezterm/themes/?.lua"
-local theme = require('${THEME}')
+  # Helper: send escape sequence (handles tmux passthrough)
+  # Uses printf '%b' to interpret \033 as actual ESC bytes
+  _send_seq() {
+    local seq="$1"
+    local target="$2"
+    if [[ -n "${TMUX:-}" ]]; then
+      # tmux passthrough: double all escape characters
+      # First interpret \033 sequences, then double them for tmux
+      local doubled
+      doubled=$(printf '%b' "$seq" | sed 's/\x1b/\x1b\x1b/g')
+      printf '\033Ptmux;%s\033\\' "$doubled" > "$target"
+    else
+      printf '%b' "$seq" > "$target"
+    fi
+  }
 
--- Return the theme for use in wezterm.lua
-return theme
-EOF
+  # STEP 1: Update current-theme file (new windows read this at creation time)
+  local theme_name_file="$HOME/.config/wezterm/current-theme"
+  mkdir -p "$(dirname "$theme_name_file")"
+  echo "$THEME" > "$theme_name_file"
+  log "Updated WezTerm current-theme file"
 
-  # Atomic replacement
-  mv -f "$temp_file" "$wezterm_theme_file"
-  chmod 644 "$wezterm_theme_file"
+  # Determine TTY target
+  local tty_target=""
+  if [[ -t 1 ]]; then
+    tty_target="/dev/stdout"
+  elif { echo -n "" > /dev/tty; } 2>/dev/null; then
+    tty_target="/dev/tty"
+  fi
 
-  # Clean up any leftover temp files
-  find "$(dirname "${wezterm_theme_file}")" -name "$(basename "${wezterm_theme_file}").tmp.*" -delete 2>/dev/null || true
+  # STEP 2: Send OSC color sequences to CURRENT pane (fixes focused window)
+  if [[ -f "$colors_file" ]] && [[ -n "$tty_target" ]]; then
+    source "$colors_file"
 
-  log "Updated WezTerm theme"
+    local osc_sequence=""
+    [[ -n "${FOREGROUND:-}" ]] && osc_sequence+="\033]10;$(_hex_to_osc_rgb "$FOREGROUND")\007"
+    [[ -n "${BACKGROUND:-}" ]] && osc_sequence+="\033]11;$(_hex_to_osc_rgb "$BACKGROUND")\007"
+    osc_sequence+="\033]12;$(_hex_to_osc_rgb "${CURSOR:-$FOREGROUND}")\007"
+
+    local i color
+    for i in {0..15}; do
+      eval "color=\${COLOR_$i:-}"
+      [[ -n "$color" ]] && osc_sequence+="\033]4;$i;$(_hex_to_osc_rgb "$color")\007"
+    done
+
+    _send_seq "$osc_sequence" "$tty_target"
+    log "Applied OSC colors to current pane"
+  fi
+
+  # STEP 3: Send user-var to trigger reload_configuration() (loads NEW config for new windows)
+  if [[ -n "$tty_target" ]]; then
+    local encoded_theme
+    encoded_theme=$(printf '%s' "$THEME" | base64)
+    local uservar_seq
+    uservar_seq=$(printf '\033]1337;SetUserVar=%s=%s\007' "theme" "$encoded_theme")
+    _send_seq "$uservar_seq" "$tty_target"
+    log "Sent user-var to trigger config reload"
+  fi
+
   return 0
 }
 
@@ -477,18 +561,8 @@ update_app_themes() {
     update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
   fi
 
-  # Update WezTerm
+  # Update WezTerm (generates complete ~/.wezterm.lua with colors inlined)
   update_wezterm_theme || success=1
-
-  # Trigger WezTerm config reload by touching the main config file
-  # WezTerm watches this file and automatically reloads when it changes
-  if [[ -f "$HOME/.wezterm.lua" ]]; then
-    touch "$HOME/.wezterm.lua"
-    log "Triggered WezTerm config reload"
-    [[ $DEBUG -eq 1 ]] && echo "DEBUG: Triggered WezTerm config reload" >&2
-    # Give WezTerm a moment to detect the change
-    sleep 0.1
-  fi
 
   # Update Kitty
   if [[ -f "$theme_dir/kitty.conf" ]]; then
@@ -555,6 +629,12 @@ reload_tmux() {
       # We're outside tmux - send command to server
       tmux source-file ~/.tmux.conf 2>/dev/null || true
       log "Reloaded tmux configuration from outside tmux"
+    fi
+
+    # Explicitly source theme.conf directly (tmux if-shell runs async, so we can't rely on it)
+    if [[ -f "$TMUX_DIR/theme.conf" ]]; then
+      tmux source-file "$TMUX_DIR/theme.conf" 2>/dev/null || true
+      log "Sourced theme.conf directly"
     fi
 
     # Get list of all tmux sessions and refresh each client
@@ -681,8 +761,95 @@ if [[ "${1:-}" == "-s" || "${1:-}" == "--shell" ]]; then
   exit 0
 fi
 
+# Handle --local flag for per-session theming (no global config changes)
+# Changes terminal colors + tmux for THIS session only
+if [[ "${1:-}" == "--local" ]]; then
+  shift
+
+  # Check for sub-flags: --local --tmux, --local --terminal, --local --shell
+  _local_component=""
+  if [[ "${1:-}" == "--tmux" || "${1:-}" == "--terminal" || "${1:-}" == "--shell" ]]; then
+    _local_component="${1#--}"
+    shift
+  fi
+
+  THEME="${1:-}"
+  if [[ -z "$THEME" ]]; then
+    echo "Error: --local requires a theme name" >&2
+    echo "Usage: $(basename "$0") --local [--tmux|--terminal|--shell] THEME" >&2
+    exit 1
+  fi
+  determine_theme
+  validate_theme
+
+  # Helper: apply tmux theme to current session only (not global)
+  _apply_tmux_session_theme() {
+    local theme_file="$SCRIPT_DIR/themes/$THEME/tmux.conf"
+    if [[ ! -f "$theme_file" ]]; then
+      return 1
+    fi
+    # Strip -g flag to make settings session-local instead of global
+    # Also strip setw -g to set -w (window option for current session)
+    sed -e 's/^set -g /set /g' -e 's/^setw -g /setw /g' "$theme_file" | \
+      while IFS= read -r line; do
+        # Skip comments and empty lines
+        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+        eval "tmux $line" 2>/dev/null || true
+      done
+    tmux refresh-client -S 2>/dev/null || true
+  }
+
+  case "$_local_component" in
+    tmux)
+      # Just tmux for this session
+      _apply_tmux_session_theme
+      ;;
+    terminal)
+      # Just terminal colors
+      set_terminal_colors
+      ;;
+    shell)
+      # Just shell exports
+      print_shell_exports
+      ;;
+    *)
+      # Everything: terminal + tmux (session-local)
+      set_terminal_colors
+      if [[ -n "${TMUX:-}" ]]; then
+        _apply_tmux_session_theme
+      fi
+      ;;
+  esac
+  exit 0
+fi
+
+# Handle --tmux flag (reload tmux theme only, session-wide)
+if [[ "${1:-}" == "--tmux" ]]; then
+  shift
+  THEME="${1:-}"
+  if [[ -z "$THEME" ]]; then
+    echo "Error: --tmux requires a theme name" >&2
+    echo "Usage: $(basename "$0") --tmux THEME" >&2
+    exit 1
+  fi
+  determine_theme
+  validate_theme
+  if [[ -f "$SCRIPT_DIR/themes/$THEME/tmux.conf" ]]; then
+    tmux source-file "$SCRIPT_DIR/themes/$THEME/tmux.conf" || {
+      echo "Error: Failed to reload tmux theme" >&2
+      exit 1
+    }
+    tmux refresh-client -S 2>/dev/null || true
+    echo "Reloaded tmux theme: $THEME"
+  else
+    echo "Error: tmux.conf not found for theme $THEME" >&2
+    exit 1
+  fi
+  exit 0
+fi
+
 # Handle --terminal flag for per-terminal theming via OSC sequences
-# Changes only THIS terminal's colors, not all terminals
+# Same as --local, kept for compatibility
 if [[ "${1:-}" == "-t" || "${1:-}" == "--terminal" ]]; then
   shift
   THEME="${1:-}"
