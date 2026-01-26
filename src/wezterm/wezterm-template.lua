@@ -364,7 +364,9 @@ local window_themes = {} -- Track applied theme per window to avoid redundant up
 
 -- Convert #RRGGBB to rgb:RR/GG/BB format for OSC sequences
 local function hex_to_osc_rgb(hex)
-  if not hex then return "rgb:ff/ff/ff" end
+  if not hex then
+    return "rgb:ff/ff/ff"
+  end
   local r, g, b = hex:match("#(%x%x)(%x%x)(%x%x)")
   return r and string.format("rgb:%s/%s/%s", r, g, b) or "rgb:ff/ff/ff"
 end

@@ -108,7 +108,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-logs
+          name: e2e-test-logs-${{ strategy.job-index }}
           path: |
             test/logs/e2e_*/
             test/e2e/*.log
