@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+# Start a tmux session named after the git repo or current directory
+
+# Get session name
+if git rev-parse --is-inside-work-tree &>/dev/null; then
+  name=$(basename "$(git rev-parse --show-toplevel)")
+else
+  name=$(basename "$PWD")
+fi
+
+# Sanitize for tmux (replace dots and colons with dashes)
+name=${name//./-}
+name=${name//:/-}
+
+# Check if session already exists
+if tmux has-session -t "$name" 2>/dev/null; then
+  tmux attach -t "$name"
+else
+  tmux new-session -s "$name"
+fi
