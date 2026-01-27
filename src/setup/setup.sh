@@ -760,11 +760,15 @@ install_linux_packages() {
     case "$PKG_MANAGER" in
       apt)
         # For Ubuntu/Debian - install from GitHub releases
-        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | jq -r '.tag_name' | sed 's/v//')
-        curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-        tar xf lazygit.tar.gz lazygit
-        sudo install lazygit /usr/local/bin
-        rm lazygit lazygit.tar.gz
+        LAZYGIT_VERSION=$(curl -sf "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+        if [[ -z "$LAZYGIT_VERSION" || "$LAZYGIT_VERSION" == "null" ]]; then
+          warning "Could not fetch lazygit version (GitHub API rate limit?), skipping"
+        else
+          curl -fLo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+          tar xf lazygit.tar.gz lazygit
+          sudo install lazygit /usr/local/bin
+          rm -f lazygit lazygit.tar.gz
+        fi
         ;;
       dnf | yum)
         # For Fedora/RHEL
