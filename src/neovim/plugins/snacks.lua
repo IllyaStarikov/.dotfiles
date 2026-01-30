@@ -33,56 +33,54 @@ function M.setup()
     dashboard = {
       enabled = true,
       width = 60,
+      preset = {
+        keys = {
+          {
+            icon = " ",
+            key = "f",
+            desc = "Find File",
+            action = ":Telescope find_files",
+          },
+          {
+            icon = " ",
+            key = "g",
+            desc = "Find Text",
+            action = ":Telescope live_grep",
+          },
+          {
+            icon = " ",
+            key = "c",
+            desc = "Config",
+            action = function()
+              require("telescope.builtin").find_files({
+                cwd = vim.fn.stdpath("config"),
+              })
+            end,
+          },
+          {
+            icon = " ",
+            key = ".",
+            desc = "Browse",
+            action = function()
+              local snacks_ok, snacks_mod = pcall(require, "snacks")
+              if snacks_ok and snacks_mod then
+                snacks_mod.explorer()
+              else
+                vim.notify("Snacks not loaded", vim.log.levels.WARN)
+              end
+            end,
+          },
+          { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
+        },
+      },
       sections = {
         { section = "header" },
-        {
-          section = "keys",
-          gap = 1,
-          padding = 1,
-          keys = {
-            {
-              icon = " ",
-              key = "f",
-              desc = "Find File",
-              action = ":Telescope find_files",
-            },
-            {
-              icon = " ",
-              key = "g",
-              desc = "Find Text",
-              action = ":Telescope live_grep",
-            },
-            {
-              icon = " ",
-              key = "c",
-              desc = "Config",
-              action = function()
-                require("telescope.builtin").find_files({
-                  cwd = vim.fn.stdpath("config"),
-                })
-              end,
-            },
-            {
-              icon = " ",
-              key = ".",
-              desc = "Browse",
-              action = function()
-                local snacks_ok, snacks_mod = pcall(require, "snacks")
-                if snacks_ok and snacks_mod then
-                  snacks_mod.explorer()
-                else
-                  vim.notify("Snacks not loaded", vim.log.levels.WARN)
-                end
-              end,
-            },
-            { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
-          },
-        },
+        { section = "keys", gap = 1, padding = 1 },
         {
           icon = " ",
           title = "Recent Files",
           section = "recent_files",
-          limit = 8,
+          limit = 9,
           padding = 1,
         },
         {
