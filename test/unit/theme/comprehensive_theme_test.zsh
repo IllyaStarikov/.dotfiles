@@ -210,8 +210,8 @@ it "should track current theme" && {
 
 # Test: Error handling
 it "should handle errors gracefully" && {
-  # Test with invalid theme name
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" "invalid_theme_name" 2>&1 || true)
+  # Test with invalid theme name (--local to avoid affecting other terminals)
+  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local "invalid_theme_name" 2>&1 || true)
 
   # Should not crash
   assert_success 0 || assert_contains "$output" "Error" || assert_contains "$output" "error"

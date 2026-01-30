@@ -64,7 +64,7 @@ else
   defaults delete -g AppleInterfaceStyle 2>/dev/null
 fi
 
-"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" >/dev/null 2>&1
+"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local >/dev/null 2>&1
 
 # Check all components updated
 new_alacritty=$(grep -E "tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
@@ -88,7 +88,7 @@ if [[ "$current_appearance" == "Dark" ]]; then
 else
   defaults delete -g AppleInterfaceStyle 2>/dev/null
 fi
-"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" >/dev/null 2>&1
+"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local >/dev/null 2>&1
 
 # Test 3: Neovim + tmux integration
 test_case "Neovim works correctly inside tmux"

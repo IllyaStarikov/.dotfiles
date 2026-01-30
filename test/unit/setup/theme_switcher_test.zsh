@@ -24,8 +24,8 @@ it "should exist and be executable" && {
 
 # Test: Theme detection
 it "should detect system appearance" && {
-  # Run theme switcher without arguments - it should auto-detect
-  output=$(bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" 2>&1 | head -5 || true)
+  # Run theme switcher without arguments - it should auto-detect (--local to avoid affecting other terminals)
+  output=$(bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local 2>&1 | head -5 || true)
 
   # Should mention switching to a theme
   if [[ "$output" == *"Switching"* ]] || [[ "$output" == *"tokyonight"* ]] || [[ "$output" == *"Theme"* ]]; then
@@ -45,8 +45,8 @@ it "should create configuration files" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Run theme switcher
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Run theme switcher (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Check if config files were created
   local configs_created=0
@@ -68,8 +68,8 @@ it "should export MACOS_THEME variable" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Set dark theme
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Set dark theme (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Check environment file
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
@@ -92,8 +92,8 @@ it "should configure light theme correctly" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Set light theme
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" light 2>&1 || true
+  # Set light theme (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local light 2>&1 || true
 
   # Check theme settings
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
@@ -116,8 +116,8 @@ it "should configure dark theme correctly" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Set dark theme
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Set dark theme (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Check theme settings
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
@@ -140,8 +140,8 @@ it "should update tmux configuration" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Run theme switcher
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Run theme switcher (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Check tmux theme file
   if [[ -f "$test_config/tmux/theme.conf" ]]; then
@@ -165,8 +165,8 @@ it "should update Alacritty configuration" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Run theme switcher
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Run theme switcher (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Check Alacritty theme file
   if [[ -f "$test_config/alacritty/theme.toml" ]]; then
@@ -196,8 +196,8 @@ it "should handle invalid theme names gracefully" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Try invalid theme
-  output=$(bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" invalid_theme 2>&1 || true)
+  # Try invalid theme (--local to avoid affecting other terminals)
+  output=$(bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local invalid_theme 2>&1 || true)
 
   # Should either fall back to default or show error
   if [[ "$output" == *"Error"* ]] || [[ "$output" == *"error"* ]] || [[ "$output" == *"Invalid"* ]] || [[ "$output" == *"invalid"* ]]; then
@@ -217,8 +217,8 @@ it "should support auto-detection from system" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Run auto-detection (no argument)
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" 2>&1 || true
+  # Run auto-detection (no argument, --local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local 2>&1 || true
 
   # Check if theme was set
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
@@ -240,14 +240,14 @@ it "should persist theme selection" && {
 
   export XDG_CONFIG_HOME="$test_config"
 
-  # Set initial theme
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" dark 2>&1 || true
+  # Set initial theme (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local dark 2>&1 || true
 
   # Capture initial state
   initial_content=$(cat "$test_config/theme-switcher/current-theme.sh" 2>/dev/null || echo "")
 
-  # Switch to light
-  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" light 2>&1 || true
+  # Switch to light (--local to avoid affecting other terminals)
+  bash "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local light 2>&1 || true
 
   # Capture new state
   new_content=$(cat "$test_config/theme-switcher/current-theme.sh" 2>/dev/null || echo "")
