@@ -35,42 +35,37 @@ function M.setup()
       width = 60,
       preset = {
         keys = {
+          { icon = "\u{f15b}", key = "n", desc = "New File", action = ":enew" },
           {
-            icon = " ",
-            key = "f",
-            desc = "Find File",
-            action = ":Telescope find_files",
-          },
-          {
-            icon = " ",
-            key = "g",
-            desc = "Find Text",
-            action = ":Telescope live_grep",
-          },
-          {
-            icon = " ",
-            key = "c",
-            desc = "Config",
+            icon = "\u{f0f6}",
+            key = "x",
+            desc = "Scratch",
             action = function()
-              require("telescope.builtin").find_files({
-                cwd = vim.fn.stdpath("config"),
-              })
+              Snacks.scratch()
             end,
           },
           {
-            icon = " ",
-            key = ".",
-            desc = "Browse",
+            icon = "\u{f120}",
+            key = "p",
+            desc = "Scratchpad",
             action = function()
-              local snacks_ok, snacks_mod = pcall(require, "snacks")
-              if snacks_ok and snacks_mod then
-                snacks_mod.explorer()
-              else
-                vim.notify("Snacks not loaded", vim.log.levels.WARN)
-              end
+              vim.ui.input({ prompt = "Extension: " }, function(ext)
+                if ext and ext ~= "" then
+                  local filename = "/tmp/scratch-" .. os.time() .. "." .. ext
+                  vim.cmd("edit " .. filename)
+                end
+              end)
             end,
           },
-          { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
+          {
+            icon = "\u{f1da}",
+            key = "s",
+            desc = "Restore Session",
+            action = function()
+              require("persistence").load()
+            end,
+          },
+          { icon = "\u{f487}", key = "l", desc = "Lazy", action = ":Lazy" },
         },
       },
       sections = {
@@ -90,7 +85,7 @@ function M.setup()
           limit = 5,
           padding = 1,
         },
-        { section = "startup" },
+        { icon = "\u{f135} ", section = "startup" },
       },
     },
 

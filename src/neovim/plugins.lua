@@ -331,6 +331,13 @@ require("lazy").setup({
     end,
   },
 
+  -- Session management (auto-saves sessions per directory)
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = {},
+  },
+
   -- UI/UX plugins
   {
     "folke/tokyonight.nvim",
