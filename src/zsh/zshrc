@@ -192,6 +192,9 @@ fi
 # Rust
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
+# Java (Homebrew openjdk is keg-only)
+[[ -d "/opt/homebrew/opt/openjdk/bin" ]] && export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
 # Add dotfiles scripts to PATH
 export PATH="$DOTFILES/src/scripts:$DOTFILES/src/setup:$PATH"
 
