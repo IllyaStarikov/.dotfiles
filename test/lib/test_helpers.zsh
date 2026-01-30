@@ -30,19 +30,19 @@ test_case() {
 
 pass() {
   echo -e "  ${GREEN}✓ PASSED${NC}"
-  ((PASSED++))
+  : $((PASSED++))  # Use : to avoid set -e failure when PASSED=0
   return 0
 }
 
 fail() {
   echo -e "  ${RED}✗ FAILED${NC}: ${1:-Test failed}"
-  ((FAILED++))
+  : $((FAILED++))  # Use : to avoid set -e failure when FAILED=0
   return 1
 }
 
 skip() {
   echo -e "  ${YELLOW}⚠ SKIPPED${NC}: ${1:-Not applicable}"
-  ((SKIPPED++))
+  : $((SKIPPED++))  # Use : to avoid set -e failure when SKIPPED=0
   return 0
 }
 
