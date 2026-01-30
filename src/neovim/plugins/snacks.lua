@@ -40,7 +40,6 @@ function M.setup()
           gap = 1,
           padding = 1,
           keys = {
-            -- Use telescope for all file operations to avoid picker conflicts
             {
               icon = " ",
               key = "f",
@@ -49,21 +48,9 @@ function M.setup()
             },
             {
               icon = " ",
-              key = "r",
-              desc = "Recent Files",
-              action = ":Telescope oldfiles",
-            },
-            {
-              icon = " ",
               key = "g",
               desc = "Find Text",
               action = ":Telescope live_grep",
-            },
-            {
-              icon = " ",
-              key = "b",
-              desc = "Buffers",
-              action = ":Telescope buffers",
             },
             {
               icon = " ",
@@ -78,7 +65,7 @@ function M.setup()
             {
               icon = " ",
               key = ".",
-              desc = "Browse Files",
+              desc = "Browse",
               action = function()
                 local snacks_ok, snacks_mod = pcall(require, "snacks")
                 if snacks_ok and snacks_mod then
@@ -90,6 +77,20 @@ function M.setup()
             },
             { icon = " ", key = "q", desc = "Quit", action = ":confirm qa" },
           },
+        },
+        {
+          icon = " ",
+          title = "Recent Files",
+          section = "recent_files",
+          limit = 8,
+          padding = 1,
+        },
+        {
+          icon = " ",
+          title = "Projects",
+          section = "projects",
+          limit = 5,
+          padding = 1,
         },
         { section = "startup" },
       },
@@ -141,8 +142,8 @@ function M.setup()
       },
       center = true,
       show = {
-        statusline = false,
-        tabline = false,
+        statusline = true,
+        tabline = true,
       },
       win = {
         style = "zen",

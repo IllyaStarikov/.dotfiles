@@ -1360,7 +1360,7 @@ require("lazy").setup({
   },
   -- Install missing plugins on startup
   install = {
-    missing = false, -- Don't auto-install by default
+    missing = true, -- Auto-install by default
     colorscheme = { "tokyonight", "habamax" },
   },
   ui = {
