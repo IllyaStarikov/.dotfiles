@@ -1129,7 +1129,7 @@ require("lazy").setup({
     dependencies = {
       "rafamadriz/friendly-snippets", -- Preconfigured snippets
     },
-    build = "make install_jsregexp", -- Build jsregexp for transformations
+    -- jsregexp build removed: optional feature, times out in CI Docker containers
     config = function()
       require("plugins.snippets").setup()
     end,
