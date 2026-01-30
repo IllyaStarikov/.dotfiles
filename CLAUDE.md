@@ -288,6 +288,34 @@ src/neovim/
 
 **Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
+**Zsh Library (`src/lib/`)**: Before implementing shell utility functions, check the library first:
+```bash
+# Available modules (400+ functions):
+ls src/lib/*.zsh
+# colors.zsh   - Terminal colors, $RED, $GREEN, colorize()
+# utils.zsh    - OS detection, command_exists(), file ops, is_macos(), is_linux()
+# logging.zsh  - LOG, INFO, WARN, ERROR, DEBUG functions
+# die.zsh      - Error handling, assertions, require_command()
+# array.zsh    - Array manipulation (60+ functions)
+# hash.zsh     - Associative array operations
+# json.zsh     - JSON parsing/generation (uses jq)
+# yaml.zsh     - YAML parsing/generation
+# types.zsh    - Type checking, validation
+# math.zsh     - Mathematical operations
+# textwrap.zsh - Text formatting, wrapping
+# cli.zsh      - Argument parsing
+# unit.zsh     - Unit testing assertions
+# ssh.zsh      - SSH key management
+# callstack.zsh - Stack traces, debugging
+# help.zsh     - Help text generation
+```
+
+**When writing new shell scripts:**
+1. Source the library: `source "${0:A:h}/../lib/init.zsh"` (from src/scripts/)
+2. Use library functions instead of reimplementing (e.g., `command_exists` not `command -v`)
+3. Add new common utilities to the appropriate library module
+4. Colors are exported: `$RED`, `$GREEN`, `$YELLOW`, `$BLUE`, `$CYAN`, `$BOLD`, `$NC`
+
 **CI/Presubmit Checks for Major Refactors**: When doing significant refactoring (moving files, renaming modules, changing plugin configs), always verify CI passes after pushing:
 ```bash
 # Push and watch CI
