@@ -251,6 +251,11 @@ local function setup_lsp()
     capabilities = blink.get_lsp_capabilities()
   end
 
+  -- Disable file watching to prevent EMFILE errors on macOS
+  -- LSP servers create too many file watchers which hits system limits
+  capabilities.workspace = capabilities.workspace or {}
+  capabilities.workspace.didChangeWatchedFiles = { dynamicRegistration = false }
+
   -- Simple on_attach function for LSP keybindings
   local on_attach = function(client, bufnr)
     -- Disable semantic tokens for servers that don't properly support it

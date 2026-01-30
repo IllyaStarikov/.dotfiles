@@ -90,9 +90,18 @@ function M.setup()
     },
 
     -- Enable only safe modules that don't use picker
-    indent = { enabled = true },
+    indent = {
+      enabled = true,
+      scope = { enabled = true, underline = true },
+      chunk = { enabled = true },
+    },
     scroll = { enabled = false }, -- Disabled for instant scrolling
-    notifier = { enabled = true },
+    notifier = {
+      enabled = true,
+      timeout = 5000,
+      style = "compact",
+    },
+    statuscolumn = { enabled = true },
     words = { enabled = true },
     terminal = { enabled = true },
     toggle = { enabled = true },
@@ -106,7 +115,7 @@ function M.setup()
     rename = { enabled = true },
     bufdelete = { enabled = true },
     scratch = { enabled = true },
-    lazygit = { enabled = false }, -- Disable until lazygit is installed
+    lazygit = { enabled = true },
 
     -- Git browse - open files in GitHub/GitLab
     gitbrowse = { enabled = true },

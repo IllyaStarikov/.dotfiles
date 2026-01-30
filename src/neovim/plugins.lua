@@ -1046,7 +1046,26 @@ require("lazy").setup({
       "jay-babu/mason-nvim-dap.nvim", -- Auto-install debug adapters
     },
     config = function()
-      require("dap").setup()
+      -- Set up dap-ui
+      local dapui_ok, dapui = pcall(require, "dapui")
+      if dapui_ok then
+        dapui.setup()
+      end
+
+      -- Set up virtual text
+      local vt_ok, dap_vt = pcall(require, "nvim-dap-virtual-text")
+      if vt_ok then
+        dap_vt.setup()
+      end
+
+      -- Set up mason-nvim-dap for auto-installing debug adapters
+      local mason_dap_ok, mason_dap = pcall(require, "mason-nvim-dap")
+      if mason_dap_ok then
+        mason_dap.setup({
+          automatic_installation = true,
+          handlers = {},
+        })
+      end
     end,
     keys = {
       { "<leader>db", desc = "Toggle Breakpoint" },
