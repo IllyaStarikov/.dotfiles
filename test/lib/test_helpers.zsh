@@ -5,13 +5,18 @@
 : "${DOTFILES_DIR:?"DOTFILES_DIR must be set"}"
 : "${TEST_TMP_DIR:?"TEST_TMP_DIR must be set"}"
 
-# Colors (only define if not already defined)
-: ${RED:='\033[0;31m'}
-: ${GREEN:='\033[0;32m'}
-: ${BLUE:='\033[0;34m'}
-: ${YELLOW:='\033[1;33m'}
-: ${CYAN:='\033[0;36m'}
-: ${NC:='\033[0m'}
+# Load library for colors (provides $RED, $GREEN, $BLUE, $YELLOW, $CYAN, $NC)
+# Use DOTFILES_DIR since init.zsh needs DOTFILES
+export DOTFILES="${DOTFILES_DIR}"
+source "${DOTFILES}/src/lib/init.zsh" 2>/dev/null || {
+  # Fallback colors if library not available
+  : ${RED:='\033[0;31m'}
+  : ${GREEN:='\033[0;32m'}
+  : ${BLUE:='\033[0;34m'}
+  : ${YELLOW:='\033[1;33m'}
+  : ${CYAN:='\033[0;36m'}
+  : ${NC:='\033[0m'}
+}
 
 # Initialize counters if not already set
 : ${PASSED:=0}

@@ -7,6 +7,31 @@
 setopt NO_UNSET PIPE_FAIL ERR_RETURN
 IFS=$'\n\t'
 
+# Load dotfiles library (provides colors, utils, logging)
+# Must be done before strict mode takes full effect
+_FRAMEWORK_DIR="${0:A:h}"
+export DOTFILES="${DOTFILES:-${_FRAMEWORK_DIR}/../..}"
+source "${DOTFILES}/src/lib/init.zsh"
+
+# Additional colors not in library (GRAY, backgrounds)
+export GRAY='\033[0;90m'
+export BG_BLACK='\033[40m'
+export BG_RED='\033[41m'
+export BG_GREEN='\033[42m'
+export BG_YELLOW='\033[43m'
+export BG_BLUE='\033[44m'
+export BG_MAGENTA='\033[45m'
+export BG_CYAN='\033[46m'
+export BG_WHITE='\033[47m'
+
+# Additional styles not in library
+export ITALIC='\033[3m'
+export UNDERLINE='\033[4m'
+export BLINK='\033[5m'
+export REVERSE='\033[7m'
+export HIDDEN='\033[8m'
+export STRIKETHROUGH='\033[9m'
+
 # Framework metadata
 # Use different name to avoid conflicts when re-sourcing
 [[ -z "${FRAMEWORK_VERSION:-}" ]] && readonly FRAMEWORK_VERSION="2.0.0"
@@ -25,37 +50,6 @@ readonly -a TEST_CATEGORIES=(
   installation boot accessibility localization penetration chaos
   mutation fuzz snapshot contract cross_browser ab
 )
-
-# ANSI color codes
-readonly BOLD='\033[1m'
-readonly DIM='\033[2m'
-readonly ITALIC='\033[3m'
-readonly UNDERLINE='\033[4m'
-readonly BLINK='\033[5m'
-readonly REVERSE='\033[7m'
-readonly HIDDEN='\033[8m'
-readonly STRIKETHROUGH='\033[9m'
-
-readonly BLACK='\033[0;30m'
-readonly RED='\033[0;31m'
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[0;33m'
-readonly BLUE='\033[0;34m'
-readonly MAGENTA='\033[0;35m'
-readonly CYAN='\033[0;36m'
-readonly WHITE='\033[0;37m'
-readonly GRAY='\033[0;90m'
-
-readonly BG_BLACK='\033[40m'
-readonly BG_RED='\033[41m'
-readonly BG_GREEN='\033[42m'
-readonly BG_YELLOW='\033[43m'
-readonly BG_BLUE='\033[44m'
-readonly BG_MAGENTA='\033[45m'
-readonly BG_CYAN='\033[46m'
-readonly BG_WHITE='\033[47m'
-
-readonly NC='\033[0m' # No Color
 
 # Unicode symbols
 readonly CHECK_MARK="✓"
