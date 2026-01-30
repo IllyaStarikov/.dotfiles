@@ -6,7 +6,7 @@
 local M = {}
 
 function M.setup()
-  -- ⚡ PERFORMANCE SETTINGS
+  -- PERFORMANCE SETTINGS
   -- Enable faster syntax highlighting
   vim.g.vimtex_syntax_enabled = 1
   vim.g.vimtex_syntax_conceal_disable = 0
@@ -17,7 +17,7 @@ function M.setup()
     -- We'll define custom mappings below
   }
 
-  -- 🔧 COMPILER CONFIGURATION
+  -- COMPILER CONFIGURATION
   -- Use latexmk as the default compiler (most reliable)
   vim.g.vimtex_compiler_method = "latexmk"
 
@@ -47,7 +47,7 @@ function M.setup()
   --   },
   -- }
 
-  -- 🖥️ VIEWER CONFIGURATION
+  -- VIEWER CONFIGURATION
   -- Detect and configure the best available PDF viewer
   local function setup_viewer()
     -- macOS: Use native Preview or Skim
@@ -84,7 +84,7 @@ function M.setup()
 
   setup_viewer()
 
-  -- ✨ FEATURES CONFIGURATION
+  -- FEATURES CONFIGURATION
   -- Enable quickfix window for errors
   vim.g.vimtex_quickfix_mode = 2 -- Open quickfix automatically, but don't focus it
   vim.g.vimtex_quickfix_autoclose_after_keystrokes = 3
@@ -101,7 +101,7 @@ function M.setup()
     menu_fmt = "@key @type @author_short @title_short (@year)",
   }
 
-  -- 🎨 SYNTAX AND CONCEALMENT
+  -- SYNTAX AND CONCEALMENT
   -- Enable syntax concealment for a cleaner look
   vim.g.vimtex_syntax_conceal = {
     accents = 1,
@@ -119,14 +119,14 @@ function M.setup()
     styles = 1,
   }
 
-  -- 📁 FILE DETECTION AND FORMATS
+  -- FILE DETECTION AND FORMATS
   -- Recognize additional LaTeX file types
   vim.g.vimtex_filetypes = { "tex", "latex", "plaintex" }
 
   -- Enable subfile support for large documents
   vim.g.vimtex_subfile_start_local = 1
 
-  -- 🔍 SEARCH AND NAVIGATION
+  -- SEARCH AND NAVIGATION
   -- Configure include search
   vim.g.vimtex_include_search_enabled = 1
 
@@ -141,7 +141,7 @@ function M.setup()
     mode = 2, -- Show context
   }
 
-  -- 🚫 DISABLE UNWANTED FEATURES
+  -- DISABLE UNWANTED FEATURES
   -- Disable default imaps (we'll use snippets instead)
   vim.g.vimtex_imaps_enabled = 0
 
@@ -151,7 +151,7 @@ function M.setup()
   -- Disable matchparen for performance
   vim.g.vimtex_matchparen_enabled = 0
 
-  -- 🎯 INTEGRATION SETTINGS
+  -- INTEGRATION SETTINGS
   -- Configure for use with modern completion engines
   vim.g.vimtex_compiler_progname = "nvim"
 
@@ -185,7 +185,7 @@ function M.setup()
     end,
   })
 
-  -- 🎨 CUSTOM SYNTAX HIGHLIGHTING
+  -- CUSTOM SYNTAX HIGHLIGHTING
   -- Enhance syntax highlighting for common LaTeX packages
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "tex", "latex", "plaintex" },
@@ -211,7 +211,7 @@ function M.setup()
     end,
   })
 
-  -- 📝 CUSTOM COMMANDS
+  -- CUSTOM COMMANDS
   -- Define useful LaTeX commands
   vim.api.nvim_create_user_command("VimtexCompileToggle", function()
     vim.cmd("VimtexCompile")
@@ -225,7 +225,7 @@ function M.setup()
     vim.cmd("VimtexInfo")
   end, { desc = "Show VimTeX status information" })
 
-  -- 🔧 ERROR HANDLING
+  -- ERROR HANDLING
   -- Configure error handling and quickfix behavior
   vim.g.vimtex_quickfix_ignore_filters = {
     "Underfull \\hbox",
@@ -236,7 +236,7 @@ function M.setup()
     "Package hyperref Warning: Token not allowed in a PDF string",
   }
 
-  -- 🎵 NOTIFICATIONS
+  -- NOTIFICATIONS
   -- Set up compilation notifications
   if vim.fn.executable("notify-send") == 1 then
     vim.g.vimtex_compiler_latexmk.callback_hooks = {
@@ -250,7 +250,7 @@ function M.setup()
     }
   end
 
-  -- 📊 PERFORMANCE OPTIMIZATION
+  -- PERFORMANCE OPTIMIZATION
   -- Optimize for large documents
   vim.g.vimtex_cache_root = vim.fn.stdpath("cache") .. "/vimtex"
   vim.g.vimtex_cache_persistent = 1

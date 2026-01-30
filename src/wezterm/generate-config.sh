@@ -69,15 +69,15 @@ HEADER
 
   # Font configuration (copy from template, skip the color loading section)
   awk '
-    /^-- 🖋️ FONT CONFIGURATION/,/^-- 🎨 COLOR SCHEME/ {
-      if (/^-- 🎨 COLOR SCHEME/) next
+    /^-- FONT CONFIGURATION/,/^-- COLOR SCHEME/ {
+      if (/^-- COLOR SCHEME/) next
       print
     }
   ' "$TEMPLATE"
 
   # Color scheme section header
   echo ""
-  echo "-- 🎨 COLOR SCHEME - $THEME (inlined for reliable live reload)"
+  echo "-- COLOR SCHEME - $THEME (inlined for reliable live reload)"
   echo ""
 
   # Extract and insert colors
@@ -90,7 +90,7 @@ HEADER
   # Rest of config (everything after the color loading section)
   awk '
     BEGIN { skip=0; found_window=0 }
-    /^-- 🖼️ WINDOW CONFIGURATION/ { found_window=1 }
+    /^-- WINDOW CONFIGURATION/ { found_window=1 }
     found_window { print }
   ' "$TEMPLATE"
 

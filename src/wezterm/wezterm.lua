@@ -5,7 +5,7 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
--- 🖋️ FONT CONFIGURATION - JetBrainsMono with full ligature and variant support
+-- FONT CONFIGURATION - JetBrainsMono with full ligature and variant support
 
 -- Primary font with extensive fallbacks for math and Unicode coverage
 config.font = wezterm.font_with_fallback({
@@ -125,7 +125,7 @@ config.treat_east_asian_ambiguous_width_as_wide = false
 config.unicode_version = 15 -- Use latest Unicode standard
 config.warn_about_missing_glyphs = false -- Don't warn about missing math glyphs
 
--- 🎨 COLOR SCHEME - Dynamic TokyoNight theme loading with error handling
+-- COLOR SCHEME - Dynamic TokyoNight theme loading with error handling
 
 -- Load the dynamic theme configuration with better error handling
 local function load_theme_safe()
@@ -159,7 +159,7 @@ else
   config.bold_brightens_ansi_colors = true
 end
 
--- 🖼️ WINDOW CONFIGURATION
+-- WINDOW CONFIGURATION
 
 config.initial_cols = 120
 config.initial_rows = 40
@@ -177,11 +177,11 @@ config.macos_window_background_blur = 0
 -- Disable native fullscreen to prevent hangs
 config.native_macos_fullscreen_mode = false
 
--- 📜 SCROLLING & HISTORY
+-- SCROLLING & HISTORY
 
 config.scrollback_lines = 50000 -- Default: 3500 (more history)
 
--- 🖱️ MOUSE CONFIGURATION
+-- MOUSE CONFIGURATION
 
 config.hide_mouse_cursor_when_typing = true -- Default: false (hide cursor when typing)
 
@@ -200,14 +200,14 @@ config.mouse_bindings = {
   },
 }
 
--- 🔲 CURSOR CONFIGURATION
+-- CURSOR CONFIGURATION
 
 config.default_cursor_style = "BlinkingBlock"
 config.cursor_blink_rate = 700
 config.cursor_blink_ease_in = "Constant"
 config.cursor_blink_ease_out = "Constant"
 
--- 🎵 BELL CONFIGURATION
+-- BELL CONFIGURATION
 
 config.audible_bell = "Disabled"
 config.visual_bell = {
@@ -217,7 +217,7 @@ config.visual_bell = {
   fade_out_duration_ms = 100,
 }
 
--- ⚙️ PERFORMANCE & RENDERING
+-- PERFORMANCE & RENDERING
 
 config.front_end = "WebGpu" -- Best performance on modern hardware
 config.webgpu_power_preference = "HighPerformance"
@@ -225,7 +225,7 @@ config.max_fps = 120
 config.animation_fps = 60
 config.enable_wayland = false -- macOS doesn't use Wayland
 
--- 📑 TAB BAR CONFIGURATION
+-- TAB BAR CONFIGURATION
 
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = false
@@ -234,7 +234,7 @@ config.tab_bar_at_bottom = false
 config.show_tab_index_in_tab_bar = true
 config.show_new_tab_button_in_tab_bar = false
 
--- 🌍 ENVIRONMENT VARIABLES
+-- ENVIRONMENT VARIABLES
 
 config.set_environment_variables = {
   TERM_PROGRAM = "WezTerm",
@@ -245,7 +245,7 @@ config.set_environment_variables = {
   LC_CTYPE = "en_US.UTF-8",
 }
 
--- ⌨️ KEY BINDINGS - Matching Alacritty + WezTerm extras
+-- KEY BINDINGS - Matching Alacritty + WezTerm extras
 
 config.keys = {
   -- Core macOS shortcuts
@@ -330,15 +330,15 @@ config.keys = {
   { key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\x1b\r") },
 }
 
--- 🎯 HYPERLINK RULES
+-- HYPERLINK RULES
 
 config.hyperlink_rules = wezterm.default_hyperlink_rules()
 
--- 📋 SELECTION
+-- SELECTION
 
 config.selection_word_boundary = " \t\n{}[]()\"'`,;:"
 
--- 🔧 MISC SETTINGS
+-- MISC SETTINGS
 
 config.automatically_reload_config = true
 config.check_for_updates = false -- Managed by Homebrew

@@ -18,7 +18,7 @@ function M.setup()
     return
   end
 
-  -- ⚡ PERFORMANCE & UI SETTINGS
+  -- PERFORMANCE & UI SETTINGS
   ---@diagnostic disable-next-line: redundant-parameter
   telescope.setup({
     defaults = {
@@ -205,7 +205,7 @@ function M.setup()
       set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
     },
 
-    -- 🔍 PICKER-SPECIFIC CONFIGURATIONS
+    -- PICKER-SPECIFIC CONFIGURATIONS
     pickers = {
       -- File pickers
       find_files = {
@@ -312,7 +312,7 @@ function M.setup()
       },
     },
 
-    -- 🔧 EXTENSIONS CONFIGURATION
+    -- EXTENSIONS CONFIGURATION
     extensions = {
       fzf = {
         fuzzy = true,
@@ -323,11 +323,11 @@ function M.setup()
     },
   })
 
-  -- 📦 LOAD EXTENSIONS
+  -- LOAD EXTENSIONS
   -- Load fzf native extension for better performance
   pcall(telescope.load_extension, "fzf")
 
-  -- 🎯 CUSTOM FUNCTIONS
+  -- CUSTOM FUNCTIONS
   -- Create custom telescope functions for enhanced workflows
 
   -- Find files with preview
@@ -476,7 +476,7 @@ function M.setup()
     })
   end
 
-  -- 📊 INTEGRATION WITH EXISTING WORKFLOW
+  -- INTEGRATION WITH EXISTING WORKFLOW
   -- Set up integration points for existing keybindings and menu system
 
   -- Global telescope functions for easy access
@@ -522,7 +522,7 @@ function M.setup()
   end
   ---@diagnostic enable: duplicate-set-field
 
-  -- 🎨 THEME INTEGRATION
+  -- THEME INTEGRATION
   -- Integrate with existing theme switching system
   -- vim.api.nvim_create_autocmd("ColorScheme", {
   --   callback = function()
@@ -550,7 +550,7 @@ function M.setup()
   -- vim.cmd("doautocmd ColorScheme")
 end
 
--- 🚀 UTILITY FUNCTIONS
+-- UTILITY FUNCTIONS
 -- Additional utility functions for telescope integration
 
 function M.grep_word_under_cursor()

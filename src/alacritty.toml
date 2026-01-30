@@ -89,7 +89,7 @@ chars = "\u000c" # Ctrl-L
 key = "K"
 mods = "Command"
 
-# 🎵 AUDIO & VISUAL FEEDBACK
+# AUDIO & VISUAL FEEDBACK
 
 [bell]
 animation = "EaseOutExpo"
@@ -97,18 +97,18 @@ color = "0x88c0d0"        # Nord-inspired blue
 duration = 100            # Brief visual feedback
 command = "None"          # No audio bell for productivity
 
-# ⚙️ GENERAL CONFIGURATION
+# GENERAL CONFIGURATION
 
 [general]
 import = ["~/.config/alacritty/theme.toml"]
 
-# 🎨 COLOR CONFIGURATION
+# COLOR CONFIGURATION
 
 [colors]
 draw_bold_text_with_bright_colors = true
 transparent_background_colors = true
 
-# 🌍 ENVIRONMENT VARIABLES
+# ENVIRONMENT VARIABLES
 
 [env]
 TERM = "alacritty"      # Use alacritty terminfo for better compatibility
@@ -118,17 +118,17 @@ LANG = "en_US.UTF-8"
 LC_ALL = "en_US.UTF-8"
 LC_CTYPE = "en_US.UTF-8"
 
-# 📜 SCROLLING & HISTORY
+# SCROLLING & HISTORY
 
 [scrolling]
 history = 50000
 
-# 📝 TEXT SELECTION & CLIPBOARD
+# TEXT SELECTION & CLIPBOARD
 
 [selection]
 save_to_clipboard = true
 
-# 🖼️ WINDOW CONFIGURATION
+# WINDOW CONFIGURATION
 
 [window]
 resize_increments = true
@@ -142,7 +142,7 @@ lines = 40
 x = 8
 y = 8
 
-# 🖋️ FONT CONFIGURATION
+# FONT CONFIGURATION
 
 [font]
 size = 18.0
@@ -169,7 +169,7 @@ style = "Bold Italic"
 [font.offset]
 y = 1
 
-# 🖱️ MOUSE CONFIGURATION
+# MOUSE CONFIGURATION
 
 [mouse]
 
@@ -186,7 +186,7 @@ mouse = "Left"
 mods = "Command"
 action = "ExpandSelection"
 
-# 🔲 CURSOR CONFIGURATION - Visibility and Style
+# CURSOR CONFIGURATION - Visibility and Style
 
 [cursor]
 # Cursor style
@@ -201,12 +201,12 @@ blink_interval = 750
 # Stop blinking after 15 seconds of inactivity (0 = always blink)
 blink_timeout = 15
 
-# 🐞 DEBUG CONFIGURATION
+# DEBUG CONFIGURATION
 
 [debug]
 log_level = "Warn"
 
-# 📝 VI MODE CONFIGURATION
+# VI MODE CONFIGURATION
 
 # VI mode toggle
 [[keyboard.bindings]]
@@ -262,7 +262,7 @@ mods = "Shift"
 mode = "Vi"
 action = "ScrollToTop"
 
-# 🔍 SEARCH BINDINGS
+# SEARCH BINDINGS
 
 [[keyboard.bindings]]
 key = "Return"

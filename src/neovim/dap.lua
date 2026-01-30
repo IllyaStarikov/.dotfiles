@@ -37,7 +37,7 @@ function M.setup()
   local is_macos = vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1
   local is_linux = vim.fn.has("unix") == 1 and not is_macos
 
-  -- ⚡ PERFORMANCE & UI SETTINGS
+  -- PERFORMANCE & UI SETTINGS
   -- Configure DAP UI for optimal experience
   dapui.setup({
     icons = {
@@ -112,7 +112,7 @@ function M.setup()
     },
   })
 
-  -- 🎨 VIRTUAL TEXT CONFIGURATION
+  -- VIRTUAL TEXT CONFIGURATION
   dap_virtual_text.setup({
     enabled = true,
     enabled_commands = true, -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
@@ -142,7 +142,7 @@ function M.setup()
     -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
   })
 
-  -- 🔧 AUTOMATIC DAP UI MANAGEMENT
+  -- AUTOMATIC DAP UI MANAGEMENT
   -- Automatically open/close DAP UI
   dap.listeners.after.event_initialized["dapui_config"] = function()
     dapui.open()
@@ -154,7 +154,7 @@ function M.setup()
     dapui.close()
   end
 
-  -- 🐍 PYTHON DEBUGGING CONFIGURATION
+  -- PYTHON DEBUGGING CONFIGURATION
   dap.adapters.python = function(cb, config)
     if config.request == "attach" then
       ---@diagnostic disable-next-line: undefined-field
@@ -218,7 +218,7 @@ function M.setup()
     },
   }
 
-  -- 🔧 C/C++ DEBUGGING CONFIGURATION
+  -- C/C++ DEBUGGING CONFIGURATION
   -- Determine lldb-dap path based on OS
   local lldb_cmd
   if is_macos then
@@ -316,7 +316,7 @@ function M.setup()
   -- C uses the same configuration as C++
   dap.configurations.c = dap.configurations.cpp
 
-  -- 🌙 LUA DEBUGGING CONFIGURATION
+  -- LUA DEBUGGING CONFIGURATION
   dap.adapters.nlua = function(callback, config)
     callback({
       type = "server",
@@ -333,7 +333,7 @@ function M.setup()
     },
   }
 
-  -- 🟨 JAVASCRIPT/TYPESCRIPT DEBUGGING
+  -- JAVASCRIPT/TYPESCRIPT DEBUGGING
   -- Disabled due to node-debug2-adapter compatibility issues
   -- To re-enable:
   -- 1. Install node-debug2-adapter via Mason
@@ -399,7 +399,7 @@ function M.setup()
   }
   --]]
 
-  -- 🦀 RUST DEBUGGING CONFIGURATION
+  -- RUST DEBUGGING CONFIGURATION
   -- Use the same lldb_cmd determined above or use codelldb
   if lldb_cmd then
     dap.adapters.rust = {
@@ -461,7 +461,7 @@ function M.setup()
     },
   }
 
-  -- 🔧 MASON-DAP INTEGRATION
+  -- MASON-DAP INTEGRATION
   -- Automatically install and configure debug adapters
   local mason_dap_ok, mason_dap = pcall(require, "mason-nvim-dap")
   if mason_dap_ok then
@@ -485,7 +485,7 @@ function M.setup()
     })
   end
 
-  -- 🎯 CUSTOM COMMANDS
+  -- CUSTOM COMMANDS
   -- Create useful DAP commands
   vim.api.nvim_create_user_command("DapUIToggle", function()
     dapui.toggle()
@@ -501,7 +501,7 @@ function M.setup()
     dap.repl.open()
   end, { desc = "Show DAP log" })
 
-  -- 📊 SIGNS CONFIGURATION
+  -- SIGNS CONFIGURATION
   -- Set up custom signs for breakpoints
   vim.fn.sign_define("DapBreakpoint", {
     text = "🔴",
@@ -538,7 +538,7 @@ function M.setup()
     numhl = "DapStopped",
   })
 
-  -- 🎨 HIGHLIGHT GROUPS
+  -- HIGHLIGHT GROUPS
   -- Set up custom highlight groups
   vim.api.nvim_create_autocmd("ColorScheme", {
     callback = function()
@@ -554,7 +554,7 @@ function M.setup()
   vim.api.nvim_set_hl(0, "DapStopped", { fg = "#98c379" })
 end
 
--- 🚀 UTILITY FUNCTIONS
+-- UTILITY FUNCTIONS
 function M.debug_nearest()
   require("dap").run_to_cursor()
 end
