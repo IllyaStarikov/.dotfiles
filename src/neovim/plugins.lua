@@ -1194,9 +1194,15 @@ require("lazy").setup({
     priority = 1000, -- High priority to load first
     build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        modules = {},
-        ignore_install = {},
+      -- Use new API (nvim-treesitter main branch dropped configs module)
+      local ts_ok, ts = pcall(require, "nvim-treesitter")
+      if not ts_ok then
+        vim.notify("nvim-treesitter not loaded", vim.log.levels.WARN)
+        return
+      end
+
+      -- New setup API
+      ts.setup({
         ensure_installed = {
           "markdown",
           "markdown_inline",
