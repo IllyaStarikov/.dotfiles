@@ -21,12 +21,12 @@ map("n", "<left>", "<C-w><left>", opts)
 map("n", "<right>", "<C-w><right>", opts)
 
 -- ============================================================================
--- WINDOW RESIZING (Ctrl + arrows)
+-- WINDOW RESIZING (Shift + arrows)
 -- ============================================================================
-map("n", "<C-Up>", ":resize +2<CR>", opts)
-map("n", "<C-Down>", ":resize -2<CR>", opts)
-map("n", "<C-Left>", ":vertical resize -2<CR>", opts)
-map("n", "<C-Right>", ":vertical resize +2<CR>", opts)
+map("n", "<S-Up>", ":resize +2<CR>", opts)
+map("n", "<S-Down>", ":resize -2<CR>", opts)
+map("n", "<S-Left>", ":vertical resize -2<CR>", opts)
+map("n", "<S-Right>", ":vertical resize +2<CR>", opts)
 
 -- ============================================================================
 -- BUFFER NAVIGATION (Tab, Shift+HL, brackets)
