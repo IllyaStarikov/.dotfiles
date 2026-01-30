@@ -34,7 +34,7 @@ function M.detect_machine_type()
   end
 
   -- Method 2: Try to load machine-detection module
-  local private_dir = vim.fn.expand("~/.dotfiles/.dotfiles.private")
+  local private_dir = vim.g.dotfiles .. "/.dotfiles.private"
   package.path = package.path .. ";" .. private_dir .. "/?.lua"
 
   local ok, detection = pcall(require, "machine-detection")
@@ -96,8 +96,7 @@ function M.init()
   vim.g.work_lsp_override = true
 
   -- Load work-specific init if available
-  local work_init_path =
-    vim.fn.expand("~/.dotfiles/.dotfiles.private/" .. machine_type .. "/init.lua")
+  local work_init_path = vim.g.dotfiles .. "/.dotfiles.private/" .. machine_type .. "/init.lua"
   local work_init = safe_dofile(work_init_path)
   if work_init and work_init.setup then
     local ok, err = pcall(work_init.setup)

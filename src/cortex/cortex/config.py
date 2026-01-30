@@ -57,8 +57,10 @@ class ConfigDefaults:
 class Config:
     """Configuration manager for Cortex."""
 
-    DEFAULT_CONFIG_DIR = Path.home() / '.dotfiles' / 'config' / 'cortex'
-    DEFAULT_PRIVATE_DIR = Path.home() / '.dotfiles' / '.dotfiles.private'
+    # Use DOTFILES environment variable if set, otherwise fall back to default
+    DOTFILES = Path(os.environ.get('DOTFILES', str(Path.home() / '.dotfiles')))
+    DEFAULT_CONFIG_DIR = DOTFILES / 'config' / 'cortex'
+    DEFAULT_PRIVATE_DIR = DOTFILES / '.dotfiles.private'
 
     def __init__(self, config_path: Optional[Path] = None):
         """Initialize configuration."""

@@ -6,7 +6,7 @@
 local M = {}
 
 -- Work config path - uses the private repo
-local WORK_CONFIG_PATH = vim.fn.expand("~/.dotfiles/.dotfiles.private")
+local WORK_CONFIG_PATH = vim.g.dotfiles .. "/.dotfiles.private"
 
 -- Load HOSTS configuration from private repo
 local function load_hosts_config()

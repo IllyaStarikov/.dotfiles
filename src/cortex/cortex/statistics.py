@@ -4,6 +4,7 @@ Statistics tracking and analytics for Cortex.
 
 import json
 import logging
+import os
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
@@ -11,6 +12,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+# Use DOTFILES environment variable if set, otherwise fall back to default
+DOTFILES = Path(os.environ.get('DOTFILES', str(Path.home() / '.dotfiles')))
 
 
 @dataclass
@@ -56,7 +60,7 @@ class StatisticsTracker:
 
     def __init__(self, stats_dir: Optional[Path] = None):
         """Initialize statistics tracker."""
-        self.stats_dir = stats_dir or (Path.home() / '.dotfiles' / 'config' / 'cortex' / 'stats')
+        self.stats_dir = stats_dir or (DOTFILES / 'config' / 'cortex' / 'stats')
         self.stats_dir.mkdir(parents=True, exist_ok=True)
 
         self.sessions_file = self.stats_dir / 'sessions.json'

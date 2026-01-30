@@ -155,7 +155,7 @@ cleanup() {
 
     # Clean macOS specific caches (silently)
     # Remove .DS_Store files from dotfiles directory
-    find ~/.dotfiles -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
+    find "${DOTFILES:-$HOME/.dotfiles}" -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
 
     # Backup shell history
     if [[ -f ~/.zsh_history ]]; then
@@ -484,10 +484,11 @@ update_tools() {
   fi
   
   # dotfiles repository
-  if [[ -d "${HOME}/.dotfiles/.git" ]]; then
+  local dotfiles_dir="${DOTFILES:-$HOME/.dotfiles}"
+  if [[ -d "${dotfiles_dir}/.git" ]]; then
     echo "Updating dotfiles..."
     if [[ "${DRY_RUN}" == false ]]; then
-        update_with_fallback "dotfiles" sh -c "cd ${HOME}/.dotfiles && git pull --rebase"
+        update_with_fallback "dotfiles" sh -c "cd '$dotfiles_dir' && git pull --rebase"
     fi
   fi
 

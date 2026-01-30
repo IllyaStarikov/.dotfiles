@@ -183,7 +183,7 @@ api.nvim_create_user_command("Format", function(opts)
   vim.cmd("silent! write")
 
   -- Build command
-  local format_script = vim.fn.expand("~/.dotfiles/src/scripts/fixy")
+  local format_script = vim.g.dotfiles .. "/src/scripts/fixy"
   local current_file = vim.fn.expand("%:p")
   local cmd = { format_script }
 

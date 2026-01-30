@@ -7,7 +7,7 @@ local M = {}
 -- Configuration
 local config = {
   enabled = false, -- Auto-format disabled by default (must be explicitly enabled)
-  cmd = vim.fn.expand("~/.dotfiles/src/scripts/fixy"),
+  cmd = vim.g.dotfiles .. "/src/scripts/fixy",
   timeout = 5000, -- 5 seconds timeout
   notifications = false, -- Disable notifications for silent operation
   notify_on_error = true, -- Still notify on errors

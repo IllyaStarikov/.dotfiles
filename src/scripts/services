@@ -544,7 +544,7 @@ EXAMPLES:
   services reset calibre-web  # Clear failed status and allow retry
 
 SERVICE DIRECTORY:
-  Services are defined in: ~/.dotfiles/src/services/
+  Services are defined in: $DOTFILES_DIR/src/services/
   Each service is a .service file with start/stop functions.
 EOF
 }

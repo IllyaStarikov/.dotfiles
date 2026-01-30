@@ -43,7 +43,7 @@ opt.wildmode = { "longest:list", "full" }
 
 -- Spell checking configuration
 opt.spelllang = { "en_us" }
-opt.spellfile = vim.fn.expand("~/.dotfiles/.dotfiles.private/config/spell/en.utf-8.add")
+opt.spellfile = vim.g.dotfiles .. "/.dotfiles.private/config/spell/en.utf-8.add"
 
 -- Completion behavior
 opt.completeopt = { "menu", "menuone", "noselect" }

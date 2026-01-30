@@ -33,6 +33,10 @@
 --   - Comprehensive error handling
 --------------------------------------------------------------------------------
 
+-- Set dotfiles path globally for use throughout the config
+-- Uses DOTFILES environment variable if set, otherwise falls back to default
+vim.g.dotfiles = vim.env.DOTFILES or vim.fn.expand("~/.dotfiles")
+
 -- Detect if we're running in headless mode or CI
 local is_headless = #vim.api.nvim_list_uis() == 0
 local is_ci = vim.env.CI or vim.env.CI_MODE or vim.env.GITHUB_ACTIONS
@@ -108,7 +112,7 @@ if init_dir ~= config_path then
 end
 
 -- Support dotfiles structure explicitly
-local dotfiles_config = vim.fn.expand("~/.dotfiles/src/neovim")
+local dotfiles_config = vim.g.dotfiles .. "/src/neovim"
 if vim.fn.isdirectory(dotfiles_config) == 1 and dotfiles_config ~= init_dir then
   package.path = package.path .. ";" .. dotfiles_config .. "/?.lua"
   package.path = package.path .. ";" .. dotfiles_config .. "/?/init.lua"
@@ -122,7 +126,7 @@ if work_init_ok and work_init then
   work_init.init()
 else
   -- Fallback to the old private init method
-  local private_init_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/neovim/init.lua")
+  local private_init_path = vim.g.dotfiles .. "/.dotfiles.private/neovim/init.lua"
   if vim.fn.filereadable(private_init_path) == 1 then
     local ok, private_init = pcall(dofile, private_init_path)
     if ok and private_init and private_init.init then

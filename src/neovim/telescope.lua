@@ -360,7 +360,7 @@ function M.setup()
   M.search_dotfiles = function()
     require("telescope.builtin").find_files({
       prompt_title = "< Dotfiles >",
-      cwd = vim.fn.expand("~/.dotfiles"),
+      cwd = vim.g.dotfiles,
       hidden = true,
     })
   end

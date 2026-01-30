@@ -200,7 +200,7 @@ alias .5="cd ../../../../.."
 # keep-sorted start
 alias desktop="cd ~/Desktop"
 alias documents="cd ~/Documents"
-alias dotfiles="cd ~/.dotfiles"
+alias dotfiles='cd $DOTFILES'
 alias downloads="cd ~/Downloads"
 alias home="cd ~"
 alias projects="cd ~/Projects"
@@ -214,7 +214,7 @@ alias light="theme light"
 # Shell-local theme (for per-pane theming in tmux demos)
 # Usage: theme-local day  OR  theme-local moon
 theme-local() {
-  source <("$HOME/.dotfiles/src/theme-switcher/switch-theme.sh" --shell "$@")
+  source <("$DOTFILES/src/theme-switcher/switch-theme.sh" --shell "$@")
 }
 
 # Development Tools
@@ -318,16 +318,16 @@ alias reset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 
 # System maintenance
-alias update="~/.dotfiles/src/scripts/update-dotfiles" # Update packages and plugins
+alias update='$DOTFILES/src/scripts/update-dotfiles' # Update packages and plugins
 alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
-alias update-dotfiles="~/.dotfiles/src/scripts/update-dotfiles" # Pull latest dotfiles changes
-alias dotfiles-setup="~/.dotfiles/src/setup/setup.sh"           # Re-run setup
-alias dotfiles-symlinks="~/.dotfiles/src/setup/symlinks.sh"     # Re-create symlinks
-alias dotfiles-install="~/.dotfiles/src/setup/setup.sh --full"  # Full installation
-alias dotfiles-core="~/.dotfiles/src/setup/setup.sh --core"     # Core packages only
-alias dotfiles-test="~/.dotfiles/test/runner.zsh"               # Run dotfiles test suite
-alias dotfiles-test-debug="~/.dotfiles/test/runner.zsh --debug" # Run tests with debug output
-alias dotfiles-test-old="~/.dotfiles/test/runner.py"            # Run Python test suite (deprecated)
+alias update-dotfiles='$DOTFILES/src/scripts/update-dotfiles' # Pull latest dotfiles changes
+alias dotfiles-setup='$DOTFILES/src/setup/setup.sh'           # Re-run setup
+alias dotfiles-symlinks='$DOTFILES/src/setup/symlinks.sh'     # Re-create symlinks
+alias dotfiles-install='$DOTFILES/src/setup/setup.sh --full'  # Full installation
+alias dotfiles-core='$DOTFILES/src/setup/setup.sh --core'     # Core packages only
+alias dotfiles-test='$DOTFILES/test/runner.zsh'               # Run dotfiles test suite
+alias dotfiles-test-debug='$DOTFILES/test/runner.zsh --debug' # Run tests with debug output
+alias dotfiles-test-old='$DOTFILES/test/runner.py'            # Run Python test suite (deprecated)
 
 # Monitoring & Diagnostics
 
@@ -349,9 +349,9 @@ alias listening='lsof -i -P | grep LISTEN'
 # Quick edits
 alias gitconfig="nvim ~/.gitconfig"
 alias sshconfig="nvim ~/.ssh/config"
-alias alacrittyconfig="nvim ~/.dotfiles/src/alacritty.toml"
-alias weztermconfig="nvim ~/.dotfiles/src/wezterm/wezterm.lua"
-alias ripgrepconfig="nvim ~/.dotfiles/src/ripgreprc"
+alias alacrittyconfig='nvim $DOTFILES/src/alacritty.toml'
+alias weztermconfig='nvim $DOTFILES/src/wezterm/wezterm.lua'
+alias ripgrepconfig='nvim $DOTFILES/src/ripgreprc'
 
 # Neovim plugin management
 alias nvim-update="nvim --headless '+Lazy! sync' +qa"       # Update all Neovim plugins

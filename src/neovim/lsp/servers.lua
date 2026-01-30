@@ -51,7 +51,7 @@ local function setup_lsp()
 
   -- Check for private work-specific LSP overrides
   -- The override file handles machine detection and routing to company configs
-  local override_path = vim.fn.expand("~/.dotfiles/.dotfiles.private/lib/lsp-override.lua")
+  local override_path = vim.g.dotfiles .. "/.dotfiles.private/lib/lsp-override.lua"
   if vim.fn.filereadable(override_path) == 1 then
     if logging then
       logging.info("LSP", "Found LSP override at: " .. override_path)

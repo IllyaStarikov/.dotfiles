@@ -66,7 +66,8 @@ else
   MAX_JOBS=8
 fi
 FILES=()
-CONFIG_FILE="${HOME}/.dotfiles/config/fixy.json"
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+CONFIG_FILE="$DOTFILES/config/fixy.json"
 KEEP_SORTED_BIN="${HOME}/go/bin/keep-sorted"
 
 # Output helper that suppresses output in parallel mode
@@ -661,7 +662,7 @@ format_fallback() {
           print_color blue "[DRY RUN] Would run stylua (fallback) on: $file"
         else
           echo -n "  → Running stylua (fallback)... "
-          stylua --config-path ~/.dotfiles/src/language/stylua.toml "$file"
+          stylua --config-path "$DOTFILES/src/language/stylua.toml" "$file"
           print_color green "✓"
         fi
         return 0

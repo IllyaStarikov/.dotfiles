@@ -35,6 +35,9 @@ from .system_utils import ModelRecommender, SystemDetector
 
 # Extended commands are now integrated directly into cli.py
 
+# Use DOTFILES environment variable if set, otherwise fall back to default
+DOTFILES = Path(os.environ.get('DOTFILES', str(Path.home() / '.dotfiles')))
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -1305,7 +1308,7 @@ def start(ctx, model, port, background):
                 '--trust-remote-code',
             ]
 
-            log_file = Path.home() / '.dotfiles/config/cortex/logs/mlx_server.log'
+            log_file = DOTFILES / 'config/cortex/logs/mlx_server.log'
             log_file.parent.mkdir(parents=True, exist_ok=True)
 
             if background:
@@ -1316,7 +1319,7 @@ def start(ctx, model, port, background):
                     )
 
                 # Save PID
-                pid_file = Path.home() / '.dotfiles/config/cortex/mlx_server.pid'
+                pid_file = DOTFILES / 'config/cortex/mlx_server.pid'
                 pid_file.write_text(str(process.pid))
 
                 console.print(
@@ -1337,7 +1340,7 @@ def start(ctx, model, port, background):
                 console.print('[green]✓[/green] Ollama server is already running')
             except subprocess.CalledProcessError:
                 console.print('[yellow]Starting Ollama server...[/yellow]')
-                log_file = Path.home() / '.dotfiles/config/cortex/logs/ollama_server.log'
+                log_file = DOTFILES / 'config/cortex/logs/ollama_server.log'
                 log_file.parent.mkdir(parents=True, exist_ok=True)
 
                 with open(log_file, 'a') as log:
@@ -1346,7 +1349,7 @@ def start(ctx, model, port, background):
                     )
 
                 # Save PID for later stop
-                pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+                pid_file = DOTFILES / 'config/cortex/ollama_server.pid'
                 pid_file.write_text(str(process.pid))
 
                 await asyncio.sleep(2)
@@ -1385,7 +1388,7 @@ def stop(ctx, provider):
 
     if provider == 'mlx':
         # Stop MLX server
-        pid_file = Path.home() / '.dotfiles/config/cortex/mlx_server.pid'
+        pid_file = DOTFILES / 'config/cortex/mlx_server.pid'
         if pid_file.exists():
             try:
                 pid = int(pid_file.read_text())
@@ -1406,7 +1409,7 @@ def stop(ctx, provider):
                 console.print('[red]Failed to stop MLX server[/red]')
 
     elif provider == 'ollama':
-        pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+        pid_file = DOTFILES / 'config/cortex/ollama_server.pid'
         if pid_file.exists():
             try:
                 pid = int(pid_file.read_text())
@@ -1512,7 +1515,7 @@ def status(ctx):
 def logs(ctx, tail, follow, provider):
     """Show Cortex system and server logs."""
 
-    log_dir = Path.home() / '.dotfiles/config/cortex/logs'
+    log_dir = DOTFILES / 'config/cortex/logs'
 
     if not log_dir.exists():
         console.print('[yellow]No logs found.[/yellow]')
@@ -1742,7 +1745,7 @@ def chat(ctx, message, model, ensemble, system, temperature, max_tokens, stream)
     }
 
     # Save stats
-    stats_file = Path.home() / '.dotfiles/config/cortex/logs/chat_stats.json'
+    stats_file = DOTFILES / 'config/cortex/logs/chat_stats.json'
     stats_file.parent.mkdir(parents=True, exist_ok=True)
 
     existing_stats = []

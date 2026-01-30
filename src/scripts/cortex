@@ -21,7 +21,8 @@
 # Reference: https://github.com/ml-explore/mlx
 
 # Add the cortex module to Python path
-export PYTHONPATH="$HOME/.dotfiles/src/cortex:$PYTHONPATH"
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+export PYTHONPATH="$DOTFILES/src/cortex:$PYTHONPATH"
 
 # Initialize pyenv if available (needed for non-interactive shells)
 if [[ -d "$HOME/.pyenv" ]]; then

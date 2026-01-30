@@ -5,7 +5,9 @@ Ollama Provider for local model hosting.
 import asyncio
 import json
 import logging
+import os
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiohttp
@@ -13,6 +15,9 @@ import aiohttp
 from . import BaseProvider, ModelCapability, ModelInfo, ProviderType
 
 logger = logging.getLogger(__name__)
+
+# Use DOTFILES environment variable if set, otherwise fall back to default
+DOTFILES = Path(os.environ.get('DOTFILES', str(Path.home() / '.dotfiles')))
 
 
 class OllamaProvider(BaseProvider):
@@ -328,7 +333,7 @@ class OllamaProvider(BaseProvider):
         # Start Ollama server
         logger.info('Starting Ollama server...')
         try:
-            log_file = Path.home() / '.dotfiles/config/cortex/logs/ollama_server.log'
+            log_file = DOTFILES / 'config/cortex/logs/ollama_server.log'
             log_file.parent.mkdir(parents=True, exist_ok=True)
 
             with open(log_file, 'a') as log:
@@ -337,7 +342,7 @@ class OllamaProvider(BaseProvider):
                 )
 
             # Save PID for later stop
-            pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+            pid_file = DOTFILES / 'config/cortex/ollama_server.pid'
             pid_file.write_text(str(process.pid))
 
             # Wait for server to be ready
@@ -353,11 +358,9 @@ class OllamaProvider(BaseProvider):
 
     async def stop_server(self) -> bool:
         """Stop Ollama server."""
-        import os
         import subprocess
-        from pathlib import Path
 
-        pid_file = Path.home() / '.dotfiles/config/cortex/ollama_server.pid'
+        pid_file = DOTFILES / 'config/cortex/ollama_server.pid'
         if pid_file.exists():
             try:
                 pid = int(pid_file.read_text())
