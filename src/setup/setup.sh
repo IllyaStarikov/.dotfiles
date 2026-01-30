@@ -395,6 +395,8 @@ install_macos_packages() {
     "rust"
     "rustup"
     "go"
+    "openjdk"  # Java (keg-only, requires PATH setup in zshrc)
+    "julia"    # Julia language
     "cmake"
     "ninja"
     "llvm"
@@ -1231,6 +1233,7 @@ setup_node() {
     npm install -g eslint &>/dev/null || warning "Failed to install eslint"
     npm install -g @fsouza/prettierd &>/dev/null || warning "Failed to install prettierd"
     npm install -g lua-fmt &>/dev/null || warning "Failed to install lua-fmt (lua-format)"
+    npm install -g @mermaid-js/mermaid-cli &>/dev/null || warning "Failed to install mermaid-cli (mmdc)"
   else
     warning "npm not found, skipping global package installation for Neovim and formatters."
   fi
