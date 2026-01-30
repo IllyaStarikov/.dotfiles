@@ -821,7 +821,7 @@ require("lazy").setup({
         before = "",
         keyword = "wide",
         after = "fg",
-        pattern = [[.*<(KEYWORDS)\s*:?]], -- Optional colon for flexibility
+        pattern = [[.*<(KEYWORDS)>\s*:?]], -- Require full word match
         comments_only = true,
         max_line_len = 400,
         exclude = {},
@@ -845,7 +845,7 @@ require("lazy").setup({
           "--line-number",
           "--column",
         },
-        pattern = [[\b(KEYWORDS):?]], -- Optional colon to support both "MARK:" and "MARK"
+        pattern = [[\b(KEYWORDS)\b:?]], -- Require full word match
       },
     },
     keys = {
