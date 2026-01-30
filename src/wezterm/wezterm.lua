@@ -328,6 +328,18 @@ config.keys = {
 
   -- Shift+Enter sends Escape+Enter (for tmux/vim)
   { key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\x1b\r") },
+
+  -- Quick Select (pattern-based text selection for git hashes, IPs, paths)
+  { key = "s", mods = "CMD|SHIFT", action = wezterm.action.QuickSelect },
+
+  -- Tab Navigator (visual tab list)
+  { key = "e", mods = "CMD", action = wezterm.action.ShowTabNavigator },
+
+  -- Char Select (unicode/emoji picker)
+  { key = ".", mods = "CMD|SHIFT", action = wezterm.action.CharSelect({ copy_on_select = true }) },
+
+  -- Debug Overlay (performance monitoring)
+  { key = "l", mods = "CTRL|SHIFT", action = wezterm.action.ShowDebugOverlay },
 }
 
 -- HYPERLINK RULES
@@ -337,6 +349,13 @@ config.hyperlink_rules = wezterm.default_hyperlink_rules()
 -- SELECTION
 
 config.selection_word_boundary = " \t\n{}[]()\"'`,;:"
+
+-- Quick Select patterns for pattern-based text selection (Cmd+Shift+S)
+config.quick_select_patterns = {
+  "[a-f0-9]{7,40}", -- Git SHA hashes (7-40 chars)
+  "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b", -- IPv4 addresses
+  "(?:/[\\w.-]+)+", -- Unix file paths
+}
 
 -- MISC SETTINGS
 
