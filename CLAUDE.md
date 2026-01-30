@@ -177,9 +177,9 @@ cortex agent on/off    # Toggle AI agent mode
 │   │   ├── pyproject.toml # Python project config
 │   │   ├── ruff.toml      # Python linter/formatter
 │   │   └── stylua.toml    # Lua formatter
-│   ├── neovim/            # Neovim configuration (47 modules)
-│   │   ├── config/        # Modular configuration system
+│   ├── neovim/            # Neovim configuration (flat structure)
 │   │   ├── init.lua       # Entry point with path detection
+│   │   ├── *.lua          # Config modules (plugins, commands, etc.)
 │   │   └── snippets/      # Language-specific snippets
 │   ├── setup/             # Installation and setup scripts
 │   ├── scripts/           # Utility and maintenance scripts
@@ -245,12 +245,16 @@ Test Categories:
 
 **Module Structure:**
 ```
-config/
+src/neovim/
 ├── core/           # Performance tuning, options, globals
 ├── keymaps/        # Categorized key bindings
 ├── lsp/            # Language server configurations
 ├── plugins/        # 80+ plugin specifications
-└── ui/             # Theme and interface settings
+├── ui/             # Theme and interface settings
+├── snippets/       # Language-specific snippets
+├── init.lua        # Entry point
+├── plugins.lua     # Plugin specifications
+└── *.lua           # Other config modules
 ```
 
 **Key Features:**

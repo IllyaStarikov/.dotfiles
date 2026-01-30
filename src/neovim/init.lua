@@ -13,12 +13,13 @@
 --   5. Work-specific late overrides
 --
 -- STRUCTURE:
---   config/           - Configuration modules
---   ├── core/        - Core settings (options, performance)
---   ├── keymaps/     - Key bindings by category
---   ├── lsp/         - Language server configurations
---   ├── plugins/     - Plugin specifications
---   └── ui/          - UI and theme settings
+--   src/neovim/       - Configuration modules (flat structure)
+--   ├── core/         - Core settings (options, performance)
+--   ├── keymaps/      - Key bindings by category
+--   ├── lsp/          - Language server configurations
+--   ├── plugins/      - Plugin specifications
+--   ├── ui/           - UI and theme settings
+--   └── *.lua         - Config modules (plugins.lua, commands.lua, etc.)
 --
 -- USAGE:
 --   Symlinked to ~/.config/nvim/init.lua
@@ -116,7 +117,7 @@ end
 -- Load work-specific early initialization if available
 -- This must happen before ANY other configuration
 -- First try the new work-init module, then fallback to private init
-local work_init_ok, work_init = pcall(require, "config.work-init")
+local work_init_ok, work_init = pcall(require, "work-init")
 if work_init_ok and work_init then
   work_init.init()
 else
@@ -191,21 +192,21 @@ end -- end of nvim_create_autocmd check
 vim.g.lsp_autostart = true
 
 -- Initialize error handling first (with pcall for safety)
-local ok, error_handler = pcall(require, "config.error-handler")
+local ok, error_handler = pcall(require, "error-handler")
 if ok then
   error_handler.init()
 end
 
 -- Initialize debug logging system if in debug mode
 if vim.env.NVIM_DEBUG_WORK or vim.env.NVIM_DEBUG then
-  local debug_ok, debug_system = pcall(require, "config.debug")
-  if debug_ok then
-    debug_system.init()
+  local logging_ok, logging = pcall(require, "logging")
+  if logging_ok then
+    logging.init()
   end
 end
 
 -- Load utils for protected requires
-local utils_ok, utils = pcall(require, "config.utils")
+local utils_ok, utils = pcall(require, "utils")
 if not utils_ok then
   -- Fallback if utils not available
   utils = {
@@ -217,13 +218,13 @@ end
 
 -- Load core configuration modules with error protection and fallback
 local modules = {
-  "config.core", -- Core Vim options and settings
-  "config.ui", -- UI-related settings and appearance
-  "config.keymaps", -- Key mappings
-  "config.autocmds", -- Autocommands
-  "config.plugins", -- Plugin management with lazy.nvim
-  "config.commands", -- Custom commands
-  "config.fixy", -- Fixy formatter integration
+  "core", -- Core Vim options and settings
+  "ui", -- UI-related settings and appearance
+  "keymaps", -- Key mappings
+  "autocmds", -- Autocommands
+  "plugins", -- Plugin management with lazy.nvim
+  "commands", -- Custom commands
+  "fixy", -- Fixy formatter integration
 }
 
 for _, module in ipairs(modules) do
@@ -242,14 +243,14 @@ else
   vim.api.nvim_create_autocmd("User", {
     pattern = "LazyVimStarted",
     callback = function()
-      utils.safe_require("config.ui.theme")
+      utils.safe_require("ui.theme")
     end,
   })
 end
 
 -- Apply work-specific overrides if available
 -- This should happen after base config but before LSP setup
-local work = utils.safe_require("config.work")
+local work = utils.safe_require("work")
 ---@diagnostic disable-next-line: undefined-field
 if work and work.apply_overrides then
   ---@diagnostic disable-next-line: undefined-field
