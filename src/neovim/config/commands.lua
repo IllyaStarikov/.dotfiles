@@ -626,4 +626,28 @@ vim.api.nvim_create_autocmd("User", {
   callback = setup_ai_commands,
 })
 
+-- =============================================================================
+-- CONFIG RELOAD
+-- =============================================================================
+
+-- Reload neovim configuration
+api.nvim_create_user_command("ReloadConfig", function()
+  -- Clear cached config modules
+  for name, _ in pairs(package.loaded) do
+    if name:match("^config%.") then
+      package.loaded[name] = nil
+    end
+  end
+
+  -- Re-source init.lua
+  local init_path = vim.fn.stdpath("config") .. "/init.lua"
+  local ok, err = pcall(dofile, init_path)
+
+  if ok then
+    vim.notify("Config reloaded successfully", vim.log.levels.INFO)
+  else
+    vim.notify("Config reload failed: " .. err, vim.log.levels.ERROR)
+  end
+end, { desc = "Reload neovim configuration" })
+
 -- Load this module from init.lua with: require('config.commands')
