@@ -8,8 +8,7 @@ else
   name=$(basename "$PWD")
 fi
 
-# Sanitize for tmux (replace dots and colons with dashes)
-name=${name//./-}
+# Sanitize for tmux (colons are special in session:window.pane syntax)
 name=${name//:/-}
 
 # Check if session already exists
