@@ -288,6 +288,20 @@ src/neovim/
 
 **Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
+**CI/Presubmit Checks for Major Refactors**: When doing significant refactoring (moving files, renaming modules, changing plugin configs), always verify CI passes after pushing:
+```bash
+# Push and watch CI
+git push && cd ~/.dotfiles && gh run list --limit 4  # Check workflows started
+gh run watch <run-id> --exit-status                   # Watch specific workflow
+```
+
+**Known CI-Breaking Patterns** (learned from experience):
+- **nvim-treesitter**: Uses `require("nvim-treesitter")` NOT `require("nvim-treesitter.configs")` (deprecated)
+- **lazy.nvim `missing = true`**: Causes plugin auto-install which times out in Docker e2e tests (10s limit)
+- **LuaSnip jsregexp build**: Native compilation times out in CI Docker containers - keep build step disabled
+- **Lua module naming**: Don't name files `debug.lua` - conflicts with Lua's built-in `debug` module
+- **File moves/renames**: Update ALL `require()` paths when moving Lua modules
+
 **Code Formatting**: Always use `./src/scripts/fixy` instead of individual formatters. It uses the priority system defined in `/config/fixy.json`.
 
 **Private Repository**: Check for existence of `.dotfiles.private` before accessing work-specific configurations:
