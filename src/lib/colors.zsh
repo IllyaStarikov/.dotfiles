@@ -89,14 +89,14 @@ color256() {
   local is_bg="${2:-0}"
 
   if [[ $color_num -lt 0 || $color_num -gt 255 ]]; then
-    echo "Invalid color number: $color_num (must be 0-255)" >&2
-    return 1
+  echo "Invalid color number: $color_num (must be 0-255)" >&2
+  return 1
   fi
 
   if [[ $is_bg -eq 1 ]]; then
-    echo "\033[48;5;${color_num}m"
+  echo "\033[48;5;${color_num}m"
   else
-    echo "\033[38;5;${color_num}m"
+  echo "\033[38;5;${color_num}m"
   fi
 }
 
@@ -109,16 +109,16 @@ rgb() {
 
   # Validate RGB values
   for val in $r $g $b; do
-    if [[ $val -lt 0 || $val -gt 255 ]]; then
-      echo "Invalid RGB value: $val (must be 0-255)" >&2
-      return 1
-    fi
+  if [[ $val -lt 0 || $val -gt 255 ]]; then
+    echo "Invalid RGB value: $val (must be 0-255)" >&2
+    return 1
+  fi
   done
 
   if [[ $is_bg -eq 1 ]]; then
-    echo "\033[48;2;${r};${g};${b}m"
+  echo "\033[48;2;${r};${g};${b}m"
   else
-    echo "\033[38;2;${r};${g};${b}m"
+  echo "\033[38;2;${r};${g};${b}m"
   fi
 }
 
@@ -127,8 +127,8 @@ hex_to_rgb() {
   local hex="${1#\#}" # Remove # if present
 
   if [[ ${#hex} -ne 6 ]]; then
-    echo "Invalid hex color: $1 (must be 6 digits)" >&2
-    return 1
+  echo "Invalid hex color: $1 (must be 6 digits)" >&2
+  return 1
   fi
 
   local r=$((16#${hex:0:2}))
@@ -146,11 +146,11 @@ colorize() {
 
   # Check if color is in our predefined colors
   if [[ -n "${COLORS[$color]}" ]]; then
-    echo -e "${COLORS[$color]}${text}${STYLES[RESET]}"
+  echo -e "${COLORS[$color]}${text}${STYLES[RESET]}"
   elif [[ -n "${COLOR_ALIASES[$color]}" ]]; then
-    echo -e "${COLOR_ALIASES[$color]}${text}${STYLES[RESET]}"
+  echo -e "${COLOR_ALIASES[$color]}${text}${STYLES[RESET]}"
   else
-    echo -e "${color}${text}${STYLES[RESET]}"
+  echo -e "${color}${text}${STYLES[RESET]}"
   fi
 }
 
@@ -161,9 +161,9 @@ stylize() {
   local text="$*"
 
   if [[ -n "${STYLES[$style]}" ]]; then
-    echo -e "${STYLES[$style]}${text}${STYLES[RESET]}"
+  echo -e "${STYLES[$style]}${text}${STYLES[RESET]}"
   else
-    echo "$text"
+  echo "$text"
   fi
 }
 
@@ -175,13 +175,13 @@ rainbow() {
   local color_index=0
 
   for ((i = 0; i < ${#text}; i++)); do
-    local char="${text:$i:1}"
-    if [[ "$char" != " " ]]; then
-      result+="${COLORS[${colors[$color_index]}]}${char}"
-      color_index=$(((color_index + 1) % ${#colors[@]}))
-    else
-      result+=" "
-    fi
+  local char="${text:$i:1}"
+  if [[ "$char" != " " ]]; then
+    result+="${COLORS[${colors[$color_index]}]}${char}"
+    color_index=$(((color_index + 1) % ${#colors[@]}))
+  else
+    result+=" "
+  fi
   done
 
   echo -e "${result}${STYLES[RESET]}"
@@ -196,10 +196,10 @@ gradient() {
   local result=""
 
   for ((i = 0; i < length; i++)); do
-    local char="${text:$i:1}"
-    local progress=$(((i * 100) / length))
-    local color=$((start_color + ((end_color - start_color) * progress / 100)))
-    result+="$(color256 $color)${char}"
+  local char="${text:$i:1}"
+  local progress=$(((i * 100) / length))
+  local color=$((start_color + ((end_color - start_color) * progress / 100)))
+  result+="$(color256 $color)${char}"
   done
 
   echo -e "${result}${STYLES[RESET]}"
@@ -214,27 +214,27 @@ strip_colors() {
 # Check if terminal supports colors
 supports_colors() {
   if [[ -t 1 ]] && [[ -n "${TERM}" ]] && [[ "${TERM}" != "dumb" ]]; then
-    return 0
+  return 0
   else
-    return 1
+  return 1
   fi
 }
 
 # Check if terminal supports 256 colors
 supports_256_colors() {
   if [[ "${TERM}" == *"256color"* ]] || [[ "${COLORTERM}" == *"256"* ]]; then
-    return 0
+  return 0
   else
-    return 1
+  return 1
   fi
 }
 
 # Check if terminal supports true color (24-bit)
 supports_true_color() {
   if [[ "${COLORTERM}" == "truecolor" ]] || [[ "${COLORTERM}" == "24bit" ]]; then
-    return 0
+  return 0
   else
-    return 1
+  return 1
   fi
 }
 
@@ -242,11 +242,11 @@ supports_true_color() {
 show_palette() {
   echo "Basic 16-color palette:"
   for color in BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
-    echo -e "${COLORS[$color]}■■■ ${color}${STYLES[RESET]}"
+  echo -e "${COLORS[$color]}■■■ ${color}${STYLES[RESET]}"
   done
   echo
   for color in BRIGHT_BLACK BRIGHT_RED BRIGHT_GREEN BRIGHT_YELLOW BRIGHT_BLUE BRIGHT_MAGENTA BRIGHT_CYAN BRIGHT_WHITE; do
-    echo -e "${COLORS[$color]}■■■ ${color}${STYLES[RESET]}"
+  echo -e "${COLORS[$color]}■■■ ${color}${STYLES[RESET]}"
   done
 }
 
@@ -254,12 +254,12 @@ show_palette() {
 show_256_palette() {
   echo "256-color palette:"
   for i in {0..255}; do
-    printf "$(color256 "$i")%3d${STYLES[RESET]}" "$i"
-    if (((i + 1) % 16 == 0)); then
-      echo
-    else
-      printf " "
-    fi
+  printf "$(color256 "$i")%3d${STYLES[RESET]}" "$i"
+  if (((i + 1) % 16 == 0)); then
+    echo
+  else
+    printf " "
+  fi
   done
 }
 
@@ -267,7 +267,7 @@ show_256_palette() {
 show_styles() {
   echo "Text styles:"
   for style in BOLD DIM ITALIC UNDERLINE BLINK REVERSE STRIKETHROUGH; do
-    echo -e "${STYLES[$style]}${style}${STYLES[RESET]}"
+  echo -e "${STYLES[$style]}${style}${STYLES[RESET]}"
   done
 }
 

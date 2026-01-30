@@ -22,14 +22,14 @@ typeset -g _LAST_CMD_FAILED=0
 # Safe to call from any context (doesn't require ZLE)
 _cancel_async_autosuggest() {
   if [[ -n "${_ZSH_AUTOSUGGEST_ASYNC_FD:-}" ]]; then
-    zle -F "$_ZSH_AUTOSUGGEST_ASYNC_FD" 2>/dev/null
-    exec {_ZSH_AUTOSUGGEST_ASYNC_FD}<&- 2>/dev/null
-    unset _ZSH_AUTOSUGGEST_ASYNC_FD
+  zle -F "$_ZSH_AUTOSUGGEST_ASYNC_FD" 2>/dev/null
+  exec {_ZSH_AUTOSUGGEST_ASYNC_FD}<&- 2>/dev/null
+  unset _ZSH_AUTOSUGGEST_ASYNC_FD
   fi
 
   if [[ -n "${_ZSH_AUTOSUGGEST_CHILD_PID:-}" ]]; then
-    kill -TERM "$_ZSH_AUTOSUGGEST_CHILD_PID" 2>/dev/null
-    unset _ZSH_AUTOSUGGEST_CHILD_PID
+  kill -TERM "$_ZSH_AUTOSUGGEST_CHILD_PID" 2>/dev/null
+  unset _ZSH_AUTOSUGGEST_CHILD_PID
   fi
 }
 
@@ -44,13 +44,13 @@ _reset_zle_display_state() {
   # Remove autosuggestion entries from region_highlight
   # Keep syntax highlighting, remove dim autosuggestion entries
   if (( ${#region_highlight[@]} > 0 )); then
-    local -a new_highlights=()
-    local entry
-    for entry in "${region_highlight[@]}"; do
-      [[ "$entry" != *"${ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE:-fg=8}"* ]] && \
-        new_highlights+=("$entry")
-    done
-    region_highlight=("${new_highlights[@]}")
+  local -a new_highlights=()
+  local entry
+  for entry in "${region_highlight[@]}"; do
+    [[ "$entry" != *"${ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE:-fg=8}"* ]] && \
+    new_highlights+=("$entry")
+  done
+  region_highlight=("${new_highlights[@]}")
   fi
 }
 
@@ -61,7 +61,7 @@ _full_zle_recovery() {
 
   # Trigger fresh autosuggestion if buffer has content
   if (( ${#BUFFER} > 0 )) && (( ${+functions[_zsh_autosuggest_fetch]} )); then
-    _zsh_autosuggest_fetch
+  _zsh_autosuggest_fetch
   fi
 }
 
@@ -73,10 +73,10 @@ _precmd_zle_state_prep() {
   local exit_status=$?
 
   if (( exit_status != 0 )); then
-    _LAST_CMD_FAILED=1
-    _cancel_async_autosuggest
+  _LAST_CMD_FAILED=1
+  _cancel_async_autosuggest
   else
-    _LAST_CMD_FAILED=0
+  _LAST_CMD_FAILED=0
   fi
 }
 
@@ -86,8 +86,8 @@ _precmd_zle_state_prep() {
 
 _zle_line_init_recovery() {
   if (( _LAST_CMD_FAILED )); then
-    _full_zle_recovery
-    _LAST_CMD_FAILED=0
+  _full_zle_recovery
+  _LAST_CMD_FAILED=0
   fi
 }
 
@@ -114,12 +114,12 @@ fi
 if (( ${+widgets[zle-line-init]} )); then
   local _existing=${widgets[zle-line-init]#user:}
   if [[ -n "$_existing" && "$_existing" != "_zle_line_init_wrapper" ]]; then
-    eval "_preserved_zle_line_init() { $_existing \"\$@\" }"
-    _zle_line_init_wrapper() {
-      _zle_line_init_recovery
-      _preserved_zle_line_init "$@"
-    }
-    zle -N zle-line-init _zle_line_init_wrapper
+  eval "_preserved_zle_line_init() { $_existing \"\$@\" }"
+  _zle_line_init_wrapper() {
+    _zle_line_init_recovery
+    _preserved_zle_line_init "$@"
+  }
+  zle -N zle-line-init _zle_line_init_wrapper
   fi
 else
   zle -N zle-line-init _zle_line_init_recovery

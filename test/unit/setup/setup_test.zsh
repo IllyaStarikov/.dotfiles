@@ -46,7 +46,7 @@ it "should support dry run mode" && {
 it "should check for Homebrew installation" && {
   # Mock brew command not found
   brew() {
-    return 127
+  return 127
   }
   export -f brew
 
@@ -60,11 +60,11 @@ it "should check for Homebrew installation" && {
 it "should verify macOS compatibility" && {
   # Mock sw_vers command
   sw_vers() {
-    case "$1" in
-      -productName) echo "macOS" ;;
-      -productVersion) echo "12.0" ;;
-      *) return 1 ;;
-    esac
+  case "$1" in
+    -productName) echo "macOS" ;;
+    -productVersion) echo "12.0" ;;
+    *) return 1 ;;
+  esac
   }
   export -f sw_vers
 
@@ -82,12 +82,12 @@ it "should create backup directory" && {
 
   # Run backup directory creation
   bash -c "
-        source $DOTFILES_DIR/src/setup/setup.sh
-        create_backup_dir() {
-            mkdir -p \"\$BACKUP_DIR\"
-        }
-        create_backup_dir
-    "
+    source $DOTFILES_DIR/src/setup/setup.sh
+    create_backup_dir() {
+      mkdir -p \"\$BACKUP_DIR\"
+    }
+    create_backup_dir
+  "
 
   assert_directory_exists "$BACKUP_DIR"
 }
@@ -99,9 +99,9 @@ it "should validate required tools" && {
 
   # Check for required commands
   for cmd in git curl wget; do
-    if ! command -v "$cmd" &>/dev/null; then
-      missing_tools+=("$cmd")
-    fi
+  if ! command -v "$cmd" &>/dev/null; then
+    missing_tools+=("$cmd")
+  fi
   done
 
   # At least git should be available in CI
@@ -139,9 +139,9 @@ it "should display help message" && {
 it "should define required functions" && {
   # Source script and check functions
   output=$(bash -c "
-        source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
-        declare -F | grep -E 'install_|setup_|configure_' | wc -l
-    ")
+    source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
+    declare -F | grep -E 'install_|setup_|configure_' | wc -l
+  ")
 
   # Should have multiple setup functions
   assert_greater_than "$output" 0
@@ -190,11 +190,11 @@ it "should not overwrite existing files without backup" && {
 
   # Check that script would create backup
   output=$(bash -c "
-        source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
-        if [[ -f \"$HOME/.zshrc\" ]]; then
-            echo 'would-backup'
-        fi
-    ")
+    source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
+    if [[ -f \"$HOME/.zshrc\" ]]; then
+      echo 'would-backup'
+    fi
+  ")
 
   assert_contains "$output" "would-backup"
 }

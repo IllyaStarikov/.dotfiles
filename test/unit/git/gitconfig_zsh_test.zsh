@@ -14,9 +14,9 @@ if [[ -f "$DOTFILES_DIR/src/gitconfig" ]]; then
   has_email=$(grep -q "email =" "$DOTFILES_DIR/src/gitconfig" && echo 1 || echo 0)
 
   if [[ $has_name -eq 1 ]] && [[ $has_email -eq 1 ]]; then
-    pass
+  pass
   else
-    fail "Missing user configuration"
+  fail "Missing user configuration"
   fi
 else
   skip "gitconfig not found"
@@ -25,22 +25,22 @@ fi
 test_case "Common git aliases exist"
 if [[ -f "$DOTFILES_DIR/src/gitconfig" ]]; then
   aliases=(
-    "st"
-    "co"
-    "br"
+  "st"
+  "co"
+  "br"
   )
 
   found=0
   for alias in "${aliases[@]}"; do
-    if grep -q "$alias =" "$DOTFILES_DIR/src/gitconfig"; then
-      ((found++))
-    fi
+  if grep -q "$alias =" "$DOTFILES_DIR/src/gitconfig"; then
+    ((found++))
+  fi
   done
 
   if [[ $found -ge 2 ]]; then
-    pass
+  pass
   else
-    fail "Only $found/${#aliases[@]} git aliases found"
+  fail "Only $found/${#aliases[@]} git aliases found"
   fi
 else
   skip "gitconfig not found"

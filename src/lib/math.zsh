@@ -28,8 +28,8 @@ divide() {
   local precision="${3:-2}"
 
   if [[ "$divisor" == "0" ]]; then
-    echo "Error: Division by zero" >&2
-    return 1
+  echo "Error: Division by zero" >&2
+  return 1
   fi
 
   printf "%.${precision}f\n" "$(echo "scale=$precision; $dividend / $divisor" | bc -l 2>/dev/null || echo "$dividend $divisor" | awk '{printf "%.'"$precision"'f", $1/$2}')"
@@ -85,9 +85,9 @@ min() {
   local min_val="$1"
   shift
   for val in "$@"; do
-    if (($(echo "$val < $min_val" | bc -l 2>/dev/null || echo "$val $min_val" | awk '{print ($1 < $2)}'))); then
-      min_val="$val"
-    fi
+  if (($(echo "$val < $min_val" | bc -l 2>/dev/null || echo "$val $min_val" | awk '{print ($1 < $2)}'))); then
+    min_val="$val"
+  fi
   done
   echo "$min_val"
 }
@@ -97,9 +97,9 @@ max() {
   local max_val="$1"
   shift
   for val in "$@"; do
-    if (($(echo "$val > $max_val" | bc -l 2>/dev/null || echo "$val $max_val" | awk '{print ($1 > $2)}'))); then
-      max_val="$val"
-    fi
+  if (($(echo "$val > $max_val" | bc -l 2>/dev/null || echo "$val $max_val" | awk '{print ($1 > $2)}'))); then
+    max_val="$val"
+  fi
   done
   echo "$max_val"
 }
@@ -184,12 +184,12 @@ median() {
   local count=${#sorted[@]}
 
   if ((count % 2 == 0)); then
-    local mid1=$((count / 2 - 1))
-    local mid2=$((count / 2))
-    average "${sorted[$mid1]}" "${sorted[$mid2]}"
+  local mid1=$((count / 2 - 1))
+  local mid2=$((count / 2))
+  average "${sorted[$mid1]}" "${sorted[$mid2]}"
   else
-    local mid=$((count / 2))
-    echo "${sorted[$mid]}"
+  local mid=$((count / 2))
+  echo "${sorted[$mid]}"
   fi
 }
 
@@ -212,9 +212,9 @@ variance() {
   local count=$#
 
   for val in "$@"; do
-    local diff=$(subtract "$val" "$mean")
-    local sq_diff=$(multiply "$diff" "$diff")
-    sum_sq_diff=$(add "$sum_sq_diff" "$sq_diff")
+  local diff=$(subtract "$val" "$mean")
+  local sq_diff=$(multiply "$diff" "$diff")
+  sum_sq_diff=$(add "$sum_sq_diff" "$sq_diff")
   done
 
   divide "$sum_sq_diff" "$count"
@@ -381,13 +381,13 @@ simple_interest() {
 factorial() {
   local n="$1"
   if [[ $n -le 1 ]]; then
-    echo 1
+  echo 1
   else
-    local result=1
-    for ((i = 2; i <= n; i++)); do
-      result=$(multiply "$result" "$i")
-    done
-    echo "$result"
+  local result=1
+  for ((i = 2; i <= n; i++)); do
+    result=$(multiply "$result" "$i")
+  done
+  echo "$result"
   fi
 }
 
@@ -397,9 +397,9 @@ gcd() {
   local b="$2"
 
   while [[ $b -ne 0 ]]; do
-    local temp=$b
-    b=$(modulo "$a" "$b")
-    a=$temp
+  local temp=$b
+  b=$(modulo "$a" "$b")
+  a=$temp
   done
 
   echo "$a"
@@ -420,25 +420,25 @@ is_prime() {
   local n="$1"
 
   if [[ $n -le 1 ]]; then
-    return 1
+  return 1
   fi
 
   if [[ $n -le 3 ]]; then
-    return 0
+  return 0
   fi
 
   if [[ $(modulo "$n" 2) -eq 0 ]] || [[ $(modulo "$n" 3) -eq 0 ]]; then
-    return 1
+  return 1
   fi
 
   local i=5
   local sqrt_n=$(sqrt "$n" 0)
 
   while [[ $i -le $sqrt_n ]]; do
-    if [[ $(modulo "$n" "$i") -eq 0 ]] || [[ $(modulo "$n" $((i + 2))) -eq 0 ]]; then
-      return 1
-    fi
-    i=$((i + 6))
+  if [[ $(modulo "$n" "$i") -eq 0 ]] || [[ $(modulo "$n" $((i + 2))) -eq 0 ]]; then
+    return 1
+  fi
+  i=$((i + 6))
   done
 
   return 0
@@ -449,17 +449,17 @@ fibonacci() {
   local n="$1"
 
   if [[ $n -le 0 ]]; then
-    echo 0
+  echo 0
   elif [[ $n -eq 1 ]]; then
-    echo 1
+  echo 1
   else
-    local a=0
-    local b=1
-    for ((i = 2; i <= n; i++)); do
-      local temp=$(add "$a" "$b")
-      a=$b
-      b=$temp
-    done
-    echo "$b"
+  local a=0
+  local b=1
+  for ((i = 2; i <= n; i++)); do
+    local temp=$(add "$a" "$b")
+    a=$b
+    b=$temp
+  done
+  echo "$b"
   fi
 }

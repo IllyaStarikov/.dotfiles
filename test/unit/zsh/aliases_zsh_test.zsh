@@ -12,23 +12,23 @@ fi
 test_case "Common aliases are defined"
 if [[ -f "$alias_file" ]]; then
   common_aliases=(
-    "ll"
-    "la"
-    "g"
-    "vim"
+  "ll"
+  "la"
+  "g"
+  "vim"
   )
 
   found=0
   for alias_name in "${common_aliases[@]}"; do
-    if grep -q "alias $alias_name=" "$alias_file" 2>/dev/null; then
-      ((found++))
-    fi
+  if grep -q "alias $alias_name=" "$alias_file" 2>/dev/null; then
+    ((found++))
+  fi
   done
 
   if [[ $found -ge 3 ]]; then
-    pass
+  pass
   else
-    fail "Only $found/${#common_aliases[@]} common aliases found"
+  fail "Only $found/${#common_aliases[@]} common aliases found"
   fi
 else
   skip "Aliases file not found"

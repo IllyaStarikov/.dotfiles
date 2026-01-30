@@ -72,7 +72,7 @@ print_info() {
 
 print_debug() {
   if [[ "${DEBUG:-false}" == true ]]; then
-    echo -e "${CYAN}[DEBUG]${NC} $1"
+  echo -e "${CYAN}[DEBUG]${NC} $1"
   fi
 }
 
@@ -83,12 +83,12 @@ run_phase() {
   print_phase "$phase_name"
 
   if $phase_function; then
-    PHASE_PASSED=$((PHASE_PASSED + 1))
-    print_success "$phase_name completed"
+  PHASE_PASSED=$((PHASE_PASSED + 1))
+  print_success "$phase_name completed"
   else
-    PHASE_FAILED=$((PHASE_FAILED + 1))
-    print_error "$phase_name failed"
-    return 1
+  PHASE_FAILED=$((PHASE_FAILED + 1))
+  print_error "$phase_name failed"
+  return 1
   fi
 }
 
@@ -109,19 +109,19 @@ phase_system_info() {
 phase_prepare_environment() {
   # Set execute permissions on scripts
   local scripts=(
-    "${DOTFILES_DIR}/src/setup/setup.sh"
-    "${DOTFILES_DIR}/src/setup/symlinks.sh"
-    "${DOTFILES_DIR}/src/setup/linux.sh"
-    "${DOTFILES_DIR}/test/runner.zsh"
+  "${DOTFILES_DIR}/src/setup/setup.sh"
+  "${DOTFILES_DIR}/src/setup/symlinks.sh"
+  "${DOTFILES_DIR}/src/setup/linux.sh"
+  "${DOTFILES_DIR}/test/runner.zsh"
   )
 
   for script in $scripts; do
-    if [[ -f "$script" ]]; then
-      chmod +x "$script"
-      print_success "Made executable: $(basename "$script")"
-    else
-      print_warning "Script not found: $script"
-    fi
+  if [[ -f "$script" ]]; then
+    chmod +x "$script"
+    print_success "Made executable: $(basename "$script")"
+  else
+    print_warning "Script not found: $script"
+  fi
   done
 
   # Create necessary directories
@@ -140,11 +140,11 @@ phase_run_setup() {
   # Also skip Starship in Docker since it requires sudo to install to /usr/local/bin
   export SKIP_STARSHIP=1
   if ./src/setup/setup.sh --core --skip-brew; then
-    print_success "Setup script completed"
-    return 0
+  print_success "Setup script completed"
+  return 0
   else
-    print_error "Setup script failed"
-    return 1
+  print_error "Setup script failed"
+  return 1
   fi
 }
 
@@ -153,17 +153,17 @@ phase_verify_installations() {
   local missing=()
 
   for tool in $tools; do
-    if command -v "$tool" &> /dev/null; then
-      print_success "$tool installed: $(command -v "$tool")"
-    else
-      print_error "$tool not found"
-      missing+=("$tool")
-    fi
+  if command -v "$tool" &> /dev/null; then
+    print_success "$tool installed: $(command -v "$tool")"
+  else
+    print_error "$tool not found"
+    missing+=("$tool")
+  fi
   done
 
   if [[ ${#missing[@]} -gt 0 ]]; then
-    print_error "Missing tools: ${missing[*]}"
-    return 1
+  print_error "Missing tools: ${missing[*]}"
+  return 1
   fi
 
   return 0
@@ -171,20 +171,20 @@ phase_verify_installations() {
 
 phase_verify_symlinks() {
   local symlinks=(
-    "${HOME}/.zshrc"
-    "${HOME}/.gitconfig"
-    "${HOME}/.tmux.conf"
-    "${HOME}/.config/nvim"
+  "${HOME}/.zshrc"
+  "${HOME}/.gitconfig"
+  "${HOME}/.tmux.conf"
+  "${HOME}/.config/nvim"
   )
 
   local failed=0
   for link in $symlinks; do
-    if [[ -L "$link" ]] || [[ -f "$link" ]] || [[ -d "$link" ]]; then
-      print_success "$(basename "$link") exists"
-    else
-      print_error "$(basename "$link") missing"
-      failed=1
-    fi
+  if [[ -L "$link" ]] || [[ -f "$link" ]] || [[ -d "$link" ]]; then
+    print_success "$(basename "$link") exists"
+  else
+    print_error "$(basename "$link") missing"
+    failed=1
+  fi
   done
 
   return "$failed"
@@ -193,16 +193,16 @@ phase_verify_symlinks() {
 phase_test_shell_config() {
   # Test that zshrc loads without errors
   if zsh -c "source ${HOME}/.zshrc" 2>/dev/null; then
-    print_success "Zsh configuration loads"
+  print_success "Zsh configuration loads"
   else
-    print_warning "Zsh configuration has warnings (non-critical)"
+  print_warning "Zsh configuration has warnings (non-critical)"
   fi
 
   # Test that basic aliases work
   if zsh -c "source ${HOME}/.zshrc && alias | grep -q 'll'"; then
-    print_success "Aliases configured"
+  print_success "Aliases configured"
   else
-    print_warning "Some aliases missing"
+  print_warning "Some aliases missing"
   fi
 
   return 0
@@ -212,17 +212,17 @@ phase_test_neovim() {
   print_debug "Testing Neovim startup..."
   # Test that Neovim starts without errors
   if timeout 10 nvim --headless -c ':qa' 2>/dev/null; then
-    print_success "Neovim starts successfully"
+  print_success "Neovim starts successfully"
   else
-    print_warning "Neovim startup has issues (may be plugin installation)"
+  print_warning "Neovim startup has issues (may be plugin installation)"
   fi
 
   # Test basic Neovim functionality
   if timeout 10 nvim --headless -c ':echo "test"' -c ':qa' 2>/dev/null; then
-    print_success "Neovim basic functionality works"
+  print_success "Neovim basic functionality works"
   else
-    print_error "Neovim basic functionality failed"
-    return 1
+  print_error "Neovim basic functionality failed"
+  return 1
   fi
 
   return 0
@@ -251,31 +251,31 @@ phase_run_unit_tests() {
 
   # Run unit tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    local timeout_val=300  # Increased from 180
-    if [[ "${DEBUG:-false}" == true ]]; then
-      print_info "Running FULL unit tests (may take several minutes)..."
-      timeout_val=600  # Increased from 300
-    fi
+  local timeout_val=300  # Increased from 180
+  if [[ "${DEBUG:-false}" == true ]]; then
+    print_info "Running FULL unit tests (may take several minutes)..."
+    timeout_val=600  # Increased from 300
+  fi
 
-    # Run with explicit timeout and non-interactive flags
-    print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit"
-    if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
-      print_success "Unit tests passed"
-      return 0
-    else
-      local exit_code=$?
-      if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
-        print_error "Unit tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
-        return 1  # FAIL on timeout
-      else
-        print_error "Unit tests FAILED (exit code: $exit_code)"
-        # ALL test failures are critical for E2E
-        return 1  # FAIL on any test failure
-      fi
-    fi
+  # Run with explicit timeout and non-interactive flags
+  print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit"
+  if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --unit < /dev/null"; then
+    print_success "Unit tests passed"
+    return 0
   else
-    print_error "Test runner not found or not executable"
-    return 1
+    local exit_code=$?
+    if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
+    print_error "Unit tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
+    return 1  # FAIL on timeout
+    else
+    print_error "Unit tests FAILED (exit code: $exit_code)"
+    # ALL test failures are critical for E2E
+    return 1  # FAIL on any test failure
+    fi
+  fi
+  else
+  print_error "Test runner not found or not executable"
+  return 1
   fi
 }
 
@@ -302,31 +302,31 @@ phase_run_functional_tests() {
 
   # Run functional tests with longer timeout for full tests
   if [[ -x "./runner.zsh" ]]; then
-    local timeout_val=300  # Increased from 180
-    if [[ "${DEBUG:-false}" == true ]]; then
-      print_info "Running FULL functional tests (may take several minutes)..."
-      timeout_val=600  # Increased from 300
-    fi
+  local timeout_val=300  # Increased from 180
+  if [[ "${DEBUG:-false}" == true ]]; then
+    print_info "Running FULL functional tests (may take several minutes)..."
+    timeout_val=600  # Increased from 300
+  fi
 
-    # Run with explicit timeout and non-interactive flags
-    print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional"
-    if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
-      print_success "Functional tests passed"
-      return 0
-    else
-      local exit_code=$?
-      if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
-        print_error "Functional tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
-        return 1  # FAIL on timeout
-      else
-        print_error "Functional tests FAILED (exit code: $exit_code)"
-        # ALL test failures are critical for E2E
-        return 1  # FAIL on any test failure
-      fi
-    fi
+  # Run with explicit timeout and non-interactive flags
+  print_debug "Running: CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional"
+  if timeout --kill-after=30 --preserve-status "$timeout_val" zsh -c "CI_MODE=1 NONINTERACTIVE=1 E2E_TEST=1 ./runner.zsh --functional < /dev/null"; then
+    print_success "Functional tests passed"
+    return 0
   else
-    print_error "Test runner not found or not executable"
-    return 1
+    local exit_code=$?
+    if [[ $exit_code -eq 124 ]] || [[ $exit_code -eq 137 ]] || [[ $exit_code -eq 143 ]]; then
+    print_error "Functional tests FAILED - timed out after ${timeout_val}s (exit: $exit_code)"
+    return 1  # FAIL on timeout
+    else
+    print_error "Functional tests FAILED (exit code: $exit_code)"
+    # ALL test failures are critical for E2E
+    return 1  # FAIL on any test failure
+    fi
+  fi
+  else
+  print_error "Test runner not found or not executable"
+  return 1
   fi
 }
 
@@ -335,22 +335,22 @@ phase_verify_development_tools() {
   local dev_tools=(python3 node npm)
 
   for tool in $dev_tools; do
-    if command -v "$tool" &> /dev/null; then
-      print_success "$tool available: $(command -v "$tool")"
-    else
-      print_info "$tool not installed (optional)"
-    fi
+  if command -v "$tool" &> /dev/null; then
+    print_success "$tool available: $(command -v "$tool")"
+  else
+    print_info "$tool not installed (optional)"
+  fi
   done
 
   # Check for optional but useful tools
   local optional_tools=(rg fd fzf)
 
   for tool in $optional_tools; do
-    if command -v "$tool" &> /dev/null; then
-      print_success "$tool available"
-    else
-      print_info "$tool not installed (optional enhancement)"
-    fi
+  if command -v "$tool" &> /dev/null; then
+    print_success "$tool available"
+  else
+    print_info "$tool not installed (optional enhancement)"
+  fi
   done
 
   return 0
@@ -365,12 +365,12 @@ main() {
   print_header "Starting E2E Test in Container"
 
   if [[ "${DEBUG:-false}" == true ]]; then
-    print_info "Debug mode enabled - verbose output active"
-    print_debug "Environment variables:"
-    print_debug "  HOME=$HOME"
-    print_debug "  DOTFILES_DIR=$DOTFILES_DIR"
-    print_debug "  CI=$CI"
-    print_debug "  E2E_TEST=$E2E_TEST"
+  print_info "Debug mode enabled - verbose output active"
+  print_debug "Environment variables:"
+  print_debug "  HOME=$HOME"
+  print_debug "  DOTFILES_DIR=$DOTFILES_DIR"
+  print_debug "  CI=$CI"
+  print_debug "  E2E_TEST=$E2E_TEST"
   fi
 
   # Run all test phases
@@ -399,11 +399,11 @@ main() {
   echo ""
 
   if [[ $PHASE_FAILED -eq 0 ]]; then
-    print_header "✅ E2E Test Completed Successfully!"
-    exit 0
+  print_header "✅ E2E Test Completed Successfully!"
+  exit 0
   else
-    print_header "❌ E2E Test Failed"
-    exit 1
+  print_header "❌ E2E Test Failed"
+  exit 1
   fi
 }
 

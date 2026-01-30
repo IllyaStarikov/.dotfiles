@@ -102,9 +102,9 @@ test_case "Can execute custom scripts"
 if [[ -x "$DOTFILES_DIR/src/scripts/theme" ]]; then
   output=$("$DOTFILES_DIR/src/scripts/theme" --list 2>&1 || echo "failed")
   if [[ "$output" != "failed" ]]; then
-    pass
+  pass
   else
-    fail "Script execution failed"
+  fail "Script execution failed"
   fi
 else
   skip "Theme script not found"
@@ -118,7 +118,7 @@ permission_issues=0
 if [[ -f "$DOTFILES_DIR/src/git/gitconfig" ]]; then
   perms=$(stat -f "%OLp" "$DOTFILES_DIR/src/git/gitconfig" 2>/dev/null || stat -c "%a" "$DOTFILES_DIR/src/git/gitconfig" 2>/dev/null)
   if [[ "${perms: -1}" != "0" ]] && [[ "${perms: -1}" != "4" ]]; then
-    ((permission_issues++))
+  ((permission_issues++))
   fi
 fi
 

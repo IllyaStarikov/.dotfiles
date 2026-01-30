@@ -95,13 +95,13 @@ critical_scripts=(
 script_errors=0
 for script in "${critical_scripts[@]}"; do
   if [[ -f "$script" ]]; then
-    # Detect shell type from shebang
-    shebang=$(head -n1 "$script")
-    if [[ "$shebang" == *"zsh"* ]]; then
-      zsh -n "$script" 2>/dev/null || ((script_errors++))
-    elif [[ "$shebang" == *"bash"* ]]; then
-      bash -n "$script" 2>/dev/null || ((script_errors++))
-    fi
+  # Detect shell type from shebang
+  shebang=$(head -n1 "$script")
+  if [[ "$shebang" == *"zsh"* ]]; then
+    zsh -n "$script" 2>/dev/null || ((script_errors++))
+  elif [[ "$shebang" == *"bash"* ]]; then
+    bash -n "$script" 2>/dev/null || ((script_errors++))
+  fi
   fi
 done
 

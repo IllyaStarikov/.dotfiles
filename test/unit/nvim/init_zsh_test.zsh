@@ -14,15 +14,15 @@ if [[ -f "$DOTFILES_DIR/src/neovim/init.lua" ]]; then
   # IMPORTANT: Use timeout to prevent CI hangs (GitHub Actions macOS issue)
   # Some CI environments cause nvim --headless to hang indefinitely
   if command -v timeout >/dev/null 2>&1; then
-    output=$(timeout 5 nvim --headless -c "luafile $DOTFILES_DIR/src/neovim/init.lua" -c "qa" 2>&1)
+  output=$(timeout 5 nvim --headless -c "luafile $DOTFILES_DIR/src/neovim/init.lua" -c "qa" 2>&1)
   else
-    # macOS doesn't have timeout by default, use alternative
-    output=$(nvim --headless -c "luafile $DOTFILES_DIR/src/neovim/init.lua" -c "qa" 2>&1 & sleep 5; kill $! 2>/dev/null)
+  # macOS doesn't have timeout by default, use alternative
+  output=$(nvim --headless -c "luafile $DOTFILES_DIR/src/neovim/init.lua" -c "qa" 2>&1 & sleep 5; kill $! 2>/dev/null)
   fi
   if [[ -z "$output" ]] || [[ "$output" != *"Error"* ]]; then
-    pass
+  pass
   else
-    fail "init.lua has errors: $output"
+  fail "init.lua has errors: $output"
   fi
 else
   fail "init.lua not found"

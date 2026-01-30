@@ -30,8 +30,8 @@ ssh_generate_key() {
   local key_path="${SSH_KEY_DIR}/${key_name}"
 
   if ssh_key_exists "$key_name"; then
-    echo "SSH key already exists: $key_path" >&2
-    return 1
+  echo "SSH key already exists: $key_path" >&2
+  return 1
   fi
 
   # Create SSH directory if it doesn't exist
@@ -40,9 +40,9 @@ ssh_generate_key() {
 
   # Generate key
   if [[ -n "$passphrase" ]]; then
-    ssh-keygen -t "$key_type" -b "$key_bits" -f "$key_path" -C "$comment" -N "$passphrase"
+  ssh-keygen -t "$key_type" -b "$key_bits" -f "$key_path" -C "$comment" -N "$passphrase"
   else
-    ssh-keygen -t "$key_type" -b "$key_bits" -f "$key_path" -C "$comment" -N ""
+  ssh-keygen -t "$key_type" -b "$key_bits" -f "$key_path" -C "$comment" -N ""
   fi
 
   # Set proper permissions
@@ -62,8 +62,8 @@ ssh_copy_key() {
   local key_path="${SSH_KEY_DIR}/${key_name}.pub"
 
   if [[ ! -f "$key_path" ]]; then
-    echo "SSH public key not found: $key_path" >&2
-    return 1
+  echo "SSH public key not found: $key_path" >&2
+  return 1
   fi
 
   ssh-copy-id -i "$key_path" -p "$port" "${user}@${host}"
@@ -77,29 +77,29 @@ ssh_list_keys() {
   echo "========================="
 
   for key in "$SSH_KEY_DIR"/*.pub; do
-    [[ -f "$key" ]] || continue
+  [[ -f "$key" ]] || continue
 
-    local key_name="${key%.pub}"
-    key_name="${key_name##*/}"
+  local key_name="${key%.pub}"
+  key_name="${key_name##*/}"
 
-    case "$format" in
-      detailed)
-        echo
-        echo "Key: $key_name"
-        ssh-keygen -l -f "$key"
-        if [[ -f "${key%.pub}" ]]; then
-          echo "  Private key: Present"
-        else
-          echo "  Private key: Missing"
-        fi
-        ;;
-      fingerprint)
-        ssh-keygen -l -f "$key"
-        ;;
-      *)
-        echo "  $key_name"
-        ;;
-    esac
+  case "$format" in
+  detailed)
+    echo
+    echo "Key: $key_name"
+    ssh-keygen -l -f "$key"
+    if [[ -f "${key%.pub}" ]]; then
+    echo "  Private key: Present"
+    else
+    echo "  Private key: Missing"
+    fi
+    ;;
+  fingerprint)
+    ssh-keygen -l -f "$key"
+    ;;
+  *)
+    echo "  $key_name"
+    ;;
+  esac
   done
 }
 
@@ -109,13 +109,13 @@ ssh_add_key() {
   local key_path="${SSH_KEY_DIR}/${key_name}"
 
   if [[ ! -f "$key_path" ]]; then
-    echo "SSH private key not found: $key_path" >&2
-    return 1
+  echo "SSH private key not found: $key_path" >&2
+  return 1
   fi
 
   # Start ssh-agent if not running
   if ! ssh-add -l >/dev/null 2>&1; then
-    eval "$(ssh-agent -s)"
+  eval "$(ssh-agent -s)"
   fi
 
   ssh-add "$key_path"
@@ -147,11 +147,11 @@ ssh_test_connection() {
   local timeout="${4:-$SSH_TIMEOUT}"
 
   ssh -o ConnectTimeout="$timeout" \
-    -o BatchMode=yes \
-    -o StrictHostKeyChecking=no \
-    -p "$port" \
-    "${user}@${host}" \
-    "echo 'SSH connection successful'" 2>/dev/null
+  -o BatchMode=yes \
+  -o StrictHostKeyChecking=no \
+  -p "$port" \
+  "${user}@${host}" \
+  "echo 'SSH connection successful'" 2>/dev/null
 }
 
 # Execute command on remote host
@@ -171,10 +171,10 @@ ssh_exec_multi() {
   local hosts=("$@")
 
   for host in "${hosts[@]}"; do
-    echo "Executing on $host:"
-    echo "===================="
-    ssh_exec "$host" "$command"
-    echo
+  echo "Executing on $host:"
+  echo "===================="
+  ssh_exec "$host" "$command"
+  echo
   done
 }
 
@@ -187,7 +187,7 @@ ssh_copy_to() {
   local user="${5:-$SSH_DEFAULT_USER}"
 
   if [[ -z "$dest" ]]; then
-    dest="~/"
+  dest="~/"
   fi
 
   scp -P "$port" "$source" "${user}@${host}:${dest}"
@@ -226,8 +226,8 @@ ssh_tunnel() {
   local jump_user="${6:-$SSH_DEFAULT_USER}"
 
   ssh -N -L "${local_port}:${remote_host}:${remote_port}" \
-    -p "$jump_port" \
-    "${jump_user}@${jump_host}"
+  -p "$jump_port" \
+  "${jump_user}@${jump_host}"
 }
 
 # Create reverse SSH tunnel
@@ -240,8 +240,8 @@ ssh_reverse_tunnel() {
   local ssh_user="${6:-$SSH_DEFAULT_USER}"
 
   ssh -N -R "${remote_port}:${local_host}:${local_port}" \
-    -p "$ssh_port" \
-    "${ssh_user}@${remote_host}"
+  -p "$ssh_port" \
+  "${ssh_user}@${remote_host}"
 }
 
 # Add host to SSH config
@@ -256,19 +256,19 @@ ssh_config_add_host() {
 
   # Check if host already exists
   if grep -q "^Host $host_alias$" "$SSH_CONFIG_FILE" 2>/dev/null; then
-    echo "Host $host_alias already exists in SSH config" >&2
-    return 1
+  echo "Host $host_alias already exists in SSH config" >&2
+  return 1
   fi
 
   # Append to SSH config
   cat >>"$SSH_CONFIG_FILE" <<EOF
 
 Host $host_alias
-    HostName $hostname
-    User $user
-    Port $port
-    IdentityFile $key_path
-    IdentitiesOnly yes
+  HostName $hostname
+  User $user
+  Port $port
+  IdentityFile $key_path
+  IdentitiesOnly yes
 EOF
 
   echo "Host $host_alias added to SSH config"
@@ -279,8 +279,8 @@ ssh_config_remove_host() {
   local host_alias="$1"
 
   if [[ ! -f "$SSH_CONFIG_FILE" ]]; then
-    echo "SSH config file not found" >&2
-    return 1
+  echo "SSH config file not found" >&2
+  return 1
   fi
 
   # Create backup
@@ -288,7 +288,7 @@ ssh_config_remove_host() {
 
   # Remove host block
   awk "/^Host $host_alias\$/{flag=1} /^Host /{if(flag && !/^Host $host_alias\$/){flag=0}} !flag" \
-    "$SSH_CONFIG_FILE" >"${SSH_CONFIG_FILE}.tmp"
+  "$SSH_CONFIG_FILE" >"${SSH_CONFIG_FILE}.tmp"
 
   mv "${SSH_CONFIG_FILE}.tmp" "$SSH_CONFIG_FILE"
   echo "Host $host_alias removed from SSH config"
@@ -297,8 +297,8 @@ ssh_config_remove_host() {
 # List hosts in SSH config
 ssh_config_list_hosts() {
   if [[ ! -f "$SSH_CONFIG_FILE" ]]; then
-    echo "SSH config file not found" >&2
-    return 1
+  echo "SSH config file not found" >&2
+  return 1
   fi
 
   echo "Hosts in SSH config:"
@@ -311,12 +311,12 @@ ssh_config_get_host() {
   local host_alias="$1"
 
   if [[ ! -f "$SSH_CONFIG_FILE" ]]; then
-    echo "SSH config file not found" >&2
-    return 1
+  echo "SSH config file not found" >&2
+  return 1
   fi
 
   awk "/^Host $host_alias\$/{flag=1} /^Host /{if(flag && !/^Host $host_alias\$/){exit}} flag" \
-    "$SSH_CONFIG_FILE"
+  "$SSH_CONFIG_FILE"
 }
 
 # Clean known hosts
@@ -344,35 +344,35 @@ ssh_host_fingerprint() {
 # Check SSH agent status
 ssh_agent_status() {
   if ssh-add -l >/dev/null 2>&1; then
-    echo "SSH agent is running"
-    echo "Keys loaded: $(ssh-add -l | wc -l)"
-    return 0
+  echo "SSH agent is running"
+  echo "Keys loaded: $(ssh-add -l | wc -l)"
+  return 0
   else
-    echo "SSH agent is not running or has no keys"
-    return 1
+  echo "SSH agent is not running or has no keys"
+  return 1
   fi
 }
 
 # Start SSH agent if not running
 ssh_agent_start() {
   if ! ssh-add -l >/dev/null 2>&1; then
-    echo "Starting SSH agent..."
-    eval "$(ssh-agent -s)"
-    echo "SSH agent started with PID $SSH_AGENT_PID"
+  echo "Starting SSH agent..."
+  eval "$(ssh-agent -s)"
+  echo "SSH agent started with PID $SSH_AGENT_PID"
   else
-    echo "SSH agent is already running"
+  echo "SSH agent is already running"
   fi
 }
 
 # Stop SSH agent
 ssh_agent_stop() {
   if [[ -n "$SSH_AGENT_PID" ]]; then
-    kill "$SSH_AGENT_PID"
-    unset SSH_AGENT_PID
-    unset SSH_AUTH_SOCK
-    echo "SSH agent stopped"
+  kill "$SSH_AGENT_PID"
+  unset SSH_AGENT_PID
+  unset SSH_AUTH_SOCK
+  echo "SSH agent stopped"
   else
-    echo "SSH agent is not running"
+  echo "SSH agent is not running"
   fi
 }
 
@@ -396,7 +396,7 @@ ssh_mount() {
   local user="${5:-$SSH_DEFAULT_USER}"
 
   if [[ -z "$mount_point" ]]; then
-    mount_point="${HOME}/mnt/${host}"
+  mount_point="${HOME}/mnt/${host}"
   fi
 
   # Create mount point if it doesn't exist
@@ -413,19 +413,19 @@ ssh_unmount() {
   local mount_point="$1"
 
   if [[ -z "$mount_point" ]]; then
-    echo "Mount point required" >&2
-    return 1
+  echo "Mount point required" >&2
+  return 1
   fi
 
   if mountpoint -q "$mount_point" 2>/dev/null || mount | grep -q "$mount_point"; then
-    if command -v fusermount >/dev/null 2>&1; then
-      fusermount -u "$mount_point"
-    else
-      umount "$mount_point"
-    fi
-    echo "Unmounted $mount_point"
+  if command -v fusermount >/dev/null 2>&1; then
+    fusermount -u "$mount_point"
   else
-    echo "$mount_point is not mounted" >&2
-    return 1
+    umount "$mount_point"
+  fi
+  echo "Unmounted $mount_point"
+  else
+  echo "$mount_point is not mounted" >&2
+  return 1
   fi
 }

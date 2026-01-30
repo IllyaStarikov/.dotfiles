@@ -22,8 +22,8 @@ fi
 # Create a file that should pass
 cat >good.py <<'EOF'
 def hello():
-    """Say hello."""
-    return "Hello, World!"
+  """Say hello."""
+  return "Hello, World!"
 EOF
 
 git add good.py
@@ -104,9 +104,9 @@ if command -v tmux >/dev/null; then
   tmux_output=$(tmux capture-pane -t test-session -p 2>/dev/null)
 
   if [[ "$tmux_output" == *"tmux-test-ok"* ]]; then
-    pass
+  pass
   else
-    fail "Neovim not working properly in tmux"
+  fail "Neovim not working properly in tmux"
   fi
 
   tmux kill-session -t test-session 2>/dev/null
@@ -127,17 +127,17 @@ cat >src/main.py <<'EOF'
 """Main application module."""
 
 def fibonacci(n):
-    """Calculate fibonacci number."""
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
+  """Calculate fibonacci number."""
+  if n <= 1:
+    return n
+  return fibonacci(n-1) + fibonacci(n-2)
 
 def main():
-    for i in range(10):
-        print(f"fib({i}) = {fibonacci(i)}")
+  for i in range(10):
+    print(f"fib({i}) = {fibonacci(i)}")
 
 if __name__ == "__main__":
-    main()
+  main()
 EOF
 
 # Test that we can edit, save, and run

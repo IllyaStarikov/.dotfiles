@@ -1070,37 +1070,42 @@ setup_python() {
 
   # Install global Python packages
   if command -v pip3 &>/dev/null; then
-    # Try to install Python packages, but don't fail if externally managed
-    pip3 install --user --upgrade pip 2>/dev/null || {
-      warning "pip upgrade failed (may be externally managed)"
-      info "Consider using pipx or virtual environments for Python packages"
-    }
+    # Determine pip install flags based on environment
+    # PEP 668 (externally managed) requires --break-system-packages on modern Python
+    local pip_flags=""
+    if pip3 install --help 2>&1 | grep -q "break-system-packages"; then
+      pip_flags="--break-system-packages"
+    fi
 
-    # Try to install essential packages, continue on failure
-    # Ensure pynvim is upgraded to latest version (0.6.0+) for Neovim compatibility
-    pip3 install --user --upgrade "pynvim>=0.6.0" 2>/dev/null || {
-      warning "Failed to upgrade pynvim to latest version"
-      info "Trying system package manager..."
-      if [[ "$OS" == "linux" ]]; then
-        case "$PKG_MANAGER" in
-          apt) sudo apt-get install -y python3-pynvim 2>/dev/null || true ;;
-          dnf | yum) sudo dnf install -y python3-neovim 2>/dev/null || true ;;
-          *) true ;;
-        esac
-      fi
-    }
-
-    # Install other Python packages
-    for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort beautysh xmlformatter; do
-      pip3 install --user "$pkg" 2>/dev/null || {
-        info "Could not install $pkg with pip, trying system package manager..."
+    # pynvim is ESSENTIAL for Neovim's Python integration
+    # Install to system Python that Neovim uses (not --user which may not be in path)
+    info "Installing pynvim for Neovim Python integration..."
+    if ! pip3 install $pip_flags --upgrade "pynvim>=0.6.0" 2>/dev/null; then
+      # Fallback: try with --user flag
+      if ! pip3 install --user --upgrade "pynvim>=0.6.0" 2>/dev/null; then
+        warning "Failed to install pynvim via pip"
+        info "Trying system package manager..."
         if [[ "$OS" == "linux" ]]; then
           case "$PKG_MANAGER" in
-            apt) sudo apt-get install -y "python3-$pkg" 2>/dev/null || true ;;
-            dnf | yum) sudo dnf install -y "python3-$pkg" 2>/dev/null || true ;;
+            apt) sudo apt-get install -y python3-pynvim 2>/dev/null || true ;;
+            dnf | yum) sudo dnf install -y python3-neovim 2>/dev/null || true ;;
+            pacman) sudo pacman -S --noconfirm python-pynvim 2>/dev/null || true ;;
             *) true ;;
           esac
+        elif [[ "$OS" == "darwin" ]]; then
+          # On macOS, pynvim should be installed via pip to the homebrew Python
+          warning "pynvim installation failed. Run manually: pip3 install --break-system-packages pynvim"
         fi
+      fi
+    else
+      success "pynvim installed successfully"
+    fi
+
+    # Install other Python packages (these are optional, use --user to avoid permission issues)
+    for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort beautysh xmlformatter; do
+      pip3 install --user "$pkg" 2>/dev/null || pip3 install $pip_flags "$pkg" 2>/dev/null || {
+        # Silent failure for optional packages - they're not critical
+        true
       }
     done
   fi

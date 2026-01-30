@@ -50,10 +50,10 @@ it "opens and edits files" && {
   echo "original" > "$test_file"
 
   nvim --headless "$test_file" \
-    +'normal! dd' \
-    +'normal! ihello world' \
-    +'write' \
-    +qa 2>&1
+  +'normal! dd' \
+  +'normal! ihello world' \
+  +'write' \
+  +qa 2>&1
 
   local content=$(cat "$test_file")
   assert_contains "$content" "hello world"
@@ -63,8 +63,8 @@ it "opens and edits files" && {
 # Test: Config directory is accessible
 it "finds config files" && {
   output=$(nvim --headless \
-    +'lua print(vim.fn.stdpath("config"))' \
-    +qa 2>&1)
+  +'lua print(vim.fn.stdpath("config"))' \
+  +qa 2>&1)
   # Should print a config path
   assert_contains "$output" "config" || assert_contains "$output" "nvim"
   pass
@@ -73,10 +73,10 @@ it "finds config files" && {
 # Test: Can handle multiple buffers
 it "manages multiple buffers" && {
   nvim --headless \
-    +'edit file1' \
-    +'edit file2' \
-    +'buffers' \
-    +qa 2>&1
+  +'edit file1' \
+  +'edit file2' \
+  +'buffers' \
+  +qa 2>&1
 
   assert_equals "$?" 0
   pass
@@ -88,8 +88,8 @@ it "loads syntax highlighting" && {
   echo '#!/bin/bash' > "$test_file"
 
   output=$(nvim --headless "$test_file" \
-    +'lua print(vim.bo.filetype)' \
-    +qa 2>&1)
+  +'lua print(vim.bo.filetype)' \
+  +qa 2>&1)
 
   assert_contains "$output" "sh" || assert_contains "$output" "bash"
   pass

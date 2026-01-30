@@ -17,9 +17,9 @@ it "should exist and be executable" && {
   local script_path="$DOTFILES_DIR/src/setup/setup.sh"
 
   if [[ -f "$script_path" ]] && [[ -x "$script_path" ]]; then
-    pass
+  pass
   else
-    fail "Setup script not found or not executable"
+  fail "Setup script not found or not executable"
   fi
 }
 
@@ -28,9 +28,9 @@ it "should provide help information" && {
   output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || true)
 
   if [[ "$output" == *"Usage"* ]] || [[ "$output" == *"usage"* ]] || [[ "$output" == *"help"* ]] || [[ "$output" == *"SETUP"* ]]; then
-    pass "Help information available"
+  pass "Help information available"
   else
-    fail "No help output"
+  fail "No help output"
   fi
 }
 
@@ -40,9 +40,9 @@ it "should handle invalid arguments gracefully" && {
 
   # Should show error or usage
   if [[ -n "$output" ]]; then
-    pass "Handled invalid argument"
+  pass "Handled invalid argument"
   else
-    fail "No output for invalid argument"
+  fail "No output for invalid argument"
   fi
 }
 
@@ -52,9 +52,9 @@ it "should support core installation mode" && {
   output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || true)
 
   if [[ "$output" == *"core"* ]] || [[ "$output" == *"Core"* ]]; then
-    pass "Core mode supported"
+  pass "Core mode supported"
   else
-    skip "Core mode not documented"
+  skip "Core mode not documented"
   fi
 }
 
@@ -64,9 +64,9 @@ it "should support symlinks mode" && {
   output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || true)
 
   if [[ "$output" == *"symlink"* ]] || [[ "$output" == *"Symlink"* ]]; then
-    pass "Symlinks mode supported"
+  pass "Symlinks mode supported"
   else
-    skip "Symlinks mode not documented"
+  skip "Symlinks mode not documented"
   fi
 }
 
@@ -76,9 +76,9 @@ it "should detect the operating system" && {
   output=$("$DOTFILES_DIR/src/setup/setup.sh" --help 2>&1 || zsh "$DOTFILES_DIR/src/setup/setup.sh" 2>&1 | head -20 || true)
 
   if [[ "$output" == *"macOS"* ]] || [[ "$output" == *"Linux"* ]] || [[ "$output" == *"Darwin"* ]] || [[ "$output" == *"System:"* ]]; then
-    pass "OS detection works"
+  pass "OS detection works"
   else
-    skip "OS detection not visible in output"
+  skip "OS detection not visible in output"
   fi
 }
 

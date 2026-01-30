@@ -82,10 +82,10 @@ it "should configure credential handling" && {
 it "should set up GPG signing if configured" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
   if [[ "$git_content" == *"signingkey"* ]]; then
-    assert_contains "$git_content" "gpgsign"
-    pass
+  assert_contains "$git_content" "gpgsign"
+  pass
   else
-    skip "GPG signing not configured"
+  skip "GPG signing not configured"
   fi
 }
 

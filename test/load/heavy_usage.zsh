@@ -14,16 +14,16 @@ test_neovim_many_files() {
 
   # Create test files
   for i in {1..50}; do
-    echo "Test file $i content" >"$test_dir/file_$i.txt"
+  echo "Test file $i content" >"$test_dir/file_$i.txt"
   done
 
   local start_time=$(date +%s%N)
 
   # Open all files in Neovim
   local nvim_output=$(timeout 30 nvim --headless \
-    "$test_dir"/file_*.txt \
-    -c "echo 'load_test_ok'" \
-    -c "qa!" 2>&1)
+  "$test_dir"/file_*.txt \
+  -c "echo 'load_test_ok'" \
+  -c "qa!" 2>&1)
 
   local end_time=$(date +%s%N)
   local duration=$(((end_time - start_time) / 1000000))
@@ -32,19 +32,19 @@ test_neovim_many_files() {
 
   # Check memory usage
   if [[ "$(uname)" == "Darwin" ]]; then
-    local mem_check=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Free pages after load: $mem_check"
+  local mem_check=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Free pages after load: $mem_check"
   fi
 
   # Cleanup
   rm -rf "$test_dir"
 
   if [[ "$nvim_output" == *"load_test_ok"* ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim handled 50 files"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim handled 50 files"
+  return 0
   else
-    log "ERROR" "Neovim failed under load"
-    return 1
+  log "ERROR" "Neovim failed under load"
+  return 1
   fi
 }
 
@@ -64,9 +64,9 @@ test_large_file_handling() {
   # Test opening in Neovim
   local start_time=$(date +%s%N)
   local nvim_output=$(timeout 30 nvim --headless \
-    "$test_file" \
-    -c "echo 'large_file_ok'" \
-    -c "qa!" 2>&1)
+  "$test_file" \
+  -c "echo 'large_file_ok'" \
+  -c "qa!" 2>&1)
   local end_time=$(date +%s%N)
   local nvim_duration=$(((end_time - start_time) / 1000000))
 
@@ -76,22 +76,22 @@ test_large_file_handling() {
   echo "FINDME" >>"$test_file"
 
   if command -v rg >/dev/null 2>&1; then
-    start_time=$(date +%s%N)
-    rg "FINDME" "$test_file" >/dev/null 2>&1
-    end_time=$(date +%s%N)
-    local rg_duration=$(((end_time - start_time) / 1000000))
-    [[ $VERBOSE -ge 1 ]] && log "INFO" "ripgrep searched ${size_mb}MB in ${rg_duration}ms"
+  start_time=$(date +%s%N)
+  rg "FINDME" "$test_file" >/dev/null 2>&1
+  end_time=$(date +%s%N)
+  local rg_duration=$(((end_time - start_time) / 1000000))
+  [[ $VERBOSE -ge 1 ]] && log "INFO" "ripgrep searched ${size_mb}MB in ${rg_duration}ms"
   fi
 
   # Cleanup
   rm -f "$test_file"
 
   if [[ $nvim_duration -lt 10000 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Large file handling acceptable"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Large file handling acceptable"
+  return 0
   else
-    log "WARNING" "Large file handling slow: ${nvim_duration}ms"
-    return 0
+  log "WARNING" "Large file handling slow: ${nvim_duration}ms"
+  return 0
   fi
 }
 
@@ -105,8 +105,8 @@ test_many_processes() {
 
   # Start background processes
   for i in $(seq 1 $num_processes); do
-    (sleep 5 && echo "Process $i done") &
-    pids+=($!)
+  (sleep 5 && echo "Process $i done") &
+  pids+=($!)
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Started $num_processes background processes"
@@ -121,16 +121,16 @@ test_many_processes() {
 
   # Kill all background processes
   for pid in "${pids[@]}"; do
-    kill "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
   done
   wait
 
   if [[ $response_time -lt 5000 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System responsive under process load"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System responsive under process load"
+  return 0
   else
-    log "WARNING" "System slow under load: ${response_time}ms"
-    return 0
+  log "WARNING" "System slow under load: ${response_time}ms"
+  return 0
   fi
 }
 
@@ -146,7 +146,7 @@ test_heavy_git_operations() {
 
   # Create many files
   for i in {1..100}; do
-    echo "File $i content" >"file_$i.txt"
+  echo "File $i content" >"file_$i.txt"
   done
 
   # Add all files
@@ -167,9 +167,9 @@ test_heavy_git_operations() {
 
   # Create many commits
   for i in {1..50}; do
-    echo "Change $i" >>file_1.txt
-    git add file_1.txt >/dev/null 2>&1
-    git commit -m "Commit $i" >/dev/null 2>&1
+  echo "Change $i" >>file_1.txt
+  git add file_1.txt >/dev/null 2>&1
+  git commit -m "Commit $i" >/dev/null 2>&1
   done
 
   # Test log performance
@@ -196,8 +196,8 @@ test_shell_startup_under_load() {
   # Create background load
   local load_pids=()
   for i in {1..10}; do
-    (while true; do echo "load" >/dev/null 2>&1; done) &
-    load_pids+=($!)
+  (while true; do echo "load" >/dev/null 2>&1; done) &
+  load_pids+=($!)
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Created CPU load with 10 busy loops"
@@ -207,28 +207,28 @@ test_shell_startup_under_load() {
   local iterations=5
 
   for i in $(seq 1 $iterations); do
-    local start_time=$(date +%s%N)
-    zsh -c "exit" 2>/dev/null
-    local end_time=$(date +%s%N)
-    local duration=$(((end_time - start_time) / 1000000))
-    total_time=$((total_time + duration))
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Iteration $i: ${duration}ms"
+  local start_time=$(date +%s%N)
+  zsh -c "exit" 2>/dev/null
+  local end_time=$(date +%s%N)
+  local duration=$(((end_time - start_time) / 1000000))
+  total_time=$((total_time + duration))
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Iteration $i: ${duration}ms"
   done
 
   # Kill load generators
   for pid in "${load_pids[@]}"; do
-    kill "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
   done
 
   local avg_time=$((total_time / iterations))
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Average shell startup under load: ${avg_time}ms"
 
   if [[ $avg_time -lt 2000 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Shell startup acceptable under load"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Shell startup acceptable under load"
+  return 0
   else
-    log "WARNING" "Shell startup slow under load: ${avg_time}ms"
-    return 0
+  log "WARNING" "Shell startup slow under load: ${avg_time}ms"
+  return 0
   fi
 }
 
@@ -240,24 +240,24 @@ test_memory_leak_detection() {
   # Get initial memory
   local initial_mem
   if [[ "$(uname)" == "Darwin" ]]; then
-    initial_mem=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
+  initial_mem=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
   else
-    initial_mem=$(free -m | grep Mem | awk '{print $4}')
+  initial_mem=$(free -m | grep Mem | awk '{print $4}')
   fi
 
   [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Initial free memory: $initial_mem"
 
   # Perform repeated operations
   for i in {1..20}; do
-    nvim --headless -c "qa!" 2>/dev/null
+  nvim --headless -c "qa!" 2>/dev/null
   done
 
   # Check memory after
   local final_mem
   if [[ "$(uname)" == "Darwin" ]]; then
-    final_mem=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
+  final_mem=$(vm_stat | grep "Pages free" | awk '{print $3}' | sed 's/\.//')
   else
-    final_mem=$(free -m | grep Mem | awk '{print $4}')
+  final_mem=$(free -m | grep Mem | awk '{print $4}')
   fi
 
   [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Final free memory: $final_mem"
@@ -266,11 +266,11 @@ test_memory_leak_detection() {
   local mem_diff=$((initial_mem - final_mem))
 
   if [[ $mem_diff -lt 1000 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "No significant memory leak detected"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "No significant memory leak detected"
+  return 0
   else
-    log "WARNING" "Possible memory leak: $mem_diff pages/MB difference"
-    return 0
+  log "WARNING" "Possible memory leak: $mem_diff pages/MB difference"
+  return 0
   fi
 }
 
@@ -287,7 +287,7 @@ test_filesystem_stress() {
 
   # Create many small files
   for i in $(seq 1 $num_files); do
-    echo "Content $i" >"file_$i.txt"
+  echo "Content $i" >"file_$i.txt"
   done
 
   local end_time=$(date +%s%N)

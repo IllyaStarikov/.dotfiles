@@ -45,9 +45,9 @@ it "should create symlinks to dotfiles" && {
   [[ -L "$test_home/.tmux.conf" ]] && ((created++))
 
   if [[ $created -gt 0 ]]; then
-    pass "Created $created symlinks"
+  pass "Created $created symlinks"
   else
-    fail "No symlinks created"
+  fail "No symlinks created"
   fi
 }
 
@@ -68,20 +68,20 @@ it "should backup existing files before symlinking" && {
 
   # Check if backup was created
   if [[ -d "$BACKUP_DIR" ]]; then
-    # Find backup file
-    backup_file=$(find "$BACKUP_DIR" -name "*zshrc*" -type f 2>/dev/null | head -1)
-    if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
-      backup_hash=$(shasum "$backup_file" | cut -d' ' -f1)
-      if [[ "$original_hash" == "$backup_hash" ]]; then
-        pass "Original file backed up correctly"
-      else
-        fail "Backup file content doesn't match original"
-      fi
+  # Find backup file
+  backup_file=$(find "$BACKUP_DIR" -name "*zshrc*" -type f 2>/dev/null | head -1)
+  if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
+    backup_hash=$(shasum "$backup_file" | cut -d' ' -f1)
+    if [[ "$original_hash" == "$backup_hash" ]]; then
+    pass "Original file backed up correctly"
     else
-      fail "Backup file not found"
+    fail "Backup file content doesn't match original"
     fi
   else
-    fail "Backup directory not created"
+    fail "Backup file not found"
+  fi
+  else
+  fail "Backup directory not created"
   fi
 }
 
@@ -100,14 +100,14 @@ it "should replace broken symlinks" && {
 
   # Check if symlink was replaced
   if [[ -L "$test_home/.zshrc" ]]; then
-    target=$(readlink "$test_home/.zshrc")
-    if [[ "$target" == *"dotfiles"* ]]; then
-      pass "Broken symlink replaced"
-    else
-      fail "Symlink not pointing to dotfiles"
-    fi
+  target=$(readlink "$test_home/.zshrc")
+  if [[ "$target" == *"dotfiles"* ]]; then
+    pass "Broken symlink replaced"
   else
-    fail "Symlink not created"
+    fail "Symlink not pointing to dotfiles"
+  fi
+  else
+  fail "Symlink not created"
   fi
 }
 
@@ -128,9 +128,9 @@ it "should create necessary directories" && {
   [[ -d "$test_home/.config/alacritty" ]] && ((dirs_created++))
 
   if [[ $dirs_created -gt 0 ]]; then
-    pass "Created $dirs_created directories"
+  pass "Created $dirs_created directories"
   else
-    fail "No directories created"
+  fail "No directories created"
   fi
 }
 
@@ -149,20 +149,20 @@ it "should validate symlink targets exist" && {
   local invalid_links=0
 
   for link in "$test_home"/.* "$test_home"/.config/*; do
-    if [[ -L "$link" ]]; then
-      target=$(readlink "$link")
-      if [[ -e "$target" ]]; then
-        ((valid_links++))
-      else
-        ((invalid_links++))
-      fi
+  if [[ -L "$link" ]]; then
+    target=$(readlink "$link")
+    if [[ -e "$target" ]]; then
+    ((valid_links++))
+    else
+    ((invalid_links++))
     fi
+  fi
   done
 
   if [[ $invalid_links -eq 0 ]] && [[ $valid_links -gt 0 ]]; then
-    pass "All $valid_links symlinks are valid"
+  pass "All $valid_links symlinks are valid"
   else
-    fail "$invalid_links invalid symlinks found"
+  fail "$invalid_links invalid symlinks found"
   fi
 }
 
@@ -188,9 +188,9 @@ it "should support force mode to overwrite without backup" && {
 
   # Check symlink was created
   if [[ -L "$test_home/.zshrc" ]]; then
-    pass "Force mode overwrote existing file"
+  pass "Force mode overwrote existing file"
   else
-    fail "Symlink not created in force mode"
+  fail "Symlink not created in force mode"
   fi
 }
 

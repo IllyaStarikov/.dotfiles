@@ -28,9 +28,9 @@ EOF
   local source_result=$(zsh -c "source '$test_config' 2>&1 && echo 'survived'" 2>&1)
 
   if [[ "$source_result" == *"survived"* ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "INFO" "Shell survived corrupted config"
+  [[ $VERBOSE -ge 1 ]] && log "INFO" "Shell survived corrupted config"
   else
-    [[ $VERBOSE -ge 1 ]] && log "INFO" "Shell rejected corrupted config (safe)"
+  [[ $VERBOSE -ge 1 ]] && log "INFO" "Shell rejected corrupted config (safe)"
   fi
 
   # Test with corrupted Lua config
@@ -46,9 +46,9 @@ EOF
   local nvim_result=$(nvim --headless -c "luafile $test_lua" -c "echo 'survived'" -c "qa!" 2>&1)
 
   if [[ "$nvim_result" == *"survived"* ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "WARNING" "Neovim loaded corrupted Lua"
+  [[ $VERBOSE -ge 1 ]] && log "WARNING" "Neovim loaded corrupted Lua"
   else
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim rejected corrupted Lua (safe)"
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim rejected corrupted Lua (safe)"
   fi
 
   # Cleanup
@@ -66,8 +66,8 @@ test_random_process_kills() {
 
   # Start some background processes
   for i in {1..5}; do
-    (sleep 30 && echo "Process $i completed") &
-    pids+=($!)
+  (sleep 30 && echo "Process $i completed") &
+  pids+=($!)
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Started ${#pids[@]} background processes"
@@ -75,23 +75,23 @@ test_random_process_kills() {
   # Randomly kill some
   local killed=0
   for pid in "${pids[@]}"; do
-    if [[ $((RANDOM % 2)) -eq 0 ]]; then
-      kill "$pid" 2>/dev/null && ((killed++))
-      [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Killed process $pid"
-    fi
+  if [[ $((RANDOM % 2)) -eq 0 ]]; then
+    kill "$pid" 2>/dev/null && ((killed++))
+    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Killed process $pid"
+  fi
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Randomly killed $killed/${#pids[@]} processes"
 
   # Clean up remaining
   for pid in "${pids[@]}"; do
-    kill "$pid" 2>/dev/null || true
+  kill "$pid" 2>/dev/null || true
   done
 
   # System should still be responsive
   echo "test" | grep "test" >/dev/null 2>&1
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System responsive after process chaos"
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System responsive after process chaos"
   fi
 
   return 0
@@ -105,17 +105,17 @@ test_disk_space_exhaustion() {
   # Check available space first
   local available_mb
   if [[ "$(uname)" == "Darwin" ]]; then
-    available_mb=$(($(df / | tail -1 | awk '{print $4}') / 1024))
+  available_mb=$(($(df / | tail -1 | awk '{print $4}') / 1024))
   else
-    available_mb=$(df -m / | tail -1 | awk '{print $4}')
+  available_mb=$(df -m / | tail -1 | awk '{print $4}')
   fi
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Available disk space: ${available_mb}MB"
 
   # Only proceed if we have enough space to test safely
   if [[ $available_mb -lt 1000 ]]; then
-    log "WARNING" "Low disk space, skipping exhaustion test"
-    return 0
+  log "WARNING" "Low disk space, skipping exhaustion test"
+  return 0
   fi
 
   local test_dir=$(mktemp -d -t disk_test.XXXXXX)
@@ -127,9 +127,9 @@ test_disk_space_exhaustion() {
   # Test if tools still work
   echo "test" >"$test_dir/test.txt" 2>/dev/null
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can still write files"
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can still write files"
   else
-    log "WARNING" "Cannot write files (disk might be full)"
+  log "WARNING" "Cannot write files (disk might be full)"
   fi
 
   # Cleanup immediately
@@ -153,7 +153,7 @@ test_env_var_chaos() {
 
   # Basic commands should still work (using absolute paths)
   if /bin/echo "test" >/dev/null 2>&1; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "System commands work with broken PATH"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "System commands work with broken PATH"
   fi
 
   # Restore PATH
@@ -166,7 +166,7 @@ test_env_var_chaos() {
   # Try to use terminal features
   tput colors >/dev/null 2>&1
   if [[ $? -ne 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Terminal features fail with empty TERM (expected)"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Terminal features fail with empty TERM (expected)"
   fi
 
   # Restore
@@ -186,14 +186,14 @@ test_permission_chaos() {
 
   # Create test files
   for i in {1..10}; do
-    echo "content" >"$test_dir/file_$i.txt"
+  echo "content" >"$test_dir/file_$i.txt"
   done
 
   # Randomly change permissions
   for file in "$test_dir"/*.txt; do
-    local perm=$((RANDOM % 777))
-    chmod $perm "$file" 2>/dev/null
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Set $(basename "$file") to $perm"
+  local perm=$((RANDOM % 777))
+  chmod $perm "$file" 2>/dev/null
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Set $(basename "$file") to $perm"
   done
 
   # Try to read files
@@ -201,11 +201,11 @@ test_permission_chaos() {
   local unreadable=0
 
   for file in "$test_dir"/*.txt; do
-    if cat "$file" >/dev/null 2>&1; then
-      ((readable++))
-    else
-      ((unreadable++))
-    fi
+  if cat "$file" >/dev/null 2>&1; then
+    ((readable++))
+  else
+    ((unreadable++))
+  fi
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "After permission chaos: $readable readable, $unreadable unreadable"
@@ -226,26 +226,26 @@ test_rapid_config_reloads() {
   local failures=0
 
   for i in $(seq 1 $iterations); do
-    # Reload Neovim config
-    local nvim_reload=$(timeout 2 nvim --headless \
-      -c "source \$MYVIMRC" \
-      -c "echo 'reload_$i'" \
-      -c "qa!" 2>&1)
+  # Reload Neovim config
+  local nvim_reload=$(timeout 2 nvim --headless \
+    -c "source \$MYVIMRC" \
+    -c "echo 'reload_$i'" \
+    -c "qa!" 2>&1)
 
-    if [[ "$nvim_reload" != *"reload_$i"* ]]; then
-      ((failures++))
-      [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Reload $i failed"
-    fi
+  if [[ "$nvim_reload" != *"reload_$i"* ]]; then
+    ((failures++))
+    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Reload $i failed"
+  fi
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Completed $iterations reloads, $failures failures"
 
   if [[ $failures -lt $((iterations / 2)) ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Most reloads succeeded"
-    return 0
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Most reloads succeeded"
+  return 0
   else
-    log "WARNING" "Many reloads failed: $failures/$iterations"
-    return 0
+  log "WARNING" "Many reloads failed: $failures/$iterations"
+  return 0
   fi
 }
 
@@ -262,7 +262,7 @@ test_random_input_injection() {
   local grep_exit=$?
 
   if [[ $grep_exit -eq 1 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "grep handled random input (no match)"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "grep handled random input (no match)"
   fi
 
   # Test with sed
@@ -270,7 +270,7 @@ test_random_input_injection() {
   local sed_exit=$?
 
   if [[ $sed_exit -ne 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "sed rejected invalid pattern"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "sed rejected invalid pattern"
   fi
 
   # Test with Neovim (should not crash)
@@ -278,9 +278,9 @@ test_random_input_injection() {
   local nvim_exit=$?
 
   if [[ $nvim_exit -eq 0 ]] || [[ $nvim_exit -eq 1 ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim handled random input"
+  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim handled random input"
   else
-    log "WARNING" "Neovim had issues with random input"
+  log "WARNING" "Neovim had issues with random input"
   fi
 
   return 0
@@ -298,7 +298,7 @@ test_time_based_chaos() {
   # Check if ls handles future dates
   ls -la "$test_file" >/dev/null 2>&1
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "ls handles future dates"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "ls handles future dates"
   fi
 
   # Test with very old dates
@@ -307,7 +307,7 @@ test_time_based_chaos() {
   # Find should still work
   find "$(dirname "$test_file")" -name "$(basename "$test_file")" >/dev/null 2>&1
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "find handles old dates"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "find handles old dates"
   fi
 
   rm -f "$test_file"
@@ -332,7 +332,7 @@ test_resource_limit_chaos() {
   # Try to run a simple command
   echo "test" | grep "test" >/dev/null 2>&1
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Commands work with small stack"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Commands work with small stack"
   fi
 
   # Restore
@@ -347,7 +347,7 @@ test_resource_limit_chaos() {
   # Try to create a process
   (echo "test") 2>/dev/null
   if [[ $? -eq 0 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Can create processes with limit"
+  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Can create processes with limit"
   fi
 
   # Restore
@@ -374,7 +374,7 @@ test_crash_recovery() {
   local nvim_recovery=$(echo "q" | nvim "$test_file" 2>&1 | head -20)
 
   if [[ "$nvim_recovery" == *"swap"* ]] || [[ "$nvim_recovery" == *"recovery"* ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "INFO" "Neovim detects swap files"
+  [[ $VERBOSE -ge 1 ]] && log "INFO" "Neovim detects swap files"
   fi
 
   # Cleanup
@@ -389,10 +389,10 @@ test_crash_recovery() {
 
   # Check if we can detect stale lock
   if [[ -f "$lock_file" ]]; then
-    local lock_pid=$(cat "$lock_file")
-    if ! kill -0 "$lock_pid" 2>/dev/null; then
-      [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can detect stale lock files"
-    fi
+  local lock_pid=$(cat "$lock_file")
+  if ! kill -0 "$lock_pid" 2>/dev/null; then
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can detect stale lock files"
+  fi
   fi
 
   rm -f "$lock_file"

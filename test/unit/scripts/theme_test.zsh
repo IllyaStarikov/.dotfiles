@@ -14,12 +14,12 @@ THEME_SWITCHER="${DOTFILES_DIR}/src/theme-switcher/switch-theme.sh"
 test_theme_script_exists() {
   # Check if theme script exists
   if [[ ! -f "$THEME_SCRIPT" ]]; then
-    fail "Theme script not found at $THEME_SCRIPT"
+  fail "Theme script not found at $THEME_SCRIPT"
   fi
 
   # Check if it's executable
   if [[ ! -x "$THEME_SCRIPT" ]]; then
-    fail "Theme script is not executable"
+  fail "Theme script is not executable"
   fi
 
   pass "Theme script exists and is executable"
@@ -28,10 +28,10 @@ test_theme_script_exists() {
 # Test: Theme switcher script exists
 test_theme_switcher_exists() {
   if [[ ! -f "$THEME_SWITCHER" ]]; then
-    fail "Theme switcher not found at $THEME_SWITCHER"
+  fail "Theme switcher not found at $THEME_SWITCHER"
   fi
   if [[ ! -x "$THEME_SWITCHER" ]]; then
-    fail "Theme switcher is not executable"
+  fail "Theme switcher is not executable"
   fi
   pass "Theme switcher exists and is executable"
 }
@@ -41,7 +41,7 @@ test_theme_help() {
   local output
   output=$("$THEME_SCRIPT" --help 2>&1 || true)
   if ! echo "$output" | grep -qi "usage\|theme\|help"; then
-    fail "Help output doesn't contain expected text"
+  fail "Help output doesn't contain expected text"
   fi
   pass "Help command works"
 }
@@ -55,9 +55,9 @@ test_theme_validation() {
 
   # Verify valid theme names are mentioned in help
   for theme in day night moon storm; do
-    if ! echo "$help_output" | grep -qi "$theme"; then
-      warning "Theme '$theme' not found in help output (may be OK if help is minimal)"
-    fi
+  if ! echo "$help_output" | grep -qi "$theme"; then
+    warning "Theme '$theme' not found in help output (may be OK if help is minimal)"
+  fi
   done
 
   # We can't easily test invalid themes without actually running the switcher
@@ -68,13 +68,13 @@ test_theme_validation() {
 # Test: Script detects macOS theme (if on macOS)
 test_theme_auto_detection() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    # Run auto-detection in dry-run mode
-    local output
-    output=$("$THEME_SCRIPT" --dry-run 2>&1 || true)
-    # Should detect either light or dark
-    assert_match "$output" "(light|dark|day|night)"
+  # Run auto-detection in dry-run mode
+  local output
+  output=$("$THEME_SCRIPT" --dry-run 2>&1 || true)
+  # Should detect either light or dark
+  assert_match "$output" "(light|dark|day|night)"
   else
-    skip "Theme auto-detection test only runs on macOS"
+  skip "Theme auto-detection test only runs on macOS"
   fi
 }
 

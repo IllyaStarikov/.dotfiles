@@ -16,12 +16,12 @@ wrap() {
   local subsequent_indent="${4:-$indent}"
 
   echo "$text" | fold -s -w "$width" | while IFS= read -r line; do
-    if [[ -z "$first_line_done" ]]; then
-      echo "${indent}${line}"
-      first_line_done=1
-    else
-      echo "${subsequent_indent}${line}"
-    fi
+  if [[ -z "$first_line_done" ]]; then
+    echo "${indent}${line}"
+    first_line_done=1
+  else
+    echo "${subsequent_indent}${line}"
+  fi
   done
 }
 
@@ -40,19 +40,19 @@ dedent() {
 
   # Find minimum indentation
   while IFS= read -r line; do
-    if [[ -n "$line" ]] && [[ "$line" =~ ^[[:space:]]+ ]]; then
-      local indent="${BASH_REMATCH[0]}"
-      if [[ -z "$min_indent" ]] || [[ ${#indent} -lt ${#min_indent} ]]; then
-        min_indent="$indent"
-      fi
+  if [[ -n "$line" ]] && [[ "$line" =~ ^[[:space:]]+ ]]; then
+    local indent="${BASH_REMATCH[0]}"
+    if [[ -z "$min_indent" ]] || [[ ${#indent} -lt ${#min_indent} ]]; then
+    min_indent="$indent"
     fi
+  fi
   done <<<"$text"
 
   # Remove minimum indentation from all lines
   if [[ -n "$min_indent" ]]; then
-    echo "$text" | sed "s/^${min_indent}//"
+  echo "$text" | sed "s/^${min_indent}//"
   else
-    echo "$text"
+  echo "$text"
   fi
 }
 
@@ -64,12 +64,12 @@ indent() {
 
   local first_line=1
   while IFS= read -r line; do
-    if [[ $first_line -eq 1 ]]; then
-      echo "${first_line_prefix}${line}"
-      first_line=0
-    else
-      echo "${prefix}${line}"
-    fi
+  if [[ $first_line -eq 1 ]]; then
+    echo "${first_line_prefix}${line}"
+    first_line=0
+  else
+    echo "${prefix}${line}"
+  fi
   done <<<"$text"
 }
 
@@ -79,13 +79,13 @@ center() {
   local width="${2:-$TEXTWRAP_WIDTH}"
 
   while IFS= read -r line; do
-    local line_length=${#line}
-    if [[ $line_length -ge $width ]]; then
-      echo "$line"
-    else
-      local padding=$(((width - line_length) / 2))
-      printf "%*s%s\n" "$padding" "" "$line"
-    fi
+  local line_length=${#line}
+  if [[ $line_length -ge $width ]]; then
+    echo "$line"
+  else
+    local padding=$(((width - line_length) / 2))
+    printf "%*s%s\n" "$padding" "" "$line"
+  fi
   done <<<"$text"
 }
 
@@ -95,7 +95,7 @@ right_align() {
   local width="${2:-$TEXTWRAP_WIDTH}"
 
   while IFS= read -r line; do
-    printf "%*s\n" "$width" "$line"
+  printf "%*s\n" "$width" "$line"
   done <<<"$text"
 }
 
@@ -105,7 +105,7 @@ left_align() {
   local width="${2:-$TEXTWRAP_WIDTH}"
 
   while IFS= read -r line; do
-    printf "%-*s\n" "$width" "$line"
+  printf "%-*s\n" "$width" "$line"
   done <<<"$text"
 }
 
@@ -115,46 +115,46 @@ justify() {
   local width="${2:-$TEXTWRAP_WIDTH}"
 
   while IFS= read -r line; do
-    local words=($line)
-    local word_count=${#words[@]}
+  local words=($line)
+  local word_count=${#words[@]}
 
-    if [[ $word_count -le 1 ]] || [[ ${#line} -ge $width ]]; then
-      echo "$line"
-      continue
-    fi
+  if [[ $word_count -le 1 ]] || [[ ${#line} -ge $width ]]; then
+    echo "$line"
+    continue
+  fi
 
-    # Calculate spaces needed
-    local text_length=0
-    for word in "${words[@]}"; do
-      text_length=$((text_length + ${#word}))
+  # Calculate spaces needed
+  local text_length=0
+  for word in "${words[@]}"; do
+    text_length=$((text_length + ${#word}))
+  done
+
+  local total_spaces=$((width - text_length))
+  local gaps=$((word_count - 1))
+
+  if [[ $gaps -eq 0 ]]; then
+    echo "$line"
+    continue
+  fi
+
+  local space_per_gap=$((total_spaces / gaps))
+  local extra_spaces=$((total_spaces % gaps))
+
+  # Build justified line
+  local result=""
+  for ((i = 0; i < word_count; i++)); do
+    result+="${words[$i]}"
+    if [[ $i -lt $((word_count - 1)) ]]; then
+    for ((j = 0; j < space_per_gap; j++)); do
+      result+=" "
     done
-
-    local total_spaces=$((width - text_length))
-    local gaps=$((word_count - 1))
-
-    if [[ $gaps -eq 0 ]]; then
-      echo "$line"
-      continue
+    if [[ $i -lt $extra_spaces ]]; then
+      result+=" "
     fi
+    fi
+  done
 
-    local space_per_gap=$((total_spaces / gaps))
-    local extra_spaces=$((total_spaces % gaps))
-
-    # Build justified line
-    local result=""
-    for ((i = 0; i < word_count; i++)); do
-      result+="${words[$i]}"
-      if [[ $i -lt $((word_count - 1)) ]]; then
-        for ((j = 0; j < space_per_gap; j++)); do
-          result+=" "
-        done
-        if [[ $i -lt $extra_spaces ]]; then
-          result+=" "
-        fi
-      fi
-    done
-
-    echo "$result"
+  echo "$result"
   done <<<"$text"
 }
 
@@ -165,10 +165,10 @@ truncate() {
   local ellipsis="${3:-...}"
 
   if [[ ${#text} -le $max_length ]]; then
-    echo "$text"
+  echo "$text"
   else
-    local truncate_at=$((max_length - ${#ellipsis}))
-    echo "${text:0:$truncate_at}${ellipsis}"
+  local truncate_at=$((max_length - ${#ellipsis}))
+  echo "${text:0:$truncate_at}${ellipsis}"
   fi
 }
 
@@ -179,13 +179,13 @@ shorten() {
   local placeholder="${3:-...}"
 
   if [[ ${#text} -le $max_length ]]; then
-    echo "$text"
+  echo "$text"
   else
-    local keep_length=$((max_length - ${#placeholder}))
-    local start_length=$((keep_length / 2))
-    local end_length=$((keep_length - start_length))
+  local keep_length=$((max_length - ${#placeholder}))
+  local start_length=$((keep_length / 2))
+  local end_length=$((keep_length - start_length))
 
-    echo "${text:0:$start_length}${placeholder}${text: -$end_length}"
+  echo "${text:0:$start_length}${placeholder}${text: -$end_length}"
   fi
 }
 
@@ -195,7 +195,7 @@ prefix_lines() {
   local prefix="$2"
 
   while IFS= read -r line; do
-    echo "${prefix}${line}"
+  echo "${prefix}${line}"
   done <<<"$text"
 }
 
@@ -205,7 +205,7 @@ suffix_lines() {
   local suffix="$2"
 
   while IFS= read -r line; do
-    echo "${line}${suffix}"
+  echo "${line}${suffix}"
   done <<<"$text"
 }
 
@@ -217,36 +217,36 @@ text_box() {
 
   # Define box characters based on style
   case "$style" in
-    double)
-      local tl="╔" tr="╗" bl="╚" br="╝" h="═" v="║"
-      ;;
-    ascii)
-      local tl="+" tr="+" bl="+" br="+" h="-" v="|"
-      ;;
-    round)
-      local tl="╭" tr="╮" bl="╰" br="╯" h="─" v="│"
-      ;;
-    *) # single
-      local tl="┌" tr="┐" bl="└" br="┘" h="─" v="│"
-      ;;
+  double)
+  local tl="╔" tr="╗" bl="╚" br="╝" h="═" v="║"
+  ;;
+  ascii)
+  local tl="+" tr="+" bl="+" br="+" h="-" v="|"
+  ;;
+  round)
+  local tl="╭" tr="╮" bl="╰" br="╯" h="─" v="│"
+  ;;
+  *) # single
+  local tl="┌" tr="┐" bl="└" br="┘" h="─" v="│"
+  ;;
   esac
 
   # Top border
   echo -n "$tl"
   for ((i = 0; i < width + 2; i++)); do
-    echo -n "$h"
+  echo -n "$h"
   done
   echo "$tr"
 
   # Content with side borders
   while IFS= read -r line; do
-    printf "%s %-*s %s\n" "$v" "$width" "$line" "$v"
+  printf "%s %-*s %s\n" "$v" "$width" "$line" "$v"
   done <<<"$text"
 
   # Bottom border
   echo -n "$bl"
   for ((i = 0; i < width + 2; i++)); do
-    echo -n "$h"
+  echo -n "$h"
   done
   echo "$br"
 }
@@ -277,26 +277,26 @@ columns() {
   local max_lines=0
 
   for text in "${texts[@]}"; do
-    local -a lines=()
-    while IFS= read -r line; do
-      lines+=("$(truncate "$line" "$column_width")")
-    done <<<"$text"
-    column_lines+=("${lines[@]}")
-    [[ ${#lines[@]} -gt $max_lines ]] && max_lines=${#lines[@]}
+  local -a lines=()
+  while IFS= read -r line; do
+    lines+=("$(truncate "$line" "$column_width")")
+  done <<<"$text"
+  column_lines+=("${lines[@]}")
+  [[ ${#lines[@]} -gt $max_lines ]] && max_lines=${#lines[@]}
   done
 
   # Print columns side by side
   for ((i = 0; i < max_lines; i++)); do
-    for ((j = 0; j < num_columns; j++)); do
-      local idx=$((j * max_lines + i))
-      if [[ $idx -lt ${#column_lines[@]} ]]; then
-        printf "%-*s" "$column_width" "${column_lines[$idx]}"
-      else
-        printf "%-*s" "$column_width" ""
-      fi
-      [[ $j -lt $((num_columns - 1)) ]] && echo -n " "
-    done
-    echo
+  for ((j = 0; j < num_columns; j++)); do
+    local idx=$((j * max_lines + i))
+    if [[ $idx -lt ${#column_lines[@]} ]]; then
+    printf "%-*s" "$column_width" "${column_lines[$idx]}"
+    else
+    printf "%-*s" "$column_width" ""
+    fi
+    [[ $j -lt $((num_columns - 1)) ]] && echo -n " "
+  done
+  echo
   done
 }
 
@@ -307,7 +307,7 @@ str_repeat() {
   local result=""
 
   for ((i = 0; i < count; i++)); do
-    result+="$string"
+  result+="$string"
   done
 
   echo "$result"
@@ -378,9 +378,9 @@ number_lines() {
 
   local line_num=1
   while IFS= read -r line; do
-    printf "$format" "$line_num"
-    echo "$line"
-    ((line_num++))
+  printf "$format" "$line_num"
+  echo "$line"
+  ((line_num++))
   done <<<"$text"
 }
 
@@ -411,46 +411,46 @@ format_table() {
   # Parse input (first line is headers)
   local first_line=1
   while IFS= read -r line; do
-    if [[ $first_line -eq 1 ]]; then
-      IFS='|' read -ra headers <<<"$line"
-      first_line=0
-      # Initialize widths
-      for header in "${headers[@]}"; do
-        widths+=(${#header})
-      done
-    else
-      IFS='|' read -ra row <<<"$line"
-      rows+=("$line")
-      # Update widths
-      for ((i = 0; i < ${#row[@]}; i++)); do
-        local len=${#row[$i]}
-        [[ $len -gt ${widths[$i]:-0} ]] && widths[$i]=$len
-      done
-    fi
+  if [[ $first_line -eq 1 ]]; then
+    IFS='|' read -ra headers <<<"$line"
+    first_line=0
+    # Initialize widths
+    for header in "${headers[@]}"; do
+    widths+=(${#header})
+    done
+  else
+    IFS='|' read -ra row <<<"$line"
+    rows+=("$line")
+    # Update widths
+    for ((i = 0; i < ${#row[@]}; i++)); do
+    local len=${#row[$i]}
+    [[ $len -gt ${widths[$i]:-0} ]] && widths[$i]=$len
+    done
+  fi
   done
 
   # Print table
   # Header
   for ((i = 0; i < ${#headers[@]}; i++)); do
-    printf "%-*s" "${widths[$i]}" "${headers[$i]}"
-    [[ $i -lt $((${#headers[@]} - 1)) ]] && echo -n " | "
+  printf "%-*s" "${widths[$i]}" "${headers[$i]}"
+  [[ $i -lt $((${#headers[@]} - 1)) ]] && echo -n " | "
   done
   echo
 
   # Separator
   for ((i = 0; i < ${#headers[@]}; i++)); do
-    printf "%s" "$(repeat '-' "${widths[$i]}")"
-    [[ $i -lt $((${#headers[@]} - 1)) ]] && echo -n "-+-"
+  printf "%s" "$(repeat '-' "${widths[$i]}")"
+  [[ $i -lt $((${#headers[@]} - 1)) ]] && echo -n "-+-"
   done
   echo
 
   # Rows
   for row in "${rows[@]}"; do
-    IFS='|' read -ra cells <<<"$row"
-    for ((i = 0; i < ${#cells[@]}; i++)); do
-      printf "%-*s" "${widths[$i]}" "${cells[$i]}"
-      [[ $i -lt $((${#cells[@]} - 1)) ]] && echo -n " | "
-    done
-    echo
+  IFS='|' read -ra cells <<<"$row"
+  for ((i = 0; i < ${#cells[@]}; i++)); do
+    printf "%-*s" "${widths[$i]}" "${cells[$i]}"
+    [[ $i -lt $((${#cells[@]} - 1)) ]] && echo -n " | "
+  done
+  echo
   done
 }
