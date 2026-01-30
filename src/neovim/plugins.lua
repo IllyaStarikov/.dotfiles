@@ -1392,7 +1392,7 @@ require("lazy").setup({
   },
   -- Install missing plugins on startup
   install = {
-    missing = true, -- Auto-install by default
+    missing = false, -- Disabled: times out in CI Docker containers
     colorscheme = { "tokyonight", "habamax" },
   },
   ui = {
