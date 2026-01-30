@@ -45,11 +45,8 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly BACKUP_DIR="$HOME/.dotfiles.backups/$(date +%Y%m%d_%H%M%S)"
 
-# Colors
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[0;33m'
-readonly RED='\033[0;31m'
-readonly NC='\033[0m'
+# Load library (provides colors: $RED, $GREEN, $YELLOW, $NC)
+source "${DOTFILES_DIR}/src/lib/init.zsh"
 
 # Counters
 declare -i created=0

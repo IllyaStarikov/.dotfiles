@@ -304,3 +304,22 @@ readonly -A DRACULA=(
   [RED]="$(rgb 255 85 85)"
   [YELLOW]="$(rgb 241 250 140)"
 )
+
+# ============================================================================
+# Backwards Compatibility Variables
+# Simple exported variables for scripts using ${RED}text${NC} pattern
+# ============================================================================
+
+# Export color variables for backwards compatibility
+# These are always defined - scripts can check [[ -t 1 ]] if needed
+export RED="${COLORS[RED]}"
+export GREEN="${COLORS[GREEN]}"
+export YELLOW="${COLORS[YELLOW]}"
+export BLUE="${COLORS[BLUE]}"
+export MAGENTA="${COLORS[MAGENTA]}"
+export CYAN="${COLORS[CYAN]}"
+export WHITE="${COLORS[WHITE]}"
+export BOLD="${STYLES[BOLD]}"
+export DIM="${STYLES[DIM]}"
+export NC="${STYLES[RESET]}"
+export RESET="${STYLES[RESET]}"

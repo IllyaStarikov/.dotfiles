@@ -42,13 +42,8 @@ readonly PID_DIR="$HOME/.local/state/services/pids"
 readonly FAIL_DIR="$HOME/.local/state/services/failed"
 readonly LAUNCHAGENT_PLIST="$HOME/Library/LaunchAgents/io.starikov.services.plist"
 
-# Colors
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[0;33m'
-readonly RED='\033[0;31m'
-readonly BLUE='\033[0;34m'
-readonly BOLD='\033[1m'
-readonly NC='\033[0m'
+# Load library (provides colors: $RED, $GREEN, $YELLOW, $BLUE, $BOLD, $NC)
+source "${DOTFILES_DIR}/src/lib/init.zsh"
 
 # Logging functions
 info() { echo -e "${GREEN}[✓]${NC} $1"; }

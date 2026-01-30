@@ -244,6 +244,18 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
+# Return the first available command from a list
+# Usage: editor=$(first_available_command nvim vim vi)
+first_available_command() {
+  for cmd in "$@"; do
+    if command_exists "$cmd"; then
+      echo "$cmd"
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Check if running as root
 is_root() {
   [[ $EUID -eq 0 ]]

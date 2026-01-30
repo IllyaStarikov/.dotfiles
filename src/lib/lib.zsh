@@ -33,8 +33,8 @@ lib_load() {
   local module="$1"
   local force="${2:-0}"
 
-  # Check if already loaded
-  if [[ -n "${LIB_LOADED[$module]}" ]] && [[ $force -eq 0 ]]; then
+  # Check if already loaded (use :- for set -u compatibility)
+  if [[ -n "${LIB_LOADED[$module]:-}" ]] && [[ $force -eq 0 ]]; then
     [[ $LIB_VERBOSE -eq 1 ]] && echo "Library already loaded: $module" >&2
     return 0
   fi
@@ -52,7 +52,7 @@ lib_load() {
   fi
 
   # Load dependencies first
-  if [[ -n "${LIB_DEPENDENCIES[$module]}" ]]; then
+  if [[ -n "${LIB_DEPENDENCIES[$module]:-}" ]]; then
     for dep in ${=LIB_DEPENDENCIES[$module]}; do
       if ! lib_load "$dep"; then
         echo "Failed to load dependency '$dep' for module '$module'" >&2
@@ -117,7 +117,7 @@ lib_load_everything() {
 # Check if a library is loaded
 lib_is_loaded() {
   local module="$1"
-  [[ -n "${LIB_LOADED[$module]}" ]]
+  [[ -n "${LIB_LOADED[$module]:-}" ]]
 }
 
 # List loaded libraries
@@ -150,7 +150,7 @@ lib_show_dependencies() {
 
   if [[ -n "$module" ]]; then
     # Show dependencies for specific module
-    if [[ -n "${LIB_DEPENDENCIES[$module]}" ]]; then
+    if [[ -n "${LIB_DEPENDENCIES[$module]:-}" ]]; then
       echo "Dependencies for $module:"
       for dep in ${=LIB_DEPENDENCIES[$module]}; do
         echo "  - $dep"
@@ -162,7 +162,7 @@ lib_show_dependencies() {
     # Show all dependencies
     echo "Library dependencies:"
     for module in ${(ok)LIB_DEPENDENCIES}; do
-      if [[ -n "${LIB_DEPENDENCIES[$module]}" ]]; then
+      if [[ -n "${LIB_DEPENDENCIES[$module]:-}" ]]; then
         echo "  $module:"
         for dep in ${=LIB_DEPENDENCIES[$module]}; do
             echo "    - $dep"
@@ -299,8 +299,5 @@ if [[ "${LIB_AUTOLOAD:-0}" -eq 1 ]]; then
   lib_load_core
 fi
 
-# Export key functions for easy access
-export -f lib_load
-export -f lib_load_all
-export -f lib_load_core
-export -f lib_is_loaded
+# Note: In zsh, functions are available in subshells by default
+# No need to export them (export -f is a bash-ism that prints function defs in zsh)

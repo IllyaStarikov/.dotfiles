@@ -50,15 +50,8 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly LOG_FILE="$HOME/.dotfiles-setup-$(date +%Y%m%d_%H%M%S).log"
 
-# ANSI color codes for user feedback
-# Standard colors following Google Shell Style Guide conventions
-readonly RED='\033[0;31m'
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[1;33m'
-readonly BLUE='\033[0;34m'
-readonly MAGENTA='\033[0;35m'
-readonly CYAN='\033[0;36m'
-readonly NC='\033[0m'
+# Load library (provides colors: $RED, $GREEN, $YELLOW, $BLUE, $MAGENTA, $CYAN, $NC)
+source "${DOTFILES_DIR}/src/lib/init.zsh"
 
 # Command line argument defaults
 # Initialize early to prevent undefined variable errors in strict mode
