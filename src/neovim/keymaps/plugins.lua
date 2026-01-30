@@ -11,10 +11,11 @@
 --   f = Find (Telescope)
 --   g = Git
 --   l = Language (filetype-specific)
---   n = Notes (scratch, notifications)
+--   n = Notes (notifications)
 --   o = Open (explorer, terminal)
 --   q = Quickfix
 --   w = Window
+--   x = Scratch
 --
 
 local map = vim.keymap.set
@@ -153,7 +154,8 @@ end
 -- CODE (<leader>c) - Symbols, LSP, Run
 -- ============================================================================
 -- Run
-map("n", "<leader>cr", "<cmd>RunFile<cr>", { desc = "Code Run" })
+map("n", "<leader>cr", "<cmd>SnipRun<cr>", { desc = "Code Run" })
+map("v", "<leader>cr", ":'<,'>SnipRun<cr>", { desc = "Code Run Selection" })
 
 -- Make targets
 map("n", "<leader>cm", "<cmd>MakePicker<cr>", { desc = "Code Make (pick target)" })
@@ -475,22 +477,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- ============================================================================
--- NOTES (<leader>n) - Scratch, Notifications
+-- NOTES (<leader>n) - Notifications
 -- ============================================================================
-map("n", "<leader>nn", function()
-  local s = get_snacks()
-  if s then
-    s.scratch()
-  end
-end, { desc = "Notes New Scratch" })
-
-map("n", "<leader>ns", function()
-  local s = get_snacks()
-  if s then
-    s.scratch.select()
-  end
-end, { desc = "Notes Select Scratch" })
-
 map("n", "<leader>nh", function()
   local s = get_snacks()
   if s then
@@ -591,6 +579,122 @@ map("n", "<leader>otn", function()
     s.terminal("node")
   end
 end, { desc = "Open Terminal Node" })
+
+-- ============================================================================
+-- SCRATCH (<leader>x) - Scratch buffers with filetype selection
+-- ============================================================================
+
+-- Usage tracking for sorting filetypes by frequency
+local scratch_usage_file = vim.fn.stdpath("data") .. "/scratch_usage.json"
+
+local function load_scratch_usage()
+  local ok, content = pcall(vim.fn.readfile, scratch_usage_file)
+  if ok and content[1] then
+    local data = vim.json.decode(content[1])
+    return data or {}
+  end
+  return {}
+end
+
+local function save_scratch_usage(usage)
+  local json = vim.json.encode(usage)
+  vim.fn.writefile({ json }, scratch_usage_file)
+end
+
+local function increment_scratch_usage(ft)
+  local usage = load_scratch_usage()
+  usage[ft] = (usage[ft] or 0) + 1
+  save_scratch_usage(usage)
+end
+
+-- Common filetypes for scratch buffers
+local scratch_filetypes = {
+  "markdown",
+  "lua",
+  "python",
+  "javascript",
+  "typescript",
+  "json",
+  "yaml",
+  "toml",
+  "sh",
+  "zsh",
+  "go",
+  "rust",
+  "c",
+  "cpp",
+  "html",
+  "css",
+  "sql",
+  "text",
+  "vim",
+}
+
+-- Sort filetypes by usage count (descending)
+local function get_sorted_filetypes()
+  local usage = load_scratch_usage()
+  local sorted = vim.deepcopy(scratch_filetypes)
+  table.sort(sorted, function(a, b)
+    return (usage[a] or 0) > (usage[b] or 0)
+  end)
+  return sorted
+end
+
+-- Open scratch with filetype picker
+local function scratch_with_picker()
+  local s = get_snacks()
+  if not s then
+    return
+  end
+
+  local filetypes = get_sorted_filetypes()
+  local usage = load_scratch_usage()
+
+  -- Build display items with usage counts
+  local display_items = {}
+  for _, ft in ipairs(filetypes) do
+    local count = usage[ft] or 0
+    local display = count > 0 and string.format("%s (%d)", ft, count) or ft
+    table.insert(display_items, display)
+  end
+
+  vim.ui.select(display_items, {
+    prompt = "Scratch Filetype:",
+  }, function(choice, idx)
+    if choice and idx then
+      local ft = filetypes[idx]
+      increment_scratch_usage(ft)
+      s.scratch({ ft = ft })
+    end
+  end)
+end
+
+-- Toggle scratch (current filetype or markdown)
+map("n", "<leader>xx", function()
+  local s = get_snacks()
+  if s then
+    s.scratch()
+  end
+end, { desc = "Scratch Toggle" })
+
+-- New scratch with filetype picker
+map("n", "<leader>xn", scratch_with_picker, { desc = "Scratch New (pick type)" })
+
+-- Select from existing scratches
+map("n", "<leader>xs", function()
+  local s = get_snacks()
+  if s then
+    s.scratch.select()
+  end
+end, { desc = "Scratch Select" })
+
+-- List scratches (alias for select)
+map("n", "<leader>xl", function()
+  local s = get_snacks()
+  if s then
+    s.scratch.select()
+  end
+end, { desc = "Scratch List" })
 
 -- ============================================================================
 -- QUICKFIX (<leader>q)

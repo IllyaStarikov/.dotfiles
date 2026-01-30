@@ -1365,6 +1365,28 @@ require("lazy").setup({
       })
     end,
   },
+
+  -- Sniprun - Run code snippets inline (Jupyter-style)
+  {
+    "michaelb/sniprun",
+    build = "sh install.sh",
+    cmd = { "SnipRun", "SnipInfo", "SnipClose", "SnipReset" },
+    keys = {
+      { "<leader>xr", "<cmd>SnipRun<cr>", desc = "Run line" },
+      { "<leader>xr", ":'<,'>SnipRun<cr>", mode = "v", desc = "Run selection" },
+      { "<leader>xc", "<cmd>SnipClose<cr>", desc = "Clear output" },
+    },
+    opts = {
+      display = { "VirtualText" }, -- Inline output like Jupyter
+      display_options = {
+        virtual_text_timeout = 0, -- Don't auto-hide output
+      },
+      show_no_output = { "Classic" }, -- Show message when no output
+      -- Use Python3_fifo for true REPL (state persists between runs)
+      selected_interpreters = { "Python3_fifo" },
+      repl_enable = { "Python3_fifo" },
+    },
+  },
 }, {
   -- Lazy.nvim options
   defaults = {

@@ -37,24 +37,11 @@ function M.setup()
         keys = {
           { icon = "\u{f15b}", key = "n", desc = "New File", action = ":enew" },
           {
-            icon = "\u{f0f6}",
+            icon = "󰎚",
             key = "x",
             desc = "Scratch",
             action = function()
               Snacks.scratch()
-            end,
-          },
-          {
-            icon = "\u{f120}",
-            key = "p",
-            desc = "Scratchpad",
-            action = function()
-              vim.ui.input({ prompt = "Extension: " }, function(ext)
-                if ext and ext ~= "" then
-                  local filename = "/tmp/scratch-" .. os.time() .. "." .. ext
-                  vim.cmd("edit " .. filename)
-                end
-              end)
             end,
           },
           {
@@ -73,7 +60,7 @@ function M.setup()
         { section = "keys", gap = 1, padding = 1 },
         {
           icon = " ",
-          title = "Recent Files",
+          title = "Files",
           section = "recent_files",
           limit = 9,
           padding = 1,
@@ -92,7 +79,7 @@ function M.setup()
     -- Enable only safe modules that don't use picker
     indent = {
       enabled = true,
-      scope = { enabled = true, underline = true },
+      scope = { enabled = true, underline = false },
       chunk = { enabled = true },
     },
     scroll = { enabled = false }, -- Disabled for instant scrolling
@@ -114,7 +101,93 @@ function M.setup()
     git = { enabled = true },
     rename = { enabled = true },
     bufdelete = { enabled = true },
-    scratch = { enabled = true },
+    scratch = {
+      enabled = true,
+      name = "Scratch",
+      root = vim.fn.stdpath("data") .. "/scratch",
+      autowrite = true,
+      filekey = {
+        cwd = false, -- Don't scope by directory
+        branch = false, -- Don't scope by git branch
+        count = true, -- Allow numbered scratches (1x, 2x, etc.)
+      },
+      -- Add <cr> to run code with sniprun for non-Lua filetypes
+      -- (Lua already has built-in Snacks.debug.run() on <cr>)
+      win_by_ft = {
+        python = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+        javascript = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+        typescript = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+        sh = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+        go = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+        rust = {
+          keys = {
+            ["source"] = {
+              "<cr>",
+              function()
+                vim.cmd("SnipRun")
+              end,
+              desc = "Run code",
+              mode = { "n", "x" },
+            },
+          },
+        },
+      },
+    },
     lazygit = { enabled = true },
 
     -- Git browse - open files in GitHub/GitLab

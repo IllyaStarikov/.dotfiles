@@ -171,24 +171,6 @@ api.nvim_create_user_command("ProjectRoot", function()
 end, { desc = "Change to project root directory" })
 
 -- =============================================================================
--- SCRATCH BUFFER
--- =============================================================================
-
--- Create a scratch buffer
-api.nvim_create_user_command("Scratch", function(opts)
-  local buf = api.nvim_create_buf(false, true)
-  vim.bo[buf].buftype = "nofile"
-  vim.bo[buf].bufhidden = "hide"
-  vim.bo[buf].swapfile = false
-
-  if opts.args ~= "" then
-    vim.bo[buf].filetype = opts.args
-  end
-
-  api.nvim_set_current_buf(buf)
-end, { nargs = "?", desc = "Create scratch buffer with optional filetype" })
-
--- =============================================================================
 -- MANUAL FORMATTING
 -- =============================================================================
 
@@ -291,53 +273,8 @@ api.nvim_create_user_command("YankDebug", function()
 end, { desc = "Debug yank performance" })
 
 -- =============================================================================
--- CODE EXECUTION
+-- CODE EXECUTION (uses sniprun plugin for inline output)
 -- =============================================================================
-
--- Run current file
-api.nvim_create_user_command("RunFile", function()
-  local ft = vim.bo.filetype
-  local filename = vim.fn.expand("%")
-  local cmd = ""
-
-  -- Determine command based on filetype
-  if ft == "python" then
-    cmd = "python3 " .. vim.fn.shellescape(filename)
-  elseif ft == "javascript" then
-    cmd = "node " .. vim.fn.shellescape(filename)
-  elseif ft == "typescript" then
-    cmd = "ts-node " .. vim.fn.shellescape(filename)
-  elseif ft == "lua" then
-    cmd = "lua " .. vim.fn.shellescape(filename)
-  elseif ft == "sh" or ft == "bash" then
-    cmd = "bash " .. vim.fn.shellescape(filename)
-  elseif ft == "c" then
-    local output = vim.fn.tempname()
-    cmd = string.format("gcc %s -o %s && %s", vim.fn.shellescape(filename), output, output)
-  elseif ft == "cpp" then
-    local output = vim.fn.tempname()
-    cmd = string.format("g++ %s -o %s && %s", vim.fn.shellescape(filename), output, output)
-  elseif ft == "rust" then
-    cmd = "cargo run"
-  elseif ft == "go" then
-    cmd = "go run " .. vim.fn.shellescape(filename)
-  elseif ft == "java" then
-    local class_name = vim.fn.expand("%:t:r")
-    cmd = string.format("javac %s && java %s", vim.fn.shellescape(filename), class_name)
-  else
-    vim.notify("No run command configured for filetype: " .. ft, vim.log.levels.WARN)
-    return
-  end
-
-  -- Save and run
-  vim.cmd("write")
-
-  -- Create terminal in bottom split
-  vim.cmd("botright new")
-  vim.cmd("resize 15")
-  vim.cmd("terminal " .. cmd)
-  vim.cmd("startinsert")
-end, { desc = "Run current file" })
 
 -- Run a make target
 api.nvim_create_user_command("Make", function(opts)

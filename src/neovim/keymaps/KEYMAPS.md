@@ -12,10 +12,11 @@
 | `f` | Find (Telescope) |
 | `g` | Git |
 | `l` | Language (filetype-specific) |
-| `n` | Notes (scratch, notifications) |
+| `n` | Notes (notifications) |
 | `o` | Open (explorer, terminal) |
 | `q` | Quickfix |
 | `w` | Window |
+| `x` | Scratch |
 
 ---
 
@@ -192,8 +193,6 @@
 
 | Key | Action |
 |-----|--------|
-| `nn` | New scratch |
-| `ns` | Select scratch |
 | `nh` | Notification history |
 | `nd` | Dismiss notifications |
 | `nD` | Dashboard |
@@ -224,6 +223,18 @@
 | `ql` | Open location list |
 | `qL` | Close location list |
 | `qf` | Find in quickfix |
+
+## Scratch (`<leader>x`)
+
+| Key | Action |
+|-----|--------|
+| `xx` | Toggle scratch (current ft or markdown) |
+| `xn` | New scratch (pick filetype) |
+| `xs` | Select scratch |
+| `xl` | List scratches |
+
+Scratch buffers persist in `~/.local/share/nvim/scratch/` and auto-save.
+The filetype picker sorts by most-used filetypes.
 
 ## Window (`<leader>w`)
 

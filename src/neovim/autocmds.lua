@@ -720,7 +720,7 @@ autocmd("QuickFixCmdPost", {
   end,
 })
 
--- Note: Language-specific run commands have been moved to commands.lua RunFile command
+-- Note: Code execution uses sniprun plugin (<leader>cr or <cr> in scratch buffers)
 
 -- Async run repeat for last command
 autocmd("FileType", {
