@@ -1,1 +1,252 @@
-old config
+# Modern Zsh Configuration - Fast, Minimal, and Powerful
+# Optimized for speed with Zinit, no bloat, just what you need
+
+# Core Settings
+
+# Fix TERM if incorrectly set to tmux-256color outside of tmux
+# This can happen if terminal emulator config is cached or misconfigured
+if [[ "$TERM" == "tmux-256color" && -z "$TMUX" ]]; then
+  export TERM="xterm-256color"
+fi
+
+# Essential options (only non-defaults)
+setopt AUTO_CD              # cd by typing directory name
+setopt INTERACTIVE_COMMENTS # Allow comments in interactive mode
+setopt HIST_IGNORE_DUPS     # Don't record duplicate commands
+setopt SHARE_HISTORY        # Share history between sessions
+setopt HIST_REDUCE_BLANKS   # Remove blanks from history
+setopt CORRECT              # Command correction
+# NO_BEEP became default in zsh 5.4 (released 2017) - disables terminal bell
+setopt GLOB_DOTS            # Include dotfiles in globbing
+
+# History
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=100000  # Default: 10000
+SAVEHIST=100000  # Default: 10000
+
+# Performance: Skip the global compinit that macOS runs from /etc/zshrc
+# Without this, completion gets initialized twice (once by system, once by us)
+# We handle it ourselves with Zinit's turbo mode for 50-100ms faster startup
+skip_global_compinit=1
+
+# Zinit - Modern Plugin Manager
+
+# Install zinit if not present
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+    print -P "%F{33}▓▒░ Installing zinit...%f"
+    command mkdir -p "$(dirname "$ZINIT_HOME")"
+    command git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Essential Plugins Only
+
+# Set up completion paths BEFORE loading completions
+fpath=(
+    /usr/local/share/zsh/site-functions
+    /usr/share/zsh/site-functions
+    $fpath
+)
+
+# Essential completions (load immediately for first tab to work)
+zinit ice blockf
+zinit light zsh-users/zsh-completions
+
+# Initialize completion system once (after fpath and plugins are set up)
+# Using zinit's compinit wrapper for proper integration
+autoload -Uz compinit bashcompinit
+if [[ -n "$ZDOTDIR" ]]; then
+    compinit -i -d "$ZDOTDIR/.zcompdump"
+else
+    compinit -i -d "$HOME/.zcompdump"
+fi
+bashcompinit  # For compatibility with bash completions
+zicompinit
+zicdreplay
+
+# Fast syntax highlighting (still deferred for speed)
+zinit wait lucid for \
+    zdharma-continuum/fast-syntax-highlighting
+
+# Autosuggestions (still deferred)
+zinit wait lucid atload"!_zsh_autosuggest_start" for \
+    zsh-users/zsh-autosuggestions
+
+# Better directory navigation (still deferred)
+zinit ice wait"0" lucid
+zinit light agkozak/zsh-z
+
+# Git aliases (minimal, not the full oh-my-zsh plugin)
+zinit snippet OMZ::lib/git.zsh
+zinit wait lucid for \
+    OMZ::plugins/git/git.plugin.zsh
+
+# Environment Setup
+
+# Dotfiles directory
+export DOTFILES="$HOME/.dotfiles"
+
+# Homebrew (only if not in PATH)
+if [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]]; then
+    [[ -x "/opt/homebrew/bin/brew" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Editor (fallback chain: nvim → vim → vi)
+if command -v nvim &>/dev/null; then
+  export EDITOR=nvim
+  export VISUAL=nvim
+elif command -v vim &>/dev/null; then
+  export EDITOR=vim
+  export VISUAL=vim
+else
+  export EDITOR=vi
+  export VISUAL=vi
+fi
+
+# Language settings - ensure UTF-8 even if system locale is misconfigured
+# Prevents encoding issues with special characters in files and terminal output
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Less pager options (default has no flags set)
+# -R: display ANSI colors (for colored man pages, git diff, etc.)
+# -S: don't wrap long lines (use arrow keys to scroll horizontally)
+# -M: show more verbose prompt with line numbers and percentage
+# -i: case-insensitive search (unless pattern has uppercase)
+export LESS='-R -S -M -i'
+
+# FZF configuration
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
+# Use fd if available and not blocked by Santa, otherwise use find
+# Check if fd is actually executable, not just present
+if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+else
+    # Fallback to find with proper exclusions
+    export FZF_DEFAULT_COMMAND='find . -type f -not -path "*/\.git/*" -not -path "*/node_modules/*" -not -path "*/__pycache__/*" 2>/dev/null'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+fi
+
+# Key Bindings
+
+# Vi mode
+bindkey -v
+export KEYTIMEOUT=1
+
+# Better searching
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+# Edit command line
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd 'v' edit-command-line
+
+# Common shortcuts
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^K' kill-line
+bindkey '^W' backward-kill-word
+
+# Completion System
+
+# Load completion fix for hanging issues
+[[ -f "$DOTFILES/src/zsh/completion-fix.zsh" ]] && source "$DOTFILES/src/zsh/completion-fix.zsh"
+
+# Completion options (compinit already initialized earlier with zinit)
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+
+# Functions
+
+# Quick server
+serve() {
+    local port=${1:-8000}
+    python3 -m http.server "$port"
+}
+
+# Extract function moved to scripts/extract
+
+# Development Tools
+
+# fnm - Fast Node Manager (replacing nvm)
+if command -v fnm &>/dev/null; then
+    eval "$(fnm env --use-on-cd)"
+fi
+
+# pyenv
+if command -v pyenv &>/dev/null; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+
+# Rust
+[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+
+# Java (Homebrew openjdk is keg-only)
+[[ -d "/opt/homebrew/opt/openjdk/bin" ]] && export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+# Add dotfiles scripts to PATH
+export PATH="$DOTFILES/src/scripts:$DOTFILES/src/setup:$PATH"
+
+# Starship Prompt
+
+# Fix vim mode indicator conflict with Starship prompt
+# Some plugins create zle-keymap-select widget which Starship also tries to create
+# This causes "maximum nested function level reached" errors
+# Solution: delete any existing widget before Starship initializes
+if (( ${+widgets[zle-keymap-select]} )); then
+    zle -D zle-keymap-select 2>/dev/null
+fi
+
+if command -v starship &>/dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+# Aliases
+
+# Source comprehensive aliases file
+[[ -f "$DOTFILES/src/zsh/aliases.zsh" ]] && source "$DOTFILES/src/zsh/aliases.zsh"
+
+# Local Overrides
+
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# Load private/work configurations if available
+# This integrates with private dotfiles for work-specific settings
+if [[ -d "$DOTFILES/.dotfiles.private" ]]; then
+    local work_config="$DOTFILES/.dotfiles.private/lib/shell/work-aliases.zsh"
+    if [[ -f "$work_config" ]] && [[ -O "$work_config" ]]; then
+        source "$work_config"
+    fi
+fi
+
+# FZF Integration
+
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+# Theme integration
+[[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
+
+# Theme wrapper function to ensure environment is updated in current shell
+theme() {
+    # Run the actual theme script
+    command theme "$@"
+
+    # Source the updated theme environment in current shell
+    if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
+        source "$HOME/.config/theme-switcher/current-theme.sh"
+    fi
+}
+
+# Remove duplicates from PATH
+typeset -U PATH path
