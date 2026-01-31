@@ -17,7 +17,8 @@
 #   - die      : Error handling and exit functions
 
 # Auto-detect DOTFILES if not set
-if [[ -z "$DOTFILES" ]]; then
+# Use ${DOTFILES:-} to handle set -u (nounset) in bash
+if [[ -z "${DOTFILES:-}" ]]; then
   # Resolve symlinks and get the real path to this file
   local init_path="${0:A}"
   # init.zsh is at src/lib/init.zsh, so DOTFILES is 3 levels up

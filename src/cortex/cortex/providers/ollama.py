@@ -318,7 +318,6 @@ class OllamaProvider(BaseProvider):
     async def start_server(self, model_id: str, **kwargs) -> bool:
         """Start Ollama server on-demand."""
         import subprocess
-        from pathlib import Path
 
         # Check if Ollama is already running
         try:
