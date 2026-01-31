@@ -49,11 +49,20 @@ TOTAL_TIME=0
 TEST_PATTERN=""
 EXCLUDE_PATTERN=""
 
+# Test result tracking for detailed reporting
+# Format: "name|status|duration|message"
+typeset -a TEST_RESULTS
+
 # ============================================================================
 # COLORS AND OUTPUT
 # ============================================================================
 
 setup_colors() {
+  # Auto-detect CI environments and disable colors
+  if [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]] || [[ $CI_MODE -eq 1 ]]; then
+    NO_COLOR=1
+  fi
+
   if [[ -t 1 ]] && [[ $NO_COLOR -eq 0 ]]; then
     RED='\033[0;31m'
     GREEN='\033[0;32m'
@@ -79,12 +88,46 @@ setup_colors() {
   fi
 }
 
+# ============================================================================
+# GITHUB ACTIONS INTEGRATION
+# ============================================================================
+
+# Emit GitHub Actions annotation
+# Usage: gh_annotation "error|warning|notice" "file" "message"
+gh_annotation() {
+  local level="$1"
+  local file="$2"
+  local message="$3"
+
+  if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    echo "::${level} file=${file}::${message}"
+  fi
+}
+
+# Start a collapsible group in GitHub Actions logs
+gh_group_start() {
+  [[ -n "${GITHUB_ACTIONS:-}" ]] && echo "::group::$1"
+}
+
+# End a collapsible group
+gh_group_end() {
+  [[ -n "${GITHUB_ACTIONS:-}" ]] && echo "::endgroup::"
+}
+
 # Logging functions
 log() {
   local level="$1"
   shift
   local message="$*"
   local timestamp=$(date '+%H:%M:%S')
+
+  # Use ASCII symbols in CI mode
+  local check_mark="✓"
+  local x_mark="✗"
+  if [[ $NO_COLOR -eq 1 ]]; then
+    check_mark="PASS"
+    x_mark="FAIL"
+  fi
 
   case "$level" in
     ERROR)
@@ -98,10 +141,10 @@ log() {
       echo -e "${BLUE}[INFO]${NC} ${timestamp} - $message"
       ;;
     SUCCESS)
-      echo -e "${GREEN}[✓]${NC} $message"
+      echo -e "${GREEN}[${check_mark}]${NC} $message"
       ;;
     FAIL)
-      echo -e "${RED}[✗]${NC} $message"
+      echo -e "${RED}[${x_mark}]${NC} $message"
       ;;
     DEBUG)
       [[ $DEBUG -eq 1 ]] && echo -e "${DIM}[DEBUG]${NC} ${timestamp} - $message" >&2
@@ -114,6 +157,9 @@ log() {
 
 # Progress indicator
 show_progress() {
+  # Skip progress bar in CI - it creates noise in logs
+  [[ $NO_COLOR -eq 1 ]] && return
+
   local current=$1
   local total=$2
   local percent=$((current * 100 / total))
@@ -350,9 +396,10 @@ EOF
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
     # Skip optional_plugin_test in any CI/E2E mode - plugin downloads timeout
     if [[ "$test_name" == "optional_plugin_test" ]]; then
-      [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+      [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
       log WARN "$test_name - SKIPPED (plugin downloads timeout in CI)"
       ((SKIPPED++))
+      TEST_RESULTS+=("$test_name|skip|0|plugin downloads timeout in CI")
       rm -rf "$test_tmp"
       return 0
     fi
@@ -390,9 +437,10 @@ EOF
         || [[ "$test_name" == "plugin_loading_test" ]] \
         || [[ "$test_name" == "optional_plugin_test" ]] \
         || [[ "$test_name" == "lsp_completion_test" ]]; then
-        [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+        [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
         log WARN "$test_name - SKIPPED (CI mode)"
         ((SKIPPED++))
+        TEST_RESULTS+=("$test_name|skip|0|skipped in CI mode")
         rm -rf "$test_tmp"
         return 0
       fi
@@ -445,23 +493,36 @@ EOF
   # Process result
   if [[ $test_status -eq 0 ]]; then
     # Clear the rest of the line after the progress bar for clean output
-    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    # Only clear if progress bar was shown (not in CI/NO_COLOR mode)
+    [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
     log SUCCESS "$test_name (${duration}s)"
     ((PASSED++))
+    TEST_RESULTS+=("$test_name|pass|$duration|")
   elif [[ $test_status -eq 124 ]] || [[ $test_status -eq 137 ]] || [[ $test_status -eq 143 ]]; then
     # Timeout exit codes: 124 (timeout), 137 (SIGKILL), 143 (SIGTERM)
-    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
+    local error_msg="TIMEOUT after ${test_timeout}s"
     log FAIL "$test_name - TIMEOUT (killed after ${test_timeout}s)"
     ((FAILED++))
+    TEST_RESULTS+=("$test_name|fail|$duration|$error_msg")
+    gh_annotation "error" "$test_file" "Test timeout: $test_name (killed after ${test_timeout}s)"
     if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
       echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
     fi
     # Bail on timeout if requested
     [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
   else
-    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
+    # Capture last few lines of output for error context
+    local error_context=""
+    if [[ -n "${test_output:-}" ]]; then
+      error_context=$(echo "$test_output" | grep -v "^[a-z_]* ()" | tail -5 | tr '\n' ' ')
+    fi
+    local error_msg="Exit code $test_status${error_context:+: $error_context}"
     log FAIL "$test_name - EXIT $test_status"
     ((FAILED++))
+    TEST_RESULTS+=("$test_name|fail|$duration|$error_msg")
+    gh_annotation "error" "$test_file" "Test failed: $test_name (exit $test_status)"
     if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
       echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
     fi
@@ -648,44 +709,139 @@ generate_report() {
   local success_rate=0
   [[ $total -gt 0 ]] && success_rate=$((PASSED * 100 / total))
 
-  echo
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "${BOLD}Test Results Summary${NC}"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo
-  echo "  ${GREEN}Passed:${NC}  $PASSED"
-  echo "  ${RED}Failed:${NC}  $FAILED"
-  echo "  ${YELLOW}Skipped:${NC} $SKIPPED"
-  [[ $WARNINGS -gt 0 ]] && echo "  ${YELLOW}Warnings:${NC} $WARNINGS"
-  echo
-  echo "  ${BOLD}Total:${NC}   $total"
-  echo "  ${BOLD}Success:${NC} ${success_rate}%"
-  echo "  ${BOLD}Time:${NC}    ${TOTAL_TIME}s"
-  echo
-
-  if [[ $FAILED -eq 0 ]]; then
-    echo "${GREEN}${BOLD}All tests passed! ✅${NC}"
-  else
-    echo "${RED}${BOLD}Tests failed! ❌${NC}"
+  # Use ASCII separators in CI mode
+  local sep="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  local subsep="─────────────"
+  local x_mark="✗"
+  if [[ $NO_COLOR -eq 1 ]]; then
+    sep="========================================================"
+    subsep="-------------"
+    x_mark="[FAIL]"
   fi
 
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo
+  echo "$sep"
+  echo "${BOLD}Test Results Summary${NC}"
+  echo "$sep"
+  echo
+  printf "  ${GREEN}%-12s${NC} %s\n" "Passed:" "$PASSED"
+  printf "  ${RED}%-12s${NC} %s\n" "Failed:" "$FAILED"
+  printf "  ${YELLOW}%-12s${NC} %s\n" "Skipped:" "$SKIPPED"
+  [[ $WARNINGS -gt 0 ]] && printf "  ${YELLOW}%-12s${NC} %s\n" "Warnings:" "$WARNINGS"
+  echo
+  printf "  ${BOLD}%-12s${NC} %s\n" "Total:" "$total"
+  printf "  ${BOLD}%-12s${NC} %s%%\n" "Success:" "$success_rate"
+  printf "  ${BOLD}%-12s${NC} %ss\n" "Time:" "$TOTAL_TIME"
+  echo
+
+  # List failed tests with details
+  if [[ $FAILED -gt 0 ]]; then
+    echo "${RED}Failed Tests:${NC}"
+    echo "$subsep"
+    for result in "${TEST_RESULTS[@]}"; do
+      local name="${result%%|*}"
+      local rest="${result#*|}"
+      local test_status="${rest%%|*}"
+      if [[ "$test_status" == "fail" ]]; then
+        echo "  ${RED}${x_mark}${NC} $name"
+      fi
+    done
+    echo
+  fi
+
+  if [[ $FAILED -eq 0 ]]; then
+    echo "${GREEN}${BOLD}All tests passed!${NC}"
+  else
+    echo "${RED}${BOLD}Tests failed!${NC}"
+  fi
+
+  echo "$sep"
 }
 
 generate_junit_report() {
-  local report_file="${1:-test-results.xml}"
-  local timestamp=$(date -Iseconds)
+  local report_file="${1:-$TEST_DIR/test-results.xml}"
+  local timestamp=$(date -Iseconds 2>/dev/null || date +%Y-%m-%dT%H:%M:%S)
+  local total=$((PASSED + FAILED + SKIPPED))
 
   cat >"$report_file" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Dotfiles Tests" time="$TOTAL_TIME" tests="$((PASSED + FAILED))" failures="$FAILED" skipped="$SKIPPED">
-  <testsuite name="Test Suite" timestamp="$timestamp" tests="$((PASSED + FAILED))" failures="$FAILED" skipped="$SKIPPED" time="$TOTAL_TIME">
-    <!-- Test cases would be added here in a real implementation -->
+<testsuites name="Dotfiles Tests" time="$TOTAL_TIME" tests="$total" failures="$FAILED" skipped="$SKIPPED">
+  <testsuite name="dotfiles" timestamp="$timestamp" tests="$total" failures="$FAILED" skipped="$SKIPPED" time="$TOTAL_TIME">
+EOF
+
+  for result in "${TEST_RESULTS[@]}"; do
+    local name="${result%%|*}"
+    local rest="${result#*|}"
+    local test_status="${rest%%|*}"
+    rest="${rest#*|}"
+    local duration="${rest%%|*}"
+    local message="${rest#*|}"
+
+    # Escape XML special characters in name and message
+    name="${name//&/&amp;}"
+    name="${name//</&lt;}"
+    name="${name//>/&gt;}"
+    name="${name//\"/&quot;}"
+    message="${message//&/&amp;}"
+    message="${message//</&lt;}"
+    message="${message//>/&gt;}"
+
+    echo "    <testcase name=\"$name\" classname=\"dotfiles\" time=\"$duration\">" >>"$report_file"
+
+    case "$test_status" in
+      fail)
+        echo "      <failure message=\"Test failed\"><![CDATA[$message]]></failure>" >>"$report_file"
+        ;;
+      skip)
+        echo "      <skipped message=\"$message\"/>" >>"$report_file"
+        ;;
+    esac
+
+    echo "    </testcase>" >>"$report_file"
+  done
+
+  cat >>"$report_file" <<EOF
   </testsuite>
 </testsuites>
 EOF
 
-  log INFO "JUnit report saved to: $report_file"
+  log INFO "JUnit report: $report_file"
+}
+
+generate_github_summary() {
+  [[ -z "${GITHUB_STEP_SUMMARY:-}" ]] && return
+
+  local total=$((PASSED + FAILED + SKIPPED))
+  local success_rate=0
+  [[ $total -gt 0 ]] && success_rate=$((PASSED * 100 / total))
+
+  cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+## Test Results
+
+| Metric | Value |
+|--------|-------|
+| Passed | $PASSED |
+| Failed | $FAILED |
+| Skipped | $SKIPPED |
+| **Total** | $total |
+| **Success Rate** | ${success_rate}% |
+| **Duration** | ${TOTAL_TIME}s |
+
+EOF
+
+  if [[ $FAILED -gt 0 ]]; then
+    echo "### Failed Tests" >> "$GITHUB_STEP_SUMMARY"
+    echo "" >> "$GITHUB_STEP_SUMMARY"
+    for result in "${TEST_RESULTS[@]}"; do
+      local name="${result%%|*}"
+      local rest="${result#*|}"
+      local test_status="${rest%%|*}"
+      if [[ "$test_status" == "fail" ]]; then
+        echo "- \`$name\`" >> "$GITHUB_STEP_SUMMARY"
+      fi
+    done
+    echo "" >> "$GITHUB_STEP_SUMMARY"
+  fi
 }
 
 # ============================================================================
@@ -853,13 +1009,16 @@ main() {
   fi
 
   # Print header
+  local sep="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  [[ $NO_COLOR -eq 1 ]] && sep="========================================================"
+
   echo
   echo "${BOLD}Dotfiles Test Runner${NC}"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "$sep"
   echo "Level: $TEST_LEVEL"
   [[ -n "$TEST_PATTERN" ]] && echo "Pattern: $TEST_PATTERN"
   [[ -n "$EXCLUDE_PATTERN" ]] && echo "Exclude: $EXCLUDE_PATTERN"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "$sep"
   echo
 
   # Run tests
@@ -879,7 +1038,8 @@ main() {
 
   # Generate reports
   generate_report
-  [[ ${JUNIT:-0} -eq 1 ]] && generate_junit_report
+  generate_junit_report "$TEST_DIR/test-results.xml"
+  generate_github_summary
 
   # Cleanup
   cleanup_test_environment
