@@ -34,26 +34,66 @@ usage() {
 ${BOLD}Neovim Work Configuration Debugger${NC}
 
 ${BOLD}USAGE:${NC}
-    $SCRIPT_NAME [OPTIONS]
+    $SCRIPT_NAME [OPTIONS] [FILES...]
 
 ${BOLD}OPTIONS:${NC}
     --check       Check work environment detection
-    --test        Test Neovim startup with debug output
+    --test        Test Neovim startup with debug output (headless)
     --lsp         Check LSP configuration
     --logs        Show recent Neovim logs
     --clean       Clean Neovim cache and retry
     -h, --help    Show this help
 
 ${BOLD}DESCRIPTION:${NC}
-    Helps debug Neovim configuration issues in work environments.
-    Checks machine detection, LSP setup, and module loading.
+    Launches Neovim with verbose debug logging (-V9).
+    Log file: /tmp/nvim-debug.log
+
+    When run without options, starts an interactive Neovim session
+    with full debug output captured to the log file.
 
 ${BOLD}EXAMPLES:${NC}
-    $SCRIPT_NAME --check    # Check if work environment is detected
-    $SCRIPT_NAME --test     # Test Neovim startup with debugging
-    $SCRIPT_NAME --lsp      # Check LSP configuration status
+    $SCRIPT_NAME              # Launch nvim with debug logging
+    $SCRIPT_NAME file.lua     # Edit file with debug logging
+    $SCRIPT_NAME --check      # Check if work environment is detected
+    $SCRIPT_NAME --test       # Test Neovim startup (headless)
+    $SCRIPT_NAME --lsp        # Check LSP configuration status
 
 EOF
+}
+
+#######################################
+# Launch Neovim with verbose debug logging
+#######################################
+launch_debug_nvim() {
+    local log_file="/tmp/nvim-debug.log"
+
+    echo "${BOLD}=== Launching Neovim with Debug Logging ===${NC}"
+    echo "${BLUE}Log file:${NC} $log_file"
+    echo "${BLUE}Verbosity:${NC} -V9 (maximum)"
+    echo
+
+    # Clear previous log
+    : > "$log_file"
+
+    # Launch nvim with verbose logging
+    # Pass any remaining arguments (files to edit) to nvim
+    nvim -V9"$log_file" "$@"
+
+    local exit_code=$?
+
+    echo
+    echo "${BOLD}=== Debug Session Ended ===${NC}"
+    echo "${BLUE}Log file:${NC} $log_file"
+
+    if [[ -s "$log_file" ]]; then
+        local line_count=$(wc -l < "$log_file")
+        echo "${BLUE}Log lines:${NC} $line_count"
+        echo
+        echo "${YELLOW}View log with:${NC} less $log_file"
+        echo "${YELLOW}Search log:${NC}  grep -i error $log_file"
+    fi
+
+    return $exit_code
 }
 
 #######################################
@@ -281,44 +321,58 @@ clean_cache() {
 # Main execution
 #######################################
 main() {
-    if [[ $# -eq 0 ]]; then
-        usage
-        exit 0
-    fi
-    
+    # Collect files to pass to nvim (non-option arguments)
+    local -a files=()
+    local run_debug=true
+
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --check)
                 check_environment
+                run_debug=false
                 shift
                 ;;
             --test)
                 test_startup
+                run_debug=false
                 shift
                 ;;
             --lsp)
                 check_lsp
+                run_debug=false
                 shift
                 ;;
             --logs)
                 show_logs
+                run_debug=false
                 shift
                 ;;
             --clean)
                 clean_cache
+                run_debug=false
                 shift
                 ;;
             -h|--help)
                 usage
                 exit 0
                 ;;
-            *)
+            -*)
                 echo "${RED}Unknown option: $1${NC}"
                 usage
                 exit 1
                 ;;
+            *)
+                # Non-option argument, treat as file
+                files+=("$1")
+                shift
+                ;;
         esac
     done
+
+    # If no diagnostic options were used, launch nvim with debug logging
+    if [[ "$run_debug" == "true" ]]; then
+        launch_debug_nvim "${files[@]}"
+    fi
 }
 
 main "$@"
