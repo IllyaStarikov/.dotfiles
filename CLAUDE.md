@@ -130,7 +130,7 @@ ruff check src/**/*.py
 
 ```bash
 # Switch themes based on macOS appearance (light/dark mode)
-./src/theme-switcher/switch-theme.sh
+./src/theme/switch-theme.sh
 
 # Quick theme switching commands (aliases in zsh)
 theme           # Auto-detect and switch based on macOS appearance
@@ -197,7 +197,7 @@ cortex agent on/off    # Toggle AI agent mode
 │   │   └── snippets/      # Language-specific snippets
 │   ├── setup/             # Installation and setup scripts
 │   ├── scripts/           # Utility and maintenance scripts
-│   ├── theme-switcher/    # Dynamic theme switching system
+│   ├── theme/    # Dynamic theme switching system
 │   ├── zsh/               # Zsh configuration with Zinit
 │   └── git/               # Git configuration and hooks
 ├── test/                  # 4-level test infrastructure
@@ -291,7 +291,7 @@ src/neovim/
 
 **Theme Synchronization:**
 
-- Zsh sources `~/.config/theme-switcher/current-theme.sh`
+- Zsh sources `~/.config/theme/current-theme.sh`
 - Neovim reads `MACOS_THEME` environment variable
 - tmux loads `~/.config/tmux/theme.conf`
 - Alacritty imports `~/.config/alacritty/theme.toml`
@@ -369,6 +369,8 @@ gh run watch <run-id> --exit-status                   # Watch specific workflow
 **Theme Changes**: When modifying theme code, test all four TokyoNight variants. The system handles tmux reloading automatically.
 
 **Git Commits**: Pre-commit hooks run Gitleaks for secret detection using Gitleaks default configuration.
+
+**Git File Operations**: Always use `git mv`, `git rm`, etc. instead of plain `mv`, `rm` to preserve git history and make changes easier to track.
 
 **Neovim Debugging**:
 
