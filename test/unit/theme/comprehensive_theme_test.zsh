@@ -18,7 +18,7 @@ setup_test
 
 # Test: switch-theme.sh exists and is executable
 it "switch-theme.sh should exist and be executable" && {
-  local script_path="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local script_path="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   assert_file_exists "$script_path"
   assert_file_executable "$script_path"
@@ -27,7 +27,7 @@ it "switch-theme.sh should exist and be executable" && {
 
 # Test: validate-themes.sh exists and is executable
 it "validate-themes.sh should exist and be executable" && {
-  local script_path="$DOTFILES_DIR/src/theme-switcher/validate-themes.sh"
+  local script_path="$DOTFILES_DIR/src/theme/validate-themes.sh"
 
   assert_file_exists "$script_path"
   assert_file_executable "$script_path"
@@ -36,10 +36,10 @@ it "validate-themes.sh should exist and be executable" && {
 
 # Test: Theme directory structure
 it "should have proper theme directory structure" && {
-  assert_directory_exists "$DOTFILES_DIR/src/theme-switcher/themes"
+  assert_directory_exists "$DOTFILES_DIR/src/theme"
 
-  # Check for theme subdirectories
-  local theme_count=$(ls -d "$DOTFILES_DIR/src/theme-switcher/themes"/*/ 2>/dev/null | wc -l)
+  # Check for theme subdirectories (themes are directly in src/theme/)
+  local theme_count=$(ls -d "$DOTFILES_DIR/src/theme"/tokyonight_*/ 2>/dev/null | wc -l)
   assert_greater_than "$theme_count" 0
   pass
 }
@@ -50,7 +50,8 @@ it "should have theme configuration files" && {
   local missing=0
 
   for theme in "${themes[@]}"; do
-    if [[ ! -d "$DOTFILES_DIR/src/theme-switcher/themes/$theme" ]]; then
+    # Themes are directly in src/theme/, not src/theme/themes/
+    if [[ ! -d "$DOTFILES_DIR/src/theme/$theme" ]]; then
       ((missing++))
     fi
   done
@@ -61,18 +62,25 @@ it "should have theme configuration files" && {
 
 # Test: Help message
 it "switch-theme.sh should display help message" && {
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --help 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --help 2>&1 || true)
 
-  assert_contains "$output" "Usage" || assert_contains "$output" "usage"
-  assert_contains "$output" "theme" || assert_contains "$output" "Theme"
-  pass
+  # Check for usage-related keywords
+  if [[ "$output" == *"Usage"* ]] || [[ "$output" == *"usage"* ]]; then
+    if [[ "$output" == *"theme"* ]] || [[ "$output" == *"Theme"* ]] || [[ "$output" == *"THEME"* ]]; then
+      pass
+    else
+      fail "Help message missing theme references"
+    fi
+  else
+    fail "Help message missing Usage"
+  fi
 }
 
 # Test: macOS appearance detection
 it "should detect macOS appearance" && {
   if [[ "$(uname)" == "Darwin" ]]; then
     # Test actual behavior - can it detect current appearance
-    output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --current 2>&1 || true)
+    output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --current 2>&1 || true)
     if [[ "$output" == *"dark"* ]] || [[ "$output" == *"light"* ]] || [[ "$output" == *"tokyonight"* ]]; then
       pass "Can detect current appearance"
     else
@@ -86,14 +94,14 @@ it "should detect macOS appearance" && {
 # Test: Theme file generation
 it "should generate theme configuration files" && {
   # Test actual behavior - run in dry run mode and see if it would generate files
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run tokyonight_day 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run tokyonight_day 2>&1 || true)
 
   # Should mention generating configs for various tools
   if [[ "$output" == *"alacritty"* ]] || [[ "$output" == *"tmux"* ]] || [[ "$output" == *"config"* ]]; then
     pass "Would generate configuration files"
   else
     # Alternative: just check if it runs without errors
-    "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
+    "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
     if [[ $? -eq 0 ]]; then
       pass "Theme switch executed successfully"
     else
@@ -108,7 +116,7 @@ it "should use atomic operations for theme switching" && {
   local test_theme="tokyonight_day"
 
   # Try switching theme (--local to avoid affecting other terminals)
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local "$test_theme" >/dev/null 2>&1
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local "$test_theme" >/dev/null 2>&1
   local result=$?
 
   # Either it succeeds completely or fails completely
@@ -121,7 +129,7 @@ it "should use atomic operations for theme switching" && {
 
 # Test: Theme validation
 it "validate-themes.sh should validate theme files" && {
-  output=$("$DOTFILES_DIR/src/theme-switcher/validate-themes.sh" 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/validate-themes.sh" 2>&1 || true)
 
   # Should check theme integrity
   assert_success $? || skip "Validation script may need themes installed"
@@ -132,8 +140,9 @@ it "validate-themes.sh should validate theme files" && {
 it "should support Alacritty themes" && {
   local alacritty_theme_exists=0
 
-  for theme_dir in "$DOTFILES_DIR/src/theme-switcher/themes"/*/; do
-    if [[ -f "$theme_dir/alacritty/theme.toml" ]] || [[ -f "$theme_dir/alacritty.toml" ]]; then
+  # Themes are directly in src/theme/tokyonight_*/
+  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight_*/; do
+    if [[ -f "$theme_dir/alacritty.toml" ]]; then
       alacritty_theme_exists=1
       break
     fi
@@ -147,8 +156,9 @@ it "should support Alacritty themes" && {
 it "should support tmux themes" && {
   local tmux_theme_exists=0
 
-  for theme_dir in "$DOTFILES_DIR/src/theme-switcher/themes"/*/; do
-    if [[ -f "$theme_dir/tmux/theme.conf" ]] || [[ -f "$theme_dir/tmux.conf" ]]; then
+  # Themes are directly in src/theme/tokyonight_*/
+  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight_*/; do
+    if [[ -f "$theme_dir/tmux.conf" ]]; then
       tmux_theme_exists=1
       break
     fi
@@ -161,11 +171,11 @@ it "should support tmux themes" && {
 # Test: Neovim theme integration
 it "should integrate with Neovim themes" && {
   # Test behavior - after switching theme, Neovim should use it
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
 
   # Check if theme environment is set
-  if [[ -f ~/.config/theme-switcher/current-theme.sh ]]; then
-    source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
+  if [[ -f ~/.config/theme/current-theme.sh ]]; then
+    source ~/.config/theme/current-theme.sh 2>/dev/null || true
     if [[ -n "$MACOS_THEME" ]]; then
       pass "Theme environment configured for Neovim"
     else
@@ -179,11 +189,11 @@ it "should integrate with Neovim themes" && {
 # Test: Theme environment variable
 it "should set theme environment variable" && {
   # Test behavior - after switching, environment should be set
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_night >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_night >/dev/null 2>&1 || true
 
   # Source the generated theme file if it exists
-  if [[ -f ~/.config/theme-switcher/current-theme.sh ]]; then
-    source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
+  if [[ -f ~/.config/theme/current-theme.sh ]]; then
+    source ~/.config/theme/current-theme.sh 2>/dev/null || true
     if [[ -n "${MACOS_THEME:-}" ]]; then
       pass "Theme environment variable set"
     else
@@ -197,10 +207,10 @@ it "should set theme environment variable" && {
 # Test: Current theme tracking
 it "should track current theme" && {
   # Test behavior - switch theme and check if it's tracked
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
 
   # Check if current theme is tracked
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --current 2>&1 || echo "")
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --current 2>&1 || echo "")
   if [[ -n "$output" ]] && [[ "$output" != *"error"* ]]; then
     pass "Current theme is tracked"
   else
@@ -211,7 +221,7 @@ it "should track current theme" && {
 # Test: Error handling
 it "should handle errors gracefully" && {
   # Test with invalid theme name (--local to avoid affecting other terminals)
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local "invalid_theme_name" 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --local "invalid_theme_name" 2>&1 || true)
 
   # Should not crash
   assert_success 0 || assert_contains "$output" "Error" || assert_contains "$output" "error"
@@ -223,7 +233,7 @@ it "should reload tmux sessions after theme change" && {
   # Test behavior - if tmux is running, theme switch should handle it
   if command -v tmux >/dev/null 2>&1; then
     # Switch theme and check if it handles tmux gracefully (--local to avoid affecting other terminals)
-    output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_moon 2>&1 || true)
+    output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_moon 2>&1 || true)
 
     # Should not error on tmux operations
     if [[ "$output" != *"tmux: command not found"* ]]; then
@@ -239,10 +249,10 @@ it "should reload tmux sessions after theme change" && {
 # Test: Backup before switching
 it "should backup current theme before switching" && {
   # Test behavior - switch theme twice and see if it handles it safely (--local to avoid affecting other terminals)
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
   local first_result=$?
 
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_night >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_night >/dev/null 2>&1 || true
   local second_result=$?
 
   # Both switches should work without corruption
@@ -256,7 +266,7 @@ it "should backup current theme before switching" && {
 # Test: Theme shortcuts
 it "should support theme shortcuts" && {
   # Test behavior - try using shortcuts (--local to avoid affecting other terminals)
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local day 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --local day 2>&1 || true)
 
   # Should either switch or show help about shortcuts
   if [[ "$output" != *"not found"* ]] && [[ "$output" != *"invalid"* ]]; then
@@ -268,7 +278,7 @@ it "should support theme shortcuts" && {
 
 # Test: Dry run mode
 it "should support dry run mode" && {
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run 2>&1 || true)
 
   # Should show what would be done
   assert_success 0 || assert_contains "$output" "Would" || assert_contains "$output" "DRY"
@@ -287,13 +297,13 @@ it "theme wrapper script should exist" && {
 # Test: Color scheme consistency
 it "should maintain color scheme consistency" && {
   # Test behavior - switch theme and check if files are consistent (--local to avoid affecting other terminals)
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1 || true
 
   # Check if config files were generated
   local configs_exist=0
   [[ -f ~/.config/alacritty/theme.toml ]] && ((configs_exist++))
   [[ -f ~/.config/tmux/theme.conf ]] && ((configs_exist++))
-  [[ -f ~/.config/theme-switcher/current-theme.sh ]] && ((configs_exist++))
+  [[ -f ~/.config/theme/current-theme.sh ]] && ((configs_exist++))
 
   if [[ $configs_exist -gt 0 ]]; then
     pass "Theme configs generated consistently"
@@ -306,7 +316,7 @@ it "should maintain color scheme consistency" && {
 it "should be optimized for performance" && {
   # Test behavior - theme switch should be fast (--local to avoid affecting other terminals)
   local start_time=$(date +%s%N 2>/dev/null || date +%s)
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
   local end_time=$(date +%s%N 2>/dev/null || date +%s)
 
   # Calculate duration in milliseconds if nanoseconds available
