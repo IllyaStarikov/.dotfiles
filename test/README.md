@@ -60,17 +60,23 @@ Test results are logged to standard output with color-coded status:
 ```
 test/
 ├── runner.zsh          # Main test runner (Zsh)
-├── unit/               # Unit tests (< 5s)
+├── security_test.zsh   # Security vulnerability scanning
+├── e2e/                # Docker-based end-to-end tests
+├── examples/           # Reference/example tests
 ├── functional/         # Functional tests (< 30s)
 ├── integration/        # Integration tests (< 60s)
-├── performance/        # Performance regression tests
 ├── lib/                # Test framework and helpers
-├── fixtures/           # Test files for LSP/formatter testing
-│   ├── sample.py
-│   ├── sample.js
-│   ├── sample.ts
-│   └── sample.cpp
-└── README.md          # This file
+├── performance/        # Performance regression tests
+├── sanity/             # Quick validation tests (smoke + regression)
+├── stress/             # Edge case and extreme condition tests
+├── unit/               # Unit tests (< 5s)
+│   ├── config/         # App configuration tests (kitty, wezterm, tmux, etc.)
+│   ├── lib/            # Library function tests
+│   ├── nvim/           # Neovim configuration tests
+│   ├── scripts/        # Script tests (including git)
+│   └── setup/          # Setup script tests
+├── workflows/          # Real-world workflow tests
+└── README.md           # This file
 ```
 
 ## Key Features

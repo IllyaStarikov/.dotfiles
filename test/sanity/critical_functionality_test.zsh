@@ -19,7 +19,7 @@ required_dirs=(
   "$DOTFILES_DIR/src/neovim"
   "$DOTFILES_DIR/src/zsh"
   "$DOTFILES_DIR/src/scripts"
-  "$DOTFILES_DIR/src/theme-switcher"
+  "$DOTFILES_DIR/src/theme"
   "$DOTFILES_DIR/test"
 )
 
@@ -40,7 +40,7 @@ essential_files=(
   "$DOTFILES_DIR/src/zsh/zshrc"
   "$DOTFILES_DIR/src/tmux.conf"
   "$DOTFILES_DIR/src/git/gitconfig"
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  "$DOTFILES_DIR/src/theme/switch-theme.sh"
 )
 
 missing_files=()
@@ -69,7 +69,7 @@ else
 fi
 
 test_case "Theme switcher is executable"
-if [[ -x "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" ]]; then
+if [[ -x "$DOTFILES_DIR/src/theme/switch-theme.sh" ]]; then
   pass
 else
   fail "Theme switcher is not executable"

@@ -82,7 +82,7 @@ test_zsh_alias_count() {
 test_theme_switching_still_works() {
   log "TRACE" "Testing theme switching functionality"
 
-  local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local theme_script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   if [[ ! -x "$theme_script" ]]; then
     log "ERROR" "Theme switcher not executable or missing"

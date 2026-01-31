@@ -68,7 +68,7 @@ test_git_config_valid() {
 test_theme_switcher_exists() {
   log "TRACE" "Testing theme switcher availability"
 
-  local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local theme_script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   assert_file_exists "$theme_script" "Theme switcher script not found"
 
