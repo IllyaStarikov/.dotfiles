@@ -348,6 +348,15 @@ EOF
 
   # In CI mode or non-interactive, use different timeout strategy
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
+    # Skip optional_plugin_test in any CI/E2E mode - plugin downloads timeout
+    if [[ "$test_name" == "optional_plugin_test" ]]; then
+      [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+      log WARN "$test_name - SKIPPED (plugin downloads timeout in CI)"
+      ((SKIPPED++))
+      rm -rf "$test_tmp"
+      return 0
+    fi
+
     # In E2E test mode, run ALL tests with longer timeouts
     if [[ "${E2E_TEST:-0}" == "1" ]]; then
       # Keep the special init timeout if already set, otherwise use E2E default
