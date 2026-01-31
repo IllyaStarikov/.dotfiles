@@ -40,7 +40,7 @@ Terminal must support ligatures (Alacritty, iTerm2, Kitty, WezTerm).
 
 ## Theme Files
 
-Configuration reads from `~/.config/theme-switcher/current-theme.sh`:
+Configuration reads from `~/.config/theme/current-theme.sh`:
 
 ```bash
 export MACOS_THEME="tokyonight_day"

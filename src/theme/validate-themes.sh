@@ -13,8 +13,8 @@ YELLOW='\033[0;33m'
 NC='\033[0m'
 
 # Path detection for theme directory location
-# Uses BASH_SOURCE for compatibility with sourced execution
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Uses zsh parameter expansion for script directory
+SCRIPT_DIR="${0:A:h}"
 
 # Core files that every theme must provide
 # These ensure complete application coverage for theme switching
@@ -27,9 +27,10 @@ REQUIRED_FILES=(
 )
 
 # Additional files that enhance theme functionality
-# Not required but provide extended editor support
+# Not required but provide extended terminal/editor support
 OPTIONAL_FILES=(
   "vim.vim"
+  "kitty.conf"
 )
 
 echo "🔍 Validating theme configurations..."

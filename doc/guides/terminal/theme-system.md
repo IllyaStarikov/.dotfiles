@@ -233,14 +233,14 @@ theme  # Reinitialize
 
 **Add support for new applications:**
 
-1. Create theme files in `themes/[theme-name]/`
+1. Create theme files in `src/theme/[theme-name]/`
 2. Update `switch-theme.sh` to copy your files
 3. Add application restart logic
 
 **Example for adding VSCode theme:**
 
 ```bash
-# In themes/tokyonight_night/vscode.json
+# In src/theme/tokyonight_night/vscode.json
 {
   "workbench.colorTheme": "Tokyo Night"
 }
