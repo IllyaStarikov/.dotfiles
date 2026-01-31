@@ -4,7 +4,10 @@
 # Supports 16-color, 256-color, and true color (24-bit) modes
 
 # Basic color codes (16-color palette)
-readonly -A COLORS=(
+# Use typeset -gA (global, associative) so variable persists when sourced
+# from inside a function (e.g., lib_load). Skip if already defined.
+if (( ! ${+COLORS} )); then
+typeset -gA COLORS=(
   # Foreground colors
   [BLACK]='\033[30m'
   [RED]='\033[31m'
@@ -47,9 +50,11 @@ readonly -A COLORS=(
   [BG_BRIGHT_CYAN]='\033[106m'
   [BG_BRIGHT_WHITE]='\033[107m'
 )
+fi
 
 # Text style codes
-readonly -A STYLES=(
+if (( ! ${+STYLES} )); then
+typeset -gA STYLES=(
   [RESET]='\033[0m'
   [BOLD]='\033[1m'
   [DIM]='\033[2m'
@@ -70,9 +75,11 @@ readonly -A STYLES=(
   [NO_HIDDEN]='\033[28m'
   [NO_STRIKETHROUGH]='\033[29m'
 )
+fi
 
 # Special color aliases for common use cases
-readonly -A COLOR_ALIASES=(
+if (( ! ${+COLOR_ALIASES} )); then
+typeset -gA COLOR_ALIASES=(
   [SUCCESS]="${COLORS[GREEN]}"
   [ERROR]="${COLORS[RED]}"
   [WARNING]="${COLORS[YELLOW]}"
@@ -82,6 +89,7 @@ readonly -A COLOR_ALIASES=(
   [SECONDARY]="${COLORS[MAGENTA]}"
   [MUTED]="${COLORS[BRIGHT_BLACK]}"
 )
+fi
 
 # Get 256-color code
 color256() {
@@ -274,7 +282,8 @@ show_styles() {
 }
 
 # Theme colors based on popular color schemes
-readonly -A NORD=(
+if (( ! ${+NORD} )); then
+typeset -gA NORD=(
   [POLAR_NIGHT_1]="$(rgb 46 52 64)"
   [POLAR_NIGHT_2]="$(rgb 59 66 82)"
   [POLAR_NIGHT_3]="$(rgb 67 76 94)"
@@ -292,8 +301,10 @@ readonly -A NORD=(
   [AURORA_GREEN]="$(rgb 163 190 140)"
   [AURORA_PURPLE]="$(rgb 180 142 173)"
 )
+fi
 
-readonly -A DRACULA=(
+if (( ! ${+DRACULA} )); then
+typeset -gA DRACULA=(
   [BACKGROUND]="$(rgb 40 42 54)"
   [CURRENT_LINE]="$(rgb 68 71 90)"
   [FOREGROUND]="$(rgb 248 248 242)"
@@ -306,6 +317,7 @@ readonly -A DRACULA=(
   [RED]="$(rgb 255 85 85)"
   [YELLOW]="$(rgb 241 250 140)"
 )
+fi
 
 # ============================================================================
 # Backwards Compatibility Variables
