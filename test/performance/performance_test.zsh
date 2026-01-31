@@ -87,14 +87,14 @@ it "Zsh should start within ${ZSH_STARTUP_THRESHOLD}ms" && {
 
 # Test: Theme switching performance
 it "Theme switching should complete within ${THEME_SWITCH_THRESHOLD}ms" && {
-  if [[ ! -x "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" ]]; then
+  if [[ ! -x "$DOTFILES_DIR/src/theme/switch-theme.sh" ]]; then
     skip "Theme switcher not found"
     return
   fi
 
   # Measure theme switch time
   local start_time=$(date +%s%N)
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run 2>&1 >/dev/null || true
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run 2>&1 >/dev/null || true
   local end_time=$(date +%s%N)
 
   local duration=$(((end_time - start_time) / 1000000))

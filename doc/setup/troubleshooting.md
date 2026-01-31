@@ -228,14 +228,14 @@ brew reinstall git-delta
 
 ```bash
 # Manual theme switch
-~/.dotfiles/src/theme-switcher/switch-theme.sh
+~/.dotfiles/src/theme/switch-theme.sh
 
 # Check theme files
 ls -la ~/.config/alacritty/theme.toml
 ls -la ~/.config/tmux/theme.conf
 
 # Reset theme cache
-rm -rf ~/.cache/theme-switcher
+rm -rf ~/.cache/theme
 ```
 
 ### Issue: Partial theme application

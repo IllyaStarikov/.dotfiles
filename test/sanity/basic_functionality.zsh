@@ -294,7 +294,7 @@ test_no_obvious_syntax_errors() {
 
   # Check shell scripts
   local shell_errors=0
-  for script in "$DOTFILES_DIR"/src/{scripts,setup,theme-switcher}/*.sh; do
+  for script in "$DOTFILES_DIR"/src/{scripts,setup,theme}/*.sh; do
     [[ -f "$script" ]] || continue
 
     if ! bash -n "$script" 2>/dev/null; then
@@ -318,7 +318,7 @@ test_theme_switcher_exists() {
   log "TRACE" "Testing theme switcher existence"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking for theme switching capability"
 
-  local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local theme_script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   if [[ -f "$theme_script" ]]; then
     if [[ -x "$theme_script" ]]; then

@@ -21,7 +21,7 @@ src/
 ├── neovim/                # Neovim editor (42+ modules)
 ├── scripts/               # Utility scripts (11 tools)
 ├── setup/                 # Installation scripts
-├── theme-switcher/        # Dynamic theme system
+├── theme/        # Dynamic theme system
 ├── wezterm/               # WezTerm terminal
 └── zsh/                   # Zsh shell configuration
 ```
@@ -175,7 +175,7 @@ Installation and configuration:
 - `mac.sh` - macOS-specific setup
 - `linux.sh` - Linux-specific setup
 
-### /theme-switcher
+### /theme
 
 Dynamic theme synchronization:
 
@@ -278,7 +278,7 @@ Validate configuration changes:
 - [Setup Guide](setup/README.md) - Installation instructions
 - [Scripts Reference](scripts/README.md) - Utility script docs
 - [Neovim Config](neovim/README.md) - Editor setup
-- [Theme System](theme-switcher/README.md) - Theme switching
+- [Theme System](theme/README.md) - Theme switching
 - [Git Config](git/README.md) - Version control setup
 - [Language Configs](language/README.md) - Language support
 - [Main README](../README.md) - Repository overview

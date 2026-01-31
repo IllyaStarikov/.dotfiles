@@ -62,7 +62,7 @@ cd ..
 test_case "Theme configuration files are generated"
 # Check if theme configuration directories exist
 theme_configs=(
-  "$HOME/.config/theme-switcher"
+  "$HOME/.config/theme"
   "$HOME/.config/alacritty"
   "$HOME/.config/tmux"
 )

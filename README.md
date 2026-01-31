@@ -112,7 +112,7 @@ Full reference: [keymaps](src/neovim/config/keymaps/KEYMAPS.md)
 | [Git](src/git/README.md)               | SSH signing, delta, hooks        |
 | [Scripts](src/scripts/README.md)       | fixy, theme, update, utilities   |
 | [Setup](src/setup/README.md)           | Installation, platform detection |
-| [Themes](src/theme-switcher/README.md) | TokyoNight, app sync             |
+| [Themes](src/theme/README.md) | TokyoNight, app sync             |
 
 ### Guides
 

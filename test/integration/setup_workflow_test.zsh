@@ -129,11 +129,11 @@ it "should set up terminal emulator configs" && {
 # Test: Theme system setup
 it "should set up theme switching system" && {
   export HOME="$TEST_HOME"
-  mkdir -p "$TEST_HOME/.config/theme-switcher"
+  mkdir -p "$TEST_HOME/.config/theme"
 
   # Check theme components
-  assert_file_exists "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
-  assert_directory_exists "$DOTFILES_DIR/src/theme-switcher/themes"
+  assert_file_exists "$DOTFILES_DIR/src/theme/switch-theme.sh"
+  assert_directory_exists "$DOTFILES_DIR/src/theme/themes"
   pass
 }
 

@@ -120,7 +120,7 @@ jobs:
           echo "🔧 Setting permissions..."
           find "$DOTFILES_DIR/src/scripts" -type f -exec chmod +x {} \;
           chmod +x "$DOTFILES_DIR/src/setup/"*.sh 2>/dev/null || true
-          chmod +x "$DOTFILES_DIR/src/theme-switcher/"*.sh 2>/dev/null || true
+          chmod +x "$DOTFILES_DIR/src/theme/"*.sh 2>/dev/null || true
 
           # Run setup (requires zsh for symlinks.sh)
           echo "🔗 Creating symlinks..."

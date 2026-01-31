@@ -42,7 +42,7 @@ themes/
 - `~/.config/kitty/theme.conf`
 - `~/.config/tmux/theme.conf`
 - `~/.config/starship/theme.toml`
-- `~/.config/theme-switcher/current-theme.sh`
+- `~/.config/theme/current-theme.sh`
 
 ## Integration
 
@@ -50,7 +50,7 @@ themes/
 
 ```bash
 # Environment variables available after switching
-source ~/.config/theme-switcher/current-theme.sh
+source ~/.config/theme/current-theme.sh
 # CURRENT_THEME="tokyonight_storm"
 # THEME_TYPE="dark"
 ```
@@ -88,7 +88,7 @@ vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 
 ## Troubleshooting
 
-**Theme not applying**: Check `cat ~/.config/theme-switcher/current-theme.sh`
+**Theme not applying**: Check `cat ~/.config/theme/current-theme.sh`
 
 **Wrong colors**: Verify terminal supports truecolor with `echo $COLORTERM`
 

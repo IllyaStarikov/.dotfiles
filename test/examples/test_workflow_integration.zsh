@@ -52,7 +52,7 @@ test_case "Theme switching updates Neovim, tmux, and Alacritty"
 # Record initial states
 initial_alacritty=$(grep -E "tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
 initial_nvim=$(nvim --headless -c "lua print(vim.g.colors_name or 'default')" -c "qa!" 2>&1)
-initial_theme_var=$(source ~/.config/theme-switcher/current-theme.sh 2>/dev/null && echo "$MACOS_THEME" || echo "none")
+initial_theme_var=$(source ~/.config/theme/current-theme.sh 2>/dev/null && echo "$MACOS_THEME" || echo "none")
 
 # Switch theme
 current_appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light")
@@ -64,12 +64,12 @@ else
   defaults delete -g AppleInterfaceStyle 2>/dev/null
 fi
 
-"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local >/dev/null 2>&1
+"$DOTFILES_DIR/src/theme/switch-theme.sh" --local >/dev/null 2>&1
 
 # Check all components updated
 new_alacritty=$(grep -E "tokyonight" ~/.config/alacritty/theme.toml 2>/dev/null || echo "none")
 new_nvim=$(nvim --headless -c "lua print(vim.g.colors_name or 'default')" -c "qa!" 2>&1)
-new_theme_var=$(source ~/.config/theme-switcher/current-theme.sh 2>/dev/null && echo "$MACOS_THEME" || echo "none")
+new_theme_var=$(source ~/.config/theme/current-theme.sh 2>/dev/null && echo "$MACOS_THEME" || echo "none")
 
 changes=0
 [[ "$initial_alacritty" != "$new_alacritty" ]] && ((changes++))
@@ -88,7 +88,7 @@ if [[ "$current_appearance" == "Dark" ]]; then
 else
   defaults delete -g AppleInterfaceStyle 2>/dev/null
 fi
-"$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local >/dev/null 2>&1
+"$DOTFILES_DIR/src/theme/switch-theme.sh" --local >/dev/null 2>&1
 
 # Test 3: Neovim + tmux integration
 test_case "Neovim works correctly inside tmux"

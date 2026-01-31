@@ -14,17 +14,17 @@
 #   theme --help  # Show detailed help
 #
 # This is a convenience wrapper - the main implementation is in:
-# ~/.dotfiles/src/theme-switcher/switch-theme.sh
+# ~/.dotfiles/src/theme/switch-theme.sh
 
 # Find the theme switcher script using multiple methods for robustness
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
-if [[ -f "$DOTFILES/src/theme-switcher/switch-theme.sh" ]]; then
-    THEME_SWITCHER="$DOTFILES/src/theme-switcher/switch-theme.sh"
-elif [[ -f "$(dirname "$0")/../theme-switcher/switch-theme.sh" ]]; then
-    THEME_SWITCHER="$(dirname "$0")/../theme-switcher/switch-theme.sh"
+if [[ -f "$DOTFILES/src/theme/switch-theme.sh" ]]; then
+    THEME_SWITCHER="$DOTFILES/src/theme/switch-theme.sh"
+elif [[ -f "$(dirname "$0")/../theme/switch-theme.sh" ]]; then
+    THEME_SWITCHER="$(dirname "$0")/../theme/switch-theme.sh"
 else
     echo "Error: Theme switcher not found" >&2
-    echo "Expected location: $DOTFILES/src/theme-switcher/switch-theme.sh" >&2
+    echo "Expected location: $DOTFILES/src/theme/switch-theme.sh" >&2
     exit 1
 fi
 

@@ -15,7 +15,6 @@ NC='\033[0m'
 # Path detection for theme directory location
 # Uses BASH_SOURCE for compatibility with sourced execution
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-THEMES_DIR="$SCRIPT_DIR/themes"
 
 # Core files that every theme must provide
 # These ensure complete application coverage for theme switching
@@ -23,6 +22,8 @@ REQUIRED_FILES=(
   "alacritty.toml"
   "tmux.conf"
   "starship.toml"
+  "wezterm.lua"
+  "colors.sh"
 )
 
 # Additional files that enhance theme functionality
@@ -35,14 +36,6 @@ echo "🔍 Validating theme configurations..."
 echo "===================================="
 echo ""
 
-# Validate themes directory exists before proceeding
-# Prevents script execution with invalid theme setup
-if [[ ! -d "$THEMES_DIR" ]]; then
-  echo -e "${RED}❌ Themes directory not found: $THEMES_DIR${NC}"
-  echo "Please run this script from the theme-switcher directory or fix the path."
-  exit 1
-fi
-
 # Counters for validation summary statistics
 # Provides clear overview of theme directory health
 TOTAL_THEMES=0
@@ -51,7 +44,7 @@ INVALID_THEMES=0
 
 # Process each theme directory for completeness
 # Checks both required files and symlink integrity
-for theme_dir in "$THEMES_DIR"/*; do
+for theme_dir in "$SCRIPT_DIR"/tokyonight_*; do
   if [[ -d "$theme_dir" ]]; then
     THEME_NAME=$(basename "$theme_dir")
     TOTAL_THEMES=$((TOTAL_THEMES + 1))

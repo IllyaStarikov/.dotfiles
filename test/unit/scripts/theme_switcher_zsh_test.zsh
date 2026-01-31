@@ -2,7 +2,7 @@
 # Test: Theme switcher script
 
 test_case "Theme switcher script exists and is executable"
-script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 if [[ -f "$script" ]]; then
   if [[ -x "$script" ]]; then
     pass
@@ -21,8 +21,8 @@ else
 fi
 
 test_case "Theme configuration directory exists"
-if [[ -d "$HOME/.config/theme-switcher" ]] \
-  || grep -q "mkdir.*theme-switcher" "$script" 2>/dev/null; then
+if [[ -d "$HOME/.config/theme" ]] \
+  || grep -q "mkdir.*theme" "$script" 2>/dev/null; then
   pass
 else
   skip "Theme config directory not created"

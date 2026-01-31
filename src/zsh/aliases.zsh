@@ -214,7 +214,7 @@ alias light="theme light"
 # Shell-local theme (for per-pane theming in tmux demos)
 # Usage: theme-local day  OR  theme-local moon
 theme-local() {
-  source <("$DOTFILES/src/theme-switcher/switch-theme.sh" --shell "$@")
+  source <("$DOTFILES/src/theme/switch-theme.sh" --shell "$@")
 }
 
 # Development Tools

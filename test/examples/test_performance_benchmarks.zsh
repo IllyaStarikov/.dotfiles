@@ -195,7 +195,7 @@ test_case "Theme switching completes quickly"
 # Measure multiple switches
 declare -a switch_times
 for i in {1..3}; do
-  time_ms=$(measure_time_ms "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh")
+  time_ms=$(measure_time_ms "$DOTFILES_DIR/src/theme/switch-theme.sh")
   switch_times+=($time_ms)
   sleep 0.5 # Brief pause between switches
 done

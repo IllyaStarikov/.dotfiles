@@ -2,7 +2,7 @@
 
 > **Seamless light/dark mode synchronization across your entire development environment**
 
-[Source Code](../../../src/theme-switcher/)
+[Source Code](../../../src/theme/)
 
 ## Overview
 
@@ -109,7 +109,7 @@ Create your own theme variants:
 
 ```bash
 # 1. Create theme directory
-mkdir ~/.dotfiles/src/theme-switcher/themes/my_custom_theme
+mkdir ~/.dotfiles/src/theme/themes/my_custom_theme
 
 # 2. Add theme files
 # alacritty.toml - Terminal colors
@@ -136,7 +136,7 @@ ps aux | grep theme-watcher
 
 ```bash
 # Install LaunchAgent (auto-start on login)
-cd ~/.dotfiles/src/theme-switcher
+cd ~/.dotfiles/src/theme
 ./install-auto-theme.sh
 
 # Verify installation
@@ -167,7 +167,7 @@ launchctl list io.starikov.theme-watcher
 **View logs:**
 
 ```bash
-tail -f ~/.cache/theme-switcher/theme-watcher.log
+tail -f ~/.cache/theme/theme-watcher.log
 ```
 
 **Restart watcher:**
@@ -182,13 +182,13 @@ launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
 **Force theme update:**
 
 ```bash
-~/.dotfiles/src/theme-switcher/switch-theme.sh auto
+~/.dotfiles/src/theme/switch-theme.sh auto
 ```
 
 **Reset to system default:**
 
 ```bash
-rm ~/.config/theme-switcher/current-theme
+rm ~/.config/theme/current-theme
 theme
 ```
 
@@ -213,17 +213,17 @@ tmux source-file ~/.tmux.conf
 
 ```bash
 # Theme watcher logs
-tail -f ~/.cache/theme-switcher/theme-watcher.log
+tail -f ~/.cache/theme/theme-watcher.log
 
 # Manual switching logs
-~/.dotfiles/src/theme-switcher/switch-theme.sh auto 2>&1
+~/.dotfiles/src/theme/switch-theme.sh auto 2>&1
 ```
 
 **Reset all state:**
 
 ```bash
-rm -rf ~/.cache/theme-switcher
-rm -rf ~/.config/theme-switcher
+rm -rf ~/.cache/theme
+rm -rf ~/.config/theme
 theme  # Reinitialize
 ```
 
@@ -282,7 +282,7 @@ work_theme() {
 ## File Structure
 
 ```
-src/theme-switcher/
+src/theme/
 ├── switch-theme.sh           # Main theme switching logic
 ├── auto-theme-watcher.sh     # Automatic monitoring daemon
 ├── install-auto-theme.sh     # LaunchAgent installer

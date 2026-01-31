@@ -471,7 +471,7 @@ function M.setup()
 
   -- Function to get theme-appropriate colors
   local function get_theme_colors()
-    local config_file = vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
+    local config_file = vim.fn.expand("~/.config/theme/current-theme.sh")
     local is_light_theme = false
 
     if vim.fn.filereadable(config_file) == 1 then
@@ -904,7 +904,7 @@ function M.setup()
 
   -- Auto-reload markview colors when theme config changes
   vim.api.nvim_create_autocmd("BufWritePost", {
-    pattern = vim.fn.expand("~/.config/theme-switcher/current-theme.sh"),
+    pattern = vim.fn.expand("~/.config/theme/current-theme.sh"),
     callback = function()
       -- Reapply markview colors when theme changes
       vim.defer_fn(apply_markview_highlights, 100)

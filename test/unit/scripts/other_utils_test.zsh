@@ -110,7 +110,7 @@ it "should exist and be executable" && {
 
 it "should call theme switcher" && {
   local script_content=$(cat "$DOTFILES_DIR/src/scripts/theme")
-  assert_contains "$script_content" "switch-theme" || assert_contains "$script_content" "theme-switcher"
+  assert_contains "$script_content" "switch-theme" || assert_contains "$script_content" "theme"
   pass
 }
 

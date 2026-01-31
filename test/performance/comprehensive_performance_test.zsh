@@ -245,7 +245,7 @@ test_theme_switching_performance() {
 
   for theme in "${themes[@]}"; do
     # Use --local to avoid affecting other terminal instances
-    local time_ms=$(measure_time "${DOTFILES_DIR}/src/theme-switcher/switch-theme.sh" --local "${theme}")
+    local time_ms=$(measure_time "${DOTFILES_DIR}/src/theme/switch-theme.sh" --local "${theme}")
     switch_times+=("${time_ms}")
     log_metric "theme_switch" "${theme}" "${time_ms}"
 

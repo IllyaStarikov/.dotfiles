@@ -207,9 +207,9 @@ jobs:
 
       - name: test theme switcher
         run: |
-          mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
-          zsh src/theme-switcher/switch-theme.sh || echo "WARNING: Theme switcher test failed"
-          test -f ~/.config/theme-switcher/current-theme.sh || echo "ERROR: Theme file not created"
+          mkdir -p ~/.config/{alacritty,tmux,theme}
+          zsh src/theme/switch-theme.sh || echo "WARNING: Theme switcher test failed"
+          test -f ~/.config/theme/current-theme.sh || echo "ERROR: Theme file not created"
 
       - name: validate configurations
         run: |

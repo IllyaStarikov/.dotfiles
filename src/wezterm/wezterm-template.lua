@@ -129,7 +129,7 @@ config.warn_about_missing_glyphs = false -- Don't warn about missing math glyphs
 -- This ensures new windows always get the latest theme without relying on reload_configuration()
 
 local home = os.getenv("HOME")
-local theme_dir = home .. "/.dotfiles/src/wezterm/themes"
+local theme_dir = home .. "/.dotfiles/src/theme"
 local theme_name_file = home .. "/.config/wezterm/current-theme"
 
 -- Read current theme name from file
@@ -358,7 +358,7 @@ config.send_composed_key_when_right_alt_is_pressed = false
 -- Uses OSC injection to ALL panes to bypass WezTerm's hot-reload focus bug (#5451)
 -- Shell sends: printf "\033]1337;SetUserVar=%s=%s\007" "theme" "$(echo -n $THEME | base64)"
 local home = os.getenv("HOME")
-local theme_dir = home .. "/.dotfiles/src/wezterm/themes"
+local theme_dir = home .. "/.dotfiles/src/theme"
 local theme_name_file_path = home .. "/.config/wezterm/current-theme"
 local window_themes = {} -- Track applied theme per window to avoid redundant updates
 

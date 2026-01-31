@@ -8,7 +8,7 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
 # Script under test
 THEME_SCRIPT="${DOTFILES_DIR}/src/scripts/theme"
-THEME_SWITCHER="${DOTFILES_DIR}/src/theme-switcher/switch-theme.sh"
+THEME_SWITCHER="${DOTFILES_DIR}/src/theme/switch-theme.sh"
 
 # Test: Script exists and is executable
 test_theme_script_exists() {
@@ -93,12 +93,12 @@ test_theme_dry_run() {
 
 # Test: Script handles missing dependencies gracefully
 test_theme_missing_deps() {
-  # Create a temporary wrapper that hides the theme-switcher
+  # Create a temporary wrapper that hides the theme
   local temp_script
   temp_script=$(mktemp)
   cat >"$temp_script" <<'EOF'
 #!/usr/bin/env zsh
-# Simulate missing theme-switcher
+# Simulate missing theme
 echo "Error: Theme switcher not found" >&2
 exit 1
 EOF
@@ -130,7 +130,7 @@ echo "Arguments: $*"
 EOF
   chmod +x "$mock_script"
 
-  # Temporarily replace theme-switcher path in script
+  # Temporarily replace theme path in script
   local temp_theme_script
   temp_theme_script=$(mktemp)
   sed "s|$THEME_SWITCHER|$mock_script|g" "$THEME_SCRIPT" >"$temp_theme_script"

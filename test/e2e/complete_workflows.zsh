@@ -409,7 +409,7 @@ test_theme_switching_workflow() {
   log "TRACE" "Testing theme switching workflow"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Testing complete theme change across tools"
 
-  local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local theme_script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   if [[ ! -x "$theme_script" ]]; then
     log "INFO" "Theme switcher not available, skipping"

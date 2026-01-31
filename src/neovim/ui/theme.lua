@@ -17,7 +17,7 @@
 --- Main theme setup function that reads macOS appearance and applies appropriate themes
 --- @return nil
 local function setup_theme()
-  local config_file = vim.fn.expand("~/.config/theme-switcher/current-theme.sh")
+  local config_file = vim.fn.expand("~/.config/theme/current-theme.sh")
 
   if vim.fn.filereadable(config_file) == 1 then
     -- Source the theme config and get environment variables
@@ -195,7 +195,7 @@ setup_theme()
 
 -- Auto-reload theme when the config file changes
 vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = vim.fn.expand("~/.config/theme-switcher/current-theme.sh"),
+  pattern = vim.fn.expand("~/.config/theme/current-theme.sh"),
   callback = setup_theme,
   group = vim.api.nvim_create_augroup("ThemeReload", { clear = true }),
 })

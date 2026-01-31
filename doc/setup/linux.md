@@ -171,7 +171,7 @@ ls ~/.config/alacritty/theme.toml
 ls ~/.config/tmux/theme.conf
 
 # Run theme switcher manually
-~/.dotfiles/src/theme-switcher/switch-theme-universal.sh auto
+~/.dotfiles/src/theme/switch-theme-universal.sh auto
 ```
 
 #### Neovim plugins not installing

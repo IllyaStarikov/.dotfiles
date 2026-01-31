@@ -37,7 +37,7 @@
 #   ~/.config/kitty/theme.conf         - Kitty colors
 #   ~/.config/tmux/theme.conf          - tmux status bar
 #   ~/.config/starship/theme.toml      - Starship prompt
-#   ~/.config/theme-switcher/current-theme.sh - Shell environment
+#   ~/.config/theme/current-theme.sh - Shell environment
 #
 # EXAMPLES:
 #   switch-theme.sh              # Auto-detect based on macOS
@@ -65,7 +65,7 @@ elif [[ -n "${0}" ]] && [[ "${0}" != "-zsh" ]] && [[ "${0}" != "zsh" ]]; then
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using \$0, SCRIPT_DIR=$SCRIPT_DIR" >&2
 else
   # Ultimate fallback: assume we're in ~/.dotfiles structure
-  SCRIPT_DIR="$HOME/.dotfiles/src/theme-switcher"
+  SCRIPT_DIR="$HOME/.dotfiles/src/theme"
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using fallback, SCRIPT_DIR=$SCRIPT_DIR" >&2
 fi
 
@@ -121,30 +121,21 @@ EOF
 # Enumerate all available theme variants
 # Scans theme directories to provide current options
 list_themes() {
-  local theme_switcher_dir="$SCRIPT_DIR/themes"
-  local dotfiles="${DOTFILES:-$HOME/.dotfiles}"
-  local wezterm_themes_dir="$dotfiles/src/wezterm/themes"
   local themes=()
 
   echo "Available themes:"
   echo ""
 
-  # Scan theme-switcher themes
-  local switcher_themes=(${theme_switcher_dir}/*(N-/))
-  for theme_path in $switcher_themes; do
+  # Scan theme directories (tokyonight_* directories in SCRIPT_DIR)
+  local theme_dirs=(${SCRIPT_DIR}/tokyonight_*(N-/))
+  for theme_path in $theme_dirs; do
     themes+=("$(basename "$theme_path")")
   done
 
-  # Scan WezTerm themes
-  local wezterm_themes=(${wezterm_themes_dir}/*.lua(N.))
-  for theme_file in $wezterm_themes; do
-    themes+=("$(basename "$theme_file" .lua)")
-  done
-
-  # Unique sorted list
+  # Display sorted list
   if (( ${#themes[@]} > 0 )); then
-    local unique_themes=($(printf "%s\n" "${themes[@]}" | sort -u))
-    for theme in "${unique_themes[@]}"; do
+    local sorted_themes=($(printf "%s\n" "${themes[@]}" | sort))
+    for theme in "${sorted_themes[@]}"; do
       local variant="dark"
       [[ "$theme" =~ (day|light) ]] && variant="light"
       echo "  $theme ($variant)"
@@ -159,7 +150,7 @@ list_themes() {
 # Print shell export commands for local theming
 # Used with: source <(switch-theme.sh --shell THEME)
 print_shell_exports() {
-  local starship_config="$SCRIPT_DIR/themes/$THEME/starship.toml"
+  local starship_config="$SCRIPT_DIR/$THEME/starship.toml"
   cat <<EOF
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
@@ -172,7 +163,7 @@ EOF
 # Only affects the current terminal instance, not all terminals
 # Handles tmux passthrough automatically when inside tmux
 set_terminal_colors() {
-  local colors_file="$SCRIPT_DIR/themes/$THEME/colors.sh"
+  local colors_file="$SCRIPT_DIR/$THEME/colors.sh"
 
   if [[ ! -f "$colors_file" ]]; then
     echo "Error: Colors file not found: $colors_file" >&2
@@ -265,8 +256,8 @@ if [[ -z "$THEME" ]]; then
 fi
 
 # Configuration directories
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme-switcher"
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/theme-switcher"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/theme"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/theme"
 ALACRITTY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 TMUX_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
 STARSHIP_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -443,7 +434,7 @@ update_alacritty_theme() {
 # 3. User-var triggers OSC injection to ALL panes via Lua handler
 # See: https://github.com/wezterm/wezterm/issues/5451
 update_wezterm_theme() {
-  local colors_file="$SCRIPT_DIR/themes/$THEME/colors.sh"
+  local colors_file="$SCRIPT_DIR/$THEME/colors.sh"
 
   # Helper: convert #RRGGBB to rgb:RR/GG/BB format for OSC sequences
   _hex_to_osc_rgb() {
@@ -552,7 +543,7 @@ atomic_update() {
 
 # Update other application themes
 update_app_themes() {
-  local theme_dir="$SCRIPT_DIR/themes/$THEME"
+  local theme_dir="$SCRIPT_DIR/$THEME"
   local success=0
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
@@ -694,20 +685,14 @@ restore_config() {
 
 # Validate theme exists
 validate_theme() {
-  local theme_switcher_dir="$SCRIPT_DIR/themes"
-  local theme_dir="$theme_switcher_dir/$THEME"
-  local dotfiles="${DOTFILES:-$HOME/.dotfiles}"
-  local wezterm_themes_dir="$dotfiles/src/wezterm/themes"
-  local wezterm_theme_file="$wezterm_themes_dir/$THEME.lua"
+  local theme_dir="$SCRIPT_DIR/$THEME"
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Validating theme '$THEME'" >&2
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Checking directory: $theme_dir" >&2
-  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Checking WezTerm file: $wezterm_theme_file" >&2
 
-  if [[ ! -d "$theme_dir" && ! -f "$wezterm_theme_file" ]]; then
+  if [[ ! -d "$theme_dir" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
     echo "Checked for directory: $theme_dir" >&2
-    echo "Checked for WezTerm theme: $wezterm_theme_file" >&2
     echo "Use '$(basename "$0") --list' to see available themes" >&2
     exit 1
   fi
@@ -786,7 +771,7 @@ if [[ "${1:-}" == "--local" ]]; then
 
   # Helper: apply tmux theme to current session only (not global)
   _apply_tmux_session_theme() {
-    local theme_file="$SCRIPT_DIR/themes/$THEME/tmux.conf"
+    local theme_file="$SCRIPT_DIR/$THEME/tmux.conf"
     if [[ ! -f "$theme_file" ]]; then
       return 1
     fi
@@ -836,8 +821,8 @@ if [[ "${1:-}" == "--tmux" ]]; then
   fi
   determine_theme
   validate_theme
-  if [[ -f "$SCRIPT_DIR/themes/$THEME/tmux.conf" ]]; then
-    tmux source-file "$SCRIPT_DIR/themes/$THEME/tmux.conf" || {
+  if [[ -f "$SCRIPT_DIR/$THEME/tmux.conf" ]]; then
+    tmux source-file "$SCRIPT_DIR/$THEME/tmux.conf" || {
       echo "Error: Failed to reload tmux theme" >&2
       exit 1
     }

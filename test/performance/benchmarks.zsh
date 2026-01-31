@@ -71,7 +71,7 @@ test_zsh_startup_time() {
 test_theme_switch_performance() {
   log "TRACE" "Benchmarking theme switching performance"
 
-  local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
+  local theme_script="$DOTFILES_DIR/src/theme/switch-theme.sh"
 
   if [[ ! -x "$theme_script" ]]; then
     log "WARNING" "Theme switcher not found"
