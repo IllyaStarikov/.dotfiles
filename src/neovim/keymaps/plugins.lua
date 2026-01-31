@@ -153,9 +153,7 @@ end
 -- ============================================================================
 -- CODE (<leader>c) - Symbols, LSP, Run
 -- ============================================================================
--- Run
-map("n", "<leader>cr", "<cmd>SnipRun<cr>", { desc = "Code Run" })
-map("v", "<leader>cr", ":'<,'>SnipRun<cr>", { desc = "Code Run Selection" })
+-- Run (sniprun - keymaps defined in plugin spec with retry logic)
 
 -- Make targets
 map("n", "<leader>cm", "<cmd>MakePicker<cr>", { desc = "Code Make (pick target)" })

@@ -1198,12 +1198,48 @@ require("lazy").setup({
   {
     "michaelb/sniprun",
     build = "sh install.sh",
-    cmd = { "SnipRun", "SnipInfo", "SnipClose", "SnipReset" },
+    lazy = false, -- Load on startup so binary is ready
     keys = {
-      { "<leader>xr", "<cmd>SnipRun<cr>", desc = "Run line" },
-      { "<leader>xr", ":'<,'>SnipRun<cr>", mode = "v", desc = "Run selection" },
-      { "<leader>xc", "<cmd>SnipClose<cr>", desc = "Clear output" },
+      {
+        "<leader>cr",
+        function()
+          local sniprun = require("sniprun")
+          if not vim.g.sniprun_initialized then
+            -- First run: call twice since binary may not be ready
+            sniprun.run()
+            vim.defer_fn(function()
+              sniprun.run()
+              vim.g.sniprun_initialized = true
+            end, 150)
+          else
+            sniprun.run()
+          end
+        end,
+        desc = "Run code",
+      },
+      {
+        "<leader>cr",
+        function()
+          local sniprun = require("sniprun")
+          if not vim.g.sniprun_initialized then
+            sniprun.run("v")
+            vim.defer_fn(function()
+              sniprun.run("v")
+              vim.g.sniprun_initialized = true
+            end, 150)
+          else
+            sniprun.run("v")
+          end
+        end,
+        mode = "v",
+        desc = "Run selection",
+      },
+      { "<leader>cc", "<cmd>SnipClose<cr>", desc = "Clear output" },
     },
+    config = function(_, opts)
+      require("sniprun").setup(opts)
+      require("sniprun").start()
+    end,
     opts = {
       display = { "VirtualText" }, -- Inline output like Jupyter
       display_options = {
