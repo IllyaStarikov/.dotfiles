@@ -44,3 +44,4 @@ template/public/
 # Debug logs
 log.txt
 log_2.txt
+test/test-results.xml
