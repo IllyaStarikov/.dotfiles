@@ -28,14 +28,14 @@ test_neovim_startup_time() {
   log "INFO" "Neovim startup time: ${nvim_time}ms (threshold: ${NVIM_STARTUP_THRESHOLD}ms)"
 
   if [[ $nvim_time -gt $NVIM_STARTUP_THRESHOLD ]]; then
-  log "ERROR" "Neovim startup exceeds threshold: ${nvim_time}ms > ${NVIM_STARTUP_THRESHOLD}ms"
+    log "ERROR" "Neovim startup exceeds threshold: ${nvim_time}ms > ${NVIM_STARTUP_THRESHOLD}ms"
 
-  # Show slowest items
-  log "DEBUG" "Slowest startup items:"
-  tail -20 "$startup_log" | grep -E "^[0-9]+" | sort -rn | head -5
+    # Show slowest items
+    log "DEBUG" "Slowest startup items:"
+    tail -20 "$startup_log" | grep -E "^[0-9]+" | sort -rn | head -5
 
-  rm -f "$startup_log"
-  return 1
+    rm -f "$startup_log"
+    return 1
   fi
 
   rm -f "$startup_log"
@@ -49,11 +49,11 @@ test_zsh_startup_time() {
   local iterations=5
 
   for i in {1..$iterations}; do
-  local start_time=$(date +%s%N)
-  zsh -i -c "exit" 2>/dev/null
-  local end_time=$(date +%s%N)
-  local duration=$(((end_time - start_time) / 1000000))
-  total_time=$((total_time + duration))
+    local start_time=$(date +%s%N)
+    zsh -i -c "exit" 2>/dev/null
+    local end_time=$(date +%s%N)
+    local duration=$(((end_time - start_time) / 1000000))
+    total_time=$((total_time + duration))
   done
 
   local avg_time=$((total_time / iterations))
@@ -61,8 +61,8 @@ test_zsh_startup_time() {
   log "INFO" "Zsh average startup time: ${avg_time}ms (threshold: ${ZSH_STARTUP_THRESHOLD}ms)"
 
   if [[ $avg_time -gt $ZSH_STARTUP_THRESHOLD ]]; then
-  log "ERROR" "Zsh startup exceeds threshold: ${avg_time}ms > ${ZSH_STARTUP_THRESHOLD}ms"
-  return 1
+    log "ERROR" "Zsh startup exceeds threshold: ${avg_time}ms > ${ZSH_STARTUP_THRESHOLD}ms"
+    return 1
   fi
 
   return 0
@@ -74,8 +74,8 @@ test_theme_switch_performance() {
   local theme_script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
 
   if [[ ! -x "$theme_script" ]]; then
-  log "WARNING" "Theme switcher not found"
-  return 77 # Skip
+    log "WARNING" "Theme switcher not found"
+    return 77 # Skip
   fi
 
   local start_time=$(date +%s%N)
@@ -86,8 +86,8 @@ test_theme_switch_performance() {
   log "INFO" "Theme switch time: ${duration}ms (threshold: ${THEME_SWITCH_THRESHOLD}ms)"
 
   if [[ $duration -gt $THEME_SWITCH_THRESHOLD ]]; then
-  log "ERROR" "Theme switch exceeds threshold: ${duration}ms > ${THEME_SWITCH_THRESHOLD}ms"
-  return 1
+    log "ERROR" "Theme switch exceeds threshold: ${duration}ms > ${THEME_SWITCH_THRESHOLD}ms"
+    return 1
   fi
 
   return 0
@@ -110,19 +110,19 @@ test_neovim_plugin_loading() {
   " 2>&1)
 
   if [[ "$output" == *"lazy-not-available"* ]]; then
-  log "WARNING" "Lazy.nvim not available for plugin performance test"
-  return 77 # Skip
+    log "WARNING" "Lazy.nvim not available for plugin performance test"
+    return 77 # Skip
   fi
 
   local load_time=$(echo "$output" | grep -o "time:[0-9]*" | cut -d':' -f2)
 
   if [[ -n "$load_time" ]]; then
-  log "INFO" "Plugin load time: ${load_time}ms (threshold: ${PLUGIN_LOAD_THRESHOLD}ms)"
+    log "INFO" "Plugin load time: ${load_time}ms (threshold: ${PLUGIN_LOAD_THRESHOLD}ms)"
 
-  if [[ $load_time -gt $PLUGIN_LOAD_THRESHOLD ]]; then
-    log "ERROR" "Plugin loading exceeds threshold: ${load_time}ms > ${PLUGIN_LOAD_THRESHOLD}ms"
-    return 1
-  fi
+    if [[ $load_time -gt $PLUGIN_LOAD_THRESHOLD ]]; then
+      log "ERROR" "Plugin loading exceeds threshold: ${load_time}ms > ${PLUGIN_LOAD_THRESHOLD}ms"
+      return 1
+    fi
   fi
 
   return 0
@@ -139,11 +139,11 @@ test_memory_usage() {
   sleep 2
 
   if [[ "$(uname)" == "Darwin" ]]; then
-  local memory_kb=$(ps -o rss= -p $nvim_pid 2>/dev/null || echo 0)
-  local memory_mb=$((memory_kb / 1024))
+    local memory_kb=$(ps -o rss= -p $nvim_pid 2>/dev/null || echo 0)
+    local memory_mb=$((memory_kb / 1024))
   else
-  local memory_kb=$(ps -o rss= -p $nvim_pid 2>/dev/null || echo 0)
-  local memory_mb=$((memory_kb / 1024))
+    local memory_kb=$(ps -o rss= -p $nvim_pid 2>/dev/null || echo 0)
+    local memory_mb=$((memory_kb / 1024))
   fi
 
   kill $nvim_pid 2>/dev/null || true
@@ -152,8 +152,8 @@ test_memory_usage() {
   log "INFO" "Neovim memory usage: ${memory_mb}MB (limit: ${MEMORY_LIMIT_MB}MB)"
 
   if [[ $memory_mb -gt $MEMORY_LIMIT_MB ]]; then
-  log "ERROR" "Memory usage exceeds limit: ${memory_mb}MB > ${MEMORY_LIMIT_MB}MB"
-  return 1
+    log "ERROR" "Memory usage exceeds limit: ${memory_mb}MB > ${MEMORY_LIMIT_MB}MB"
+    return 1
   fi
 
   return 0
@@ -182,7 +182,7 @@ test_file_operation_performance() {
   log "INFO" "File write time: ${write_time}ms, read time: ${read_time}ms"
 
   if [[ $write_time -gt 1000 ]] || [[ $read_time -gt 500 ]]; then
-  log "WARNING" "File operations may be slow"
+    log "WARNING" "File operations may be slow"
   fi
 
   return 0
@@ -196,13 +196,13 @@ test_concurrent_operations() {
 
   # Start multiple Neovim instances
   for i in {1..5}; do
-  nvim --headless -c "qa!" &
-  pids+=($!)
+    nvim --headless -c "qa!" &
+    pids+=($!)
   done
 
   # Wait for all to complete
   for pid in "${pids[@]}"; do
-  wait "$pid"
+    wait "$pid"
   done
 
   local end_time=$(date +%s%N)
@@ -211,7 +211,7 @@ test_concurrent_operations() {
   log "INFO" "Concurrent startup time for 5 instances: ${duration}ms"
 
   if [[ $duration -gt 2000 ]]; then
-  log "WARNING" "Concurrent operations may be slow: ${duration}ms"
+    log "WARNING" "Concurrent operations may be slow: ${duration}ms"
   fi
 
   return 0
@@ -232,7 +232,7 @@ test_command_completion_performance() {
   log "INFO" "Completion initialization time: ${duration}ms"
 
   if [[ $duration -gt 1000 ]]; then
-  log "WARNING" "Completion initialization may be slow: ${duration}ms"
+    log "WARNING" "Completion initialization may be slow: ${duration}ms"
   fi
 
   return 0
@@ -242,26 +242,26 @@ test_script_execution_performance() {
   log "TRACE" "Testing script execution performance"
 
   local scripts_to_test=(
-  "$DOTFILES_DIR/src/scripts/fixy"
-  "$DOTFILES_DIR/src/scripts/update-dotfiles"
+    "$DOTFILES_DIR/src/scripts/fixy"
+    "$DOTFILES_DIR/src/scripts/update-dotfiles"
   )
 
   for script in "${scripts_to_test[@]}"; do
-  if [[ ! -x "$script" ]]; then
-    continue
-  fi
+    if [[ ! -x "$script" ]]; then
+      continue
+    fi
 
-  local basename=$(basename "$script")
-  local start_time=$(date +%s%N)
-  "$script" --help 2>/dev/null || true
-  local end_time=$(date +%s%N)
-  local duration=$(((end_time - start_time) / 1000000))
+    local basename=$(basename "$script")
+    local start_time=$(date +%s%N)
+    "$script" --help 2>/dev/null || true
+    local end_time=$(date +%s%N)
+    local duration=$(((end_time - start_time) / 1000000))
 
-  log "INFO" "$basename execution time: ${duration}ms"
+    log "INFO" "$basename execution time: ${duration}ms"
 
-  if [[ $duration -gt 500 ]]; then
-    log "WARNING" "$basename may be slow to start: ${duration}ms"
-  fi
+    if [[ $duration -gt 500 ]]; then
+      log "WARNING" "$basename may be slow to start: ${duration}ms"
+    fi
   done
 
   return 0
@@ -277,20 +277,20 @@ test_regression_neovim_startup() {
   local current_time=$(grep "NVIM STARTED" "$current_log" | awk '{print $1}' | cut -d'.' -f1)
 
   if [[ -f "$baseline_file" ]]; then
-  local baseline_time=$(cat "$baseline_file")
-  local regression_threshold=$((baseline_time * 120 / 100)) # 20% regression allowed
+    local baseline_time=$(cat "$baseline_file")
+    local regression_threshold=$((baseline_time * 120 / 100)) # 20% regression allowed
 
-  log "INFO" "Current: ${current_time}ms, Baseline: ${baseline_time}ms, Threshold: ${regression_threshold}ms"
+    log "INFO" "Current: ${current_time}ms, Baseline: ${baseline_time}ms, Threshold: ${regression_threshold}ms"
 
-  if [[ $current_time -gt $regression_threshold ]]; then
-    log "ERROR" "Performance regression detected: ${current_time}ms > ${regression_threshold}ms"
-    rm -f "$current_log"
-    return 1
-  fi
+    if [[ $current_time -gt $regression_threshold ]]; then
+      log "ERROR" "Performance regression detected: ${current_time}ms > ${regression_threshold}ms"
+      rm -f "$current_log"
+      return 1
+    fi
   else
-  # Save baseline
-  echo "$current_time" >"$baseline_file"
-  log "INFO" "Baseline saved: ${current_time}ms"
+    # Save baseline
+    echo "$current_time" >"$baseline_file"
+    log "INFO" "Baseline saved: ${current_time}ms"
   fi
 
   rm -f "$current_log"

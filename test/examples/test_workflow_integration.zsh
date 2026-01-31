@@ -104,9 +104,9 @@ if command -v tmux >/dev/null; then
   tmux_output=$(tmux capture-pane -t test-session -p 2>/dev/null)
 
   if [[ "$tmux_output" == *"tmux-test-ok"* ]]; then
-  pass
+    pass
   else
-  fail "Neovim not working properly in tmux"
+    fail "Neovim not working properly in tmux"
   fi
 
   tmux kill-session -t test-session 2>/dev/null

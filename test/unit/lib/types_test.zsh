@@ -226,7 +226,7 @@ test_is_command_false() {
 test_is_file_true() {
   test_case "is_file returns true for existing file"
   local testfile="$TEST_TMP_DIR/test_file.txt"
-  echo "test" > "$testfile"
+  echo "test" >"$testfile"
   if is_file "$testfile"; then
     pass
   else
@@ -265,7 +265,7 @@ test_is_dir_false() {
 test_is_readable_true() {
   test_case "is_readable returns true for readable file"
   local testfile="$TEST_TMP_DIR/readable_file.txt"
-  echo "test" > "$testfile"
+  echo "test" >"$testfile"
   chmod +r "$testfile"
   if is_readable "$testfile"; then
     pass
@@ -278,7 +278,7 @@ test_is_readable_true() {
 test_is_executable_true() {
   test_case "is_executable returns true for executable file"
   local testfile="$TEST_TMP_DIR/executable_file.sh"
-  echo "#!/bin/bash" > "$testfile"
+  echo "#!/bin/bash" >"$testfile"
   chmod +x "$testfile"
   if is_executable "$testfile"; then
     pass
@@ -303,7 +303,7 @@ test_is_empty_file_true() {
 test_is_empty_file_false() {
   test_case "is_empty_file returns false for non-empty file"
   local testfile="$TEST_TMP_DIR/nonempty_file.txt"
-  echo "content" > "$testfile"
+  echo "content" >"$testfile"
   if ! is_empty_file "$testfile"; then
     pass
   else

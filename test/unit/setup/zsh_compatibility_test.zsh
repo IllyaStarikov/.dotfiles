@@ -18,9 +18,9 @@ it "setup.sh should run with zsh without errors" && {
 
   # Check syntax with zsh
   if zsh -n "$script_path" 2>/dev/null; then
-  pass "Setup script has valid zsh syntax"
+    pass "Setup script has valid zsh syntax"
   else
-  fail "Setup script has syntax errors with zsh"
+    fail "Setup script has syntax errors with zsh"
   fi
 }
 
@@ -30,9 +30,9 @@ it "symlinks.sh should run with zsh without errors" && {
 
   # Check syntax with zsh
   if zsh -n "$script_path" 2>/dev/null; then
-  pass "Symlinks script has valid zsh syntax"
+    pass "Symlinks script has valid zsh syntax"
   else
-  fail "Symlinks script has syntax errors with zsh"
+    fail "Symlinks script has syntax errors with zsh"
   fi
 }
 
@@ -46,9 +46,9 @@ it "setup.sh should correctly detect DOTFILES_DIR" && {
 
   # The script should not error about DOTFILES_DIR
   if [[ "$output" != *"DOTFILES_DIR"* ]] || [[ "$output" == *"SETUP"* ]]; then
-  pass "Script detects directory correctly"
+    pass "Script detects directory correctly"
   else
-  fail "Script has directory detection issues: $output"
+    fail "Script has directory detection issues: $output"
   fi
 }
 
@@ -58,9 +58,9 @@ it "symlinks.sh should correctly detect DOTFILES_DIR" && {
   output=$(zsh "$DOTFILES_DIR/src/setup/symlinks.sh" --dry-run 2>&1 | head -5 || true)
 
   if [[ "$output" == *"Dotfiles directory:"* ]] || [[ "$output" == *"Symlink"* ]]; then
-  pass "Symlinks script detects directory correctly"
+    pass "Symlinks script detects directory correctly"
   else
-  skip "Could not verify directory detection"
+    skip "Could not verify directory detection"
   fi
 }
 
@@ -69,22 +69,22 @@ it "template/generate.sh should use zsh" && {
   local script_path="$DOTFILES_DIR/template/generate.sh"
 
   if [[ -f "$script_path" ]]; then
-  # Check shebang
-  shebang=$(head -1 "$script_path")
-  if [[ "$shebang" == *"zsh"* ]]; then
-    pass "Generate script uses zsh shebang"
-  else
-    fail "Generate script does not use zsh: $shebang"
-  fi
+    # Check shebang
+    shebang=$(head -1 "$script_path")
+    if [[ "$shebang" == *"zsh"* ]]; then
+      pass "Generate script uses zsh shebang"
+    else
+      fail "Generate script does not use zsh: $shebang"
+    fi
 
-  # Check syntax
-  if zsh -n "$script_path" 2>/dev/null; then
-    pass "Generate script has valid zsh syntax"
+    # Check syntax
+    if zsh -n "$script_path" 2>/dev/null; then
+      pass "Generate script has valid zsh syntax"
+    else
+      fail "Generate script has syntax errors"
+    fi
   else
-    fail "Generate script has syntax errors"
-  fi
-  else
-  skip "Template generate script not found"
+    skip "Template generate script not found"
   fi
 }
 
@@ -93,22 +93,22 @@ it "template/mirror.sh should use zsh" && {
   local script_path="$DOTFILES_DIR/template/mirror.sh"
 
   if [[ -f "$script_path" ]]; then
-  # Check shebang
-  shebang=$(head -1 "$script_path")
-  if [[ "$shebang" == *"zsh"* ]]; then
-    pass "Mirror script uses zsh shebang"
-  else
-    fail "Mirror script does not use zsh: $shebang"
-  fi
+    # Check shebang
+    shebang=$(head -1 "$script_path")
+    if [[ "$shebang" == *"zsh"* ]]; then
+      pass "Mirror script uses zsh shebang"
+    else
+      fail "Mirror script does not use zsh: $shebang"
+    fi
 
-  # Check syntax
-  if zsh -n "$script_path" 2>/dev/null; then
-    pass "Mirror script has valid zsh syntax"
+    # Check syntax
+    if zsh -n "$script_path" 2>/dev/null; then
+      pass "Mirror script has valid zsh syntax"
+    else
+      fail "Mirror script has syntax errors"
+    fi
   else
-    fail "Mirror script has syntax errors"
-  fi
-  else
-  skip "Template mirror script not found"
+    skip "Template mirror script not found"
   fi
 }
 
@@ -116,15 +116,15 @@ it "template/mirror.sh should use zsh" && {
 it "zsh scripts should not use BASH_SOURCE" && {
   # Check our modified scripts don't have BASH_SOURCE
   for script in "$DOTFILES_DIR/src/setup/setup.sh" \
-  "$DOTFILES_DIR/src/setup/symlinks.sh" \
-  "$DOTFILES_DIR/template/generate.sh" \
-  "$DOTFILES_DIR/template/mirror.sh"; do
-  if [[ -f "$script" ]]; then
-    if grep -q 'BASH_SOURCE' "$script"; then
-    fail "$(basename "$script") still contains BASH_SOURCE"
-    return 1
+    "$DOTFILES_DIR/src/setup/symlinks.sh" \
+    "$DOTFILES_DIR/template/generate.sh" \
+    "$DOTFILES_DIR/template/mirror.sh"; do
+    if [[ -f "$script" ]]; then
+      if grep -q 'BASH_SOURCE' "$script"; then
+        fail "$(basename "$script") still contains BASH_SOURCE"
+        return 1
+      fi
     fi
-  fi
   done
   pass "No BASH_SOURCE references found"
 }
@@ -133,15 +133,15 @@ it "zsh scripts should not use BASH_SOURCE" && {
 it "scripts should use proper zsh directory detection" && {
   # Check for ${0} usage instead of BASH_SOURCE
   for script in "$DOTFILES_DIR/src/setup/setup.sh" \
-  "$DOTFILES_DIR/src/setup/symlinks.sh"; do
-  if [[ -f "$script" ]]; then
-    if grep -q 'dirname.*\${0}' "$script" || grep -q 'dirname.*\$0' "$script"; then
-    pass "$(basename "$script") uses zsh-style directory detection"
-    else
-    fail "$(basename "$script") may not detect directory correctly"
-    return 1
+    "$DOTFILES_DIR/src/setup/symlinks.sh"; do
+    if [[ -f "$script" ]]; then
+      if grep -q 'dirname.*\${0}' "$script" || grep -q 'dirname.*\$0' "$script"; then
+        pass "$(basename "$script") uses zsh-style directory detection"
+      else
+        fail "$(basename "$script") may not detect directory correctly"
+        return 1
+      fi
     fi
-  fi
   done
 }
 
@@ -151,14 +151,14 @@ it "setup.sh should invoke git hooks installer with zsh" && {
 
   # Check if git hooks installer is invoked with zsh
   if echo "$setup_content" | grep -q 'zsh.*install-git-hooks'; then
-  pass "Git hooks installer invoked with zsh"
+    pass "Git hooks installer invoked with zsh"
   else
-  # Check if it's not invoked with bash
-  if echo "$setup_content" | grep -q 'bash.*install-git-hooks'; then
-    fail "Git hooks installer still invoked with bash"
-  else
-    skip "Git hooks installer invocation not found"
-  fi
+    # Check if it's not invoked with bash
+    if echo "$setup_content" | grep -q 'bash.*install-git-hooks'; then
+      fail "Git hooks installer still invoked with bash"
+    else
+      skip "Git hooks installer invocation not found"
+    fi
   fi
 }
 
@@ -168,14 +168,14 @@ it "setup.sh should invoke symlinks.sh with zsh" && {
 
   # Check if symlinks.sh is invoked with zsh
   if echo "$setup_content" | grep -q 'zsh.*symlinks\.sh'; then
-  pass "Symlinks script invoked with zsh"
+    pass "Symlinks script invoked with zsh"
   else
-  # Check if it's not invoked with bash
-  if echo "$setup_content" | grep -q 'bash.*symlinks\.sh'; then
-    fail "Symlinks script still invoked with bash"
-  else
-    skip "Symlinks script invocation not found"
-  fi
+    # Check if it's not invoked with bash
+    if echo "$setup_content" | grep -q 'bash.*symlinks\.sh'; then
+      fail "Symlinks script still invoked with bash"
+    else
+      skip "Symlinks script invocation not found"
+    fi
   fi
 }
 

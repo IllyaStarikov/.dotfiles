@@ -20,17 +20,17 @@ services install
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `services` | Show status of all services |
-| `services start [name]` | Start all or specific service |
-| `services stop [name]` | Stop all or specific service |
-| `services restart [name]` | Restart all or specific service |
-| `services status [name]` | Show status |
-| `services list` | List available services |
-| `services logs <name>` | Show service logs |
-| `services install` | Install LaunchAgent for auto-start |
-| `services uninstall` | Remove LaunchAgent |
+| Command                   | Description                        |
+| ------------------------- | ---------------------------------- |
+| `services`                | Show status of all services        |
+| `services start [name]`   | Start all or specific service      |
+| `services stop [name]`    | Stop all or specific service       |
+| `services restart [name]` | Restart all or specific service    |
+| `services status [name]`  | Show status                        |
+| `services list`           | List available services            |
+| `services logs <name>`    | Show service logs                  |
+| `services install`        | Install LaunchAgent for auto-start |
+| `services uninstall`      | Remove LaunchAgent                 |
 
 ## Creating a Service
 
@@ -58,11 +58,11 @@ service_stop() {
 
 ## Service Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SERVICE_NAME` | Yes | Unique identifier |
-| `SERVICE_DESC` | No | Human-readable description |
-| `SERVICE_PIDFILE` | No | Custom PID file path |
+| Variable          | Required | Description                |
+| ----------------- | -------- | -------------------------- |
+| `SERVICE_NAME`    | Yes      | Unique identifier          |
+| `SERVICE_DESC`    | No       | Human-readable description |
+| `SERVICE_PIDFILE` | No       | Custom PID file path       |
 
 ## Available Services
 

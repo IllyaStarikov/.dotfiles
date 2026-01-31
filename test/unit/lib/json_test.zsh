@@ -508,7 +508,7 @@ test_json_array_mixed() {
 test_json_read_existing_file() {
   test_case "json_read reads existing file"
   local testfile="$TEST_TMP_DIR/test.json"
-  echo '{"key":"value"}' > "$testfile"
+  echo '{"key":"value"}' >"$testfile"
   local result=$(json_read "$testfile")
   if [[ "$result" == '{"key":"value"}' ]]; then
     pass

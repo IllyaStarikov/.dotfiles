@@ -46,7 +46,7 @@ it "should support dry run mode" && {
 it "should check for Homebrew installation" && {
   # Mock brew command not found
   brew() {
-  return 127
+    return 127
   }
   export -f brew
 
@@ -60,11 +60,11 @@ it "should check for Homebrew installation" && {
 it "should verify macOS compatibility" && {
   # Mock sw_vers command
   sw_vers() {
-  case "$1" in
-    -productName) echo "macOS" ;;
-    -productVersion) echo "12.0" ;;
-    *) return 1 ;;
-  esac
+    case "$1" in
+      -productName) echo "macOS" ;;
+      -productVersion) echo "12.0" ;;
+      *) return 1 ;;
+    esac
   }
   export -f sw_vers
 
@@ -99,9 +99,9 @@ it "should validate required tools" && {
 
   # Check for required commands
   for cmd in git curl wget; do
-  if ! command -v "$cmd" &>/dev/null; then
-    missing_tools+=("$cmd")
-  fi
+    if ! command -v "$cmd" &>/dev/null; then
+      missing_tools+=("$cmd")
+    fi
   done
 
   # At least git should be available in CI

@@ -50,9 +50,9 @@ it "should have theme configuration files" && {
   local missing=0
 
   for theme in "${themes[@]}"; do
-  if [[ ! -d "$DOTFILES_DIR/src/theme-switcher/themes/$theme" ]]; then
-    ((missing++))
-  fi
+    if [[ ! -d "$DOTFILES_DIR/src/theme-switcher/themes/$theme" ]]; then
+      ((missing++))
+    fi
   done
 
   assert_equals "$missing" 0
@@ -71,15 +71,15 @@ it "switch-theme.sh should display help message" && {
 # Test: macOS appearance detection
 it "should detect macOS appearance" && {
   if [[ "$(uname)" == "Darwin" ]]; then
-  # Test actual behavior - can it detect current appearance
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --current 2>&1 || true)
-  if [[ "$output" == *"dark"* ]] || [[ "$output" == *"light"* ]] || [[ "$output" == *"tokyonight"* ]]; then
-    pass "Can detect current appearance"
+    # Test actual behavior - can it detect current appearance
+    output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --current 2>&1 || true)
+    if [[ "$output" == *"dark"* ]] || [[ "$output" == *"light"* ]] || [[ "$output" == *"tokyonight"* ]]; then
+      pass "Can detect current appearance"
+    else
+      skip "Cannot determine current theme"
+    fi
   else
-    skip "Cannot determine current theme"
-  fi
-  else
-  skip "Not on macOS"
+    skip "Not on macOS"
   fi
 }
 
@@ -90,15 +90,15 @@ it "should generate theme configuration files" && {
 
   # Should mention generating configs for various tools
   if [[ "$output" == *"alacritty"* ]] || [[ "$output" == *"tmux"* ]] || [[ "$output" == *"config"* ]]; then
-  pass "Would generate configuration files"
+    pass "Would generate configuration files"
   else
-  # Alternative: just check if it runs without errors
-  "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
-  if [[ $? -eq 0 ]]; then
-    pass "Theme switch executed successfully"
-  else
-    skip "Theme switch not functional"
-  fi
+    # Alternative: just check if it runs without errors
+    "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+      pass "Theme switch executed successfully"
+    else
+      skip "Theme switch not functional"
+    fi
   fi
 }
 
@@ -113,9 +113,9 @@ it "should use atomic operations for theme switching" && {
 
   # Either it succeeds completely or fails completely
   if [[ $result -eq 0 ]]; then
-  pass "Theme switch completed atomically"
+    pass "Theme switch completed atomically"
   else
-  skip "Theme switch not available"
+    skip "Theme switch not available"
   fi
 }
 
@@ -133,10 +133,10 @@ it "should support Alacritty themes" && {
   local alacritty_theme_exists=0
 
   for theme_dir in "$DOTFILES_DIR/src/theme-switcher/themes"/*/; do
-  if [[ -f "$theme_dir/alacritty/theme.toml" ]] || [[ -f "$theme_dir/alacritty.toml" ]]; then
-    alacritty_theme_exists=1
-    break
-  fi
+    if [[ -f "$theme_dir/alacritty/theme.toml" ]] || [[ -f "$theme_dir/alacritty.toml" ]]; then
+      alacritty_theme_exists=1
+      break
+    fi
   done
 
   assert_equals "$alacritty_theme_exists" 1
@@ -148,10 +148,10 @@ it "should support tmux themes" && {
   local tmux_theme_exists=0
 
   for theme_dir in "$DOTFILES_DIR/src/theme-switcher/themes"/*/; do
-  if [[ -f "$theme_dir/tmux/theme.conf" ]] || [[ -f "$theme_dir/tmux.conf" ]]; then
-    tmux_theme_exists=1
-    break
-  fi
+    if [[ -f "$theme_dir/tmux/theme.conf" ]] || [[ -f "$theme_dir/tmux.conf" ]]; then
+      tmux_theme_exists=1
+      break
+    fi
   done
 
   assert_equals "$tmux_theme_exists" 1
@@ -165,14 +165,14 @@ it "should integrate with Neovim themes" && {
 
   # Check if theme environment is set
   if [[ -f ~/.config/theme-switcher/current-theme.sh ]]; then
-  source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
-  if [[ -n "$MACOS_THEME" ]]; then
-    pass "Theme environment configured for Neovim"
+    source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
+    if [[ -n "$MACOS_THEME" ]]; then
+      pass "Theme environment configured for Neovim"
+    else
+      skip "Theme environment not set"
+    fi
   else
-    skip "Theme environment not set"
-  fi
-  else
-  skip "Theme configuration not generated"
+    skip "Theme configuration not generated"
   fi
 }
 
@@ -183,14 +183,14 @@ it "should set theme environment variable" && {
 
   # Source the generated theme file if it exists
   if [[ -f ~/.config/theme-switcher/current-theme.sh ]]; then
-  source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
-  if [[ -n "${MACOS_THEME:-}" ]]; then
-    pass "Theme environment variable set"
+    source ~/.config/theme-switcher/current-theme.sh 2>/dev/null || true
+    if [[ -n "${MACOS_THEME:-}" ]]; then
+      pass "Theme environment variable set"
+    else
+      skip "Environment variable not set"
+    fi
   else
-    skip "Environment variable not set"
-  fi
-  else
-  skip "Theme config not generated"
+    skip "Theme config not generated"
   fi
 }
 
@@ -202,9 +202,9 @@ it "should track current theme" && {
   # Check if current theme is tracked
   output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --current 2>&1 || echo "")
   if [[ -n "$output" ]] && [[ "$output" != *"error"* ]]; then
-  pass "Current theme is tracked"
+    pass "Current theme is tracked"
   else
-  skip "Theme tracking not available"
+    skip "Theme tracking not available"
   fi
 }
 
@@ -222,17 +222,17 @@ it "should handle errors gracefully" && {
 it "should reload tmux sessions after theme change" && {
   # Test behavior - if tmux is running, theme switch should handle it
   if command -v tmux >/dev/null 2>&1; then
-  # Switch theme and check if it handles tmux gracefully (--local to avoid affecting other terminals)
-  output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_moon 2>&1 || true)
+    # Switch theme and check if it handles tmux gracefully (--local to avoid affecting other terminals)
+    output=$("$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --local tokyonight_moon 2>&1 || true)
 
-  # Should not error on tmux operations
-  if [[ "$output" != *"tmux: command not found"* ]]; then
-    pass "Handles tmux gracefully"
+    # Should not error on tmux operations
+    if [[ "$output" != *"tmux: command not found"* ]]; then
+      pass "Handles tmux gracefully"
+    else
+      fail "tmux handling error"
+    fi
   else
-    fail "tmux handling error"
-  fi
-  else
-  skip "tmux not installed"
+    skip "tmux not installed"
   fi
 }
 
@@ -247,9 +247,9 @@ it "should backup current theme before switching" && {
 
   # Both switches should work without corruption
   if [[ $first_result -eq 0 ]] || [[ $second_result -eq 0 ]]; then
-  pass "Theme switching is safe"
+    pass "Theme switching is safe"
   else
-  skip "Theme switching not functional"
+    skip "Theme switching not functional"
   fi
 }
 
@@ -260,9 +260,9 @@ it "should support theme shortcuts" && {
 
   # Should either switch or show help about shortcuts
   if [[ "$output" != *"not found"* ]] && [[ "$output" != *"invalid"* ]]; then
-  pass "Theme shortcuts supported"
+    pass "Theme shortcuts supported"
   else
-  skip "Shortcuts not available"
+    skip "Shortcuts not available"
   fi
 }
 
@@ -296,9 +296,9 @@ it "should maintain color scheme consistency" && {
   [[ -f ~/.config/theme-switcher/current-theme.sh ]] && ((configs_exist++))
 
   if [[ $configs_exist -gt 0 ]]; then
-  pass "Theme configs generated consistently"
+    pass "Theme configs generated consistently"
   else
-  skip "Theme configs not generated"
+    skip "Theme configs not generated"
   fi
 }
 
@@ -311,15 +311,15 @@ it "should be optimized for performance" && {
 
   # Calculate duration in milliseconds if nanoseconds available
   if [[ "$start_time" == *"N"* ]]; then
-  skip "Cannot measure nanoseconds on this system"
+    skip "Cannot measure nanoseconds on this system"
   else
-  local duration=$((end_time - start_time))
-  # Should complete within 2 seconds
-  if [[ $duration -le 2 ]]; then
-    pass "Theme switch is performant"
-  else
-    fail "Theme switch took too long: ${duration}s"
-  fi
+    local duration=$((end_time - start_time))
+    # Should complete within 2 seconds
+    if [[ $duration -le 2 ]]; then
+      pass "Theme switch is performant"
+    else
+      fail "Theme switch took too long: ${duration}s"
+    fi
   fi
 }
 

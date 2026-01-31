@@ -245,12 +245,12 @@ if command -v docker &>/dev/null; then
 
   # Function to safely run docker commands only when daemon is running
   docker_safe() {
-  if docker info &>/dev/null; then
-    docker "$@"
-  else
-    echo "Docker daemon is not running. Start Docker or Colima first."
-    return 1
-  fi
+    if docker info &>/dev/null; then
+      docker "$@"
+    else
+      echo "Docker daemon is not running. Start Docker or Colima first."
+      return 1
+    fi
   }
 fi
 
@@ -282,11 +282,11 @@ cleanup() {
   echo -n "Are you sure? [y/N] "
   read -r response
   if [[ "$response" =~ ^[Yy]$ ]]; then
-  find . -type f -name '*.DS_Store' -delete
-  find . -type f -name '*.pyc' -delete
-  echo "Cleanup complete."
+    find . -type f -name '*.DS_Store' -delete
+    find . -type f -name '*.pyc' -delete
+    echo "Cleanup complete."
   else
-  echo "Cleanup cancelled."
+    echo "Cleanup cancelled."
   fi
 }
 
@@ -299,19 +299,19 @@ emptytrash() {
   echo -n "Are you ABSOLUTELY sure? Type 'yes' to confirm: "
   read -r response
   if [[ "$response" == "yes" ]]; then
-  # Use specific paths instead of wildcards with sudo
-  sudo rm -rfv ~/.Trash
-  # Only clear Trashes on mounted volumes if they exist
-  for volume in /Volumes/*; do
-    if [[ -d "$volume/.Trashes" ]]; then
-    sudo rm -rfv "$volume/.Trashes"
-    fi
-  done
-  # Clear ASL logs safely
-  sudo rm -rfv /private/var/log/asl/*.asl 2>/dev/null || true
-  echo "Trash emptied."
+    # Use specific paths instead of wildcards with sudo
+    sudo rm -rfv ~/.Trash
+    # Only clear Trashes on mounted volumes if they exist
+    for volume in /Volumes/*; do
+      if [[ -d "$volume/.Trashes" ]]; then
+        sudo rm -rfv "$volume/.Trashes"
+      fi
+    done
+    # Clear ASL logs safely
+    sudo rm -rfv /private/var/log/asl/*.asl 2>/dev/null || true
+    echo "Trash emptied."
   else
-  echo "Operation cancelled."
+    echo "Operation cancelled."
   fi
 }
 alias reset="source ~/.zshrc && clear"

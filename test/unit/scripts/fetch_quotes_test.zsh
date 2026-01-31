@@ -46,8 +46,8 @@ it "should accept count parameter" && {
 
 it "should have timeout configuration" && {
   # Verify timeout handling is configured
-  if grep -q "TIMEOUT_DURATION" "$FETCH_QUOTES" && \
-     grep -q "get_timeout_cmd" "$FETCH_QUOTES"; then
+  if grep -q "TIMEOUT_DURATION" "$FETCH_QUOTES" \
+    && grep -q "get_timeout_cmd" "$FETCH_QUOTES"; then
     pass
   else
     fail "Missing timeout configuration"
@@ -56,9 +56,9 @@ it "should have timeout configuration" && {
 
 it "should handle missing dependencies gracefully" && {
   # Test error messages for missing tools
-  if grep -q "check_requirements" "$FETCH_QUOTES" && \
-     grep -q "curl is required" "$FETCH_QUOTES" && \
-     grep -q "jq is required" "$FETCH_QUOTES"; then
+  if grep -q "check_requirements" "$FETCH_QUOTES" \
+    && grep -q "curl is required" "$FETCH_QUOTES" \
+    && grep -q "jq is required" "$FETCH_QUOTES"; then
     pass
   else
     fail "Doesn't check for required dependencies"
@@ -67,8 +67,8 @@ it "should handle missing dependencies gracefully" && {
 
 it "should provide installation instructions for missing tools" && {
   # Check that it provides helpful install commands
-  if grep -q "brew install jq" "$FETCH_QUOTES" && \
-     grep -q "apt install jq" "$FETCH_QUOTES"; then
+  if grep -q "brew install jq" "$FETCH_QUOTES" \
+    && grep -q "apt install jq" "$FETCH_QUOTES"; then
     pass
   else
     fail "Missing installation instructions"

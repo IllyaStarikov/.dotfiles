@@ -19,18 +19,18 @@ test_bugreport() {
   test_case "bugreport: Generates help information"
   output=$("${script}" --help 2>&1 || true)
   if [[ -n "${output}" ]]; then
-  pass "Help displayed"
+    pass "Help displayed"
   else
-  fail "No help output"
+    fail "No help output"
   fi
 
   test_case "bugreport: Handles invalid options properly"
   output=$("${script}" --invalid-option 2>&1 || true)
   # Should show error or usage
   if [[ "${output}" == *"Unknown"* ]] || [[ "${output}" == *"Error"* ]] || [[ "${output}" == *"Usage"* ]]; then
-  pass "Invalid option handled"
+    pass "Invalid option handled"
   else
-  fail "No error for invalid option"
+    fail "No error for invalid option"
   fi
 }
 
@@ -41,9 +41,9 @@ test_common() {
   test_case "common.sh: Provides reusable functions"
   # Source and check if we can use its functions
   (
-  source "${SCRIPTS_DIR}/common.sh" 2>/dev/null
-  # Try to use a function it should provide
-  type log_info &>/dev/null || type info &>/dev/null || type log &>/dev/null
+    source "${SCRIPTS_DIR}/common.sh" 2>/dev/null
+    # Try to use a function it should provide
+    type log_info &>/dev/null || type info &>/dev/null || type log &>/dev/null
   ) && pass "Functions available after sourcing" || skip "No common functions found"
 }
 
@@ -62,9 +62,9 @@ test_fixy() {
   # Check if formatting improved
   content=$(cat "${temp_file}")
   if [[ "${content}" != *"def hello( ):"* ]]; then
-  pass "File was formatted"
+    pass "File was formatted"
   else
-  skip "Formatter not available"
+    skip "Formatter not available"
   fi
   rm -f "${temp_file}"
 }
@@ -78,9 +78,9 @@ test_scratchpad() {
   test_case "scratchpad: Creates temporary workspace"
   # Don't actually run scratchpad as it opens an editor
   if [[ -x "${script}" ]]; then
-  pass "Scratchpad script exists and is executable"
+    pass "Scratchpad script exists and is executable"
   else
-  fail "Scratchpad script not found"
+    fail "Scratchpad script not found"
   fi
 }
 
@@ -96,9 +96,9 @@ test_theme() {
 
   # Should either show current theme or switch
   if [[ "${output}" == *"theme"* ]] || [[ "${output}" == *"Theme"* ]] || [[ "${output}" == *"tokyonight"* ]]; then
-  pass "Theme operation performed"
+    pass "Theme operation performed"
   else
-  skip "Theme script not functional"
+    skip "Theme script not functional"
   fi
 }
 
@@ -113,9 +113,9 @@ test_tmux_utils() {
 
   # Should show usage or perform an action
   if [[ "${output}" == *"tmux"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"battery"* ]]; then
-  pass "Utility functions available"
+    pass "Utility functions available"
   else
-  skip "tmux-utils not functional"
+    skip "tmux-utils not functional"
   fi
 }
 
@@ -131,9 +131,9 @@ test_update_dotfiles() {
 
   # Should mention updating or show help
   if [[ "${output}" == *"update"* ]] || [[ "${output}" == *"Update"* ]] || [[ "${output}" == *"Usage"* ]]; then
-  pass "Update functionality available"
+    pass "Update functionality available"
   else
-  skip "Update script not functional"
+    skip "Update script not functional"
   fi
 }
 
@@ -149,17 +149,17 @@ test_generic_script() {
 
   # Most scripts should provide help
   if [[ "${output}" == *"${script_name}"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"usage"* ]]; then
-  pass "Help available"
+    pass "Help available"
   else
-  skip "No help flag"
+    skip "No help flag"
   fi
 
   test_case "${script_name}: Has proper shebang"
   first_line=$(head -n1 "${script}")
   if [[ "${first_line}" == "#!/"* ]]; then
-  pass "Has shebang"
+    pass "Has shebang"
   else
-  fail "Missing shebang"
+    fail "Missing shebang"
   fi
 }
 
@@ -176,14 +176,14 @@ for script in "${SCRIPTS_DIR}"/*; do
   echo -e "\n${CYAN}Testing: ${script_name}${NC}"
 
   case "${script_name}" in
-  bugreport) test_bugreport ;;
-  common.sh) test_common ;;
-  fixy) test_fixy ;;
-  scratchpad) test_scratchpad ;;
-  theme) test_theme ;;
-  tmux-utils) test_tmux_utils ;;
-  update-dotfiles) test_update_dotfiles ;;
-  *) test_generic_script "${script}" ;;
+    bugreport) test_bugreport ;;
+    common.sh) test_common ;;
+    fixy) test_fixy ;;
+    scratchpad) test_scratchpad ;;
+    theme) test_theme ;;
+    tmux-utils) test_tmux_utils ;;
+    update-dotfiles) test_update_dotfiles ;;
+    *) test_generic_script "${script}" ;;
   esac
 done
 

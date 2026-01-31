@@ -6,11 +6,11 @@
 
 This setup supports multiple GPU-accelerated terminal emulators:
 
-| Terminal | Best For | Config Location |
-|----------|----------|-----------------|
-| [Alacritty](../../usage/tools/alacritty.md) | Simplicity, cross-platform | `~/.config/alacritty/` |
-| [WezTerm](../../usage/tools/wezterm.md) | Built-in multiplexing, Lua config | `~/.config/wezterm/` |
-| [Kitty](../../usage/tools/kitty.md) | Image support, remote control | `~/.config/kitty/` |
+| Terminal                                    | Best For                          | Config Location        |
+| ------------------------------------------- | --------------------------------- | ---------------------- |
+| [Alacritty](../../usage/tools/alacritty.md) | Simplicity, cross-platform        | `~/.config/alacritty/` |
+| [WezTerm](../../usage/tools/wezterm.md)     | Built-in multiplexing, Lua config | `~/.config/wezterm/`   |
+| [Kitty](../../usage/tools/kitty.md)         | Image support, remote control     | `~/.config/kitty/`     |
 
 ## Available Guides
 
@@ -38,6 +38,7 @@ theme storm   # TokyoNight Storm variant
 ```
 
 Theme files are generated in each terminal's config directory:
+
 - Alacritty: `~/.config/alacritty/theme.toml`
 - WezTerm: `~/.config/wezterm/theme.lua`
 - Kitty: `~/.config/kitty/theme.conf`
@@ -47,13 +48,14 @@ Theme files are generated in each terminal's config directory:
 
 All terminals use Nerd Fonts for consistent icons:
 
-| Terminal | Font Setting |
-|----------|--------------|
-| Alacritty | `font.normal.family = "JetBrainsMono Nerd Font"` |
-| WezTerm | `config.font = wezterm.font("MesloLGS Nerd Font Mono")` |
-| Kitty | `font_family JetBrains Mono` |
+| Terminal  | Font Setting                                            |
+| --------- | ------------------------------------------------------- |
+| Alacritty | `font.normal.family = "JetBrainsMono Nerd Font"`        |
+| WezTerm   | `config.font = wezterm.font("MesloLGS Nerd Font Mono")` |
+| Kitty     | `font_family JetBrains Mono`                            |
 
 **Recommended fonts:**
+
 - JetBrains Mono Nerd Font
 - MesloLGS Nerd Font Mono
 - Fira Code Nerd Font
@@ -73,18 +75,18 @@ Font ligatures        Enabled
 
 Consistent keybindings across all terminals:
 
-| Action | macOS Key |
-|--------|-----------|
-| New tab | `Cmd+T` |
-| Close tab | `Cmd+W` |
-| New window | `Cmd+N` |
-| Split vertical | `Cmd+D` |
+| Action           | macOS Key     |
+| ---------------- | ------------- |
+| New tab          | `Cmd+T`       |
+| Close tab        | `Cmd+W`       |
+| New window       | `Cmd+N`       |
+| Split vertical   | `Cmd+D`       |
 | Split horizontal | `Cmd+Shift+D` |
-| Previous tab | `Cmd+[` |
-| Next tab | `Cmd+]` |
-| Font size up | `Cmd++` |
-| Font size down | `Cmd+-` |
-| Fullscreen | `Cmd+Return` |
+| Previous tab     | `Cmd+[`       |
+| Next tab         | `Cmd+]`       |
+| Font size up     | `Cmd++`       |
+| Font size down   | `Cmd+-`       |
+| Fullscreen       | `Cmd+Return`  |
 
 ## Shell Integration
 
@@ -121,12 +123,12 @@ fi
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Colors wrong | Check `$TERM` and `$COLORTERM` variables |
-| Icons missing | Install Nerd Font variant |
-| Slow rendering | Check GPU acceleration settings |
-| Theme not updating | Run `theme` command to force sync |
+| Issue              | Solution                                 |
+| ------------------ | ---------------------------------------- |
+| Colors wrong       | Check `$TERM` and `$COLORTERM` variables |
+| Icons missing      | Install Nerd Font variant                |
+| Slow rendering     | Check GPU acceleration settings          |
+| Theme not updating | Run `theme` command to force sync        |
 
 ### Debug Commands
 
@@ -153,11 +155,13 @@ awk 'BEGIN{
 ### Alacritty
 
 **Pros:**
+
 - Simple TOML configuration
 - Cross-platform (macOS, Linux, Windows)
 - Minimal and fast
 
 **Cons:**
+
 - No built-in tabs/splits (use tmux)
 - No image support
 
@@ -166,12 +170,14 @@ awk 'BEGIN{
 ### WezTerm
 
 **Pros:**
+
 - Built-in multiplexing (tabs, splits)
 - Lua configuration (powerful)
 - SSH integration
 - Image support
 
 **Cons:**
+
 - Larger binary
 - More complex configuration
 
@@ -180,12 +186,14 @@ awk 'BEGIN{
 ### Kitty
 
 **Pros:**
+
 - Excellent image support (`icat`)
 - Remote control API
 - Fast and GPU-accelerated
 - Built-in multiplexing
 
 **Cons:**
+
 - Linux/macOS only
 - Configuration syntax unique to Kitty
 

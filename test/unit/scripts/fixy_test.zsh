@@ -30,9 +30,9 @@ EOF
   # Check if file was modified (formatting applied)
   content=$(cat "$TEST_TMP_DIR/test.py")
   if [[ "$content" != *"  )"* ]]; then
-  pass "Python file was formatted"
+    pass "Python file was formatted"
   else
-  skip "Python formatter not available"
+    skip "Python formatter not available"
   fi
 }
 
@@ -47,9 +47,9 @@ EOF
   # Check if formatting improved readability
   content=$(cat "$TEST_TMP_DIR/test.js")
   if [[ "$content" == *$'\n'* ]] || [[ ${#content} -gt 40 ]]; then
-  pass "JavaScript file was formatted"
+    pass "JavaScript file was formatted"
   else
-  skip "JavaScript formatter not available"
+    skip "JavaScript formatter not available"
   fi
 }
 
@@ -59,9 +59,9 @@ it "should handle missing files gracefully" && {
 
   # Should give meaningful error, not crash
   if [[ -n "$output" ]]; then
-  pass "Handled missing file gracefully"
+    pass "Handled missing file gracefully"
   else
-  fail "No error message for missing file"
+    fail "No error message for missing file"
   fi
 }
 
@@ -83,9 +83,9 @@ it "should provide usage information" && {
 
   # Help should explain how to use the tool
   if [[ "$output" == *"fixy"* ]] || [[ "$output" == *"Usage"* ]] || [[ "$output" == *"usage"* ]]; then
-  pass "Help provides usage information"
+    pass "Help provides usage information"
   else
-  fail "Help output not informative"
+    fail "Help output not informative"
   fi
 }
 
@@ -100,9 +100,9 @@ it "should process multiple files" && {
 
   # Should complete without fatal errors
   if [[ $exit_code -eq 0 ]] || [[ $exit_code -eq 1 ]]; then
-  pass "Processed multiple files"
+    pass "Processed multiple files"
   else
-  fail "Failed processing multiple files"
+    fail "Failed processing multiple files"
   fi
 }
 
@@ -120,9 +120,9 @@ EOF
   # Shell formatter should fix indentation
   content=$(cat "$TEST_TMP_DIR/test.sh")
   if [[ "$content" != *"    echo     "* ]]; then
-  pass "Used appropriate formatter for shell script"
+    pass "Used appropriate formatter for shell script"
   else
-  skip "Shell formatter not available"
+    skip "Shell formatter not available"
   fi
 }
 
@@ -153,9 +153,9 @@ it "should return success for successful formatting" && {
   exit_code=$?
 
   if [[ $exit_code -eq 0 ]]; then
-  pass "Returns success exit code"
+    pass "Returns success exit code"
   else
-  skip "Exit code behavior varies by formatter availability"
+    skip "Exit code behavior varies by formatter availability"
   fi
 }
 

@@ -58,6 +58,7 @@ Our tool configurations prioritize:
 ### 1. Consistency
 
 Similar patterns across tools:
+
 - Vi-style keybindings where possible
 - Consistent theme colors
 - Unified leader key concepts
@@ -65,6 +66,7 @@ Similar patterns across tools:
 ### 2. Performance
 
 Fast startup and operation:
+
 - Lazy loading where applicable
 - Minimal dependencies
 - GPU acceleration for terminals
@@ -72,6 +74,7 @@ Fast startup and operation:
 ### 3. Integration
 
 Tools work together seamlessly:
+
 - Theme switching affects all applications
 - Shell aliases for common operations
 - Shared configuration patterns
@@ -79,6 +82,7 @@ Tools work together seamlessly:
 ### 4. Simplicity
 
 Easy to understand and modify:
+
 - Well-documented configurations
 - Modular file organization
 - Clear naming conventions
@@ -133,15 +137,15 @@ export PATH="$HOME/.local/bin:$PATH"
 
 Located in `~/.dotfiles/src/scripts/`:
 
-| Script | Description |
-|--------|-------------|
-| `fixy` | Universal code formatter |
-| `theme` | Theme switching |
+| Script            | Description                     |
+| ----------------- | ------------------------------- |
+| `fixy`            | Universal code formatter        |
+| `theme`           | Theme switching                 |
 | `update-dotfiles` | Update all packages and plugins |
-| `extract` | Universal archive extractor |
-| `cortex` | AI model management |
-| `services` | Background service manager |
-| `scratchpad` | Quick temporary file editing |
+| `extract`         | Universal archive extractor     |
+| `cortex`          | AI model management             |
+| `services`        | Background service manager      |
+| `scratchpad`      | Quick temporary file editing    |
 
 ## Adding New Tools
 
@@ -165,7 +169,9 @@ When adding a new tool:
 ## Quick Start
 
 \`\`\`bash
+
 # Basic usage examples
+
 \`\`\`
 
 ## Configuration

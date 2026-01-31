@@ -153,7 +153,7 @@ it "should create backups of existing files" && {
   export BACKUP_DIR="$TEST_HOME/.dotfiles-backup"
 
   # Create existing file
-  echo "existing" > "$TEST_HOME/.zshrc"
+  echo "existing" >"$TEST_HOME/.zshrc"
 
   # Check backup would be created (script outputs "Backed up existing file")
   output=$("$DOTFILES_DIR/src/setup/symlinks.sh" --dry-run 2>&1 || true)
@@ -230,7 +230,7 @@ it "should handle upgrade from existing installation" && {
 
   # Simulate existing installation
   mkdir -p "$TEST_HOME/.config/nvim"
-  echo "old config" > "$TEST_HOME/.zshrc"
+  echo "old config" >"$TEST_HOME/.zshrc"
 
   # Check setup script handles existing files (backup logic in symlinks.sh)
   local symlinks_content=$(cat "$DOTFILES_DIR/src/setup/symlinks.sh")

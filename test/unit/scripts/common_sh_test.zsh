@@ -20,9 +20,9 @@ it "should provide OS detection functions" && {
   # Source the library in a subshell to avoid polluting test environment
   # Tests that core OS detection functions are properly exported
   if (source "$COMMON_LIB" && type detect_os >/dev/null 2>&1); then
-  pass
+    pass
   else
-  fail "Missing OS detection functions"
+    fail "Missing OS detection functions"
   fi
 }
 
@@ -32,11 +32,11 @@ it "should detect current OS correctly" && {
   os_result=$(source "$COMMON_LIB" && detect_os)
 
   if [[ "$(uname)" == "Darwin" ]] && [[ "$os_result" == "macos" ]]; then
-  pass
+    pass
   elif [[ "$(uname)" == "Linux" ]] && [[ "$os_result" == "linux" ]]; then
-  pass
+    pass
   else
-  fail "OS detection mismatch: expected $(uname), got $os_result"
+    fail "OS detection mismatch: expected $(uname), got $os_result"
   fi
 }
 
@@ -44,9 +44,9 @@ it "should provide color printing functions" && {
   # Test that color output utilities are available
   # These functions provide consistent user feedback across scripts
   if (source "$COMMON_LIB" && type print_color >/dev/null 2>&1); then
-  pass
+    pass
   else
-  fail "Missing print_color function"
+    fail "Missing print_color function"
   fi
 }
 
@@ -54,7 +54,7 @@ it "should provide command existence checking" && {
   # Verify command detection utilities are present
   # Critical for conditional functionality based on available tools
   if (source "$COMMON_LIB" && type has_command >/dev/null 2>&1); then
-  pass
+    pass
   else
     fail "Missing has_command function"
   fi

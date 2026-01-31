@@ -36,7 +36,7 @@ it "should error on unknown format" && {
 
 it "should successfully extract zip files" && {
   # Create a test zip file
-  echo "test content" > "$TEST_TMP_DIR/test.txt"
+  echo "test content" >"$TEST_TMP_DIR/test.txt"
   (cd "$TEST_TMP_DIR" && zip -q test.zip test.txt)
   rm "$TEST_TMP_DIR/test.txt"
 

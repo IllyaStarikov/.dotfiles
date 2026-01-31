@@ -4,12 +4,12 @@ Demo files for dotfiles gallery screenshots.
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `demo.tex` | LaTeX demo for VimTeX showcase |
-| `demo.pdf` | Compiled PDF (generated) |
-| `sample.py` | Python file for fixy formatting demo |
-| `sample.tar.gz` | Archive for extract demo |
+| File            | Purpose                              |
+| --------------- | ------------------------------------ |
+| `demo.tex`      | LaTeX demo for VimTeX showcase       |
+| `demo.pdf`      | Compiled PDF (generated)             |
+| `sample.py`     | Python file for fixy formatting demo |
+| `sample.tar.gz` | Archive for extract demo             |
 
 ## Usage
 

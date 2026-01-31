@@ -76,39 +76,39 @@ return config
 
 ### Window Management
 
-| Key           | Action           |
-|---------------|------------------|
-| `Cmd+N`       | New window       |
-| `Cmd+W`       | Close pane       |
-| `Cmd+Shift+W` | Close window     |
-| `Cmd+Return`  | Toggle fullscreen|
-| `Cmd+M`       | Minimize         |
+| Key           | Action            |
+| ------------- | ----------------- |
+| `Cmd+N`       | New window        |
+| `Cmd+W`       | Close pane        |
+| `Cmd+Shift+W` | Close window      |
+| `Cmd+Return`  | Toggle fullscreen |
+| `Cmd+M`       | Minimize          |
 
 ### Tab Management
 
-| Key           | Action            |
-|---------------|-------------------|
-| `Cmd+T`       | New tab           |
-| `Cmd+[`       | Previous tab      |
-| `Cmd+]`       | Next tab          |
-| `Cmd+1-9`     | Go to tab 1-9     |
-| `Cmd+Shift+T` | Show tab navigator|
+| Key           | Action             |
+| ------------- | ------------------ |
+| `Cmd+T`       | New tab            |
+| `Cmd+[`       | Previous tab       |
+| `Cmd+]`       | Next tab           |
+| `Cmd+1-9`     | Go to tab 1-9      |
+| `Cmd+Shift+T` | Show tab navigator |
 
 ### Pane Management
 
-| Key           | Action            |
-|---------------|-------------------|
-| `Cmd+D`       | Split right       |
-| `Cmd+Shift+D` | Split down        |
-| `Cmd+H`       | Navigate left     |
-| `Cmd+J`       | Navigate down     |
-| `Cmd+K`       | Navigate up       |
-| `Cmd+L`       | Navigate right    |
+| Key           | Action         |
+| ------------- | -------------- |
+| `Cmd+D`       | Split right    |
+| `Cmd+Shift+D` | Split down     |
+| `Cmd+H`       | Navigate left  |
+| `Cmd+J`       | Navigate down  |
+| `Cmd+K`       | Navigate up    |
+| `Cmd+L`       | Navigate right |
 
 ### Text Operations
 
 | Key     | Action       |
-|---------|--------------|
+| ------- | ------------ |
 | `Cmd+C` | Copy         |
 | `Cmd+V` | Paste        |
 | `Cmd+F` | Search       |
@@ -117,7 +117,7 @@ return config
 ### Font Size
 
 | Key         | Action        |
-|-------------|---------------|
+| ----------- | ------------- |
 | `Cmd+Plus`  | Increase font |
 | `Cmd+Minus` | Decrease font |
 | `Cmd+0`     | Reset font    |
@@ -238,6 +238,7 @@ config.colors = {
 ### GPU Acceleration
 
 WezTerm uses GPU by default:
+
 - Metal on macOS
 - DirectX on Windows
 - OpenGL on Linux
@@ -280,12 +281,12 @@ wezterm connect server
 
 ### Common Issues
 
-| Issue              | Solution                        |
-|--------------------|---------------------------------|
+| Issue              | Solution                                        |
+| ------------------ | ----------------------------------------------- |
 | Config errors      | Use `wezterm --config-file wezterm-minimal.lua` |
-| Font not rendering | Install Nerd Font variant       |
-| Slow performance   | Disable transparency, check GPU |
-| Theme not updating | Ensure theme.lua exists         |
+| Font not rendering | Install Nerd Font variant                       |
+| Slow performance   | Disable transparency, check GPU                 |
+| Theme not updating | Ensure theme.lua exists                         |
 
 ### Debug Mode
 

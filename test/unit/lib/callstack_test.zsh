@@ -106,8 +106,8 @@ test_debug_on_off() {
 
 test_profile_functions_exist() {
   test_case "profiling functions exist"
-  if declare -f profile_start >/dev/null 2>&1 && \
-     declare -f profile_end >/dev/null 2>&1; then
+  if declare -f profile_start >/dev/null 2>&1 \
+    && declare -f profile_end >/dev/null 2>&1; then
     pass
   else
     skip "profiling functions not available"
@@ -120,8 +120,8 @@ test_profile_functions_exist() {
 
 test_stack_trace_function() {
   test_case "stack_trace function exists"
-  if declare -f stack_trace >/dev/null 2>&1 || \
-     declare -f print_stack_trace >/dev/null 2>&1; then
+  if declare -f stack_trace >/dev/null 2>&1 \
+    || declare -f print_stack_trace >/dev/null 2>&1; then
     pass
   else
     skip "stack_trace not available"

@@ -11,14 +11,14 @@ CompileFlags:
     - '-I/usr/include'
   Remove:
     # Remove any system-specific flags that might cause issues cross-platform
-    - '-stdlib=libc++'          # macOS-specific stdlib
+    - '-stdlib=libc++' # macOS-specific stdlib
 
 Diagnostics:
   ClangTidy:
     # Enable performance and modernization checks
     # Full list: https://clang.llvm.org/extra/clang-tidy/checks/list.html
     Add: [performance-*, modernize-*]
-    Remove: [modernize-use-trailing-return-type]  # Conflicts with style guide
+    Remove: [modernize-use-trailing-return-type] # Conflicts with style guide
 
 Completion:
   AllScopes: true

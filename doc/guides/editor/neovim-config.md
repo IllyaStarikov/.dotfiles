@@ -46,6 +46,7 @@ This configuration uses a modular Lua architecture designed for maintainability,
 ### Entry Point (`init.lua`)
 
 The main entry point that:
+
 1. Detects if running from dotfiles or standard location
 2. Sets up runtime paths
 3. Loads configuration modules in correct order
@@ -108,14 +109,14 @@ vim.g.large_file_threshold = 512 * 1024  -- 512KB
 
 Organized by functionality (see [Keybindings Reference](../../usage/keybindings/neovim.md)):
 
-| File | Purpose |
-|------|---------|
-| `core.lua` | Essential mappings (save, quit, clipboard) |
-| `navigation.lua` | Window, buffer, and code navigation |
-| `editing.lua` | Text manipulation and indentation |
-| `lsp.lua` | Go to definition, references, etc. |
-| `plugins.lua` | Telescope, file explorer, git |
-| `debug.lua` | DAP breakpoints and stepping |
+| File             | Purpose                                    |
+| ---------------- | ------------------------------------------ |
+| `core.lua`       | Essential mappings (save, quit, clipboard) |
+| `navigation.lua` | Window, buffer, and code navigation        |
+| `editing.lua`    | Text manipulation and indentation          |
+| `lsp.lua`        | Go to definition, references, etc.         |
+| `plugins.lua`    | Telescope, file explorer, git              |
+| `debug.lua`      | DAP breakpoints and stepping               |
 
 ### LSP Configuration
 
@@ -142,14 +143,14 @@ local servers = {
 
 #### Supported Languages
 
-| Language | Server | Formatter |
-|----------|--------|-----------|
-| Lua | lua_ls | stylua |
-| Python | pyright | ruff |
-| TypeScript | ts_ls | prettier |
-| Rust | rust_analyzer | rustfmt |
-| Go | gopls | gofmt |
-| C/C++ | clangd | clang-format |
+| Language   | Server        | Formatter    |
+| ---------- | ------------- | ------------ |
+| Lua        | lua_ls        | stylua       |
+| Python     | pyright       | ruff         |
+| TypeScript | ts_ls         | prettier     |
+| Rust       | rust_analyzer | rustfmt      |
+| Go         | gopls         | gofmt        |
+| C/C++      | clangd        | clang-format |
 
 ### Plugin System
 
@@ -183,17 +184,17 @@ return {
 
 #### Plugin Categories
 
-| Category | Key Plugins |
-|----------|-------------|
-| Completion | blink.cmp, LuaSnip |
-| Fuzzy Finding | Telescope, fzf-lua |
+| Category        | Key Plugins               |
+| --------------- | ------------------------- |
+| Completion      | blink.cmp, LuaSnip        |
+| Fuzzy Finding   | Telescope, fzf-lua        |
 | File Management | oil.nvim, snacks.explorer |
-| Git | gitsigns, lazygit |
-| AI | CodeCompanion, Avante |
-| LSP | nvim-lspconfig, Mason |
-| Treesitter | nvim-treesitter |
-| UI | tokyonight, lualine |
-| Debugging | nvim-dap, nvim-dap-ui |
+| Git             | gitsigns, lazygit         |
+| AI              | CodeCompanion, Avante     |
+| LSP             | nvim-lspconfig, Mason     |
+| Treesitter      | nvim-treesitter           |
+| UI              | tokyonight, lualine       |
+| Debugging       | nvim-dap, nvim-dap-ui     |
 
 ### Autocommands (`autocmds.lua`)
 
@@ -227,12 +228,12 @@ vim.api.nvim_create_autocmd("BufNewFile", {
 
 Productivity commands:
 
-| Command | Description |
-|---------|-------------|
-| `:Format` | Format current buffer |
-| `:LspRestart` | Restart LSP servers |
-| `:Telescope` | Open fuzzy finder |
-| `:Mason` | Manage LSP servers |
+| Command       | Description           |
+| ------------- | --------------------- |
+| `:Format`     | Format current buffer |
+| `:LspRestart` | Restart LSP servers   |
+| `:Telescope`  | Open fuzzy finder     |
+| `:Mason`      | Manage LSP servers    |
 
 ## Adding New Configuration
 
@@ -365,12 +366,12 @@ nvim -V9 /tmp/nvim.log
 
 ## Performance Targets
 
-| Metric | Target |
-|--------|--------|
-| Startup time | < 150ms |
+| Metric         | Target  |
+| -------------- | ------- |
+| Startup time   | < 150ms |
 | Plugin loading | < 500ms |
-| LSP attach | < 1s |
-| Memory usage | < 200MB |
+| LSP attach     | < 1s    |
+| Memory usage   | < 200MB |
 
 ## Work Overrides
 

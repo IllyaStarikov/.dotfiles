@@ -29,10 +29,10 @@ it "should detect system appearance" && {
 
   # Should mention switching to a theme
   if [[ "$output" == *"Switching"* ]] || [[ "$output" == *"tokyonight"* ]] || [[ "$output" == *"Theme"* ]]; then
-  pass "Theme switcher executed"
+    pass "Theme switcher executed"
   else
-  # Might already be in the correct theme
-  pass "Theme detection completed"
+    # Might already be in the correct theme
+    pass "Theme detection completed"
   fi
 }
 
@@ -55,9 +55,9 @@ it "should create configuration files" && {
   [[ -f "$test_config/theme-switcher/current-theme.sh" ]] && ((configs_created++))
 
   if [[ $configs_created -gt 0 ]]; then
-  pass "Created $configs_created config files"
+    pass "Created $configs_created config files"
   else
-  fail "No configuration files created"
+    fail "No configuration files created"
   fi
 }
 
@@ -73,14 +73,14 @@ it "should export MACOS_THEME variable" && {
 
   # Check environment file
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
-  content=$(cat "$test_config/theme-switcher/current-theme.sh")
-  if [[ "$content" == *"MACOS_THEME"* ]]; then
-    pass "MACOS_THEME variable exported"
+    content=$(cat "$test_config/theme-switcher/current-theme.sh")
+    if [[ "$content" == *"MACOS_THEME"* ]]; then
+      pass "MACOS_THEME variable exported"
+    else
+      fail "MACOS_THEME not found in theme file"
+    fi
   else
-    fail "MACOS_THEME not found in theme file"
-  fi
-  else
-  fail "Theme environment file not created"
+    fail "Theme environment file not created"
   fi
 }
 
@@ -97,14 +97,14 @@ it "should configure light theme correctly" && {
 
   # Check theme settings
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
-  content=$(cat "$test_config/theme-switcher/current-theme.sh")
-  if [[ "$content" == *"light"* ]] || [[ "$content" == *"Light"* ]]; then
-    pass "Light theme configured"
+    content=$(cat "$test_config/theme-switcher/current-theme.sh")
+    if [[ "$content" == *"light"* ]] || [[ "$content" == *"Light"* ]]; then
+      pass "Light theme configured"
+    else
+      fail "Light theme not properly set"
+    fi
   else
-    fail "Light theme not properly set"
-  fi
-  else
-  fail "Theme file not created"
+    fail "Theme file not created"
   fi
 }
 
@@ -121,14 +121,14 @@ it "should configure dark theme correctly" && {
 
   # Check theme settings
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
-  content=$(cat "$test_config/theme-switcher/current-theme.sh")
-  if [[ "$content" == *"dark"* ]] || [[ "$content" == *"Dark"* ]]; then
-    pass "Dark theme configured"
+    content=$(cat "$test_config/theme-switcher/current-theme.sh")
+    if [[ "$content" == *"dark"* ]] || [[ "$content" == *"Dark"* ]]; then
+      pass "Dark theme configured"
+    else
+      fail "Dark theme not properly set"
+    fi
   else
-    fail "Dark theme not properly set"
-  fi
-  else
-  fail "Theme file not created"
+    fail "Theme file not created"
   fi
 }
 
@@ -145,15 +145,15 @@ it "should update tmux configuration" && {
 
   # Check tmux theme file
   if [[ -f "$test_config/tmux/theme.conf" ]]; then
-  content=$(cat "$test_config/tmux/theme.conf")
-  # Check for tmux-specific configuration
-  if [[ "$content" == *"status"* ]] || [[ "$content" == *"bg="* ]] || [[ "$content" == *"fg="* ]]; then
-    pass "Tmux theme configuration created"
+    content=$(cat "$test_config/tmux/theme.conf")
+    # Check for tmux-specific configuration
+    if [[ "$content" == *"status"* ]] || [[ "$content" == *"bg="* ]] || [[ "$content" == *"fg="* ]]; then
+      pass "Tmux theme configuration created"
+    else
+      fail "Tmux theme file is empty or invalid"
+    fi
   else
-    fail "Tmux theme file is empty or invalid"
-  fi
-  else
-  fail "Tmux theme file not created"
+    fail "Tmux theme file not created"
   fi
 }
 
@@ -170,15 +170,15 @@ it "should update Alacritty configuration" && {
 
   # Check Alacritty theme file
   if [[ -f "$test_config/alacritty/theme.toml" ]]; then
-  content=$(cat "$test_config/alacritty/theme.toml")
-  # Check for Alacritty-specific configuration
-  if [[ "$content" == *"colors"* ]] || [[ "$content" == *"primary"* ]] || [[ "$content" == *"background"* ]]; then
-    pass "Alacritty theme configuration created"
+    content=$(cat "$test_config/alacritty/theme.toml")
+    # Check for Alacritty-specific configuration
+    if [[ "$content" == *"colors"* ]] || [[ "$content" == *"primary"* ]] || [[ "$content" == *"background"* ]]; then
+      pass "Alacritty theme configuration created"
+    else
+      fail "Alacritty theme file is empty or invalid"
+    fi
   else
-    fail "Alacritty theme file is empty or invalid"
-  fi
-  else
-  fail "Alacritty theme file not created"
+    fail "Alacritty theme file not created"
   fi
 }
 
@@ -201,12 +201,12 @@ it "should handle invalid theme names gracefully" && {
 
   # Should either fall back to default or show error
   if [[ "$output" == *"Error"* ]] || [[ "$output" == *"error"* ]] || [[ "$output" == *"Invalid"* ]] || [[ "$output" == *"invalid"* ]]; then
-  pass "Invalid theme handled with error"
+    pass "Invalid theme handled with error"
   elif [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
-  # Or it might fall back to a default
-  pass "Invalid theme handled with fallback"
+    # Or it might fall back to a default
+    pass "Invalid theme handled with fallback"
   else
-  fail "Invalid theme not handled properly"
+    fail "Invalid theme not handled properly"
   fi
 }
 
@@ -222,14 +222,14 @@ it "should support auto-detection from system" && {
 
   # Check if theme was set
   if [[ -f "$test_config/theme-switcher/current-theme.sh" ]]; then
-  content=$(cat "$test_config/theme-switcher/current-theme.sh")
-  if [[ -n "$content" ]]; then
-    pass "Auto-detection created theme configuration"
+    content=$(cat "$test_config/theme-switcher/current-theme.sh")
+    if [[ -n "$content" ]]; then
+      pass "Auto-detection created theme configuration"
+    else
+      fail "Auto-detection created empty file"
+    fi
   else
-    fail "Auto-detection created empty file"
-  fi
-  else
-  fail "Auto-detection did not create theme file"
+    fail "Auto-detection did not create theme file"
   fi
 }
 
@@ -254,9 +254,9 @@ it "should persist theme selection" && {
 
   # Verify change persisted
   if [[ "$initial_content" != "$new_content" ]]; then
-  pass "Theme change persisted"
+    pass "Theme change persisted"
   else
-  fail "Theme did not change"
+    fail "Theme did not change"
   fi
 }
 

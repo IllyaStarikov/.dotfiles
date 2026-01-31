@@ -19,16 +19,16 @@ else
   lua_files=($(find "$DOTFILES_DIR/src/neovim" "$DOTFILES_DIR/src/wezterm" -name "*.lua" 2>/dev/null))
 
   for file in "${lua_files[@]}"; do
-  if ! luac -p "$file" 2>/dev/null; then
-    [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $file"
-    ((errors++))
-  fi
+    if ! luac -p "$file" 2>/dev/null; then
+      [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $file"
+      ((errors++))
+    fi
   done
 
   if [[ $errors -eq 0 ]]; then
-  pass "${#lua_files[@]} Lua files validated"
+    pass "${#lua_files[@]} Lua files validated"
   else
-  fail "$errors Lua files have syntax errors"
+    fail "$errors Lua files have syntax errors"
   fi
 fi
 
@@ -38,10 +38,10 @@ if ! command -v stylua &>/dev/null; then
   skip "stylua not installed"
 else
   if stylua --check "$DOTFILES_DIR/src/neovim" "$DOTFILES_DIR/src/wezterm" \
-  --config-path "$DOTFILES_DIR/src/language/stylua.toml" 2>/dev/null; then
-  pass
+    --config-path "$DOTFILES_DIR/src/language/stylua.toml" 2>/dev/null; then
+    pass
   else
-  fail "Lua files need formatting (run: stylua src/neovim src/wezterm)"
+    fail "Lua files need formatting (run: stylua src/neovim src/wezterm)"
   fi
 fi
 
@@ -51,13 +51,13 @@ if ! command -v ruff &>/dev/null; then
   skip "ruff not installed"
 else
   if [[ ! -d "$DOTFILES_DIR/src/cortex" ]]; then
-  skip "cortex directory not found"
+    skip "cortex directory not found"
   else
-  if ruff check "$DOTFILES_DIR/src/cortex" 2>/dev/null; then
-    pass
-  else
-    fail "Python linting errors (run: ruff check --fix src/cortex)"
-  fi
+    if ruff check "$DOTFILES_DIR/src/cortex" 2>/dev/null; then
+      pass
+    else
+      fail "Python linting errors (run: ruff check --fix src/cortex)"
+    fi
   fi
 fi
 
@@ -67,13 +67,13 @@ if ! command -v ruff &>/dev/null; then
   skip "ruff not installed"
 else
   if [[ ! -d "$DOTFILES_DIR/src/cortex" ]]; then
-  skip "cortex directory not found"
+    skip "cortex directory not found"
   else
-  if ruff format --check "$DOTFILES_DIR/src/cortex" 2>/dev/null; then
-    pass
-  else
-    fail "Python files need formatting (run: ruff format src/cortex)"
-  fi
+    if ruff format --check "$DOTFILES_DIR/src/cortex" 2>/dev/null; then
+      pass
+    else
+      fail "Python files need formatting (run: ruff format src/cortex)"
+    fi
   fi
 fi
 
@@ -84,8 +84,8 @@ zsh_files=($(find "$DOTFILES_DIR/src" "$DOTFILES_DIR/test" -name "*.zsh" 2>/dev/
 
 for file in "${zsh_files[@]}"; do
   if ! zsh -n "$file" 2>/dev/null; then
-  [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $file"
-  ((errors++))
+    [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $file"
+    ((errors++))
   fi
 done
 
@@ -93,8 +93,8 @@ done
 zsh_scripts=($(grep -rl '^#!/usr/bin/env zsh' "$DOTFILES_DIR/src/scripts" 2>/dev/null || true))
 for script in "${zsh_scripts[@]}"; do
   if ! zsh -n "$script" 2>/dev/null; then
-  [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $script"
-  ((errors++))
+    [[ "$DEBUG" == "1" ]] && echo "  Syntax error: $script"
+    ((errors++))
   fi
 done
 
@@ -114,16 +114,16 @@ else
   json_files=($(find "$DOTFILES_DIR" -name "*.json" -type f -not -path "*/.git/*" -not -path "*/node_modules/*" 2>/dev/null))
 
   for file in "${json_files[@]}"; do
-  if ! jq . "$file" >/dev/null 2>&1; then
-    [[ "$DEBUG" == "1" ]] && echo "  Invalid JSON: $file"
-    ((errors++))
-  fi
+    if ! jq . "$file" >/dev/null 2>&1; then
+      [[ "$DEBUG" == "1" ]] && echo "  Invalid JSON: $file"
+      ((errors++))
+    fi
   done
 
   if [[ $errors -eq 0 ]]; then
-  pass "${#json_files[@]} JSON files validated"
+    pass "${#json_files[@]} JSON files validated"
   else
-  fail "$errors JSON files are invalid"
+    fail "$errors JSON files are invalid"
   fi
 fi
 
@@ -136,16 +136,16 @@ else
   toml_files=($(find "$DOTFILES_DIR" -name "*.toml" -type f -not -path "*/.git/*" 2>/dev/null))
 
   for file in "${toml_files[@]}"; do
-  if ! taplo format --check "$file" 2>/dev/null; then
-    [[ "$DEBUG" == "1" ]] && echo "  Invalid TOML: $file"
-    ((errors++))
-  fi
+    if ! taplo format --check "$file" 2>/dev/null; then
+      [[ "$DEBUG" == "1" ]] && echo "  Invalid TOML: $file"
+      ((errors++))
+    fi
   done
 
   if [[ $errors -eq 0 ]]; then
-  pass "${#toml_files[@]} TOML files validated"
+    pass "${#toml_files[@]} TOML files validated"
   else
-  fail "$errors TOML files need formatting"
+    fail "$errors TOML files need formatting"
   fi
 fi
 

@@ -16,8 +16,8 @@ NVIM_DEBUG="$DOTFILES_DIR/src/scripts/nvim-debug"
 
 it "should provide usage information" && {
   # Check that usage function exists and provides help
-  if grep -q "usage()" "$NVIM_DEBUG" && \
-     grep -q "Neovim Work Configuration Debugger" "$NVIM_DEBUG"; then
+  if grep -q "usage()" "$NVIM_DEBUG" \
+    && grep -q "Neovim Work Configuration Debugger" "$NVIM_DEBUG"; then
     pass
   else
     fail "Missing usage information"
@@ -40,8 +40,8 @@ it "should support multiple debug options" && {
 
 it "should detect terminal color support" && {
   # Check for proper terminal color detection
-  if grep -q "if \[\[ -t 1 \]\]" "$NVIM_DEBUG" && \
-     grep -q "readonly RED=\$'\\\\033\[0;31m'" "$NVIM_DEBUG"; then
+  if grep -q "if \[\[ -t 1 \]\]" "$NVIM_DEBUG" \
+    && grep -q "readonly RED=\$'\\\\033\[0;31m'" "$NVIM_DEBUG"; then
     pass
   else
     fail "Missing terminal color detection"
@@ -68,8 +68,8 @@ it "should determine script directory correctly" && {
 
 it "should handle no-color output for non-terminals" && {
   # Verify it sets empty strings when not in a terminal
-  if grep -q 'readonly RED=""' "$NVIM_DEBUG" && \
-     grep -q 'readonly NC=""' "$NVIM_DEBUG"; then
+  if grep -q 'readonly RED=""' "$NVIM_DEBUG" \
+    && grep -q 'readonly NC=""' "$NVIM_DEBUG"; then
     pass
   else
     fail "Missing no-color handling for non-terminals"

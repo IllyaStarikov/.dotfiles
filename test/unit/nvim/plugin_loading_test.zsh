@@ -123,7 +123,7 @@ test_case "Common plugin commands are available"
 commands_found=0
 for cmd in "Lazy" "Mason" "LspInfo"; do
   if nvim --headless -c "lua print(vim.fn.exists(':$cmd') > 0)" -c "qa!" 2>&1 | grep -q "true"; then
-  ((commands_found++))
+    ((commands_found++))
   fi
 done
 

@@ -389,8 +389,8 @@ install_macos_packages() {
     "rust"
     "rustup"
     "go"
-    "openjdk"  # Java (keg-only, requires PATH setup in zshrc)
-    "julia"    # Julia language
+    "openjdk" # Java (keg-only, requires PATH setup in zshrc)
+    "julia"   # Julia language
     "cmake"
     "ninja"
     "llvm"
@@ -1167,9 +1167,9 @@ setup_latex_tools() {
     for module in "${cpan_modules[@]}"; do
       info "Installing $module..."
       # Use yes to auto-answer prompts and redirect output to reduce noise
-      yes | sudo cpan install "$module" &>/dev/null 2>&1 && \
-        success "✓ $module installed" || \
-        warning "✗ $module installation failed (may already be installed)"
+      yes | sudo cpan install "$module" &>/dev/null 2>&1 \
+        && success "✓ $module installed" \
+        || warning "✗ $module installation failed (may already be installed)"
     done
 
     success "LaTeX tools configured"
@@ -1282,7 +1282,7 @@ setup_tmux() {
 # Coordinate setup based on detected system and user preferences
 
 main() {
-    # Initialize IS_WORK_MACHINE early to prevent unbound variable errors in strict mode
+  # Initialize IS_WORK_MACHINE early to prevent unbound variable errors in strict mode
   # Will be properly detected later by detect_work_environment() function
   IS_WORK_MACHINE=false
 

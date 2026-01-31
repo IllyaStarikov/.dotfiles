@@ -18,30 +18,30 @@ CORTEX="$DOTFILES_DIR/src/scripts/cortex"
 # Test: Script exists and is executable
 it "should exist and be executable" && {
   if [[ -f "$CORTEX" ]]; then
-  if [[ -x "$CORTEX" ]]; then
-    pass "Cortex script exists and is executable"
+    if [[ -x "$CORTEX" ]]; then
+      pass "Cortex script exists and is executable"
+    else
+      fail "Cortex script exists but is not executable"
+    fi
   else
-    fail "Cortex script exists but is not executable"
-  fi
-  else
-  fail "Cortex script not found at $CORTEX"
+    fail "Cortex script not found at $CORTEX"
   fi
 }
 
 # Test: Script sets Python path correctly
 it "should set PYTHONPATH for cortex module" && {
   if grep -q "PYTHONPATH" "$CORTEX" 2>/dev/null; then
-  pass "Script sets PYTHONPATH"
+    pass "Script sets PYTHONPATH"
   else
-  fail "Script does not set PYTHONPATH"
+    fail "Script does not set PYTHONPATH"
   fi
 }
 
 # Test: Script calls cortex.cli module
 it "should call cortex.cli module" && {
   if grep -q "cortex.cli" "$CORTEX" 2>/dev/null; then
-  pass "Script calls cortex.cli module"
+    pass "Script calls cortex.cli module"
   else
-  fail "Script does not call cortex.cli module"
+    fail "Script does not call cortex.cli module"
   fi
 }

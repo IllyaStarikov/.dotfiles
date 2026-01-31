@@ -21,7 +21,7 @@ plugin_files=(
 missing=()
 for file in "${plugin_files[@]}"; do
   if [[ ! -f "$DOTFILES_DIR/src/neovim/config/$file" ]]; then
-  missing+=("$file")
+    missing+=("$file")
   fi
 done
 
@@ -42,8 +42,8 @@ critical_plugins=(
 found=0
 for plugin in "${critical_plugins[@]}"; do
   if grep -q "$plugin" "$DOTFILES_DIR/src/neovim/config/plugins.lua" 2>/dev/null \
-  || grep -q "$plugin" "$DOTFILES_DIR/src/neovim/config/plugins/"*.lua 2>/dev/null; then
-  ((found++))
+    || grep -q "$plugin" "$DOTFILES_DIR/src/neovim/config/plugins/"*.lua 2>/dev/null; then
+    ((found++))
   fi
 done
 

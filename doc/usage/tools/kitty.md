@@ -72,37 +72,37 @@ visual_bell_duration 0.0
 
 ### Window Management
 
-| Key           | Action           |
-|---------------|------------------|
-| `Cmd+N`       | New OS window    |
-| `Cmd+W`       | Close window     |
-| `Cmd+Return`  | Toggle fullscreen|
-| `Cmd+M`       | Minimize         |
+| Key          | Action            |
+| ------------ | ----------------- |
+| `Cmd+N`      | New OS window     |
+| `Cmd+W`      | Close window      |
+| `Cmd+Return` | Toggle fullscreen |
+| `Cmd+M`      | Minimize          |
 
 ### Tab Management
 
-| Key              | Action            |
-|------------------|-------------------|
-| `Cmd+T`          | New tab           |
-| `Cmd+[`          | Previous tab      |
-| `Cmd+]`          | Next tab          |
-| `Cmd+1-9`        | Go to tab 1-9     |
-| `Cmd+Shift+Left` | Move tab left     |
-| `Cmd+Shift+Right`| Move tab right    |
+| Key               | Action         |
+| ----------------- | -------------- |
+| `Cmd+T`           | New tab        |
+| `Cmd+[`           | Previous tab   |
+| `Cmd+]`           | Next tab       |
+| `Cmd+1-9`         | Go to tab 1-9  |
+| `Cmd+Shift+Left`  | Move tab left  |
+| `Cmd+Shift+Right` | Move tab right |
 
 ### Window Splits
 
-| Key           | Action            |
-|---------------|-------------------|
-| `Cmd+D`       | Split vertical    |
-| `Cmd+Shift+D` | Split horizontal  |
-| `Cmd+[`       | Previous window   |
-| `Cmd+]`       | Next window       |
+| Key           | Action           |
+| ------------- | ---------------- |
+| `Cmd+D`       | Split vertical   |
+| `Cmd+Shift+D` | Split horizontal |
+| `Cmd+[`       | Previous window  |
+| `Cmd+]`       | Next window      |
 
 ### Text Operations
 
 | Key     | Action       |
-|---------|--------------|
+| ------- | ------------ |
 | `Cmd+C` | Copy         |
 | `Cmd+V` | Paste        |
 | `Cmd+F` | Search       |
@@ -110,22 +110,22 @@ visual_bell_duration 0.0
 
 ### Font Size
 
-| Key          | Action        |
-|--------------|---------------|
-| `Cmd+Plus`   | Increase font |
-| `Cmd+Minus`  | Decrease font |
-| `Cmd+0`      | Reset font    |
+| Key         | Action        |
+| ----------- | ------------- |
+| `Cmd+Plus`  | Increase font |
+| `Cmd+Minus` | Decrease font |
+| `Cmd+0`     | Reset font    |
 
 ### Scrolling
 
-| Key         | Action           |
-|-------------|------------------|
-| `Cmd+Up`    | Scroll line up   |
-| `Cmd+Down`  | Scroll line down |
-| `Cmd+PgUp`  | Scroll page up   |
-| `Cmd+PgDown`| Scroll page down |
-| `Cmd+Home`  | Scroll to top    |
-| `Cmd+End`   | Scroll to bottom |
+| Key          | Action           |
+| ------------ | ---------------- |
+| `Cmd+Up`     | Scroll line up   |
+| `Cmd+Down`   | Scroll line down |
+| `Cmd+PgUp`   | Scroll page up   |
+| `Cmd+PgDown` | Scroll page down |
+| `Cmd+Home`   | Scroll to top    |
+| `Cmd+End`    | Scroll to bottom |
 
 ## Custom Keybindings
 
@@ -166,13 +166,13 @@ map cmd+l next_layout
 
 ### Layout Types
 
-| Layout  | Description                    |
-|---------|--------------------------------|
-| `tall`  | One main + stack on side       |
-| `fat`   | One main + stack on bottom     |
-| `grid`  | Windows in grid                |
-| `splits`| Manual splits                  |
-| `stack` | Single window (tabs-like)      |
+| Layout   | Description                |
+| -------- | -------------------------- |
+| `tall`   | One main + stack on side   |
+| `fat`    | One main + stack on bottom |
+| `grid`   | Windows in grid            |
+| `splits` | Manual splits              |
+| `stack`  | Single window (tabs-like)  |
 
 ## Theme Integration
 
@@ -244,6 +244,7 @@ icat() {
 ### Image Protocols
 
 Kitty supports:
+
 - Native kitty graphics protocol
 - iTerm2 inline images
 - Sixel graphics
@@ -307,7 +308,7 @@ kitty --debug-gl
 ### Common Issues
 
 | Issue              | Solution                        |
-|--------------------|---------------------------------|
+| ------------------ | ------------------------------- |
 | Ligatures missing  | Ensure font supports ligatures  |
 | Slow performance   | Check GPU, disable transparency |
 | Theme not updating | Run `theme` command             |

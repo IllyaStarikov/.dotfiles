@@ -37,8 +37,8 @@ test_cli_flag_defines_flag() {
   test_case "cli_flag defines a flag"
   reset_cli
   cli_flag "verbose" "v" "Enable verbose output" "false" "bool"
-  if [[ "${CLI_OPTIONS[verbose]}" == "v" ]] && \
-     [[ "${CLI_DESCRIPTIONS[verbose]}" == "Enable verbose output" ]]; then
+  if [[ "${CLI_OPTIONS[verbose]}" == "v" ]] \
+    && [[ "${CLI_DESCRIPTIONS[verbose]}" == "Enable verbose output" ]]; then
     pass
   else
     fail "Flag not properly defined"
@@ -75,8 +75,8 @@ test_cli_command_defines_command() {
   test_case "cli_command defines a subcommand"
   reset_cli
   cli_command "build" "Build the project"
-  if [[ "${CLI_COMMANDS[1]}" == "build" ]] && \
-     [[ "${CLI_COMMAND_DESCRIPTIONS[build]}" == "Build the project" ]]; then
+  if [[ "${CLI_COMMANDS[1]}" == "build" ]] \
+    && [[ "${CLI_COMMAND_DESCRIPTIONS[build]}" == "Build the project" ]]; then
     pass
   else
     fail "Command not properly defined"
@@ -91,9 +91,9 @@ test_cli_program_sets_info() {
   test_case "cli_program sets program info"
   reset_cli
   cli_program "myapp" "My Application" "2.0.0"
-  if [[ "$CLI_PROGRAM_NAME" == "myapp" ]] && \
-     [[ "$CLI_PROGRAM_DESCRIPTION" == "My Application" ]] && \
-     [[ "$CLI_PROGRAM_VERSION" == "2.0.0" ]]; then
+  if [[ "$CLI_PROGRAM_NAME" == "myapp" ]] \
+    && [[ "$CLI_PROGRAM_DESCRIPTION" == "My Application" ]] \
+    && [[ "$CLI_PROGRAM_VERSION" == "2.0.0" ]]; then
     pass
   else
     fail "Program info not set correctly"
@@ -168,8 +168,8 @@ test_cli_parse_double_dash() {
   reset_cli
   cli_flag "verbose" "v" "Verbose" "false" "bool"
   cli_parse -v -- --not-a-flag
-  if [[ "${CLI_FLAGS[verbose]}" == "true" ]] && \
-     [[ "${CLI_ARGS[1]}" == "--not-a-flag" ]]; then
+  if [[ "${CLI_FLAGS[verbose]}" == "true" ]] \
+    && [[ "${CLI_ARGS[1]}" == "--not-a-flag" ]]; then
     pass
   else
     fail "Double dash not handled correctly"

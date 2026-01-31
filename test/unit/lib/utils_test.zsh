@@ -180,7 +180,7 @@ test_join() {
 test_file_exists_true() {
   test_case "file_exists returns true for existing file"
   local testfile="$TEST_TMP_DIR/test_file.txt"
-  echo "test" > "$testfile"
+  echo "test" >"$testfile"
   if file_exists "$testfile"; then
     pass
   else

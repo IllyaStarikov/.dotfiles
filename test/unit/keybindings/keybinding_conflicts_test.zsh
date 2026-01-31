@@ -64,9 +64,9 @@ test_case "tmux has a prefix key configured"
 if command -v tmux &>/dev/null; then
   prefix=$(tmux show-options -g prefix 2>/dev/null | cut -d' ' -f2)
   if [[ -n "$prefix" ]]; then
-  pass "tmux prefix: $prefix"
+    pass "tmux prefix: $prefix"
   else
-  fail "No tmux prefix configured"
+    fail "No tmux prefix configured"
   fi
 else
   skip "tmux not installed"

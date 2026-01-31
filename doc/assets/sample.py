@@ -1,6 +1,9 @@
 # Unformatted Python for fixy demo - lots of style issues!
-import json,sys,os
-from typing import Dict,List,Optional
+import json
+import os
+import sys
+from typing import Dict, List, Optional
+
 
 class   DataProcessor:
     """A class with various formatting issues."""

@@ -17,25 +17,25 @@
 - One-liner install, clean uninstall
 - 20+ languages with LSP, linting, and formatting out of the box
 
-| | |
-|:---:|:---:|
-| ![Editor](template/editor.png) | ![Tools](template/tools.png) |
-| **Editor** as capable as an IDE, as fast as vim | **Tools** that make the daily grind disappear |
-| ![Theme](template/theme.png) | ![Write](template/write.png) |
+|                                                  |                                                   |
+| :----------------------------------------------: | :-----------------------------------------------: |
+|          ![Editor](template/editor.png)          |           ![Tools](template/tools.png)            |
+| **Editor** as capable as an IDE, as fast as vim  |   **Tools** that make the daily grind disappear   |
+|           ![Theme](template/theme.png)           |           ![Write](template/write.png)            |
 | **Theme** switching that keeps every app in sync | **Write** Markdown and LaTeX without the friction |
-
 
 ## Requirements
 
-| Platform | Version |
-|----------|---------|
-| macOS | 12.0+ (Intel or Apple Silicon) |
-| Ubuntu | 20.04+ |
-| Debian | 11+ |
-| Fedora | 35+ |
-| Arch | Rolling |
+| Platform | Version                        |
+| -------- | ------------------------------ |
+| macOS    | 12.0+ (Intel or Apple Silicon) |
+| Ubuntu   | 20.04+                         |
+| Debian   | 11+                            |
+| Fedora   | 35+                            |
+| Arch     | Rolling                        |
 
 **Prerequisites:**
+
 - `git` 2.30+
 - `curl` or `wget`
 - `zsh` shell (macOS default, install on Linux)
@@ -50,11 +50,11 @@
 git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/setup.sh
 ```
 
-| Mode | Command | Time | Description |
-|------|---------|------|-------------|
-| Full | `./src/setup/setup.sh` | 15-30 min | Complete environment |
-| Core | `./src/setup/setup.sh --core` | 5-10 min | Essential tools only |
-| Symlinks | `./src/setup/setup.sh --symlinks` | 30 sec | Link configs only |
+| Mode     | Command                           | Time      | Description          |
+| -------- | --------------------------------- | --------- | -------------------- |
+| Full     | `./src/setup/setup.sh`            | 15-30 min | Complete environment |
+| Core     | `./src/setup/setup.sh --core`     | 5-10 min  | Essential tools only |
+| Symlinks | `./src/setup/setup.sh --symlinks` | 30 sec    | Link configs only    |
 
 **Options:** `--skip-brew` (corporate machines) · `--verbose` · `--help`
 
@@ -68,67 +68,67 @@ nvim +Telescope\ files  # Fuzzy find everything
 
 ## Features
 
-| Tool | What You Get |
-|------|--------------|
-| **Neovim** | 80+ plugins, 150ms startup, LSP for 20+ languages, AI built-in |
-| **Zsh** | Starship prompt, syntax highlighting, completions that actually work |
-| **tmux** | Intuitive bindings, session persistence, theme-aware |
-| **Theme** | 4 TokyoNight variants, one command syncs everything |
-| **Search** | fzf + ripgrep = find anything, fast |
+| Tool       | What You Get                                                         |
+| ---------- | -------------------------------------------------------------------- |
+| **Neovim** | 80+ plugins, 150ms startup, LSP for 20+ languages, AI built-in       |
+| **Zsh**    | Starship prompt, syntax highlighting, completions that actually work |
+| **tmux**   | Intuitive bindings, session persistence, theme-aware                 |
+| **Theme**  | 4 TokyoNight variants, one command syncs everything                  |
+| **Search** | fzf + ripgrep = find anything, fast                                  |
 
 **Languages:** Python · JavaScript · TypeScript · Go · Rust · C/C++ · Lua · Swift · Kotlin · LaTeX
 
 ## Keybindings
 
-| Key | Action |
-|-----|--------|
-| `<Space>ff` | Find files |
-| `<Space>fg` | Live grep |
-| `<Space>e` | File explorer |
-| `<Space>ac` | AI chat |
+| Key           | Action          |
+| ------------- | --------------- |
+| `<Space>ff`   | Find files      |
+| `<Space>fg`   | Live grep       |
+| `<Space>e`    | File explorer   |
+| `<Space>ac`   | AI chat         |
 | `<C-h/j/k/l>` | Navigate splits |
-| `gcc` | Toggle comment |
+| `gcc`         | Toggle comment  |
 
 Full reference: [keymaps](src/neovim/config/keymaps/KEYMAPS.md)
 
 ## Performance
 
-| Component | Measured | Notes |
-|-----------|----------|-------|
-| Neovim startup | 150ms | M1 Mac, 80+ plugins |
-| Zsh startup | 50-150ms | Zinit turbo mode |
-| tmux startup | ~125ms | New session |
-| Theme switching | <500ms | All apps synced |
-| Memory usage | <200MB | Under normal load |
+| Component       | Measured | Notes               |
+| --------------- | -------- | ------------------- |
+| Neovim startup  | 150ms    | M1 Mac, 80+ plugins |
+| Zsh startup     | 50-150ms | Zinit turbo mode    |
+| tmux startup    | ~125ms   | New session         |
+| Theme switching | <500ms   | All apps synced     |
+| Memory usage    | <200MB   | Under normal load   |
 
 ## Documentation
 
 ### Core Components
 
-| Component | Description |
-|-----------|-------------|
-| [Neovim](src/neovim/README.md) | 80+ plugins, LSP, AI integration |
-| [Zsh](src/zsh/README.md) | Zinit, completions, prompt |
-| [Git](src/git/README.md) | SSH signing, delta, hooks |
-| [Scripts](src/scripts/README.md) | fixy, theme, update, utilities |
-| [Setup](src/setup/README.md) | Installation, platform detection |
-| [Themes](src/theme-switcher/README.md) | TokyoNight, app sync |
+| Component                              | Description                      |
+| -------------------------------------- | -------------------------------- |
+| [Neovim](src/neovim/README.md)         | 80+ plugins, LSP, AI integration |
+| [Zsh](src/zsh/README.md)               | Zinit, completions, prompt       |
+| [Git](src/git/README.md)               | SSH signing, delta, hooks        |
+| [Scripts](src/scripts/README.md)       | fixy, theme, update, utilities   |
+| [Setup](src/setup/README.md)           | Installation, platform detection |
+| [Themes](src/theme-switcher/README.md) | TokyoNight, app sync             |
 
 ### Guides
 
-| Guide | Description |
-|-------|-------------|
-| [Quick Start](doc/setup/README.md) | Get up and running |
-| [Customization](doc/guides/README.md) | Make it yours |
+| Guide                                  | Description            |
+| -------------------------------------- | ---------------------- |
+| [Quick Start](doc/setup/README.md)     | Get up and running     |
+| [Customization](doc/guides/README.md)  | Make it yours          |
 | [Usage Reference](doc/usage/README.md) | Commands & keybindings |
 
 ### Development
 
-| Resource | Description |
-|----------|-------------|
+| Resource                                 | Description         |
+| ---------------------------------------- | ------------------- |
 | [Language Tools](src/language/README.md) | Formatters, linters |
-| [Testing](test/README.md) | Test infrastructure |
-| [CI/CD](.github/workflows/README.md) | GitHub Actions |
+| [Testing](test/README.md)                | Test infrastructure |
+| [CI/CD](.github/workflows/README.md)     | GitHub Actions      |
 
 ## Uninstall / Reset
 

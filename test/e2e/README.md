@@ -5,6 +5,7 @@ Comprehensive E2E testing for the dotfiles repository that validates the complet
 ## Overview
 
 The E2E test suite ensures that:
+
 - The setup script runs successfully on all supported platforms
 - All symlinks are created correctly
 - Core tools are installed and configured
@@ -14,6 +15,7 @@ The E2E test suite ensures that:
 ## Test Coverage
 
 ### Platforms Tested
+
 - **Ubuntu 22.04 LTS** - Primary Debian-based distribution
 - **Fedora 39** - RPM-based distribution
 - **Arch Linux** - Rolling release distribution
@@ -51,11 +53,13 @@ The E2E test suite ensures that:
 ### Local Docker Testing
 
 Run tests for all Linux distributions:
+
 ```bash
 ./test/e2e/runner.zsh
 ```
 
 Test specific platform:
+
 ```bash
 # Ubuntu only
 ./test/e2e/runner.zsh --linux
@@ -68,6 +72,7 @@ docker-compose -f test/e2e/docker-compose.yml up ubuntu-e2e
 ### macOS Testing
 
 Run on macOS host:
+
 ```bash
 ./test/e2e/runner.zsh --macos
 ```
@@ -75,12 +80,14 @@ Run on macOS host:
 ### Docker Compose
 
 Test all platforms in parallel:
+
 ```bash
 cd test/e2e
 docker-compose up --abort-on-container-exit
 ```
 
 Interactive debugging:
+
 ```bash
 docker-compose -f test/e2e/docker-compose.yml run debug-e2e
 ```
@@ -88,6 +95,7 @@ docker-compose -f test/e2e/docker-compose.yml run debug-e2e
 ## CI/CD Integration
 
 The E2E tests run automatically on:
+
 - Every push to main branch
 - All pull requests
 - Nightly schedule (2 AM UTC)
@@ -96,6 +104,7 @@ The E2E tests run automatically on:
 ### GitHub Actions Workflow
 
 The workflow tests on:
+
 - Ubuntu (Docker)
 - Fedora (Docker)
 - Arch (Docker)
@@ -109,6 +118,7 @@ View workflow: `.github/workflows/e2e.yml`
 ### Success Criteria
 
 All tests must pass:
+
 - ✅ Setup script completes without errors
 - ✅ All required tools installed
 - ✅ All symlinks created correctly
@@ -120,10 +130,12 @@ All tests must pass:
 ### Logs and Artifacts
 
 Test logs are saved to:
+
 - Local: `test/logs/e2e_<timestamp>/`
 - CI: Available as workflow artifacts
 
 Each test run generates:
+
 - `main.log` - Overall test execution
 - `<platform>.log` - Platform-specific results
 - `report.md` - Summary report
@@ -133,6 +145,7 @@ Each test run generates:
 ### Common Issues
 
 **Docker build fails**
+
 ```bash
 # Clean Docker cache
 docker system prune -a
@@ -143,11 +156,13 @@ docker-compose build --no-cache
 ```
 
 **Tests fail in container but pass locally**
+
 - Check for hardcoded paths
 - Verify CI environment variables
 - Review permission issues
 
 **Symlinks not created**
+
 - Ensure setup script has execute permissions
 - Check `$HOME` variable in container
 - Verify source files exist
@@ -155,6 +170,7 @@ docker-compose build --no-cache
 ### Debugging
 
 Enter debug container:
+
 ```bash
 docker-compose -f test/e2e/docker-compose.yml run debug-e2e
 
@@ -164,6 +180,7 @@ cd /home/testuser/.dotfiles
 ```
 
 Run specific test phase:
+
 ```bash
 docker run --rm -it \
   -v $(pwd):/home/testuser/.dotfiles:ro \
@@ -176,6 +193,7 @@ docker run --rm -it \
 ### Adding New Platform
 
 1. Create Dockerfile:
+
 ```dockerfile
 # test/e2e/Dockerfile.newplatform
 FROM newplatform:latest
@@ -183,6 +201,7 @@ FROM newplatform:latest
 ```
 
 2. Add to docker-compose.yml:
+
 ```yaml
 newplatform-e2e:
   build:
@@ -191,6 +210,7 @@ newplatform-e2e:
 ```
 
 3. Update CI workflow:
+
 ```yaml
 matrix:
   distro: [ubuntu, fedora, arch, newplatform]
@@ -199,6 +219,7 @@ matrix:
 ### Extending Test Coverage
 
 Add test phases to `run_e2e_test.sh`:
+
 ```bash
 phase_custom_test() {
   print_info "Running custom test..."
@@ -213,6 +234,7 @@ run_phase "Custom Test" phase_custom_test
 ## Performance
 
 Typical execution times:
+
 - Ubuntu E2E: ~3-5 minutes
 - Fedora E2E: ~3-5 minutes
 - Arch E2E: ~3-5 minutes
@@ -229,6 +251,7 @@ Typical execution times:
 ## Contributing
 
 When adding new features:
+
 1. Ensure E2E tests still pass
 2. Add verification for new functionality
 3. Update this README if needed

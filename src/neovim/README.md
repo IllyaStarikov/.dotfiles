@@ -94,6 +94,7 @@ nvim
 - Disabling providers (python3, ruby) saves 70ms
 - Lazy loading after `VeryLazy` event prevents UI blocking
 - Work detection via hostname prevents config conflicts
+
 # Neovim Configuration Modules
 
 > **Modular Neovim configuration** - Core settings, keymaps, plugins, LSP, and UI components

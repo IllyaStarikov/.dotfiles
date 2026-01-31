@@ -15,8 +15,8 @@ for i in {1..5}; do
 
   # Parse the total time from the log
   if [[ -f "$TEST_TMP_DIR/startup_$i.log" ]]; then
-  total_time=$(tail -1 "$TEST_TMP_DIR/startup_$i.log" | awk '{print $1}')
-  startup_times+=($total_time)
+    total_time=$(tail -1 "$TEST_TMP_DIR/startup_$i.log" | awk '{print $1}')
+    startup_times+=($total_time)
   fi
 done
 
@@ -24,7 +24,7 @@ done
 if [[ ${#startup_times[@]} -gt 0 ]]; then
   total=0
   for time in "${startup_times[@]}"; do
-  total=$(echo "$total + $time" | bc)
+    total=$(echo "$total + $time" | bc)
   done
   avg=$(echo "scale=2; $total / ${#startup_times[@]}" | bc)
 
@@ -33,15 +33,15 @@ if [[ ${#startup_times[@]} -gt 0 ]]; then
 
   # Check against threshold
   if (($(echo "$avg < 300" | bc -l))); then
-  pass
+    pass
   else
-  # Analyze what's slow
-  echo "  Analyzing slow components..."
-  grep -E "^[0-9]+\.[0-9]+\s+[0-9]+\.[0-9]+:\s+.*/(lazy|plugin)" "$TEST_TMP_DIR/startup_5.log" \
-    | sort -nr | head -5 | while read line; do
-    echo "    $line"
-  done
-  fail "Startup too slow: ${avg}ms"
+    # Analyze what's slow
+    echo "  Analyzing slow components..."
+    grep -E "^[0-9]+\.[0-9]+\s+[0-9]+\.[0-9]+:\s+.*/(lazy|plugin)" "$TEST_TMP_DIR/startup_5.log" \
+      | sort -nr | head -5 | while read line; do
+      echo "    $line"
+    done
+    fail "Startup too slow: ${avg}ms"
   fi
 else
   fail "Could not measure startup time"
@@ -84,9 +84,9 @@ if [[ "$output" == *"total-time:"* ]]; then
   echo "$output" | grep -A 5 "slowest-plugins:" | tail -5
 
   if [[ "$total_time" -lt 500 ]]; then
-  pass
+    pass
   else
-  fail "Plugin loading too slow: ${total_time}ms"
+    fail "Plugin loading too slow: ${total_time}ms"
   fi
 else
   fail "Could not measure plugin loading"
@@ -136,9 +136,9 @@ if [[ "$output" == *"completion-time:"* ]]; then
   echo "  Completion response: ${comp_time}ms"
 
   if (($(echo "$comp_time < 200" | bc -l))); then
-  pass
+    pass
   else
-  fail "Completion too slow: ${comp_time}ms"
+    fail "Completion too slow: ${comp_time}ms"
   fi
 else
   skip "Could not measure completion time"
@@ -173,18 +173,18 @@ if [[ -f "$TEST_TMP_DIR/memory.log" ]]; then
   proc_mem=$(grep "process-memory:" "$TEST_TMP_DIR/memory.log" | awk '{print $2}')
 
   if [[ -n "$lua_mem" ]]; then
-  echo "  Lua memory: ${lua_mem}KB"
+    echo "  Lua memory: ${lua_mem}KB"
   fi
   if [[ -n "$proc_mem" ]]; then
-  echo "  Process RSS: ${proc_mem}KB"
-  # Check if under 200MB
-  if [[ "$proc_mem" -lt 200000 ]]; then
-    pass
+    echo "  Process RSS: ${proc_mem}KB"
+    # Check if under 200MB
+    if [[ "$proc_mem" -lt 200000 ]]; then
+      pass
+    else
+      fail "Memory usage too high: ${proc_mem}KB"
+    fi
   else
-    fail "Memory usage too high: ${proc_mem}KB"
-  fi
-  else
-  skip "Could not measure process memory"
+    skip "Could not measure process memory"
   fi
 else
   fail "Memory measurement failed"

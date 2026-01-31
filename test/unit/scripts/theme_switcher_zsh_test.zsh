@@ -5,9 +5,9 @@ test_case "Theme switcher script exists and is executable"
 script="$DOTFILES_DIR/src/theme-switcher/switch-theme.sh"
 if [[ -f "$script" ]]; then
   if [[ -x "$script" ]]; then
-  pass
+    pass
   else
-  fail "Script not executable"
+    fail "Script not executable"
   fi
 else
   fail "Theme switcher script not found"
@@ -34,9 +34,9 @@ if [[ -f "$script" ]]; then
   has_light=$(grep -q "Light\|light\|tokyonight_day" "$script" && echo 1 || echo 0)
 
   if [[ $has_dark -eq 1 ]] && [[ $has_light -eq 1 ]]; then
-  pass
+    pass
   else
-  fail "Missing theme support"
+    fail "Missing theme support"
   fi
 else
   skip "Script not found"

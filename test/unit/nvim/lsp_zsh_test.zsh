@@ -21,15 +21,15 @@ config_file="$DOTFILES_DIR/src/neovim/config/lsp/servers.lua"
 if [[ -f "$config_file" ]]; then
   found=0
   for server in "${expected_servers[@]}"; do
-  if grep -q "$server" "$config_file"; then
-    ((found++))
-  fi
+    if grep -q "$server" "$config_file"; then
+      ((found++))
+    fi
   done
 
   if [[ $found -ge 3 ]]; then
-  pass
+    pass
   else
-  fail "Only $found/${#expected_servers[@]} LSP servers configured"
+    fail "Only $found/${#expected_servers[@]} LSP servers configured"
   fi
 else
   skip "LSP config file not found"

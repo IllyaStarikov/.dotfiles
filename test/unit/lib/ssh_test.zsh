@@ -42,7 +42,7 @@ test_ssh_key_exists_found() {
   if declare -f ssh_key_exists >/dev/null 2>&1; then
     # Create a mock key file
     local keyfile="$TEST_TMP_DIR/test_ssh_key"
-    echo "mock ssh key" > "$keyfile"
+    echo "mock ssh key" >"$keyfile"
     if ssh_key_exists "$keyfile"; then
       pass
     else
@@ -63,7 +63,7 @@ test_ssh_config_list_hosts() {
   if declare -f ssh_config_list_hosts >/dev/null 2>&1; then
     # Create a mock SSH config
     local configfile="$TEST_TMP_DIR/ssh_config"
-    cat > "$configfile" << 'EOF'
+    cat >"$configfile" <<'EOF'
 Host server1
     HostName server1.example.com
     User admin

@@ -30,14 +30,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            name: "Arch Linux (Docker)"
-            dockerfile: "test/e2e/Dockerfile.arch"
+            name: 'Arch Linux (Docker)'
+            dockerfile: 'test/e2e/Dockerfile.arch'
           - os: ubuntu-latest
-            name: "Ubuntu 24.04 (Docker)"
-            dockerfile: "test/e2e/Dockerfile.ubuntu"
+            name: 'Ubuntu 24.04 (Docker)'
+            dockerfile: 'test/e2e/Dockerfile.ubuntu'
           - os: macos-latest
-            name: "macOS (Native)"
-            dockerfile: ""
+            name: 'macOS (Native)'
+            dockerfile: ''
 
     steps:
       - name: checkout repository

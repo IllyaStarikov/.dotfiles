@@ -74,21 +74,21 @@ it "should set shell options" && {
 
 it "should handle macOS specific settings" && {
   if [[ "$(uname)" == "Darwin" ]]; then
-  local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
-  assert_contains "$zshrc_content" "Darwin" || assert_contains "$zshrc_content" "macOS" || assert_contains "$zshrc_content" "brew"
-  pass
+    local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
+    assert_contains "$zshrc_content" "Darwin" || assert_contains "$zshrc_content" "macOS" || assert_contains "$zshrc_content" "brew"
+    pass
   else
-  skip "Not on macOS"
+    skip "Not on macOS"
   fi
 }
 
 it "should handle Linux specific settings" && {
   if [[ "$(uname)" == "Linux" ]]; then
-  local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
-  assert_contains "$zshrc_content" "Linux" || assert_contains "$zshrc_content" "linux"
-  pass
+    local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
+    assert_contains "$zshrc_content" "Linux" || assert_contains "$zshrc_content" "linux"
+    pass
   else
-  skip "Not on Linux"
+    skip "Not on Linux"
   fi
 }
 

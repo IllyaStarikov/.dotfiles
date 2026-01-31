@@ -63,7 +63,7 @@ test_markdown_config() {
   assert_file_exists "$md_conf" "Markdown lint configuration should exist"
 
   # Should be valid JSON
-  if ! python3 -m json.tool < "$md_conf" >/dev/null 2>&1; then
+  if ! python3 -m json.tool <"$md_conf" >/dev/null 2>&1; then
     fail "markdownlint.json is not valid JSON"
   fi
 }

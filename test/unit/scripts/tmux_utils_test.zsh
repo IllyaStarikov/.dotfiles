@@ -38,9 +38,9 @@ it "should support multiple utility functions" && {
 
 it "should implement caching for performance" && {
   # Check for cache file usage
-  if grep -q "CACHE_DIR=" "$TMUX_UTILS" && \
-     grep -q "_CACHE_FILE=" "$TMUX_UTILS" && \
-     grep -q "cache_time" "$TMUX_UTILS"; then
+  if grep -q "CACHE_DIR=" "$TMUX_UTILS" \
+    && grep -q "_CACHE_FILE=" "$TMUX_UTILS" \
+    && grep -q "cache_time" "$TMUX_UTILS"; then
     pass
   else
     fail "Missing caching implementation"
@@ -61,8 +61,8 @@ it "should handle both Linux and macOS" && {
 
 it "should handle cache file age checking" && {
   # Verify cache freshness logic
-  if grep -q "age=.*current_time.*cache_time" "$TMUX_UTILS" && \
-     grep -q "if.*age.*-lt" "$TMUX_UTILS"; then
+  if grep -q "age=.*current_time.*cache_time" "$TMUX_UTILS" \
+    && grep -q "if.*age.*-lt" "$TMUX_UTILS"; then
     pass
   else
     fail "Missing cache age checking"
@@ -83,8 +83,8 @@ it "should use proper stat command for each OS" && {
 
 it "should accept command-line arguments" && {
   # Script should handle different utility commands as arguments
-  if grep -q 'case.*\$1.*in' "$TMUX_UTILS" || \
-     grep -q 'if.*\$1' "$TMUX_UTILS"; then
+  if grep -q 'case.*\$1.*in' "$TMUX_UTILS" \
+    || grep -q 'if.*\$1' "$TMUX_UTILS"; then
     pass
   else
     fail "Doesn't handle command-line arguments"

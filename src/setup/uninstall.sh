@@ -174,7 +174,7 @@ main() {
       --dry-run) DRY_RUN=true ;;
       --restore) RESTORE=true ;;
       --full) FULL=true ;;
-      --help|-h) show_help ;;
+      --help | -h) show_help ;;
       *)
         error "Unknown option: $1"
         echo "Use --help for usage information"

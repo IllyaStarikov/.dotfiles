@@ -22,17 +22,17 @@ services install
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `services` | Show status of all services |
-| `services start [name]` | Start all or specific service |
-| `services stop [name]` | Stop all or specific service |
-| `services restart [name]` | Restart all or specific service |
-| `services status [name]` | Show detailed status |
-| `services list` | List available services |
-| `services logs <name>` | Show service logs |
-| `services install` | Install LaunchAgent (auto-start) |
-| `services uninstall` | Remove LaunchAgent |
+| Command                   | Description                      |
+| ------------------------- | -------------------------------- |
+| `services`                | Show status of all services      |
+| `services start [name]`   | Start all or specific service    |
+| `services stop [name]`    | Stop all or specific service     |
+| `services restart [name]` | Restart all or specific service  |
+| `services status [name]`  | Show detailed status             |
+| `services list`           | List available services          |
+| `services logs <name>`    | Show service logs                |
+| `services install`        | Install LaunchAgent (auto-start) |
+| `services uninstall`      | Remove LaunchAgent               |
 
 ## Usage Examples
 
@@ -115,13 +115,13 @@ service_status() {
 
 ### Service Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SERVICE_NAME` | Yes | Unique identifier (lowercase, no spaces) |
-| `SERVICE_DESC` | No | Human-readable description |
-| `SERVICE_PIDFILE` | No | Custom PID file path |
-| `SERVICE_LOGFILE` | No | Custom log file path |
-| `SERVICE_USER` | No | Run as specific user |
+| Variable          | Required | Description                              |
+| ----------------- | -------- | ---------------------------------------- |
+| `SERVICE_NAME`    | Yes      | Unique identifier (lowercase, no spaces) |
+| `SERVICE_DESC`    | No       | Human-readable description               |
+| `SERVICE_PIDFILE` | No       | Custom PID file path                     |
+| `SERVICE_LOGFILE` | No       | Custom log file path                     |
+| `SERVICE_USER`    | No       | Run as specific user                     |
 
 ### Example: Web Server Service
 
@@ -179,12 +179,12 @@ open http://localhost:8083
 
 ## File Locations
 
-| Purpose | Location |
-|---------|----------|
-| Service definitions | `~/.dotfiles/src/services/*.service` |
-| Logs | `~/.local/state/services/*.log` |
-| PID files | `~/.local/state/services/pids/*.pid` |
-| LaunchAgent | `~/Library/LaunchAgents/io.starikov.services.plist` |
+| Purpose             | Location                                            |
+| ------------------- | --------------------------------------------------- |
+| Service definitions | `~/.dotfiles/src/services/*.service`                |
+| Logs                | `~/.local/state/services/*.log`                     |
+| PID files           | `~/.local/state/services/pids/*.pid`                |
+| LaunchAgent         | `~/Library/LaunchAgents/io.starikov.services.plist` |
 
 ## LaunchAgent Integration
 
@@ -237,12 +237,12 @@ launchctl list | grep services
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Service won't start | Check logs with `services logs <name>` |
+| Issue               | Solution                                |
+| ------------------- | --------------------------------------- |
+| Service won't start | Check logs with `services logs <name>`  |
 | Port already in use | Stop conflicting process or change port |
-| Permission denied | Check file permissions on service file |
-| Service crashes | Check logs, ensure foreground execution |
+| Permission denied   | Check file permissions on service file  |
+| Service crashes     | Check logs, ensure foreground execution |
 
 ### Debug Mode
 

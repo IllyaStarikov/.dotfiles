@@ -51,8 +51,8 @@ test_wezterm_minimal_config() {
   assert_file_exists "$minimal" "Minimal WezTerm config should exist"
 
   # Minimal config should be simpler than main
-  local main_lines=$(wc -l < "${DOTFILES_DIR}/src/wezterm/wezterm.lua")
-  local minimal_lines=$(wc -l < "$minimal")
+  local main_lines=$(wc -l <"${DOTFILES_DIR}/src/wezterm/wezterm.lua")
+  local minimal_lines=$(wc -l <"$minimal")
 
   if [[ $minimal_lines -ge $main_lines ]]; then
     fail "Minimal config should be smaller than main config"

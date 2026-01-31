@@ -24,9 +24,9 @@ DIE_STACK_TRACE=0
 
 test_exit_codes_defined() {
   test_case "EXIT_CODES contains standard codes"
-  if [[ "${EXIT_CODES[SUCCESS]}" == "0" ]] && \
-     [[ "${EXIT_CODES[GENERAL_ERROR]}" == "1" ]] && \
-     [[ "${EXIT_CODES[NOT_FOUND]}" == "127" ]]; then
+  if [[ "${EXIT_CODES[SUCCESS]}" == "0" ]] \
+    && [[ "${EXIT_CODES[GENERAL_ERROR]}" == "1" ]] \
+    && [[ "${EXIT_CODES[NOT_FOUND]}" == "127" ]]; then
     pass
   else
     fail "Standard exit codes not defined"
@@ -35,8 +35,8 @@ test_exit_codes_defined() {
 
 test_exit_codes_custom() {
   test_case "EXIT_CODES contains custom codes"
-  if [[ "${EXIT_CODES[CONFIG_ERROR]}" == "64" ]] && \
-     [[ "${EXIT_CODES[NETWORK_ERROR]}" == "65" ]]; then
+  if [[ "${EXIT_CODES[CONFIG_ERROR]}" == "64" ]] \
+    && [[ "${EXIT_CODES[NETWORK_ERROR]}" == "65" ]]; then
     pass
   else
     fail "Custom exit codes not defined"
@@ -127,7 +127,7 @@ test_require_command_missing() {
 test_require_file_exists() {
   test_case "require_file passes for existing file"
   local testfile="$TEST_TMP_DIR/require_test.txt"
-  echo "test" > "$testfile"
+  echo "test" >"$testfile"
   local result=0
   (require_file "$testfile" 2>/dev/null) || result=$?
   rm -f "$testfile"

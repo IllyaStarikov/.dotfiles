@@ -88,13 +88,13 @@ Everything you need to get started and stay productive.
 
 ### Config Files
 
-| Tool | Location |
-|------|----------|
-| Neovim | `~/.config/nvim/` |
-| Zsh | `~/.zshrc` |
-| tmux | `~/.tmux.conf` |
+| Tool      | Location               |
+| --------- | ---------------------- |
+| Neovim    | `~/.config/nvim/`      |
+| Zsh       | `~/.zshrc`             |
+| tmux      | `~/.tmux.conf`         |
 | Alacritty | `~/.config/alacritty/` |
-| Git | `~/.gitconfig` |
+| Git       | `~/.gitconfig`         |
 
 ### External Resources
 

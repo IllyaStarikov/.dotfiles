@@ -7,11 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 When checking code for errors, always use these tools in order:
 
 **Lua files:**
+
 1. `luac -p <file>` - Syntax validation (catches parse errors only)
 2. `stylua --check <file>` - Formatting validation (2-space indent, no tabs)
 3. For semantic errors (unused variables, wrong API usage, type mismatches), these CLI tools won't help. Ask the user to check lua_ls diagnostics in Neovim, or test the code by running it.
 
 **Important Lua gotchas CLI tools won't catch:**
+
 - `vim.defer_fn()` returns a libuv timer userdata, stop with `timer:stop(); timer:close()` NOT `vim.fn.timer_stop()`
 - `vim.fn.timer_start()` returns a number ID, stop with `vim.fn.timer_stop(id)`
 - Unused variables (lua_ls catches these)
@@ -19,6 +21,7 @@ When checking code for errors, always use these tools in order:
 - Overriding vim API functions triggers `duplicate-set-field` - use `---@diagnostic disable-next-line: duplicate-set-field`
 
 **When to suppress vs fix lua_ls errors:**
+
 - **Fix first**: Always try to fix the actual issue before suppressing
   - API changed? Update the code (e.g., which-key v3 no longer uses `setup()`)
   - Deprecated function? Use the replacement
@@ -31,10 +34,12 @@ When checking code for errors, always use these tools in order:
 - **Always add a comment** explaining why suppression is necessary
 
 **Shell scripts (zsh/bash):**
+
 1. `zsh -n <file>` or `bash -n <file>` - Syntax validation
 2. `shellcheck <file>` - Static analysis (note: shellcheck doesn't support zsh, only sh/bash)
 
 **Python files:**
+
 1. `ruff check <file>` - Linting (catches most issues)
 2. `ruff format --check <file>` - Formatting
 
@@ -43,6 +48,7 @@ When checking code for errors, always use these tools in order:
 ## Code Style Preferences
 
 **Line Length**: 100 characters maximum (modern preference over traditional 80 characters)
+
 - All formatters and linters are configured for 100-character line length
 - This applies to all languages: Python, C/C++, Lua, JavaScript/TypeScript, Shell, etc.
 - Rationale: Modern monitors support wider lines, improves readability for complex expressions
@@ -51,6 +57,7 @@ When checking code for errors, always use these tools in order:
 ## Important: README Documentation
 
 **ALWAYS read the README.md file in any directory before performing actions in that directory.** Each directory contains a README that documents:
+
 - Directory purpose and structure
 - Configuration details
 - Usage patterns
@@ -62,12 +69,14 @@ When making changes to any directory, **update its README.md** to reflect those 
 ## Repository Overview
 
 This is a comprehensive dotfiles repository serving dual purposes:
+
 1. **Personal configuration management** - Complete development environment with enterprise-level testing
 2. **Web publishing** - GitHub Pages site at `dotfiles.starikov.io` showcasing configurations
 
 ## Key Commands
 
 ### Setup and Installation
+
 ```bash
 # Unified setup script with different modes
 ./src/setup/setup.sh           # Full installation (interactive, auto-detects platform)
@@ -82,6 +91,7 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ```
 
 ### Testing
+
 ```bash
 # Main test runner with comprehensive test suite
 ./test/runner.zsh            # Run standard test suite
@@ -100,6 +110,7 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ```
 
 ### Linting and Code Quality
+
 ```bash
 # Universal code formatter with config-based priority queue
 ./src/scripts/fixy [file]   # Auto-detect language and format
@@ -116,6 +127,7 @@ ruff check src/**/*.py
 ```
 
 ### Theme Management
+
 ```bash
 # Switch themes based on macOS appearance (light/dark mode)
 ./src/theme-switcher/switch-theme.sh
@@ -129,6 +141,7 @@ theme storm     # TokyoNight Storm (dark variant)
 ```
 
 ### Development Workflow
+
 ```bash
 # Start tmux session with tmuxinator (templates in private repo)
 tmuxinator start project
@@ -153,6 +166,7 @@ cortex agent on/off    # Toggle AI agent mode
 ## Repository Statistics
 
 ### Actual Metrics (December 2024)
+
 - **80+ Neovim plugins** managed by lazy.nvim (500+ plugin references across config files)
 - **5 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions, etc.)
 - **0 tmux plugins** (pure configuration, no TPM - simpler and faster)
@@ -195,17 +209,20 @@ cortex agent on/off    # Toggle AI agent mode
 ### Core Architectural Patterns
 
 **1. Symlink Strategy**
+
 - All configurations live in `/src/` and are symlinked to proper locations
 - `symlinks.sh` creates all necessary links with backup functionality
 - Always edit files in `/src/`, never the symlinked versions
 
 **2. Private Repository Integration**
+
 - `.dotfiles.private/` submodule for work-specific configurations
 - Contains: Google/Garmin detection, tmuxinator templates, sensitive settings
 - Work overrides loaded conditionally in Neovim and shell configs
 - Spell files stored in private repo: `~/.dotfiles/.dotfiles.private/config/spell/`
 
 **3. Theme System Architecture**
+
 - Atomic switching across all applications (Alacritty, tmux, Neovim, WezTerm, Starship)
 - macOS appearance detection via `defaults read -g AppleInterfaceStyle`
 - Configuration generation in `~/.config/` directories
@@ -213,6 +230,7 @@ cortex agent on/off    # Toggle AI agent mode
 - tmux session reloading handled automatically
 
 **4. Testing Infrastructure**
+
 ```
 Test Levels:
 - Unit: Configuration validation (< 5s)
@@ -229,12 +247,14 @@ Test Categories:
 ```
 
 **5. Universal Code Formatter (fixy)**
+
 - Priority-based formatter selection from `/config/fixy.json`
 - 20+ language support with automatic fallback
 - Parallel processing with CPU core detection
 - Normalizations: whitespace, tabs, smart quotes, keep-sorted
 
 **6. CI/CD Pipeline**
+
 - Multi-OS testing (Ubuntu, macOS Intel/Apple Silicon)
 - Security scanning with Gitleaks
 - Quality checks: ShellCheck, Stylua, Ruff
@@ -244,6 +264,7 @@ Test Categories:
 ### Neovim Configuration Architecture
 
 **Module Structure:**
+
 ```
 src/neovim/
 ├── core/           # Performance tuning, options, globals
@@ -258,6 +279,7 @@ src/neovim/
 ```
 
 **Key Features:**
+
 - Modern Lua configuration with lazy.nvim
 - Work-specific overrides loaded conditionally
 - AI integration: Avante, CodeCompanion, local Ollama
@@ -268,12 +290,14 @@ src/neovim/
 ### Integration Points
 
 **Theme Synchronization:**
+
 - Zsh sources `~/.config/theme-switcher/current-theme.sh`
 - Neovim reads `MACOS_THEME` environment variable
 - tmux loads `~/.config/tmux/theme.conf`
 - Alacritty imports `~/.config/alacritty/theme.toml`
 
 **Performance Standards:**
+
 - Neovim startup: ~150ms
 - Plugin loading: < 500ms
 - Theme switching: < 500ms
@@ -289,6 +313,7 @@ src/neovim/
 **Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
 **Zsh Library (`src/lib/`)**: Before implementing shell utility functions, check the library first:
+
 ```bash
 # Available modules (400+ functions):
 ls src/lib/*.zsh
@@ -311,12 +336,14 @@ ls src/lib/*.zsh
 ```
 
 **When writing new shell scripts:**
+
 1. Source the library: `source "${0:A:h}/../lib/init.zsh"` (from src/scripts/)
 2. Use library functions instead of reimplementing (e.g., `command_exists` not `command -v`)
 3. Add new common utilities to the appropriate library module
 4. Colors are exported: `$RED`, `$GREEN`, `$YELLOW`, `$BLUE`, `$CYAN`, `$BOLD`, `$NC`
 
 **CI/Presubmit Checks for Major Refactors**: When doing significant refactoring (moving files, renaming modules, changing plugin configs), always verify CI passes after pushing:
+
 ```bash
 # Push and watch CI
 git push && cd ~/.dotfiles && gh run list --limit 4  # Check workflows started
@@ -324,6 +351,7 @@ gh run watch <run-id> --exit-status                   # Watch specific workflow
 ```
 
 **Known CI-Breaking Patterns** (learned from experience):
+
 - **nvim-treesitter**: Uses `require("nvim-treesitter")` NOT `require("nvim-treesitter.configs")` (deprecated)
 - **lazy.nvim `missing = true`**: Causes plugin auto-install which times out in Docker e2e tests (10s limit)
 - **LuaSnip jsregexp build**: Native compilation times out in CI Docker containers - keep build step disabled
@@ -333,6 +361,7 @@ gh run watch <run-id> --exit-status                   # Watch specific workflow
 **Code Formatting**: Always use `./src/scripts/fixy` instead of individual formatters. It uses the priority system defined in `/config/fixy.json`.
 
 **Private Repository**: Check for existence of `.dotfiles.private` before accessing work-specific configurations:
+
 ```bash
 [ -d "$HOME/.dotfiles/.dotfiles.private" ] && echo "Private repo exists"
 ```
@@ -342,6 +371,7 @@ gh run watch <run-id> --exit-status                   # Watch specific workflow
 **Git Commits**: Pre-commit hooks run Gitleaks for secret detection using Gitleaks default configuration.
 
 **Neovim Debugging**:
+
 ```bash
 nvim --startuptime /tmp/startup.log   # Profile startup
 nvim -V9 /tmp/nvim.log                # Verbose logging
@@ -352,14 +382,17 @@ nvim -V9 /tmp/nvim.log                # Verbose logging
 ## Common Fixes and Solutions
 
 ### Zsh vim mode recursion error
+
 Fixed by clearing `zle-keymap-select` widget before Starship initialization in `src/zsh/zshrc:181-183`.
 
 ### Theme switching issues
+
 - Check lockfile: `/tmp/theme-switch.lock`
 - Verify apps are running
 - Use force mode: `theme --force dark`
 
 ### Formatter not working
+
 - Verify formatter installed: `which <formatter>`
 - Check fixy.json config: `/config/fixy.json`
 - Test with dry-run: `fixy --dry-run file`
@@ -367,6 +400,7 @@ Fixed by clearing `zle-keymap-select` widget before Starship initialization in `
 ## Script Aliases and Shortcuts
 
 Many scripts have shorter aliases defined in `src/zsh/aliases.zsh`:
+
 - `update` → `update-dotfiles`
 - `ff` → fuzzy file finder
 - `fg` → fuzzy grep
@@ -382,6 +416,7 @@ The style guides are included as a submodule at `/Users/starikov/.dotfiles/style
 ### Style Guide Locations
 
 #### Primary Language Guides
+
 - **Python**: `styleguide/pyguide.md` (100 chars modern preference, 4-space indent)
   - Linter config: `styleguide/pylintrc`
   - Vim config: `styleguide/google_python_style.vim`
@@ -399,6 +434,7 @@ The style guides are included as a submodule at `/Users/starikov/.dotfiles/style
   - Decisions: `styleguide/go/decisions.md`
 
 #### Additional Languages
+
 - **HTML/CSS**: `styleguide/htmlcssguide.html`
 - **Objective-C**: `styleguide/objcguide.md`
 - **R**: `styleguide/Rguide.md`
@@ -409,6 +445,7 @@ The style guides are included as a submodule at `/Users/starikov/.dotfiles/style
 - **C#**: `styleguide/csharp-style.md`
 
 #### Documentation Style
+
 - **Docs**: `styleguide/docguide/style.md`
 - **READMEs**: `styleguide/docguide/READMEs.md`
 - **Best Practices**: `styleguide/docguide/best_practices.md`
@@ -418,6 +455,7 @@ The style guides are included as a submodule at `/Users/starikov/.dotfiles/style
 All formatters and linters in this repository are configured to follow Google style:
 
 #### Python
+
 - Line length: 100 characters (modern preference)
 - Indentation: 4 spaces
 - Formatter priority: yapf → ruff → black
@@ -426,6 +464,7 @@ All formatters and linters in this repository are configured to follow Google st
 - Style reference: https://google.github.io/styleguide/pyguide.html
 
 #### C/C++
+
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces
 - Base style: Industry standard (via clang-format)
@@ -433,18 +472,21 @@ All formatters and linters in this repository are configured to follow Google st
 - Style reference: https://google.github.io/styleguide/cppguide.html
 
 #### Lua
+
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces
 - Quote style: Double quotes preferred
 - Config: `src/language/stylua.toml`
 
 #### Shell Scripts
+
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces (via shfmt)
 - Always use `#!/usr/bin/env zsh` or `#!/bin/bash`
 - Style reference: https://google.github.io/styleguide/shellguide.html
 
 #### JavaScript/TypeScript
+
 - Line length: 100 characters (modern preference)
 - Indentation: 2 spaces
 - Trailing commas: ES5 style
@@ -454,6 +496,7 @@ All formatters and linters in this repository are configured to follow Google st
 ### Pre-commit Checklist
 
 Before committing code changes:
+
 1. Check the relevant style guide in `styleguide/` directory
 2. Run `./src/scripts/fixy` on modified files
 3. Run `./test/runner.zsh --quick` to verify configurations

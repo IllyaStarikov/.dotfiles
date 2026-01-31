@@ -29,7 +29,7 @@ it "Neovim should start within ${NVIM_STARTUP_THRESHOLD}ms" && {
   timeout 5 nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -c "qa!" 2>&1 >/dev/null
   local end_time=$(date +%s%N)
 
-  local duration=$(( (end_time - start_time) / 1000000 ))
+  local duration=$(((end_time - start_time) / 1000000))
 
   if [[ $duration -lt $NVIM_STARTUP_THRESHOLD ]]; then
     echo "  Startup time: ${duration}ms"
@@ -42,7 +42,7 @@ it "Neovim should start within ${NVIM_STARTUP_THRESHOLD}ms" && {
 # Test: Neovim plugin loading performance
 it "Neovim plugins should load within ${PLUGIN_LOAD_THRESHOLD}ms" && {
   # Create test file to trigger plugin loading
-  echo "test content" > "$TEST_TMP_DIR/test.lua"
+  echo "test content" >"$TEST_TMP_DIR/test.lua"
 
   # Measure plugin loading time
   local start_time=$(date +%s%N)
@@ -52,7 +52,7 @@ it "Neovim plugins should load within ${PLUGIN_LOAD_THRESHOLD}ms" && {
     -c "qa!" 2>&1 >/dev/null || true
   local end_time=$(date +%s%N)
 
-  local duration=$(( (end_time - start_time) / 1000000 ))
+  local duration=$(((end_time - start_time) / 1000000))
 
   if [[ $duration -lt $PLUGIN_LOAD_THRESHOLD ]]; then
     echo "  Plugin load time: ${duration}ms"
@@ -75,7 +75,7 @@ it "Zsh should start within ${ZSH_STARTUP_THRESHOLD}ms" && {
   zsh -c "source $DOTFILES_DIR/src/zsh/zshrc; exit" 2>/dev/null || true
   local end_time=$(date +%s%N)
 
-  local duration=$(( (end_time - start_time) / 1000000 ))
+  local duration=$(((end_time - start_time) / 1000000))
 
   if [[ $duration -lt $ZSH_STARTUP_THRESHOLD ]]; then
     echo "  Zsh startup time: ${duration}ms"
@@ -97,7 +97,7 @@ it "Theme switching should complete within ${THEME_SWITCH_THRESHOLD}ms" && {
   "$DOTFILES_DIR/src/theme-switcher/switch-theme.sh" --dry-run 2>&1 >/dev/null || true
   local end_time=$(date +%s%N)
 
-  local duration=$(( (end_time - start_time) / 1000000 ))
+  local duration=$(((end_time - start_time) / 1000000))
 
   if [[ $duration -lt $THEME_SWITCH_THRESHOLD ]]; then
     echo "  Theme switch time: ${duration}ms"
@@ -120,7 +120,7 @@ it "Utility scripts should execute quickly" && {
       timeout 2 "$script" --help 2>&1 >/dev/null || true
       local end_time=$(date +%s%N)
 
-      local duration=$(( (end_time - start_time) / 1000000 ))
+      local duration=$(((end_time - start_time) / 1000000))
 
       if [[ $duration -gt 100 ]]; then
         fail "$(basename "$script") took ${duration}ms"
@@ -146,19 +146,19 @@ it "Configuration files should parse quickly" && {
 
       case "$config" in
         *.lua)
-            timeout 1 lua -e "dofile('$config')" 2>/dev/null || true
-            ;;
-        *.sh|*zshrc)
-            timeout 1 zsh -n "$config" 2>/dev/null || true
-            ;;
+          timeout 1 lua -e "dofile('$config')" 2>/dev/null || true
+          ;;
+        *.sh | *zshrc)
+          timeout 1 zsh -n "$config" 2>/dev/null || true
+          ;;
         *)
-            # Just read the file
-            cat "$config" >/dev/null 2>&1
-            ;;
+          # Just read the file
+          cat "$config" >/dev/null 2>&1
+          ;;
       esac
 
       local end_time=$(date +%s%N)
-      local duration=$(( (end_time - start_time) / 1000000 ))
+      local duration=$(((end_time - start_time) / 1000000))
 
       if [[ $duration -gt 50 ]]; then
         fail "$(basename "$config") parsing took ${duration}ms"
@@ -197,20 +197,20 @@ it "File operations should be efficient" && {
   # Write test
   local start_time=$(date +%s%N)
   for i in {1..100}; do
-    echo "Line $i" >> "$test_file"
+    echo "Line $i" >>"$test_file"
   done
   local end_time=$(date +%s%N)
 
-  local write_duration=$(( (end_time - start_time) / 1000000 ))
+  local write_duration=$(((end_time - start_time) / 1000000))
 
   # Read test
   start_time=$(date +%s%N)
   while read -r line; do
     : # No-op
-  done < "$test_file"
+  done <"$test_file"
   end_time=$(date +%s%N)
 
-  local read_duration=$(( (end_time - start_time) / 1000000 ))
+  local read_duration=$(((end_time - start_time) / 1000000))
 
   if [[ $write_duration -lt 100 ]] && [[ $read_duration -lt 50 ]]; then
     echo "  Write: ${write_duration}ms, Read: ${read_duration}ms"
@@ -240,7 +240,7 @@ it "Scripts should handle parallel execution" && {
   }
 
   local end_time=$(date +%s%N)
-  local duration=$(( (end_time - start_time) / 1000000 ))
+  local duration=$(((end_time - start_time) / 1000000))
 
   if [[ $duration -lt 500 ]]; then
     echo "  Parallel execution time: ${duration}ms"
@@ -263,13 +263,13 @@ it "Cache should improve performance" && {
   local start_time=$(date +%s%N)
   "$script" cpu 2>&1 >/dev/null || true
   local end_time=$(date +%s%N)
-  local cold_duration=$(( (end_time - start_time) / 1000000 ))
+  local cold_duration=$(((end_time - start_time) / 1000000))
 
   # Second run (warm cache)
   start_time=$(date +%s%N)
   "$script" cpu 2>&1 >/dev/null || true
   end_time=$(date +%s%N)
-  local warm_duration=$(( (end_time - start_time) / 1000000 ))
+  local warm_duration=$(((end_time - start_time) / 1000000))
 
   if [[ $warm_duration -lt $cold_duration ]]; then
     echo "  Cold: ${cold_duration}ms, Warm: ${warm_duration}ms"

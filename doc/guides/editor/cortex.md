@@ -45,16 +45,16 @@ cortex status
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `cortex list` | List all available models by provider |
-| `cortex model <name>` | Set the active model |
+| Command                  | Description                           |
+| ------------------------ | ------------------------------------- |
+| `cortex list`            | List all available models by provider |
+| `cortex model <name>`    | Set the active model                  |
 | `cortex download <name>` | Download model with progress tracking |
-| `cortex start` | Start model server (MLX, Ollama) |
-| `cortex stop` | Stop model server |
-| `cortex chat` | Interactive chat with current model |
-| `cortex status` | Show current configuration and status |
-| `cortex logs` | View system logs |
+| `cortex start`           | Start model server (MLX, Ollama)      |
+| `cortex stop`            | Stop model server                     |
+| `cortex chat`            | Interactive chat with current model   |
+| `cortex status`          | Show current configuration and status |
+| `cortex logs`            | View system logs                      |
 
 ### Model Selection
 
@@ -110,6 +110,7 @@ cortex chat
 ```
 
 **Recommended models:**
+
 - `mlx-community/Meta-Llama-3.1-8B-Instruct-4bit` - Best balance
 - `mlx-community/Mistral-7B-Instruct-v0.3-4bit` - Fast
 - `mlx-community/CodeLlama-34b-Instruct-4bit` - Coding
@@ -130,6 +131,7 @@ cortex model llama3.1:8b
 ```
 
 **Recommended models:**
+
 - `llama3.1:8b` - General purpose
 - `codellama:13b` - Coding
 - `mistral:7b` - Fast responses
@@ -270,22 +272,22 @@ cortex start
 
 ### System Requirements
 
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| RAM | 8GB | 16GB+ |
-| Storage | 10GB | 50GB+ |
-| GPU | - | Apple Silicon / NVIDIA |
-| Python | 3.9+ | 3.11+ |
+| Component | Minimum | Recommended            |
+| --------- | ------- | ---------------------- |
+| RAM       | 8GB     | 16GB+                  |
+| Storage   | 10GB    | 50GB+                  |
+| GPU       | -       | Apple Silicon / NVIDIA |
+| Python    | 3.9+    | 3.11+                  |
 
 ### Model Size Guidelines
 
-| Model Size | RAM Required | Speed |
-|------------|--------------|-------|
-| 7B-4bit | 6GB | Fast |
-| 8B-4bit | 8GB | Fast |
-| 13B-4bit | 10GB | Medium |
-| 34B-4bit | 20GB | Slow |
-| 70B-4bit | 40GB | Very Slow |
+| Model Size | RAM Required | Speed     |
+| ---------- | ------------ | --------- |
+| 7B-4bit    | 6GB          | Fast      |
+| 8B-4bit    | 8GB          | Fast      |
+| 13B-4bit   | 10GB         | Medium    |
+| 34B-4bit   | 20GB         | Slow      |
+| 70B-4bit   | 40GB         | Very Slow |
 
 ### MLX Performance (Apple Silicon)
 
@@ -329,12 +331,12 @@ cortex stats --from 2024-01-01 --to 2024-01-31
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Model not found | Run `cortex list` to see available models |
+| Issue              | Solution                                         |
+| ------------------ | ------------------------------------------------ |
+| Model not found    | Run `cortex list` to see available models        |
 | Server won't start | Check port availability, try `cortex stop` first |
-| Slow responses | Try smaller model or check system resources |
-| API errors | Verify API keys in private config |
+| Slow responses     | Try smaller model or check system resources      |
+| API errors         | Verify API keys in private config                |
 
 ### Debug Mode
 

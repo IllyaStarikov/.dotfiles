@@ -63,7 +63,7 @@ it "should preserve local modifications" && {
   export HOME="$TEST_HOME"
 
   # Create a local modification
-  echo "test" > "$TEST_HOME/.test_file"
+  echo "test" >"$TEST_HOME/.test_file"
 
   # Sync should not destroy local files - check for backup or safe update patterns
   local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"

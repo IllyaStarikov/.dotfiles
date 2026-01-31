@@ -14,27 +14,27 @@ test_extreme_file_sizes() {
   local sizes=(1 10 50 100) # MB
 
   for size in "${sizes[@]}"; do
-  [[ $VERBOSE -ge 1 ]] && log "INFO" "Testing ${size}MB file"
+    [[ $VERBOSE -ge 1 ]] && log "INFO" "Testing ${size}MB file"
 
-  # Create file
-  dd if=/dev/zero bs=1048576 count="$size" of="$test_file" 2>/dev/null
+    # Create file
+    dd if=/dev/zero bs=1048576 count="$size" of="$test_file" 2>/dev/null
 
-  # Try to open in Neovim
-  local start_time=$(date +%s%N)
-  timeout 30 nvim --headless "$test_file" -c "qa!" 2>/dev/null
-  local exit_code=$?
-  local end_time=$(date +%s%N)
-  local duration=$(((end_time - start_time) / 1000000))
+    # Try to open in Neovim
+    local start_time=$(date +%s%N)
+    timeout 30 nvim --headless "$test_file" -c "qa!" 2>/dev/null
+    local exit_code=$?
+    local end_time=$(date +%s%N)
+    local duration=$(((end_time - start_time) / 1000000))
 
-  if [[ $exit_code -eq 124 ]]; then
-    log "WARNING" "Neovim timeout with ${size}MB file"
-    break
-  elif [[ $exit_code -ne 0 ]]; then
-    log "WARNING" "Neovim failed with ${size}MB file"
-    break
-  else
-    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Handled ${size}MB file in ${duration}ms"
-  fi
+    if [[ $exit_code -eq 124 ]]; then
+      log "WARNING" "Neovim timeout with ${size}MB file"
+      break
+    elif [[ $exit_code -ne 0 ]]; then
+      log "WARNING" "Neovim failed with ${size}MB file"
+      break
+    else
+      [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Handled ${size}MB file in ${duration}ms"
+    fi
   done
 
   # Cleanup
@@ -55,12 +55,12 @@ test_rapid_file_operations() {
   local start_time=$(date +%s%N)
 
   for i in $(seq 1 $iterations); do
-  # Create
-  echo "test" >"file_$i.txt"
-  # Modify
-  echo "modified" >>"file_$i.txt"
-  # Delete
-  rm "file_$i.txt"
+    # Create
+    echo "test" >"file_$i.txt"
+    # Modify
+    echo "modified" >>"file_$i.txt"
+    # Delete
+    rm "file_$i.txt"
   done
 
   local end_time=$(date +%s%N)
@@ -76,11 +76,11 @@ test_rapid_file_operations() {
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Filesystem operations per second: $ops_per_second"
 
   if [[ $ops_per_second -gt 100 ]]; then
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Filesystem performance good under stress"
-  return 0
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Filesystem performance good under stress"
+    return 0
   else
-  log "WARNING" "Filesystem slow under stress: $ops_per_second ops/sec"
-  return 0
+    log "WARNING" "Filesystem slow under stress: $ops_per_second ops/sec"
+    return 0
   fi
 }
 
@@ -104,19 +104,19 @@ test_maximum_open_files() {
   local fds=()
 
   for i in $(seq 1 $max_test); do
-  if exec {fd}>"file_$i.txt" 2>/dev/null; then
-    fds+=($fd)
-    ((files_opened++))
-  else
-    break
-  fi
+    if exec {fd}>"file_$i.txt" 2>/dev/null; then
+      fds+=($fd)
+      ((files_opened++))
+    else
+      break
+    fi
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Successfully opened $files_opened files"
 
   # Close all file descriptors
   for fd in "${fds[@]}"; do
-  exec {fd}>&-
+    exec {fd}>&-
   done
 
   # Cleanup
@@ -124,11 +124,11 @@ test_maximum_open_files() {
   rm -rf "$test_dir"
 
   if [[ $files_opened -gt 100 ]]; then
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can handle many open files: $files_opened"
-  return 0
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Can handle many open files: $files_opened"
+    return 0
   else
-  log "WARNING" "Limited file handles: $files_opened"
-  return 0
+    log "WARNING" "Limited file handles: $files_opened"
+    return 0
   fi
 }
 
@@ -155,9 +155,9 @@ test_cpu_stress() {
   kill $load_pid 2>/dev/null || true
 
   if [[ $exit_code -eq 0 ]]; then
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim responsive under CPU stress (${duration}ms)"
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim responsive under CPU stress (${duration}ms)"
   else
-  log "WARNING" "Neovim slow under CPU stress"
+    log "WARNING" "Neovim slow under CPU stress"
   fi
 
   return 0
@@ -176,7 +176,7 @@ test_memory_pressure() {
 
   # Allocate memory
   for i in $(seq 1 $allocation_size); do
-  memory_hog+=("data_$i")
+    memory_hog+=("data_$i")
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Allocated array with $allocation_size elements"
@@ -193,11 +193,11 @@ test_memory_pressure() {
   unset memory_hog
 
   if [[ $duration -lt 1000 ]]; then
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System handles memory pressure"
-  return 0
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "System handles memory pressure"
+    return 0
   else
-  log "WARNING" "System slow under memory pressure"
-  return 0
+    log "WARNING" "System slow under memory pressure"
+    return 0
   fi
 }
 
@@ -214,9 +214,9 @@ test_recursive_operations() {
   local current_dir="."
 
   for i in $(seq 1 $depth); do
-  current_dir="$current_dir/level_$i"
-  mkdir -p "$current_dir"
-  echo "content" >"$current_dir/file.txt"
+    current_dir="$current_dir/level_$i"
+    mkdir -p "$current_dir"
+    echo "content" >"$current_dir/file.txt"
   done
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Created directory structure with depth $depth"
@@ -231,11 +231,11 @@ test_recursive_operations() {
 
   # Test recursive grep
   if command -v rg >/dev/null 2>&1; then
-  start_time=$(date +%s%N)
-  rg "content" >/dev/null 2>&1
-  end_time=$(date +%s%N)
-  local rg_duration=$(((end_time - start_time) / 1000000))
-  [[ $VERBOSE -ge 1 ]] && log "INFO" "Recursive ripgrep in ${rg_duration}ms"
+    start_time=$(date +%s%N)
+    rg "content" >/dev/null 2>&1
+    end_time=$(date +%s%N)
+    local rg_duration=$(((end_time - start_time) / 1000000))
+    [[ $VERBOSE -ge 1 ]] && log "INFO" "Recursive ripgrep in ${rg_duration}ms"
   fi
 
   # Cleanup
@@ -261,16 +261,16 @@ test_signal_handling() {
   local signals=(USR1 USR2 HUP)
 
   for sig in "${signals[@]}"; do
-  if kill "-$sig" "$nvim_pid" 2>/dev/null; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Sent signal $sig to Neovim"
-  fi
-  sleep 0.5
+    if kill "-$sig" "$nvim_pid" 2>/dev/null; then
+      [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Sent signal $sig to Neovim"
+    fi
+    sleep 0.5
 
-  # Check if still running
-  if ! kill -0 $nvim_pid 2>/dev/null; then
-    log "WARNING" "Neovim terminated by signal $sig"
-    break
-  fi
+    # Check if still running
+    if ! kill -0 $nvim_pid 2>/dev/null; then
+      log "WARNING" "Neovim terminated by signal $sig"
+      break
+    fi
   done
 
   # Clean up
@@ -290,15 +290,15 @@ test_network_interruption() {
   local fake_hosts=("fake.invalid.host" "192.0.2.1") # TEST-NET-1
 
   for host in "${fake_hosts[@]}"; do
-  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Testing connection to $host"
+    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Testing connection to $host"
 
-  # Try to connect with timeout
-  timeout 2 curl -s "http://$host" >/dev/null 2>&1
-  local exit_code=$?
+    # Try to connect with timeout
+    timeout 2 curl -s "http://$host" >/dev/null 2>&1
+    local exit_code=$?
 
-  if [[ $exit_code -eq 124 ]]; then
-    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Connection timed out (expected)"
-  fi
+    if [[ $exit_code -eq 124 ]]; then
+      [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Connection timed out (expected)"
+    fi
   done
 
   # Test plugin manager behavior without network
@@ -313,7 +313,7 @@ test_network_interruption() {
   " 2>&1)
 
   if [[ "$plugin_test" == *"plugins_loaded"* ]]; then
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Plugins work offline"
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Plugins work offline"
   fi
 
   return 0

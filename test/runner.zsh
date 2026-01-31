@@ -56,27 +56,27 @@ EXCLUDE_PATTERN=""
 
 setup_colors() {
   if [[ -t 1 ]] && [[ $NO_COLOR -eq 0 ]]; then
-  RED='\033[0;31m'
-  GREEN='\033[0;32m'
-  YELLOW='\033[0;33m'
-  BLUE='\033[0;34m'
-  MAGENTA='\033[0;35m'
-  CYAN='\033[0;36m'
-  WHITE='\033[0;37m'
-  BOLD='\033[1m'
-  DIM='\033[2m'
-  NC='\033[0m' # No Color
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    BLUE='\033[0;34m'
+    MAGENTA='\033[0;35m'
+    CYAN='\033[0;36m'
+    WHITE='\033[0;37m'
+    BOLD='\033[1m'
+    DIM='\033[2m'
+    NC='\033[0m' # No Color
   else
-  RED=''
-  GREEN=''
-  YELLOW=''
-  BLUE=''
-  MAGENTA=''
-  CYAN=''
-  WHITE=''
-  BOLD=''
-  DIM=''
-  NC=''
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    MAGENTA=''
+    CYAN=''
+    WHITE=''
+    BOLD=''
+    DIM=''
+    NC=''
   fi
 }
 
@@ -88,28 +88,28 @@ log() {
   local timestamp=$(date '+%H:%M:%S')
 
   case "$level" in
-  ERROR)
-    echo -e "${RED}[ERROR]${NC} ${timestamp} - $message" >&2
-    ;;
-  WARN)
-    echo -e "${YELLOW}[WARN]${NC} ${timestamp} - $message" >&2
-    ((WARNINGS++))
-    ;;
-  INFO)
-    echo -e "${BLUE}[INFO]${NC} ${timestamp} - $message"
-    ;;
-  SUCCESS)
-    echo -e "${GREEN}[✓]${NC} $message"
-    ;;
-  FAIL)
-    echo -e "${RED}[✗]${NC} $message"
-    ;;
-  DEBUG)
-    [[ $DEBUG -eq 1 ]] && echo -e "${DIM}[DEBUG]${NC} ${timestamp} - $message" >&2
-    ;;
-  *)
-    echo "$message"
-    ;;
+    ERROR)
+      echo -e "${RED}[ERROR]${NC} ${timestamp} - $message" >&2
+      ;;
+    WARN)
+      echo -e "${YELLOW}[WARN]${NC} ${timestamp} - $message" >&2
+      ((WARNINGS++))
+      ;;
+    INFO)
+      echo -e "${BLUE}[INFO]${NC} ${timestamp} - $message"
+      ;;
+    SUCCESS)
+      echo -e "${GREEN}[✓]${NC} $message"
+      ;;
+    FAIL)
+      echo -e "${RED}[✗]${NC} $message"
+      ;;
+    DEBUG)
+      [[ $DEBUG -eq 1 ]] && echo -e "${DIM}[DEBUG]${NC} ${timestamp} - $message" >&2
+      ;;
+    *)
+      echo "$message"
+      ;;
   esac
 }
 
@@ -122,21 +122,21 @@ show_progress() {
 
   # Ensure filled doesn't exceed 50 and calculate empty correctly
   if [[ $filled -gt 50 ]]; then
-  filled=50
+    filled=50
   fi
   local empty=$((50 - filled))
 
   # For 100%, ensure the bar is fully green
   if [[ $percent -eq 100 ]]; then
-  filled=50
-  empty=0
+    filled=50
+    empty=0
   fi
 
   printf "\r[${GREEN}"
   printf "%0.s█" $(seq 1 $filled)
   printf "${NC}"
   if [[ $empty -gt 0 ]]; then
-  printf "%0.s░" $(seq 1 $empty)
+    printf "%0.s░" $(seq 1 $empty)
   fi
   printf "] ${percent}%% ($current/$total)"
 }
@@ -213,69 +213,69 @@ discover_tests() {
   local test_files=()
 
   case "$category" in
-  unit)
-    test_files=($(find "$TEST_DIR/unit" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  functional)
-    test_files=($(find "$TEST_DIR/functional" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  integration)
-    test_files=($(find "$TEST_DIR/integration" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  performance)
-    test_files=($(find "$TEST_DIR/performance" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  smoke)
-    test_files=($(find "$TEST_DIR/smoke" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  sanity)
-    test_files=($(find "$TEST_DIR/sanity" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  e2e)
-    test_files=($(find "$TEST_DIR/e2e" -name "$pattern" -type f ! -name "runner.zsh" 2>/dev/null | sort))
-    ;;
-  security)
-    test_files=($(find "$TEST_DIR/security" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  regression)
-    test_files=($(find "$TEST_DIR/regression" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  stress)
-    test_files=($(find "$TEST_DIR/stress" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  load)
-    test_files=($(find "$TEST_DIR/load" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  chaos)
-    test_files=($(find "$TEST_DIR/chaos" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  compatibility)
-    test_files=($(find "$TEST_DIR/compatibility" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  workflows)
-    test_files=($(find "$TEST_DIR/workflows" -name "$pattern" -type f 2>/dev/null | sort))
-    ;;
-  all)
-    test_files=($(find "$TEST_DIR" -name "$pattern" -type f \
-    ! -path "*/helpers/*" \
-    ! -path "*/.git/*" \
-    ! -path "*/lib/*" \
-    ! -path "*/logs/*" \
-    ! -path "*/examples/*" \
-    ! -name "runner.zsh" \
-    2>/dev/null | sort))
-    ;;
+    unit)
+      test_files=($(find "$TEST_DIR/unit" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    functional)
+      test_files=($(find "$TEST_DIR/functional" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    integration)
+      test_files=($(find "$TEST_DIR/integration" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    performance)
+      test_files=($(find "$TEST_DIR/performance" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    smoke)
+      test_files=($(find "$TEST_DIR/smoke" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    sanity)
+      test_files=($(find "$TEST_DIR/sanity" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    e2e)
+      test_files=($(find "$TEST_DIR/e2e" -name "$pattern" -type f ! -name "runner.zsh" 2>/dev/null | sort))
+      ;;
+    security)
+      test_files=($(find "$TEST_DIR/security" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    regression)
+      test_files=($(find "$TEST_DIR/regression" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    stress)
+      test_files=($(find "$TEST_DIR/stress" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    load)
+      test_files=($(find "$TEST_DIR/load" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    chaos)
+      test_files=($(find "$TEST_DIR/chaos" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    compatibility)
+      test_files=($(find "$TEST_DIR/compatibility" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    workflows)
+      test_files=($(find "$TEST_DIR/workflows" -name "$pattern" -type f 2>/dev/null | sort))
+      ;;
+    all)
+      test_files=($(find "$TEST_DIR" -name "$pattern" -type f \
+        ! -path "*/helpers/*" \
+        ! -path "*/.git/*" \
+        ! -path "*/lib/*" \
+        ! -path "*/logs/*" \
+        ! -path "*/examples/*" \
+        ! -name "runner.zsh" \
+        2>/dev/null | sort))
+      ;;
   esac
 
   # Apply exclude pattern if set
   if [[ -n "$EXCLUDE_PATTERN" ]]; then
-  local filtered=()
-  for file in "${test_files[@]}"; do
-    if [[ ! "$file" =~ $EXCLUDE_PATTERN ]]; then
-    filtered+=("$file")
-    fi
-  done
-  test_files=("${filtered[@]}")
+    local filtered=()
+    for file in "${test_files[@]}"; do
+      if [[ ! "$file" =~ $EXCLUDE_PATTERN ]]; then
+        filtered+=("$file")
+      fi
+    done
+    test_files=("${filtered[@]}")
   fi
 
   echo "${test_files[@]}"
@@ -353,54 +353,54 @@ EOF
   # Run test through wrapper with timeout
   local test_output
   local test_status
-  local test_timeout=30  # Default 30 second timeout per test
+  local test_timeout=30 # Default 30 second timeout per test
 
   # Special handling for init tests which load Neovim and can be slow
   if [[ "$test_name" == *"init"* ]] || [[ "$test_name" == *"startup"* ]]; then
-  test_timeout=60  # Much longer timeout for initialization tests
+    test_timeout=60 # Much longer timeout for initialization tests
   fi
 
   # In CI mode or non-interactive, use different timeout strategy
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
-  # In E2E test mode, run ALL tests with longer timeouts
-  if [[ "${E2E_TEST:-0}" == "1" ]]; then
-    # Keep the special init timeout if already set, otherwise use E2E default
-    [[ "$test_name" != *"init"* ]] && test_timeout=60  # Longer timeout for E2E tests
-    # Don't skip any tests in E2E mode - all tests are critical
-  else
-    # Regular CI mode - shorter timeout and skip problematic tests
-    # Keep the special init timeout if already set
-    [[ "$test_name" != *"init"* ]] && test_timeout=30  # Standard CI timeout
+    # In E2E test mode, run ALL tests with longer timeouts
+    if [[ "${E2E_TEST:-0}" == "1" ]]; then
+      # Keep the special init timeout if already set, otherwise use E2E default
+      [[ "$test_name" != *"init"* ]] && test_timeout=60 # Longer timeout for E2E tests
+      # Don't skip any tests in E2E mode - all tests are critical
+    else
+      # Regular CI mode - shorter timeout and skip problematic tests
+      # Keep the special init timeout if already set
+      [[ "$test_name" != *"init"* ]] && test_timeout=30 # Standard CI timeout
 
-    # Skip certain tests in CI that require special conditions:
-    # - keybinding_conflicts: Requires interactive Neovim session
-    # - comprehensive_*: Long-running tests better suited for local dev
-    # - *_interactive_*: Require user interaction
-    # - plugin_loading: Requires full Neovim plugin environment
-    # - lsp_completion: Requires LSP servers to be installed
-    # Run these locally with: ./runner.zsh --full
-    local base_name="${test_name%_zsh_test}"
-    base_name="${base_name%_test}"
+      # Skip certain tests in CI that require special conditions:
+      # - keybinding_conflicts: Requires interactive Neovim session
+      # - comprehensive_*: Long-running tests better suited for local dev
+      # - *_interactive_*: Require user interaction
+      # - plugin_loading: Requires full Neovim plugin environment
+      # - lsp_completion: Requires LSP servers to be installed
+      # Run these locally with: ./runner.zsh --full
+      local base_name="${test_name%_zsh_test}"
+      base_name="${base_name%_test}"
 
-    if [[ "$test_name" == "keybinding_conflicts_test" ]] ||
-     [[ "$test_name" == "keybinding_conflicts_zsh_test" ]] ||
-     [[ "$base_name" == "keybinding_conflicts" ]] ||
-     [[ "$test_name" == "comprehensive_nvim_test" ]] ||
-     [[ "$test_name" == "comprehensive_scripts_test" ]] ||
-     [[ "$test_name" == "comprehensive_setup_test" ]] ||
-     [[ "$test_name" == "comprehensive_symlinks_test" ]] ||
-     [[ "$test_name" == "comprehensive_theme_test" ]] ||
-     [[ "$test_name" == "comprehensive_zsh_test" ]] ||
-     [[ "$test_name" == *"_interactive_"* ]] ||
-     [[ "$test_name" == "plugin_loading_test" ]] ||
-     [[ "$test_name" == "lsp_completion_test" ]]; then
-    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-    log WARN "$test_name - SKIPPED (CI mode)"
-    ((SKIPPED++))
-    rm -rf "$test_tmp"
-    return 0
+      if [[ "$test_name" == "keybinding_conflicts_test" ]] \
+        || [[ "$test_name" == "keybinding_conflicts_zsh_test" ]] \
+        || [[ "$base_name" == "keybinding_conflicts" ]] \
+        || [[ "$test_name" == "comprehensive_nvim_test" ]] \
+        || [[ "$test_name" == "comprehensive_scripts_test" ]] \
+        || [[ "$test_name" == "comprehensive_setup_test" ]] \
+        || [[ "$test_name" == "comprehensive_symlinks_test" ]] \
+        || [[ "$test_name" == "comprehensive_theme_test" ]] \
+        || [[ "$test_name" == "comprehensive_zsh_test" ]] \
+        || [[ "$test_name" == *"_interactive_"* ]] \
+        || [[ "$test_name" == "plugin_loading_test" ]] \
+        || [[ "$test_name" == "lsp_completion_test" ]]; then
+        [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+        log WARN "$test_name - SKIPPED (CI mode)"
+        ((SKIPPED++))
+        rm -rf "$test_tmp"
+        return 0
+      fi
     fi
-  fi
   fi
 
   # Use timeout command (macOS doesn't support --kill-after)
@@ -408,39 +408,39 @@ EOF
   local -a timeout_cmd
   local has_timeout=1
 
-  if command -v gtimeout > /dev/null 2>&1; then
-  # Use GNU timeout if available (installed via coreutils on macOS)
-  timeout_cmd=(gtimeout --kill-after=5)
-  elif command -v timeout > /dev/null 2>&1; then
-  # Check if timeout exists at all
-  if [[ "$(uname)" == "Linux" ]]; then
-    # Linux has GNU timeout with --kill-after
-    timeout_cmd=(timeout --kill-after=5)
+  if command -v gtimeout >/dev/null 2>&1; then
+    # Use GNU timeout if available (installed via coreutils on macOS)
+    timeout_cmd=(gtimeout --kill-after=5)
+  elif command -v timeout >/dev/null 2>&1; then
+    # Check if timeout exists at all
+    if [[ "$(uname)" == "Linux" ]]; then
+      # Linux has GNU timeout with --kill-after
+      timeout_cmd=(timeout --kill-after=5)
+    else
+      # Basic timeout without kill-after
+      timeout_cmd=(timeout)
+    fi
   else
-    # Basic timeout without kill-after
-    timeout_cmd=(timeout)
-  fi
-  else
-  # No timeout command available - will run without timeout
-  has_timeout=0
+    # No timeout command available - will run without timeout
+    has_timeout=0
   fi
 
   if [[ $VERBOSE -eq 1 ]]; then
-  # Run with or without timeout in verbose mode
-  if [[ $has_timeout -eq 1 ]]; then
-    "${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
+    # Run with or without timeout in verbose mode
+    if [[ $has_timeout -eq 1 ]]; then
+      "${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 </dev/null
+    else
+      zsh "$wrapper_script" "$test_file" 2>&1 </dev/null
+    fi
+    test_status=$?
   else
-    zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null
-  fi
-  test_status=$?
-  else
-  # Run with or without timeout in quiet mode
-  if [[ $has_timeout -eq 1 ]]; then
-    test_output=$("${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
-  else
-    test_output=$(zsh "$wrapper_script" "$test_file" 2>&1 < /dev/null)
-  fi
-  test_status=$?
+    # Run with or without timeout in quiet mode
+    if [[ $has_timeout -eq 1 ]]; then
+      test_output=$("${timeout_cmd[@]}" $test_timeout zsh "$wrapper_script" "$test_file" 2>&1 </dev/null)
+    else
+      test_output=$(zsh "$wrapper_script" "$test_file" 2>&1 </dev/null)
+    fi
+    test_status=$?
   fi
 
   local end_time=$(date +%s)
@@ -448,30 +448,30 @@ EOF
 
   # Process result
   if [[ $test_status -eq 0 ]]; then
-  # Clear the rest of the line after the progress bar for clean output
-  [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-  log SUCCESS "$test_name (${duration}s)"
-  ((PASSED++))
+    # Clear the rest of the line after the progress bar for clean output
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    log SUCCESS "$test_name (${duration}s)"
+    ((PASSED++))
   elif [[ $test_status -eq 124 ]] || [[ $test_status -eq 137 ]] || [[ $test_status -eq 143 ]]; then
-  # Timeout exit codes: 124 (timeout), 137 (SIGKILL), 143 (SIGTERM)
-  [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-  log FAIL "$test_name - TIMEOUT (killed after ${test_timeout}s)"
-  ((FAILED++))
-  if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
-    echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
-  fi
-  # Bail on timeout if requested
-  [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
+    # Timeout exit codes: 124 (timeout), 137 (SIGKILL), 143 (SIGTERM)
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    log FAIL "$test_name - TIMEOUT (killed after ${test_timeout}s)"
+    ((FAILED++))
+    if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
+      echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
+    fi
+    # Bail on timeout if requested
+    [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
   else
-  [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
-  log FAIL "$test_name - EXIT $test_status"
-  ((FAILED++))
-  if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
-    echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
-  fi
+    [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
+    log FAIL "$test_name - EXIT $test_status"
+    ((FAILED++))
+    if [[ $VERBOSE -eq 0 ]] && [[ -n "${test_output:-}" ]]; then
+      echo "$test_output" | grep -v "^[a-z_]* ()" | head -20
+    fi
 
-  # Bail on first failure if requested
-  [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
+    # Bail on first failure if requested
+    [[ $BAIL_ON_FAIL -eq 1 ]] && return 1
   fi
 
   # Clean up test temp dir
@@ -490,33 +490,33 @@ run_test_category() {
   local total=${#test_files[@]}
 
   if [[ $total -eq 0 ]]; then
-  log WARN "No $category tests found matching pattern: $pattern"
-  return 0
+    log WARN "No $category tests found matching pattern: $pattern"
+    return 0
   fi
 
   log INFO "Found $total $category test(s)"
 
   local count=0
   for test_file in "${test_files[@]}"; do
-  ((count++))
+    ((count++))
 
-  if [[ $PARALLEL -eq 1 ]]; then
-    run_test "$test_file" &
-  else
-    # Show progress bar before running test
-    [[ $VERBOSE -eq 0 ]] && show_progress "$count" "$total"
+    if [[ $PARALLEL -eq 1 ]]; then
+      run_test "$test_file" &
+    else
+      # Show progress bar before running test
+      [[ $VERBOSE -eq 0 ]] && show_progress "$count" "$total"
 
-    run_test "$test_file"
+      run_test "$test_file"
 
-    # After the last test, ensure we have a clean line
-    if [[ $count -eq $total ]] && [[ $VERBOSE -eq 0 ]]; then
-    echo  # Add newline after the completed progress bar
+      # After the last test, ensure we have a clean line
+      if [[ $count -eq $total ]] && [[ $VERBOSE -eq 0 ]]; then
+        echo # Add newline after the completed progress bar
+      fi
+
+      if [[ $? -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
+        return 1
+      fi
     fi
-
-    if [[ $? -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
-    return 1
-    fi
-  fi
   done
 
   # Wait for parallel tests
@@ -540,7 +540,7 @@ setup_test_environment() {
 
   # Source test helpers if available
   if [[ -f "$TEST_DIR/helpers/common.sh" ]]; then
-  source "$TEST_DIR/helpers/common.sh"
+    source "$TEST_DIR/helpers/common.sh"
   fi
 
   log DEBUG "Test environment ready"
@@ -549,7 +549,7 @@ setup_test_environment() {
 cleanup_test_environment() {
   # Clean up temp directory
   if [[ -d "$TEST_TMP_DIR" ]]; then
-  rm -rf "$TEST_TMP_DIR"
+    rm -rf "$TEST_TMP_DIR"
   fi
 
   log DEBUG "Test environment cleaned up"
@@ -565,10 +565,10 @@ assert_equals() {
   local message="${3:-Assertion failed}"
 
   if [[ "$expected" != "$actual" ]]; then
-  echo "FAIL: $message"
-  echo "  Expected: $expected"
-  echo "  Actual:   $actual"
-  return 1
+    echo "FAIL: $message"
+    echo "  Expected: $expected"
+    echo "  Actual:   $actual"
+    return 1
   fi
   return 0
 }
@@ -578,9 +578,9 @@ assert_true() {
   local message="${2:-Assertion failed}"
 
   if ! eval "$condition"; then
-  echo "FAIL: $message"
-  echo "  Condition: $condition"
-  return 1
+    echo "FAIL: $message"
+    echo "  Condition: $condition"
+    return 1
   fi
   return 0
 }
@@ -590,9 +590,9 @@ assert_false() {
   local message="${2:-Assertion failed}"
 
   if eval "$condition"; then
-  echo "FAIL: $message"
-  echo "  Condition should be false: $condition"
-  return 1
+    echo "FAIL: $message"
+    echo "  Condition should be false: $condition"
+    return 1
   fi
   return 0
 }
@@ -602,9 +602,9 @@ assert_file_exists() {
   local message="${2:-File should exist}"
 
   if [[ ! -f "$file" ]]; then
-  echo "FAIL: $message"
-  echo "  File not found: $file"
-  return 1
+    echo "FAIL: $message"
+    echo "  File not found: $file"
+    return 1
   fi
   return 0
 }
@@ -614,9 +614,9 @@ assert_dir_exists() {
   local message="${2:-Directory should exist}"
 
   if [[ ! -d "$dir" ]]; then
-  echo "FAIL: $message"
-  echo "  Directory not found: $dir"
-  return 1
+    echo "FAIL: $message"
+    echo "  Directory not found: $dir"
+    return 1
   fi
   return 0
 }
@@ -626,9 +626,9 @@ assert_command_succeeds() {
   local message="${2:-Command should succeed}"
 
   if ! eval "$command" >/dev/null 2>&1; then
-  echo "FAIL: $message"
-  echo "  Command failed: $command"
-  return 1
+    echo "FAIL: $message"
+    echo "  Command failed: $command"
+    return 1
   fi
   return 0
 }
@@ -638,8 +638,8 @@ skip_if() {
   local message="${2:-Test skipped}"
 
   if eval "$condition"; then
-  echo "SKIP: $message"
-  exit 0
+    echo "SKIP: $message"
+    exit 0
   fi
 }
 
@@ -668,9 +668,9 @@ generate_report() {
   echo
 
   if [[ $FAILED -eq 0 ]]; then
-  echo "${GREEN}${BOLD}All tests passed! ✅${NC}"
+    echo "${GREEN}${BOLD}All tests passed! ✅${NC}"
   else
-  echo "${RED}${BOLD}Tests failed! ❌${NC}"
+    echo "${RED}${BOLD}Tests failed! ❌${NC}"
   fi
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -701,124 +701,124 @@ main() {
 
   # Parse arguments
   while [[ $# -gt 0 ]]; do
-  case "$1" in
-    # Test levels
-    --quick)
-    TEST_LEVEL="quick"
-    shift
-    ;;
-    --standard)
-    TEST_LEVEL="standard"
-    shift
-    ;;
-    --full)
-    TEST_LEVEL="full"
-    shift
-    ;;
-    --ci)
-    CI_MODE=1
-    TEST_LEVEL="full"
-    shift
-    ;;
+    case "$1" in
+      # Test levels
+      --quick)
+        TEST_LEVEL="quick"
+        shift
+        ;;
+      --standard)
+        TEST_LEVEL="standard"
+        shift
+        ;;
+      --full)
+        TEST_LEVEL="full"
+        shift
+        ;;
+      --ci)
+        CI_MODE=1
+        TEST_LEVEL="full"
+        shift
+        ;;
 
-    # Test categories
-    --unit)
-    RUN_UNIT=1
-    shift
-    ;;
-    --functional)
-    RUN_FUNCTIONAL=1
-    shift
-    ;;
-    --integration)
-    RUN_INTEGRATION=1
-    shift
-    ;;
-    --performance)
-    RUN_PERFORMANCE=1
-    shift
-    ;;
-    --smoke)
-    RUN_SMOKE=1
-    shift
-    ;;
-    --sanity)
-    RUN_SANITY=1
-    shift
-    ;;
-    --e2e)
-    RUN_E2E=1
-    shift
-    ;;
-    --security)
-    RUN_SECURITY=1
-    shift
-    ;;
-    --regression)
-    RUN_REGRESSION=1
-    shift
-    ;;
-    --workflows)
-    RUN_WORKFLOWS=1
-    shift
-    ;;
-    --all)
-    RUN_ALL=1
-    shift
-    ;;
+      # Test categories
+      --unit)
+        RUN_UNIT=1
+        shift
+        ;;
+      --functional)
+        RUN_FUNCTIONAL=1
+        shift
+        ;;
+      --integration)
+        RUN_INTEGRATION=1
+        shift
+        ;;
+      --performance)
+        RUN_PERFORMANCE=1
+        shift
+        ;;
+      --smoke)
+        RUN_SMOKE=1
+        shift
+        ;;
+      --sanity)
+        RUN_SANITY=1
+        shift
+        ;;
+      --e2e)
+        RUN_E2E=1
+        shift
+        ;;
+      --security)
+        RUN_SECURITY=1
+        shift
+        ;;
+      --regression)
+        RUN_REGRESSION=1
+        shift
+        ;;
+      --workflows)
+        RUN_WORKFLOWS=1
+        shift
+        ;;
+      --all)
+        RUN_ALL=1
+        shift
+        ;;
 
-    # Output options
-    -v | --verbose)
-    VERBOSE=1
-    shift
-    ;;
-    -d | --debug)
-    DEBUG=1
-    VERBOSE=1
-    shift
-    ;;
-    --no-color)
-    NO_COLOR=1
-    shift
-    ;;
-    --coverage)
-    COVERAGE=1
-    shift
-    ;;
-    --junit)
-    JUNIT=1
-    shift
-    ;;
+      # Output options
+      -v | --verbose)
+        VERBOSE=1
+        shift
+        ;;
+      -d | --debug)
+        DEBUG=1
+        VERBOSE=1
+        shift
+        ;;
+      --no-color)
+        NO_COLOR=1
+        shift
+        ;;
+      --coverage)
+        COVERAGE=1
+        shift
+        ;;
+      --junit)
+        JUNIT=1
+        shift
+        ;;
 
-    # Execution options
-    --parallel)
-    PARALLEL=1
-    shift
-    ;;
-    --bail)
-    BAIL_ON_FAIL=1
-    shift
-    ;;
-    --timeout)
-    TEST_TIMEOUT="$2"
-    shift 2
-    ;;
-    --exclude)
-    EXCLUDE_PATTERN="$2"
-    shift 2
-    ;;
+      # Execution options
+      --parallel)
+        PARALLEL=1
+        shift
+        ;;
+      --bail)
+        BAIL_ON_FAIL=1
+        shift
+        ;;
+      --timeout)
+        TEST_TIMEOUT="$2"
+        shift 2
+        ;;
+      --exclude)
+        EXCLUDE_PATTERN="$2"
+        shift 2
+        ;;
 
-    # Help
-    -h | --help)
-    usage
-    ;;
+      # Help
+      -h | --help)
+        usage
+        ;;
 
-    # Test pattern
-    *)
-    TEST_PATTERN="$1"
-    shift
-    ;;
-  esac
+      # Test pattern
+      *)
+        TEST_PATTERN="$1"
+        shift
+        ;;
+    esac
   done
 
   # Setup
@@ -827,34 +827,34 @@ main() {
 
   # Determine what to run based on level
   if [[ $RUN_ALL -eq 1 ]]; then
-  RUN_UNIT=1
-  RUN_FUNCTIONAL=1
-  RUN_INTEGRATION=1
-  RUN_PERFORMANCE=1
-  RUN_SMOKE=1
-  RUN_SANITY=1
-  RUN_E2E=1
-  RUN_SECURITY=1
-  RUN_REGRESSION=1
-  RUN_WORKFLOWS=1
-  elif [[ $RUN_UNIT -eq 0 && $RUN_FUNCTIONAL -eq 0 && $RUN_INTEGRATION -eq 0 && $RUN_PERFORMANCE -eq 0 && $RUN_SMOKE -eq 0 && $RUN_SANITY -eq 0 && $RUN_E2E -eq 0 && $RUN_SECURITY -eq 0 && $RUN_REGRESSION -eq 0 && $RUN_WORKFLOWS -eq 0 ]]; then
-  # No specific category selected, use test level
-  case "$TEST_LEVEL" in
-    quick)
-    RUN_UNIT=1
-    ;;
-    standard)
-    RUN_UNIT=1
-    RUN_FUNCTIONAL=1
-    ;;
-    full)
     RUN_UNIT=1
     RUN_FUNCTIONAL=1
     RUN_INTEGRATION=1
     RUN_PERFORMANCE=1
+    RUN_SMOKE=1
+    RUN_SANITY=1
+    RUN_E2E=1
+    RUN_SECURITY=1
+    RUN_REGRESSION=1
     RUN_WORKFLOWS=1
-    ;;
-  esac
+  elif [[ $RUN_UNIT -eq 0 && $RUN_FUNCTIONAL -eq 0 && $RUN_INTEGRATION -eq 0 && $RUN_PERFORMANCE -eq 0 && $RUN_SMOKE -eq 0 && $RUN_SANITY -eq 0 && $RUN_E2E -eq 0 && $RUN_SECURITY -eq 0 && $RUN_REGRESSION -eq 0 && $RUN_WORKFLOWS -eq 0 ]]; then
+    # No specific category selected, use test level
+    case "$TEST_LEVEL" in
+      quick)
+        RUN_UNIT=1
+        ;;
+      standard)
+        RUN_UNIT=1
+        RUN_FUNCTIONAL=1
+        ;;
+      full)
+        RUN_UNIT=1
+        RUN_FUNCTIONAL=1
+        RUN_INTEGRATION=1
+        RUN_PERFORMANCE=1
+        RUN_WORKFLOWS=1
+        ;;
+    esac
   fi
 
   # Print header

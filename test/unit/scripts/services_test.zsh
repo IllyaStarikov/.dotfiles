@@ -12,11 +12,11 @@ SERVICES_SCRIPT="${DOTFILES_DIR}/src/scripts/services"
 # Test: Script exists and is executable
 test_services_script_exists() {
   if [[ ! -f "$SERVICES_SCRIPT" ]]; then
-  fail "Services script not found at $SERVICES_SCRIPT"
+    fail "Services script not found at $SERVICES_SCRIPT"
   fi
 
   if [[ ! -x "$SERVICES_SCRIPT" ]]; then
-  fail "Services script is not executable"
+    fail "Services script is not executable"
   fi
 
   pass "Services script exists and is executable"
@@ -27,7 +27,7 @@ test_services_help() {
   local output
   output=$("$SERVICES_SCRIPT" --help 2>&1 || true)
   if ! echo "$output" | grep -qi "usage\|services\|start\|stop"; then
-  fail "Help output doesn't contain expected commands"
+    fail "Help output doesn't contain expected commands"
   fi
   pass "Help command works"
 }
@@ -39,7 +39,7 @@ test_services_list() {
   output=$("$SERVICES_SCRIPT" list 2>&1 || true)
   # Check it returns something (either services or "no services" message)
   if [[ -z "$output" ]]; then
-  warning "List command returned empty output (may be OK if no services defined)"
+    warning "List command returned empty output (may be OK if no services defined)"
   fi
   pass "List command completes without error"
 }
@@ -51,7 +51,7 @@ test_services_status() {
   "$SERVICES_SCRIPT" status >/dev/null 2>&1 || exit_code=$?
   # Exit code 0 or 1 are acceptable (0 = all running, 1 = some not running)
   if [[ $exit_code -gt 1 ]]; then
-  fail "Status command failed with exit code $exit_code"
+    fail "Status command failed with exit code $exit_code"
   fi
   pass "Status command completes without error"
 }
@@ -63,11 +63,11 @@ test_services_validation() {
   # Try to start a nonexistent service
   output=$("$SERVICES_SCRIPT" start nonexistent_service_12345 2>&1) || exit_code=$?
   if [[ $exit_code -eq 0 ]]; then
-  fail "Script should fail when starting nonexistent service"
+    fail "Script should fail when starting nonexistent service"
   fi
   # Check for error message about service not found
   if ! echo "$output" | grep -qi "not found\|unknown\|invalid\|does not exist"; then
-  warning "Error message might not be clear about invalid service"
+    warning "Error message might not be clear about invalid service"
   fi
   pass "Script validates service names"
 }
@@ -81,9 +81,9 @@ test_services_configuration() {
   # Check for essential configuration variables
   local required_vars=("SERVICES_DIR" "LOG_DIR" "PID_DIR")
   for var in "${required_vars[@]}"; do
-  if ! echo "$script_content" | grep -q "$var"; then
-    fail "Missing configuration variable: $var"
-  fi
+    if ! echo "$script_content" | grep -q "$var"; then
+      fail "Missing configuration variable: $var"
+    fi
   done
 
   pass "Configuration variables are defined"
@@ -97,9 +97,9 @@ test_services_functions() {
   # Check for essential functions
   local required_funcs=("get_services" "service_exists" "info" "error")
   for func in "${required_funcs[@]}"; do
-  if ! echo "$script_content" | grep -q "${func}()"; then
-    fail "Missing function: $func"
-  fi
+    if ! echo "$script_content" | grep -q "${func}()"; then
+      fail "Missing function: $func"
+    fi
   done
 
   pass "Essential functions are defined"
