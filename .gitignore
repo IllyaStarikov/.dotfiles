@@ -33,6 +33,7 @@ test/reports/
 # WezTerm debug files and generated theme
 wezterm_*.txt
 src/wezterm/theme.lua
+src/wezterm/current-theme
 
 # Kitty generated theme
 src/kitty/theme.conf
