@@ -1,6 +1,6 @@
 # dotfiles
 
-> Power of an IDE, speed of a text editor.
+> 🐚 Code at the speed of thought.
 
 ![macOS](https://img.shields.io/badge/macOS-black?logo=apple)
 ![Linux](https://img.shields.io/badge/Linux-black?logo=linux&logoColor=white)
@@ -9,13 +9,11 @@
 
 ![dotfiles](template/dotfiles.png)
 
-## Why This?
-
-- Themes sync across terminal, editor, tmux, and prompt in one command
-- 80+ automated tests prevent configuration drift
-- Private repo support for private configs
-- One-liner install, clean uninstall
-- 20+ languages with LSP, linting, and formatting out of the box
+- **Battle-tested, production-ready dotfiles** refined over 10 years of daily use.
+- **One command, everything syncs** terminal, editor, tmux, prompt all switch themes together
+- **80+ automated tests** CI catches breakage before you do
+- **20 languages, zero config** LSP, linting, formatting just work
+- **5 minutes to install, 30 seconds to uninstall** no leftovers, no regrets
 
 |                                                  |                                                   |
 | :----------------------------------------------: | :-----------------------------------------------: |
@@ -152,5 +150,14 @@ MIT - See [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-  <sub>A decade of Vim, because I never figured out how to exit.</sub>
+  <i>
+    The Shell. A digital frontier.<br>
+    I tried to picture clusters of information as they moved through the text buffer.<br>
+    What did they look like? Scripts, macro-cycles?<br>
+    Were the pipelines like freeways?<br>
+    I kept dreaming of a world I thought I'd never see.<br>
+    And then, one day... <b>I typed Vim.</b>
+  </i>
+  <br>
+  — <a href="https://www.goodreads.com/quotes/513459-the-grid-a-digital-frontier-i-tried-to-picture-clusters">Kevin Flynn</a>, probably
 </div>
