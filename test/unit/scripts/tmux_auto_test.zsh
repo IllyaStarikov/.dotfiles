@@ -46,6 +46,17 @@ test_name_sanitization() {
   assert_true "[ $has_sanitize -gt 0 ]" "Should sanitize colons in session name"
 }
 
+# Test dot sanitization (leading dots stripped, internal dots to underscores)
+test_dot_sanitization() {
+  local has_leading_dot_strip
+  has_leading_dot_strip=$(grep -c 'name=${name#.}' "$SCRIPT_PATH" || echo 0)
+  assert_true "[ $has_leading_dot_strip -gt 0 ]" "Should strip leading dot from session name"
+
+  local has_dot_replace
+  has_dot_replace=$(grep -c 'name=${name//./_}' "$SCRIPT_PATH" || echo 0)
+  assert_true "[ $has_dot_replace -gt 0 ]" "Should replace dots with underscores in session name"
+}
+
 # Test tmux session existence check
 test_session_check() {
   local has_session_check

@@ -11,6 +11,10 @@ fi
 # Sanitize for tmux (colons are special in session:window.pane syntax)
 name=${name//:/-}
 
+# Strip leading dots and replace remaining dots with underscores
+name=${name#.}
+name=${name//./_}
+
 # Check if session already exists
 if tmux has-session -t "$name" 2>/dev/null; then
   tmux attach -t "$name"
