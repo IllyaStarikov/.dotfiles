@@ -55,23 +55,32 @@ function M.detect_machine_type()
     end
   end
 
-  -- Method 4: Check hostname patterns directly
-  local hostname = vim.fn.hostname()
-  if
-    hostname:match("%.corp%.google%.com$")
-    or hostname:match("%.c%.googlers%.com$")
-    or hostname:match("^cloudtop%-")
-  then
-    cached_machine_type = "google"
-    vim.g.work_machine_type = cached_machine_type
-    return cached_machine_type
-  elseif hostname:match("DELL%-PRECISION") or hostname:match("%.garmin%.com$") then
-    cached_machine_type = "garmin"
-    vim.g.work_machine_type = cached_machine_type
-    return cached_machine_type
+  -- Method 4: Check hosts.json patterns from private dotfiles
+  -- Hostname patterns are stored in private dotfiles to avoid exposing work machine names
+  local hosts_file = private_dir .. "/config/hosts.json"
+  if vim.fn.filereadable(hosts_file) == 1 then
+    local hostname = vim.fn.hostname()
+    local ok, hosts_content = pcall(vim.fn.readfile, hosts_file)
+    if ok and hosts_content then
+      local json_str = table.concat(hosts_content, "\n")
+      local decode_ok, hosts = pcall(vim.fn.json_decode, json_str)
+      if decode_ok and hosts then
+        for pattern, company in pairs(hosts) do
+          -- Convert glob pattern to Lua pattern
+          -- * -> .* (any chars), ? -> . (one char), . -> %.(literal dot)
+          local lua_pattern = pattern:gsub("%.", "%%."):gsub("%*", ".*"):gsub("%?", ".")
+          lua_pattern = "^" .. lua_pattern .. "$"
+          if hostname:match(lua_pattern) then
+            cached_machine_type = company
+            vim.g.work_machine_type = cached_machine_type
+            return cached_machine_type
+          end
+        end
+      end
+    end
   end
 
-  -- Default to personal
+  -- Default to personal (no private dotfiles or no pattern match)
   cached_machine_type = "personal"
   vim.g.work_machine_type = cached_machine_type
   return cached_machine_type

@@ -212,23 +212,24 @@ detect_work_environment() {
   # Get current hostname
   CURRENT_HOSTNAME=$(hostname -f 2>/dev/null || hostname)
 
-  # Check hostname patterns to identify corporate work machines
-  # Pattern matching for various corporate domain suffixes
-  case "$CURRENT_HOSTNAME" in
-    starikov-mac.roam.internal | \
-      starikov.c.googlers.com | \
-      starikov-desktop.mtv.corp.google.com | \
-      *.c.googlers.com | \
-      *.corp.google.com | \
-      *.roam.internal)
+  # Check for work machine using private dotfiles detection
+  # Hostname patterns are stored in private dotfiles to avoid exposing work machine names
+  local check_machine_script="$HOME/.dotfiles/.dotfiles.private/bin/check-machine"
+  if [[ -x "$check_machine_script" ]]; then
+    local machine_type
+    machine_type=$("$check_machine_script" 2>/dev/null) || machine_type="personal"
+    if [[ "$machine_type" != "personal" ]]; then
       IS_WORK_MACHINE=true
-      info "Detected corporate work machine: $CURRENT_HOSTNAME"
+      export WORK_MACHINE_TYPE="$machine_type"
+      info "Detected corporate work machine ($machine_type): $CURRENT_HOSTNAME"
       info "Will use work-specific configurations (PyPy, timeouts, workarounds)"
-      ;;
-    *)
+    else
       info "Personal machine detected: $CURRENT_HOSTNAME"
-      ;;
-  esac
+    fi
+  else
+    # No private dotfiles - assume personal machine
+    info "Personal machine detected: $CURRENT_HOSTNAME"
+  fi
 
   export IS_WORK_MACHINE
 }
