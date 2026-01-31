@@ -342,7 +342,7 @@ require("lazy").setup({
   -- Bufferline - Better buffer management
   {
     "akinsho/bufferline.nvim",
-    version = false,
+    version = "*",
     dependencies = "nvim-tree/nvim-web-devicons",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
@@ -953,7 +953,7 @@ require("lazy").setup({
   -- Snippet Engine
   {
     "L3MON4D3/LuaSnip",
-    version = false,
+    version = "v2.*", -- Use stable v2 releases
     dependencies = {
       "rafamadriz/friendly-snippets", -- Preconfigured snippets
     },
@@ -980,7 +980,7 @@ require("lazy").setup({
       "rafamadriz/friendly-snippets",
       "L3MON4D3/LuaSnip",
     },
-    version = false,
+    version = "1.*", -- Use stable releases with prebuilt binaries
     opts = function()
       return require("plugins.completion")
     end,
