@@ -145,10 +145,10 @@ colorize() {
   local text="$*"
 
   # Check if color is in our predefined colors
-  # Use ${+array[key]} to check key existence (works with set -u)
-  if [[ -n "$color" ]] && (( ${+COLORS[$color]} )); then
+  # Use ${array[$key]:-} with -n test to avoid arithmetic context issues with special chars
+  if [[ -n "$color" && -n "${COLORS[$color]:-}" ]]; then
     echo -e "${COLORS[$color]}${text}${STYLES[RESET]}"
-  elif [[ -n "$color" ]] && (( ${+COLOR_ALIASES[$color]} )); then
+  elif [[ -n "$color" && -n "${COLOR_ALIASES[$color]:-}" ]]; then
     echo -e "${COLOR_ALIASES[$color]}${text}${STYLES[RESET]}"
   else
     # Fallback: treat color as raw escape sequence or just print text
