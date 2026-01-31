@@ -49,7 +49,7 @@ sudo zypper install git curl wget gcc-c++ make
 ```bash
 git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && \
 cd ~/.dotfiles && \
-./src/setup/setup.sh
+./src/setup/install.sh
 ```
 
 ### Desktop Environment Support

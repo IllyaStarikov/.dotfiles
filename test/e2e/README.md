@@ -176,7 +176,7 @@ docker-compose -f test/e2e/docker-compose.yml run debug-e2e
 
 # Inside container
 cd /home/testuser/.dotfiles
-./src/setup/setup.sh --verbose
+./src/setup/install.sh --verbose
 ```
 
 Run specific test phase:

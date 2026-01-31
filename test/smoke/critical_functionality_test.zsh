@@ -87,7 +87,7 @@ fi
 
 test_case "Critical scripts have no syntax errors"
 critical_scripts=(
-  "$DOTFILES_DIR/src/scripts/update-dotfiles"
+  "$DOTFILES_DIR/src/setup/update.sh"
   "$DOTFILES_DIR/src/scripts/theme"
   "$DOTFILES_DIR/src/scripts/fixy"
 )

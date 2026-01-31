@@ -243,7 +243,7 @@ test_script_execution_performance() {
 
   local scripts_to_test=(
     "$DOTFILES_DIR/src/scripts/fixy"
-    "$DOTFILES_DIR/src/scripts/update-dotfiles"
+    "$DOTFILES_DIR/src/setup/update.sh"
   )
 
   for script in "${scripts_to_test[@]}"; do

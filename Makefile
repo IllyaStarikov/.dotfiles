@@ -50,7 +50,7 @@ lint:
 
 # Run full setup
 setup:
-	./src/setup/setup.sh
+	./src/setup/install.sh
 
 # Create/update symlinks only
 symlinks:
@@ -58,7 +58,7 @@ symlinks:
 
 # Update packages and plugins
 update:
-	./src/scripts/update-dotfiles
+	./src/setup/update.sh
 
 # Auto-detect theme from macOS appearance
 theme:

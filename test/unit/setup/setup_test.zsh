@@ -82,7 +82,7 @@ it "should create backup directory" && {
 
   # Run backup directory creation
   bash -c "
-    source $DOTFILES_DIR/src/setup/setup.sh
+    source $DOTFILES_DIR/src/setup/install.sh
     create_backup_dir() {
       mkdir -p \"\$BACKUP_DIR\"
     }
@@ -111,7 +111,7 @@ it "should validate required tools" && {
 # Test: Configuration file paths
 it "should use correct configuration paths" && {
   # Check setup.sh instead since mac.sh doesn't exist
-  local script_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh" 2>/dev/null || echo "")
+  local script_content=$(cat "$DOTFILES_DIR/src/setup/install.sh" 2>/dev/null || echo "")
 
   # Check for expected paths
   assert_contains "$script_content" "DOTFILES_DIR"
@@ -139,7 +139,7 @@ it "should display help message" && {
 it "should define required functions" && {
   # Source script and check functions
   output=$(bash -c "
-    source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
+    source $DOTFILES_DIR/src/setup/install.sh 2>/dev/null || true
     declare -F | grep -E 'install_|setup_|configure_' | wc -l
   ")
 
@@ -190,7 +190,7 @@ it "should not overwrite existing files without backup" && {
 
   # Check that script would create backup
   output=$(bash -c "
-    source $DOTFILES_DIR/src/setup/setup.sh 2>/dev/null || true
+    source $DOTFILES_DIR/src/setup/install.sh 2>/dev/null || true
     if [[ -f \"$HOME/.zshrc\" ]]; then
       echo 'would-backup'
     fi

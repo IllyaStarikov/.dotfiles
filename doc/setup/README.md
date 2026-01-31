@@ -6,7 +6,7 @@ Quick installation guide for macOS and Linux.
 
 ```bash
 git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
-cd ~/.dotfiles && ./src/setup/setup.sh
+cd ~/.dotfiles && ./src/setup/install.sh
 ```
 
 ## Prerequisites
@@ -71,5 +71,5 @@ Personal configs go in:
 ```bash
 cd ~/.dotfiles
 git pull
-./src/setup/setup.sh --symlinks  # Update links only
+./src/setup/install.sh --symlinks  # Update links only
 ```

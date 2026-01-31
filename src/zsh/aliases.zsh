@@ -318,13 +318,13 @@ alias reset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 
 # System maintenance
-alias update='$DOTFILES/src/scripts/update-dotfiles' # Update packages and plugins
+alias update='$DOTFILES/src/setup/update.sh' # Update packages and plugins
 alias updateall="update && npm update -g && pip3 list --outdated --format=freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U"
-alias update-dotfiles='$DOTFILES/src/scripts/update-dotfiles' # Pull latest dotfiles changes
-alias dotfiles-setup='$DOTFILES/src/setup/setup.sh'           # Re-run setup
+alias update-dotfiles='$DOTFILES/src/setup/update.sh' # Pull latest dotfiles changes
+alias dotfiles-setup='$DOTFILES/src/setup/install.sh'           # Re-run setup
 alias dotfiles-symlinks='$DOTFILES/src/setup/symlinks.sh'     # Re-create symlinks
-alias dotfiles-install='$DOTFILES/src/setup/setup.sh --full'  # Full installation
-alias dotfiles-core='$DOTFILES/src/setup/setup.sh --core'     # Core packages only
+alias dotfiles-install='$DOTFILES/src/setup/install.sh --full'  # Full installation
+alias dotfiles-core='$DOTFILES/src/setup/install.sh --core'     # Core packages only
 alias dotfiles-test='$DOTFILES/test/runner.zsh'               # Run dotfiles test suite
 alias dotfiles-test-debug='$DOTFILES/test/runner.zsh --debug' # Run tests with debug output
 alias dotfiles-test-old='$DOTFILES/test/runner.py'            # Run Python test suite (deprecated)

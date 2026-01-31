@@ -150,7 +150,7 @@ EOF
 test_update_script_functionality() {
   log "TRACE" "Testing update-dotfiles script"
 
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
 
   if [[ ! -x "$update_script" ]]; then
     log "ERROR" "update-dotfiles script not executable or missing"

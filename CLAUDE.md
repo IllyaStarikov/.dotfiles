@@ -79,15 +79,15 @@ This is a comprehensive dotfiles repository serving dual purposes:
 
 ```bash
 # Unified setup script with different modes
-./src/setup/setup.sh           # Full installation (interactive, auto-detects platform)
-./src/setup/setup.sh --core    # Core packages only
-./src/setup/setup.sh --symlinks # Just create symlinks
+./src/setup/install.sh           # Full installation (interactive, auto-detects platform)
+./src/setup/install.sh --core    # Core packages only
+./src/setup/install.sh --symlinks # Just create symlinks
 
 # Create symlinks for all dotfiles
 ./src/setup/symlinks.sh
 
 # System maintenance and updates
-./src/scripts/update-dotfiles   # Update all packages, plugins, and tools (alias: update)
+./src/setup/update.sh   # Update all packages, plugins, and tools (alias: update)
 ```
 
 ### Testing

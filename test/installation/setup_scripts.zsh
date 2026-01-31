@@ -10,7 +10,7 @@ test_setup_script_exists() {
   log "TRACE" "Checking setup script existence and permissions"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Looking for setup scripts in: $DOTFILES_DIR/src/setup/"
 
-  local setup_script="$DOTFILES_DIR/src/setup/setup.sh"
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
 
   if [[ ! -f "$setup_script" ]]; then
     log "ERROR" "Setup script not found at: $setup_script"
@@ -108,7 +108,7 @@ test_setup_creates_directories() {
   )
 
   # Check if setup script references these
-  local setup_script="$DOTFILES_DIR/src/setup/setup.sh"
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
   if [[ -f "$setup_script" ]]; then
     for dir in "${required_dirs[@]}"; do
       if grep -q "mkdir.*$(echo "$dir" | sed 's/\$HOME//')" "$setup_script" 2>/dev/null; then
@@ -284,7 +284,7 @@ test_dependency_checks() {
   log "TRACE" "Testing dependency verification in setup"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking if setup verifies dependencies"
 
-  local setup_script="$DOTFILES_DIR/src/setup/setup.sh"
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
 
   if [[ ! -f "$setup_script" ]]; then
     return 1
@@ -362,7 +362,7 @@ test_setup_logging() {
   log "TRACE" "Testing logging capabilities in setup"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking if setup provides adequate logging"
 
-  local setup_script="$DOTFILES_DIR/src/setup/setup.sh"
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
 
   if [[ -f "$setup_script" ]]; then
     # Check for echo/printf statements

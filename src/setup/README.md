@@ -6,10 +6,10 @@ Automated installation system for dotfiles across macOS and Linux.
 
 ```bash
 # Full installation (15-30 min)
-./src/setup/setup.sh
+./src/setup/install.sh
 
 # Core tools only (5-10 min)
-./src/setup/setup.sh --core
+./src/setup/install.sh --core
 
 # Symlinks only (30 sec)
 ./src/setup/symlinks.sh

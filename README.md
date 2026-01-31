@@ -47,14 +47,14 @@
 ### Quick Start
 
 ```bash
-git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/setup.sh
+git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/install.sh
 ```
 
 | Mode     | Command                           | Time      | Description          |
 | -------- | --------------------------------- | --------- | -------------------- |
-| Full     | `./src/setup/setup.sh`            | 15-30 min | Complete environment |
-| Core     | `./src/setup/setup.sh --core`     | 5-10 min  | Essential tools only |
-| Symlinks | `./src/setup/setup.sh --symlinks` | 30 sec    | Link configs only    |
+| Full     | `./src/setup/install.sh`            | 15-30 min | Complete environment |
+| Core     | `./src/setup/install.sh --core`     | 5-10 min  | Essential tools only |
+| Symlinks | `./src/setup/install.sh --symlinks` | 30 sec    | Link configs only    |
 
 **Options:** `--skip-brew` (corporate machines) · `--verbose` · `--help`
 

@@ -109,7 +109,7 @@ phase_system_info() {
 phase_prepare_environment() {
   # Set execute permissions on scripts
   local scripts=(
-    "${DOTFILES_DIR}/src/setup/setup.sh"
+    "${DOTFILES_DIR}/src/setup/install.sh"
     "${DOTFILES_DIR}/src/setup/symlinks.sh"
     "${DOTFILES_DIR}/src/setup/linux.sh"
     "${DOTFILES_DIR}/test/runner.zsh"
@@ -139,7 +139,7 @@ phase_run_setup() {
   # Run the setup script with core packages only (skip brew)
   # Also skip Starship in Docker since it requires sudo to install to /usr/local/bin
   export SKIP_STARSHIP=1
-  if ./src/setup/setup.sh --core --skip-brew; then
+  if ./src/setup/install.sh --core --skip-brew; then
     print_success "Setup script completed"
     return 0
   else

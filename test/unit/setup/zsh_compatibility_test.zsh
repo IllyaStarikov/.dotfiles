@@ -14,7 +14,7 @@ describe "Zsh script compatibility tests"
 
 # Test: Setup script runs with zsh
 it "setup.sh should run with zsh without errors" && {
-  local script_path="$DOTFILES_DIR/src/setup/setup.sh"
+  local script_path="$DOTFILES_DIR/src/setup/install.sh"
 
   # Check syntax with zsh
   if zsh -n "$script_path" 2>/dev/null; then
@@ -41,7 +41,7 @@ it "setup.sh should correctly detect DOTFILES_DIR" && {
   # Run the script and capture early output
   output=$(timeout 2 zsh -c "
     set -e
-    source '$DOTFILES_DIR/src/setup/setup.sh' --help 2>&1 | head -1
+    source '$DOTFILES_DIR/src/setup/install.sh' --help 2>&1 | head -1
   " 2>&1 || true)
 
   # The script should not error about DOTFILES_DIR
@@ -115,7 +115,7 @@ it "template/mirror.sh should use zsh" && {
 # Test: No BASH_SOURCE references in zsh scripts
 it "zsh scripts should not use BASH_SOURCE" && {
   # Check our modified scripts don't have BASH_SOURCE
-  for script in "$DOTFILES_DIR/src/setup/setup.sh" \
+  for script in "$DOTFILES_DIR/src/setup/install.sh" \
     "$DOTFILES_DIR/src/setup/symlinks.sh" \
     "$DOTFILES_DIR/template/generate.sh" \
     "$DOTFILES_DIR/template/mirror.sh"; do
@@ -132,7 +132,7 @@ it "zsh scripts should not use BASH_SOURCE" && {
 # Test: Scripts use proper zsh directory detection
 it "scripts should use proper zsh directory detection" && {
   # Check for ${0} usage instead of BASH_SOURCE
-  for script in "$DOTFILES_DIR/src/setup/setup.sh" \
+  for script in "$DOTFILES_DIR/src/setup/install.sh" \
     "$DOTFILES_DIR/src/setup/symlinks.sh"; do
     if [[ -f "$script" ]]; then
       if grep -q 'dirname.*\${0}' "$script" || grep -q 'dirname.*\$0' "$script"; then
@@ -147,7 +147,7 @@ it "scripts should use proper zsh directory detection" && {
 
 # Test: Git hooks installer is called with zsh
 it "setup.sh should invoke git hooks installer with zsh" && {
-  local setup_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh")
+  local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
 
   # Check if git hooks installer is invoked with zsh
   if echo "$setup_content" | grep -q 'zsh.*install-git-hooks'; then
@@ -164,7 +164,7 @@ it "setup.sh should invoke git hooks installer with zsh" && {
 
 # Test: Symlinks.sh is invoked with zsh from setup.sh
 it "setup.sh should invoke symlinks.sh with zsh" && {
-  local setup_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh")
+  local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
 
   # Check if symlinks.sh is invoked with zsh
   if echo "$setup_content" | grep -q 'zsh.*symlinks\.sh'; then

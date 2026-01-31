@@ -27,7 +27,7 @@ it "should complete fresh installation workflow" && {
   export DOTFILES_TEST_MODE=1
 
   # Run setup in dry-run mode
-  output=$("$DOTFILES_DIR/src/setup/setup.sh" --dry-run 2>&1 || true)
+  output=$("$DOTFILES_DIR/src/setup/install.sh" --dry-run 2>&1 || true)
 
   # Should complete without errors
   assert_not_contains "$output" "FATAL"
@@ -167,8 +167,8 @@ it "should handle platform-specific setup" && {
   export HOME="$TEST_HOME"
 
   # Unified setup.sh handles both platforms
-  assert_file_exists "$DOTFILES_DIR/src/setup/setup.sh"
-  local setup_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh")
+  assert_file_exists "$DOTFILES_DIR/src/setup/install.sh"
+  local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
   # Should detect platform
   assert_contains "$setup_content" "Darwin" || assert_contains "$setup_content" "Linux" || assert_contains "$setup_content" "uname"
   pass
@@ -203,7 +203,7 @@ it "should check for required dependencies" && {
   export HOME="$TEST_HOME"
 
   # Check setup script has dependency checking
-  local setup_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh")
+  local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
 
   assert_contains "$setup_content" "command -v" || assert_contains "$setup_content" "which"
   assert_contains "$setup_content" "git" || assert_contains "$setup_content" "Git"
@@ -215,8 +215,8 @@ it "should be idempotent when run multiple times" && {
   export HOME="$TEST_HOME"
 
   # Run setup twice
-  output1=$("$DOTFILES_DIR/src/setup/setup.sh" --dry-run 2>&1 || true)
-  output2=$("$DOTFILES_DIR/src/setup/setup.sh" --dry-run 2>&1 || true)
+  output1=$("$DOTFILES_DIR/src/setup/install.sh" --dry-run 2>&1 || true)
+  output2=$("$DOTFILES_DIR/src/setup/install.sh" --dry-run 2>&1 || true)
 
   # Both should succeed
   assert_not_contains "$output1" "FATAL"
@@ -243,7 +243,7 @@ it "should verify installation success" && {
   export HOME="$TEST_HOME"
 
   # Check setup script has verification
-  local setup_content=$(cat "$DOTFILES_DIR/src/setup/setup.sh")
+  local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
 
   assert_contains "$setup_content" "verify" || assert_contains "$setup_content" "check" || assert_contains "$setup_content" "test"
   pass

@@ -23,7 +23,7 @@ it "should check git repository status" && {
 }
 
 it "should handle uncommitted changes" && {
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
   if [[ -f "$update_script" ]]; then
     local script_content=$(cat "$update_script")
     assert_contains "$script_content" "status" || assert_contains "$script_content" "diff"
@@ -34,7 +34,7 @@ it "should handle uncommitted changes" && {
 }
 
 it "should sync with remote repository" && {
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
   if [[ -f "$update_script" ]]; then
     local script_content=$(cat "$update_script")
     assert_contains "$script_content" "pull" || assert_contains "$script_content" "fetch"
@@ -46,7 +46,7 @@ it "should sync with remote repository" && {
 
 it "should handle submodules" && {
   if [[ -f "$DOTFILES_DIR/.gitmodules" ]]; then
-    local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+    local update_script="$DOTFILES_DIR/src/setup/update.sh"
     local script_content=$(cat "$update_script")
     # Check for explicit submodule handling, or skip if not implemented
     if [[ "$script_content" == *"submodule"* ]] || [[ "$script_content" == *"recurse"* ]]; then
@@ -66,7 +66,7 @@ it "should preserve local modifications" && {
   echo "test" >"$TEST_HOME/.test_file"
 
   # Sync should not destroy local files - check for backup or safe update patterns
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
   if [[ -f "$update_script" ]]; then
     local script_content=$(cat "$update_script")
     # Accept backup, stash, or skip patterns (safe update handling)
@@ -81,7 +81,7 @@ it "should preserve local modifications" && {
 }
 
 it "should update symlinks after sync" && {
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
   if [[ -f "$update_script" ]]; then
     local script_content=$(cat "$update_script")
     # Accept symlink, link, or config patterns (update handling)

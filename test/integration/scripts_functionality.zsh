@@ -92,9 +92,9 @@ EOF
 # Test update-dotfiles script
 test_update_dotfiles_script() {
   log "TRACE" "Testing update-dotfiles script"
-  [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Testing: $DOTFILES_DIR/src/scripts/update-dotfiles"
+  [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Testing: $DOTFILES_DIR/src/setup/update.sh"
 
-  local update_script="$DOTFILES_DIR/src/scripts/update-dotfiles"
+  local update_script="$DOTFILES_DIR/src/setup/update.sh"
 
   if [[ ! -x "$update_script" ]]; then
     log "ERROR" "update-dotfiles script not found or not executable"

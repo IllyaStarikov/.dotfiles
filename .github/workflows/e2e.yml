@@ -76,7 +76,7 @@ jobs:
         run: |
           chmod +x test/e2e/docker-e2e-test.zsh || true
           chmod +x test/runner.zsh || true
-          chmod +x src/setup/setup.sh || true
+          chmod +x src/setup/install.sh || true
           chmod +x src/setup/symlinks.sh || true
 
       - name: run e2e tests (docker)
@@ -99,7 +99,7 @@ jobs:
         run: |
           echo "Running native E2E tests on ${{ matrix.name }}"
           # Run setup script directly on macOS
-          ./src/setup/setup.sh --core --skip-brew || echo "Setup completed with warnings"
+          ./src/setup/install.sh --core --skip-brew || echo "Setup completed with warnings"
           # Run tests from the current directory (GitHub workspace)
           # The setup script creates symlinks, not a copy of the repo
           ./test/runner.zsh --quick
