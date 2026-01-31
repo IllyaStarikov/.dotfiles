@@ -379,6 +379,7 @@ EOF
         || [[ "$test_name" == "comprehensive_zsh_test" ]] \
         || [[ "$test_name" == *"_interactive_"* ]] \
         || [[ "$test_name" == "plugin_loading_test" ]] \
+        || [[ "$test_name" == "optional_plugin_test" ]] \
         || [[ "$test_name" == "lsp_completion_test" ]]; then
         [[ $VERBOSE -eq 0 ]] && printf "\r%-80s\r" " "
         log WARN "$test_name - SKIPPED (CI mode)"
