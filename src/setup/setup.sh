@@ -188,7 +188,7 @@ detect_system() {
       PKG_UPDATE="sudo pacman -Syu --noconfirm"
     else
       error "No supported package manager found. Please install one of: apt-get, dnf, or pacman"
-      error "For manual installation, see: https://github.com/yourusername/dotfiles#manual-setup"
+      error "For manual installation, see: https://github.com/IllyaStarikov/.dotfiles#manual-setup"
       exit 1
     fi
   else

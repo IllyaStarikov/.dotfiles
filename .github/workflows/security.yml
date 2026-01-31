@@ -27,8 +27,8 @@ jobs:
       - name: secret detection
         run: |
           echo "::group::Install and run gitleaks"
-          # Install gitleaks
-          wget -qO gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          # Install gitleaks (version v8.21.2 - pinned for stability)
+          wget -qO gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz
           tar -xzf gitleaks.tar.gz
           chmod +x gitleaks
           sudo mv gitleaks /usr/local/bin/
@@ -50,7 +50,7 @@ jobs:
           echo "::endgroup::"
 
       - name: dependency scan
-        uses: anchore/scan-action@v3
+        uses: anchore/scan-action@v5.3.0
         continue-on-error: true
         with:
           path: '.'

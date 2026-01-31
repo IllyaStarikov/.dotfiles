@@ -143,11 +143,21 @@ jobs:
           echo "::endgroup::"
           echo "✅ All Python files are properly formatted"
 
+      - name: type check python
+        run: |
+          pip install mypy types-pyyaml types-requests
+          echo "::group::Type checking Python"
+          mypy src/cortex --ignore-missing-imports --no-error-summary || {
+            echo "⚠️ Type checking warnings (non-blocking)"
+            exit 0
+          }
+          echo "::endgroup::"
+          echo "✅ Python type checking complete"
+
   toml:
     name: toml files
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    continue-on-error: true
 
     steps:
       - name: checkout code
@@ -162,14 +172,13 @@ jobs:
           key: ${{ runner.os }}-taplo-v0.9.0-2
 
       - name: validate toml
-        continue-on-error: true
         run: |
           # Install taplo if not cached
           if ! command -v taplo &> /dev/null; then
             echo "Installing taplo..."
             curl -fsSL -o taplo.gz https://github.com/tamasfe/taplo/releases/download/0.9.0/taplo-full-linux-x86_64.gz || {
-              echo "⚠️ Failed to download taplo, skipping TOML validation"
-              exit 0
+              echo "❌ Failed to download taplo"
+              exit 1
             }
             gunzip taplo.gz && chmod +x taplo && sudo mv taplo /usr/local/bin/
           fi
@@ -185,7 +194,8 @@ jobs:
           echo "::endgroup::"
 
           if [[ $errors -gt 0 ]]; then
-            echo "⚠️ Found $errors TOML formatting issues (non-blocking)"
+            echo "❌ Found $errors TOML formatting issues"
+            exit 1
           else
             echo "✅ All TOML files are valid"
           fi
@@ -236,7 +246,8 @@ jobs:
           echo "::endgroup::"
 
           if [[ $errors -gt 0 ]]; then
-            echo "⚠️ Found $errors YAML validation warnings (non-blocking)"
+            echo "❌ Found $errors YAML validation errors"
+            exit 1
           else
             echo "✅ All YAML files are valid"
           fi
