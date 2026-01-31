@@ -93,11 +93,8 @@ local function setup_lsp()
     end
   end
 
-  -- TODO(starikov): Migrate to vim.lsp.config when nvim-lspconfig v3.0.0 is released
-  -- Currently using the old require('lspconfig') pattern which triggers a deprecation
-  -- warning on Neovim 0.11+. The warning is filtered in config/error-handler.lua
-  -- until the migration path is available.
-  local lspconfig = require("lspconfig")
+  -- Use native vim.lsp.config API (Neovim 0.11+)
+  -- nvim-lspconfig still provides default configs in lsp/ directory
 
   -- 1. Setup Mason for LSP management (skip if work override is active)
   if not vim.g.work_lsp_override then
@@ -329,313 +326,286 @@ local function setup_lsp()
   end
 
   -- Enable language servers only if they exist
-  local servers =
-    {
-      pyright = {
-        -- Prevent pyright from using home directory as workspace root
-        -- Note: ~/pyproject.toml exists for global ruff config, which breaks default detection
-        root_dir = function(fname)
-          local home = vim.fn.expand("~")
-          -- Check Python-specific markers first (more specific, excludes .git)
-          local python_root = lspconfig.util.root_pattern(
-            "pyproject.toml",
-            "setup.py",
-            "setup.cfg",
-            "requirements.txt",
-            "Pipfile",
-            "pyrightconfig.json"
-          )(fname)
-          -- If found root is home directory, try to find a more specific one
-          if python_root == home then
-            -- Try without pyproject.toml (since ~/pyproject.toml is global config)
-            python_root = lspconfig.util.root_pattern(
-              "setup.py",
-              "setup.cfg",
-              "requirements.txt",
-              "Pipfile",
-              "pyrightconfig.json"
-            )(fname)
-          end
-          -- Fall back to .git if no Python markers found
-          if not python_root then
-            python_root = lspconfig.util.root_pattern(".git")(fname)
-          end
-          -- If still home or nil, use file's directory
-          if not python_root or python_root == home then
-            python_root = vim.fn.fnamemodify(fname, ":h")
-          end
-          return python_root
-        end,
-        settings = {
-          python = {
-            analysis = {
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              diagnosticMode = "workspace",
-              typeCheckingMode = "basic",
-              -- Add completion-specific settings
-              autoImportCompletions = true,
-              completeFunctionParens = true,
+  local servers = {
+    pyright = {
+      -- Prevent pyright from using home directory as workspace root
+      -- Note: ~/pyproject.toml exists for global ruff config, which breaks default detection
+      -- Root markers searched in order; first match wins
+      root_markers = {
+        "pyrightconfig.json", -- Most specific marker first
+        "setup.py",
+        "setup.cfg",
+        "requirements.txt",
+        "Pipfile",
+        -- pyproject.toml excluded to avoid matching ~/pyproject.toml
+        ".git",
+      },
+      settings = {
+        python = {
+          analysis = {
+            autoSearchPaths = true,
+            useLibraryCodeForTypes = true,
+            diagnosticMode = "workspace",
+            typeCheckingMode = "basic",
+            -- Add completion-specific settings
+            autoImportCompletions = true,
+            completeFunctionParens = true,
+          },
+        },
+      },
+    },
+    clangd = {
+      -- Minimal configuration for clangd
+      cmd = {
+        "clangd",
+        "--background-index",
+        "--completion-style=detailed",
+        "--header-insertion=iwyu",
+        "--clang-tidy=false", -- Disable clang-tidy for better performance
+      },
+      filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+      -- Root markers for project detection
+      root_markers = {
+        ".clangd",
+        ".clang-tidy",
+        ".clang-format",
+        "compile_commands.json",
+        "compile_flags.txt",
+        "configure.ac",
+        ".git",
+      },
+      single_file_support = true,
+    },
+    marksman = {},
+    texlab = {},
+    lua_ls = {
+      settings = {
+        Lua = {
+          diagnostics = { globals = { "vim" } },
+          workspace = {
+            library = vim.api.nvim_list_runtime_paths(),
+            checkThirdParty = false,
+          },
+          telemetry = { enable = false },
+        },
+      },
+    },
+    ts_ls = {
+      settings = {
+        typescript = {
+          inlayHints = {
+            includeInlayParameterNameHints = "all",
+            includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayEnumMemberValueHints = true,
+          },
+        },
+      },
+    },
+    rust_analyzer = {
+      settings = {
+        ["rust-analyzer"] = {
+          checkOnSave = {
+            command = "clippy",
+          },
+        },
+      },
+    },
+    gopls = {
+      settings = {
+        gopls = {
+          analyses = {
+            unusedparams = true,
+          },
+          staticcheck = true,
+        },
+      },
+    },
+    dockerls = {
+      settings = {
+        docker = {
+          languageserver = {
+            formatter = {
+              ignoreMultilineInstructions = true,
             },
           },
         },
       },
-      clangd = {
-        -- Minimal configuration for clangd
-        cmd = {
-          "clangd",
-          "--background-index",
-          "--completion-style=detailed",
-          "--header-insertion=iwyu",
-          "--clang-tidy=false", -- Disable clang-tidy for better performance
-        },
-        filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-        -- Add root directory detection to prevent multiple instances
-        root_dir = function(fname)
-          local root = lspconfig.util.root_pattern(
-            ".clangd",
-            ".clang-tidy",
-            ".clang-format",
-            "compile_commands.json",
-            "compile_flags.txt",
-            "configure.ac",
-            ".git"
-          )(fname)
-          -- If no root found, use the file's directory
-          return root or vim.fs.dirname(fname)
-        end,
-        single_file_support = true,
-      },
-      marksman = {},
-      texlab = {},
-      lua_ls = {
-        settings = {
-          Lua = {
-            diagnostics = { globals = { "vim" } },
-            workspace = {
-              library = vim.api.nvim_list_runtime_paths(),
-              checkThirdParty = false,
-            },
-            telemetry = { enable = false },
+    },
+    yamlls = {
+      settings = {
+        yaml = {
+          schemas = {
+            ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+            ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "docker-compose*.yml",
+          },
+          format = {
+            enable = true,
           },
         },
       },
-      ts_ls = {
-        settings = {
-          typescript = {
-            inlayHints = {
-              includeInlayParameterNameHints = "all",
-              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-              includeInlayFunctionParameterTypeHints = true,
-              includeInlayVariableTypeHints = true,
-              includeInlayPropertyDeclarationTypeHints = true,
-              includeInlayFunctionLikeReturnTypeHints = true,
-              includeInlayEnumMemberValueHints = true,
-            },
+    },
+    jsonls = {
+      settings = {
+        json = {
+          validate = { enable = true },
+          format = { enable = true },
+          schemas = {
+            ["https://json.schemastore.org/package.json"] = "package.json",
+            ["https://json.schemastore.org/tsconfig.json"] = "tsconfig*.json",
+            ["https://json.schemastore.org/eslintrc.json"] = ".eslintrc*",
           },
         },
       },
-      rust_analyzer = {
-        settings = {
-          ["rust-analyzer"] = {
-            checkOnSave = {
-              command = "clippy",
-            },
+    },
+    html = {
+      settings = {
+        html = {
+          format = {
+            enable = true,
+            wrapLineLength = 100,
+            unformatted = "wbr",
+          },
+          validate = {
+            scripts = true,
+            styles = true,
           },
         },
       },
-      gopls = {
-        settings = {
-          gopls = {
-            analyses = {
-              unusedparams = true,
-            },
-            staticcheck = true,
+    },
+    cssls = {
+      settings = {
+        css = {
+          validate = true,
+          lint = {
+            unknownAtRules = "ignore",
+          },
+        },
+        scss = {
+          validate = true,
+          lint = {
+            unknownAtRules = "ignore",
+          },
+        },
+        less = {
+          validate = true,
+          lint = {
+            unknownAtRules = "ignore",
           },
         },
       },
-      dockerls = {
-        settings = {
-          docker = {
-            languageserver = {
-              formatter = {
-                ignoreMultilineInstructions = true,
-              },
-            },
+    },
+    emmet_ls = {
+      filetypes = {
+        "html",
+        "css",
+        "scss",
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "haml",
+        "xml",
+        "xsl",
+        "pug",
+        "slim",
+        "sass",
+        "less",
+      },
+    },
+    lemminx = {}, -- XML
+    cmake = {
+      settings = {
+        cmake = {
+          configProvider = {
+            enableSnippets = true,
           },
         },
       },
-      yamlls = {
-        settings = {
-          yaml = {
-            schemas = {
-              ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-              ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "docker-compose*.yml",
-            },
-            format = {
-              enable = true,
-            },
-          },
-        },
-      },
-      jsonls = {
-        settings = {
-          json = {
-            validate = { enable = true },
-            format = { enable = true },
-            schemas = {
-              ["https://json.schemastore.org/package.json"] = "package.json",
-              ["https://json.schemastore.org/tsconfig.json"] = "tsconfig*.json",
-              ["https://json.schemastore.org/eslintrc.json"] = ".eslintrc*",
-            },
-          },
-        },
-      },
-      html = {
-        settings = {
-          html = {
-            format = {
-              enable = true,
-              wrapLineLength = 100,
-              unformatted = "wbr",
-            },
-            validate = {
-              scripts = true,
-              styles = true,
-            },
-          },
-        },
-      },
-      cssls = {
-        settings = {
-          css = {
-            validate = true,
-            lint = {
-              unknownAtRules = "ignore",
-            },
-          },
-          scss = {
-            validate = true,
-            lint = {
-              unknownAtRules = "ignore",
-            },
-          },
-          less = {
-            validate = true,
-            lint = {
-              unknownAtRules = "ignore",
-            },
-          },
-        },
-      },
-      emmet_ls = {
-        filetypes = {
-          "html",
-          "css",
-          "scss",
-          "javascript",
-          "javascriptreact",
-          "typescript",
-          "typescriptreact",
-          "haml",
-          "xml",
-          "xsl",
-          "pug",
-          "slim",
-          "sass",
-          "less",
-        },
-      },
-      lemminx = {}, -- XML
-      cmake = {
-        settings = {
-          cmake = {
-            configProvider = {
-              enableSnippets = true,
-            },
-          },
-        },
-      },
-      bashls = {
-        filetypes = { "sh", "bash", "zsh" },
-      },
-      zls = {}, -- Zig/Assembly
-      solargraph = {
-        -- Try to use system solargraph if available (via rbenv/rvm)
-        cmd = function()
-          -- Check for rbenv shim first
-          local rbenv_shim = vim.fn.expand("~/.rbenv/shims/solargraph")
-          if vim.fn.executable(rbenv_shim) == 1 then
-            return { rbenv_shim, "stdio" }
-          end
-          -- Check for rvm shim
-          local rvm_shim = vim.fn.expand("~/.rvm/shims/solargraph")
-          if vim.fn.executable(rvm_shim) == 1 then
-            return { rvm_shim, "stdio" }
-          end
-          -- Check for system solargraph
-          if vim.fn.executable("solargraph") == 1 then
-            return { "solargraph", "stdio" }
-          end
-          -- Fall back to Mason's installation if available
+    },
+    bashls = {
+      filetypes = { "sh", "bash", "zsh" },
+    },
+    zls = {}, -- Zig/Assembly
+    solargraph = {
+      -- Try to use system solargraph if available (via rbenv/rvm)
+      cmd = function()
+        -- Check for rbenv shim first
+        local rbenv_shim = vim.fn.expand("~/.rbenv/shims/solargraph")
+        if vim.fn.executable(rbenv_shim) == 1 then
+          return { rbenv_shim, "stdio" }
+        end
+        -- Check for rvm shim
+        local rvm_shim = vim.fn.expand("~/.rvm/shims/solargraph")
+        if vim.fn.executable(rvm_shim) == 1 then
+          return { rvm_shim, "stdio" }
+        end
+        -- Check for system solargraph
+        if vim.fn.executable("solargraph") == 1 then
           return { "solargraph", "stdio" }
-        end,
-        settings = {
-          solargraph = {
-            diagnostics = true,
-            formatting = true,
-          },
+        end
+        -- Fall back to Mason's installation if available
+        return { "solargraph", "stdio" }
+      end,
+      settings = {
+        solargraph = {
+          diagnostics = true,
+          formatting = true,
         },
       },
-      taplo = {}, -- TOML
-      perlnavigator = {
-        settings = {
-          perlnavigator = {
-            perlPath = "perl",
-            enableWarnings = true,
-          },
+    },
+    taplo = {}, -- TOML
+    perlnavigator = {
+      settings = {
+        perlnavigator = {
+          perlPath = "perl",
+          enableWarnings = true,
         },
       },
-      sqlls = {
-        cmd = { "sql-language-server", "up", "--method", "stdio" },
-        filetypes = { "sql", "mysql", "postgresql" },
+    },
+    sqlls = {
+      cmd = { "sql-language-server", "up", "--method", "stdio" },
+      filetypes = { "sql", "mysql", "postgresql" },
+    },
+    -- sourcekit must be installed via Xcode, not Mason
+    -- Only configure if on macOS with Xcode installed
+    sourcekit = vim.fn.has("mac") == 1 and {
+      cmd = { "xcrun", "sourcekit-lsp" },
+      filetypes = { "swift", "objc", "objcpp" },
+      root_markers = {
+        "Package.swift",
+        "*.xcodeproj",
+        "*.xcworkspace",
+        ".git",
       },
-      -- sourcekit must be installed via Xcode, not Mason
-      -- Only configure if on macOS with Xcode installed
-      sourcekit = vim.fn.has("mac") == 1 and {
-        cmd = { "xcrun", "sourcekit-lsp" },
-        filetypes = { "swift", "objc", "objcpp" },
-        root_dir = function(fname)
-          return lspconfig.util.root_pattern(
-            "Package.swift",
-            ".git",
-            "*.xcodeproj",
-            "*.xcworkspace"
-          )(fname) or vim.fs.dirname(
-            vim.fs.find(".git", { path = fname, upward = true })[1]
-          ) or vim.fn.getcwd()
-        end,
-      } or nil,
-    }
+    } or nil,
+  }
+
+  -- Setup global defaults for all LSP clients
+  vim.lsp.config("*", {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  })
 
   -- Setup all configured servers (skip if work override is active)
   if not vim.g.work_lsp_override then
+    local servers_to_enable = {}
+
     for server, config in pairs(servers) do
       -- Skip nil configurations (e.g., sourcekit on non-Mac systems)
       if config then
-        -- Setup the server
-        config.capabilities = capabilities
-        config.on_attach = on_attach
-
-        -- Use pcall to handle servers that might not be installed
-        local ok = pcall(function()
-          lspconfig[server].setup(config)
-        end)
-        if not ok and vim.env.NVIM_DEBUG then
-          vim.notify("LSP setup failed for: " .. server, vim.log.levels.DEBUG)
-        end
+        -- Configure the server with vim.lsp.config (Neovim 0.11+)
+        -- nvim-lspconfig provides base configs in lsp/ directory
+        vim.lsp.config(server, config)
+        table.insert(servers_to_enable, server)
       end
     end
+
+    -- Enable all configured servers
+    vim.lsp.enable(servers_to_enable)
   end
 
   -- For clangd, we need to manually start it to avoid duplicates

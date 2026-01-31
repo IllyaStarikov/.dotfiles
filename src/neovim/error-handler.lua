@@ -23,32 +23,7 @@ function M.setup_notify()
       level = vim.log.levels[level:upper()] or vim.log.levels.INFO
     end
 
-    -- TODO(starikov): Remove this filter when nvim-lspconfig v3.0.0 is released
-    -- This is a very strict filter for the specific lspconfig deprecation warning
-    -- that cannot be avoided until the plugin provides a migration path
-    if level == vim.log.levels.WARN and type(msg) == "string" then
-      -- Check for the exact deprecation message from nvim-lspconfig
-      -- The message appears to come with exact text including backticks and quotes
-      local is_lspconfig_deprecation = false
-
-      -- Check if message contains all the key parts of the deprecation warning
-      if
-        msg:find("require%('lspconfig'%)", 1, false)
-        and msg:find("framework", 1, true)
-        and msg:find("deprecated", 1, true)
-        and msg:find("vim%.lsp%.config", 1, false)
-        and msg:find("nvim%-lspconfig v3%.0%.0", 1, false)
-      then
-        is_lspconfig_deprecation = true
-      end
-
-      if is_lspconfig_deprecation then
-        -- Silently ignore this specific deprecation warning
-        return
-      end
-    end
-
-    -- No other error filtering - show all errors to the user
+    -- No error filtering - show all errors to the user
 
     -- For errors, check if we should throttle
     if level == vim.log.levels.ERROR then
