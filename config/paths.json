@@ -1,0 +1,45 @@
+{
+  "$schema": "./schemas/paths.schema.json",
+  "homebrew": {
+    "apple_silicon": "/opt/homebrew",
+    "intel": "/usr/local",
+    "work": {
+      "prefix": "/usr/local/Homebrew",
+      "cellar": "/usr/local/Homebrew/Cellar"
+    }
+  },
+  "backup": {
+    "dotfiles": "~/.dotfiles.backups",
+    "cleanup": "~/.dotfiles-cleanup-backups"
+  },
+  "cache": {
+    "nvim_swap": "~/.local/state/nvim/swap",
+    "nvim_backup": "~/.local/state/nvim/backup",
+    "nvim_lazy": "~/.local/share/nvim/lazy",
+    "tmux": "/tmp/.tmux_*_cache"
+  },
+  "services": {
+    "logs": "~/.local/state/services",
+    "pids": "~/.local/state/services/pids",
+    "failed": "~/.local/state/services/failed",
+    "launchagent": "~/Library/LaunchAgents/io.starikov.services.plist"
+  },
+  "private": {
+    "root": "~/.dotfiles/.dotfiles.private",
+    "check_machine": "bin/check-machine"
+  },
+  "config": {
+    "nvim": "~/.config/nvim",
+    "alacritty": "~/.config/alacritty",
+    "wezterm": "~/.config/wezterm",
+    "kitty": "~/.config/kitty",
+    "tmux": "~/.config/tmux",
+    "starship": "~/.config/starship.toml",
+    "tmuxinator": "~/.config/tmuxinator"
+  },
+  "directories": {
+    "config": "~/.config",
+    "local_bin": "~/.local/bin",
+    "cache": "~/.cache"
+  }
+}

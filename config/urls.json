@@ -1,0 +1,25 @@
+{
+  "$schema": "./schemas/urls.schema.json",
+  "installers": {
+    "homebrew": "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh",
+    "starship": "https://starship.rs/install.sh",
+    "rust": "https://sh.rustup.rs",
+    "nvm": "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh",
+    "zinit": "https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh",
+    "vim_plug": "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+  },
+  "apis": {
+    "lazygit_releases": "https://api.github.com/repos/jesseduffield/lazygit/releases/latest",
+    "zenquotes": "https://zenquotes.io/api/random",
+    "quotable": "https://api.quotable.io/random",
+    "advice_slip": "https://api.adviceslip.com/advice"
+  },
+  "repositories": {
+    "wezterm_apt_key": "https://apt.fury.io/wez/gpg.key",
+    "wezterm_apt_repo": "https://apt.fury.io/wez/"
+  },
+  "documentation": {
+    "dotfiles_manual_setup": "https://github.com/IllyaStarikov/.dotfiles#manual-setup",
+    "wezterm_linux_install": "https://wezfurlong.org/wezterm/install/linux.html"
+  }
+}

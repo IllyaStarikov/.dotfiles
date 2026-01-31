@@ -1,0 +1,46 @@
+{
+  "$schema": "./schemas/timeouts.schema.json",
+  "brew": {
+    "update": 30,
+    "install": 60,
+    "_comment": "Shorter timeouts for work machines with managed Homebrew"
+  },
+  "python": {
+    "install": 600,
+    "_comment": "10 minutes for compiling Python from source"
+  },
+  "neovim": {
+    "startup_test": 5,
+    "checkhealth": 30,
+    "verbose_diagnostics": 10,
+    "lsp_check": 5,
+    "plugin_list": 5
+  },
+  "shell": {
+    "interactive_startup": 5,
+    "noninteractive_startup": 2
+  },
+  "bugreport": {
+    "tree": 3,
+    "system_log": 5,
+    "homebrew_doctor": 10,
+    "npm_doctor": 10,
+    "pip_check": 5,
+    "cortex_status": 5
+  },
+  "services": {
+    "start_check_delay": 1,
+    "stop_grace_period": 5,
+    "launchagent_throttle": 10
+  },
+  "fetch_quotes": {
+    "api_timeout": 3,
+    "retry_delay": 0.5
+  },
+  "versions": {
+    "python_preferred": "3.13",
+    "python_fallback": "3.12",
+    "pynvim_min": "0.6.0",
+    "nvm": "v0.39.0"
+  }
+}

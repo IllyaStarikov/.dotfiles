@@ -1,0 +1,111 @@
+{
+  "$schema": "./schemas/symlinks.schema.json",
+  "shell": [
+    {
+      "source": "src/zsh/zshrc",
+      "target": "~/.zshrc",
+      "description": "Zsh config"
+    },
+    {
+      "source": "src/zsh/zshenv",
+      "target": "~/.zshenv",
+      "description": "Zsh environment"
+    },
+    {
+      "source": "src/tmux.conf",
+      "target": "~/.tmux.conf",
+      "description": "tmux config"
+    }
+  ],
+  "git": [
+    {
+      "source": "src/git/gitconfig",
+      "target": "~/.gitconfig",
+      "description": "Git config"
+    },
+    {
+      "source": "src/git/gitignore",
+      "target": "~/.gitignore",
+      "description": "Global gitignore"
+    },
+    {
+      "source": "src/git/gitmessage",
+      "target": "~/.gitmessage",
+      "description": "Git commit template"
+    }
+  ],
+  "editor": [
+    {
+      "source": "src/neovim",
+      "target": "~/.config/nvim",
+      "type": "directory",
+      "description": "Neovim config (entire directory)"
+    }
+  ],
+  "terminals": [
+    {
+      "source": "src/alacritty.toml",
+      "target": "~/.config/alacritty/alacritty.toml",
+      "mkdir": "~/.config/alacritty",
+      "description": "Alacritty config"
+    },
+    {
+      "source": "src/wezterm",
+      "target": "~/.config/wezterm",
+      "type": "directory",
+      "optional": true,
+      "description": "WezTerm config"
+    },
+    {
+      "source": "src/kitty",
+      "target": "~/.config/kitty",
+      "type": "directory",
+      "optional": true,
+      "description": "Kitty terminal config"
+    }
+  ],
+  "tools": [
+    {
+      "source": "src/zsh/starship.toml",
+      "target": "~/.config/starship.toml",
+      "description": "Starship prompt"
+    },
+    {
+      "source": "src/ripgreprc",
+      "target": "~/.ripgreprc",
+      "description": "Ripgrep config"
+    },
+    {
+      "source": "src/editorconfig",
+      "target": "~/.editorconfig",
+      "description": "EditorConfig"
+    },
+    {
+      "source": "src/language/latexmkrc",
+      "target": "~/.latexmkrc",
+      "description": "LaTeX config"
+    },
+    {
+      "source": "src/language/ruff.toml",
+      "target": "~/.ruff.toml",
+      "description": "Ruff Python formatter/linter"
+    },
+    {
+      "source": "src/language/pyproject.toml",
+      "target": "~/pyproject.toml",
+      "description": "Python project config"
+    },
+    {
+      "source": "src/tmuxinator",
+      "target": "~/.config/tmuxinator",
+      "type": "directory",
+      "optional": true,
+      "description": "Tmuxinator templates"
+    }
+  ],
+  "scripts": {
+    "source_dir": "src/scripts",
+    "target_dir": "~/.local/bin",
+    "description": "All executable scripts symlinked dynamically"
+  }
+}

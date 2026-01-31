@@ -53,6 +53,9 @@ readonly LOG_FILE="$HOME/.dotfiles-setup-$(date +%Y%m%d_%H%M%S).log"
 # Load library (provides colors: $RED, $GREEN, $YELLOW, $BLUE, $MAGENTA, $CYAN, $NC)
 source "${DOTFILES_DIR}/src/lib/init.zsh"
 
+# Load config library for reading JSON config files
+lib_load config 2>/dev/null || true
+
 # Command line argument defaults
 # Initialize early to prevent undefined variable errors in strict mode
 INSTALL_MODE="full" # full, core, symlinks
@@ -253,7 +256,9 @@ setup_homebrew() {
 
   if ! command -v brew &>/dev/null; then
     info "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    local homebrew_url
+    homebrew_url=$(get_config "urls.json" ".installers.homebrew" "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")
+    /bin/bash -c "$(curl -fsSL "$homebrew_url")"
 
     # Add Homebrew to PATH
     if [[ "$ARCH" == "arm64" ]]; then
@@ -297,7 +302,9 @@ setup_homebrew() {
 
   # Update Homebrew (with timeout for work machines)
   if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
-    timeout 30 brew update 2>/dev/null || info "Brew update skipped (timeout or restricted)"
+    local brew_update_timeout
+    brew_update_timeout=$(get_config "timeouts.json" ".brew.update" "30")
+    timeout "$brew_update_timeout" brew update 2>/dev/null || info "Brew update skipped (timeout or restricted)"
   else
     brew update
   fi
@@ -342,107 +349,52 @@ install_macos_packages() {
 
   progress "Installing packages via Homebrew..."
 
-  # Core packages
-  local core_packages=(
-    "git"
-    "git-extras"
-    "git-lfs"
-    "neovim"
-    "vim"
-    "tmux"
-    "tmuxinator"
-    "alacritty" # Terminal emulator 1
-    "starship"
-    "ripgrep"
-    "fd"
-    "bat"
-    "eza"
-    "fzf"
-    "zoxide"
-    "gh"
-    "jq"
-    "tree"
-    "htop"
-    "ranger"
-    "wget"
-    "curl"
-    "gnupg"
-    "pinentry-mac"
-    "colordiff"
-    "coreutils"
-    "readline"
-    "ncurses"
-    "sqlite"
-    "openssl@3"
-    "ca-certificates"
-    "lua"
-    "luajit"
-    "luarocks"
-  )
+  # Load packages from config/packages.json if available, fallback to hardcoded
+  local -a core_packages dev_packages lsp_packages formatter_packages
 
-  # Development packages
-  local dev_packages=(
-    "pyenv"
-    "pyenv-virtualenv"
-    "node"
-    "ruby"
-    "rust"
-    "rustup"
-    "go"
-    "openjdk" # Java (keg-only, requires PATH setup in zshrc)
-    "julia"   # Julia language
-    "cmake"
-    "ninja"
-    "llvm"
-    "gcc"
-    "colima"
-    "lima"
-    "cloc"
-    "ctags"
-    "dos2unix"
-    "git-filter-repo"
-    "git-quick-stats"
-    "gnu-sed"
-    "marksman"
-    "texlab"
-    "tree-sitter"
-    "telnet"
-    "unbound"
-    "automake"
-    "autoconf"
-    "libtool"
-    "pkg-config"
-    "lazygit"
-  )
+  if has_config "packages.json" 2>/dev/null; then
+    info "Loading package lists from config/packages.json..."
+    load_config_array core_packages "packages.json" ".brew.core"
+    load_config_array dev_packages "packages.json" ".brew.dev"
+    load_config_array lsp_packages "packages.json" ".brew.lsp"
+    load_config_array formatter_packages "packages.json" ".brew.formatters"
+  fi
 
-  # Language servers
-  local lsp_packages=(
-    "lua-language-server"
-    "typescript-language-server"
-    "rust-analyzer"
-    "gopls"
-    "pyright"
-  )
+  # Fallback to hardcoded if config loading failed or returned empty
+  if [[ ${#core_packages[@]} -eq 0 ]]; then
+    core_packages=(
+      "git" "git-extras" "git-lfs" "neovim" "vim" "tmux" "tmuxinator"
+      "alacritty" "starship" "ripgrep" "fd" "bat" "eza" "fzf" "zoxide"
+      "gh" "jq" "tree" "htop" "ranger" "wget" "curl" "gnupg" "pinentry-mac"
+      "colordiff" "coreutils" "readline" "ncurses" "sqlite" "openssl@3"
+      "ca-certificates" "lua" "luajit" "luarocks"
+    )
+  fi
 
-  # Code formatters and linters
-  local formatter_packages=(
-    "prettier"
-    "shfmt"
-    "stylua"
-    "clang-format"
-    "astyle"
-    "swiftformat"
-    "taplo"
-    "shellcheck"
-    "yamllint"
-    "xmlstarlet"
-    "perl"
-    "perltidy"
-    "latexindent"
-    "postgresql@14"
-    "pgformatter"
-    "nasm"
-  )
+  if [[ ${#dev_packages[@]} -eq 0 ]]; then
+    dev_packages=(
+      "pyenv" "pyenv-virtualenv" "node" "ruby" "rust" "rustup" "go"
+      "openjdk" "julia" "cmake" "ninja" "llvm" "gcc" "colima" "lima"
+      "cloc" "ctags" "dos2unix" "git-filter-repo" "git-quick-stats"
+      "gnu-sed" "marksman" "texlab" "tree-sitter" "telnet" "unbound"
+      "automake" "autoconf" "libtool" "pkg-config" "lazygit"
+    )
+  fi
+
+  if [[ ${#lsp_packages[@]} -eq 0 ]]; then
+    lsp_packages=(
+      "lua-language-server" "typescript-language-server" "rust-analyzer"
+      "gopls" "pyright"
+    )
+  fi
+
+  if [[ ${#formatter_packages[@]} -eq 0 ]]; then
+    formatter_packages=(
+      "prettier" "shfmt" "stylua" "clang-format" "astyle" "swiftformat"
+      "taplo" "shellcheck" "yamllint" "xmlstarlet" "perl" "perltidy"
+      "latexindent" "postgresql@14" "pgformatter" "nasm"
+    )
+  fi
 
   # Install based on mode
   if [[ "$INSTALL_MODE" == "full" ]]; then
@@ -456,7 +408,9 @@ install_macos_packages() {
         # Work machines often have proxy/firewall issues that cause hangs
         if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
           # Try building from source first, then fall back to bottles with timeout
-          output=$(timeout 60 brew install --build-from-source "$pkg" 2>&1 || timeout 60 brew install "$pkg" 2>&1)
+          local brew_install_timeout
+          brew_install_timeout=$(get_config "timeouts.json" ".brew.install" "60")
+          output=$(timeout "$brew_install_timeout" brew install --build-from-source "$pkg" 2>&1 || timeout "$brew_install_timeout" brew install "$pkg" 2>&1)
           exit_code=$?
         else
           output=$(brew install "$pkg" 2>&1)
@@ -478,7 +432,9 @@ install_macos_packages() {
           # Special handling for critical packages with alternative installation methods
           if [[ "$pkg" == "starship" ]]; then
             info "Homebrew failed for Starship, trying official installer..."
-            if curl -sS https://starship.rs/install.sh | sh -s -- -y; then
+            local starship_url
+            starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
+            if curl -sS "$starship_url" | sh -s -- -y; then
               success "✓ Starship installed via official installer"
             else
               error "✗ Starship installation failed completely"
@@ -540,9 +496,32 @@ install_macos_packages() {
       fi
     done
 
+    # Load fonts, GUI apps, and extras from config if available
+    local -a font_packages gui_packages extra_packages
+
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array font_packages "packages.json" ".brew.fonts"
+      load_config_array gui_packages "packages.json" ".brew.gui"
+      load_config_array extra_packages "packages.json" ".brew.extras"
+    fi
+
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#font_packages[@]} -eq 0 ]]; then
+      font_packages=("font-jetbrains-mono-nerd-font" "font-hack-nerd-font" "font-ibm-plex-mono")
+    fi
+    if [[ ${#gui_packages[@]} -eq 0 ]]; then
+      gui_packages=("wezterm" "raycast" "amethyst")
+    fi
+    if [[ ${#extra_packages[@]} -eq 0 ]]; then
+      extra_packages=(
+        "cmatrix" "cowsay" "figlet" "htop" "neofetch" "ranger"
+        "ffmpeg" "imagemagick" "yt-dlp" "tesseract"
+      )
+    fi
+
     # Nerd Fonts (check if already installed first)
     info "Installing Nerd Fonts..."
-    for font in font-jetbrains-mono-nerd-font font-hack-nerd-font font-ibm-plex-mono; do
+    for font in "${font_packages[@]}"; do
       if brew list --cask "$font" &>/dev/null; then
         info "✓ $font already installed"
       elif brew install --cask "$font" 2>/dev/null; then
@@ -554,7 +533,7 @@ install_macos_packages() {
 
     # GUI Applications (check if already installed first)
     info "Installing GUI applications..."
-    for app in wezterm raycast amethyst; do # wezterm is Terminal emulator 2
+    for app in "${gui_packages[@]}"; do
       if brew list --cask "$app" &>/dev/null; then
         info "✓ $app already installed"
       elif brew install --cask "$app" 2>/dev/null; then
@@ -563,20 +542,6 @@ install_macos_packages() {
         warning "✗ $app installation failed"
       fi
     done
-
-    # Additional tools (from 3-tooling.sh)
-    local extra_packages=(
-      "cmatrix"
-      "cowsay"
-      "figlet"
-      "htop"
-      "neofetch"
-      "ranger"
-      "ffmpeg"
-      "imagemagick"
-      "yt-dlp"
-      "tesseract"
-    )
     info "Installing extra tools..."
     for pkg in "${extra_packages[@]}"; do
       if brew list --formula "$pkg" &>/dev/null || true; then
@@ -608,7 +573,9 @@ install_macos_packages() {
     info "Skipping Starship installation (SKIP_STARSHIP is set)"
   elif ! command -v starship &>/dev/null; then
     info "Installing Starship via official installer..."
-    curl -sS https://starship.rs/install.sh | sh -s -- -y || {
+    local starship_url
+    starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
+    curl -sS "$starship_url" | sh -s -- -y || {
       warning "Starship installation failed, trying alternative method..."
       # Try cargo if available
       if command -v cargo &>/dev/null; then
@@ -629,15 +596,37 @@ setup_macos() {
   if [[ "$INSTALL_MODE" == "full" ]]; then
     progress "Applying macOS settings..."
 
-    # Keyboard repeat rate
-    defaults write NSGlobalDomain KeyRepeat -int 2
-    defaults write NSGlobalDomain InitialKeyRepeat -int 15
+    # Apply settings from config if available, otherwise use hardcoded defaults
+    if has_config "macos-defaults.json" 2>/dev/null && command -v jq &>/dev/null; then
+      info "Loading macOS defaults from config/macos-defaults.json..."
+      local config_file="${DOTFILES_DIR}/config/macos-defaults.json"
 
-    # Show hidden files
-    defaults write com.apple.finder AppleShowAllFiles -bool true
+      # Process each domain in the config
+      for domain in $(jq -r 'keys[]' "$config_file" 2>/dev/null | grep -v '^\$'); do
+        for key in $(jq -r ".\"$domain\" | keys[]" "$config_file" 2>/dev/null); do
+          local value_type=$(jq -r ".\"$domain\".\"$key\".type" "$config_file" 2>/dev/null)
+          local value=$(jq -r ".\"$domain\".\"$key\".value" "$config_file" 2>/dev/null)
 
-    # Disable press-and-hold for keys
-    defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+          case "$value_type" in
+            int) defaults write "$domain" "$key" -int "$value" ;;
+            bool) defaults write "$domain" "$key" -bool "$value" ;;
+            string) defaults write "$domain" "$key" -string "$value" ;;
+            float) defaults write "$domain" "$key" -float "$value" ;;
+          esac
+        done
+      done
+    else
+      # Fallback to hardcoded defaults
+      # Keyboard repeat rate
+      defaults write NSGlobalDomain KeyRepeat -int 2
+      defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+      # Show hidden files
+      defaults write com.apple.finder AppleShowAllFiles -bool true
+
+      # Disable press-and-hold for keys
+      defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+    fi
 
     killall Finder || true
     success "macOS settings applied"
@@ -658,75 +647,47 @@ install_linux_packages() {
     *) warning "Cannot update unknown package manager" ;;
   esac
 
-  # Core packages (varies by distro)
-  local packages=()
-  case "$PKG_MANAGER" in
-    apt)
-      packages=(
-        "build-essential"
-        "git"
-        "curl"
-        "wget"
-        "tmux"
-        "neovim"
-        "ripgrep"
-        "fd-find"
-        "bat"
-        "fzf"
-        "jq"
-        "tree"
-        "gnupg"
-        "unzip"
-        "python3-pip"
-        "python3-venv"
-        "cargo" # For installing tree-sitter
-      )
-      ;;
-    dnf | yum)
-      packages=(
-        "gcc"
-        "gcc-c++"
-        "make"
-        "git"
-        "curl"
-        "wget"
-        "tmux"
-        "neovim"
-        "ripgrep"
-        "fd-find"
-        "bat"
-        "fzf"
-        "jq"
-        "tree"
-        "gnupg2"
-        "unzip"
-        "python3-pip"
-      )
-      ;;
-    pacman)
-      packages=(
-        "base-devel"
-        "git"
-        "curl"
-        "wget"
-        "tmux"
-        "neovim"
-        "ripgrep"
-        "fd"
-        "bat"
-        "fzf"
-        "jq"
-        "tree"
-        "gnupg"
-        "unzip"
-        "python-pip"
-      )
-      ;;
-    *)
-      warning "Unknown package manager: $PKG_MANAGER"
-      return 1
-      ;;
-  esac
+  # Core packages (varies by distro) - load from config if available
+  local -a packages
+
+  if has_config "packages.json" 2>/dev/null; then
+    info "Loading package lists from config/packages.json..."
+    case "$PKG_MANAGER" in
+      apt) load_config_array packages "packages.json" ".apt" ;;
+      dnf | yum) load_config_array packages "packages.json" ".dnf" ;;
+      pacman) load_config_array packages "packages.json" ".pacman" ;;
+    esac
+  fi
+
+  # Fallback to hardcoded if config loading failed or returned empty
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    case "$PKG_MANAGER" in
+      apt)
+        packages=(
+          "build-essential" "git" "curl" "wget" "tmux" "neovim" "ripgrep"
+          "fd-find" "bat" "fzf" "jq" "tree" "gnupg" "unzip" "python3-pip"
+          "python3-venv" "cargo"
+        )
+        ;;
+      dnf | yum)
+        packages=(
+          "gcc" "gcc-c++" "make" "git" "curl" "wget" "tmux" "neovim"
+          "ripgrep" "fd-find" "bat" "fzf" "jq" "tree" "gnupg2" "unzip"
+          "python3-pip"
+        )
+        ;;
+      pacman)
+        packages=(
+          "base-devel" "git" "curl" "wget" "tmux" "neovim" "ripgrep" "fd"
+          "bat" "fzf" "jq" "tree" "gnupg" "unzip" "python-pip"
+        )
+        ;;
+      *)
+        warning "Unknown package manager: $PKG_MANAGER"
+        return 1
+        ;;
+    esac
+  fi
 
   # Install packages
   if [[ ${#packages[@]} -gt 0 ]]; then
@@ -747,7 +708,9 @@ install_linux_packages() {
 
   # Install Starship
   if [[ -z "${SKIP_STARSHIP:-}" ]] && ! command -v starship &>/dev/null; then
-    curl -sS https://starship.rs/install.sh | sh -s -- -y
+    local starship_url
+    starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
+    curl -sS "$starship_url" | sh -s -- -y
   fi
 
   # Install lazygit
@@ -756,7 +719,9 @@ install_linux_packages() {
     case "$PKG_MANAGER" in
       apt)
         # For Ubuntu/Debian - install from GitHub releases
-        LAZYGIT_VERSION=$(curl -sf "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+        local lazygit_api_url
+        lazygit_api_url=$(get_config "urls.json" ".apis.lazygit_releases" "https://api.github.com/repos/jesseduffield/lazygit/releases/latest")
+        LAZYGIT_VERSION=$(curl -sf "$lazygit_api_url" | jq -r '.tag_name' | sed 's/v//')
         if [[ -z "$LAZYGIT_VERSION" || "$LAZYGIT_VERSION" == "null" ]]; then
           warning "Could not fetch lazygit version (GitHub API rate limit?), skipping"
         else
@@ -835,8 +800,11 @@ install_linux_packages() {
       case "$PKG_MANAGER" in
         apt)
           # For Ubuntu/Debian
-          curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-          echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+          local wezterm_key_url wezterm_repo_url
+          wezterm_key_url=$(get_config "urls.json" ".repositories.wezterm_apt_key" "https://apt.fury.io/wez/gpg.key")
+          wezterm_repo_url=$(get_config "urls.json" ".repositories.wezterm_apt_repo" "https://apt.fury.io/wez/")
+          curl -fsSL "$wezterm_key_url" | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+          echo "deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] ${wezterm_repo_url} * *" | sudo tee /etc/apt/sources.list.d/wezterm.list
           sudo apt update
           sudo apt install -y wezterm || warning "Failed to install WezTerm"
           ;;
@@ -858,7 +826,9 @@ install_linux_packages() {
           ;;
         *)
           warning "Cannot install WezTerm for unknown package manager"
-          info "Visit https://wezfurlong.org/wezterm/install/linux.html for manual installation"
+          local wezterm_docs_url
+          wezterm_docs_url=$(get_config "urls.json" ".documentation.wezterm_linux_install" "https://wezfurlong.org/wezterm/install/linux.html")
+          info "Visit $wezterm_docs_url for manual installation"
           ;;
       esac
     else
@@ -868,7 +838,9 @@ install_linux_packages() {
 
   # Install Rust
   if ! command -v rustup &>/dev/null && [[ "$INSTALL_MODE" == "full" ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    local rust_url
+    rust_url=$(get_config "urls.json" ".installers.rust" "https://sh.rustup.rs")
+    curl --proto '=https' --tlsv1.2 -sSf "$rust_url" | sh -s -- -y
     source "$HOME/.cargo/env"
   fi
 
@@ -936,7 +908,9 @@ setup_shell() {
   # Install Zinit
   if [[ ! -d "$HOME/.local/share/zinit/zinit.git" ]]; then
     info "Installing Zinit..."
-    bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+    local zinit_url
+    zinit_url=$(get_config "urls.json" ".installers.zinit" "https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh")
+    bash -c "$(curl --fail --show-error --silent --location "$zinit_url")"
   else
     success "Zinit already installed"
   fi
@@ -1034,7 +1008,9 @@ setup_python() {
         # Python compilation can hang on corporate networks or fail due to security restrictions
         if command -v timeout &>/dev/null; then
           # Timeout prevents indefinite hangs during compilation (10 minutes max)
-          timeout 600 pyenv install -v "$PYTHON_VERSION" || {
+          local python_install_timeout
+          python_install_timeout=$(get_config "timeouts.json" ".python.install" "600")
+          timeout "$python_install_timeout" pyenv install -v "$PYTHON_VERSION" || {
             warning "Python installation timed out or failed"
             info "This can happen due to corporate security or network issues"
             info "Checking for existing Python installations..."
@@ -1087,12 +1063,39 @@ setup_python() {
       pip_flags="--break-system-packages"
     fi
 
+    # Load pip packages from config if available
+    local -a pip_required pip_optional
+    local pynvim_min_version="0.6.0"
+
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array pip_required "packages.json" ".pip.required"
+      load_config_array pip_optional "packages.json" ".pip.optional"
+    fi
+
+    # Get pynvim minimum version from config
+    if has_config "timeouts.json" 2>/dev/null; then
+      local config_pynvim_min
+      config_pynvim_min=$(get_config "timeouts.json" ".versions.pynvim_min" "0.6.0")
+      [[ -n "$config_pynvim_min" ]] && pynvim_min_version="$config_pynvim_min"
+    fi
+
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#pip_required[@]} -eq 0 ]]; then
+      pip_required=("pynvim>=${pynvim_min_version}")
+    fi
+    if [[ ${#pip_optional[@]} -eq 0 ]]; then
+      pip_optional=(
+        "black" "ruff" "mypy" "ipython" "yapf" "autopep8" "isort"
+        "sqlformat" "cmake-format" "toml-sort" "beautysh" "xmlformatter"
+      )
+    fi
+
     # pynvim is ESSENTIAL for Neovim's Python integration
     # Install to system Python that Neovim uses (not --user which may not be in path)
     info "Installing pynvim for Neovim Python integration..."
-    if ! pip3 install $pip_flags --upgrade "pynvim>=0.6.0" 2>/dev/null; then
+    if ! pip3 install $pip_flags --upgrade "pynvim>=${pynvim_min_version}" 2>/dev/null; then
       # Fallback: try with --user flag
-      if ! pip3 install --user --upgrade "pynvim>=0.6.0" 2>/dev/null; then
+      if ! pip3 install --user --upgrade "pynvim>=${pynvim_min_version}" 2>/dev/null; then
         warning "Failed to install pynvim via pip"
         info "Trying system package manager..."
         if [[ "$OS" == "linux" ]]; then
@@ -1112,7 +1115,7 @@ setup_python() {
     fi
 
     # Install other Python packages (these are optional, use --user to avoid permission issues)
-    for pkg in black ruff mypy ipython yapf autopep8 isort sqlformat cmake-format toml-sort beautysh xmlformatter; do
+    for pkg in "${pip_optional[@]}"; do
       pip3 install --user "$pkg" 2>/dev/null || pip3 install $pip_flags "$pkg" 2>/dev/null || {
         # Silent failure for optional packages - they're not critical
         true
@@ -1129,14 +1132,27 @@ setup_go_tools() {
   if command -v go &>/dev/null; then
     info "Installing Go tools..."
 
-    # Install goimports
-    go install golang.org/x/tools/cmd/goimports@latest 2>/dev/null || warning "Failed to install goimports"
+    # Load Go packages from config if available
+    local -a go_packages
 
-    # Install keep-sorted
-    go install github.com/google/keep-sorted@latest 2>/dev/null || warning "Failed to install keep-sorted"
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array go_packages "packages.json" ".go"
+    fi
 
-    # Install asmfmt for assembly formatting
-    go install github.com/klauspost/asmfmt/cmd/asmfmt@latest 2>/dev/null || warning "Failed to install asmfmt"
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#go_packages[@]} -eq 0 ]]; then
+      go_packages=(
+        "golang.org/x/tools/cmd/goimports@latest"
+        "github.com/google/keep-sorted@latest"
+        "github.com/klauspost/asmfmt/cmd/asmfmt@latest"
+      )
+    fi
+
+    for pkg in "${go_packages[@]}"; do
+      local pkg_name="${pkg##*/}"
+      pkg_name="${pkg_name%@*}"
+      go install "$pkg" 2>/dev/null || warning "Failed to install $pkg_name"
+    done
 
     success "Go tools installed"
   else
@@ -1151,9 +1167,21 @@ setup_ruby_tools() {
   if command -v gem &>/dev/null; then
     info "Installing Ruby gems..."
 
-    # Try to install Ruby formatters
-    gem install rubocop 2>/dev/null || warning "Failed to install rubocop (may need newer Ruby)"
-    gem install rufo 2>/dev/null || warning "Failed to install rufo (may need newer Ruby)"
+    # Load Ruby gems from config if available
+    local -a gem_packages
+
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array gem_packages "packages.json" ".gem"
+    fi
+
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#gem_packages[@]} -eq 0 ]]; then
+      gem_packages=("rubocop" "rufo")
+    fi
+
+    for pkg in "${gem_packages[@]}"; do
+      gem install "$pkg" 2>/dev/null || warning "Failed to install $pkg (may need newer Ruby)"
+    done
 
     success "Ruby tools installed"
   else
@@ -1168,15 +1196,23 @@ setup_latex_tools() {
   if command -v perl &>/dev/null && command -v cpan &>/dev/null; then
     info "Installing Perl modules required for latexindent..."
 
-    # Install required CPAN modules for latexindent
-    # These modules are required for latexindent to work properly with fixy
-    local cpan_modules=(
-      "YAML::Tiny"
-      "File::HomeDir"
-      "Log::Log4perl"
-      "Log::Dispatch::File"
-      "Unicode::GCString"
-    )
+    # Load CPAN modules from config if available
+    local -a cpan_modules
+
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array cpan_modules "packages.json" ".cpan"
+    fi
+
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#cpan_modules[@]} -eq 0 ]]; then
+      cpan_modules=(
+        "YAML::Tiny"
+        "File::HomeDir"
+        "Log::Log4perl"
+        "Log::Dispatch::File"
+        "Unicode::GCString"
+      )
+    fi
 
     for module in "${cpan_modules[@]}"; do
       info "Installing $module..."
@@ -1211,7 +1247,9 @@ setup_node() {
     if [[ ! -d "$HOME/.nvm" ]]; then
       info "Installing nvm for Linux..."
       set +u
-      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash || {
+      local nvm_url
+      nvm_url=$(get_config "urls.json" ".installers.nvm" "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh")
+      curl -o- "$nvm_url" | bash || {
         warning "NVM installation had warnings, continuing..."
       }
       set -u
@@ -1237,11 +1275,22 @@ setup_node() {
   # Install global npm packages for Neovim and formatters, regardless of OS
   if command -v npm &>/dev/null; then
     info "Installing global npm packages for Neovim and formatters..."
-    npm install -g neovim &>/dev/null || warning "Failed to install neovim npm package"
-    npm install -g eslint &>/dev/null || warning "Failed to install eslint"
-    npm install -g @fsouza/prettierd &>/dev/null || warning "Failed to install prettierd"
-    npm install -g lua-fmt &>/dev/null || warning "Failed to install lua-fmt (lua-format)"
-    npm install -g @mermaid-js/mermaid-cli &>/dev/null || warning "Failed to install mermaid-cli (mmdc)"
+
+    # Load npm packages from config if available
+    local -a npm_packages
+
+    if has_config "packages.json" 2>/dev/null; then
+      load_config_array npm_packages "packages.json" ".npm"
+    fi
+
+    # Fallback to hardcoded if config loading failed
+    if [[ ${#npm_packages[@]} -eq 0 ]]; then
+      npm_packages=("neovim" "eslint" "@fsouza/prettierd" "lua-fmt" "@mermaid-js/mermaid-cli")
+    fi
+
+    for pkg in "${npm_packages[@]}"; do
+      npm install -g "$pkg" &>/dev/null || warning "Failed to install $pkg"
+    done
   else
     warning "npm not found, skipping global package installation for Neovim and formatters."
   fi
@@ -1268,8 +1317,9 @@ setup_neovim() {
 
   # Install vim-plug
   if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim" ]]; then
-    curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim" --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    local vim_plug_url
+    vim_plug_url=$(get_config "urls.json" ".installers.vim_plug" "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
+    curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim" --create-dirs "$vim_plug_url"
   fi
 
   # Install plugins

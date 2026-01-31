@@ -1,0 +1,27 @@
+{
+  "$schema": "./schemas/macos-defaults.schema.json",
+  "NSGlobalDomain": {
+    "KeyRepeat": {
+      "type": "int",
+      "value": 2,
+      "description": "Key repeat rate (lower is faster)"
+    },
+    "InitialKeyRepeat": {
+      "type": "int",
+      "value": 15,
+      "description": "Delay before key repeat starts (lower is faster)"
+    },
+    "ApplePressAndHoldEnabled": {
+      "type": "bool",
+      "value": false,
+      "description": "Disable press-and-hold for accented characters"
+    }
+  },
+  "com.apple.finder": {
+    "AppleShowAllFiles": {
+      "type": "bool",
+      "value": true,
+      "description": "Show hidden files in Finder"
+    }
+  }
+}

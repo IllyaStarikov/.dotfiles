@@ -30,9 +30,16 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/common.sh"
 
-# Configuration
+# Load config library for reading JSON config files
+lib_load config 2>/dev/null || true
+
+# Configuration - load from config if available
 QUOTES_COUNT=${1:-5}
-TIMEOUT_DURATION=3
+if has_config "timeouts.json" 2>/dev/null; then
+  TIMEOUT_DURATION=$(get_config "timeouts.json" ".fetch_quotes.api_timeout" "3")
+else
+  TIMEOUT_DURATION=3
+fi
 
 # Colors are already available from common.sh
 
@@ -72,46 +79,64 @@ fetch_quotes() {
   local count=$1
   local fetched=0
   local timeout_cmd=$(get_timeout_cmd)
-  
+
+  # Load API URLs from config if available
+  local zenquotes_url quotable_url advice_slip_url retry_delay
+  if has_config "urls.json" 2>/dev/null; then
+    zenquotes_url=$(get_config "urls.json" ".apis.zenquotes" "https://zenquotes.io/api/random")
+    quotable_url=$(get_config "urls.json" ".apis.quotable" "https://api.quotable.io/random")
+    advice_slip_url=$(get_config "urls.json" ".apis.advice_slip" "https://api.adviceslip.com/advice")
+  else
+    zenquotes_url="https://zenquotes.io/api/random"
+    quotable_url="https://api.quotable.io/random"
+    advice_slip_url="https://api.adviceslip.com/advice"
+  fi
+
+  if has_config "timeouts.json" 2>/dev/null; then
+    retry_delay=$(get_config "timeouts.json" ".fetch_quotes.retry_delay" "0.5")
+  else
+    retry_delay=0.5
+  fi
+
   # Try each API multiple times to ensure we get enough quotes
   while [ "$fetched" -lt "$count" ]; do
     # ZenQuotes API
     if [ "$fetched" -lt "$count" ]; then
       local quote
       # Use timeout wrapper if available, otherwise run directly
-      quote=$($timeout_cmd curl -s 'https://zenquotes.io/api/random' 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
+      quote=$($timeout_cmd curl -s "$zenquotes_url" 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
 
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
       fi
     fi
-    
+
     # Quotable API
     if [ "$fetched" -lt "$count" ]; then
       local quote
-      quote=$($timeout_cmd curl -s 'https://api.quotable.io/random' 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
+      quote=$($timeout_cmd curl -s "$quotable_url" 2>/dev/null | jq -r '"🌟 \"\(.content)\"\n   — \(.author)"' 2>/dev/null)
 
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
       fi
     fi
-    
+
     # Advice Slip API
     if [ "$fetched" -lt "$count" ]; then
       local quote
-      quote=$($timeout_cmd curl -s 'https://api.adviceslip.com/advice' 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
+      quote=$($timeout_cmd curl -s "$advice_slip_url" 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
 
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
         ((fetched++))
       fi
     fi
-    
+
     # If we still need more quotes, add a small delay before retrying
     if [ "$fetched" -lt "$count" ]; then
-      sleep 0.5
+      sleep "$retry_delay"
     fi
   done
 }

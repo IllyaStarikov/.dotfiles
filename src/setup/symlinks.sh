@@ -48,6 +48,9 @@ readonly BACKUP_DIR="$HOME/.dotfiles.backups/$(date +%Y%m%d_%H%M%S)"
 # Load library (provides colors: $RED, $GREEN, $YELLOW, $NC)
 source "${DOTFILES_DIR}/src/lib/init.zsh"
 
+# Load config library for reading JSON config files
+lib_load config 2>/dev/null || true
+
 # Counters
 declare -i created=0
 declare -i skipped=0
