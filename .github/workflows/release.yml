@@ -122,12 +122,13 @@ jobs:
           chmod +x "$DOTFILES_DIR/src/setup/"*.sh 2>/dev/null || true
           chmod +x "$DOTFILES_DIR/src/theme-switcher/"*.sh 2>/dev/null || true
 
-          # Run setup
+          # Run setup (requires zsh for symlinks.sh)
           echo "🔗 Creating symlinks..."
-          if [[ -f "$DOTFILES_DIR/src/setup/symlinks.sh" ]]; then
-              bash "$DOTFILES_DIR/src/setup/symlinks.sh"
-          elif [[ -f "$DOTFILES_DIR/src/setup/aliases.sh" ]]; then
-              bash "$DOTFILES_DIR/src/setup/aliases.sh"
+          if ! command -v zsh &>/dev/null; then
+              echo "⚠️  zsh not found. Please install zsh first, then run:"
+              echo "   zsh $DOTFILES_DIR/src/setup/symlinks.sh"
+          elif [[ -f "$DOTFILES_DIR/src/setup/symlinks.sh" ]]; then
+              zsh "$DOTFILES_DIR/src/setup/symlinks.sh"
           fi
 
           echo "✅ Installation complete!"

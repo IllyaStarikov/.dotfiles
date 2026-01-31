@@ -186,13 +186,19 @@ jobs:
           mkdir -p "$TEST_HOME/.config" "$TEST_HOME/.local/share"
           echo "TEST_HOME=$TEST_HOME" >> $GITHUB_ENV
 
+      - name: install zsh (linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zsh
+
       - name: test symlink creation
         run: |
           export HOME="$TEST_HOME"
           export DOTFILES_DIR="${{ github.workspace }}"
 
-          # Test symlink creation
-          bash src/setup/symlinks.sh
+          # Test symlink creation (script requires zsh)
+          zsh src/setup/symlinks.sh
 
           # Verify critical symlinks
           test -L "$HOME/.zshrc" && echo ".zshrc symlink created" || echo "ERROR: .zshrc symlink missing"
@@ -202,7 +208,7 @@ jobs:
       - name: test theme switcher
         run: |
           mkdir -p ~/.config/{alacritty,tmux,theme-switcher}
-          bash src/theme-switcher/switch-theme.sh || echo "WARNING: Theme switcher test failed"
+          zsh src/theme-switcher/switch-theme.sh || echo "WARNING: Theme switcher test failed"
           test -f ~/.config/theme-switcher/current-theme.sh || echo "ERROR: Theme file not created"
 
       - name: validate configurations
