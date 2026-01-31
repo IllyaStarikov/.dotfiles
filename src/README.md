@@ -18,7 +18,7 @@ src/
 ├── git/                   # Git configuration and hooks
 ├── kitty/                 # Kitty terminal emulator
 ├── language/              # Language-specific configs (7 files)
-├── neovim/                # Neovim editor (42+ modules)
+├── neovim/                # Neovim editor (22 modules + 4 subdirectories)
 ├── scripts/               # Utility scripts (11 tools)
 ├── setup/                 # Installation scripts
 ├── theme/        # Dynamic theme system
@@ -149,9 +149,11 @@ Version control configuration and utilities:
 Modern Neovim configuration:
 
 - `init.lua` - Entry point with path detection
-- `config/` - Core modules (options, keymaps, autocmds)
+- `core/` - Core modules (options, performance, backup)
+- `keymaps/` - Organized key bindings
 - `plugins/` - Plugin specifications (lazy.nvim)
 - `snippets/` - Language-specific snippets
+- `lsp.lua`, `ui.lua`, `utils.lua` - Root-level modules
 - Work overrides loaded from private repo
 
 ### /scripts
@@ -170,17 +172,18 @@ Utility scripts for productivity:
 
 Installation and configuration:
 
-- `setup.sh` - Main installer (interactive)
+- `install.sh` - Main installer (interactive, platform-aware)
 - `symlinks.sh` - Dotfile linking
-- `mac.sh` - macOS-specific setup
-- `linux.sh` - Linux-specific setup
+- `update.sh` - System maintenance and updates
+- `uninstall.sh` - Clean removal with backup restore
 
 ### /theme
 
 Dynamic theme synchronization:
 
 - `switch-theme.sh` - Main switcher
-- `themes/` - TokyoNight variants
+- `validate-themes.sh` - Theme validator
+- `tokyonight_day/`, `tokyonight_night/`, `tokyonight_moon/`, `tokyonight_storm/` - Theme configs
 - Syncs: Alacritty, tmux, Neovim, WezTerm, Starship
 - < 500ms switching time
 

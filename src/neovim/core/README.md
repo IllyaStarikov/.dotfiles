@@ -1,4 +1,4 @@
-# /src/neovim/config/core - Neovim Core Settings
+# /src/neovim/core - Neovim Core Settings
 
 ## 1. What's in this directory and how to use it
 
@@ -21,7 +21,7 @@ core/
 
 ```lua
 -- These are automatically loaded by config/init.lua
-require('config.core')  -- Loads all core modules
+require('core')  -- Loads all core modules
 
 -- Or load individually
 require('config.core.options')
@@ -414,7 +414,7 @@ end
 :StartupTime
 
 " Check module load time
-:lua print(vim.inspect(require('config.core')))
+:lua print(vim.inspect(require('core')))
 ```
 
 ### Common Problems:
@@ -436,7 +436,7 @@ end
 
 ## Related Documentation
 
-- [Neovim Config](../../README.md) - Main configuration
+- [Neovim Config](../README.md) - Main configuration
 - [Performance Guide](../performance.md) - Optimization tips
 - [Options Documentation](https://neovim.io/doc/user/options.html)
 - [Provider Documentation](https://neovim.io/doc/user/provider.html)

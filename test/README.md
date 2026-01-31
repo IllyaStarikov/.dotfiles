@@ -75,7 +75,6 @@ test/
 │   ├── nvim/           # Neovim configuration tests
 │   ├── scripts/        # Script tests (including git)
 │   └── setup/          # Setup script tests
-├── workflows/          # Real-world workflow tests
 └── README.md           # This file
 ```
 
@@ -127,7 +126,7 @@ Make it executable and run via `runner.zsh`.
 
 The suite includes:
 
-- **40+ test files** across all categories
+- **80+ test files** across all categories
 - **Unit tests** for each script and configuration
 - **Functional tests** for plugin functionality
 - **Integration tests** for multi-component workflows

@@ -28,11 +28,10 @@ theme storm     # Balanced dark (default)
 ```
 switch-theme.sh         # Main switching script
 validate-themes.sh      # Theme validator
-themes/
-├── tokyonight_day/    # Each theme has configs for:
-├── tokyonight_night/  # - alacritty.toml
-├── tokyonight_moon/   # - wezterm.lua
-└── tokyonight_storm/  # - kitty.conf, tmux.conf, starship.toml
+tokyonight_day/         # Each theme directory has configs for:
+tokyonight_night/       # - alacritty.toml
+tokyonight_moon/        # - wezterm.lua
+tokyonight_storm/       # - kitty.conf, tmux.conf, starship.toml
 ```
 
 ## Generated Configs

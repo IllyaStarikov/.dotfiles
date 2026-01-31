@@ -45,7 +45,7 @@ Comprehensive configuration for the universal code formatting script (`~/.dotfil
   "extensions": {
     "py": {
       "language": "Python",
-      "formatters": ["ruff", "black", "yapf", "autopep8"],
+      "formatters": ["yapf", "ruff", "black", "autopep8"],
       "additional": ["isort"]
     }
   }
@@ -54,9 +54,9 @@ Comprehensive configuration for the universal code formatting script (`~/.dotfil
 
 This means Python files will:
 
-1. Try Ruff first (fastest, Rust-based)
-2. Fall back to Black if Ruff unavailable
-3. Then yapf, then autopep8
+1. Try yapf first (Google style support)
+2. Fall back to Ruff if yapf unavailable
+3. Then black, then autopep8
 4. Also run isort for import sorting if available
 
 ## Subdirectories
@@ -88,7 +88,7 @@ cortex/
 
 The fixy.json supports the following languages with priority-based formatters:
 
-**Python**: ruff → black → yapf → autopep8 (+ isort)
+**Python**: yapf → ruff → black → autopep8 (+ isort)
 **C/C++**: clang-format → astyle
 **Shell**: shfmt → beautysh
 **Lua**: stylua → lua-format

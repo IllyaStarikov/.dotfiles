@@ -318,5 +318,5 @@ require("luasnip").config.set_config({
 
 - [LuaSnip Documentation](https://github.com/L3MON4D3/LuaSnip)
 - [Neovim Config](../README.md)
-- [Completion Setup](../config/blink-setup.lua)
-- [Keymaps](../config/keymaps/README.md)
+- [Completion Setup](../blink-setup.lua)
+- [Keymaps](../keymaps/README.md)

@@ -89,4 +89,4 @@ keys = { "<leader>ff" }
 | `<leader>gg` | LazyGit       | Git UI        |
 | `<leader>cc` | CodeCompanion | AI chat       |
 
-See `config/plugins.lua` for full specifications.
+See `plugins.lua` at `src/neovim/plugins.lua` for full specifications.

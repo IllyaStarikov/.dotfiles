@@ -17,15 +17,15 @@ Automated installation system for dotfiles across macOS and Linux.
 
 ## Installation Modes
 
-| Mode     | Command                 | Description          | Use Case       |
-| -------- | ----------------------- | -------------------- | -------------- |
-| Full     | `./setup.sh`            | Complete environment | New machines   |
-| Core     | `./setup.sh --core`     | Essential tools      | Minimal setups |
-| Symlinks | `./setup.sh --symlinks` | Links only           | Config updates |
+| Mode     | Command                   | Description          | Use Case       |
+| -------- | ------------------------- | -------------------- | -------------- |
+| Full     | `./install.sh`            | Complete environment | New machines   |
+| Core     | `./install.sh --core`     | Essential tools      | Minimal setups |
+| Symlinks | `./install.sh --symlinks` | Links only           | Config updates |
 
 ## Scripts
 
-### setup.sh
+### install.sh
 
 Main installation script with platform detection.
 

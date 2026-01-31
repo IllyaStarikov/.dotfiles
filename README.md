@@ -12,7 +12,7 @@
 ## Why This?
 
 - Themes sync across terminal, editor, tmux, and prompt in one command
-- 40+ automated tests prevent configuration drift
+- 80+ automated tests prevent configuration drift
 - Private repo support for private configs
 - One-liner install, clean uninstall
 - 20+ languages with LSP, linting, and formatting out of the box
@@ -89,7 +89,7 @@ nvim +Telescope\ files  # Fuzzy find everything
 | `<C-h/j/k/l>` | Navigate splits |
 | `gcc`         | Toggle comment  |
 
-Full reference: [keymaps](src/neovim/config/keymaps/KEYMAPS.md)
+Full reference: [keymaps](src/neovim/keymaps/README.md)
 
 ## Performance
 

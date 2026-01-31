@@ -13,15 +13,17 @@ Modern Neovim setup with < 300ms startup, AI integration, and 80+ plugins manage
 
 ```
 src/neovim/
-├── core/       # Options, performance, search
-├── keymaps/    # Organized key bindings
-├── lsp/        # 20+ language servers
-├── plugins/    # 80+ plugin configs
-├── ui/         # Theme and appearance
-├── utils/      # Shared utilities
-├── snippets/   # Language snippets
+├── core/       # Options, performance, backup, folding (7 files)
+├── keymaps/    # Key bindings (8 files)
+├── plugins/    # Plugin configs (7 files)
+├── snippets/   # Language snippets (11 files)
+├── spell/      # Spell files (loaded from private repo)
 ├── init.lua    # Entry point
-└── *.lua       # Config modules
+├── lsp.lua     # LSP configurations (20+ servers)
+├── ui.lua      # Theme and appearance
+├── utils.lua   # Utility functions
+├── plugins.lua # Plugin specifications (37KB)
+└── *.lua       # 19 other config modules
 ```
 
 ## Quick Start
@@ -74,7 +76,7 @@ nvim
 ## Customization
 
 - Add plugins in `plugins/` directory
-- Configure LSPs in `lsp/servers.lua`
+- Configure LSPs in `lsp.lua`
 - Custom keymaps in `keymaps/` directory
 - Work overrides via `.dotfiles.private/`
 
@@ -105,51 +107,55 @@ This directory contains the modular configuration system for Neovim, organized i
 
 ```
 src/neovim/
-├── core/              # Core Neovim settings
-│   ├── globals.lua    # Global variables
-│   ├── init.lua       # Core initialization
-│   └── options.lua    # Vim options
-├── keymaps/           # Key binding definitions
+├── core/              # Core Neovim settings (7 files)
+│   ├── init.lua       # Module loader
+│   ├── options.lua    # Editor options
+│   ├── performance.lua # Speed optimizations
+│   ├── backup.lua     # Backup/swap settings
+│   ├── folding.lua    # Code folding config
+│   ├── indentation.lua # Tab/space settings
+│   └── search.lua     # Search behavior
+├── keymaps/           # Key binding definitions (8 files)
+│   ├── core.lua       # Essential mappings
 │   ├── editing.lua    # Text editing keys
-│   ├── init.lua       # Keymap loader
 │   ├── navigation.lua # Movement keys
-│   ├── plugins.lua    # Plugin-specific keys
-│   └── windows.lua    # Window management
-├── lsp/               # Language server configurations
-│   ├── handlers.lua   # LSP handlers
-│   ├── init.lua       # LSP initialization
-│   ├── keymaps.lua    # LSP key bindings
-│   └── servers.lua    # Server configurations
-├── plugins/           # Plugin specifications
-│   ├── ai.lua         # AI assistants
-│   ├── coding.lua     # Coding tools
-│   ├── editor.lua     # Editor enhancements
-│   ├── git.lua        # Git integration
-│   ├── init.lua       # Plugin loader
-│   ├── lsp.lua        # LSP plugins
-│   ├── treesitter.lua # Syntax highlighting
-│   └── ui.lua         # UI components
-├── ui/                # User interface settings
-│   ├── colors.lua     # Color schemes
-│   ├── init.lua       # UI initialization
-│   └── statusline.lua # Status line config
-├── utils/             # Utility functions
-│   ├── init.lua       # Utility loader
-│   └── helpers.lua    # Helper functions
-├── autocmds.lua       # Auto commands (47KB)
+│   ├── lsp.lua        # LSP key bindings
+│   ├── debug.lua      # Debugging keybindings
+│   └── plugins.lua    # Plugin-specific keys
+├── plugins/           # Plugin specifications (7 files)
+│   ├── ai.lua         # AI assistants (CodeCompanion)
+│   ├── completion.lua # Blink.cmp config
+│   ├── markview.lua   # Markdown preview
+│   ├── snippets.lua   # LuaSnip config
+│   └── vimtex.lua     # LaTeX support
+├── snippets/          # Language-specific snippets (11 files)
+│   ├── c.lua, cpp.lua # C/C++ snippets
+│   ├── python.lua     # Python snippets
+│   ├── javascript.lua # JS/TS snippets
+│   └── ...            # Other languages
+├── spell/             # Spell files (loaded from private repo)
+├── init.lua           # Entry point with path detection
+├── lsp.lua            # LSP configurations (20+ servers)
+├── ui.lua             # Theme and appearance
+├── utils.lua          # Utility functions
+├── autocmds.lua       # Auto commands (52KB)
 ├── blink-setup.lua    # Blink.cmp configuration
-├── commands.lua       # Custom commands
+├── commands.lua       # Custom commands (20KB)
+├── compat.lua         # Compatibility layer
 ├── conform.lua        # Formatter configuration
-├── dap.lua           # Debug adapter protocol
-├── debug.lua         # Debug utilities
-├── error-handler.lua # Error handling
-├── fixy.lua          # Auto-formatter (16KB)
-├── gitsigns.lua      # Git signs configuration
-├── health.lua        # Health checks
-├── keymaps.lua       # Legacy keymaps
-├── lazy.lua          # Plugin manager setup
-├── menu.lua          # Context menus (31KB)
-└── plugins.lua       # Plugin specifications (37KB)
+├── dap.lua            # Debug adapter protocol (18KB)
+├── error-handler.lua  # Error handling
+├── fixy.lua           # Auto-formatter (16KB)
+├── gitsigns.lua       # Git signs configuration
+├── health.lua         # Health checks
+├── keymaps.lua        # Legacy keymaps
+├── lazy.lua           # Plugin manager setup
+├── logging.lua        # Logging utilities
+├── menu.lua           # Context menus (31KB)
+├── plugins.lua        # Plugin specifications (37KB)
+├── telescope.lua      # Telescope configuration (15KB)
+├── work.lua           # Work detection utilities
+└── work-init.lua      # Work-specific initialization
 ```
 
 ## 🔧 Core Modules
@@ -231,41 +237,24 @@ Organized key bindings:
 - **plugins.lua** - Plugin-specific bindings
 - **windows.lua** - Splits, tabs, buffers
 
-### /lsp
-
-Language Server Protocol:
-
-- **servers.lua** - Server configurations for 20+ languages
-- **handlers.lua** - Hover, signature, diagnostics
-- **keymaps.lua** - Go to definition, references, etc.
-- **init.lua** - LSP initialization and setup
-
 ### /plugins
 
-Plugin categories:
+Plugin configuration files:
 
-- **ai.lua** - Avante, CodeCompanion, Copilot
-- **coding.lua** - Completion, snippets, formatting
-- **editor.lua** - File explorer, search, replace
-- **git.lua** - Gitsigns, fugitive, diffview
-- **lsp.lua** - Mason, lspconfig, diagnostics
-- **treesitter.lua** - Syntax, folding, context
-- **ui.lua** - Themes, statusline, notifications
+- **ai.lua** - CodeCompanion AI assistant setup
+- **completion.lua** - Blink.cmp completion config
+- **markview.lua** - Markdown preview settings
+- **snippets.lua** - LuaSnip configuration
+- **vimtex.lua** - LaTeX support
 
-### /ui
+### Root-Level Modules
 
-Visual configuration:
+Key modules at the root level:
 
-- **colors.lua** - TokyoNight theme setup
-- **statusline.lua** - Lualine configuration
-- **init.lua** - UI component initialization
-
-### /utils
-
-Helper functions:
-
-- **helpers.lua** - Common utility functions
-- **init.lua** - Utility module loader
+- **lsp.lua** - All LSP configurations (20+ servers)
+- **ui.lua** - Theme and appearance settings
+- **utils.lua** - Shared utility functions
+- **telescope.lua** - Fuzzy finder configuration
 
 ## ⚡ Performance Features
 
@@ -404,8 +393,8 @@ vim.g.debug_mode = true
 
 ## 📚 Related Documentation
 
-- [Neovim Configuration](../README.md)
 - [Plugin List](plugins/README.md)
-- [LSP Setup](lsp/README.md)
 - [Keymaps Guide](keymaps/README.md)
-- [Main Dotfiles](../../../README.md)
+- [Core Settings](core/README.md)
+- [Snippets](snippets/README.md)
+- [Main Dotfiles](../../README.md)

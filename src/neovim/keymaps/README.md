@@ -1,4 +1,4 @@
-# /src/neovim/config/keymaps - Neovim Key Bindings
+# /src/neovim/keymaps - Neovim Key Bindings
 
 ## 1. What's in this directory and how to use it
 
@@ -505,6 +505,6 @@ vim.keymap.set("i", "<C-v>", "<C-r><C-p>+", { desc = "Paste properly" })
 
 - [Core Config](../core/README.md) - Vim options
 - [Plugins Config](../plugins/README.md) - Plugin specifications
-- [Which-key Setup](../plugins.lua) - Visual key hints
+- [Main Neovim Config](../README.md) - Overview
 - [Vim Keymap Docs](https://neovim.io/doc/user/map.html)
 - [Key Notation](https://neovim.io/doc/user/intro.html#key-notation)

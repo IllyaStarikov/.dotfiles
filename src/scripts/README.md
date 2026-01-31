@@ -8,7 +8,7 @@ Custom productivity tools that automate daily development tasks.
 | -------------------- | ---------------------------------------- | --------------------- |
 | **fixy**             | Universal code formatter (20+ languages) | `fixy file.py`        |
 | **theme**            | System-wide theme switcher               | `theme dark`          |
-| **update-dotfiles**  | Update all packages and plugins          | `update`              |
+| **update**           | Update all packages and plugins          | `update`              |
 | **tmux-utils**       | System monitoring for tmux status        | `tmux-utils battery`  |
 | **scratchpad**       | Quick temporary file editor              | `scratchpad`          |
 | **extract**          | Universal archive extractor              | `extract file.tar.gz` |
