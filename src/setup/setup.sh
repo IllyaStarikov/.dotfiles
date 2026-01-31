@@ -760,20 +760,34 @@ install_linux_packages() {
         if [[ -z "$LAZYGIT_VERSION" || "$LAZYGIT_VERSION" == "null" ]]; then
           warning "Could not fetch lazygit version (GitHub API rate limit?), skipping"
         else
-          curl -fLo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-          tar xf lazygit.tar.gz lazygit
-          sudo install lazygit /usr/local/bin
-          rm -f lazygit lazygit.tar.gz
+          # Wrap in if/else to handle download/extraction failures gracefully
+          # This prevents flaky CI failures due to network issues
+          if curl -fLo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
+             tar xf lazygit.tar.gz lazygit 2>/dev/null && \
+             sudo install lazygit /usr/local/bin; then
+            rm -f lazygit lazygit.tar.gz
+            success "lazygit installed"
+          else
+            rm -f lazygit lazygit.tar.gz
+            warning "Failed to install lazygit from GitHub releases (network issue?), skipping"
+          fi
         fi
         ;;
       dnf | yum)
         # For Fedora/RHEL
-        sudo dnf copr enable atim/lazygit -y
-        sudo dnf install -y lazygit
+        if sudo dnf copr enable atim/lazygit -y && sudo dnf install -y lazygit; then
+          success "lazygit installed"
+        else
+          warning "Failed to install lazygit via dnf, skipping"
+        fi
         ;;
       pacman)
         # For Arch Linux
-        sudo pacman -S --noconfirm lazygit
+        if sudo pacman -S --noconfirm lazygit; then
+          success "lazygit installed"
+        else
+          warning "Failed to install lazygit via pacman, skipping"
+        fi
         ;;
       *)
         warning "Cannot install lazygit for unknown package manager"
