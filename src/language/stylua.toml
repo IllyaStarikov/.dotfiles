@@ -1,6 +1,7 @@
 # Stylua Configuration - Lua Code Formatter
 # Ensures consistent Lua formatting across Neovim configs
 # https://github.com/JohnnyMorganz/StyLua
+# Canonical values: config/standards.json
 
 # Indentation: 2 spaces (standard for Lua, matches Neovim conventions)
 indent_type = "Spaces"

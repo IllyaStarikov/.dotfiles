@@ -6,6 +6,7 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 -- FONT CONFIGURATION - JetBrainsMono with full ligature and variant support
+-- Canonical values defined in config/standards.json
 
 -- Primary font with extensive fallbacks for math and Unicode coverage
 config.font = wezterm.font_with_fallback({

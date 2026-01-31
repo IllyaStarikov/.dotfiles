@@ -143,6 +143,7 @@ x = 8
 y = 8
 
 # FONT CONFIGURATION
+# Canonical values defined in config/standards.json
 
 [font]
 size = 18.0

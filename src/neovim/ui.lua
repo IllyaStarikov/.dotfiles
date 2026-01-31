@@ -30,6 +30,7 @@ opt.linebreak = true -- wrap at word boundaries
 opt.formatoptions:remove("t") -- Don't auto-wrap text
 
 -- GUI font settings with ligature support
+-- Canonical values defined in config/standards.json
 if vim.fn.has("gui_running") == 1 or vim.g.neovide then
   opt.guifont = "JetBrainsMono Nerd Font:h18"
   -- Enable ligatures in Neovide

@@ -1,0 +1,250 @@
+#!/usr/bin/env zsh
+# Configuration standards validation script
+# Validates that config files match centralized values in config/standards.json
+# Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
+
+set -euo pipefail
+
+# Source library for config reading
+SCRIPT_DIR="${0:A:h}"
+DOTFILES_DIR="${SCRIPT_DIR}/../.."
+source "${DOTFILES_DIR}/src/lib/config.zsh"
+
+# ANSI color codes for validation output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Counters for summary
+TOTAL_CHECKS=0
+PASSED=0
+FAILED=0
+WARNINGS=0
+
+# Load standards from config/standards.json
+FONT_PRIMARY=$(get_config "standards.json" ".fonts.primary")
+FONT_FALLBACK=$(get_config "standards.json" ".fonts.fallback")
+FONT_SIZE=$(get_config "standards.json" ".fonts.size")
+LINE_LENGTH=$(get_config "standards.json" ".formatting.line_length")
+INDENT_WIDTH=$(get_config "standards.json" ".formatting.indent_width")
+SCROLLBACK=$(get_config "standards.json" ".limits.scrollback_lines")
+UNDO_LEVELS=$(get_config "standards.json" ".limits.undo_levels")
+MAX_MEM_PATTERN=$(get_config "standards.json" ".limits.max_mem_pattern")
+
+# Helper to check a value in a file
+# Usage: check_value "file" "pattern" "expected" "description"
+check_value() {
+  local file="$1"
+  local pattern="$2"
+  local expected="$3"
+  local description="$4"
+
+  TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+
+  if [[ ! -f "$file" ]]; then
+    echo -e "  ${YELLOW}⚠${NC}  $description: file not found"
+    WARNINGS=$((WARNINGS + 1))
+    return
+  fi
+
+  local actual
+  actual=$(grep -oE "$pattern" "$file" 2>/dev/null | head -1 || true)
+
+  if [[ -z "$actual" ]]; then
+    echo -e "  ${YELLOW}⚠${NC}  $description: pattern not found"
+    WARNINGS=$((WARNINGS + 1))
+  elif [[ "$actual" == *"$expected"* ]]; then
+    echo -e "  ${GREEN}✓${NC}  $description"
+    PASSED=$((PASSED + 1))
+  else
+    echo -e "  ${RED}✗${NC}  $description"
+    echo -e "      Expected: $expected"
+    echo -e "      Found:    $actual"
+    FAILED=$((FAILED + 1))
+  fi
+}
+
+# Helper to check numeric value with grep
+# Handles formats like: value = 18, value = 18.0, value: 18, "value": 100
+check_numeric() {
+  local file="$1"
+  local pattern="$2"
+  local expected="$3"
+  local description="$4"
+
+  TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+
+  if [[ ! -f "$file" ]]; then
+    echo -e "  ${YELLOW}⚠${NC}  $description: file not found"
+    WARNINGS=$((WARNINGS + 1))
+    return
+  fi
+
+  local line
+  line=$(grep -E "$pattern" "$file" 2>/dev/null | head -1 || true)
+
+  if [[ -z "$line" ]]; then
+    echo -e "  ${YELLOW}⚠${NC}  $description: setting not found"
+    WARNINGS=$((WARNINGS + 1))
+    return
+  fi
+
+  # Extract the numeric value (handles 18, 18.0, etc.)
+  local actual
+  actual=$(echo "$line" | grep -oE '[0-9]+(\.[0-9]+)?' | head -1 || echo "?")
+  # Convert to integer for comparison (18.0 -> 18)
+  local actual_int="${actual%%.*}"
+
+  if [[ "$actual_int" == "$expected" ]]; then
+    echo -e "  ${GREEN}✓${NC}  $description = $expected"
+    PASSED=$((PASSED + 1))
+  else
+    echo -e "  ${RED}✗${NC}  $description"
+    echo -e "      Expected: $expected"
+    echo -e "      Found:    $actual"
+    FAILED=$((FAILED + 1))
+  fi
+}
+
+echo "Validating configurations against standards.json"
+echo "================================================="
+echo ""
+echo -e "${CYAN}Standards:${NC}"
+echo "  Font: $FONT_PRIMARY @ ${FONT_SIZE}pt"
+echo "  Line length: $LINE_LENGTH"
+echo "  Indent: $INDENT_WIDTH spaces"
+echo "  Scrollback: $SCROLLBACK lines"
+echo ""
+
+# ============================================
+# Terminal Emulators
+# ============================================
+echo -e "${CYAN}Terminal Emulators${NC}"
+echo "------------------"
+
+# Alacritty
+echo "Alacritty (src/alacritty.toml):"
+ALACRITTY="${DOTFILES_DIR}/src/alacritty.toml"
+check_value "$ALACRITTY" 'family = "[^"]*"' "$FONT_PRIMARY" "Font family"
+check_numeric "$ALACRITTY" 'size = [0-9]+' "$FONT_SIZE" "Font size"
+check_numeric "$ALACRITTY" 'history = [0-9]+' "$SCROLLBACK" "Scrollback"
+echo ""
+
+# WezTerm
+echo "WezTerm (src/wezterm/wezterm.lua):"
+WEZTERM="${DOTFILES_DIR}/src/wezterm/wezterm.lua"
+check_value "$WEZTERM" '"[^"]*Nerd Font[^"]*"' "$FONT_PRIMARY" "Font family"
+check_numeric "$WEZTERM" 'font_size = [0-9]+' "$FONT_SIZE" "Font size"
+check_numeric "$WEZTERM" 'scrollback_lines = [0-9]+' "$SCROLLBACK" "Scrollback"
+echo ""
+
+# Kitty
+echo "Kitty (src/kitty/kitty.conf):"
+KITTY="${DOTFILES_DIR}/src/kitty/kitty.conf"
+check_value "$KITTY" 'font_family.*' "$FONT_FALLBACK" "Font family (uses base variant)"
+check_numeric "$KITTY" 'font_size [0-9]+' "$FONT_SIZE" "Font size"
+echo ""
+
+# tmux
+echo "tmux (src/tmux.conf):"
+TMUX="${DOTFILES_DIR}/src/tmux.conf"
+check_numeric "$TMUX" 'history-limit [0-9]+' "$SCROLLBACK" "History limit"
+echo ""
+
+# ============================================
+# Language Formatters
+# ============================================
+echo -e "${CYAN}Language Formatters${NC}"
+echo "-------------------"
+
+# stylua
+echo "StyLua (src/language/stylua.toml):"
+STYLUA="${DOTFILES_DIR}/src/language/stylua.toml"
+check_numeric "$STYLUA" 'column_width = [0-9]+' "$LINE_LENGTH" "Line length"
+check_numeric "$STYLUA" 'indent_width = [0-9]+' "$INDENT_WIDTH" "Indent width"
+echo ""
+
+# ruff
+echo "Ruff (src/language/ruff.toml):"
+RUFF="${DOTFILES_DIR}/src/language/ruff.toml"
+check_numeric "$RUFF" 'line-length = [0-9]+' "$LINE_LENGTH" "Line length"
+echo ""
+
+# clang-format
+echo "Clang-format (src/language/.clang-format):"
+CLANG="${DOTFILES_DIR}/src/language/.clang-format"
+check_numeric "$CLANG" 'ColumnLimit: [0-9]+' "$LINE_LENGTH" "Column limit"
+check_numeric "$CLANG" 'IndentWidth: [0-9]+' "$INDENT_WIDTH" "Indent width"
+echo ""
+
+# markdownlint (uses jq for JSON parsing)
+echo "Markdownlint (src/language/markdownlint.json):"
+MDLINT="${DOTFILES_DIR}/src/language/markdownlint.json"
+TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
+if [[ -f "$MDLINT" ]] && command -v jq &>/dev/null; then
+  MDLINT_LINE_LEN=$(jq -r '.MD013.line_length // empty' "$MDLINT" 2>/dev/null)
+  if [[ "$MDLINT_LINE_LEN" == "$LINE_LENGTH" ]]; then
+    echo -e "  ${GREEN}✓${NC}  Line length = $LINE_LENGTH"
+    PASSED=$((PASSED + 1))
+  else
+    echo -e "  ${RED}✗${NC}  Line length"
+    echo -e "      Expected: $LINE_LENGTH"
+    echo -e "      Found:    $MDLINT_LINE_LEN"
+    FAILED=$((FAILED + 1))
+  fi
+else
+  echo -e "  ${YELLOW}⚠${NC}  Line length: file not found or jq unavailable"
+  WARNINGS=$((WARNINGS + 1))
+fi
+echo ""
+
+# ============================================
+# Neovim
+# ============================================
+echo -e "${CYAN}Neovim${NC}"
+echo "------"
+
+echo "UI (src/neovim/ui.lua):"
+NVIM_UI="${DOTFILES_DIR}/src/neovim/ui.lua"
+check_value "$NVIM_UI" 'colorcolumn = "[0-9]+"' "$LINE_LENGTH" "Color column"
+check_value "$NVIM_UI" 'JetBrainsMono Nerd Font:h[0-9]+' "h$FONT_SIZE" "GUI font"
+echo ""
+
+echo "Performance (src/neovim/core/performance.lua):"
+NVIM_PERF="${DOTFILES_DIR}/src/neovim/core/performance.lua"
+check_numeric "$NVIM_PERF" 'maxmempattern = [0-9]+' "$MAX_MEM_PATTERN" "Max mem pattern"
+echo ""
+
+echo "Backup (src/neovim/core/backup.lua):"
+NVIM_BACKUP="${DOTFILES_DIR}/src/neovim/core/backup.lua"
+check_numeric "$NVIM_BACKUP" 'undolevels = [0-9]+' "$UNDO_LEVELS" "Undo levels"
+echo ""
+
+# ============================================
+# Summary
+# ============================================
+echo "================================================="
+echo "Summary:"
+echo -e "  Total checks:  $TOTAL_CHECKS"
+echo -e "  ${GREEN}Passed:${NC}        $PASSED"
+if [[ $FAILED -gt 0 ]]; then
+  echo -e "  ${RED}Failed:${NC}        $FAILED"
+else
+  echo -e "  Failed:        0"
+fi
+if [[ $WARNINGS -gt 0 ]]; then
+  echo -e "  ${YELLOW}Warnings:${NC}      $WARNINGS"
+else
+  echo -e "  Warnings:      0"
+fi
+echo ""
+
+if [[ $FAILED -gt 0 ]]; then
+  echo -e "${RED}Validation failed.${NC} Update configs to match config/standards.json"
+  exit 1
+else
+  echo -e "${GREEN}All configurations match standards.json${NC}"
+  exit 0
+fi

@@ -1,0 +1,21 @@
+{
+  "$schema": "./schemas/standards.schema.json",
+  "fonts": {
+    "primary": "JetBrainsMono Nerd Font",
+    "fallback": "JetBrains Mono",
+    "size": 18,
+    "markdown_size": 14
+  },
+  "formatting": {
+    "line_length": 100,
+    "indent_width": 2,
+    "indent_style": "spaces",
+    "python_indent_width": 4
+  },
+  "limits": {
+    "scrollback_lines": 50000,
+    "undo_levels": 50000,
+    "history_size": 100000,
+    "max_mem_pattern": 50000
+  }
+}

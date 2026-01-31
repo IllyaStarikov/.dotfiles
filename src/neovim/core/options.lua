@@ -9,8 +9,7 @@ opt.history = 10000
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 
--- Large file performance settings
-opt.maxmempattern = 50000 -- KB
+-- Large file performance settings (maxmempattern is set in performance.lua)
 opt.redrawtime = 20000 -- ms
 opt.clipboard:append("unnamedplus")
 opt.virtualedit = "block"

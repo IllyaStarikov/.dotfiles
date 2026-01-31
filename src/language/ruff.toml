@@ -2,6 +2,7 @@
 # Fast, Rust-based replacement for Black, isort, and Flake8
 # Documentation: https://docs.astral.sh/ruff/
 # Style guide: https://google.github.io/styleguide/pyguide.html
+# Canonical values: config/standards.json
 
 # Maximum line length for code
 line-length = 100
