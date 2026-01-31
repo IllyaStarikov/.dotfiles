@@ -913,7 +913,7 @@ require("lazy").setup({
     "neovim/nvim-lspconfig",
     dependencies = { "saghen/blink.cmp" },
     config = function()
-      require("lsp.servers").setup()
+      require("lsp").setup()
     end,
   },
   {

@@ -16,10 +16,9 @@
 --   src/neovim/       - Configuration modules (flat structure)
 --   ├── core/         - Core settings (options, performance)
 --   ├── keymaps/      - Key bindings by category
---   ├── lsp/          - Language server configurations
 --   ├── plugins/      - Plugin specifications
---   ├── ui/           - UI and theme settings
---   └── *.lua         - Config modules (plugins.lua, commands.lua, etc.)
+--   ├── snippets/     - Language-specific snippets
+--   └── *.lua         - Config modules (lsp.lua, ui.lua, commands.lua, etc.)
 --
 -- USAGE:
 --   Symlinked to ~/.config/nvim/init.lua
@@ -195,7 +194,10 @@ else
   vim.api.nvim_create_autocmd("User", {
     pattern = "LazyVimStarted",
     callback = function()
-      utils.safe_require("ui.theme")
+      local ui = utils.safe_require("ui")
+      if ui and ui.setup_theme then
+        ui.setup_theme()
+      end
     end,
   })
 end
