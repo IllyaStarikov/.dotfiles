@@ -28,12 +28,5 @@ export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 export KEYTIMEOUT=1  # Default: 40 (faster vim mode switching)
 
-# Editor configuration
-if [[ $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
-else
-   export VISUAL=nvim
-   export EDITOR="$VISUAL"
-fi
 # Rust configuration
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"

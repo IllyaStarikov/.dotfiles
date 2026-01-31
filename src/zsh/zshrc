@@ -31,8 +31,7 @@ skip_global_compinit=1
 
 # Zinit - Modern Plugin Manager
 
-# Install zinit if not present
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+# Install zinit if not present (ZINIT_HOME exported in zshenv)
 if [[ ! -d "$ZINIT_HOME" ]]; then
     print -P "%F{33}▓▒░ Installing zinit...%f"
     command mkdir -p "$(dirname "$ZINIT_HOME")"
@@ -131,9 +130,8 @@ fi
 
 # Key Bindings
 
-# Vi mode
+# Vi mode (KEYTIMEOUT exported in zshenv)
 bindkey -v
-export KEYTIMEOUT=1
 
 # Better searching
 bindkey '^R' history-incremental-search-backward
@@ -208,6 +206,9 @@ if (( ${+widgets[zle-keymap-select]} )); then
     zle -D zle-keymap-select 2>/dev/null
 fi
 
+# Fix right prompt alignment (zsh default has 1 char margin)
+export ZLE_RPROMPT_INDENT=0
+
 if command -v starship &>/dev/null; then
     eval "$(starship init zsh)"
 fi
@@ -235,7 +236,7 @@ fi
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
 # Theme integration
-[[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]] && source "$HOME/.config/theme-switcher/current-theme.sh"
+[[ -f "$HOME/.config/theme/current-theme.sh" ]] && source "$HOME/.config/theme/current-theme.sh"
 
 # Theme wrapper function to ensure environment is updated in current shell
 theme() {
@@ -243,8 +244,8 @@ theme() {
     command theme "$@"
 
     # Source the updated theme environment in current shell
-    if [[ -f "$HOME/.config/theme-switcher/current-theme.sh" ]]; then
-        source "$HOME/.config/theme-switcher/current-theme.sh"
+    if [[ -f "$HOME/.config/theme/current-theme.sh" ]]; then
+        source "$HOME/.config/theme/current-theme.sh"
     fi
 }
 
