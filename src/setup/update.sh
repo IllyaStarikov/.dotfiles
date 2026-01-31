@@ -354,6 +354,12 @@ fi
     update_with_fallback "Homebrew cleanup" brew cleanup -s
     update_with_fallback "Homebrew doctor" brew doctor || true
     update_with_fallback "Homebrew autoremove" brew autoremove || true
+
+    # Refresh font cache after Homebrew updates (fonts may have been installed/updated)
+    if has_command fc-cache; then
+      echo "Refreshing font cache..."
+      update_with_fallback "Font cache refresh" fc-cache -fv
+    fi
   fi
 }
 
@@ -552,6 +558,41 @@ update_tools() {
     echo "Updating fzf..."
     if [[ "${DRY_RUN}" == false ]]; then
         (cd "$HOME/.fzf" && update_with_fallback "fzf update" git pull && update_with_fallback "fzf install" ./install --all)
+    fi
+  fi
+
+  # Ollama model updates (local AI models)
+  if has_command ollama; then
+    echo "Updating Ollama models..."
+    if [[ "${DRY_RUN}" == false ]]; then
+      if ollama list &>/dev/null 2>&1; then
+        local models
+        models=$(ollama list 2>/dev/null | awk 'NR>1 {print $1}')
+        if [[ -n "$models" ]]; then
+          echo "$models" | while read -r model; do
+            [[ -n "$model" ]] && update_with_fallback "Ollama pull $model" ollama pull "$model"
+          done
+        else
+          echo "No Ollama models installed"
+        fi
+      else
+        echo "Ollama not running, skipping model updates"
+      fi
+    fi
+  fi
+
+  # Docker cleanup (containers, images, volumes)
+  if has_command docker; then
+    echo "Cleaning up Docker resources..."
+    if [[ "${DRY_RUN}" == false ]]; then
+      if docker info &>/dev/null 2>&1; then
+        update_with_fallback "Docker container prune" docker container prune -f
+        update_with_fallback "Docker image prune (>7 days)" docker image prune -a --filter "until=168h" -f
+        update_with_fallback "Docker volume prune" docker volume prune -f
+        update_with_fallback "Docker network prune" docker network prune -f
+      else
+        echo "Docker daemon not running, skipping cleanup"
+      fi
     fi
   fi
 }
