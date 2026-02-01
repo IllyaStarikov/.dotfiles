@@ -43,6 +43,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Set up completion paths BEFORE loading completions
 fpath=(
+    $DOTFILES/src/zsh/completions
     /usr/local/share/zsh/site-functions
     /usr/share/zsh/site-functions
     $fpath

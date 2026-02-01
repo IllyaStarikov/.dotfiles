@@ -1,0 +1,114 @@
+#compdef theme
+
+# Zsh completion for theme switcher
+# Provides dynamic completions from themes.json
+
+local curcontext="$curcontext" state line
+typeset -A opt_args
+
+local DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+local THEMES_JSON="$DOTFILES/config/themes.json"
+
+# Get all theme families from JSON
+_theme_families() {
+  local families
+  if command -v jq &>/dev/null && [[ -f "$THEMES_JSON" ]]; then
+    families=($(jq -r '.families | keys[]' "$THEMES_JSON" 2>/dev/null))
+  else
+    families=(tokyonight github catppuccin dracula onedark material ayu monokai nightowl synthwave84 shadesofpurple atomone)
+  fi
+  _describe -t families 'theme family' families
+}
+
+# Get variants for a specific family
+_theme_variants() {
+  local family="$1"
+  local variants
+  if command -v jq &>/dev/null && [[ -f "$THEMES_JSON" ]]; then
+    variants=($(jq -r ".families.\"$family\".variants | keys[]" "$THEMES_JSON" 2>/dev/null))
+  else
+    case "$family" in
+      tokyonight) variants=(day night moon storm) ;;
+      github) variants=(light dark dark_dimmed dark_high_contrast light_high_contrast) ;;
+      catppuccin) variants=(latte frappe macchiato mocha) ;;
+      dracula) variants=(classic soft) ;;
+      onedark) variants=(classic darker vivid flat) ;;
+      material) variants=(default darker palenight oceanic lighter) ;;
+      ayu) variants=(light dark mirage) ;;
+      monokai) variants=(pro classic machine octagon ristretto spectrum) ;;
+      nightowl) variants=(dark light) ;;
+      synthwave84) variants=(default) ;;
+      shadesofpurple) variants=(default) ;;
+      atomone) variants=(dark darker cool warm warmer light) ;;
+      *) variants=() ;;
+    esac
+  fi
+  _describe -t variants 'variant' variants
+}
+
+# Get all full theme names (family_variant)
+_theme_full_names() {
+  local themes
+  if command -v jq &>/dev/null && [[ -f "$THEMES_JSON" ]]; then
+    themes=($(jq -r '.families | to_entries[] | .key as $f | .value.variants | keys[] | "\($f)_\(.)"' "$THEMES_JSON" 2>/dev/null))
+  else
+    themes=(
+      tokyonight_day tokyonight_night tokyonight_moon tokyonight_storm
+      github_light github_dark github_dark_dimmed
+      catppuccin_latte catppuccin_frappe catppuccin_macchiato catppuccin_mocha
+      dracula_classic dracula_soft
+    )
+  fi
+  _describe -t themes 'theme' themes
+}
+
+# Get aliases from JSON
+_theme_aliases() {
+  local aliases
+  if command -v jq &>/dev/null && [[ -f "$THEMES_JSON" ]]; then
+    aliases=($(jq -r '.aliases | keys[]' "$THEMES_JSON" 2>/dev/null))
+  else
+    aliases=(light dark day night moon storm latte mocha mirage palenight oceanic)
+  fi
+  _describe -t aliases 'alias' aliases
+}
+
+_arguments -C \
+  '(-h --help)'{-h,--help}'[Show help message]' \
+  '(-l --list)'{-l,--list}'[List available themes]' \
+  '(-c --current)'{-c,--current}'[Show current theme]' \
+  '(-f --force)'{-f,--force}'[Force theme switch even if same]' \
+  '--local[Apply to current terminal only]' \
+  '--terminal[Update terminal colors only]' \
+  '--tmux[Update tmux only]' \
+  '--shell[Update shell prompt only]' \
+  '--neovim[Update neovim only]' \
+  '1: :->first_arg' \
+  '2: :->second_arg' \
+  && return 0
+
+case $state in
+  first_arg)
+    # First argument: family name, full theme name, or alias
+    _alternative \
+      'families:theme family:_theme_families' \
+      'themes:full theme name:_theme_full_names' \
+      'aliases:alias:_theme_aliases'
+    ;;
+  second_arg)
+    # Second argument: variant for the family (if first arg is a family)
+    local family="${words[2]}"
+    # Check if first arg is a valid family
+    if command -v jq &>/dev/null && [[ -f "$THEMES_JSON" ]]; then
+      if jq -e ".families.\"$family\"" "$THEMES_JSON" &>/dev/null; then
+        _theme_variants "$family"
+      fi
+    else
+      case "$family" in
+        tokyonight|github|catppuccin|dracula|onedark|material|ayu|monokai|nightowl|synthwave84|shadesofpurple|atomone)
+          _theme_variants "$family"
+          ;;
+      esac
+    fi
+    ;;
+esac

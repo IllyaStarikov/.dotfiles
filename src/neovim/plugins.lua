@@ -177,6 +177,9 @@ require("lazy").setup({
       },
     },
   },
+  -- NOTE: Additional colorschemes are generated locally from colors.json
+  -- See src/theme/templates/neovim.lua and src/neovim/colors/
+  -- No external plugin dependencies needed
   -- Undotree - Visual undo history
   {
     "mbbill/undotree",
@@ -520,6 +523,16 @@ require("lazy").setup({
       },
     },
     -- lazy.nvim automatically calls setup(opts) when opts is provided
+  },
+
+  -- Virtual column line (replaces native colorcolumn with cleaner character rendering)
+  {
+    "lukas-reineke/virt-column.nvim",
+    event = "VeryLazy",
+    opts = {
+      char = "│",
+      virtcolumn = "100",
+    },
   },
 
   -- Trouble.nvim - Pretty diagnostics, references, quickfix, loclist

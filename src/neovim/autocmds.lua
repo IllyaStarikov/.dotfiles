@@ -388,7 +388,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -403,7 +402,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -418,7 +416,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -432,7 +429,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -447,7 +443,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
     -- LaTeX-specific settings
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
@@ -472,7 +467,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -487,7 +481,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -513,7 +506,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -527,7 +519,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 4
     vim.opt_local.expandtab = false -- Go uses tabs
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -541,7 +532,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 4
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
   end,
 })
 
@@ -555,7 +545,6 @@ autocmd("FileType", {
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
     vim.opt_local.textwidth = 100
-    vim.opt_local.colorcolumn = "100"
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
   end,

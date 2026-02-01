@@ -163,7 +163,6 @@ function M.setup()
       vim.opt_local.wrap = true
       vim.opt_local.linebreak = true
       vim.opt_local.textwidth = 100
-      vim.opt_local.colorcolumn = "101"
       vim.opt_local.conceallevel = 2 -- Enable concealment
       vim.opt_local.concealcursor = "" -- Don't conceal under cursor
       vim.opt_local.spell = true
