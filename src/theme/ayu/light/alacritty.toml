@@ -1,0 +1,26 @@
+# Ayu Light theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#fafafa'
+foreground = '#575f66'
+
+[colors.normal]
+black = '#55606d'
+red = '#f51818'
+green = '#86b300'
+yellow = '#f29718'
+blue = '#36a3d9'
+magenta = '#a37acc'
+cyan = '#4cbf99'
+white = '#ffffff'
+
+[colors.bright]
+black = '#707a8c'
+red = '#f51818'
+green = '#86b300'
+yellow = '#f29718'
+blue = '#36a3d9'
+magenta = '#a37acc'
+cyan = '#4cbf99'
+white = '#ffffff'

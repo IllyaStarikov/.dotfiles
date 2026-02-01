@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": 1,
+  "defaults": {
+    "light": "tokyonight_day",
+    "dark": "tokyonight_storm"
+  },
+  "families": {
+    "tokyonight": {
+      "name": "Tokyo Night",
+      "url": "https://github.com/folke/tokyonight.nvim",
+      "neovim_plugin": "folke/tokyonight.nvim",
+      "variants": {
+        "day": {
+          "display_name": "Day",
+          "mode": "light",
+          "neovim_colorscheme": "tokyonight-day",
+          "neovim_style": "day",
+          "bat_theme": "tokyonight_day"
+        },
+        "night": {
+          "display_name": "Night",
+          "mode": "dark",
+          "neovim_colorscheme": "tokyonight-night",
+          "neovim_style": "night",
+          "bat_theme": "tokyonight_night"
+        },
+        "moon": {
+          "display_name": "Moon",
+          "mode": "dark",
+          "neovim_colorscheme": "tokyonight-moon",
+          "neovim_style": "moon",
+          "bat_theme": "tokyonight_moon"
+        },
+        "storm": {
+          "display_name": "Storm",
+          "mode": "dark",
+          "neovim_colorscheme": "tokyonight-storm",
+          "neovim_style": "storm",
+          "bat_theme": "tokyonight_storm"
+        }
+      }
+    },
+    "github": {
+      "name": "GitHub",
+      "url": "https://github.com/projekt0n/github-nvim-theme",
+      "neovim_plugin": "projekt0n/github-nvim-theme",
+      "variants": {
+        "light": {
+          "display_name": "Light",
+          "mode": "light",
+          "neovim_colorscheme": "github_light",
+          "bat_theme": "GitHub"
+        },
+        "dark": {
+          "display_name": "Dark",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark",
+          "bat_theme": "GitHub"
+        },
+        "dark_dimmed": {
+          "display_name": "Dark Dimmed",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark_dimmed",
+          "bat_theme": "GitHub"
+        },
+        "dark_high_contrast": {
+          "display_name": "Dark High Contrast",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark_high_contrast",
+          "bat_theme": "GitHub"
+        },
+        "light_high_contrast": {
+          "display_name": "Light High Contrast",
+          "mode": "light",
+          "neovim_colorscheme": "github_light_high_contrast",
+          "bat_theme": "GitHub"
+        }
+      }
+    },
+    "catppuccin": {
+      "name": "Catppuccin",
+      "url": "https://github.com/catppuccin/nvim",
+      "neovim_plugin": "catppuccin/nvim",
+      "variants": {
+        "latte": {
+          "display_name": "Latte",
+          "mode": "light",
+          "neovim_colorscheme": "catppuccin-latte",
+          "neovim_style": "latte",
+          "bat_theme": "Catppuccin Latte"
+        },
+        "frappe": {
+          "display_name": "Frappe",
+          "mode": "dark",
+          "neovim_colorscheme": "catppuccin-frappe",
+          "neovim_style": "frappe",
+          "bat_theme": "Catppuccin Frappe"
+        },
+        "macchiato": {
+          "display_name": "Macchiato",
+          "mode": "dark",
+          "neovim_colorscheme": "catppuccin-macchiato",
+          "neovim_style": "macchiato",
+          "bat_theme": "Catppuccin Macchiato"
+        },
+        "mocha": {
+          "display_name": "Mocha",
+          "mode": "dark",
+          "neovim_colorscheme": "catppuccin-mocha",
+          "neovim_style": "mocha",
+          "bat_theme": "Catppuccin Mocha"
+        }
+      }
+    },
+    "dracula": {
+      "name": "Dracula",
+      "url": "https://github.com/dracula/vim",
+      "neovim_plugin": "Mofiqul/dracula.nvim",
+      "variants": {
+        "classic": {
+          "display_name": "Classic",
+          "mode": "dark",
+          "neovim_colorscheme": "dracula",
+          "bat_theme": "Dracula"
+        },
+        "soft": {
+          "display_name": "Soft",
+          "mode": "dark",
+          "neovim_colorscheme": "dracula-soft",
+          "bat_theme": "Dracula"
+        }
+      }
+    },
+    "onedarkpro": {
+      "name": "One Dark Pro",
+      "url": "https://github.com/olimorris/onedarkpro.nvim",
+      "neovim_plugin": "olimorris/onedarkpro.nvim",
+      "variants": {
+        "classic": {
+          "display_name": "Classic",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "bat_theme": "OneHalfDark"
+        },
+        "darker": {
+          "display_name": "Darker",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark_dark",
+          "bat_theme": "OneHalfDark"
+        },
+        "vivid": {
+          "display_name": "Vivid",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark_vivid",
+          "bat_theme": "OneHalfDark"
+        },
+        "flat": {
+          "display_name": "Flat",
+          "mode": "dark",
+          "neovim_colorscheme": "onelight",
+          "bat_theme": "OneHalfLight"
+        }
+      }
+    },
+    "material": {
+      "name": "Material",
+      "url": "https://github.com/marko-cerovac/material.nvim",
+      "neovim_plugin": "marko-cerovac/material.nvim",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "material",
+          "neovim_style": "default",
+          "bat_theme": "Material"
+        },
+        "darker": {
+          "display_name": "Darker",
+          "mode": "dark",
+          "neovim_colorscheme": "material",
+          "neovim_style": "darker",
+          "bat_theme": "Material"
+        },
+        "palenight": {
+          "display_name": "Palenight",
+          "mode": "dark",
+          "neovim_colorscheme": "material",
+          "neovim_style": "palenight",
+          "bat_theme": "Material"
+        },
+        "oceanic": {
+          "display_name": "Oceanic",
+          "mode": "dark",
+          "neovim_colorscheme": "material",
+          "neovim_style": "oceanic",
+          "bat_theme": "Material"
+        },
+        "lighter": {
+          "display_name": "Lighter",
+          "mode": "light",
+          "neovim_colorscheme": "material",
+          "neovim_style": "lighter",
+          "bat_theme": "Material"
+        }
+      }
+    },
+    "ayu": {
+      "name": "Ayu",
+      "url": "https://github.com/Shatur/neovim-ayu",
+      "neovim_plugin": "Shatur/neovim-ayu",
+      "variants": {
+        "light": {
+          "display_name": "Light",
+          "mode": "light",
+          "neovim_colorscheme": "ayu-light",
+          "bat_theme": "ayu-light"
+        },
+        "dark": {
+          "display_name": "Dark",
+          "mode": "dark",
+          "neovim_colorscheme": "ayu-dark",
+          "bat_theme": "ayu-dark"
+        },
+        "mirage": {
+          "display_name": "Mirage",
+          "mode": "dark",
+          "neovim_colorscheme": "ayu-mirage",
+          "bat_theme": "ayu-mirage"
+        }
+      }
+    },
+    "monokai": {
+      "name": "Monokai Pro",
+      "url": "https://github.com/loctvl842/monokai-pro.nvim",
+      "neovim_plugin": "loctvl842/monokai-pro.nvim",
+      "variants": {
+        "pro": {
+          "display_name": "Pro",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "pro",
+          "bat_theme": "Monokai Extended"
+        },
+        "classic": {
+          "display_name": "Classic",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "classic",
+          "bat_theme": "Monokai Extended"
+        },
+        "machine": {
+          "display_name": "Machine",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "machine",
+          "bat_theme": "Monokai Extended"
+        },
+        "octagon": {
+          "display_name": "Octagon",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "octagon",
+          "bat_theme": "Monokai Extended"
+        },
+        "ristretto": {
+          "display_name": "Ristretto",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "ristretto",
+          "bat_theme": "Monokai Extended"
+        },
+        "spectrum": {
+          "display_name": "Spectrum",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai-pro",
+          "neovim_style": "spectrum",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
+    "nightowl": {
+      "name": "Night Owl",
+      "url": "https://github.com/oxfist/night-owl.nvim",
+      "neovim_plugin": "oxfist/night-owl.nvim",
+      "variants": {
+        "dark": {
+          "display_name": "Dark",
+          "mode": "dark",
+          "neovim_colorscheme": "night-owl",
+          "bat_theme": "night-owl"
+        },
+        "light": {
+          "display_name": "Light",
+          "mode": "light",
+          "neovim_colorscheme": "light-owl",
+          "bat_theme": "night-owl"
+        }
+      }
+    },
+    "synthwave84": {
+      "name": "Synthwave 84",
+      "url": "https://github.com/lunarvim/synthwave84.nvim",
+      "neovim_plugin": "lunarvim/synthwave84.nvim",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "synthwave84",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
+    "shadesofpurple": {
+      "name": "Shades of Purple",
+      "url": "https://github.com/Rigellute/shades-of-purple.vim",
+      "neovim_plugin": "Rigellute/shades-of-purple.vim",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "shades_of_purple",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
+    "atomone": {
+      "name": "Atom One",
+      "url": "https://github.com/navarasu/onedark.nvim",
+      "neovim_plugin": "navarasu/onedark.nvim",
+      "variants": {
+        "dark": {
+          "display_name": "Dark",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "dark",
+          "bat_theme": "OneHalfDark"
+        },
+        "dark_darker": {
+          "display_name": "Dark Darker",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "darker",
+          "bat_theme": "OneHalfDark"
+        },
+        "dark_cool": {
+          "display_name": "Dark Cool",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "cool",
+          "bat_theme": "OneHalfDark"
+        },
+        "dark_warm": {
+          "display_name": "Dark Warm",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "warm",
+          "bat_theme": "OneHalfDark"
+        },
+        "dark_warmer": {
+          "display_name": "Dark Warmer",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "warmer",
+          "bat_theme": "OneHalfDark"
+        },
+        "light": {
+          "display_name": "Light",
+          "mode": "light",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "light",
+          "bat_theme": "OneHalfLight"
+        }
+      }
+    }
+  },
+  "aliases": {
+    "light": "defaults.light",
+    "dark": "defaults.dark",
+    "day": "tokyonight_day",
+    "night": "tokyonight_night",
+    "moon": "tokyonight_moon",
+    "storm": "tokyonight_storm",
+    "latte": "catppuccin_latte",
+    "frappe": "catppuccin_frappe",
+    "macchiato": "catppuccin_macchiato",
+    "mocha": "catppuccin_mocha",
+    "mirage": "ayu_mirage",
+    "palenight": "material_palenight",
+    "oceanic": "material_oceanic"
+  }
+}

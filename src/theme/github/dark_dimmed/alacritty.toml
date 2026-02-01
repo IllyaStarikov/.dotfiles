@@ -1,0 +1,26 @@
+# GitHub Dark_Dimmed theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#22272e'
+foreground = '#adbac7'
+
+[colors.normal]
+black = '#545d68'
+red = '#f47067'
+green = '#57ab5a'
+yellow = '#c69026'
+blue = '#539bf5'
+magenta = '#b083f0'
+cyan = '#39c5cf'
+white = '#adbac7'
+
+[colors.bright]
+black = '#636e7b'
+red = '#ff938a'
+green = '#6bc46d'
+yellow = '#daaa3f'
+blue = '#6cb6ff'
+magenta = '#dcbdfb'
+cyan = '#56d4dd'
+white = '#cdd9e5'

@@ -7,7 +7,7 @@ Synchronized theme switching across all terminal applications with macOS appeara
 - **Unified switching** - Change all apps with one command
 - **macOS integration** - Auto-syncs with system dark/light mode
 - **Atomic operations** - Crash-proof with file locking
-- **4 TokyoNight variants** - Day (light), Night, Moon, Storm (dark)
+- **43 theme variants** - 12 families including TokyoNight, GitHub, Catppuccin, Dracula, and more
 
 ## Supported Applications
 
@@ -28,10 +28,13 @@ theme storm     # Balanced dark (default)
 ```
 switch-theme.sh         # Main switching script
 validate-themes.sh      # Theme validator
-tokyonight_day/         # Each theme directory has configs for:
-tokyonight_night/       # - alacritty.toml
-tokyonight_moon/        # - wezterm.lua
-tokyonight_storm/       # - kitty.conf, tmux.conf, starship.toml
+generate-theme.sh       # Generate configs from templates + colors.json
+regenerate-all.sh       # Regenerate all 43 themes
+templates/              # Template files for each app
+tokyonight/day/         # Each theme directory has configs for:
+tokyonight/storm/       # - alacritty.toml, wezterm.lua
+github/dark/            # - kitty.conf, tmux.conf, starship.toml
+catppuccin/mocha/       # - colors.sh, colors.json
 ```
 
 ## Generated Configs

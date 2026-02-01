@@ -1,0 +1,26 @@
+# Material Lighter theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#fafafa'
+foreground = '#546e7a'
+
+[colors.normal]
+black = '#546e7a'
+red = '#ff5370'
+green = '#91b859'
+yellow = '#f6a434'
+blue = '#6182b8'
+magenta = '#7c4dff'
+cyan = '#39adb5'
+white = '#ffffff'
+
+[colors.bright]
+black = '#546e7a'
+red = '#ff5370'
+green = '#91b859'
+yellow = '#f6a434'
+blue = '#6182b8'
+magenta = '#7c4dff'
+cyan = '#39adb5'
+white = '#ffffff'

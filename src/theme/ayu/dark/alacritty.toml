@@ -1,0 +1,26 @@
+# Ayu Dark theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#0d1017'
+foreground = '#bfbdb6'
+
+[colors.normal]
+black = '#3e4451'
+red = '#f07178'
+green = '#aad94c'
+yellow = '#ffb454'
+blue = '#39bae6'
+magenta = '#d2a6ff'
+cyan = '#95e6cb'
+white = '#e6e1cf'
+
+[colors.bright]
+black = '#4d5566'
+red = '#f07178'
+green = '#aad94c'
+yellow = '#ffb454'
+blue = '#39bae6'
+magenta = '#d2a6ff'
+cyan = '#95e6cb'
+white = '#e6e1cf'

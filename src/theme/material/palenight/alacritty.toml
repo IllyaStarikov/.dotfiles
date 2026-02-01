@@ -1,0 +1,26 @@
+# Material Palenight theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#292d3e'
+foreground = '#a6accd'
+
+[colors.normal]
+black = '#676e95'
+red = '#f07178'
+green = '#c3e88d'
+yellow = '#ffcb6b'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#89ddff'
+white = '#ffffff'
+
+[colors.bright]
+black = '#676e95'
+red = '#f07178'
+green = '#c3e88d'
+yellow = '#ffcb6b'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#89ddff'
+white = '#ffffff'

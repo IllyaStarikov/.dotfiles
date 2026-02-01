@@ -1,0 +1,26 @@
+# Catppuccin Macchiato theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#24273a'
+foreground = '#cad3f5'
+
+[colors.normal]
+black = '#494d64'
+red = '#ed8796'
+green = '#a6da95'
+yellow = '#eed49f'
+blue = '#8aadf4'
+magenta = '#f5bde6'
+cyan = '#8bd5ca'
+white = '#b8c0e0'
+
+[colors.bright]
+black = '#5b6078'
+red = '#ed8796'
+green = '#a6da95'
+yellow = '#eed49f'
+blue = '#8aadf4'
+magenta = '#f5bde6'
+cyan = '#8bd5ca'
+white = '#a5adcb'

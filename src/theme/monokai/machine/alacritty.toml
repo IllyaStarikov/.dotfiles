@@ -1,0 +1,26 @@
+# Monokai Pro Machine theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#273136'
+foreground = '#f2fffc'
+
+[colors.normal]
+black = '#6b7678'
+red = '#ff6d7e'
+green = '#a2e57b'
+yellow = '#ffed72'
+blue = '#7cd5f1'
+magenta = '#baa0f8'
+cyan = '#7cd5f1'
+white = '#f2fffc'
+
+[colors.bright]
+black = '#8a9496'
+red = '#ff6d7e'
+green = '#a2e57b'
+yellow = '#ffed72'
+blue = '#7cd5f1'
+magenta = '#baa0f8'
+cyan = '#7cd5f1'
+white = '#f2fffc'

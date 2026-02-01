@@ -51,6 +51,14 @@ set -euo pipefail
 # Get the absolute directory of the script
 # This needs to work in multiple contexts: direct execution, sourced, symlinked, etc.
 DEBUG=${DEBUG:-0}
+VERBOSE=${VERBOSE:-0}
+
+# Print message when verbose mode is enabled
+# Used for user-friendly progress output (different from DEBUG which is for development)
+verbose() {
+  [[ $VERBOSE -eq 1 ]] && echo "  → $1"
+  return 0
+}
 if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
   # Running in bash compatibility mode
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -69,17 +77,62 @@ else
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using fallback, SCRIPT_DIR=$SCRIPT_DIR" >&2
 fi
 
+# JSON theme configuration file
+THEMES_JSON="${SCRIPT_DIR}/../../config/themes.json"
+THEMES_CACHE=""
+
+# Initialize THEME variable (will be set by args, picker, or auto-detect)
+THEME=""
+
+# Load and cache theme configuration JSON
+# Returns cached value if already loaded, otherwise reads from file
+get_themes_json() {
+  if [[ -z "$THEMES_CACHE" ]]; then
+    if [[ -f "$THEMES_JSON" ]]; then
+      THEMES_CACHE=$(cat "$THEMES_JSON")
+    fi
+  fi
+  echo "$THEMES_CACHE"
+}
+
+# Check if jq is available for JSON parsing
+has_jq() {
+  command -v jq &>/dev/null
+}
+
+# Convert theme name (family_variant) to directory path (family/variant)
+# Example: catppuccin_mocha -> catppuccin/mocha
+get_theme_path() {
+  local theme_name="$1"
+  local family="${theme_name%%_*}"
+  local variant="${theme_name#*_}"
+  echo "$SCRIPT_DIR/$family/$variant"
+}
+
 # Display usage information and available options
 # Provides comprehensive help for theme selection
+# Dynamically generates theme list from JSON configuration
 show_usage() {
+  local default_light default_dark
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    default_light=$(jq -r '.defaults.light' "$THEMES_JSON" 2>/dev/null || echo "tokyonight_day")
+    default_dark=$(jq -r '.defaults.dark' "$THEMES_JSON" 2>/dev/null || echo "tokyonight_storm")
+  else
+    default_light="tokyonight_day"
+    default_dark="tokyonight_storm"
+  fi
+
   cat <<EOF
-Usage: $(basename "$0") [THEME|OPTION]
+Usage: $(basename "$0") [FAMILY VARIANT|THEME|OPTION]
 
 Theme Switcher - Synchronize terminal themes with macOS appearance
 
 OPTIONS:
+    (no args)           Interactive picker with live color preview
+    -p, --pick          Force interactive picker
+    --auto              Auto-detect from macOS appearance (skip picker)
     -h, --help, help    Show this help message
-    -l, --list          List all available themes
+    -l, --list [FAMILY] List all themes, or variants in a family
     --local THEME       Change terminal + tmux for THIS session (no global config)
     --local --tmux THEME    Just tmux for this session
     --local --terminal THEME  Just terminal colors for this pane
@@ -88,69 +141,313 @@ OPTIONS:
     -s, --shell THEME   Alias for --local --shell
     --tmux THEME        Alias for --local --tmux
 
-THEMES:
-    light              Use default light theme (tokyonight_day)
-    dark               Use default dark theme (tokyonight_storm)
+QUICK DEFAULTS:
+    light              Use default light theme ($default_light)
+    dark               Use default dark theme ($default_dark)
 
-    Shortcuts:
-    day                tokyonight_day (light)
-    night              tokyonight_night (dark)
-    moon               tokyonight_moon (dark)
-    storm              tokyonight_storm (dark) [default dark]
+SYNTAX:
+    Two-word:          $(basename "$0") github dark
+    Full name:         $(basename "$0") github_dark
+    Shortcut:          $(basename "$0") storm
 
-    Full theme names:
-    tokyonight_day, tokyonight_night, tokyonight_moon, tokyonight_storm
+THEME FAMILIES:
+$(generate_family_list)
+
+SHORTCUTS:
+$(generate_alias_list)
 
 EXAMPLES:
-    $(basename "$0") dark      # Use default dark theme (storm)
-    $(basename "$0") moon      # Use TokyoNight Moon theme
-    $(basename "$0") day       # Use TokyoNight Day theme (light)
-    $(basename "$0") --list    # List all available themes
-
-    # Shell-local theming (env vars only):
-    source <($(basename "$0") --shell day)   # Light theme env vars
-    source <($(basename "$0") --shell moon)  # Dark theme env vars
-
-    # Per-terminal theming (changes THIS terminal's colors):
-    $(basename "$0") --terminal day   # Light colors in this terminal
-    $(basename "$0") --terminal moon  # Dark colors in this terminal
+    $(basename "$0") dark              # Use default dark theme
+    $(basename "$0") catppuccin mocha  # Two-word syntax
+    $(basename "$0") github_dark       # Full name syntax
+    $(basename "$0") --list github     # List GitHub variants
+    $(basename "$0") --terminal storm  # Per-terminal theming
 
 EOF
 }
 
-# Enumerate all available theme variants
-# Scans theme directories to provide current options
-list_themes() {
-  local themes=()
-
-  echo "Available themes:"
-  echo ""
-
-  # Scan theme directories (tokyonight_* directories in SCRIPT_DIR)
-  local theme_dirs=(${SCRIPT_DIR}/tokyonight_*(N-/))
-  for theme_path in $theme_dirs; do
-    themes+=("$(basename "$theme_path")")
-  done
-
-  # Display sorted list
-  if (( ${#themes[@]} > 0 )); then
-    local sorted_themes=($(printf "%s\n" "${themes[@]}" | sort))
-    for theme in "${sorted_themes[@]}"; do
-      local variant="dark"
-      [[ "$theme" =~ (day|light) ]] && variant="light"
-      echo "  $theme ($variant)"
-    done
+# Generate formatted list of theme families from JSON
+generate_family_list() {
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    jq -r '
+      .families | to_entries[] |
+      "    \(.key): \(.value.variants | keys | join(", "))"
+    ' "$THEMES_JSON" 2>/dev/null | head -20
   else
-    echo "  No themes found."
+    echo "    tokyonight: day, night, moon, storm"
+  fi
+}
+
+# Generate formatted list of aliases from JSON
+generate_alias_list() {
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    jq -r '
+      .aliases | to_entries[] |
+      select(.value != "defaults.light" and .value != "defaults.dark") |
+      "    \(.key) -> \(.value)"
+    ' "$THEMES_JSON" 2>/dev/null | head -15
+  else
+    echo "    day -> tokyonight_day"
+    echo "    night -> tokyonight_night"
+    echo "    moon -> tokyonight_moon"
+    echo "    storm -> tokyonight_storm"
+  fi
+}
+
+# Enumerate all available theme variants
+# Supports optional family filter: list_themes [family]
+# Reads from JSON configuration for accurate listing
+list_themes() {
+  local filter="${1:-}"
+
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    if [[ -n "$filter" ]]; then
+      # List variants in a specific family
+      local family_exists
+      family_exists=$(jq -r ".families.\"$filter\" // empty" "$THEMES_JSON")
+      if [[ -z "$family_exists" ]]; then
+        echo "Error: Unknown family '$filter'" >&2
+        echo "Use '$(basename "$0") --list' to see all families" >&2
+        return 1
+      fi
+
+      local family_name
+      family_name=$(jq -r ".families.\"$filter\".name // \"$filter\"" "$THEMES_JSON")
+      echo "$family_name variants:"
+      echo ""
+      jq -r "
+        .families.\"$filter\".variants | to_entries[] |
+        \"  ${filter}_\(.key) (\(.value.mode))\"
+      " "$THEMES_JSON"
+    else
+      # List all families and variants
+      echo "Available themes:"
+      echo ""
+
+      jq -r '
+        .families | to_entries | sort_by(.key)[] |
+        "  \(.value.name) (\(.key)):",
+        (.value.variants | to_entries | sort_by(.key)[] | "    - \(.key) [\(.value.mode)]"),
+        ""
+      ' "$THEMES_JSON"
+
+      echo "Shortcuts:"
+      jq -r '.aliases | to_entries[] | "  \(.key) -> \(.value)"' "$THEMES_JSON"
+    fi
+  else
+    # Fallback: scan theme directories
+    echo "Available themes:"
+    echo ""
+
+    local theme_dirs
+    setopt localoptions nullglob
+    theme_dirs=(${SCRIPT_DIR}/*_*(N-/))
+    for theme_path in $theme_dirs; do
+      local theme_name=$(basename "$theme_path")
+      local variant="dark"
+      [[ "$theme_name" =~ (day|light|latte) ]] && variant="light"
+      echo "  $theme_name ($variant)"
+    done
   fi
   echo ""
-  echo "Use any theme name with: switch-theme.sh THEME_NAME"
+  echo "Usage: $(basename "$0") FAMILY VARIANT  or  $(basename "$0") THEME_NAME"
+}
+
+# Interactive theme picker with live color preview
+# Uses fzf for selection and OSC sequences for live terminal color preview
+interactive_picker() {
+  if ! command -v fzf &>/dev/null; then
+    echo "Error: fzf is required for interactive picker" >&2
+    echo "Install with: brew install fzf" >&2
+    return 1
+  fi
+
+  if ! has_jq || [[ ! -f "$THEMES_JSON" ]]; then
+    echo "Error: themes.json required for interactive picker" >&2
+    return 1
+  fi
+
+  # Setup cache directory for restore script
+  local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/theme"
+  local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/theme"
+  mkdir -p "$cache_dir"
+
+  # Generate theme list with tab-separated columns: full_name, family, variant, mode
+  local theme_list
+  theme_list=$(jq -r '
+    .families | to_entries | sort_by(.key)[] |
+    .key as $family | .value.name as $name |
+    .value.variants | to_entries | sort_by(.key)[] |
+    "\($family)_\(.key)\t\($name)\t\(.key)\t\(.value.mode)"
+  ' "$THEMES_JSON")
+
+  # Preview script that shows color palette
+  local preview_cmd
+  preview_cmd='
+    theme=$(echo {} | cut -f1)
+    family=$(echo {} | cut -f2)
+    variant=$(echo {} | cut -f3)
+    mode=$(echo {} | cut -f4)
+
+    # Parse theme name into family/variant path
+    family_key=$(echo $theme | cut -d"_" -f1)
+    variant_key=$(echo $theme | cut -d"_" -f2-)
+    theme_path="'"$SCRIPT_DIR"'/${family_key}/${variant_key}"
+    colors_file="$theme_path/colors.sh"
+
+    echo -e "\033[1m$family - $variant\033[0m ($mode)"
+    echo ""
+
+    if [[ -f "$colors_file" ]]; then
+      source "$colors_file" 2>/dev/null
+
+      # Show color palette with Unicode blocks
+      if [[ -n "${BACKGROUND:-}" ]] && [[ -n "${FOREGROUND:-}" ]]; then
+        echo -e "Background: \033[48;2;$(printf "%d;%d;%d" 0x${BACKGROUND:1:2} 0x${BACKGROUND:3:2} 0x${BACKGROUND:5:2})m    \033[0m $BACKGROUND"
+        echo -e "Foreground: \033[38;2;$(printf "%d;%d;%d" 0x${FOREGROUND:1:2} 0x${FOREGROUND:3:2} 0x${FOREGROUND:5:2})m████\033[0m $FOREGROUND"
+        echo ""
+        echo "Normal colors:"
+        for i in 0 1 2 3 4 5 6 7; do
+          eval "c=\${COLOR_$i:-}"
+          if [[ -n "$c" ]]; then
+            printf "\033[48;2;$(printf "%d;%d;%d" 0x${c:1:2} 0x${c:3:2} 0x${c:5:2})m  \033[0m"
+          fi
+        done
+        echo ""
+        echo "Bright colors:"
+        for i in 8 9 10 11 12 13 14 15; do
+          eval "c=\${COLOR_$i:-}"
+          if [[ -n "$c" ]]; then
+            printf "\033[48;2;$(printf "%d;%d;%d" 0x${c:1:2} 0x${c:3:2} 0x${c:5:2})m  \033[0m"
+          fi
+        done
+        echo ""
+      else
+        echo "(Could not load colors)"
+      fi
+    else
+      echo "(colors.sh not found)"
+    fi
+  '
+
+  # Live preview: apply colors to terminal AND tmux as user browses
+  local execute_cmd
+  execute_cmd='
+    theme=$(echo {} | cut -f1)
+    family_key=$(echo $theme | cut -d"_" -f1)
+    variant_key=$(echo $theme | cut -d"_" -f2-)
+    theme_dir="'"$SCRIPT_DIR"'/${family_key}/${variant_key}"
+    colors_file="$theme_dir/colors.sh"
+    tmux_file="$theme_dir/tmux.conf"
+
+    if [[ -f "$colors_file" ]]; then
+      source "$colors_file" 2>/dev/null || exit 0
+
+      # Apply colors via OSC sequences (with error handling)
+      [[ -z "${FOREGROUND:-}" ]] && exit 0
+      [[ -z "${BACKGROUND:-}" ]] && exit 0
+
+      hex_to_rgb() {
+        local hex="${1#\#}"
+        echo "rgb:${hex:0:2}/${hex:2:2}/${hex:4:2}"
+      }
+
+      # Set foreground, background, cursor
+      printf "\033]10;$(hex_to_rgb "$FOREGROUND")\007"
+      printf "\033]11;$(hex_to_rgb "$BACKGROUND")\007"
+      printf "\033]12;$(hex_to_rgb "$FOREGROUND")\007"
+
+      # Set palette colors
+      for i in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+        eval "c=\${COLOR_$i:-}"
+        if [[ -n "$c" ]]; then
+          printf "\033]4;$i;$(hex_to_rgb "$c")\007"
+        fi
+      done
+    fi
+
+    # Also apply tmux theme for live preview using source-file (more reliable)
+    if [[ -n "${TMUX:-}" ]] && [[ -f "$tmux_file" ]]; then
+      tmux source-file "$tmux_file" 2>/dev/null || true
+      tmux refresh-client -S 2>/dev/null || true
+    fi
+  '
+
+  # Store current theme for restore on cancel
+  local current_theme=""
+  if [[ -f "$config_dir/current-theme.sh" ]]; then
+    current_theme=$(grep "^MACOS_THEME=" "$config_dir/current-theme.sh" 2>/dev/null | cut -d= -f2 | tr -d '"'"'")
+  fi
+
+  # Run fzf with preview and live color application
+  local selected
+  selected=$(echo "$theme_list" | fzf \
+    --ansi \
+    --height=80% \
+    --layout=reverse \
+    --border=rounded \
+    --prompt="Theme: " \
+    --header=$'  FAMILY\tVARIANT\tMODE\n  ↑↓ navigate • enter select • esc cancel' \
+    --preview="$preview_cmd" \
+    --preview-window=right:40%:wrap \
+    --bind="focus:execute-silent($execute_cmd)" \
+    --delimiter=$'\t' \
+    --with-nth=2,3,4 \
+    --tabstop=22 \
+  )
+
+  # If cancelled (empty selection), restore original colors and tmux
+  if [[ -z "$selected" ]]; then
+    if [[ -n "$current_theme" ]]; then
+      local family_key="${current_theme%%_*}"
+      local variant_key="${current_theme#*_}"
+      local theme_dir="$SCRIPT_DIR/$family_key/$variant_key"
+      local colors_file="$theme_dir/colors.sh"
+      local tmux_file="$theme_dir/tmux.conf"
+
+      if [[ -f "$colors_file" ]]; then
+        source "$colors_file"
+
+        # Helper to convert hex to OSC rgb format
+        _hex_to_rgb() {
+          local hex="${1#\#}"
+          echo "rgb:${hex:0:2}/${hex:2:2}/${hex:4:2}"
+        }
+
+        # Restore terminal colors - must write to /dev/tty to reach terminal
+        {
+          printf "\033]10;$(_hex_to_rgb "$FOREGROUND")\007"
+          printf "\033]11;$(_hex_to_rgb "$BACKGROUND")\007"
+          printf "\033]12;$(_hex_to_rgb "${CURSOR:-$FOREGROUND}")\007"
+          for i in {0..15}; do
+            eval "c=\${COLOR_$i:-}"
+            if [[ -n "$c" ]]; then
+              printf "\033]4;$i;$(_hex_to_rgb "$c")\007"
+            fi
+          done
+        } > /dev/tty 2>/dev/null || true
+      fi
+
+      # Restore tmux theme using source-file (more reliable)
+      if [[ -n "${TMUX:-}" ]] && [[ -f "$tmux_file" ]]; then
+        tmux source-file "$tmux_file" 2>/dev/null || true
+        tmux refresh-client -S 2>/dev/null || true
+      fi
+    fi
+    echo "Cancelled - restored previous theme"
+    return 1
+  fi
+
+  # Extract and return the selected theme name (first field)
+  local theme_name
+  theme_name=$(echo "$selected" | cut -f1)
+  echo "$theme_name"
 }
 
 # Print shell export commands for local theming
 # Used with: source <(switch-theme.sh --shell THEME)
 print_shell_exports() {
-  local starship_config="$SCRIPT_DIR/$THEME/starship.toml"
+  local starship_config="$(get_theme_path "$THEME")/starship.toml"
   cat <<EOF
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
@@ -163,7 +460,7 @@ EOF
 # Only affects the current terminal instance, not all terminals
 # Handles tmux passthrough automatically when inside tmux
 set_terminal_colors() {
-  local colors_file="$SCRIPT_DIR/$THEME/colors.sh"
+  local colors_file="$(get_theme_path "$THEME")/colors.sh"
 
   if [[ ! -f "$colors_file" ]]; then
     echo "Error: Colors file not found: $colors_file" >&2
@@ -223,36 +520,79 @@ set_terminal_colors() {
   done
 }
 
-# Check for help or list options
+# Check for help, list, pick, or auto options
 case "${1:-}" in
   -h | --help | help)
     show_usage
     exit 0
     ;;
+  -v | --verbose)
+    VERBOSE=1
+    shift
+    ;;
   -l | --list)
-    list_themes
+    # Support: --list or --list <family>
+    list_themes "${2:-}"
     exit 0
+    ;;
+  -p | --pick)
+    # Force interactive picker
+    THEME=$(interactive_picker) || exit 0
+    shift
+    ;;
+  --auto)
+    # Force auto-detect from system appearance
+    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+      THEME="${THEME_DARK:-tokyonight_storm}"
+    else
+      THEME="${THEME_LIGHT:-tokyonight_day}"
+    fi
+    echo "Auto-detected theme: $THEME"
+    shift
     ;;
 esac
 
-# Configuration
-THEME="${1:-}"
+# Configuration - support two-argument syntax: theme <family> <variant>
+# First argument will be set later after flag handling
+# This variable tracks potential second argument for two-word syntax
+THEME_ARG2=""
 
-# Default themes (defined early for auto-detection)
-LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
-DARK_THEME="${THEME_DARK:-tokyonight_storm}"
+# Check if this looks like two-argument syntax (both args non-flags)
+# e.g., "theme github dark" but NOT "theme --local storm"
+if [[ -n "${1:-}" ]] && [[ "${1:-}" != -* ]] && \
+   [[ -n "${2:-}" ]] && [[ "${2:-}" != -* ]]; then
+  # Both arguments are non-flags, likely two-argument theme syntax
+  THEME_ARG2="${2}"
+fi
 
-# Auto-detect theme from macOS system appearance preferences
-# Respects user's system-wide dark/light mode setting for consistency
+# Set theme from first argument (unless already set by --pick or --auto)
+[[ -z "${THEME:-}" ]] && THEME="${1:-}"
+
+# Default themes (from JSON config or environment, with fallbacks)
+if has_jq && [[ -f "$THEMES_JSON" ]]; then
+  _json_light=$(jq -r '.defaults.light // "tokyonight_day"' "$THEMES_JSON" 2>/dev/null)
+  _json_dark=$(jq -r '.defaults.dark // "tokyonight_storm"' "$THEMES_JSON" 2>/dev/null)
+  LIGHT_THEME="${THEME_LIGHT:-$_json_light}"
+  DARK_THEME="${THEME_DARK:-$_json_dark}"
+else
+  LIGHT_THEME="${THEME_LIGHT:-tokyonight_day}"
+  DARK_THEME="${THEME_DARK:-tokyonight_storm}"
+fi
+
+# Interactive picker or auto-detect when no theme specified
 if [[ -z "$THEME" ]]; then
-  # Query macOS appearance setting via defaults command
-  # AppleInterfaceStyle returns "Dark" in dark mode, undefined in light mode
-  if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
-    THEME="$DARK_THEME"
+  # If running interactively with a TTY, use interactive picker
+  if [[ -t 0 ]] && [[ -t 1 ]] && command -v fzf &>/dev/null; then
+    THEME=$(interactive_picker) || exit 0
   else
-    THEME="$LIGHT_THEME"
+    # Non-interactive: auto-detect from macOS appearance
+    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+      THEME="$DARK_THEME"
+    else
+      THEME="$LIGHT_THEME"
+    fi
+    echo "Auto-detected theme: $THEME"
   fi
-  echo "Auto-detected theme: $THEME"
 fi
 
 # Configuration directories
@@ -336,44 +676,94 @@ release_lock() {
 trap release_lock EXIT
 
 # Map user input to canonical theme names
-# Handles both short names (day, night) and full names (tokyonight_day)
+# Supports: two-argument syntax (github dark), full names (github_dark), aliases (storm)
+# Reads from JSON configuration for alias resolution and mode detection
 determine_theme() {
-  case "$THEME" in
-    light)
-      THEME="$LIGHT_THEME"
-      VARIANT="light"
-      ;;
-    dark)
-      THEME="$DARK_THEME"
-      VARIANT="dark"
-      ;;
-    # Map convenient short names to full theme identifiers
-    moon)
-      THEME="tokyonight_moon"
-      VARIANT="dark"
-      ;;
-    night)
-      THEME="tokyonight_night"
-      VARIANT="dark"
-      ;;
-    storm)
-      THEME="tokyonight_storm"
-      VARIANT="dark"
-      ;;
-    day)
-      THEME="tokyonight_day"
-      VARIANT="light"
-      ;;
-    *)
-      # Auto-detect variant from theme name patterns
-      # Light themes typically contain 'day' or 'light' in name
-      if [[ "$THEME" =~ (day|light)$ ]]; then
+  local arg1="${THEME:-}"
+  local arg2="${THEME_ARG2:-}"
+
+  # Two-argument syntax: theme <family> <variant>
+  if [[ -n "$arg2" ]]; then
+    THEME="${arg1}_${arg2}"
+    [[ $DEBUG -eq 1 ]] && echo "DEBUG: Two-arg syntax -> $THEME" >&2
+  fi
+
+  # Try JSON-based resolution if jq is available
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    # Check aliases first
+    local alias_target
+    alias_target=$(jq -r ".aliases.\"$THEME\" // empty" "$THEMES_JSON" 2>/dev/null)
+
+    if [[ -n "$alias_target" ]]; then
+      if [[ "$alias_target" == "defaults."* ]]; then
+        # Resolve defaults.light or defaults.dark
+        local default_key="${alias_target#defaults.}"
+        THEME=$(jq -r ".defaults.$default_key" "$THEMES_JSON" 2>/dev/null)
+        [[ $DEBUG -eq 1 ]] && echo "DEBUG: Resolved default $default_key -> $THEME" >&2
+      else
+        THEME="$alias_target"
+        [[ $DEBUG -eq 1 ]] && echo "DEBUG: Resolved alias -> $THEME" >&2
+      fi
+    fi
+
+    # Get mode (light/dark) from JSON
+    local family="${THEME%%_*}"
+    local variant="${THEME#*_}"
+    VARIANT=$(jq -r ".families.\"$family\".variants.\"$variant\".mode // empty" "$THEMES_JSON" 2>/dev/null)
+
+    # Fallback to pattern matching if not in JSON
+    if [[ -z "$VARIANT" ]]; then
+      if [[ "$THEME" =~ (day|light|latte)($|_) ]]; then
         VARIANT="light"
       else
         VARIANT="dark"
       fi
-      ;;
-  esac
+    fi
+  else
+    # Fallback: hardcoded mappings for when jq is not available
+    case "$THEME" in
+      light)
+        THEME="$LIGHT_THEME"
+        VARIANT="light"
+        ;;
+      dark)
+        THEME="$DARK_THEME"
+        VARIANT="dark"
+        ;;
+      moon)
+        THEME="tokyonight_moon"
+        VARIANT="dark"
+        ;;
+      night)
+        THEME="tokyonight_night"
+        VARIANT="dark"
+        ;;
+      storm)
+        THEME="tokyonight_storm"
+        VARIANT="dark"
+        ;;
+      day)
+        THEME="tokyonight_day"
+        VARIANT="light"
+        ;;
+      latte)
+        THEME="catppuccin_latte"
+        VARIANT="light"
+        ;;
+      mocha)
+        THEME="catppuccin_mocha"
+        VARIANT="dark"
+        ;;
+      *)
+        # Auto-detect variant from theme name patterns
+        if [[ "$THEME" =~ (day|light|latte)($|_) ]]; then
+          VARIANT="light"
+        else
+          VARIANT="dark"
+        fi
+        ;;
+    esac
+  fi
 }
 
 # Avoid unnecessary operations if theme already active
@@ -434,7 +824,7 @@ update_alacritty_theme() {
 # 3. User-var triggers OSC injection to ALL panes via Lua handler
 # See: https://github.com/wezterm/wezterm/issues/5451
 update_wezterm_theme() {
-  local colors_file="$SCRIPT_DIR/$THEME/colors.sh"
+  local colors_file="$(get_theme_path "$THEME")/colors.sh"
 
   # Helper: convert #RRGGBB to rgb:RR/GG/BB format for OSC sequences
   _hex_to_osc_rgb() {
@@ -543,7 +933,7 @@ atomic_update() {
 
 # Update other application themes
 update_app_themes() {
-  local theme_dir="$SCRIPT_DIR/$THEME"
+  local theme_dir="$(get_theme_path "$THEME")"
   local success=0
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
@@ -685,7 +1075,7 @@ restore_config() {
 
 # Validate theme exists
 validate_theme() {
-  local theme_dir="$SCRIPT_DIR/$THEME"
+  local theme_dir="$(get_theme_path "$THEME")"
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Validating theme '$THEME'" >&2
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Checking directory: $theme_dir" >&2
@@ -761,6 +1151,11 @@ if [[ "${1:-}" == "--local" ]]; then
   fi
 
   THEME="${1:-}"
+  # Check for two-argument syntax: --local <family> <variant>
+  if [[ -n "${1:-}" ]] && [[ "${1:-}" != -* ]] && \
+     [[ -n "${2:-}" ]] && [[ "${2:-}" != -* ]]; then
+    THEME_ARG2="${2}"
+  fi
   if [[ -z "$THEME" ]]; then
     echo "Error: --local requires a theme name" >&2
     echo "Usage: $(basename "$0") --local [--tmux|--terminal|--shell] THEME" >&2
@@ -771,7 +1166,7 @@ if [[ "${1:-}" == "--local" ]]; then
 
   # Helper: apply tmux theme to current session only (not global)
   _apply_tmux_session_theme() {
-    local theme_file="$SCRIPT_DIR/$THEME/tmux.conf"
+    local theme_file="$(get_theme_path "$THEME")/tmux.conf"
     if [[ ! -f "$theme_file" ]]; then
       return 1
     fi
@@ -821,8 +1216,8 @@ if [[ "${1:-}" == "--tmux" ]]; then
   fi
   determine_theme
   validate_theme
-  if [[ -f "$SCRIPT_DIR/$THEME/tmux.conf" ]]; then
-    tmux source-file "$SCRIPT_DIR/$THEME/tmux.conf" || {
+  if [[ -f "$(get_theme_path "$THEME")/tmux.conf" ]]; then
+    tmux source-file "$(get_theme_path "$THEME")/tmux.conf" || {
       echo "Error: Failed to reload tmux theme" >&2
       exit 1
     }

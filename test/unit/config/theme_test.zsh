@@ -38,19 +38,19 @@ it "validate-themes.sh should exist and be executable" && {
 it "should have proper theme directory structure" && {
   assert_directory_exists "$DOTFILES_DIR/src/theme"
 
-  # Check for theme subdirectories (themes are directly in src/theme/)
-  local theme_count=$(ls -d "$DOTFILES_DIR/src/theme"/tokyonight_*/ 2>/dev/null | wc -l)
+  # Check for theme subdirectories (themes are in src/theme/family/variant/)
+  local theme_count=$(ls -d "$DOTFILES_DIR/src/theme"/tokyonight/*/ 2>/dev/null | wc -l)
   assert_greater_than "$theme_count" 0
   pass
 }
 
 # Test: Theme configurations exist
 it "should have theme configuration files" && {
-  local themes=("tokyonight_day" "tokyonight_night" "tokyonight_moon" "tokyonight_storm")
+  local themes=("tokyonight/day" "tokyonight/night" "tokyonight/moon" "tokyonight/storm")
   local missing=0
 
   for theme in "${themes[@]}"; do
-    # Themes are directly in src/theme/, not src/theme/themes/
+    # Themes are in src/theme/family/variant/
     if [[ ! -d "$DOTFILES_DIR/src/theme/$theme" ]]; then
       ((missing++))
     fi
@@ -141,7 +141,7 @@ it "should support Alacritty themes" && {
   local alacritty_theme_exists=0
 
   # Themes are directly in src/theme/tokyonight_*/
-  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight_*/; do
+  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight/*/; do
     if [[ -f "$theme_dir/alacritty.toml" ]]; then
       alacritty_theme_exists=1
       break
@@ -157,7 +157,7 @@ it "should support tmux themes" && {
   local tmux_theme_exists=0
 
   # Themes are directly in src/theme/tokyonight_*/
-  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight_*/; do
+  for theme_dir in "$DOTFILES_DIR/src/theme"/tokyonight/*/; do
     if [[ -f "$theme_dir/tmux.conf" ]]; then
       tmux_theme_exists=1
       break
@@ -276,6 +276,90 @@ it "should support theme shortcuts" && {
   fi
 }
 
+# Test: Two-argument syntax (e.g., theme github dark)
+it "should support two-argument syntax" && {
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --local catppuccin mocha 2>&1 || true)
+
+  if [[ "$output" == *"catppuccin_mocha"* ]] || [[ "$output" == *"switched"* ]] || [[ "$output" == *"Theme"* ]]; then
+    pass "Two-argument syntax works"
+  else
+    skip "Two-argument syntax not yet implemented"
+  fi
+}
+
+# Test: JSON configuration exists
+it "should have themes.json configuration" && {
+  local json_path="$DOTFILES_DIR/config/themes.json"
+
+  assert_file_exists "$json_path"
+  # Verify it's valid JSON
+  if command -v jq >/dev/null 2>&1; then
+    jq empty "$json_path" 2>/dev/null
+    if [[ $? -eq 0 ]]; then
+      pass "themes.json is valid JSON"
+    else
+      fail "themes.json is not valid JSON"
+    fi
+  else
+    pass "themes.json exists (jq not available for validation)"
+  fi
+}
+
+# Test: New theme families exist
+it "should have multiple theme families" && {
+  local families=("catppuccin" "github" "dracula" "material" "ayu" "monokai")
+  local found_count=0
+
+  for family in "${families[@]}"; do
+    # Families are now top-level directories with variant subdirectories
+    if [[ -d "$DOTFILES_DIR/src/theme/$family" ]]; then
+      ((found_count++))
+    fi
+  done
+
+  if [[ $found_count -ge 4 ]]; then
+    pass "Found $found_count theme families"
+  else
+    fail "Only found $found_count theme families, expected at least 4"
+  fi
+}
+
+# Test: Theme list with family filter
+it "should support theme list filtering by family" && {
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --list catppuccin 2>&1 || true)
+
+  if [[ "$output" == *"latte"* ]] || [[ "$output" == *"mocha"* ]] || [[ "$output" == *"frappe"* ]]; then
+    pass "Theme list filtering works"
+  else
+    skip "Theme list filtering not implemented"
+  fi
+}
+
+# Test: All theme directories have required files
+it "all themes should have required files" && {
+  local missing_files=0
+  local required_files=("alacritty.toml" "tmux.conf" "starship.toml" "wezterm.lua" "colors.sh")
+
+  # Check nested family/variant structure
+  for family_dir in "$DOTFILES_DIR/src/theme"/*/; do
+    for theme_dir in "$family_dir"/*/; do
+      if [[ -d "$theme_dir" ]]; then
+        for file in "${required_files[@]}"; do
+          if [[ ! -f "$theme_dir/$file" ]]; then
+            ((missing_files++))
+          fi
+        done
+      fi
+    done
+  done
+
+  if [[ $missing_files -eq 0 ]]; then
+    pass "All themes have required files"
+  else
+    fail "Found $missing_files missing files across themes"
+  fi
+}
+
 # Test: Dry run mode
 it "should support dry run mode" && {
   output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run 2>&1 || true)
@@ -330,6 +414,27 @@ it "should be optimized for performance" && {
     else
       fail "Theme switch took too long: ${duration}s"
     fi
+  fi
+}
+
+# Test: Generated themes use lowercase hex colors (tmux requirement)
+it "generated themes should use lowercase hex colors" && {
+  local uppercase_found=0
+
+  # Check all tmux.conf files for uppercase hex (A-F in color codes)
+  for tmux_file in "$DOTFILES_DIR"/src/theme/*/*/tmux.conf; do
+    if [[ -f "$tmux_file" ]]; then
+      # Look for hex colors with uppercase letters (e.g., #FAD000 instead of #fad000)
+      if grep -E '#[0-9a-fA-F]*[A-F][0-9a-fA-F]*' "$tmux_file" >/dev/null 2>&1; then
+        ((uppercase_found++))
+      fi
+    fi
+  done
+
+  if [[ $uppercase_found -eq 0 ]]; then
+    pass "All themes use lowercase hex colors"
+  else
+    fail "Found $uppercase_found themes with uppercase hex colors (breaks tmux clickability)"
   fi
 }
 

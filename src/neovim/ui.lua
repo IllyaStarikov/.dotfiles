@@ -57,7 +57,7 @@ opt.number = true
 opt.relativenumber = true
 opt.signcolumn = "yes" -- always show to avoid text shifting
 opt.cursorline = true
-opt.colorcolumn = "100"
+opt.colorcolumn = "" -- Using virt-column.nvim instead
 opt.termguicolors = true
 opt.pumheight = 10
 opt.splitbelow = true
@@ -137,21 +137,94 @@ end
 -- THEME CONFIGURATION
 -- =============================================================================
 
+-- Cache for themes.json configuration
+local theme_config_cache = nil
+
+--- Load theme configuration from JSON
+--- @return table|nil
+local function load_theme_config()
+  if theme_config_cache then
+    return theme_config_cache
+  end
+
+  local config_path = vim.fn.expand("~/.dotfiles/config/themes.json")
+  if vim.fn.filereadable(config_path) ~= 1 then
+    return nil
+  end
+
+  local content = vim.fn.readfile(config_path)
+  if not content or #content == 0 then
+    return nil
+  end
+
+  local ok, config = pcall(vim.fn.json_decode, table.concat(content, "\n"))
+  if ok and config then
+    theme_config_cache = config
+    return config
+  end
+
+  return nil
+end
+
+--- Get theme info from JSON config
+--- @param theme_name string Theme name in family_variant format
+--- @return table|nil
+local function get_theme_info(theme_name)
+  local config = load_theme_config()
+  if not config then
+    return nil
+  end
+
+  local family, variant = theme_name:match("^([a-z0-9]+)_(.+)$")
+  if not family or not variant then
+    return nil
+  end
+
+  local family_config = config.families and config.families[family]
+  if not family_config or not family_config.variants then
+    return nil
+  end
+
+  local variant_info = family_config.variants[variant]
+  if variant_info then
+    return {
+      family = family,
+      variant = variant,
+      mode = variant_info.mode or "dark",
+      colorscheme = variant_info.neovim_colorscheme,
+      style = variant_info.neovim_style,
+      plugin = family_config.neovim_plugin,
+    }
+  end
+
+  return nil
+end
+
+--- Check if a local colorscheme exists
+--- @param name string Colorscheme name (family_variant format)
+--- @return boolean
+local function local_colorscheme_exists(name)
+  -- Check if colorscheme file exists in our colors directory
+  local colors_dir = vim.fn.expand("~/.dotfiles/src/neovim/colors")
+  local colorscheme_file = colors_dir .. "/" .. name .. ".lua"
+  return vim.fn.filereadable(colorscheme_file) == 1
+end
+
 --- Main theme setup function that reads macOS appearance and applies appropriate themes
 --- @return nil
 function M.setup_theme()
   local config_file = vim.fn.expand("~/.config/theme/current-theme.sh")
+  local theme = "tokyonight_moon"
+  local variant = "dark"
 
   if vim.fn.filereadable(config_file) == 1 then
-    -- Source the theme config and get environment variables
     local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
     local variant_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
-    -- MACOS_VARIANT is the single source of truth for light/dark
 
-    local theme = vim.fn.system(theme_cmd):gsub("\n", "")
-    local variant = vim.fn.system(variant_cmd):gsub("\n", "")
+    theme = vim.fn.system(theme_cmd):gsub("\n", "")
+    variant = vim.fn.system(variant_cmd):gsub("\n", "")
 
-    -- Handle legacy format where theme is just "light" or "dark"
+    -- Handle legacy format
     if theme == "light" then
       theme = "tokyonight_day"
       variant = "light"
@@ -159,148 +232,54 @@ function M.setup_theme()
       theme = "tokyonight_moon"
       variant = "dark"
     end
-
-    -- Set background based on variant
-    if variant == "dark" then
-      vim.opt.background = "dark"
-    else
-      vim.opt.background = "light"
-    end
-
-    -- Apply colorscheme based on current theme
-    if theme == "tokyonight_moon" then
-      vim.opt.background = "dark"
-      local ok, tokyonight = pcall(require, "tokyonight")
-      if ok then
-        tokyonight.setup({
-          style = "moon",
-          transparent = false,
-          styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-          },
-        })
-      end
-      pcall(function()
-        vim.cmd("colorscheme tokyonight-moon")
-      end)
-    elseif theme == "tokyonight_storm" then
-      vim.opt.background = "dark"
-      local ok, tokyonight = pcall(require, "tokyonight")
-      if ok then
-        tokyonight.setup({
-          style = "storm",
-          transparent = false,
-          styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-          },
-        })
-      end
-      pcall(function()
-        vim.cmd("colorscheme tokyonight-storm")
-      end)
-    elseif theme == "tokyonight_night" then
-      vim.opt.background = "dark"
-      -- Ensure Tokyo Night plugin is configured before loading
-      local ok, tokyonight = pcall(require, "tokyonight")
-      if ok then
-        tokyonight.setup({
-          style = "night",
-          transparent = false,
-          styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-          },
-        })
-      end
-      -- Set the style global for compatibility
-      vim.g.tokyonight_style = "night"
-      -- Try to load the colorscheme with error handling
-      local status_ok = pcall(function()
-        vim.cmd("colorscheme tokyonight-night")
-      end)
-      if not status_ok then
-        -- Fallback to basic tokyonight command
-        vim.cmd("colorscheme tokyonight")
-      end
-    elseif theme == "tokyonight_day" then
-      vim.opt.background = "light"
-      local ok, tokyonight = pcall(require, "tokyonight")
-      if ok then
-        tokyonight.setup({
-          style = "day",
-          transparent = false,
-          styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-          },
-        })
-      end
-      pcall(function()
-        vim.cmd("colorscheme tokyonight-day")
-      end)
-    else
-      -- Default fallback to Tokyo Night Moon
-      vim.opt.background = "dark"
-      local ok, tokyonight = pcall(require, "tokyonight")
-      if ok then
-        tokyonight.setup({
-          style = "moon",
-          transparent = false,
-          styles = {
-            comments = { italic = true },
-            keywords = { italic = true },
-          },
-        })
-      end
-      pcall(function()
-        vim.cmd("colorscheme tokyonight-moon")
-      end)
-    end
-  else
-    -- Default to dark theme if config file doesn't exist
-    vim.opt.background = "dark"
-    local ok, tokyonight = pcall(require, "tokyonight")
-    if ok then
-      tokyonight.setup({
-        style = "moon",
-        transparent = false,
-        styles = {
-          comments = { italic = true },
-          keywords = { italic = true },
-        },
-      })
-    end
-    vim.cmd("colorscheme tokyonight-moon")
   end
 
-  -- Apply intelligent syntax highlighting optimizations
+  -- Get theme info from JSON config
+  local theme_info = get_theme_info(theme)
+
+  -- Set background
+  vim.opt.background = (theme_info and theme_info.mode) or variant or "dark"
+
+  -- Apply theme using local colorscheme files
+  -- Local colorschemes are generated from colors.json and stored in src/neovim/colors/
+  -- Format: family_variant (e.g., catppuccin_mocha, github_dark, tokyonight_storm)
+  if local_colorscheme_exists(theme) then
+    local ok = pcall(vim.cmd, "colorscheme " .. theme)
+    if not ok then
+      -- Fallback to tokyonight_moon
+      pcall(vim.cmd, "colorscheme tokyonight_moon")
+    end
+  elseif theme_info and theme_info.colorscheme then
+    -- Try external plugin colorscheme as fallback
+    local ok = pcall(vim.cmd, "colorscheme " .. theme_info.colorscheme)
+    if not ok then
+      pcall(vim.cmd, "colorscheme tokyonight_moon")
+    end
+  else
+    -- Ultimate fallback
+    pcall(vim.cmd, "colorscheme tokyonight_moon")
+  end
+
+  -- Apply syntax highlighting optimizations
   vim.schedule(function()
     local current_bg = vim.o.background
 
-    -- Smart comment colors based on background
     if current_bg == "dark" then
-      -- Dark background: lighter, more visible comment colors
       vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
       vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
     else
-      -- Light background: darker, high-contrast comment colors
       vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
       vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
     end
 
-    -- Light theme syntax optimizations for better readability
     if current_bg == "light" then
-      vim.cmd("highlight String guifg=#032F62 ctermfg=28") -- Dark blue strings
-      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26") -- Blue numbers
-      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26") -- Blue constants
-      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129") -- Purple preprocessor
-      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26") -- Blue types
-      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202") -- Orange special chars
+      vim.cmd("highlight String guifg=#032F62 ctermfg=28")
+      vim.cmd("highlight Number guifg=#0451A5 ctermfg=26")
+      vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")
+      vim.cmd("highlight PreProc guifg=#AF00DB ctermfg=129")
+      vim.cmd("highlight Type guifg=#0451A5 ctermfg=26")
+      vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")
     end
-
-    -- Theme changes are automatically applied by mini.statusline
   end)
 end
 
@@ -334,25 +313,85 @@ end, {
   desc = "Fix comment colors for current background",
 })
 
--- Command to force Tokyo Night theme reload
+-- Command to switch themes dynamically
+vim.api.nvim_create_user_command("Theme", function(args)
+  local theme_name = args.args
+  if theme_name == "" then
+    vim.notify("Current theme: " .. (vim.g.colors_name or "unknown"), vim.log.levels.INFO)
+    return
+  end
+
+  local theme_info = get_theme_info(theme_name)
+  if theme_info then
+    vim.opt.background = theme_info.mode or "dark"
+  end
+
+  -- Try local colorscheme first, then fall back to plugin colorscheme
+  if local_colorscheme_exists(theme_name) then
+    local ok = pcall(vim.cmd, "colorscheme " .. theme_name)
+    if ok then
+      vim.notify("Theme: " .. theme_name, vim.log.levels.INFO)
+    else
+      vim.notify("Failed to load theme: " .. theme_name, vim.log.levels.ERROR)
+    end
+  elseif theme_info and theme_info.colorscheme then
+    local ok = pcall(vim.cmd, "colorscheme " .. theme_info.colorscheme)
+    if ok then
+      vim.notify("Theme: " .. theme_name, vim.log.levels.INFO)
+    else
+      vim.notify("Failed to load theme: " .. theme_name, vim.log.levels.ERROR)
+    end
+  else
+    vim.notify("Unknown theme: " .. theme_name, vim.log.levels.ERROR)
+  end
+end, {
+  nargs = "?",
+  complete = function()
+    local config = load_theme_config()
+    if not config or not config.families then
+      return { "tokyonight_moon", "tokyonight_storm", "tokyonight_day", "tokyonight_night" }
+    end
+
+    local themes = {}
+    for family, family_config in pairs(config.families) do
+      if family_config.variants then
+        for variant, _ in pairs(family_config.variants) do
+          table.insert(themes, family .. "_" .. variant)
+        end
+      end
+    end
+    table.sort(themes)
+    return themes
+  end,
+  desc = "Switch to a theme (e.g., :Theme catppuccin_mocha)",
+})
+
+-- Command to force Tokyo Night theme reload (backward compatibility)
 vim.api.nvim_create_user_command("TokyoNight", function(args)
   local style = args.args ~= "" and args.args or "moon"
   vim.opt.background = style == "day" and "light" or "dark"
 
-  local ok, tokyonight = pcall(require, "tokyonight")
-  if ok then
-    tokyonight.setup({
-      style = style,
-      transparent = false,
-      styles = {
-        comments = { italic = true },
-        keywords = { italic = true },
-      },
-    })
-    vim.g.tokyonight_style = style
-    vim.cmd("colorscheme tokyonight-" .. style)
+  -- Use local colorscheme (tokyonight_moon, tokyonight_storm, etc.)
+  local theme_name = "tokyonight_" .. style
+  if local_colorscheme_exists(theme_name) then
+    pcall(vim.cmd, "colorscheme " .. theme_name)
   else
-    vim.notify("Tokyo Night plugin not found", vim.log.levels.WARN)
+    -- Fall back to plugin if local colorscheme not found
+    local ok, tokyonight = pcall(require, "tokyonight")
+    if ok then
+      tokyonight.setup({
+        style = style,
+        transparent = false,
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true },
+        },
+      })
+      vim.g.tokyonight_style = style
+      vim.cmd("colorscheme tokyonight-" .. style)
+    else
+      vim.notify("Tokyo Night colorscheme not found", vim.log.levels.WARN)
+    end
   end
 end, {
   nargs = "?",

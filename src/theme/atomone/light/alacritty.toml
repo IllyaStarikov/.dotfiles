@@ -1,0 +1,26 @@
+# Atom One Light theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#fafafa'
+foreground = '#383a42'
+
+[colors.normal]
+black = '#a0a1a7'
+red = '#e45649'
+green = '#50a14f'
+yellow = '#c18401'
+blue = '#4078f2'
+magenta = '#a626a4'
+cyan = '#0184bc'
+white = '#fafafa'
+
+[colors.bright]
+black = '#696c77'
+red = '#e45649'
+green = '#50a14f'
+yellow = '#c18401'
+blue = '#4078f2'
+magenta = '#a626a4'
+cyan = '#0184bc'
+white = '#fafafa'

@@ -1,0 +1,26 @@
+# Monokai Pro Ristretto theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#2c2525'
+foreground = '#fff1f3'
+
+[colors.normal]
+black = '#72696a'
+red = '#fd6883'
+green = '#adda78'
+yellow = '#f9cc6c'
+blue = '#85dacc'
+magenta = '#a8a9eb'
+cyan = '#85dacc'
+white = '#fff1f3'
+
+[colors.bright]
+black = '#918787'
+red = '#fd6883'
+green = '#adda78'
+yellow = '#f9cc6c'
+blue = '#85dacc'
+magenta = '#a8a9eb'
+cyan = '#85dacc'
+white = '#fff1f3'

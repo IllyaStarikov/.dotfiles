@@ -1,0 +1,26 @@
+# Dracula Soft theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#282a36'
+foreground = '#f8f8f2'
+
+[colors.normal]
+black = '#21222c'
+red = '#f08080'
+green = '#90ee90'
+yellow = '#f0e68c'
+blue = '#b39ddb'
+magenta = '#dda0dd'
+cyan = '#87ceeb'
+white = '#f5f5f5'
+
+[colors.bright]
+black = '#6272a4'
+red = '#f0a0a0'
+green = '#98fb98'
+yellow = '#fffacd'
+blue = '#c5b0e8'
+magenta = '#e6a8e6'
+cyan = '#a0e6ff'
+white = '#ffffff'

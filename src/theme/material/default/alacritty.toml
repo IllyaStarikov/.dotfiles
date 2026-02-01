@@ -1,0 +1,26 @@
+# Material Default theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#263238'
+foreground = '#eeffff'
+
+[colors.normal]
+black = '#546e7a'
+red = '#ff5370'
+green = '#c3e88d'
+yellow = '#ffcb6b'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#89ddff'
+white = '#ffffff'
+
+[colors.bright]
+black = '#546e7a'
+red = '#ff5370'
+green = '#c3e88d'
+yellow = '#ffcb6b'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#89ddff'
+white = '#ffffff'

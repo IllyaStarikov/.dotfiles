@@ -1,0 +1,26 @@
+# Synthwave 84 Default theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#262335'
+foreground = '#ffffff'
+
+[colors.normal]
+black = '#614d85'
+red = '#fe4450'
+green = '#72f1b8'
+yellow = '#fede5d'
+blue = '#03edf9'
+magenta = '#ff7edb'
+cyan = '#36f9f6'
+white = '#ffffff'
+
+[colors.bright]
+black = '#7a6a9a'
+red = '#ff6e7a'
+green = '#8fffd2'
+yellow = '#ffef7d'
+blue = '#4effff'
+magenta = '#ff9fe7'
+cyan = '#6cffff'
+white = '#ffffff'

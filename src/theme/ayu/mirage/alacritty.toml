@@ -1,0 +1,26 @@
+# Ayu Mirage theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#1f2430'
+foreground = '#cbccc6'
+
+[colors.normal]
+black = '#707a8c'
+red = '#f28779'
+green = '#bbd684'
+yellow = '#ffd580'
+blue = '#73d0ff'
+magenta = '#d4bfff'
+cyan = '#95e6cb'
+white = '#ffffff'
+
+[colors.bright]
+black = '#8a919d'
+red = '#f28779'
+green = '#bbd684'
+yellow = '#ffd580'
+blue = '#73d0ff'
+magenta = '#d4bfff'
+cyan = '#95e6cb'
+white = '#ffffff'

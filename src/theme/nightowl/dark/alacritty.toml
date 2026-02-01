@@ -1,0 +1,26 @@
+# Night Owl Dark theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#011627'
+foreground = '#d6deeb'
+
+[colors.normal]
+black = '#575656'
+red = '#ef5350'
+green = '#22da6e'
+yellow = '#addb67'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#21c7a8'
+white = '#ffffff'
+
+[colors.bright]
+black = '#7a8181'
+red = '#ef5350'
+green = '#22da6e'
+yellow = '#ffeb95'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#7fdbca'
+white = '#ffffff'

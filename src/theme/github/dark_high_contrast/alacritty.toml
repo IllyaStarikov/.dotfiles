@@ -1,0 +1,26 @@
+# GitHub Dark_High_Contrast theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#0a0c10'
+foreground = '#f0f3f6'
+
+[colors.normal]
+black = '#7a828e'
+red = '#ff9492'
+green = '#26cd4d'
+yellow = '#f0b72f'
+blue = '#71b7ff'
+magenta = '#cb9eff'
+cyan = '#39c5cf'
+white = '#f0f3f6'
+
+[colors.bright]
+black = '#9ea7b3'
+red = '#ffb1af'
+green = '#4ae168'
+yellow = '#f7c843'
+blue = '#91cbff'
+magenta = '#dbb7ff'
+cyan = '#56d4dd'
+white = '#ffffff'

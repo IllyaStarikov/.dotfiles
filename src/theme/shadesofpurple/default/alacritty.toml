@@ -1,0 +1,26 @@
+# Shades of Purple Default theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#1e1e3f'
+foreground = '#fafafa'
+
+[colors.normal]
+black = '#6d6d6d'
+red = '#ff628c'
+green = '#a5ff90'
+yellow = '#ffdd00'
+blue = '#9d8bfe'
+magenta = '#fad000'
+cyan = '#80ffea'
+white = '#ffffff'
+
+[colors.bright]
+black = '#8d8d8d'
+red = '#ff7e9e'
+green = '#b8ffa6'
+yellow = '#ffe64d'
+blue = '#b4a6fe'
+magenta = '#ffe14d'
+cyan = '#9affef'
+white = '#ffffff'
