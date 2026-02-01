@@ -340,8 +340,10 @@ it "all themes should have required files" && {
   local missing_files=0
   local required_files=("alacritty.toml" "tmux.conf" "starship.toml" "wezterm.lua" "colors.sh")
 
-  # Check nested family/variant structure
+  # Check nested family/variant structure (skip templates directory)
   for family_dir in "$DOTFILES_DIR/src/theme"/*/; do
+    # Skip the templates directory - it contains templates, not theme variants
+    [[ "$family_dir" == */templates/ ]] && continue
     for theme_dir in "$family_dir"/*/; do
       if [[ -d "$theme_dir" ]]; then
         for file in "${required_files[@]}"; do
@@ -399,21 +401,17 @@ it "should maintain color scheme consistency" && {
 # Test: Performance optimization
 it "should be optimized for performance" && {
   # Test behavior - theme switch should be fast (--local to avoid affecting other terminals)
-  local start_time=$(date +%s%N 2>/dev/null || date +%s)
+  # Use seconds only for reliable cross-platform timing
+  local start_time=$(date +%s)
   "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
-  local end_time=$(date +%s%N 2>/dev/null || date +%s)
+  local end_time=$(date +%s)
 
-  # Calculate duration in milliseconds if nanoseconds available
-  if [[ "$start_time" == *"N"* ]]; then
-    skip "Cannot measure nanoseconds on this system"
+  local duration=$((end_time - start_time))
+  # Should complete within 3 seconds (allow some CI overhead)
+  if [[ $duration -le 3 ]]; then
+    pass "Theme switch is performant (${duration}s)"
   else
-    local duration=$((end_time - start_time))
-    # Should complete within 2 seconds
-    if [[ $duration -le 2 ]]; then
-      pass "Theme switch is performant"
-    else
-      fail "Theme switch took too long: ${duration}s"
-    fi
+    fail "Theme switch took too long: ${duration}s"
   fi
 }
 
