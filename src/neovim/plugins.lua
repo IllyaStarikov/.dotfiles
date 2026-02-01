@@ -207,6 +207,84 @@ require("lazy").setup({
       { "<leader>gd", "<cmd>Gdiff<cr>", desc = "Git diff" },
     },
   },
+  -- Lualine - Statusline with powerline separators
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    event = "VeryLazy",
+    config = function()
+      local lualine = require("lualine")
+      lualine.setup({
+        options = {
+          theme = "auto",
+          section_separators = { left = "", right = "" },
+          component_separators = { left = "", right = "" },
+          globalstatus = true,
+          refresh = {
+            statusline = 100, -- Refresh every 100ms for instant mode updates
+          },
+        },
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = {
+            "branch",
+            {
+              "diff",
+              -- Nerd Font icons: nf-oct-diff_added, diff_modified, diff_removed
+              symbols = { added = "\u{f457} ", modified = "\u{f459} ", removed = "\u{f458} " },
+              colored = true,
+            },
+          },
+          lualine_c = {
+            {
+              "diagnostics",
+              sources = { "nvim_diagnostic" },
+              -- Nerd Font icons: nf-fa-times_circle, warning, info_circle, lightbulb
+              symbols = { error = "\u{f00d} ", warn = "\u{f071} ", info = "\u{f05a} ", hint = "\u{f0eb} " },
+              colored = true,
+            },
+          },
+          lualine_x = {
+            -- LSP server names with gear icon
+            {
+              function()
+                local clients = vim.lsp.get_clients({ bufnr = 0 })
+                if #clients == 0 then return "" end
+                local names = {}
+                for _, client in ipairs(clients) do
+                  table.insert(names, client.name)
+                end
+                -- nf-fa-server icon
+                return "\u{f233} " .. table.concat(names, ", ")
+              end,
+            },
+            {
+              "encoding",
+              cond = function() return vim.bo.fileencoding ~= "" and vim.bo.fileencoding ~= "utf-8" end,
+            },
+            "filetype",
+          },
+          lualine_y = { "progress" },
+          lualine_z = { "location" },
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { "filename" },
+          lualine_x = { "location" },
+          lualine_y = {},
+          lualine_z = {},
+        },
+      })
+
+      -- Force instant refresh on mode change
+      vim.api.nvim_create_autocmd("ModeChanged", {
+        callback = function()
+          lualine.refresh()
+        end,
+      })
+    end,
+  },
   -- Mini.nvim suite - Modern Neovim plugins
   {
     "echasnovski/mini.nvim",
@@ -215,11 +293,11 @@ require("lazy").setup({
     config = function()
       local utils = require("utils")
 
-      -- mini.statusline - Modern statusline
-      utils.setup_plugin("mini.statusline", {
-        use_icons = true,
-        set_vim_settings = true,
-      })
+      -- mini.statusline - Disabled in favor of lualine for powerline separators
+      -- utils.setup_plugin("mini.statusline", {
+      --   use_icons = true,
+      --   set_vim_settings = true,
+      -- })
 
       -- mini.surround - Better surround operations
       utils.setup_plugin("mini.surround", {
@@ -378,7 +456,7 @@ require("lazy").setup({
         require("bufferline").setup({
           options = {
             mode = "buffers",
-            separator_style = "slant",
+            separator_style = "slope",
             always_show_bufferline = false,
             show_buffer_close_icons = false,
             show_close_icon = false,
