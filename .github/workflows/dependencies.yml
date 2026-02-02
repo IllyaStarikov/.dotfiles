@@ -81,7 +81,7 @@ jobs:
 
       - name: create pull request
         if: env.SUBMODULES_UPDATED == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'chore: update dependencies and submodules'
