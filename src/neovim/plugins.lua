@@ -230,8 +230,7 @@ require("lazy").setup({
             "branch",
             {
               "diff",
-              -- Nerd Font icons: nf-oct-diff_added, diff_modified, diff_removed
-              symbols = { added = "\u{f457} ", modified = "\u{f459} ", removed = "\u{f458} " },
+              symbols = { added = "+", modified = "~", removed = "-" },
               colored = true,
             },
           },
@@ -239,33 +238,47 @@ require("lazy").setup({
             {
               "diagnostics",
               sources = { "nvim_diagnostic" },
-              -- Nerd Font icons: nf-fa-times_circle, warning, info_circle, lightbulb
               symbols = { error = "\u{f00d} ", warn = "\u{f071} ", info = "\u{f05a} ", hint = "\u{f0eb} " },
               colored = true,
             },
+            {
+              "filename",
+              path = 1, -- 0=filename, 1=relative path, 2=absolute, 3=absolute with ~
+              symbols = { modified = " ●", readonly = " ", unnamed = "[No Name]" },
+            },
           },
           lualine_x = {
-            -- LSP server names with gear icon
+            -- LSP server names
             {
               function()
                 local clients = vim.lsp.get_clients({ bufnr = 0 })
-                if #clients == 0 then return "" end
+                if #clients == 0 then
+                  return ""
+                end
                 local names = {}
                 for _, client in ipairs(clients) do
                   table.insert(names, client.name)
                 end
-                -- nf-fa-server icon
-                return "\u{f233} " .. table.concat(names, ", ")
+                return "[" .. table.concat(names, ",") .. "]"
               end,
-            },
-            {
-              "encoding",
-              cond = function() return vim.bo.fileencoding ~= "" and vim.bo.fileencoding ~= "utf-8" end,
             },
             "filetype",
           },
-          lualine_y = { "progress" },
-          lualine_z = { "location" },
+          lualine_y = {},
+          lualine_z = {
+            -- Lines: current/total with down arrow (vertical)
+            {
+              function()
+                return "\u{f063} " .. vim.fn.line(".") .. "/" .. vim.fn.line("$")
+              end,
+            },
+            -- Columns: current/line-length with right arrow (horizontal)
+            {
+              function()
+                return "\u{f061} " .. vim.fn.col(".") .. "/" .. (vim.fn.col("$") - 1)
+              end,
+            },
+          },
         },
         inactive_sections = {
           lualine_a = {},
@@ -483,11 +496,11 @@ require("lazy").setup({
               bg = colors.bg_dark,
             },
             background = {
-              fg = colors.fg_dark,
+              fg = colors.fg,
               bg = colors.bg_dark,
             },
             buffer_visible = {
-              fg = colors.fg_dark,
+              fg = colors.fg,
               bg = colors.bg_dark,
             },
             buffer_selected = {
@@ -520,8 +533,50 @@ require("lazy").setup({
               fg = colors.yellow or colors.fg,
               bg = colors.bg,
             },
+            trunc_marker = {
+              fg = colors.blue,
+              bg = colors.bg_dark,
+              bold = true,
+            },
+            numbers = {
+              fg = colors.blue,
+              bg = colors.bg_dark,
+              bold = true,
+            },
+            numbers_visible = {
+              fg = colors.blue,
+              bg = colors.bg_dark,
+              bold = true,
+            },
+            numbers_selected = {
+              fg = colors.blue,
+              bg = colors.bg,
+              bold = true,
+            },
+            tab = {
+              fg = colors.blue,
+              bg = colors.bg_dark,
+              bold = true,
+            },
+            tab_selected = {
+              fg = colors.fg,
+              bg = colors.bg,
+              bold = true,
+            },
+            tab_close = {
+              fg = colors.blue,
+              bg = colors.bg_dark,
+            },
           },
         })
+
+        -- Force bright colors for bufferline indicators (override any theme defaults)
+        vim.api.nvim_set_hl(0, "BufferLineNumbers", { fg = "#7aa2f7", bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineNumbersVisible", { fg = "#7aa2f7", bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTruncMarker", { fg = "#7aa2f7", bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "#c0caf5", bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTabClose", { fg = "#7aa2f7", bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineOffsetSeparator", { fg = "#7aa2f7", bold = true })
       end
 
       -- Initial setup
