@@ -1007,11 +1007,6 @@ require("lazy").setup({
       },
     },
     cmd = { "AerialToggle", "AerialOpen", "AerialNavToggle" },
-    keys = {
-      { "<leader>T", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
-      { "<leader>at", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
-      { "<leader>an", "<cmd>AerialNavToggle<cr>", desc = "Aerial Nav Toggle" },
-    },
   },
 
   -- Language specific

@@ -159,9 +159,7 @@ end
 map("n", "<leader>cm", "<cmd>MakePicker<cr>", { desc = "Code Make (pick target)" })
 map("n", "<leader>cM", "<cmd>Make<cr>", { desc = "Code Make (default)" })
 
--- Symbol outline (Aerial)
-map("n", "<leader>cs", "<cmd>AerialToggle<CR>", { desc = "Code Symbols" })
-map("n", "<leader>cS", "<cmd>AerialNavToggle<CR>", { desc = "Code Symbol Navigator" })
+-- Symbol navigation (Aerial)
 map("n", "<leader>cn", "<cmd>AerialNext<CR>", { desc = "Code Next Symbol" })
 map("n", "<leader>cp", "<cmd>AerialPrev<CR>", { desc = "Code Prev Symbol" })
 map("n", "<leader>cN", "<cmd>AerialNextUp<CR>", { desc = "Code Next Symbol (up)" })
@@ -525,6 +523,10 @@ map("n", "<leader>of", function()
 end, { desc = "Open Explorer Float" })
 
 map("n", "<leader>oo", safe_require("oil", "open"), { desc = "Open Oil" })
+
+-- Symbol outline (Aerial)
+map("n", "<leader>oa", "<cmd>AerialToggle<CR>", { desc = "Open Aerial" })
+map("n", "<leader>oA", "<cmd>AerialNavToggle<CR>", { desc = "Open Aerial Navigator" })
 
 -- Shortcut: - opens explorer
 map("n", "-", function()
