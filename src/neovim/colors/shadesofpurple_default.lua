@@ -95,9 +95,9 @@ function M.setup()
     Substitute = { fg = c.bg, bg = c.red },
     MatchParen = { fg = c.yellow, bold = true },
 
-    -- Visual
-    Visual = { bg = c.selection },
-    VisualNOS = { bg = c.selection },
+    -- Visual (use contrasting purple instead of gray for visibility)
+    Visual = { bg = "#433a6a" },
+    VisualNOS = { bg = "#433a6a" },
 
     -- Messages
     ModeMsg = { fg = c.fg, bold = true },

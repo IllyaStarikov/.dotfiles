@@ -175,6 +175,11 @@ require("lazy").setup({
       integrations = {
         bufferline = true,
       },
+      on_highlights = function(hl, c)
+        -- Make Visual selection more visible (especially over comments)
+        hl.Visual = { bg = "#3b4261", bold = true }
+        hl.VisualNOS = { bg = "#3b4261", bold = true }
+      end,
     },
   },
   -- NOTE: Additional colorschemes are generated locally from colors.json
@@ -207,13 +212,28 @@ require("lazy").setup({
       { "<leader>gd", "<cmd>Gdiff<cr>", desc = "Git diff" },
     },
   },
-  -- Lualine - Production-ready statusline
+  -- Lualine - Production-ready statusline with dynamic mode colors
+  -- Inspired by: Evil Lualine, LazyVim, lualine-so-fancy.nvim
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     event = "VeryLazy",
     config = function()
-      -- Helper: Check window width for responsive hiding
+      -- TokyoNight-based mode colors for dynamic mode indication
+      local mode_colors = {
+        n = { fg = "#1a1b26", bg = "#7aa2f7" }, -- Normal: blue
+        i = { fg = "#1a1b26", bg = "#9ece6a" }, -- Insert: green
+        v = { fg = "#1a1b26", bg = "#bb9af7" }, -- Visual: purple
+        V = { fg = "#1a1b26", bg = "#bb9af7" }, -- V-Line: purple
+        ["\22"] = { fg = "#1a1b26", bg = "#bb9af7" }, -- V-Block: purple (Ctrl-V)
+        c = { fg = "#1a1b26", bg = "#e0af68" }, -- Command: yellow
+        R = { fg = "#1a1b26", bg = "#f7768e" }, -- Replace: red
+        s = { fg = "#1a1b26", bg = "#7dcfff" }, -- Select: cyan
+        S = { fg = "#1a1b26", bg = "#7dcfff" }, -- S-Line: cyan
+        t = { fg = "#1a1b26", bg = "#ff9e64" }, -- Terminal: orange
+      }
+
+      -- Responsive helpers for window width
       local function hide_in_width()
         return vim.fn.winwidth(0) > 80
       end
@@ -230,31 +250,58 @@ require("lazy").setup({
           component_separators = { left = "", right = "" },
           globalstatus = true,
           disabled_filetypes = {
-            statusline = { "dashboard", "alpha", "lazy" },
+            statusline = { "dashboard", "alpha", "lazy", "starter" },
             winbar = {},
           },
           always_divide_middle = true,
-          refresh = {
-            statusline = 1000,
-          },
+          refresh = { statusline = 500 },
         },
         sections = {
+          -- Section A: Mode with dynamic colors
           lualine_a = {
             {
               "mode",
               fmt = function(str)
-                return str:sub(1, 3)
+                local mode_map = {
+                  NORMAL = "NOR",
+                  INSERT = "INS",
+                  VISUAL = "VIS",
+                  ["V-LINE"] = "V-L",
+                  ["V-BLOCK"] = "V-B",
+                  COMMAND = "CMD",
+                  REPLACE = "REP",
+                  SELECT = "SEL",
+                  TERMINAL = "TRM",
+                  ["O-PENDING"] = "O-P",
+                }
+                return mode_map[str] or str:sub(1, 3)
+              end,
+              color = function()
+                return mode_colors[vim.fn.mode()] or mode_colors.n
               end,
             },
           },
+          -- Section B: Git branch and diff
           lualine_b = {
             { "branch", icon = "\u{e725}", cond = hide_in_width },
             {
               "diff",
               symbols = { added = "+", modified = "~", removed = "-" },
+              diff_color = {
+                added = { fg = "#9ece6a" },
+                modified = { fg = "#e0af68" },
+                removed = { fg = "#f7768e" },
+              },
+              source = function()
+                local gs = vim.b.gitsigns_status_dict
+                if gs then
+                  return { added = gs.added, modified = gs.changed, removed = gs.removed }
+                end
+              end,
               cond = hide_in_width,
             },
           },
+          -- Section C: Diagnostics, filename, macro recording
           lualine_c = {
             {
               "diagnostics",
@@ -265,17 +312,68 @@ require("lazy").setup({
                 info = "\u{f05a} ",
                 hint = "\u{f0eb} ",
               },
-              colored = true,
+              diagnostics_color = {
+                error = { fg = "#f7768e" },
+                warn = { fg = "#e0af68" },
+                info = { fg = "#7aa2f7" },
+                hint = { fg = "#7dcfff" },
+              },
+              update_in_insert = false,
             },
             {
               "filename",
               path = 1,
-              symbols = { modified = " \u{f444}", readonly = " \u{f023}", unnamed = "[No Name]" },
+              symbols = {
+                modified = " \u{f448}",
+                readonly = " \u{f023}",
+                unnamed = "[No Name]",
+                newfile = " \u{f15b}",
+              },
+              color = function()
+                return vim.bo.modified and { fg = "#e0af68", gui = "bold" } or nil
+              end,
+            },
+            -- Macro recording indicator
+            {
+              function()
+                local reg = vim.fn.reg_recording()
+                return reg ~= "" and ("\u{f8d9} @" .. reg) or ""
+              end,
+              color = { fg = "#f7768e", gui = "bold" },
             },
           },
+          -- Section X: Search, selection, DAP, LSP
           lualine_x = {
-            { "searchcount", cond = wide_window },
-            { "selectioncount", cond = wide_window },
+            { "searchcount", maxcount = 999, timeout = 500, cond = wide_window },
+            -- Selection count (lines x chars)
+            {
+              function()
+                local mode = vim.fn.mode()
+                if mode:find("[vV\22]") then
+                  local lines = math.abs(vim.fn.line("v") - vim.fn.line(".")) + 1
+                  local chars = vim.fn.wordcount().visual_chars or 0
+                  return "\u{f0ce} " .. lines .. "L " .. chars .. "C"
+                end
+                return ""
+              end,
+              color = { fg = "#bb9af7", gui = "bold" },
+            },
+            -- DAP debug status
+            {
+              function()
+                local ok, dap = pcall(require, "dap")
+                if ok and dap.session() then
+                  return "\u{f188} " .. (dap.session().config.name or "Debug")
+                end
+                return ""
+              end,
+              color = { fg = "#e0af68", gui = "bold" },
+              cond = function()
+                local ok, dap = pcall(require, "dap")
+                return ok and dap.session() ~= nil
+              end,
+            },
+            -- LSP servers
             {
               function()
                 local clients = vim.lsp.get_clients({ bufnr = 0 })
@@ -284,39 +382,82 @@ require("lazy").setup({
                 end
                 local names = {}
                 for _, c in ipairs(clients) do
-                  names[#names + 1] = c.name
+                  if c.name ~= "null-ls" and c.name ~= "copilot" then
+                    names[#names + 1] = c.name
+                  end
                 end
-                return "\u{f085} " .. table.concat(names, ", ")
+                return #names > 0 and ("\u{f233} " .. table.concat(names, ", ")) or ""
               end,
+              color = { fg = "#7aa2f7" },
               cond = hide_in_width,
             },
-            { "filetype", colored = true },
           },
-          lualine_y = {},
+          -- Section Y: Filetype, encoding (conditional), fileformat (conditional)
+          lualine_y = {
+            { "filetype", colored = true },
+            {
+              "encoding",
+              fmt = string.upper,
+              cond = function()
+                local enc = vim.bo.fileencoding
+                return enc ~= "" and enc ~= "utf-8" and wide_window()
+              end,
+            },
+            {
+              "fileformat",
+              symbols = { unix = "", dos = "", mac = "" },
+              cond = function()
+                return vim.bo.fileformat ~= "unix" and wide_window()
+              end,
+            },
+          },
+          -- Section Z: Location (line/total, col/total) with mode color
           lualine_z = {
             {
               function()
-                return "\u{f063} " .. vim.fn.line(".") .. "/" .. vim.fn.line("$")
+                local line = vim.fn.line(".")
+                local total_lines = vim.fn.line("$")
+                local col = vim.fn.col(".")
+                local total_cols = vim.fn.col("$") - 1
+                return "\u{f063} "
+                  .. line
+                  .. "/"
+                  .. total_lines
+                  .. " \u{f061} "
+                  .. col
+                  .. "/"
+                  .. total_cols
               end,
-              color = { fg = "#1a1b26", bg = "#9ece6a", gui = "bold" },
-            },
-            {
-              function()
-                return "\u{f061} " .. vim.fn.col(".") .. "/" .. (vim.fn.col("$") - 1)
+              color = function()
+                return mode_colors[vim.fn.mode()] or mode_colors.n
               end,
-              color = { fg = "#1a1b26", bg = "#bb9af7", gui = "bold" },
             },
           },
         },
         inactive_sections = {
           lualine_a = {},
           lualine_b = {},
-          lualine_c = { { "filename", path = 1 } },
+          lualine_c = {
+            {
+              "filename",
+              path = 1,
+              symbols = { modified = " \u{f448}", readonly = " \u{f023}" },
+            },
+          },
           lualine_x = { "location" },
           lualine_y = {},
           lualine_z = {},
         },
-        extensions = { "neo-tree", "toggleterm", "quickfix", "fugitive", "lazy" },
+        extensions = {
+          "neo-tree",
+          "toggleterm",
+          "quickfix",
+          "fugitive",
+          "lazy",
+          "trouble",
+          "aerial",
+          "man",
+        },
       })
     end,
   },

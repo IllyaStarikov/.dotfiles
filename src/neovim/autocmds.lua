@@ -829,6 +829,27 @@ vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false }
 vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
 
 -- =============================================================================
+-- VISUAL SELECTION HIGHLIGHT
+-- =============================================================================
+-- Make visual selection more visible (especially over comments)
+local visual_highlight_group = augroup("VisualHighlight", { clear = true })
+
+autocmd("ColorScheme", {
+  group = visual_highlight_group,
+  pattern = "*",
+  callback = function()
+    -- Bright yellow background - maximum contrast with gray comments
+    vim.api.nvim_set_hl(0, "Visual", { bg = "#3a3a00", fg = "#ffff00" })
+    vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#3a3a00", fg = "#ffff00" })
+  end,
+  desc = "Set Visual selection highlight for better visibility",
+})
+
+-- Apply immediately
+vim.api.nvim_set_hl(0, "Visual", { bg = "#3a3a00", fg = "#ffff00" })
+vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#3a3a00", fg = "#ffff00" })
+
+-- =============================================================================
 -- SPELL CHECKING CONFIGURATION
 -- =============================================================================
 -- Enable spell checking only for text-heavy file types to avoid performance issues
