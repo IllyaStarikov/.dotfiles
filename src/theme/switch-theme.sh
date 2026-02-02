@@ -895,11 +895,24 @@ update_wezterm_theme() {
     fi
   }
 
-  # STEP 1: Update current-theme file (new windows read this at creation time)
-  local theme_name_file="$HOME/.config/wezterm/current-theme"
-  mkdir -p "$(dirname "$theme_name_file")"
-  echo "$THEME" > "$theme_name_file"
-  log "Updated WezTerm current-theme file"
+  # STEP 1: Update theme.lua file (wezterm.lua imports this for colors)
+  local theme_dir="$(get_theme_path "$THEME")"
+  local wezterm_theme_src="$theme_dir/wezterm.lua"
+  local wezterm_config_dir="$HOME/.config/wezterm"
+  local wezterm_theme_dest="$wezterm_config_dir/theme.lua"
+  local wezterm_main_config="$wezterm_config_dir/wezterm.lua"
+
+  mkdir -p "$wezterm_config_dir"
+
+  if [[ -f "$wezterm_theme_src" ]]; then
+    cp "$wezterm_theme_src" "$wezterm_theme_dest"
+    # Touch main config to trigger WezTerm's auto-reload (same fix as Alacritty)
+    [[ -f "$wezterm_main_config" ]] && touch "$wezterm_main_config"
+    log "Updated WezTerm theme.lua"
+  fi
+
+  # Also update current-theme file for reference
+  echo "$THEME" > "$wezterm_config_dir/current-theme"
 
   # Determine TTY target
   local tty_target=""
