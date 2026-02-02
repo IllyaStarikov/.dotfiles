@@ -207,48 +207,75 @@ require("lazy").setup({
       { "<leader>gd", "<cmd>Gdiff<cr>", desc = "Git diff" },
     },
   },
-  -- Lualine - Statusline with powerline separators
+  -- Lualine - Production-ready statusline
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     event = "VeryLazy",
     config = function()
-      local lualine = require("lualine")
-      lualine.setup({
+      -- Helper: Check window width for responsive hiding
+      local function hide_in_width()
+        return vim.fn.winwidth(0) > 80
+      end
+
+      local function wide_window()
+        return vim.fn.winwidth(0) > 100
+      end
+
+      require("lualine").setup({
         options = {
+          icons_enabled = true,
           theme = "auto",
           section_separators = { left = "", right = "" },
           component_separators = { left = "", right = "" },
           globalstatus = true,
+          disabled_filetypes = {
+            statusline = { "dashboard", "alpha", "lazy" },
+            winbar = {},
+          },
+          always_divide_middle = true,
           refresh = {
-            statusline = 100, -- Refresh every 100ms for instant mode updates
+            statusline = 1000,
           },
         },
         sections = {
-          lualine_a = { "mode" },
+          lualine_a = {
+            {
+              "mode",
+              fmt = function(str)
+                return str:sub(1, 3)
+              end,
+            },
+          },
           lualine_b = {
-            "branch",
+            { "branch", icon = "\u{e725}", cond = hide_in_width },
             {
               "diff",
               symbols = { added = "+", modified = "~", removed = "-" },
-              colored = true,
+              cond = hide_in_width,
             },
           },
           lualine_c = {
             {
               "diagnostics",
               sources = { "nvim_diagnostic" },
-              symbols = { error = "\u{f00d} ", warn = "\u{f071} ", info = "\u{f05a} ", hint = "\u{f0eb} " },
+              symbols = {
+                error = "\u{f00d} ",
+                warn = "\u{f071} ",
+                info = "\u{f05a} ",
+                hint = "\u{f0eb} ",
+              },
               colored = true,
             },
             {
               "filename",
-              path = 1, -- 0=filename, 1=relative path, 2=absolute, 3=absolute with ~
-              symbols = { modified = " ●", readonly = " ", unnamed = "[No Name]" },
+              path = 1,
+              symbols = { modified = " \u{f444}", readonly = " \u{f023}", unnamed = "[No Name]" },
             },
           },
           lualine_x = {
-            -- LSP server names
+            { "searchcount", cond = wide_window },
+            { "selectioncount", cond = wide_window },
             {
               function()
                 local clients = vim.lsp.get_clients({ bufnr = 0 })
@@ -256,45 +283,40 @@ require("lazy").setup({
                   return ""
                 end
                 local names = {}
-                for _, client in ipairs(clients) do
-                  table.insert(names, client.name)
+                for _, c in ipairs(clients) do
+                  names[#names + 1] = c.name
                 end
-                return "[" .. table.concat(names, ",") .. "]"
+                return "\u{f085} " .. table.concat(names, ", ")
               end,
+              cond = hide_in_width,
             },
-            "filetype",
+            { "filetype", colored = true },
           },
           lualine_y = {},
           lualine_z = {
-            -- Lines: current/total with down arrow (vertical)
             {
               function()
                 return "\u{f063} " .. vim.fn.line(".") .. "/" .. vim.fn.line("$")
               end,
+              color = { fg = "#1a1b26", bg = "#9ece6a", gui = "bold" },
             },
-            -- Columns: current/line-length with right arrow (horizontal)
             {
               function()
                 return "\u{f061} " .. vim.fn.col(".") .. "/" .. (vim.fn.col("$") - 1)
               end,
+              color = { fg = "#1a1b26", bg = "#bb9af7", gui = "bold" },
             },
           },
         },
         inactive_sections = {
           lualine_a = {},
           lualine_b = {},
-          lualine_c = { "filename" },
+          lualine_c = { { "filename", path = 1 } },
           lualine_x = { "location" },
           lualine_y = {},
           lualine_z = {},
         },
-      })
-
-      -- Force instant refresh on mode change
-      vim.api.nvim_create_autocmd("ModeChanged", {
-        callback = function()
-          lualine.refresh()
-        end,
+        extensions = { "neo-tree", "toggleterm", "quickfix", "fugitive", "lazy" },
       })
     end,
   },
@@ -570,21 +592,29 @@ require("lazy").setup({
           },
         })
 
-        -- Force bright colors for bufferline indicators (override any theme defaults)
-        vim.api.nvim_set_hl(0, "BufferLineNumbers", { fg = "#7aa2f7", bold = true })
-        vim.api.nvim_set_hl(0, "BufferLineNumbersVisible", { fg = "#7aa2f7", bold = true })
-        vim.api.nvim_set_hl(0, "BufferLineTruncMarker", { fg = "#7aa2f7", bold = true })
-        vim.api.nvim_set_hl(0, "BufferLineTab", { fg = "#c0caf5", bold = true })
-        vim.api.nvim_set_hl(0, "BufferLineTabClose", { fg = "#7aa2f7", bold = true })
-        vim.api.nvim_set_hl(0, "BufferLineOffsetSeparator", { fg = "#7aa2f7", bold = true })
+        -- Force bright colors for bufferline indicators using theme-aware colors
+        local function get_hl_color(group, attr)
+          local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+          return hl[attr] and string.format("#%06x", hl[attr]) or nil
+        end
+
+        local accent = get_hl_color("Function", "fg") or colors.blue or "#7aa2f7"
+        local fg_color = get_hl_color("Normal", "fg") or colors.fg or "#c0caf5"
+
+        vim.api.nvim_set_hl(0, "BufferLineNumbers", { fg = accent, bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineNumbersVisible", { fg = accent, bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTruncMarker", { fg = accent, bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTab", { fg = fg_color, bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineTabClose", { fg = accent, bold = true })
+        vim.api.nvim_set_hl(0, "BufferLineOffsetSeparator", { fg = accent, bold = true })
       end
 
       -- Initial setup
       vim.defer_fn(setup_bufferline, 100)
 
-      -- Reload on colorscheme change
+      -- Reload on colorscheme change (supports all 43 themes)
       vim.api.nvim_create_autocmd("ColorScheme", {
-        pattern = "tokyonight*",
+        pattern = "*",
         callback = function()
           vim.defer_fn(setup_bufferline, 100)
         end,
