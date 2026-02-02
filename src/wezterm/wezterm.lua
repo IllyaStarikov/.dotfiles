@@ -133,6 +133,9 @@ local function load_theme_safe()
   local home = os.getenv("HOME")
   local theme_path = home .. "/.config/wezterm/theme.lua"
 
+  -- Watch theme file for changes (enables live theme switching via `theme` command)
+  wezterm.add_to_config_reload_watch_list(theme_path)
+
   -- Use pcall to safely load the theme
   local theme_ok, theme_result = pcall(function()
     local f = loadfile(theme_path)
