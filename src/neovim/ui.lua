@@ -287,11 +287,31 @@ end
 -- USER COMMANDS
 -- =============================================================================
 
--- Auto-reload theme when the config file changes
+-- Auto-reload theme when Neovim regains focus (detects external theme changes)
+-- This handles the case where `theme foo` is run in terminal while Neovim is open
+local theme_reload_group = vim.api.nvim_create_augroup("ThemeReload", { clear = true })
+local last_theme = nil
+
+vim.api.nvim_create_autocmd("FocusGained", {
+  group = theme_reload_group,
+  callback = function()
+    local config_file = vim.fn.expand("~/.config/theme/current-theme.sh")
+    if vim.fn.filereadable(config_file) == 1 then
+      local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
+      local current_theme = vim.fn.system(theme_cmd):gsub("%s+$", "")
+      if current_theme ~= "" and current_theme ~= last_theme then
+        last_theme = current_theme
+        M.setup_theme()
+      end
+    end
+  end,
+})
+
+-- Also reload on BufWritePost for editing the file directly
 vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = vim.fn.expand("~/.config/theme/current-theme.sh"),
   callback = M.setup_theme,
-  group = vim.api.nvim_create_augroup("ThemeReload", { clear = true }),
+  group = theme_reload_group,
 })
 
 -- Convenient commands for manual theme management

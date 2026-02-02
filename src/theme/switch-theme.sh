@@ -109,6 +109,36 @@ get_theme_path() {
   echo "$SCRIPT_DIR/$family/$variant"
 }
 
+# Map theme to valid bat syntax theme
+# bat --list-themes shows available themes
+get_bat_theme() {
+  local theme_name="$1"
+  local variant="$2"
+  local family="${theme_name%%_*}"
+
+  case "$family" in
+    catppuccin) echo "Catppuccin ${variant^}" ;; # Capitalize variant
+    dracula) echo "Dracula" ;;
+    github) [[ "$variant" == "light" ]] && echo "GitHub" || echo "Visual Studio Dark+" ;;
+    gruvbox) [[ "$variant" == "light" ]] && echo "gruvbox-light" || echo "gruvbox-dark" ;;
+    monokai) echo "Monokai Extended" ;;
+    nord) echo "Nord" ;;
+    onedarkpro|atomone) echo "OneHalfDark" ;;
+    *) [[ "$variant" == "light" ]] && echo "OneHalfLight" || echo "OneHalfDark" ;;
+  esac
+}
+
+# Map theme to valid delta syntax theme (same as bat)
+get_delta_theme() {
+  get_bat_theme "$1" "$2"
+}
+
+# Get fzf color scheme based on variant
+get_fzf_color() {
+  local variant="$1"
+  [[ "$variant" == "light" ]] && echo "light" || echo "dark"
+}
+
 # Display usage information and available options
 # Provides comprehensive help for theme selection
 # Dynamically generates theme list from JSON configuration
@@ -448,10 +478,15 @@ interactive_picker() {
 # Used with: source <(switch-theme.sh --shell THEME)
 print_shell_exports() {
   local starship_config="$(get_theme_path "$THEME")/starship.toml"
+  local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
+  local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
+  local fzf_color=$(get_fzf_color "$VARIANT")
   cat <<EOF
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
-export BAT_THEME="tokyonight_${VARIANT}"
+export BAT_THEME="$bat_theme"
+export DELTA_SYNTAX_THEME="$delta_theme"
+export FZF_COLOR="$fzf_color"
 export STARSHIP_CONFIG="$starship_config"
 EOF
 }
@@ -782,10 +817,18 @@ check_current_theme() {
 # Other processes can safely read current theme during switches
 save_theme_state() {
   local theme_file_tmp="$CONFIG_DIR/current-theme.sh.tmp.$$"
+  local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
+  local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
+  local fzf_color=$(get_fzf_color "$VARIANT")
+  local starship_config="$(get_theme_path "$THEME")/starship.toml"
   cat >"$theme_file_tmp" <<EOF
 # Current theme configuration
 export MACOS_THEME="$THEME"
 export MACOS_VARIANT="$VARIANT"
+export BAT_THEME="$bat_theme"
+export DELTA_SYNTAX_THEME="$delta_theme"
+export FZF_COLOR="$fzf_color"
+export STARSHIP_CONFIG="$starship_config"
 EOF
   mv -f "$theme_file_tmp" "$CONFIG_DIR/current-theme.sh"
   chmod 644 "$CONFIG_DIR/current-theme.sh"
@@ -809,6 +852,9 @@ update_alacritty_theme() {
   # Prevents partial writes that could break terminal rendering
   mv -f "$temp_file" "$theme_dest"
   chmod 644 "$theme_dest"
+  # Touch file to trigger Alacritty's live-reload watcher
+  # (mv changes inode which some file watchers don't detect)
+  touch "$theme_dest"
 
   # Clean up any leftover temp files (zsh-safe glob)
   setopt localoptions nullglob

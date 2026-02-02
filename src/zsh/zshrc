@@ -116,8 +116,10 @@ export LC_ALL=en_US.UTF-8
 # -i: case-insensitive search (unless pattern has uppercase)
 export LESS='-R -S -M -i'
 
-# FZF configuration
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --color=dark'
+# FZF configuration (color set dynamically based on theme)
+# Source theme early to get FZF_COLOR
+[[ -f "$HOME/.config/theme/current-theme.sh" ]] && source "$HOME/.config/theme/current-theme.sh"
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --color=${FZF_COLOR:-dark}"
 # Use fd if available and not blocked by Santa, otherwise use find
 # Check if fd is actually executable, not just present
 if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then

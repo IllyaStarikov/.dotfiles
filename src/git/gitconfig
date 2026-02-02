@@ -72,6 +72,7 @@
     side-by-side = true   # Default: false
     # Display line numbers in diffs
     line-numbers = true   # Default: false
+    # Syntax theme: automatically uses BAT_THEME env var (set by theme command)
 
 # Performance optimizations for large repositories
 [pack]
