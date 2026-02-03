@@ -324,6 +324,77 @@
         }
       }
     },
+    "nord": {
+      "name": "Nord",
+      "url": "https://github.com/nordtheme/nord",
+      "neovim_plugin": "shaunsingh/nord.nvim",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "nord",
+          "bat_theme": "Nord"
+        }
+      }
+    },
+    "embark": {
+      "name": "Embark",
+      "url": "https://github.com/embark-theme/vim",
+      "neovim_plugin": "embark-theme/vim",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "embark",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
+    "iceberg": {
+      "name": "Iceberg",
+      "url": "https://github.com/cocopon/iceberg.vim",
+      "neovim_plugin": "cocopon/iceberg.vim",
+      "variants": {
+        "dark": {
+          "display_name": "Dark",
+          "mode": "dark",
+          "neovim_colorscheme": "iceberg",
+          "bat_theme": "Nord"
+        },
+        "light": {
+          "display_name": "Light",
+          "mode": "light",
+          "neovim_colorscheme": "iceberg",
+          "bat_theme": "GitHub"
+        }
+      }
+    },
+    "monokaiclassic": {
+      "name": "Monokai Classic",
+      "url": "https://github.com/ku1ik/vim-monokai",
+      "neovim_plugin": "ku1ik/vim-monokai",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "monokai",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
+    "aurora": {
+      "name": "Aurora",
+      "url": "https://github.com/ray-x/aurora",
+      "neovim_plugin": "ray-x/aurora",
+      "variants": {
+        "default": {
+          "display_name": "Default",
+          "mode": "dark",
+          "neovim_colorscheme": "aurora",
+          "bat_theme": "Monokai Extended"
+        }
+      }
+    },
     "atomone": {
       "name": "Atom One",
       "url": "https://github.com/navarasu/onedark.nvim",

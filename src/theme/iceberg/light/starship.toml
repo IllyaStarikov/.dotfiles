@@ -1,0 +1,73 @@
+# Iceberg Light - Starship Configuration (Light)
+# Generated from template - do not edit directly
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vicmd_symbol = "[❮](bold green)"
+
+[directory]
+style = "blue bold"
+read_only = " 🔒"
+
+[git_branch]
+style = "bold purple"
+
+[git_status]
+style = "bold red"
+
+[git_commit]
+style = "bold yellow"
+
+[git_state]
+style = "bold yellow"
+
+[git_metrics]
+added_style = "bold green"
+deleted_style = "bold red"
+
+[cmd_duration]
+style = "yellow bold"
+
+[python]
+style = "yellow bold"
+
+[nodejs]
+style = "green bold"
+
+[rust]
+style = "red bold"
+
+[golang]
+style = "cyan bold"
+
+[docker_context]
+style = "blue bold"
+
+[kubernetes]
+style = "cyan bold"
+
+[username]
+style_user = "green bold"
+style_root = "red bold"
+
+[hostname]
+style = "green dimmed"
+
+[jobs]
+style = "bold blue"
+
+[battery]
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[time]
+style = "yellow"
+
+[status]
+style = "bg:red"

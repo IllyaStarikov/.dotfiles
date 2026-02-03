@@ -1,0 +1,26 @@
+# Aurora theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#282c34'
+foreground = '#a9b1d6'
+
+[colors.normal]
+black = '#1a1926'
+red = '#ff5874'
+green = '#addb67'
+yellow = '#ecc48d'
+blue = '#4c77e4'
+magenta = '#be9af7'
+cyan = '#a1efe4'
+white = '#e7c3fb'
+
+[colors.bright]
+black = '#637077'
+red = '#ff5874'
+green = '#9ec410'
+yellow = '#e7c547'
+blue = '#7aa6da'
+magenta = '#b77ee0'
+cyan = '#54ced6'
+white = '#ececec'

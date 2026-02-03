@@ -1,0 +1,26 @@
+# Embark theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#1e1c31'
+foreground = '#cbe3e7'
+
+[colors.normal]
+black = '#1e1c31'
+red = '#f0719b'
+green = '#a1efd3'
+yellow = '#ffe6b3'
+blue = '#91ddff'
+magenta = '#d4bfff'
+cyan = '#abf8f7'
+white = '#cbe3e7'
+
+[colors.bright]
+black = '#3e3859'
+red = '#f02e6e'
+green = '#2ce592'
+yellow = '#ffb378'
+blue = '#78a8ff'
+magenta = '#a742ea'
+cyan = '#63f2f1'
+white = '#f8f8f2'

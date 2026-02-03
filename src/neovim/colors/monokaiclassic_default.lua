@@ -1,36 +1,36 @@
--- Shades of Purple Default colorscheme for Neovim
+-- Monokai Classic colorscheme for Neovim
 -- Generated from colors.json - do not edit directly
 
 local M = {}
 
 -- Color palette
 M.colors = {
-  bg = "#1e1e3f",
-  fg = "#fafafa",
-  accent = "#fad000",
-  border = "#3d3d5c",
-  surface = "#393956",
-  muted = "#8d8d8d",
-  cursor = "#fafafa",
-  selection = "#6d6d6d",
+  bg = "#272822",
+  fg = "#f8f8f2",
+  accent = "#66d9ef",
+  border = "#64645e",
+  surface = "#3c3d37",
+  muted = "#75715e",
+  cursor = "#f8f8f0",
+  selection = "#49483e",
   -- ANSI colors
-  black = "#6d6d6d",
-  red = "#ff628c",
-  green = "#a5ff90",
-  yellow = "#ffdd00",
-  blue = "#9d8bfe",
-  magenta = "#fad000",
-  cyan = "#80ffea",
-  white = "#ffffff",
+  black = "#272822",
+  red = "#f92672",
+  green = "#a6e22e",
+  yellow = "#e6db74",
+  blue = "#66d9ef",
+  magenta = "#ae81ff",
+  cyan = "#a1efe4",
+  white = "#f8f8f2",
   -- Bright ANSI
-  bright_black = "#8d8d8d",
-  bright_red = "#ff7e9e",
-  bright_green = "#b8ffa6",
-  bright_yellow = "#ffe64d",
-  bright_blue = "#b4a6fe",
-  bright_magenta = "#ffe14d",
-  bright_cyan = "#9affef",
-  bright_white = "#ffffff",
+  bright_black = "#75715e",
+  bright_red = "#f92672",
+  bright_green = "#a6e22e",
+  bright_yellow = "#e6db74",
+  bright_blue = "#66d9ef",
+  bright_magenta = "#ae81ff",
+  bright_cyan = "#a1efe4",
+  bright_white = "#f9f8f5",
 }
 
 function M.setup()
@@ -42,7 +42,7 @@ function M.setup()
     vim.cmd("syntax reset")
   end
 
-  vim.g.colors_name = "shadesofpurple_default"
+  vim.g.colors_name = "monokaiclassic_default"
 
   -- Editor highlights
   local highlights = {
