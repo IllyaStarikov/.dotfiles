@@ -1,0 +1,26 @@
+# Material Deep Ocean theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#0f111a'
+foreground = '#a6accd'
+
+[colors.normal]
+black = '#000000'
+red = '#dc6068'
+green = '#abcf76'
+yellow = '#e6b455'
+blue = '#6e98eb'
+magenta = '#b480d6'
+cyan = '#71c6e7'
+white = '#eeffff'
+
+[colors.bright]
+black = '#464b5d'
+red = '#f07178'
+green = '#c3e88d'
+yellow = '#ffcb6b'
+blue = '#82aaff'
+magenta = '#c792ea'
+cyan = '#89ddff'
+white = '#eeffff'

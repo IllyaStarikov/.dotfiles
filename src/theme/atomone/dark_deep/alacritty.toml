@@ -1,0 +1,26 @@
+# OneDark Deep theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#1a212e'
+foreground = '#93a4c3'
+
+[colors.normal]
+black = '#0c0e15'
+red = '#f65866'
+green = '#8bcd5b'
+yellow = '#efbd5d'
+blue = '#41a7fc'
+magenta = '#c75ae8'
+cyan = '#34bfd0'
+white = '#93a4c3'
+
+[colors.bright]
+black = '#455574'
+red = '#f65866'
+green = '#8bcd5b'
+yellow = '#efbd5d'
+blue = '#41a7fc'
+magenta = '#c75ae8'
+cyan = '#34bfd0'
+white = '#93a4c3'

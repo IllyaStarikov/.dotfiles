@@ -2,25 +2,25 @@
 # Generated from template - do not edit directly
 
 [colors.primary]
-background = '#0f111a'
-foreground = '#8f93a2'
+background = '#25363b'
+foreground = '#b0bec5'
 
 [colors.normal]
-black = '#464b5d'
-red = '#ff5370'
-green = '#c3e88d'
-yellow = '#ffcb6b'
-blue = '#82aaff'
-magenta = '#c792ea'
-cyan = '#89ddff'
-white = '#ffffff'
+black = '#000000'
+red = '#dc6068'
+green = '#abcf76'
+yellow = '#e6b455'
+blue = '#6e98eb'
+magenta = '#b480d6'
+cyan = '#71c6e7'
+white = '#eeffff'
 
 [colors.bright]
-black = '#464b5d'
-red = '#ff5370'
+black = '#546e7a'
+red = '#f07178'
 green = '#c3e88d'
 yellow = '#ffcb6b'
 blue = '#82aaff'
 magenta = '#c792ea'
 cyan = '#89ddff'
-white = '#ffffff'
+white = '#eeffff'

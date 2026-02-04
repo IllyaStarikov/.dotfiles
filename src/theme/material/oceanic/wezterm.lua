@@ -5,71 +5,71 @@ local M = {}
 
 M.colors = {
   -- Basic colors
-  foreground = "#8f93a2",
-  background = "#0f111a",
-  cursor_bg = "#8f93a2",
-  cursor_fg = "#0f111a",
-  cursor_border = "#8f93a2",
-  selection_fg = "#8f93a2",
-  selection_bg = "#464b5d",
+  foreground = "#b0bec5",
+  background = "#25363b",
+  cursor_bg = "#b0bec5",
+  cursor_fg = "#25363b",
+  cursor_border = "#b0bec5",
+  selection_fg = "#b0bec5",
+  selection_bg = "#395b65",
 
   -- ANSI colors
   ansi = {
-    "#464b5d",   -- black
-    "#ff5370",     -- red
-    "#c3e88d",   -- green
-    "#ffcb6b",  -- yellow
-    "#82aaff",    -- blue
-    "#c792ea", -- magenta
-    "#89ddff",    -- cyan
-    "#ffffff",   -- white
+    "#000000",   -- black
+    "#dc6068",     -- red
+    "#abcf76",   -- green
+    "#e6b455",  -- yellow
+    "#6e98eb",    -- blue
+    "#b480d6", -- magenta
+    "#71c6e7",    -- cyan
+    "#eeffff",   -- white
   },
 
   -- Bright ANSI colors
   brights = {
-    "#464b5d",   -- bright black
-    "#ff5370",     -- bright red
+    "#546e7a",   -- bright black
+    "#f07178",     -- bright red
     "#c3e88d",   -- bright green
     "#ffcb6b",  -- bright yellow
     "#82aaff",    -- bright blue
     "#c792ea", -- bright magenta
     "#89ddff",    -- bright cyan
-    "#ffffff",   -- bright white
+    "#eeffff",   -- bright white
   },
 
   -- Tab bar
   tab_bar = {
-    background = "#2b2d35",
+    background = "#314549",
     active_tab = {
-      bg_color = "#0f111a",
-      fg_color = "#82aaff",
+      bg_color = "#25363b",
+      fg_color = "#11bba3",
       intensity = "Bold",
     },
     inactive_tab = {
-      bg_color = "#2b2d35",
-      fg_color = "#464b5d",
+      bg_color = "#314549",
+      fg_color = "#546e7a",
     },
     inactive_tab_hover = {
-      bg_color = "#464b5d",
-      fg_color = "#82aaff",
+      bg_color = "#355058",
+      fg_color = "#11bba3",
       italic = false,
     },
     new_tab = {
-      bg_color = "#2b2d35",
-      fg_color = "#82aaff",
+      bg_color = "#314549",
+      fg_color = "#11bba3",
     },
     new_tab_hover = {
-      bg_color = "#464b5d",
-      fg_color = "#82aaff",
+      bg_color = "#355058",
+      fg_color = "#11bba3",
       italic = false,
     },
   },
 
   -- Scrollbar
-  scrollbar_thumb = "#464b5d",
+  scrollbar_thumb = "#546e7a",
 
   -- Split lines
-  split = "#464b5d",
+  split = "#546e7a",
 }
 
 return M

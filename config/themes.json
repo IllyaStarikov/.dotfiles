@@ -75,6 +75,42 @@
           "mode": "light",
           "neovim_colorscheme": "github_light_high_contrast",
           "bat_theme": "GitHub"
+        },
+        "dark_default": {
+          "display_name": "Dark Default",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark_default",
+          "bat_theme": "GitHub"
+        },
+        "light_default": {
+          "display_name": "Light Default",
+          "mode": "light",
+          "neovim_colorscheme": "github_light_default",
+          "bat_theme": "GitHub"
+        },
+        "dark_colorblind": {
+          "display_name": "Dark Colorblind",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark_colorblind",
+          "bat_theme": "GitHub"
+        },
+        "light_colorblind": {
+          "display_name": "Light Colorblind",
+          "mode": "light",
+          "neovim_colorscheme": "github_light_colorblind",
+          "bat_theme": "GitHub"
+        },
+        "dark_tritanopia": {
+          "display_name": "Dark Tritanopia",
+          "mode": "dark",
+          "neovim_colorscheme": "github_dark_tritanopia",
+          "bat_theme": "GitHub"
+        },
+        "light_tritanopia": {
+          "display_name": "Light Tritanopia",
+          "mode": "light",
+          "neovim_colorscheme": "github_light_tritanopia",
+          "bat_theme": "GitHub"
         }
       }
     },
@@ -160,6 +196,12 @@
           "mode": "dark",
           "neovim_colorscheme": "onelight",
           "bat_theme": "OneHalfLight"
+        },
+        "vaporwave": {
+          "display_name": "Vaporwave",
+          "mode": "dark",
+          "neovim_colorscheme": "vaporwave",
+          "bat_theme": "OneHalfDark"
         }
       }
     },
@@ -168,13 +210,6 @@
       "url": "https://github.com/marko-cerovac/material.nvim",
       "neovim_plugin": "marko-cerovac/material.nvim",
       "variants": {
-        "default": {
-          "display_name": "Default",
-          "mode": "dark",
-          "neovim_colorscheme": "material",
-          "neovim_style": "default",
-          "bat_theme": "Material"
-        },
         "darker": {
           "display_name": "Darker",
           "mode": "dark",
@@ -201,6 +236,13 @@
           "mode": "light",
           "neovim_colorscheme": "material",
           "neovim_style": "lighter",
+          "bat_theme": "Material"
+        },
+        "deep_ocean": {
+          "display_name": "Deep Ocean",
+          "mode": "dark",
+          "neovim_colorscheme": "material",
+          "neovim_style": "deep ocean",
           "bat_theme": "Material"
         }
       }
@@ -441,6 +483,13 @@
           "neovim_colorscheme": "onedark",
           "neovim_style": "light",
           "bat_theme": "OneHalfLight"
+        },
+        "dark_deep": {
+          "display_name": "Dark Deep",
+          "mode": "dark",
+          "neovim_colorscheme": "onedark",
+          "neovim_style": "deep",
+          "bat_theme": "OneHalfDark"
         }
       }
     }

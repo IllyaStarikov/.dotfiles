@@ -1,36 +1,36 @@
--- Material Default colorscheme for Neovim
+-- OneDark Deep colorscheme for Neovim
 -- Generated from colors.json - do not edit directly
 
 local M = {}
 
 -- Color palette
 M.colors = {
-  bg = "#263238",
-  fg = "#eeffff",
-  accent = "#80cbc4",
-  border = "#546e7a",
-  surface = "#404a4f",
-  muted = "#546e7a",
-  cursor = "#eeffff",
-  selection = "#546e7a",
+  bg = "#1a212e",
+  fg = "#93a4c3",
+  accent = "#41a7fc",
+  border = "#455574",
+  surface = "#21283b",
+  muted = "#455574",
+  cursor = "#93a4c3",
+  selection = "#283347",
   -- ANSI colors
-  black = "#546e7a",
-  red = "#ff5370",
-  green = "#c3e88d",
-  yellow = "#ffcb6b",
-  blue = "#82aaff",
-  magenta = "#c792ea",
-  cyan = "#89ddff",
-  white = "#ffffff",
+  black = "#0c0e15",
+  red = "#f65866",
+  green = "#8bcd5b",
+  yellow = "#efbd5d",
+  blue = "#41a7fc",
+  magenta = "#c75ae8",
+  cyan = "#34bfd0",
+  white = "#93a4c3",
   -- Bright ANSI
-  bright_black = "#546e7a",
-  bright_red = "#ff5370",
-  bright_green = "#c3e88d",
-  bright_yellow = "#ffcb6b",
-  bright_blue = "#82aaff",
-  bright_magenta = "#c792ea",
-  bright_cyan = "#89ddff",
-  bright_white = "#ffffff",
+  bright_black = "#455574",
+  bright_red = "#f65866",
+  bright_green = "#8bcd5b",
+  bright_yellow = "#efbd5d",
+  bright_blue = "#41a7fc",
+  bright_magenta = "#c75ae8",
+  bright_cyan = "#34bfd0",
+  bright_white = "#93a4c3",
 }
 
 function M.setup()
@@ -42,7 +42,7 @@ function M.setup()
     vim.cmd("syntax reset")
   end
 
-  vim.g.colors_name = "material_default"
+  vim.g.colors_name = "atomone_dark_deep"
 
   -- Editor highlights
   local highlights = {
@@ -191,7 +191,7 @@ function M.setup()
     Repeat = { fg = c.magenta },
     Label = { fg = c.magenta },
     Operator = { fg = c.fg },
-    Keyword = { fg = c.magenta, italic = true },
+    Keyword = { fg = c.magenta },
     Exception = { fg = c.magenta },
     PreProc = { fg = c.cyan },
     Include = { fg = c.magenta },
@@ -241,7 +241,7 @@ function M.setup()
     ["@function.macro"] = { link = "Macro" },
     ["@function.method"] = { link = "Function" },
     ["@function.method.call"] = { link = "@function.method" },
-    ["@keyword"] = { fg = c.magenta, italic = true },
+    ["@keyword"] = { fg = c.magenta },
     ["@keyword.conditional"] = { link = "Conditional" },
     ["@keyword.coroutine"] = { link = "@keyword" },
     ["@keyword.debug"] = { link = "Debug" },
@@ -250,7 +250,7 @@ function M.setup()
     ["@keyword.exception"] = { link = "Exception" },
     ["@keyword.function"] = { fg = c.magenta },
     ["@keyword.import"] = { link = "Include" },
-    ["@keyword.operator"] = { link = "@operator" },
+    ["@keyword.operator"] = { link = "Statement" },
     ["@keyword.repeat"] = { link = "Repeat" },
     ["@keyword.return"] = { link = "@keyword" },
     ["@keyword.storage"] = { link = "StorageClass" },

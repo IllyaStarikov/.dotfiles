@@ -1,0 +1,26 @@
+# One Dark Pro Vaporwave theme for Alacritty
+# Generated from template - do not edit directly
+
+[colors.primary]
+background = '#222435'
+foreground = '#b4b7cf'
+
+[colors.normal]
+black = '#585b89'
+red = '#e16765'
+green = '#75be78'
+yellow = '#eaa041'
+blue = '#25abe4'
+magenta = '#c678dd'
+cyan = '#46a3af'
+white = '#b4b7cf'
+
+[colors.bright]
+black = '#7679a7'
+red = '#e16765'
+green = '#75be78'
+yellow = '#eae852'
+blue = '#25abe4'
+magenta = '#c678dd'
+cyan = '#46a3af'
+white = '#b4b7cf'
