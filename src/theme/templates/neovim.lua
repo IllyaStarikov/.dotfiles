@@ -190,8 +190,8 @@ function M.setup()
     Conditional = { fg = c.magenta },
     Repeat = { fg = c.magenta },
     Label = { fg = c.magenta },
-    Operator = { fg = c.fg },
-    Keyword = { fg = c.magenta, italic = true },
+    Operator = { fg = c.cyan },
+    Keyword = { fg = c.magenta },
     Exception = { fg = c.magenta },
     PreProc = { fg = c.cyan },
     Include = { fg = c.magenta },
@@ -241,7 +241,7 @@ function M.setup()
     ["@function.macro"] = { link = "Macro" },
     ["@function.method"] = { link = "Function" },
     ["@function.method.call"] = { link = "@function.method" },
-    ["@keyword"] = { fg = c.magenta, italic = true },
+    ["@keyword"] = { fg = c.magenta },
     ["@keyword.conditional"] = { link = "Conditional" },
     ["@keyword.coroutine"] = { link = "@keyword" },
     ["@keyword.debug"] = { link = "Debug" },
@@ -281,10 +281,10 @@ function M.setup()
     ["@none"] = {},
     ["@number"] = { link = "Number" },
     ["@number.float"] = { link = "Float" },
-    ["@operator"] = { fg = c.fg },
+    ["@operator"] = { fg = c.cyan },
     ["@property"] = { fg = c.green },
     ["@punctuation.bracket"] = { fg = c.fg },
-    ["@punctuation.delimiter"] = { fg = c.fg },
+    ["@punctuation.delimiter"] = { fg = c.cyan },
     ["@punctuation.special"] = { fg = c.cyan },
     ["@punctuation.special.markdown"] = { fg = c.yellow },
     ["@string"] = { link = "String" },
@@ -773,7 +773,7 @@ function M.setup()
     BlinkCmpKindKeyword = { fg = c.magenta },
     BlinkCmpKindMethod = { fg = c.blue },
     BlinkCmpKindModule = { fg = c.blue },
-    BlinkCmpKindOperator = { fg = c.fg },
+    BlinkCmpKindOperator = { fg = c.cyan },
     BlinkCmpKindProperty = { fg = c.cyan },
     BlinkCmpKindReference = { fg = c.cyan },
     BlinkCmpKindSnippet = { fg = c.green },
@@ -1072,7 +1072,7 @@ function M.setup()
     NavicIconsEnumMember = { fg = c.cyan },
     NavicIconsStruct = { fg = c.yellow },
     NavicIconsEvent = { fg = c.magenta },
-    NavicIconsOperator = { fg = c.fg },
+    NavicIconsOperator = { fg = c.cyan },
     NavicIconsTypeParameter = { fg = c.yellow },
 
     -- LspKind (completion icons)
@@ -1358,7 +1358,7 @@ function M.setup()
     CmpItemKindConstant = { fg = c.cyan },
     CmpItemKindStruct = { fg = c.yellow },
     CmpItemKindEvent = { fg = c.magenta },
-    CmpItemKindOperator = { fg = c.fg },
+    CmpItemKindOperator = { fg = c.cyan },
     CmpItemKindTypeParameter = { fg = c.yellow },
 
     -- Noice extended
@@ -1455,6 +1455,9 @@ function M.setup()
     VimwikiHeader4 = { fg = c.yellow, bold = true },
     VimwikiHeader5 = { fg = c.cyan, bold = true },
     VimwikiHeader6 = { fg = c.red, bold = true },
+    -- SnipRun virtual text (inline code output)
+    SniprunVirtualTextOk = { fg = c.bg, bg = c.green, bold = true },
+    SniprunVirtualTextErr = { fg = c.bg, bg = c.red, bold = true },
   }
 
   -- Apply highlights

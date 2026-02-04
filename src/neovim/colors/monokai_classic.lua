@@ -190,7 +190,7 @@ function M.setup()
     Conditional = { fg = c.magenta },
     Repeat = { fg = c.magenta },
     Label = { fg = c.magenta },
-    Operator = { fg = c.fg },
+    Operator = { fg = c.cyan },
     Keyword = { fg = c.magenta },
     Exception = { fg = c.magenta },
     PreProc = { fg = c.cyan },
@@ -250,7 +250,7 @@ function M.setup()
     ["@keyword.exception"] = { link = "Exception" },
     ["@keyword.function"] = { fg = c.magenta },
     ["@keyword.import"] = { link = "Include" },
-    ["@keyword.operator"] = { link = "Statement" },
+    ["@keyword.operator"] = { link = "@operator" },
     ["@keyword.repeat"] = { link = "Repeat" },
     ["@keyword.return"] = { link = "@keyword" },
     ["@keyword.storage"] = { link = "StorageClass" },
@@ -281,10 +281,10 @@ function M.setup()
     ["@none"] = {},
     ["@number"] = { link = "Number" },
     ["@number.float"] = { link = "Float" },
-    ["@operator"] = { fg = c.fg },
+    ["@operator"] = { fg = c.cyan },
     ["@property"] = { fg = c.green },
     ["@punctuation.bracket"] = { fg = c.fg },
-    ["@punctuation.delimiter"] = { fg = c.fg },
+    ["@punctuation.delimiter"] = { fg = c.cyan },
     ["@punctuation.special"] = { fg = c.cyan },
     ["@punctuation.special.markdown"] = { fg = c.yellow },
     ["@string"] = { link = "String" },
@@ -773,7 +773,7 @@ function M.setup()
     BlinkCmpKindKeyword = { fg = c.magenta },
     BlinkCmpKindMethod = { fg = c.blue },
     BlinkCmpKindModule = { fg = c.blue },
-    BlinkCmpKindOperator = { fg = c.fg },
+    BlinkCmpKindOperator = { fg = c.cyan },
     BlinkCmpKindProperty = { fg = c.cyan },
     BlinkCmpKindReference = { fg = c.cyan },
     BlinkCmpKindSnippet = { fg = c.green },
@@ -1072,7 +1072,7 @@ function M.setup()
     NavicIconsEnumMember = { fg = c.cyan },
     NavicIconsStruct = { fg = c.yellow },
     NavicIconsEvent = { fg = c.magenta },
-    NavicIconsOperator = { fg = c.fg },
+    NavicIconsOperator = { fg = c.cyan },
     NavicIconsTypeParameter = { fg = c.yellow },
 
     -- LspKind (completion icons)
@@ -1358,7 +1358,7 @@ function M.setup()
     CmpItemKindConstant = { fg = c.cyan },
     CmpItemKindStruct = { fg = c.yellow },
     CmpItemKindEvent = { fg = c.magenta },
-    CmpItemKindOperator = { fg = c.fg },
+    CmpItemKindOperator = { fg = c.cyan },
     CmpItemKindTypeParameter = { fg = c.yellow },
 
     -- Noice extended
@@ -1461,7 +1461,6 @@ function M.setup()
   }
 
   -- Apply highlights
-
   for group, opts in pairs(highlights) do
     vim.api.nvim_set_hl(0, group, opts)
   end
