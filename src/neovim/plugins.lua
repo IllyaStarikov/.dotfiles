@@ -1510,57 +1510,67 @@ require("lazy").setup({
   {
     "michaelb/sniprun",
     build = "sh install.sh",
-    lazy = false, -- Load on startup so binary is ready
+    lazy = false, -- Preload binary for instant first-run
     keys = {
       {
         "<leader>cr",
         function()
-          local sniprun = require("sniprun")
-          if not vim.g.sniprun_initialized then
-            -- First run: call twice since binary may not be ready
-            sniprun.run()
-            vim.defer_fn(function()
-              sniprun.run()
-              vim.g.sniprun_initialized = true
-            end, 150)
-          else
-            sniprun.run()
-          end
+          local pos = vim.api.nvim_win_get_cursor(0)
+          vim.cmd("%SnipRun")
+          vim.api.nvim_win_set_cursor(0, pos)
         end,
-        desc = "Run code",
+        desc = "Run file",
       },
-      {
-        "<leader>cr",
-        function()
-          local sniprun = require("sniprun")
-          if not vim.g.sniprun_initialized then
-            sniprun.run("v")
-            vim.defer_fn(function()
-              sniprun.run("v")
-              vim.g.sniprun_initialized = true
-            end, 150)
-          else
-            sniprun.run("v")
-          end
-        end,
-        mode = "v",
-        desc = "Run selection",
-      },
+      { "<leader>cr", ":SnipRun<cr>", mode = "v", desc = "Run selection" },
+      { "<leader>cl", "<cmd>SnipRun<cr>", desc = "Run line" },
       { "<leader>cc", "<cmd>SnipClose<cr>", desc = "Clear output" },
+      { "<leader>cR", "<cmd>SnipReset<cr>", desc = "Reset runner" },
     },
     config = function(_, opts)
       require("sniprun").setup(opts)
       require("sniprun").start()
+      -- Ensure highlights stand out from code (must survive colorscheme changes)
+      local function set_sniprun_hl()
+        vim.api.nvim_set_hl(
+          0,
+          "SniprunVirtualTextOk",
+          { fg = "#1a1b26", bg = "#9ece6a", bold = true }
+        )
+        vim.api.nvim_set_hl(
+          0,
+          "SniprunVirtualTextErr",
+          { fg = "#1a1b26", bg = "#f7768e", bold = true }
+        )
+        vim.api.nvim_set_hl(0, "SniprunFloatingWinOk", { fg = "#9ece6a", bold = true })
+        vim.api.nvim_set_hl(0, "SniprunFloatingWinErr", { fg = "#f7768e", bold = true })
+      end
+      set_sniprun_hl()
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function()
+          vim.schedule(set_sniprun_hl)
+        end,
+      })
     end,
     opts = {
-      display = { "VirtualText" }, -- Inline output like Jupyter
+      -- VirtualText: inline short results; LongTempFloatingWindow: popup for multiline (tracebacks)
+      display = { "VirtualText", "LongTempFloatingWindow" },
       display_options = {
         virtual_text_timeout = 0, -- Don't auto-hide output
       },
-      show_no_output = { "Classic" }, -- Show message when no output
-      -- Use Python3_fifo for true REPL (state persists between runs)
-      selected_interpreters = { "Python3_fifo" },
-      repl_enable = { "Python3_fifo" },
+      show_no_output = { "Classic" },
+      borders = "rounded",
+      -- Use Python3_original (runs as file, so __name__ == "__main__" works)
+      selected_interpreters = { "Python3_original" },
+      repl_enable = {},
+      interpreter_options = {
+        Python3_original = { error_truncate = "auto" },
+      },
+      snipruncolors = {
+        SniprunVirtualTextOk = { bg = "#9ece6a", fg = "#1a1b26", bold = true },
+        SniprunVirtualTextErr = { bg = "#f7768e", fg = "#1a1b26", bold = true },
+        SniprunFloatingWinOk = { fg = "#9ece6a" },
+        SniprunFloatingWinErr = { fg = "#f7768e" },
+      },
     },
   },
 }, {

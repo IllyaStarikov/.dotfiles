@@ -1455,9 +1455,13 @@ function M.setup()
     VimwikiHeader4 = { fg = c.yellow, bold = true },
     VimwikiHeader5 = { fg = c.cyan, bold = true },
     VimwikiHeader6 = { fg = c.red, bold = true },
+    -- SnipRun virtual text (inline code output)
+    SniprunVirtualTextOk = { fg = c.bg, bg = c.green, bold = true },
+    SniprunVirtualTextErr = { fg = c.bg, bg = c.red, bold = true },
   }
 
   -- Apply highlights
+
   for group, opts in pairs(highlights) do
     vim.api.nvim_set_hl(0, group, opts)
   end
