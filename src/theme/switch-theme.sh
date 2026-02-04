@@ -1132,6 +1132,68 @@ restore_config() {
   fi
 }
 
+# Suggest similar theme names when user input doesn't match exactly
+# Uses substring matching on theme names and aliases
+suggest_themes() {
+  local input="$1"
+  local suggestions=()
+
+  if has_jq && [[ -f "$THEMES_JSON" ]]; then
+    # Get all valid theme names (family_variant format)
+    local all_themes
+    all_themes=$(jq -r '
+      .families | to_entries[] |
+      .key as $family |
+      .value.variants | keys[] |
+      "\($family)_\(.)"
+    ' "$THEMES_JSON" 2>/dev/null)
+
+    # Get all alias keys
+    local all_aliases
+    all_aliases=$(jq -r '.aliases | keys[]' "$THEMES_JSON" 2>/dev/null)
+
+    # Substring match on theme names (case-insensitive)
+    local match
+    while IFS= read -r match; do
+      [[ -n "$match" ]] && suggestions+=("$match")
+    done < <(echo "$all_themes" | grep -i "$input" 2>/dev/null || true)
+
+    # Substring match on aliases (case-insensitive)
+    while IFS= read -r match; do
+      if [[ -n "$match" ]]; then
+        local target
+        target=$(jq -r ".aliases.\"$match\" // empty" "$THEMES_JSON" 2>/dev/null)
+        [[ -n "$target" ]] && suggestions+=("$match -> $target")
+      fi
+    done < <(echo "$all_aliases" | grep -i "$input" 2>/dev/null || true)
+  else
+    # Fallback: scan directories for substring matches
+    setopt localoptions nullglob
+    for family_dir in "$SCRIPT_DIR"/*/; do
+      local family=$(basename "$family_dir")
+      [[ "$family" == "templates" ]] && continue
+      for variant_dir in "$family_dir"/*/; do
+        local variant=$(basename "$variant_dir")
+        local full_name="${family}_${variant}"
+        if [[ "${full_name:l}" == *"${input:l}"* ]]; then
+          suggestions+=("$full_name")
+        fi
+      done
+    done
+  fi
+
+  # Print suggestions (max 5)
+  if (( ${#suggestions[@]} > 0 )); then
+    echo "Did you mean:" >&2
+    local count=0
+    for s in "${suggestions[@]}"; do
+      echo "  $s" >&2
+      count=$((count + 1))
+      if (( count >= 5 )); then break; fi
+    done
+  fi
+}
+
 # Validate theme exists
 validate_theme() {
   local theme_dir="$(get_theme_path "$THEME")"
@@ -1141,7 +1203,7 @@ validate_theme() {
 
   if [[ ! -d "$theme_dir" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
-    echo "Checked for directory: $theme_dir" >&2
+    suggest_themes "$THEME"
     echo "Use '$(basename "$0") --list' to see available themes" >&2
     exit 1
   fi
