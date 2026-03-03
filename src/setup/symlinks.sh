@@ -225,7 +225,10 @@ main() {
   # LaTeX
   create_link "$DOTFILES_DIR/src/language/latexmkrc" "$HOME/.latexmkrc" "LaTeX config"
 
-  # Python configurations
+  # Language configurations
+  create_link "$DOTFILES_DIR/src/language/.clang-format" "$HOME/.clang-format" "C/C++ clang-format"
+  create_link "$DOTFILES_DIR/src/language/clangd_config.yaml" "$HOME/.config/clangd/config.yaml" "Clangd LSP config"
+  create_link "$DOTFILES_DIR/src/language/markdownlint.json" "$HOME/.markdownlint.json" "Markdownlint config"
   create_link "$DOTFILES_DIR/src/language/ruff.toml" "$HOME/.ruff.toml" "Ruff Python formatter/linter"
   create_link "$DOTFILES_DIR/src/language/pyproject.toml" "$HOME/pyproject.toml" "Python project config"
 

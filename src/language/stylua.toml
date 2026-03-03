@@ -9,7 +9,3 @@ indent_width = 2
 
 # Line width
 column_width = 100
-
-# Import sorting: Disabled to preserve logical grouping
-[sort_requires]
-enabled = false

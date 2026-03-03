@@ -7,9 +7,6 @@
 # Maximum line length for code
 line-length = 100
 
-# Target Python version for compatibility checks
-target-version = "py39"
-
 # Code formatting configuration
 [format]
 quote-style = "single"
@@ -28,5 +25,4 @@ select = [
 
 # Import sorting configuration
 [lint.isort]
-force-single-line = false
 combine-as-imports = true

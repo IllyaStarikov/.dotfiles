@@ -16,7 +16,7 @@ test_python_ruff_config() {
 
   # Check for essential Python settings
   assert_file_contains "$ruff_conf" "line-length" "Line length should be configured"
-  assert_file_contains "$ruff_conf" "target-version" "Target Python version should be set"
+  assert_file_contains "$ruff_conf" "select" "Lint rule selection should be configured"
 
   # Verify line length follows style guide (100 chars)
   assert_file_contains "$ruff_conf" "line-length = 100" "Line length should be 100 (style guide)"
@@ -46,6 +46,17 @@ test_cpp_clangd_config() {
   assert_file_contains "$clangd_conf" "CompileFlags" "Compile flags should be configured"
 }
 
+# Test C/C++ clang-format configuration
+test_cpp_clang_format_config() {
+  local clang_fmt="${DOTFILES_DIR}/src/language/.clang-format"
+
+  assert_file_exists "$clang_fmt" "clang-format configuration should exist"
+
+  # Check for essential settings
+  assert_file_contains "$clang_fmt" "BasedOnStyle" "Base style should be configured"
+  assert_file_contains "$clang_fmt" "ColumnLimit: 100" "Column limit should be 100"
+}
+
 # Test LaTeX configuration (latexmkrc)
 test_latex_config() {
   local latex_conf="${DOTFILES_DIR}/src/language/latexmkrc"
@@ -66,6 +77,9 @@ test_markdown_config() {
   if ! python3 -m json.tool <"$md_conf" >/dev/null 2>&1; then
     fail "markdownlint.json is not valid JSON"
   fi
+
+  # Verify line length is 100 (style guide)
+  assert_file_contains "$md_conf" "\"line_length\": 100" "Line length should be 100"
 }
 
 # Test Python project configuration (pyproject.toml)
@@ -95,6 +109,7 @@ test_suite "Language Configurations" \
   test_python_ruff_config \
   test_lua_stylua_config \
   test_cpp_clangd_config \
+  test_cpp_clang_format_config \
   test_latex_config \
   test_markdown_config \
   test_pyproject_config \

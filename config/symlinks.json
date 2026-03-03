@@ -86,6 +86,21 @@
       "description": "LaTeX config"
     },
     {
+      "source": "src/language/.clang-format",
+      "target": "~/.clang-format",
+      "description": "C/C++ clang-format"
+    },
+    {
+      "source": "src/language/clangd_config.yaml",
+      "target": "~/.config/clangd/config.yaml",
+      "description": "Clangd LSP config"
+    },
+    {
+      "source": "src/language/markdownlint.json",
+      "target": "~/.markdownlint.json",
+      "description": "Markdownlint config"
+    },
+    {
       "source": "src/language/ruff.toml",
       "target": "~/.ruff.toml",
       "description": "Ruff Python formatter/linter"

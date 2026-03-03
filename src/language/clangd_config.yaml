@@ -20,10 +20,6 @@ Diagnostics:
     Add: [performance-*, modernize-*]
     Remove: [modernize-use-trailing-return-type] # Conflicts with style guide
 
-Completion:
-  AllScopes: true
-  DetailedLabel: true
-
 InlayHints:
   Enabled: true
   ParameterNames: true
