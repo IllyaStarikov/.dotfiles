@@ -84,24 +84,13 @@ deleted = "✘"
 
 # Git commit - show hash when in detached HEAD state
 [git_commit]
-disabled = false
-only_detached = true
 tag_disabled = false
 format = '[\($hash$tag\)]($style) '
 style = "bold yellow"
-commit_hash_length = 7
 
 # Git state - show rebase/merge/cherry-pick status
 [git_state]
-disabled = false
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
-rebase = "REBASING"
-merge = "MERGING"
-revert = "REVERTING"
-cherry_pick = "CHERRY"
-bisect = "BISECTING"
-am = "AM"
-am_or_rebase = "AM/REBASE"
 style = "bold yellow"
 
 # Git metrics - show added/deleted lines
@@ -180,7 +169,6 @@ style = "blue bold"
 only_with_files = true
 detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
 detect_folders = []
-disabled = false
 
 # Kubernetes - show context with production warning
 [kubernetes]
