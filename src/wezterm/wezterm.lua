@@ -154,13 +154,12 @@ local function load_theme_safe()
 end
 
 local theme = load_theme_safe()
+config.bold_brightens_ansi_colors = true
 if theme and theme.colors then
   config.colors = theme.colors
-  config.bold_brightens_ansi_colors = true
 else
   -- Fallback to built-in theme if custom theme fails
   config.color_scheme = "tokyonight_storm"
-  config.bold_brightens_ansi_colors = true
 end
 
 -- WINDOW CONFIGURATION
@@ -175,8 +174,6 @@ config.window_padding = {
   bottom = 8,
 }
 config.window_close_confirmation = "NeverPrompt"
-config.window_background_opacity = 1.0
-config.macos_window_background_blur = 0
 
 -- Disable native fullscreen to prevent hangs
 config.native_macos_fullscreen_mode = false
@@ -227,14 +224,11 @@ config.front_end = "WebGpu" -- Best performance on modern hardware
 config.webgpu_power_preference = "HighPerformance"
 config.max_fps = 120
 config.animation_fps = 60
-config.enable_wayland = false -- macOS doesn't use Wayland
 
 -- TAB BAR CONFIGURATION
 
-config.enable_tab_bar = true
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
-config.tab_bar_at_bottom = false
 config.show_tab_index_in_tab_bar = true
 config.show_new_tab_button_in_tab_bar = false
 
@@ -363,11 +357,7 @@ config.quick_select_patterns = {
 
 -- MISC SETTINGS
 
-config.automatically_reload_config = true
 config.check_for_updates = false -- Managed by Homebrew
-config.use_ime = true
-config.enable_kitty_keyboard = false
-config.send_composed_key_when_left_alt_is_pressed = false
 config.send_composed_key_when_right_alt_is_pressed = false
 
 return config
