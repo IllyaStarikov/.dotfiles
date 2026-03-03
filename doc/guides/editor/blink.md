@@ -17,7 +17,7 @@ We chose Blink.cmp over nvim-cmp for:
 ### Performance Optimizations
 
 ```lua
--- Located in: lua/config/plugins/completion.lua
+-- Located in: src/neovim/plugins.lua
 {
   performance = {
     -- Faster triggering for immediate feedback
@@ -163,7 +163,7 @@ filetypes = {
 ### Adding Custom Sources
 
 ```lua
--- In lua/config/plugins/completion.lua
+-- In src/neovim/plugins.lua
 sources = {
   providers = {
     -- Add custom source
@@ -193,7 +193,7 @@ window = {
 ## References
 
 - [Official Blink.cmp Documentation](https://cmp.saghen.dev/)
-- [Our full configuration](https://github.com/starikov/.dotfiles/blob/main/src/neovim/config/plugins/completion.lua)
+- [Our full configuration](https://github.com/IllyaStarikov/.dotfiles/blob/main/src/neovim/plugins.lua)
 - [Performance benchmarks](https://github.com/Saghen/blink.cmp#benchmarks)
 
 ---

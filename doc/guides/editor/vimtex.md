@@ -367,7 +367,7 @@ VimTeX works seamlessly with our LaTeX snippets:
 - Type `fig<Tab>` for figure environment
 - Type `eq<Tab>` for equation
 - Type `sec<Tab>` for section
-- See [Snippets Guide](./snippets_guide.md) for full list
+- See [Snippets Guide](./snippets.md) for full list
 
 ## Troubleshooting
 

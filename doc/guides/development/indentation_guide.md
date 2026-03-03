@@ -2,7 +2,7 @@
 
 This dotfiles repository follows industry-standard style guides for all languages.
 
-Official style guide resources are included as a git submodule in `src/styleguide/`.
+Official style guide resources are included as a git submodule in `styleguide/`.
 
 ## Indentation Standards
 
@@ -94,4 +94,4 @@ The style guide submodule includes:
 - **Java**: `javaguide.html`
 - **R**: `Rguide.md`
 
-Access these resources in `src/styleguide/`.
+Access these resources in `styleguide/`.

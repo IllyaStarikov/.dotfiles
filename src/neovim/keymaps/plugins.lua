@@ -60,7 +60,10 @@ end
 -- ============================================================================
 -- AI (<leader>a) - CodeCompanion
 -- ============================================================================
-local ai_config = require("plugins.ai")
+local ok, ai_config = pcall(require, "plugins.ai")
+if not ok then
+  ai_config = {}
+end
 
 -- Chat and interaction
 map("n", "<leader>ac", "<cmd>CodeCompanionChat<cr>", { desc = "AI Chat" })

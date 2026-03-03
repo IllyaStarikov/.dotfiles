@@ -34,15 +34,17 @@ nvim +/pattern  # Search for pattern
 ### Configuration Structure
 
 ```
-~/.config/nvim/
-├── init.lua              # Entry point
-├── lua/
-│   └── config/
-│       ├── options.lua   # Editor settings
-│       ├── keymaps.lua   # Key mappings
-│       ├── plugins.lua   # Plugin specs
-│       ├── lsp.lua       # Language servers
-│       └── ...          # Other modules
+~/.dotfiles/src/neovim/
+├── init.lua              # Entry point with path detection
+├── plugins.lua           # Plugin specifications (80+ plugins)
+├── lsp.lua               # Language server configurations
+├── ui.lua                # UI and theme configuration
+├── autocmds.lua          # Autocommands
+├── commands.lua          # Custom commands
+├── core/                 # Core settings (options, globals)
+├── keymaps/              # Modular key bindings
+├── plugins/              # Plugin specs by category
+├── snippets/             # Language-specific snippets
 └── lazy-lock.json        # Plugin versions
 ```
 
@@ -271,7 +273,7 @@ n/N          # Next/Previous match
 ### Options
 
 ```lua
--- In ~/.config/nvim/lua/config/options.lua
+-- In src/neovim/core/options.lua
 vim.opt.number = true         -- Line numbers
 vim.opt.relativenumber = true -- Relative numbers
 vim.opt.expandtab = true      -- Spaces not tabs
@@ -281,7 +283,7 @@ vim.opt.shiftwidth = 2        -- Indent size
 ### Keymaps
 
 ```lua
--- In ~/.config/nvim/lua/config/keymaps.lua
+-- In src/neovim/keymaps/core.lua
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>q', ':q<CR>')
 ```
@@ -289,7 +291,7 @@ vim.keymap.set('n', '<leader>q', ':q<CR>')
 ### Autocommands
 
 ```lua
--- In ~/.config/nvim/lua/config/autocmds.lua
+-- In src/neovim/autocmds.lua
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "python",
   callback = function()

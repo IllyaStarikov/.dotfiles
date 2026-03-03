@@ -118,7 +118,9 @@ doc/
 ├── guides/         # Deep-dive customization
 │   ├── editor/
 │   ├── terminal/
-│   └── development/
+│   ├── development/
+│   └── tools/
+├── assets/         # Build artifacts and demos
 └── skeleton/       # Documentation templates
 ```
 

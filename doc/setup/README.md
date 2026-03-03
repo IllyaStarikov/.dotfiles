@@ -36,8 +36,7 @@ nvim                # Plugins auto-install
 ### tmux Setup
 
 ```bash
-tmux
-# Press Ctrl-a + I to install plugins
+tmux                    # Start tmux (no plugins needed)
 ```
 
 ### Theme Configuration

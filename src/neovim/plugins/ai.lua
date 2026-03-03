@@ -172,9 +172,6 @@ function M.setup()
 - Focus on best practices and clean code
 - Suggest improvements when you see potential issues]],
     },
-
-    -- Use default prompts and slash commands
-    use_default_prompts = true,
   })
 end
 
@@ -227,6 +224,7 @@ end
 
 -- Helper function to list available models
 function M.list_models()
+  local model_configs = is_macos and mlx_models or ollama_models
   local adapter = vim.g.codecompanion_adapter
   vim.notify(
     "Current: " .. vim.g.codecompanion_model .. " (" .. adapter .. ")",

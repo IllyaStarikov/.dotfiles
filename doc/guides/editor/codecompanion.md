@@ -53,7 +53,7 @@ strategies = {
 ### Our Prompt Library
 
 ```lua
--- Located in: lua/config/plugins/ai.lua
+-- Located in: src/neovim/plugins.lua
 prompts = {
   -- Industry style guide compliance
   ["Style Review"] = {
@@ -298,7 +298,7 @@ end
 
 - [CodeCompanion.nvim Documentation](https://github.com/olimorris/codecompanion.nvim)
 - [Ollama Documentation](https://ollama.ai/docs)
-- [Our AI prompts configuration](https://github.com/starikov/.dotfiles/blob/main/src/neovim/config/plugins/ai.lua)
+- [Our AI prompts configuration](https://github.com/IllyaStarikov/.dotfiles/blob/main/src/neovim/plugins.lua)
 
 ---
 

@@ -109,72 +109,55 @@ Create your own theme variants:
 
 ```bash
 # 1. Create theme directory
-mkdir ~/.dotfiles/src/theme/themes/my_custom_theme
+mkdir ~/.dotfiles/src/theme/my_custom_theme
 
-# 2. Add theme files
-# alacritty.toml - Terminal colors
-# tmux.conf - tmux styling
-# starship.toml - Prompt colors
+# 2. Add theme variant files following existing theme structure
 
-# 3. Use your theme
+# 3. Regenerate configs
+~/.dotfiles/src/theme/regenerate-all.sh
+
+# 4. Use your theme
 theme my_custom_theme
 ```
 
 ## Installation Status
 
-### Check if Running
+### Verify Theme Scripts
 
 ```bash
-# Check LaunchAgent status
-launchctl list | grep theme-watcher
+# Check theme scripts exist
+ls ~/.dotfiles/src/theme/*.sh
 
-# Check process
-ps aux | grep theme-watcher
+# Validate theme configurations
+~/.dotfiles/src/theme/validate-themes.sh
 ```
 
-### Manual Installation
+### Manual Theme Switch
 
 ```bash
-# Install LaunchAgent (auto-start on login)
-cd ~/.dotfiles/src/theme
-./install-auto-theme.sh
+# Run theme switcher directly
+~/.dotfiles/src/theme/switch-theme.sh
 
-# Verify installation
-launchctl list io.starikov.theme-watcher
-```
-
-### Manual Start/Stop
-
-```bash
-# Start theme watcher
-launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
-
-# Stop theme watcher
-launchctl unload ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
+# Or use the theme alias
+theme         # Auto-detect from macOS
+theme day     # Light theme
+theme night   # Dark theme
 ```
 
 ## Troubleshooting
 
 ### Theme Not Switching
 
-**Check watcher status:**
+**Run manually to check for errors:**
 
 ```bash
-launchctl list io.starikov.theme-watcher
-# Should show PID if running
+~/.dotfiles/src/theme/switch-theme.sh auto 2>&1
 ```
 
-**View logs:**
+**Check lockfile (if switching seems stuck):**
 
 ```bash
-tail -f ~/.cache/theme/theme-watcher.log
-```
-
-**Restart watcher:**
-
-```bash
-launchctl unload ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
-launchctl load ~/Library/LaunchAgents/io.starikov.theme-watcher.plist
+ls -la /tmp/theme-switch.lock
 ```
 
 ### Manual Override
@@ -212,9 +195,6 @@ tmux source-file ~/.tmux.conf
 **View detailed logs:**
 
 ```bash
-# Theme watcher logs
-tail -f ~/.cache/theme/theme-watcher.log
-
 # Manual switching logs
 ~/.dotfiles/src/theme/switch-theme.sh auto 2>&1
 ```
@@ -233,7 +213,7 @@ theme  # Reinitialize
 
 **Add support for new applications:**
 
-1. Create theme files in `src/theme/[theme-name]/`
+1. Create theme files in `src/theme/[theme-name]/` and `src/theme/templates/`
 2. Update `switch-theme.sh` to copy your files
 3. Add application restart logic
 
@@ -284,20 +264,15 @@ work_theme() {
 ```
 src/theme/
 ├── switch-theme.sh           # Main theme switching logic
-├── auto-theme-watcher.sh     # Automatic monitoring daemon
-├── install-auto-theme.sh     # LaunchAgent installer
-├── io.starikov.theme-watcher.plist  # LaunchAgent config
+├── generate-theme.sh         # Theme configuration generator
 ├── validate-themes.sh        # Theme validation utility
-└── themes/                   # Theme definitions
-    ├── tokyonight_day/
-    │   ├── alacritty.toml
-    │   ├── tmux.conf
-    │   └── starship.toml
-    ├── tokyonight_night/
-    │   ├── alacritty.toml
-    │   ├── tmux.conf
-    │   └── starship.toml
-    └── [other-themes]/
+├── regenerate-all.sh         # Regenerate all theme configs
+├── templates/                # Theme templates (Alacritty, etc.)
+├── tokyonight/               # TokyoNight theme variants
+├── catppuccin/               # Catppuccin theme variants
+├── dracula/                  # Dracula theme
+├── nord/                     # Nord theme
+└── [other-themes]/           # Additional theme directories
 ```
 
 ## Performance Notes

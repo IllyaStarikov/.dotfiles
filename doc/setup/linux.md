@@ -171,7 +171,7 @@ ls ~/.config/alacritty/theme.toml
 ls ~/.config/tmux/theme.conf
 
 # Run theme switcher manually
-~/.dotfiles/src/theme/switch-theme-universal.sh auto
+~/.dotfiles/src/theme/switch-theme.sh auto
 ```
 
 #### Neovim plugins not installing
@@ -256,6 +256,5 @@ rm -rf ~/.dotfiles
 chsh -s /bin/bash
 
 # Remove installed packages (optional)
-# Review before running - this removes many useful tools!
-cat ~/.dotfiles/doc/setup/packages-to-remove.txt
+# Review installed packages before removing
 ```

@@ -111,16 +111,6 @@ rm -rf ~/.cache/nvim
 
 ### tmux Problems
 
-#### Issue: Plugins not loading
-
-```bash
-# Install TPM manually
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# In tmux
-# Press: Ctrl-a, Shift-I
-```
-
 #### Issue: "server not found" error
 
 ```bash
@@ -286,7 +276,7 @@ mv ~/.dotfiles ~/.dotfiles.backup
 # Fresh installation
 git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./src/setup/mac.sh
+./src/setup/install.sh
 ```
 
 ### Partial Reset
@@ -294,16 +284,16 @@ cd ~/.dotfiles
 ```bash
 # Reset Neovim
 rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
-cd ~/.dotfiles && ./src/setup/aliases.sh
+cd ~/.dotfiles && ./src/setup/symlinks.sh
 
 # Reset tmux
 rm -rf ~/.tmux/plugins
 tmux kill-server
-cd ~/.dotfiles && ./src/setup/aliases.sh
+cd ~/.dotfiles && ./src/setup/symlinks.sh
 
 # Reset shell
 rm ~/.zshrc ~/.oh-my-zsh
-cd ~/.dotfiles && ./src/setup/mac.sh
+cd ~/.dotfiles && ./src/setup/install.sh
 ```
 
 ## Debug Mode

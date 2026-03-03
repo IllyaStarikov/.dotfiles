@@ -8,37 +8,39 @@ This configuration uses a modular Lua architecture designed for maintainability,
 
 ```
 ~/.dotfiles/src/neovim/
-├── init.lua                    # Entry point with path detection
-├── config/                     # Main configuration modules
-│   ├── core/                   # Core settings
-│   │   ├── options.lua         # Vim options
-│   │   ├── globals.lua         # Global variables
-│   │   └── performance.lua     # Performance optimizations
-│   ├── keymaps/                # Key bindings (modular)
-│   │   ├── core.lua            # Essential mappings
-│   │   ├── navigation.lua      # Movement mappings
-│   │   ├── editing.lua         # Text manipulation
-│   │   ├── lsp.lua             # Language server mappings
-│   │   ├── plugins.lua         # Plugin-specific mappings
-│   │   └── debug.lua           # DAP debugging mappings
-│   ├── lsp/                    # Language server configs
-│   │   ├── init.lua            # LSP setup
-│   │   ├── servers.lua         # Server configurations
-│   │   └── handlers.lua        # Custom handlers
-│   ├── plugins/                # Plugin specifications
-│   │   ├── editor.lua          # Editor enhancements
-│   │   ├── ui.lua              # UI plugins
-│   │   ├── coding.lua          # Coding tools
-│   │   └── ...                 # Other plugin groups
-│   ├── ui/                     # UI configuration
-│   │   └── theme.lua           # Theme switching
-│   └── utils/                  # Utility functions
-│       └── helpers.lua         # Common helpers
-├── snippets/                   # Language-specific snippets
-│   ├── lua.lua
-│   ├── python.lua
-│   └── ...
-└── spell/                      # Spell files
+├── init.lua              # Entry point with path detection
+├── plugins.lua           # Plugin specifications (80+ plugins)
+├── lsp.lua               # Language server configurations
+├── ui.lua                # UI and theme configuration
+├── autocmds.lua          # Autocommands
+├── commands.lua          # Custom commands
+├── keymaps.lua           # Keymap loader
+├── telescope.lua         # Telescope configuration
+├── utils.lua             # Utility functions
+├── dap.lua               # Debug Adapter Protocol
+├── gitsigns.lua          # Git integration
+├── menu.lua              # Menu system
+├── health.lua            # Health checks
+├── logging.lua           # Logging utilities
+├── error-handler.lua     # Error handling
+├── fixy.lua              # Formatter integration
+├── work.lua              # Work-specific overrides
+├── work-init.lua         # Work initialization
+├── core/                 # Core settings
+│   ├── options.lua       # Vim options
+│   ├── globals.lua       # Global variables
+│   └── performance.lua   # Performance optimizations
+├── keymaps/              # Key bindings (modular)
+│   ├── core.lua          # Essential mappings
+│   ├── navigation.lua    # Movement mappings
+│   ├── editing.lua       # Text manipulation
+│   ├── lsp.lua           # Language server mappings
+│   ├── plugins.lua       # Plugin-specific mappings
+│   └── debug.lua         # DAP debugging mappings
+├── plugins/              # Plugin specifications (by category)
+├── colors/               # Color scheme utilities
+├── snippets/             # Language-specific snippets
+└── spell/                # Spell files
 ```
 
 ## Module Overview
@@ -120,7 +122,7 @@ Organized by functionality (see [Keybindings Reference](../../usage/keybindings/
 
 ### LSP Configuration
 
-#### `lsp/servers.lua`
+#### `lsp.lua`
 
 Language server configurations:
 
@@ -156,7 +158,7 @@ local servers = {
 
 Uses lazy.nvim for plugin management:
 
-#### `plugins.lua`
+#### `plugins.lua` and `plugins/`
 
 Main plugin specifications (80+ plugins):
 
@@ -239,7 +241,7 @@ Productivity commands:
 
 ### Adding a New Plugin
 
-1. Add to `config/plugins.lua` or category file:
+1. Add to `plugins.lua` or a file in `plugins/`:
 
 ```lua
 {
@@ -257,7 +259,7 @@ Productivity commands:
 
 ### Adding New Keymaps
 
-1. Identify the appropriate file in `config/keymaps/`
+1. Identify the appropriate file in `keymaps/`
 2. Add the mapping:
 
 ```lua
@@ -268,7 +270,7 @@ end, { desc = "Description for which-key" })
 
 ### Adding a New LSP Server
 
-1. Add to `config/lsp/servers.lua`:
+1. Add to `lsp.lua`:
 
 ```lua
 servers.new_server = {

@@ -61,9 +61,9 @@ git show <bad-commit>
 #### JavaScript/TypeScript
 
 ```vim
-" Install DAP (Debug Adapter Protocol)
-:PackerInstall nvim-dap
-:PackerInstall nvim-dap-ui
+" DAP (Debug Adapter Protocol) is managed by lazy.nvim
+:Lazy install nvim-dap
+:Lazy install nvim-dap-ui
 
 " Set breakpoint
 <leader>db  " Toggle breakpoint

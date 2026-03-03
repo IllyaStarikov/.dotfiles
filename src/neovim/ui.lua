@@ -216,11 +216,15 @@ function M.setup_theme()
   local variant = "dark"
 
   if vim.fn.filereadable(config_file) == 1 then
-    local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
-    local variant_cmd = "source " .. config_file .. " && echo $MACOS_VARIANT"
-
-    theme = vim.fn.system(theme_cmd):gsub("\n", "")
-    variant = vim.fn.system(variant_cmd):gsub("\n", "")
+    local lines = vim.fn.readfile(config_file)
+    for _, line in ipairs(lines) do
+      local k, v = line:match("^export%s+(%w+)=['\"]?(.-)['\"]?$")
+      if k == "MACOS_THEME" then
+        theme = v
+      elseif k == "MACOS_VARIANT" then
+        variant = v
+      end
+    end
 
     -- Handle legacy format
     if theme == "light" then
@@ -260,17 +264,9 @@ function M.setup_theme()
 
   -- Apply syntax highlighting optimizations
   vim.schedule(function()
-    local current_bg = vim.o.background
+    M.apply_comment_highlights()
 
-    if current_bg == "dark" then
-      vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
-      vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
-    else
-      vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
-      vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
-    end
-
-    if current_bg == "light" then
+    if vim.o.background == "light" then
       vim.cmd("highlight String guifg=#032F62 ctermfg=28")
       vim.cmd("highlight Number guifg=#0451A5 ctermfg=26")
       vim.cmd("highlight Constant guifg=#0451A5 ctermfg=26")
@@ -279,6 +275,17 @@ function M.setup_theme()
       vim.cmd("highlight Special guifg=#FF6600 ctermfg=202")
     end
   end)
+end
+
+--- Apply comment highlight colors based on current background
+function M.apply_comment_highlights()
+  if vim.o.background == "dark" then
+    vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
+  else
+    vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
+    vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
+  end
 end
 
 -- =============================================================================
@@ -295,9 +302,16 @@ vim.api.nvim_create_autocmd("FocusGained", {
   callback = function()
     local config_file = vim.fn.expand("~/.config/theme/current-theme.sh")
     if vim.fn.filereadable(config_file) == 1 then
-      local theme_cmd = "source " .. config_file .. " && echo $MACOS_THEME"
-      local current_theme = vim.fn.system(theme_cmd):gsub("%s+$", "")
-      if current_theme ~= "" and current_theme ~= last_theme then
+      local current_theme = nil
+      local lines = vim.fn.readfile(config_file)
+      for _, line in ipairs(lines) do
+        local k, v = line:match("^export%s+(%w+)=['\"]?(.-)['\"]?$")
+        if k == "MACOS_THEME" then
+          current_theme = v
+          break
+        end
+      end
+      if current_theme and current_theme ~= "" and current_theme ~= last_theme then
         last_theme = current_theme
         M.setup_theme()
       end
@@ -317,17 +331,7 @@ vim.api.nvim_create_user_command("ReloadTheme", M.setup_theme, {
   desc = "Reload the current theme and adjust colors",
 })
 
-vim.api.nvim_create_user_command("FixComments", function()
-  local current_bg = vim.o.background
-
-  if current_bg == "dark" then
-    vim.cmd("highlight Comment guifg=#6272A4 ctermfg=61 cterm=italic gui=italic")
-    vim.cmd("highlight CommentDoc guifg=#7289DA ctermfg=68 cterm=italic gui=italic")
-  else
-    vim.cmd("highlight Comment guifg=#5C6370 ctermfg=59 cterm=italic gui=italic")
-    vim.cmd("highlight CommentDoc guifg=#4078C0 ctermfg=32 cterm=italic gui=italic")
-  end
-end, {
+vim.api.nvim_create_user_command("FixComments", M.apply_comment_highlights, {
   desc = "Fix comment colors for current background",
 })
 

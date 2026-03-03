@@ -82,7 +82,7 @@ def function_name(args):
 ### Type Hints & Annotations
 
 | Trigger | Description | Example |
-|---------|-------------|---------||
+|---------|-------------|---------|
 | `-> None` | Return type none | Auto-suggested in functions |
 | `-> int` | Return type int | Choose with `Ctrl+n/p` |
 | `-> str` | Return type string | Available in choice nodes |
@@ -107,7 +107,7 @@ def function_name(args):
 ### Array Methods
 
 | Trigger | Description | Example |
-|---------|-------------|---------||
+|---------|-------------|---------|
 | `map` | Array map | `.map((item) => {})` |
 | `filter` | Array filter | `.filter((item) => {})` |
 | `reduce` | Array reduce | `.reduce((acc, item) => {}, initial)` |
@@ -291,7 +291,7 @@ def function_name(args):
 ### Modern Java
 
 | Trigger | Description | Version |
-|---------|-------------|---------||
+|---------|-------------|---------|
 | `record` | Record class | Java 14+ |
 | `var` | Local variable | Type inference |
 | `stream` | Stream operation | Functional style |
@@ -323,7 +323,7 @@ def function_name(args):
 ### Control Flow
 
 | Trigger | Description | Example |
-|---------|-------------|---------||
+|---------|-------------|---------|
 | `if` | If statement | `if [[ condition ]]; then` |
 | `elif` | Else if | `elif [[ condition ]]; then` |
 | `for` | For loop | `for item in list; do` |
@@ -497,7 +497,7 @@ s("trigger", {
 ### Snippet Components
 
 | Component | Function | Example |
-|-----------|----------|---------||
+|-----------|----------|---------|
 | `t()` | Static text | `t("hello")` |
 | `i()` | Insert node | `i(1, "default")` |
 | `c()` | Choice node | `c(1, {t("opt1"), t("opt2")})` |

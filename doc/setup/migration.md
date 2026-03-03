@@ -182,7 +182,7 @@ node --inspect-brk app.js
 ### Startup Speed
 
 Our setup prioritizes fast startup:
-Neovim: <50ms
+Neovim: ~150ms
 Shell: <200ms
 tmux: instant
 

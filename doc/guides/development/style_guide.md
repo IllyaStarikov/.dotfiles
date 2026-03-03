@@ -10,14 +10,14 @@ All settings are automatically applied when opening files of the corresponding t
 
 | Language                  | Style Guide       | Column Limit | Notes                                      |
 | ------------------------- | ----------------- | ------------ | ------------------------------------------ |
-| **C/C++**                 | Industry standard | 80           | Includes `.c`, `.cpp`, `.cc`, `.h`, `.hpp` |
-| **Shell/Bash**            | Industry standard | 80           | Includes `sh`, `bash`, `zsh`, `fish`       |
-| **JavaScript/TypeScript** | Industry standard | 80           | Includes JSX/TSX, JSON                     |
-| **HTML/CSS**              | Industry standard | 80           | Includes SCSS, SASS, LESS                  |
+| **C/C++**                 | Industry standard | 100          | Includes `.c`, `.cpp`, `.cc`, `.h`, `.hpp` |
+| **Shell/Bash**            | Industry standard | 100          | Includes `sh`, `bash`, `zsh`, `fish`       |
+| **JavaScript/TypeScript** | Industry standard | 100          | Includes JSX/TSX, JSON                     |
+| **HTML/CSS**              | Industry standard | 100          | Includes SCSS, SASS, LESS                  |
 | **Swift**                 | Industry standard | 100          | Common convention                          |
-| **Lua**                   | Industry standard | 80           | Common convention                          |
-| **LaTeX**                 | Industry standard | 80           | With word wrap enabled                     |
-| **Ruby**                  | Industry standard | 80           | Rails convention                           |
+| **Lua**                   | Industry standard | 100          | Common convention                          |
+| **LaTeX**                 | Industry standard | 100          | With word wrap enabled                     |
+| **Ruby**                  | Industry standard | 100          | Rails convention                           |
 | **YAML/TOML**             | Industry standard | -            | Configuration files                        |
 | **Markdown**              | Industry standard | 100          | With word wrap enabled                     |
 
@@ -25,7 +25,7 @@ All settings are automatically applied when opening files of the corresponding t
 
 | Language   | Style Guide                                                   | Column Limit | Notes               |
 | ---------- | ------------------------------------------------------------- | ------------ | ------------------- |
-| **Python** | PEP 8 standard                                                | 80           | Industry convention |
+| **Python** | PEP 8 standard                                                | 100          | Industry convention |
 | **Rust**   | [Official Rust Style](https://doc.rust-lang.org/1.0.0/style/) | 100          | rustfmt default     |
 
 ### Languages with Tab Indentation
@@ -69,7 +69,7 @@ To check current settings:
 
 ## Format Command
 
-Use the `:Format` command or the `format` shell script to automatically format files according to these standards.
+Use the `:Format` command or the `fixy` shell script to automatically format files according to these standards.
 
 ## Python Linting
 
@@ -85,4 +85,4 @@ Run pylint using the Google style guide:
 pylint --rcfile=~/.dotfiles/styleguide/pylintrc myfile.py
 ```
 
-The format script will automatically run pylint if it's installed.
+The fixy script will automatically run pylint if it's installed.

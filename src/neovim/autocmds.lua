@@ -653,8 +653,8 @@ autocmd({ "FileChangedShell" }, {
   desc = "Auto reload unmodified files",
 })
 
--- More aggressive checking for terminal users
-if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM then
+-- More aggressive checking for Alacritty terminal users
+if vim.env.TERM_PROGRAM == "Alacritty" then
   -- Check more frequently in terminal
   vim.opt.updatetime = 1000 -- Trigger CursorHold after 1 second
 
@@ -670,6 +670,14 @@ if vim.env.TERM_PROGRAM == "Alacritty" or vim.env.TERM then
       end
     end)
   )
+
+  -- Clean up timer when Neovim exits
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+      timer:stop()
+      timer:close()
+    end,
+  })
 elseif vim.env.TERM_PROGRAM == "WezTerm" then
   -- WezTerm-specific settings to prevent hangs
   vim.opt.updatetime = 4000 -- Much less aggressive for WezTerm
@@ -683,22 +691,27 @@ end
 -- Configure LSP highlight groups for better visibility
 local lsp_highlight_group = augroup("LspDocumentHighlight", { clear = true })
 
-autocmd("ColorScheme", {
-  group = lsp_highlight_group,
-  pattern = "*",
-  callback = function()
-    -- Make LSP references more visible with a subtle background highlight
+local function apply_lsp_highlights()
+  if vim.o.background == "dark" then
     vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
     vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
     vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
-  end,
+  else
+    vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#e8e8e8", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#e8e8e8", underline = false })
+    vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#e0d8d8", underline = false })
+  end
+end
+
+autocmd("ColorScheme", {
+  group = lsp_highlight_group,
+  pattern = "*",
+  callback = apply_lsp_highlights,
   desc = "Set LSP reference highlight colors",
 })
 
 -- Apply highlight groups immediately
-vim.api.nvim_set_hl(0, "LspReferenceText", { bg = "#3b3b3b", underline = false })
-vim.api.nvim_set_hl(0, "LspReferenceRead", { bg = "#3b3b3b", underline = false })
-vim.api.nvim_set_hl(0, "LspReferenceWrite", { bg = "#4b3b3b", underline = false })
+apply_lsp_highlights()
 
 -- =============================================================================
 -- VISUAL SELECTION HIGHLIGHT
@@ -710,9 +723,13 @@ autocmd("ColorScheme", {
   group = visual_highlight_group,
   pattern = "*",
   callback = function()
-    -- Bright yellow background - maximum contrast with gray comments
-    vim.api.nvim_set_hl(0, "Visual", { bg = "#3a3a00", fg = "#ffff00" })
-    vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#3a3a00", fg = "#ffff00" })
+    if vim.o.background == "dark" then
+      vim.api.nvim_set_hl(0, "Visual", { bg = "#3a3a00", fg = "#ffff00" })
+      vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#3a3a00", fg = "#ffff00" })
+    else
+      vim.api.nvim_set_hl(0, "Visual", { bg = "#d6d6ff", fg = "#000080" })
+      vim.api.nvim_set_hl(0, "VisualNOS", { bg = "#d6d6ff", fg = "#000080" })
+    end
   end,
   desc = "Set Visual selection highlight for better visibility",
 })

@@ -158,29 +158,6 @@ Mouse is enabled with these features:
 | Scroll           | Scroll in copy mode         |
 | Select text      | Automatic copy mode         |
 
-## Plugin Commands
-
-### tmux-resurrect
-
-| Key       | Action          | Description          |
-| --------- | --------------- | -------------------- |
-| `C-a C-s` | Save session    | Save layout/programs |
-| `C-a C-r` | Restore session | Restore saved state  |
-
-### tmux-yank
-
-| Key | Action            | Description           |
-| --- | ----------------- | --------------------- |
-| `y` | Copy to clipboard | In copy mode          |
-| `Y` | Copy line         | Put line in clipboard |
-
-### tmux-open
-
-| Key   | Action         | Description   |
-| ----- | -------------- | ------------- |
-| `o`   | Open selection | Open URL/file |
-| `C-o` | Open in editor | Edit file     |
-
 ## Custom Workflows
 
 ### Quick Split and Navigate
@@ -225,12 +202,11 @@ Cmd+V          # System paste
 ### Session Management
 
 ```bash
-# Save work session
-C-a C-s        # tmux-resurrect save
+# Detach work session
+C-a d          # Detach from session
 
-# Next day
-tmux
-C-a C-r        # tmux-resurrect restore
+# Next day, reattach
+tmux a         # Reattach to session
 ```
 
 ## Tips and Tricks

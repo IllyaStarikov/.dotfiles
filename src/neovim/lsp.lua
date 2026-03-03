@@ -147,8 +147,7 @@ local function setup_lsp()
     })
   end
 
-  -- 2. LSP server configurations
-  -- lspconfig already required above
+  -- 2. LSP server configurations (using native vim.lsp.config API)
 
   -- Configure diagnostics with virtual text (inline error messages)
   -- Only configure once to prevent duplicates
@@ -603,25 +602,8 @@ local function setup_lsp()
     vim.lsp.enable(servers_to_enable)
   end
 
-  -- For clangd, we need to manually start it to avoid duplicates
-  -- Only register this if we're not on a work machine (work machines handle their own LSP)
-  if not vim.g.work_lsp_override then
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-      callback = function()
-        -- Check if clangd is already running for this buffer
-        local clients = vim.lsp.get_clients({ bufnr = 0, name = "clangd" })
-        if #clients == 0 then
-          -- No clangd running, start it
-          vim.cmd("LspStart clangd")
-        end
-      end,
-      desc = "Manually start clangd to prevent duplicates",
-    })
-  end
-
-  -- Note: We're manually configuring servers above, so we don't need
-  -- mason-lspconfig handlers which could cause duplicate setup
+  -- Note: vim.lsp.enable() handles server startup automatically.
+  -- No manual FileType autocmd needed for clangd — it would cause duplicates.
 end
 
 -- Export module

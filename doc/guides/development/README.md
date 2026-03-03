@@ -8,9 +8,9 @@ This section contains guides for maintaining consistent code quality and style a
 
 ## Available Guides
 
-### [Format Script Guide](format_guide.md)
+### Fixy — Universal Code Formatter
 
-Universal code formatter that combines:
+The `fixy` script (documented in [tools/README.md](../tools/README.md)) combines:
 
 - File operations (trailing whitespace, tabs)
 - Language-specific formatters
@@ -72,14 +72,14 @@ main() {
 These standards are enforced through:
 
 1. **Editor Configuration** - `src/editorconfig` and language servers
-2. **Formatters** - Automated via `format` script
+2. **Formatters** - Automated via `fixy` script
 3. **Linters** - Pre-commit hooks and CI checks
 4. **Code Review** - Manual verification
 
 ## Resources
 
 - Industry-standard style guides
-- Local copy: `src/styleguide/` (git submodule)
+- Local copy: `styleguide/` (git submodule)
 
 ---
 

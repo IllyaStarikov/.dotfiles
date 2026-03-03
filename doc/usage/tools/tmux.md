@@ -142,8 +142,7 @@ Changed from default `C-b` for ergonomics.
 ```bash
 ~/.tmux.conf              # Main config
 ~/.config/tmux/           # Additional configs
-  ├── theme.conf         # Dynamic theme
-  └── plugins/           # TPM plugins
+  └── theme.conf         # Dynamic theme
 ```
 
 ### Key Settings
@@ -165,28 +164,6 @@ set -g base-index 1
 set -sg escape-time 0
 ```
 
-## Plugins (TPM)
-
-### Installation
-
-```bash
-# Clone TPM
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# In tmux, install plugins
-C-a I
-```
-
-### Key Plugins
-
-| Plugin             | Purpose         | Keys             |
-| ------------------ | --------------- | ---------------- |
-| tmux-sensible      | Better defaults | Auto             |
-| tmux-resurrect     | Save/restore    | `C-a C-s/C-r`    |
-| tmux-continuum     | Auto-save       | Auto             |
-| tmux-yank          | Better copy     | `y` in copy mode |
-| vim-tmux-navigator | Vim integration | `C-h/j/k/l`      |
-
 ## Workflows
 
 ### Development Setup
@@ -205,17 +182,6 @@ C-a c        # New window
 C-a ,        # Rename to "server"
 C-a c        # New window
 C-a ,        # Rename to "logs"
-```
-
-### Session Persistence
-
-```bash
-# Save session manually
-C-a C-s      # tmux-resurrect save
-
-# Restore after reboot
-tmux
-C-a C-r      # tmux-resurrect restore
 ```
 
 ### Remote Work
@@ -316,7 +282,7 @@ lazygit            # Run lazygit
 
 1. **Named sessions**: Always use descriptive names
 2. **Window names**: Name by purpose (editor, server, logs)
-3. **Save layouts**: Use resurrect for complex setups
+3. **Save layouts**: Use tmuxinator for complex setups
 4. **tmuxinator**: Define project layouts
 
 ### Display
@@ -366,10 +332,6 @@ tmux source ~/.tmux.conf
 # Simple
 set -g status-left '#S '
 set -g status-right '%H:%M '
-
-# With plugins
-set -g @plugin 'tmux-plugins/tmux-cpu'
-set -g status-right 'CPU: #{cpu_percentage} | %H:%M '
 ```
 
 ## Quick Reference Card
@@ -387,8 +349,7 @@ C-a o      Cycle panes    C-a w     Window list
 C-a ;      Last pane      C-a s     Session list
 
 # Advanced
-C-a C-s    Save session   C-a :     Command
-C-a C-r    Restore        C-a ?     List keys
+C-a :      Command        C-a ?     List keys
 ```
 
 ---

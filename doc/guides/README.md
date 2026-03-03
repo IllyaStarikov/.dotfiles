@@ -32,13 +32,12 @@ Shell and terminal customizations:
 
 - **[Zinit Setup](terminal/zinit-setup.md)** - Modern plugin manager replacing Oh My Zsh
 - **[Theme System](terminal/theme-system.md)** - Automatic light/dark mode synchronization
-- **[Terminal Guide](README.md)** - Alacritty configuration
 
 ### [Development Standards](development/)
 
 Code quality and consistency:
 
-- **[Format Script](development/format_guide.md)** - Universal code formatter
+- **[Fixy Formatter](tools/README.md#universal-code-formatter-fixy)** - Universal code formatter
 - **[Indentation Guide](development/indentation_guide.md)** - Industry standard compliance
 - **[Style Guide](development/style_guide.md)** - Comprehensive coding standards
 

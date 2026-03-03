@@ -112,7 +112,7 @@ alias gwip="git add -A && git commit -m 'WIP: work in progress'"
 
 # Modern search tools with fallbacks
 # Use fd if available and executable, otherwise use find
-if command -v fd &>/dev/null && fd --version &>/dev/null 2>&1; then
+if command -v fd &>/dev/null && fd --version &>/dev/null; then
   alias find-file="fd"
 else
   alias find-file="find . -type f -name"
@@ -158,7 +158,6 @@ command -v bat &>/dev/null && alias cat='bat'
 
 # Colorful and enhanced utilities
 command -v colordiff &>/dev/null && alias diff="colordiff"
-alias less="less -R"
 alias c="bat --style=header,grid,numbers"
 alias preview="bat --style=header,grid,numbers --color=always"
 
@@ -320,7 +319,7 @@ emptytrash() {
     echo "Operation cancelled."
   fi
 }
-alias reset="source ~/.zshrc && clear"
+alias zreset="source ~/.zshrc && clear"
 alias reload="source ~/.zshrc"
 
 # System maintenance

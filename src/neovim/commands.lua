@@ -140,11 +140,8 @@ end, { desc = "Show diff with saved file" })
 
 -- Profile startup time
 api.nvim_create_user_command("StartupTime", function()
-  local start_time = fn.reltime()
-  vim.cmd("runtime! plugin/**/*.vim")
-  local elapsed = fn.reltimefloat(fn.reltime(start_time))
-  print(string.format("Startup time: %.3f ms", elapsed * 1000))
-end, { desc = "Measure startup time" })
+  vim.notify("Use :Lazy profile for accurate startup timing", vim.log.levels.INFO)
+end, { desc = "Show startup profiling instructions" })
 
 -- =============================================================================
 -- WORKSPACE UTILITIES
@@ -566,9 +563,18 @@ vim.api.nvim_create_autocmd("User", {
 
 -- Reload neovim configuration
 api.nvim_create_user_command("ReloadConfig", function()
-  -- Clear cached config modules
+  -- Clear cached config modules (matches actual module prefixes used in this config)
   for name, _ in pairs(package.loaded) do
-    if name:match("^config%.") then
+    if
+      name:match("^core%.")
+      or name:match("^plugins%.")
+      or name:match("^keymaps%.")
+      or name == "ui"
+      or name == "lsp"
+      or name == "autocmds"
+      or name == "commands"
+      or name == "utils"
+    then
       package.loaded[name] = nil
     end
   end
