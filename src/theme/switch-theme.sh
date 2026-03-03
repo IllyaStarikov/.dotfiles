@@ -59,23 +59,9 @@ verbose() {
   [[ $VERBOSE -eq 1 ]] && echo "  → $1"
   return 0
 }
-if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
-  # Running in bash compatibility mode
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using BASH_SOURCE, SCRIPT_DIR=$SCRIPT_DIR" >&2
-elif [[ -n "${(%):-%x}" ]] && [[ "${(%):-%x}" != "-zsh" ]]; then
-  # Zsh with %x prompt expansion (works when sourced)
-  SCRIPT_DIR="$(cd "$(dirname "${(%):-%x}")" && pwd)"
-  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using zsh %x, SCRIPT_DIR=$SCRIPT_DIR" >&2
-elif [[ -n "${0}" ]] && [[ "${0}" != "-zsh" ]] && [[ "${0}" != "zsh" ]]; then
-  # Standard $0 approach (works for direct execution)
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using \$0, SCRIPT_DIR=$SCRIPT_DIR" >&2
-else
-  # Ultimate fallback: assume we're in ~/.dotfiles structure
-  SCRIPT_DIR="$HOME/.dotfiles/src/theme"
-  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Using fallback, SCRIPT_DIR=$SCRIPT_DIR" >&2
-fi
+# Shebang is #!/usr/bin/env zsh, so ${0:A:h} always works
+SCRIPT_DIR="${0:A:h}"
+[[ $DEBUG -eq 1 ]] && echo "DEBUG: SCRIPT_DIR=$SCRIPT_DIR" >&2
 
 # JSON theme configuration file
 THEMES_JSON="${SCRIPT_DIR}/../../config/themes.json"
@@ -555,15 +541,17 @@ set_terminal_colors() {
   done
 }
 
+# Process --verbose flag before main argument handling
+if [[ "${1:-}" == "-v" || "${1:-}" == "--verbose" ]]; then
+  VERBOSE=1
+  shift
+fi
+
 # Check for help, list, pick, or auto options
 case "${1:-}" in
   -h | --help | help)
     show_usage
     exit 0
-    ;;
-  -v | --verbose)
-    VERBOSE=1
-    shift
     ;;
   -l | --list)
     # Support: --list or --list <family>
@@ -993,17 +981,17 @@ atomic_update() {
 # Update other application themes
 update_app_themes() {
   local theme_dir="$(get_theme_path "$THEME")"
-  local success=0
+  local failed=0
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
 
   # Update Alacritty
   if [[ -f "$theme_dir/alacritty.toml" ]]; then
-    update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || success=1
+    update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || failed=1
   fi
 
   # Update WezTerm (generates complete ~/.wezterm.lua with colors inlined)
-  update_wezterm_theme || success=1
+  update_wezterm_theme || failed=1
 
   # Update Kitty
   if [[ -f "$theme_dir/kitty.conf" ]]; then
@@ -1015,7 +1003,7 @@ update_app_themes() {
       fi
     else
       log "Failed to update Kitty theme" "ERROR"
-      success=1
+      failed=1
     fi
   fi
 
@@ -1025,7 +1013,7 @@ update_app_themes() {
       log "Updated tmux theme"
     else
       log "Failed to update tmux theme" "ERROR"
-      success=1
+      failed=1
     fi
   fi
 
@@ -1035,57 +1023,37 @@ update_app_themes() {
       log "Updated Starship theme"
     else
       log "Failed to update Starship theme" "ERROR"
-      success=1
+      failed=1
     fi
   fi
 
-  return $success
+  return $failed
 }
 
 # Reload tmux configuration for ALL sessions
 reload_tmux() {
-  if command -v tmux &>/dev/null; then
-    # Check if tmux server is running
-    if ! tmux info &>/dev/null; then
-      log "No tmux server running"
-      [[ $DEBUG -eq 1 ]] && echo "DEBUG: No tmux server found" >&2
-      return 0
-    fi
-
-    [[ $DEBUG -eq 1 ]] && echo "DEBUG: Reloading tmux configuration" >&2
-
-    # Source the config file first
-    if [[ -n "${TMUX:-}" ]]; then
-      # We're inside tmux - reload directly
-      tmux source-file ~/.tmux.conf 2>/dev/null || true
-      log "Reloaded tmux configuration from inside tmux"
-    else
-      # We're outside tmux - send command to server
-      tmux source-file ~/.tmux.conf 2>/dev/null || true
-      log "Reloaded tmux configuration from outside tmux"
-    fi
-
-    # Explicitly source theme.conf directly (tmux if-shell runs async, so we can't rely on it)
-    if [[ -f "$TMUX_DIR/theme.conf" ]]; then
-      tmux source-file "$TMUX_DIR/theme.conf" 2>/dev/null || true
-      log "Sourced theme.conf directly"
-    fi
-
-    # Get list of all tmux sessions and refresh each client
-    local tmux_sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
-    if [[ -n "$tmux_sessions" ]]; then
-      while IFS= read -r session; do
-        # Refresh all clients attached to this session
-        local clients=$(tmux list-clients -t "$session" -F '#{client_name}' 2>/dev/null || true)
-        if [[ -n "$clients" ]]; then
-          while IFS= read -r client; do
-            tmux refresh-client -t "$client" -S 2>/dev/null || true
-          done <<<"$clients"
-        fi
-      done <<<"$tmux_sessions"
-      log "Refreshed all tmux clients"
-    fi
+  if ! command -v tmux &>/dev/null; then
+    return 0
   fi
+
+  # Check if tmux server is running
+  if ! tmux info &>/dev/null; then
+    log "No tmux server running"
+    [[ $DEBUG -eq 1 ]] && echo "DEBUG: No tmux server found" >&2
+    return 0
+  fi
+
+  [[ $DEBUG -eq 1 ]] && echo "DEBUG: Reloading tmux configuration" >&2
+
+  # Source theme.conf directly (tmux.conf already sources it, but if-shell is async)
+  if [[ -f "$TMUX_DIR/theme.conf" ]]; then
+    tmux source-file "$TMUX_DIR/theme.conf" 2>/dev/null || true
+    log "Sourced theme.conf"
+  fi
+
+  # Refresh all clients to apply the new theme visually
+  tmux refresh-client -S 2>/dev/null || true
+  log "Refreshed tmux clients"
 }
 
 # Backup current configuration
@@ -1284,15 +1252,17 @@ if [[ "${1:-}" == "--local" ]]; then
     if [[ ! -f "$theme_file" ]]; then
       return 1
     fi
-    # Strip -g flag to make settings session-local instead of global
-    # Also strip setw -g to set -w (window option for current session)
-    sed -e 's/^set -g /set /g' -e 's/^setw -g /setw /g' "$theme_file" | \
-      while IFS= read -r line; do
-        # Skip comments and empty lines
-        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
-        eval "tmux $line" 2>/dev/null || true
-      done
-    tmux refresh-client -S 2>/dev/null || true
+    # Strip -g flag to make settings session-local, remove comments/empty lines
+    local tmp_file
+    tmp_file=$(mktemp)
+    {
+      sed -e 's/^set -g /set /g' -e 's/^setw -g /setw /g' \
+          -e '/^#/d' -e '/^$/d' "$theme_file" > "$tmp_file"
+      tmux source-file "$tmp_file" 2>/dev/null || true
+      tmux refresh-client -S 2>/dev/null || true
+    } always {
+      rm -f "$tmp_file"
+    }
   }
 
   case "$_local_component" in

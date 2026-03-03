@@ -5,15 +5,11 @@
 
 set -euo pipefail
 
-# ANSI color codes for user feedback
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
-
 # Path detection for theme directory location
 SCRIPT_DIR="${0:A:h}"
+
+# Source color definitions from lib
+source "$SCRIPT_DIR/../lib/colors.zsh"
 THEMES_JSON="${SCRIPT_DIR}/../../config/themes.json"
 
 # Core files that every theme must provide
@@ -149,6 +145,7 @@ for family_dir in "$SCRIPT_DIR"/*/; do
     # Skip non-family items
     [[ "$family" == *.sh ]] && continue
     [[ "$family" == *.md ]] && continue
+    [[ "$family" == "templates" ]] && continue
 
     for variant_dir in "$family_dir"/*/; do
       if [[ -d "$variant_dir" ]]; then
@@ -197,21 +194,19 @@ if [[ $ORPHANED -gt 0 ]]; then
   echo -e "  Orphaned directories: ${YELLOW}$ORPHANED${NC}"
 fi
 
-# Verify active theme symlinks are in place
+# Verify active theme config files are in place
 echo ""
-echo "Checking theme symlinks..."
-if [[ -L "$HOME/.config/alacritty/theme.toml" ]]; then
-  target=$(readlink "$HOME/.config/alacritty/theme.toml")
-  echo -e "  ${GREEN}[OK]${NC} Alacritty -> $(basename "$(dirname "$target")")"
+echo "Checking theme config files..."
+if [[ -f "$HOME/.config/alacritty/theme.toml" ]]; then
+  echo -e "  ${GREEN}[OK]${NC} Alacritty theme.toml exists"
 else
-  echo -e "  ${YELLOW}[WARN]${NC} No Alacritty theme symlink"
+  echo -e "  ${YELLOW}[WARN]${NC} No Alacritty theme file"
 fi
 
-if [[ -L "$HOME/.config/tmux/theme.conf" ]]; then
-  target=$(readlink "$HOME/.config/tmux/theme.conf")
-  echo -e "  ${GREEN}[OK]${NC} Tmux -> $(basename "$(dirname "$target")")"
+if [[ -f "$HOME/.config/tmux/theme.conf" ]]; then
+  echo -e "  ${GREEN}[OK]${NC} Tmux theme.conf exists"
 else
-  echo -e "  ${YELLOW}[WARN]${NC} No Tmux theme symlink"
+  echo -e "  ${YELLOW}[WARN]${NC} No Tmux theme file"
 fi
 
 # Exit with status code indicating validation results

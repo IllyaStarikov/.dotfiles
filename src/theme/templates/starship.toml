@@ -1,4 +1,4 @@
-# GitHub Dark Default - Starship Configuration
+# {{THEME_NAME}} - Starship Configuration
 # Generated from template - do not edit directly
 
 [character]
@@ -7,7 +7,7 @@ error_symbol = "[❯](bold red)"
 vicmd_symbol = "[❮](bold green)"
 
 [directory]
-style = "cyan bold"
+style = "{{directory_style}}"
 read_only = " 🔒"
 
 [git_branch]

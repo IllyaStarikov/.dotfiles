@@ -3,6 +3,7 @@
 
 FOREGROUND='{{fg}}'
 BACKGROUND='{{bg}}'
+CURSOR='{{cursor}}'
 
 # Normal colors (0-7)
 COLOR_0='{{black}}'   # black

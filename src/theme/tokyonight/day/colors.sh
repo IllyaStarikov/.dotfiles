@@ -3,6 +3,7 @@
 
 FOREGROUND='#3760bf'
 BACKGROUND='#e1e2e7'
+CURSOR='#3760bf'
 
 # Normal colors (0-7)
 COLOR_0='#b4b5b9'   # black

@@ -49,23 +49,31 @@ generate_from_template() {
     return 1
   fi
 
-  # Create temp file for sed script
+  # Create temp file for sed script, ensure cleanup on any exit path
   local sed_file
   sed_file=$(mktemp)
 
-  # Build sed script
-  echo "s|{{THEME_NAME}}|$theme_name|g" >> "$sed_file"
-  [[ -n "$colorscheme_name" ]] && echo "s|{{COLORSCHEME_NAME}}|$colorscheme_name|g" >> "$sed_file"
+  {
+    # Build sed script
+    echo "s|{{THEME_NAME}}|$theme_name|g" >> "$sed_file"
+    [[ -n "$colorscheme_name" ]] && echo "s|{{COLORSCHEME_NAME}}|$colorscheme_name|g" >> "$sed_file"
+    # Set directory_style based on mode (for starship template)
+    local mode="${5:-dark}"
+    if [[ "$mode" == "light" ]]; then
+      echo "s|{{directory_style}}|blue bold|g" >> "$sed_file"
+    else
+      echo "s|{{directory_style}}|cyan bold|g" >> "$sed_file"
+    fi
 
-  # Read all color keys from JSON and build sed replacements
-  # IMPORTANT: Use ascii_downcase to normalize hex colors - tmux has issues with uppercase hex
-  jq -r 'to_entries | .[] | select(.key != "name") | "s|{{\(.key)}}|\(.value | ascii_downcase)|g"' "$colors_json" >> "$sed_file"
+    # Read all color keys from JSON and build sed replacements
+    # IMPORTANT: Use ascii_downcase to normalize hex colors - tmux has issues with uppercase hex
+    jq -r 'to_entries | .[] | select(.key != "name") | "s|{{\(.key)}}|\(.value | ascii_downcase)|g"' "$colors_json" >> "$sed_file"
 
-  # Apply all substitutions
-  sed -f "$sed_file" "$template_file"
-
-  # Cleanup
-  rm -f "$sed_file"
+    # Apply all substitutions
+    sed -f "$sed_file" "$template_file"
+  } always {
+    rm -f "$sed_file"
+  }
 }
 
 # Main function
@@ -107,12 +115,8 @@ main() {
       generate_from_template "$TEMPLATES_DIR/wezterm.lua" "$colors_json" "$theme_name"   > "$theme_dir/wezterm.lua"
       generate_from_template "$TEMPLATES_DIR/colors.sh" "$colors_json" "$theme_name"     > "$theme_dir/colors.sh"
 
-      # Use light or dark starship template based on mode
-      if [[ "$mode" == "light" ]]; then
-        generate_from_template "$TEMPLATES_DIR/starship-light.toml" "$colors_json" "$theme_name" > "$theme_dir/starship.toml"
-      else
-        generate_from_template "$TEMPLATES_DIR/starship-dark.toml" "$colors_json" "$theme_name" > "$theme_dir/starship.toml"
-      fi
+      # Starship template uses {{directory_style}} variable set by mode
+      generate_from_template "$TEMPLATES_DIR/starship.toml" "$colors_json" "$theme_name" "" "$mode" > "$theme_dir/starship.toml"
 
       # Generate Neovim colorscheme
       if [[ -f "$TEMPLATES_DIR/neovim.lua" ]]; then
@@ -135,11 +139,7 @@ main() {
       generate_from_template "$TEMPLATES_DIR/wezterm.lua" "$colors_json" "$theme_name"
       ;;
     starship)
-      if [[ "$mode" == "light" ]]; then
-        generate_from_template "$TEMPLATES_DIR/starship-light.toml" "$colors_json" "$theme_name"
-      else
-        generate_from_template "$TEMPLATES_DIR/starship-dark.toml" "$colors_json" "$theme_name"
-      fi
+      generate_from_template "$TEMPLATES_DIR/starship.toml" "$colors_json" "$theme_name" "" "$mode"
       ;;
     colors)
       generate_from_template "$TEMPLATES_DIR/colors.sh" "$colors_json" "$theme_name"

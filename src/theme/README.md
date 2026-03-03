@@ -7,7 +7,8 @@ Synchronized theme switching across all terminal applications with macOS appeara
 - **Unified switching** - Change all apps with one command
 - **macOS integration** - Auto-syncs with system dark/light mode
 - **Atomic operations** - Crash-proof with file locking
-- **43 theme variants** - 12 families including TokyoNight, GitHub, Catppuccin, Dracula, and more
+- **57 theme variants** - 17 families including TokyoNight, GitHub, Catppuccin, Dracula, and more
+- **Template-based generation** - All theme configs are generated from `colors.json` + templates
 
 ## Supported Applications
 
@@ -16,28 +17,35 @@ Alacritty, WezTerm, Kitty, tmux, Starship, Neovim, bat, delta
 ## Quick Start
 
 ```bash
-theme           # Auto-detect from macOS
-theme day       # Light theme
-theme night     # Dark blue theme
-theme moon      # Dark purple theme
-theme storm     # Balanced dark (default)
+theme                # Interactive picker with live preview
+theme day            # Light theme
+theme night          # Dark blue theme
+theme moon           # Dark purple theme
+theme storm          # Balanced dark (default)
+theme --list         # List all available themes
+theme --list github  # List variants of a family
+theme -v storm       # Verbose output
 ```
 
 ## Files
 
 ```
-switch-theme.sh         # Main switching script
+switch-theme.sh         # Main switching script (zsh)
 validate-themes.sh      # Theme validator
 generate-theme.sh       # Generate configs from templates + colors.json
-regenerate-all.sh       # Regenerate all 43 themes
+regenerate-all.sh       # Regenerate all 57 themes
 templates/              # Template files for each app
-tokyonight/day/         # Each theme directory has configs for:
-tokyonight/storm/       # - alacritty.toml, wezterm.lua
-github/dark/            # - kitty.conf, tmux.conf, starship.toml
-catppuccin/mocha/       # - colors.sh, colors.json
+  starship.toml         #   Uses {{directory_style}} for light/dark
+  colors.sh             #   Exports FOREGROUND, BACKGROUND, CURSOR, COLOR_0-15
+  tmux.conf, alacritty.toml, kitty.conf, wezterm.lua, neovim.lua
+tokyonight/storm/       # Each theme directory has:
+  colors.json           #   Source of truth for all colors
+  alacritty.toml, wezterm.lua, kitty.conf, tmux.conf, starship.toml, colors.sh
 ```
 
 ## Generated Configs
+
+Theme switching copies configs atomically (not symlinks) to:
 
 - `~/.config/alacritty/theme.toml`
 - `~/.config/wezterm/theme.lua`
@@ -55,6 +63,7 @@ catppuccin/mocha/       # - colors.sh, colors.json
 source ~/.config/theme/current-theme.sh
 # CURRENT_THEME="tokyonight_storm"
 # THEME_TYPE="dark"
+# MACOS_THEME="storm"
 ```
 
 ### Applications
@@ -74,19 +83,32 @@ source-file ~/.config/tmux/theme.conf
 vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 ```
 
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| (no args) | Interactive picker with live preview |
+| `--auto` | Auto-detect from macOS appearance |
+| `--local [THEME]` | Session-only theming (terminal OSC + tmux session-local) |
+| `--list [FAMILY]` | List themes, optionally filtered by family |
+| `--pick` | Force interactive picker |
+| `--shell THEME` | Print shell exports to stdout |
+| `--tmux THEME` | Reload tmux theme only |
+| `-v`, `--verbose` | Verbose output (composes with other flags) |
+| `-h`, `--help` | Show help |
+
 ## Custom Themes
 
-1. Create `themes/custom_theme/` directory
-2. Add config files for each application
-3. Validate: `./validate-themes.sh custom_theme`
-4. Apply: `theme custom_theme`
+1. Create `family/variant/` directory with `colors.json`
+2. Run `./generate-theme.sh family variant` to generate configs
+3. Validate: `./validate-themes.sh`
+4. Apply: `theme family_variant`
 
 ## Performance
 
 - **< 500ms** switching time
-- Cached theme files
-- Background tmux reloading
-- Atomic file operations
+- Atomic file operations (cp + mv)
+- Direct `tmux source-file` for reload
 
 ## Troubleshooting
 
@@ -97,10 +119,3 @@ vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 **Stuck switching**: Remove lock file `rm /tmp/.theme-switch-*`
 
 **Debug mode**: `THEME_DEBUG=1 theme storm`
-
-## Lessons Learned
-
-- File locking prevents race conditions during concurrent switches
-- tmux needs `source-file` not just reload for theme changes
-- Atomic moves prevent partial theme application
-- macOS appearance API can lag, polling needed

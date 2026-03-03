@@ -79,12 +79,16 @@ it "switch-theme.sh should display help message" && {
 # Test: macOS appearance detection
 it "should detect macOS appearance" && {
   if [[ "$(uname)" == "Darwin" ]]; then
-    # Test actual behavior - can it detect current appearance
-    output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --current 2>&1 || true)
-    if [[ "$output" == *"dark"* ]] || [[ "$output" == *"light"* ]] || [[ "$output" == *"tokyonight"* ]]; then
-      pass "Can detect current appearance"
+    # Test auto-detection by checking current-theme.sh
+    if [[ -f ~/.config/theme/current-theme.sh ]]; then
+      source ~/.config/theme/current-theme.sh 2>/dev/null || true
+      if [[ -n "${CURRENT_THEME:-}" ]]; then
+        pass "Current theme detected: $CURRENT_THEME"
+      else
+        skip "Cannot determine current theme"
+      fi
     else
-      skip "Cannot determine current theme"
+      skip "No current theme file"
     fi
   else
     skip "Not on macOS"
@@ -93,20 +97,12 @@ it "should detect macOS appearance" && {
 
 # Test: Theme file generation
 it "should generate theme configuration files" && {
-  # Test actual behavior - run in dry run mode and see if it would generate files
-  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run tokyonight_day 2>&1 || true)
-
-  # Should mention generating configs for various tools
-  if [[ "$output" == *"alacritty"* ]] || [[ "$output" == *"tmux"* ]] || [[ "$output" == *"config"* ]]; then
-    pass "Would generate configuration files"
+  # Test with --local to avoid side effects
+  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
+  if [[ $? -eq 0 ]]; then
+    pass "Theme switch executed successfully"
   else
-    # Alternative: just check if it runs without errors
-    "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_day >/dev/null 2>&1
-    if [[ $? -eq 0 ]]; then
-      pass "Theme switch executed successfully"
-    else
-      skip "Theme switch not functional"
-    fi
+    skip "Theme switch not functional"
   fi
 }
 
@@ -206,15 +202,16 @@ it "should set theme environment variable" && {
 
 # Test: Current theme tracking
 it "should track current theme" && {
-  # Test behavior - switch theme and check if it's tracked
-  "$DOTFILES_DIR/src/theme/switch-theme.sh" --local tokyonight_storm >/dev/null 2>&1 || true
-
-  # Check if current theme is tracked
-  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --current 2>&1 || echo "")
-  if [[ -n "$output" ]] && [[ "$output" != *"error"* ]]; then
-    pass "Current theme is tracked"
+  # Check if current theme is tracked via current-theme.sh
+  if [[ -f ~/.config/theme/current-theme.sh ]]; then
+    source ~/.config/theme/current-theme.sh 2>/dev/null || true
+    if [[ -n "${CURRENT_THEME:-}" ]]; then
+      pass "Current theme is tracked: $CURRENT_THEME"
+    else
+      skip "Theme tracking variable not set"
+    fi
   else
-    skip "Theme tracking not available"
+    skip "Theme tracking file not available"
   fi
 }
 
@@ -362,13 +359,16 @@ it "all themes should have required files" && {
   fi
 }
 
-# Test: Dry run mode
-it "should support dry run mode" && {
-  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --dry-run 2>&1 || true)
+# Test: List mode
+it "should support list mode" && {
+  output=$("$DOTFILES_DIR/src/theme/switch-theme.sh" --list 2>&1 || true)
 
-  # Should show what would be done
-  assert_success 0 || assert_contains "$output" "Would" || assert_contains "$output" "DRY"
-  pass
+  # Should list available themes
+  if [[ "$output" == *"tokyonight"* ]]; then
+    pass "List mode shows themes"
+  else
+    skip "List mode not functional"
+  fi
 }
 
 # Test: Theme wrapper script
@@ -433,6 +433,75 @@ it "generated themes should use lowercase hex colors" && {
     pass "All themes use lowercase hex colors"
   else
     fail "Found $uppercase_found themes with uppercase hex colors (breaks tmux clickability)"
+  fi
+}
+
+# Test: generate-theme.sh produces valid output (T1)
+it "generate-theme.sh should produce valid output" && {
+  local gen_script="$DOTFILES_DIR/src/theme/generate-theme.sh"
+  if [[ ! -x "$gen_script" ]]; then
+    fail "generate-theme.sh not found or not executable"
+  fi
+
+  # Generate storm theme to a temp dir
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
+
+  output=$("$gen_script" tokyonight storm 2>&1)
+  local result=$?
+
+  if [[ $result -ne 0 ]]; then
+    rm -rf "$tmp_dir"
+    fail "generate-theme.sh exited with error: $output"
+  fi
+
+  # Check that no unsubstituted {{variables}} remain in generated files
+  local unsubstituted=0
+  for file in "$DOTFILES_DIR/src/theme/tokyonight/storm"/*.{toml,conf,sh,lua}; do
+    if [[ -f "$file" ]] && grep -q '{{' "$file" 2>/dev/null; then
+      ((unsubstituted++))
+    fi
+  done
+
+  rm -rf "$tmp_dir"
+
+  if [[ $unsubstituted -eq 0 ]]; then
+    pass "All template variables substituted"
+  else
+    fail "Found $unsubstituted files with unsubstituted {{variables}}"
+  fi
+}
+
+# Test: colors.json schema consistency (T3)
+it "all colors.json files should have consistent keys" && {
+  if ! command -v jq >/dev/null 2>&1; then
+    skip "jq not available"
+  fi
+
+  # Get keys from first colors.json as reference
+  local reference_file="$DOTFILES_DIR/src/theme/tokyonight/storm/colors.json"
+  if [[ ! -f "$reference_file" ]]; then
+    fail "Reference colors.json not found"
+  fi
+
+  local reference_keys
+  reference_keys=$(jq -r 'keys | sort | .[]' "$reference_file")
+
+  local inconsistent=0
+  for colors_file in "$DOTFILES_DIR"/src/theme/*/*/colors.json; do
+    if [[ -f "$colors_file" ]]; then
+      local file_keys
+      file_keys=$(jq -r 'keys | sort | .[]' "$colors_file" 2>/dev/null)
+      if [[ "$file_keys" != "$reference_keys" ]]; then
+        ((inconsistent++))
+      fi
+    fi
+  done
+
+  if [[ $inconsistent -eq 0 ]]; then
+    pass "All colors.json files have consistent keys"
+  else
+    fail "Found $inconsistent colors.json files with inconsistent keys"
   fi
 }
 
