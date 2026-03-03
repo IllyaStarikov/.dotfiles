@@ -114,15 +114,12 @@ config.harfbuzz_features = {
   "ss07=1", -- Stylistic set 07 (alternative style)
   "ss19=1", -- Stylistic set 19 (slashed zero)
   "ss20=1", -- Stylistic set 20 (graphical control characters)
-  "zero=1", -- Slashed zero
   "onum=1", -- Oldstyle numbers
 }
 
 -- Additional font configuration for better math rendering
 config.allow_square_glyphs_to_overflow_width = "Always" -- Better for math symbols
 config.custom_block_glyphs = true -- Better box drawing characters
-config.anti_alias_custom_block_glyphs = true
-config.treat_east_asian_ambiguous_width_as_wide = false
 config.unicode_version = 15 -- Use latest Unicode standard
 config.warn_about_missing_glyphs = false -- Don't warn about missing math glyphs
 

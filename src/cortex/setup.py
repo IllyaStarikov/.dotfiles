@@ -3,23 +3,11 @@ Cortex - Unified AI Model Management System
 Setup configuration for the Cortex package
 """
 
-import os
-
 from setuptools import find_packages, setup
 
 # Read the README file
 with open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
-
-
-# Read requirements
-def read_requirements(filename):
-    """Read requirements from file."""
-    req_path = os.path.join(os.path.dirname(__file__), filename)
-    if os.path.exists(req_path):
-        with open(req_path, 'r', encoding='utf-8') as f:
-            return [line.strip() for line in f if line.strip() and not line.startswith('#')]
-    return []
 
 
 setup(
@@ -53,18 +41,7 @@ setup(
         'pyyaml>=6.0',
         'requests>=2.31.0',
         'aiohttp>=3.9.0',
-        'huggingface-hub>=0.20.0',
-        'anthropic>=0.20.0',
-        'openai>=1.10.0',
-        'google-generativeai>=0.3.0',
         'psutil>=5.9.0',
-        'platformdirs>=4.0.0',
-        'python-dotenv>=1.0.0',
-        'tabulate>=0.9.0',
-        'tqdm>=4.66.0',
-        'pydantic>=2.5.0',
-        'asyncio-throttle>=1.0.0',
-        'orjson>=3.9.0',
     ],
     extras_require={
         'dev': [

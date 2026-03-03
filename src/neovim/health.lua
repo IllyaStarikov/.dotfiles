@@ -135,8 +135,10 @@ function M.check()
 
   -- Check work profile
   vim.health.info("Checking work profile...")
-  local work = require("work")
-  if work.is_work_env() then
+  local ok, work = pcall(require, "work")
+  if not ok then
+    vim.health.info("Work module not available (private repo not cloned)")
+  elseif work.is_work_env() then
     local profile = work.get_profile()
     vim.health.ok("Work profile active: " .. (profile.profile or "unknown"))
   else

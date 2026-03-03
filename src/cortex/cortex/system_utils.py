@@ -96,7 +96,7 @@ class SystemDetector:
         if system == 'darwin':
             # Check if Apple Silicon
             machine = platform.machine().lower()
-            if 'arm' in machine or 'm1' in machine or 'm2' in machine or 'm3' in machine:
+            if 'arm' in machine:
                 return SystemType.MACOS_APPLE_SILICON
             else:
                 return SystemType.MACOS_INTEL
@@ -186,38 +186,29 @@ class SystemDetector:
 
                     if 'm3 max' in output:
                         gpu_info['name'] = 'Apple M3 Max'
-                        gpu_info['memory_gb'] = 48 if '128 gb' in output else 36
                     elif 'm3 pro' in output:
                         gpu_info['name'] = 'Apple M3 Pro'
-                        gpu_info['memory_gb'] = 18
                     elif 'm3' in output:
                         gpu_info['name'] = 'Apple M3'
-                        gpu_info['memory_gb'] = 8
                     elif 'm2 max' in output:
                         gpu_info['name'] = 'Apple M2 Max'
-                        gpu_info['memory_gb'] = 32
                     elif 'm2 pro' in output:
                         gpu_info['name'] = 'Apple M2 Pro'
-                        gpu_info['memory_gb'] = 16
                     elif 'm2' in output:
                         gpu_info['name'] = 'Apple M2'
-                        gpu_info['memory_gb'] = 8
                     elif 'm1 max' in output:
                         gpu_info['name'] = 'Apple M1 Max'
-                        gpu_info['memory_gb'] = 32
                     elif 'm1 pro' in output:
                         gpu_info['name'] = 'Apple M1 Pro'
-                        gpu_info['memory_gb'] = 16
                     elif 'm1' in output:
                         gpu_info['name'] = 'Apple M1'
-                        gpu_info['memory_gb'] = 8
 
                     # For unified memory, GPU memory is shared with system RAM
                     # Estimate available GPU memory as ~75% of total RAM
                     mem_info = SystemDetector._get_memory_info()
                     gpu_info['memory_gb'] = round(mem_info['ram_gb'] * 0.75, 1)
 
-                except (ImportError, AttributeError, KeyError):
+                except (AttributeError, KeyError):
                     pass
 
             elif os_type == SystemType.LINUX:

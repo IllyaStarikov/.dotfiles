@@ -984,12 +984,8 @@ process_file_parallel() {
   local result_file="${tmpdir}/result_${index}"
   
   # Process the file and capture the result
-  if process_file "$file"; then
-    echo "0" > "$result_file"
-  else
-    local result=$?
-    echo "$result" > "$result_file"
-  fi
+  process_file "$file"
+  echo "$?" > "$result_file"
 }
 
 # Process files in parallel

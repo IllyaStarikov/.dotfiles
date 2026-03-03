@@ -154,7 +154,7 @@ fi
 # System Utilities
 
 # Modern replacements (with command checks)
-command -v bat &>/dev/null && alias cat='bat' || alias cat='cat'
+command -v bat &>/dev/null && alias cat='bat'
 
 # Colorful and enhanced utilities
 command -v colordiff &>/dev/null && alias diff="colordiff"
@@ -338,11 +338,11 @@ alias dotfiles-test-debug='$DOTFILES/test/runner.zsh --debug' # Run tests with d
 
 # Process monitoring
 alias psg="ps aux | grep"
-alias cpu='top -o cpu'
-alias mem='top -o mem'
 
 # Disk usage (GNU du uses --max-depth, macOS du uses -d)
 if [[ "$OSTYPE" == darwin* ]]; then
+  alias cpu='top -o cpu'
+  alias mem='top -o mem'
   alias disk='du -h -d 1 | sort -hr'
   alias biggest='du -h -d 1 | sort -hr | head -20'
 else

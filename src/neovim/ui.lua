@@ -79,14 +79,12 @@ opt.listchars = {
   eol = "¬",
 }
 
--- Bracket/parenthesis matching
-opt.showmatch = true
-opt.matchtime = 2 -- tenths of a second
-
--- Cursor behavior
-opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
+-- Cursor behavior (showmatch/matchtime are set in core/search.lua)
+-- Exported for reuse in autocmds.lua terminal cursor restoration
+M.default_guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
   .. ",a:blinkwait700-blinkoff400-blinkon250"
   .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+opt.guicursor = M.default_guicursor
 
 -- =============================================================================
 -- LIGATURE SUPPORT

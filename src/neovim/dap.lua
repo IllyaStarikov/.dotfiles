@@ -54,9 +54,7 @@ function M.setup()
       repl = "r",
       toggle = "t",
     },
-    -- Expand lines larger than the render window
-    -- Requires >= 0.7
-    expand_lines = vim.fn.has("nvim-0.7") == 1,
+    expand_lines = true,
     -- Layouts define sections of the screen to place windows.
     layouts = {
       {
@@ -222,7 +220,7 @@ function M.setup()
   -- Determine lldb-dap path based on OS
   local lldb_cmd
   if is_macos then
-    lldb_cmd = "/opt/homebrew/Cellar/llvm/21.1.1/bin/lldb-dap" -- macOS with Homebrew
+    lldb_cmd = "/opt/homebrew/opt/llvm/bin/lldb-dap" -- macOS with Homebrew (version-independent symlink)
   elseif is_linux then
     -- Try common Linux locations
     if vim.fn.executable("lldb-dap") == 1 then
@@ -332,72 +330,6 @@ function M.setup()
       name = "Attach to running Neovim instance",
     },
   }
-
-  -- JAVASCRIPT/TYPESCRIPT DEBUGGING
-  -- Disabled due to node-debug2-adapter compatibility issues
-  -- To re-enable:
-  -- 1. Install node-debug2-adapter via Mason
-  -- 2. Uncomment the configuration below
-  --[[
-  local node_debug_path = vim.fn.stdpath("data") .. '/mason/packages/node-debug2-adapter/out/src/nodeDebug.js'
-  if vim.fn.filereadable(node_debug_path) == 1 then
-    dap.adapters.node2 = {
-      type = 'executable',
-      command = 'node',
-      args = {node_debug_path},
-    }
-  else
-    -- Defer notification to avoid startup noise
-    vim.defer_fn(function()
-      vim.notify("Node debug adapter not found. Run :Mason to install 'node-debug2-adapter'.", vim.log.levels.WARN)
-    end, 1000)
-  end
-
-  dap.configurations.javascript = {
-    {
-      name = 'Launch',
-      type = 'node2',
-      request = 'launch',
-      program = '${file}',
-      cwd = vim.fn.getcwd(),
-      sourceMaps = true,
-      protocol = 'inspector',
-      console = 'integratedTerminal',
-    },
-    {
-      -- For this to work you need to make sure the node process is started with the `--inspect` flag.
-      name = 'Attach to process',
-      type = 'node2',
-      request = 'attach',
-      processId = require'dap.utils'.pick_process,
-    },
-  }
-
-  dap.configurations.typescript = {
-    {
-      name = 'ts-node (Node2 with ts-node)',
-      type = 'node2',
-      request = 'launch',
-      cwd = vim.fn.getcwd(),
-      runtimeArgs = {'-r', 'ts-node/register'},
-      runtimeExecutable = 'node',
-      args = {'--inspect', '${file}'},
-      sourceMaps = true,
-      skipFiles = {'<node_internals>/**', 'node_modules/**'},
-    },
-    {
-      name = 'Jest (Node2 with Jest)',
-      type = 'node2',
-      request = 'launch',
-      cwd = vim.fn.getcwd(),
-      runtimeArgs = {'--inspect-brk', '${workspaceFolder}/node_modules/.bin/jest', '--runInBand', '--no-cache', '--no-coverage', '${file}'},
-      runtimeExecutable = 'node',
-      args = {'--inspect', '${file}'},
-      sourceMaps = true,
-      skipFiles = {'<node_internals>/**', 'node_modules/**'},
-    },
-  }
-  --]]
 
   -- RUST DEBUGGING CONFIGURATION
   -- Use the same lldb_cmd determined above or use codelldb

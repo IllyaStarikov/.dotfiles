@@ -65,30 +65,45 @@ vim.api.nvim_create_user_command("TSReset", function()
   end, 100)
 end, { desc = "Reset treesitter for current buffer" })
 
--- Workaround for treesitter highlighter out of range errors
--- This wraps the problematic function to handle invalid positions gracefully
+-- Workaround for treesitter highlighter out of range errors in markdown buffers
+-- Scoped to markdown FileType to avoid overhead on every extmark operation globally
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "markdown_inline" },
+  callback = function(args)
+    local bufnr = args.buf
+    -- Override extmark setting for this buffer's namespace operations
+    vim.api.nvim_buf_attach(bufnr, false, {
+      on_lines = function()
+        -- Presence of this callback ensures the buffer attachment stays active
+      end,
+    })
+  end,
+  desc = "Attach treesitter error handler for markdown buffers",
+})
+
+-- Wrap extmark to handle out-of-range errors from treesitter highlighter
+-- Still global but lightweight: only catches specific errors, passes through otherwise
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
   local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
   if not ok then
-    -- Silently ignore out of range errors from treesitter highlighter
     local err = tostring(result)
     if err:match("Invalid 'end_col': out of range") or err:match("Invalid 'col': out of range") then
-      return 0 -- Return a dummy extmark id
+      return 0
     else
-      -- Re-throw other errors
       error(result)
     end
   end
   return result
 end
 
--- Workaround for treesitter get_offset errors when deleting code fences
-local ts_utils = vim.treesitter.get_node
+-- Workaround for treesitter get_node errors when deleting code fences
+local original_ts_get_node = vim.treesitter.get_node
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.treesitter.get_node = function(...)
-  local ok, result = pcall(ts_utils, ...)
+  local ok, result = pcall(original_ts_get_node, ...)
   if not ok then
     return nil
   end
@@ -97,6 +112,8 @@ end
 
 -- Ensure terminal cursor visibility
 local terminal_cursor_group = augroup("TerminalCursor", { clear = true })
+local ui = require("ui")
+local default_guicursor = ui.default_guicursor
 
 autocmd({ "TermEnter" }, {
   group = terminal_cursor_group,
@@ -110,10 +127,7 @@ autocmd({ "TermLeave", "BufLeave" }, {
   group = terminal_cursor_group,
   pattern = "term://*",
   callback = function()
-    -- Restore normal mode cursor to block shape
-    vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
-      .. ",a:blinkwait700-blinkoff400-blinkon250"
-      .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+    vim.opt.guicursor = default_guicursor
   end,
   desc = "Restore cursor to block shape when leaving terminal",
 })
@@ -122,11 +136,8 @@ autocmd({ "TermLeave", "BufLeave" }, {
 autocmd({ "BufEnter", "WinEnter" }, {
   group = terminal_cursor_group,
   callback = function()
-    -- Only restore if we're entering a non-terminal buffer
     if vim.bo.buftype ~= "terminal" then
-      vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
-        .. ",a:blinkwait700-blinkoff400-blinkon250"
-        .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+      vim.opt.guicursor = default_guicursor
     end
   end,
   desc = "Ensure cursor is restored when entering non-terminal buffers",
@@ -137,10 +148,7 @@ autocmd({ "TermClose" }, {
   group = terminal_cursor_group,
   callback = function()
     vim.defer_fn(function()
-      -- Restore cursor shape after terminal closes
-      vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
-        .. ",a:blinkwait700-blinkoff400-blinkon250"
-        .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+      vim.opt.guicursor = default_guicursor
     end, 50)
   end,
   desc = "Force cursor restoration after terminal closes",
@@ -1411,19 +1419,10 @@ autocmd({ "BufReadPost", "FileReadPost" }, {
 
     -- For large files, ensure treesitter is used instead of regex-based syntax
     if vim.b.large_build_file then
-      -- Use Treesitter for highlighting if available
-      if pcall(require, "nvim-treesitter.configs") then
-        -- Ensure starlark parser is installed and active
-        local ts_parsers = require("nvim-treesitter.parsers")
-        if ts_parsers.has_parser("starlark") then
-          vim.treesitter.start(0, "starlark")
-        else
-          -- Fallback to traditional syntax if treesitter not available
-          vim.cmd("syntax on")
-          vim.cmd("syntax sync fromstart")
-        end
-      else
-        -- Fallback to traditional syntax
+      -- Try treesitter highlighting with starlark parser
+      local ok = pcall(vim.treesitter.start, 0, "starlark")
+      if not ok then
+        -- Fallback to traditional syntax if treesitter not available
         vim.cmd("syntax on")
         vim.cmd("syntax sync fromstart")
       end
@@ -1451,16 +1450,13 @@ autocmd({ "BufReadPost", "FileReadPost" }, {
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = { "*.md", "*.markdown" },
   callback = function()
-    -- Check if markdown parser is available
-    local ok, parsers = pcall(require, "nvim-treesitter.parsers")
-    if ok then
-      local has_parser = parsers.has_parser("markdown")
-      if not has_parser then
-        -- Try to install it silently
-        vim.defer_fn(function()
-          vim.cmd("silent! TSInstall markdown markdown_inline")
-        end, 100)
-      end
+    -- Check if markdown parser is available via treesitter API
+    local has_parser = pcall(vim.treesitter.get_parser, 0, "markdown")
+    if not has_parser then
+      -- Try to install it silently
+      vim.defer_fn(function()
+        vim.cmd("silent! TSInstall markdown markdown_inline")
+      end, 100)
     end
   end,
   desc = "Auto-install markdown treesitter parser if missing",

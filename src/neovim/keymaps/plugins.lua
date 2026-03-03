@@ -136,12 +136,12 @@ map("n", "<leader>bD", function()
   end
 end, { desc = "Buffer Delete All" })
 
-map("n", "<leader>bo", function()
+map("n", "<leader>bO", function()
   local s = get_snacks()
   if s then
     s.bufdelete.other()
   end
-end, { desc = "Buffer Delete Others" })
+end, { desc = "Buffer Delete Others (Snacks)" })
 
 map("n", "<leader>bb", telescope_builtin("buffers"), { desc = "Buffer List" })
 
@@ -167,18 +167,18 @@ map("n", "<leader>cP", "<cmd>AerialPrevUp<CR>", { desc = "Code Prev Symbol (up)"
 map("n", "<leader>cg", "<cmd>AerialGo<CR>", { desc = "Code Go to Symbol" })
 
 -- Telescope symbol search
-map("n", "<leader>cf", function()
+map("n", "<leader>cF", function()
   local ok, telescope = pcall(require, "telescope")
   if ok then
     telescope.extensions.aerial.aerial()
   else
     vim.notify("Telescope aerial extension not available", vim.log.levels.WARN)
   end
-end, { desc = "Code Find Symbols" })
+end, { desc = "Code Find Symbols (Telescope)" })
 
 -- LSP actions (buffer-local in lsp.lua, but global fallbacks here)
 map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
-map("n", "<leader>cR", vim.lsp.buf.rename, { desc = "Code Rename" })
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename Symbol" })
 map("n", "<leader>ch", vim.lsp.buf.hover, { desc = "Code Hover" })
 map("n", "<leader>cd", vim.lsp.buf.definition, { desc = "Code Definition" })
 map("n", "<leader>cD", vim.lsp.buf.declaration, { desc = "Code Declaration" })
@@ -359,12 +359,12 @@ map("n", "<leader>gG", function()
 end, { desc = "Git Lazygit (file dir)" })
 
 -- Browse/Blame
-map("n", "<leader>gb", function()
+map("n", "<leader>gl", function()
   local s = get_snacks()
   if s then
     s.git.blame_line()
   end
-end, { desc = "Git Blame Line" })
+end, { desc = "Git Blame Line (inline)" })
 
 map("n", "<leader>gB", function()
   local s = get_snacks()
@@ -375,10 +375,10 @@ end, { desc = "Git Browse" })
 
 -- Telescope git pickers
 map("n", "<leader>gf", telescope_builtin("git_files"), { desc = "Git Files" })
-map("n", "<leader>gs", telescope_builtin("git_status"), { desc = "Git Status" })
+map("n", "<leader>gS", telescope_builtin("git_status"), { desc = "Git Status (Telescope)" })
 map("n", "<leader>gc", telescope_builtin("git_commits"), { desc = "Git Commits" })
 map("n", "<leader>gC", telescope_builtin("git_bcommits"), { desc = "Git Buffer Commits" })
-map("n", "<leader>gd", "<cmd>Gitsigns diffthis<cr>", { desc = "Git Diff" })
+map("n", "<leader>gD", "<cmd>Gitsigns diffthis<cr>", { desc = "Git Diff (Gitsigns)" })
 
 -- ============================================================================
 -- LANGUAGE (<leader>l) - Filetype-specific
@@ -670,7 +670,7 @@ local function scratch_with_picker()
 end
 
 -- Toggle scratch (current filetype or markdown)
-map("n", "<leader>xx", function()
+map("n", "<leader>xS", function()
   local s = get_snacks()
   if s then
     s.scratch()
@@ -688,8 +688,8 @@ map("n", "<leader>xs", function()
   end
 end, { desc = "Scratch Select" })
 
--- List scratches (alias for select)
-map("n", "<leader>xl", function()
+-- List scratches
+map("n", "<leader>xL", function()
   local s = get_snacks()
   if s then
     s.scratch.select()

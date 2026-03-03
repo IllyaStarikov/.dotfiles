@@ -247,7 +247,6 @@ class ProviderRegistry:
         """Initialize all providers with configuration."""
         from .anthropic import AnthropicProvider
         from .google import GoogleProvider
-        from .huggingface import HuggingFaceProvider
         from .mlx import MLXProvider
         from .ollama import OllamaProvider
         from .openai import OpenAIProvider
@@ -267,9 +266,6 @@ class ProviderRegistry:
 
         if config.get('providers', {}).get('gemini', {}).get('enabled', False):
             self.register(GoogleProvider(config.get('providers', {}).get('gemini', {})))
-
-        # HuggingFace is always enabled for model discovery
-        self.register(HuggingFaceProvider(config.get('providers', {}).get('huggingface', {})))
 
         self._initialized = True
         logger.info('Provider registry initialized')

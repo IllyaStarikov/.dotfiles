@@ -70,10 +70,6 @@ local ollama_models = {
   },
 }
 
--- Select appropriate models based on OS (used for model list command)
----@diagnostic disable-next-line: unused-local
-local model_configs = is_macos and mlx_models or ollama_models
-
 -- Default model selection based on OS (American tech companies)
 local default_model = is_macos and "mlx-community/Meta-Llama-3.1-8B-Instruct-4bit" -- Meta's Llama for macOS
   or "llama3.2:latest" -- Meta's Llama for Linux

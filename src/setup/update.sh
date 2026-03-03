@@ -480,7 +480,7 @@ update_tools() {
   if command_exists ollama; then
     echo "Updating Ollama models..."
     if [[ "${DRY_RUN}" == false ]]; then
-      if ollama list &>/dev/null 2>&1; then
+      if ollama list &>/dev/null; then
         local models
         models=$(ollama list 2>/dev/null | awk 'NR>1 {print $1}')
         if [[ -n "$models" ]]; then
@@ -500,7 +500,7 @@ update_tools() {
   if command_exists docker; then
     echo "Cleaning up Docker resources..."
     if [[ "${DRY_RUN}" == false ]]; then
-      if docker info &>/dev/null 2>&1; then
+      if docker info &>/dev/null; then
         update_with_fallback "Docker container prune" docker container prune -f
         update_with_fallback "Docker image prune (>7 days)" docker image prune -a --filter "until=168h" -f
         update_with_fallback "Docker volume prune" docker volume prune -f

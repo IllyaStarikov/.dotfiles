@@ -77,7 +77,7 @@ map("t", "<Esc>", "<C-\\><C-n>", opts)
 -- Copy filename/path
 map("n", ",cs", ":let @+=expand('%')<CR>", { desc = "Copy relative path" })
 map("n", ",cl", ":let @+=expand('%:p')<CR>", { desc = "Copy absolute path" })
-map("n", "<Leader>cp", ":let @+=expand('%:p')<CR>", { desc = "Copy full path" })
+map("n", "<Leader>yp", ":let @+=expand('%:p')<CR>", { desc = "Yank full path" })
 
 -- Replace word under cursor
 map(

@@ -4,7 +4,7 @@
 
 [tool.black]
 line-length = 100
-target-version = ['py38']
+target-version = ['py39']
 # Only format Python files
 include = '\.pyi?$'
 # Additional exclusions beyond defaults

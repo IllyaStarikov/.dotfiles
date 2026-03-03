@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import os
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -317,8 +318,6 @@ class OllamaProvider(BaseProvider):
 
     async def start_server(self, model_id: str, **kwargs) -> bool:
         """Start Ollama server on-demand."""
-        import subprocess
-
         # Check if Ollama is already running
         try:
             async with aiohttp.ClientSession() as session:
@@ -357,8 +356,6 @@ class OllamaProvider(BaseProvider):
 
     async def stop_server(self) -> bool:
         """Stop Ollama server."""
-        import subprocess
-
         pid_file = DOTFILES / 'config/cortex/ollama_server.pid'
         if pid_file.exists():
             try:

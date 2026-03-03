@@ -416,8 +416,6 @@ class MLXProvider(BaseProvider):
                 # Parse download progress from output
                 if 'Downloading' in line_text:
                     # Extract file size if available
-                    import re
-
                     size_match = re.search(r'(\d+\.?\d*)\s*(GB|MB|KB)', line_text)
                     if size_match:
                         size = float(size_match.group(1))

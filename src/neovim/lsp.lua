@@ -180,17 +180,12 @@ local function setup_lsp()
     -- Create a namespace for our custom virtual text
     local ns = vim.api.nvim_create_namespace("custom_diagnostic_vtext")
 
-    -- Custom handler that shows only one diagnostic per line
+    -- Custom handler that shows only one diagnostic per line (scoped to current buffer)
     local function show_diagnostic_virtual_text()
-      -- Clear previous virtual text
-      for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_is_loaded(buf) then
-          vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
-        end
-      end
-
-      -- Get diagnostics for current buffer
       local bufnr = vim.api.nvim_get_current_buf()
+
+      -- Clear previous virtual text for current buffer only
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       local diagnostics = vim.diagnostic.get(bufnr)
 
       -- Group diagnostics by line

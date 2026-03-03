@@ -75,9 +75,9 @@ function M.setup_custom_menus()
     { name = "separator" },
 
     { name = "  LSP Info", cmd = "LspInfo", rtxt = "i", hl = "Exblue" },
-    { name = "  Go to Definition", cmd = "ALEGoToDefinition", rtxt = "d" },
-    { name = "  Find References", cmd = "ALEFindReferences", rtxt = "R" },
-    { name = "  Format Code", cmd = "ALEFix", rtxt = "F" },
+    { name = "  Go to Definition", cmd = "lua vim.lsp.buf.definition()", rtxt = "d" },
+    { name = "  Find References", cmd = "lua vim.lsp.buf.references()", rtxt = "R" },
+    { name = "  Format Code", cmd = "lua vim.lsp.buf.format()", rtxt = "F" },
 
     { name = "separator" },
 

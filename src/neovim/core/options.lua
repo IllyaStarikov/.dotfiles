@@ -9,8 +9,7 @@ opt.history = 10000
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 
--- Large file performance settings (maxmempattern is set in performance.lua)
-opt.redrawtime = 20000 -- ms
+-- Large file performance settings (redrawtime and maxmempattern are set in performance.lua)
 opt.clipboard:append("unnamedplus")
 opt.virtualedit = "block"
 opt.updatetime = 300 -- ms, for CursorHold and diagnostics
@@ -26,16 +25,6 @@ opt.fillchars = {
   vertright = "├", -- Vertical with right
   verthoriz = "┼", -- Cross
 }
-
--- Force proper rendering of box-drawing characters
-if vim.fn.has("multi_byte") == 1 then
-  vim.opt.listchars = {
-    tab = "▸ ",
-    trail = "·",
-    extends = "❯",
-    precedes = "❮",
-  }
-end
 
 -- Wild menu (command-line completion)
 opt.wildmode = { "longest:list", "full" }

@@ -469,12 +469,6 @@ require("lazy").setup({
     config = function()
       local utils = require("utils")
 
-      -- mini.statusline - Disabled in favor of lualine for powerline separators
-      -- utils.setup_plugin("mini.statusline", {
-      --   use_icons = true,
-      --   set_vim_settings = true,
-      -- })
-
       -- mini.surround - Better surround operations
       utils.setup_plugin("mini.surround", {
         mappings = {
@@ -812,11 +806,6 @@ require("lazy").setup({
     dependencies = { "nvim-lua/plenary.nvim" },
   },
 
-  -- UI enhancements - Disabled in favor of Snacks.nvim
-  -- {
-  --   "stevearc/dressing.nvim",
-  --   enabled = false,  -- Using Snacks.nvim for vim.ui overrides instead
-  -- },
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -839,101 +828,52 @@ require("lazy").setup({
     },
   },
 
-  -- Trouble.nvim - Pretty diagnostics, references, quickfix, loclist
+  -- Trouble.nvim v3 - Pretty diagnostics, references, quickfix, loclist
   {
     "folke/trouble.nvim",
-    cmd = { "Trouble", "TroubleToggle" },
+    cmd = { "Trouble" },
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      position = "bottom",
-      height = 10,
-      width = 50,
-      icons = true,
-      mode = "document_diagnostics",
-      fold_open = "",
-      fold_closed = "",
-      group = true,
-      padding = true,
-      action_keys = {
-        close = { "q", "<esc>" },
-        cancel = "<c-e>",
-        refresh = "r",
-        jump = { "<cr>", "<tab>" },
-        open_split = { "<c-x>" },
-        open_vsplit = { "<c-v>" },
-        open_tab = { "<c-t>" },
-        jump_close = { "o" },
-        toggle_mode = "m",
-        toggle_preview = "P",
-        hover = "K",
-        preview = "p",
-        close_folds = { "zM", "zm" },
-        open_folds = { "zR", "zr" },
-        toggle_fold = { "zA", "za" },
-        previous = "k",
-        next = "j",
-      },
-      indent_lines = true,
-      auto_open = false,
-      auto_close = false,
-      auto_preview = true,
-      auto_fold = false,
-      auto_jump = { "lsp_definitions" },
-      signs = {
-        error = "",
-        warning = "",
-        hint = "",
-        information = "",
-        other = "",
-      },
-      use_diagnostic_signs = true,
-    },
+    opts = {},
     keys = {
-      { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
-      {
-        "<leader>xw",
-        "<cmd>TroubleToggle workspace_diagnostics<cr>",
-        desc = "Workspace Diagnostics",
-      },
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       {
         "<leader>xd",
-        "<cmd>TroubleToggle document_diagnostics<cr>",
-        desc = "Document Diagnostics",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
       },
-      {
-        "<leader>xq",
-        "<cmd>TroubleToggle quickfix<cr>",
-        desc = "Quickfix List",
-      },
-      {
-        "<leader>xl",
-        "<cmd>TroubleToggle loclist<cr>",
-        desc = "Location List",
-      },
-      {
-        "<leader>xr",
-        "<cmd>TroubleToggle lsp_references<cr>",
-        desc = "LSP References",
-      },
-      { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo Comments" },
-      {
-        "gR",
-        "<cmd>TroubleToggle lsp_references<cr>",
-        desc = "LSP References",
-      },
+      { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+      { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xr", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
+      { "<leader>xs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
+      { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo Comments (Trouble)" },
+      { "gR", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
       {
         "[q",
         function()
-          require("trouble").previous({ skip_groups = true, jump = true })
+          if require("trouble").is_open() then
+            require("trouble").prev({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cprevious)
+            if not ok then
+              vim.notify(tostring(err), vim.log.levels.ERROR)
+            end
+          end
         end,
-        desc = "Previous Trouble Item",
+        desc = "Previous Trouble/Quickfix Item",
       },
       {
         "]q",
         function()
-          require("trouble").next({ skip_groups = true, jump = true })
+          if require("trouble").is_open() then
+            require("trouble").next({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cnext)
+            if not ok then
+              vim.notify(tostring(err), vim.log.levels.ERROR)
+            end
+          end
         end,
-        desc = "Next Trouble Item",
+        desc = "Next Trouble/Quickfix Item",
       },
     },
   },
@@ -1157,7 +1097,6 @@ require("lazy").setup({
   -- LaTeX support with vimtex
   {
     "lervag/vimtex",
-    lazy = false, -- Load immediately for LaTeX files
     ft = { "tex", "latex", "plaintex" },
     config = function()
       require("plugins.vimtex").setup()

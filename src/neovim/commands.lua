@@ -81,9 +81,6 @@ end, { range = true, desc = "Search visual selection in project" })
 -- HEALTH CHECK
 -- =============================================================================
 
--- Load health check module
-pcall(require, "health")
-
 -- =============================================================================
 -- FORMATTING UTILITIES
 -- =============================================================================
@@ -587,4 +584,4 @@ api.nvim_create_user_command("ReloadConfig", function()
   end
 end, { desc = "Reload neovim configuration" })
 
--- Load this module from init.lua with: require('config.commands')
+-- Load this module from init.lua with: require('commands')

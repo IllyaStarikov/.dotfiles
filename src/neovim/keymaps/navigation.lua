@@ -38,17 +38,12 @@ map("n", "<S-l>", ":bnext<cr>", { desc = "Next buffer" })
 map("n", "[b", ":bprevious<cr>", { desc = "Previous buffer" })
 map("n", "]b", ":bnext<cr>", { desc = "Next buffer" })
 
--- ============================================================================
--- TAB NAVIGATION (brackets)
--- ============================================================================
-map("n", "[t", ":tabprevious<CR>", { desc = "Previous Tab" })
-map("n", "]t", ":tabnext<CR>", { desc = "Next Tab" })
+-- Tab and quickfix bracket navigation ([t, ]t, [q, ]q) are handled by
+-- todo-comments.nvim and trouble.nvim respectively in plugins.lua
 
 -- ============================================================================
--- QUICKFIX/LOCATION (brackets)
+-- LOCATION (brackets)
 -- ============================================================================
-map("n", "[q", ":cprevious<CR>", { desc = "Previous Quickfix" })
-map("n", "]q", ":cnext<CR>", { desc = "Next Quickfix" })
 map("n", "[l", ":lprevious<CR>", { desc = "Previous Location" })
 map("n", "]l", ":lnext<CR>", { desc = "Next Location" })
 
