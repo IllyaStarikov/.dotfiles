@@ -17,15 +17,15 @@ GPU-accelerated terminal emulator with ligatures and image support.
 ```conf
 font_family JetBrains Mono
 font_size 18.0
-disable_ligatures never
 ```
+
+Nerd Font icons via `symbol_map` ranges (ligatures from regular font + icons from Nerd Font).
 
 ### Appearance
 
 ```conf
-background_opacity 0.95
-window_padding_width 10
-macos_titlebar_color background
+window_padding_width 8
+macos_option_as_alt yes
 ```
 
 ### Theme
@@ -52,7 +52,7 @@ Synced with system via `~/.config/kitty/theme.conf`
 
 ## Performance
 
-- 10,000 line scrollback
+- 50,000 line scrollback
 - Shared memory for images
 - GPU-accelerated scrolling
 - Minimal input lag

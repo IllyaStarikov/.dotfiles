@@ -42,7 +42,7 @@ test_kitty_config_syntax() {
   fi
 
   # Check for valid configuration format (key value pairs)
-  local invalid_lines=$(grep -v -E "^(#|$|[a-z_]+\s+.+$|include\s+.+$)" "$kitty_conf" 2>/dev/null | wc -l)
+  local invalid_lines=$(grep -v -E "^(#|$|[a-z_]+\s+.+$)" "$kitty_conf" 2>/dev/null | wc -l)
   assert_equals "$invalid_lines" "0" "All non-comment lines should be valid config entries"
 }
 

@@ -1011,14 +1011,7 @@ update_app_themes() {
       log "Updated Kitty theme"
       # Reload Kitty configuration if it's running
       if pgrep -x "kitty" >/dev/null; then
-        # Find Kitty socket and reload config
-        local kitty_socket=$(ls /tmp/kitty-* 2>/dev/null | head -1)
-        if [[ -n "$kitty_socket" ]]; then
-          kitty @ --to unix:"$kitty_socket" load-config 2>/dev/null || true
-        else
-          # Fallback: try without socket specification
-          kitty @ load-config 2>/dev/null || true
-        fi
+        kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
       fi
     else
       log "Failed to update Kitty theme" "ERROR"
