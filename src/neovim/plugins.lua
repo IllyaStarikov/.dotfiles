@@ -1407,50 +1407,24 @@ require("lazy").setup({
       })
     end,
   },
+  -- Markdown rendering — clean concealed preview with anti-conceal on cursor line
   {
-    "OXY2DEV/markview.nvim",
-    lazy = false,
-    priority = 500, -- Lower priority than treesitter
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown", "quarto", "rmd" },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      {
-        "nvim-tree/nvim-web-devicons",
-        config = function()
-          require("nvim-web-devicons").setup({
-            -- Force override for better compatibility
-            override = {},
-            -- Ensure color icons are enabled
-            color_icons = true,
-            -- Use default icons
-            default = true,
-          })
-        end,
-      },
+      "nvim-tree/nvim-web-devicons",
     },
     config = function()
-      -- FIRST: Load markview modules to ensure they're available
-      require("markview") -- Load module (no variable needed)
-      local spec = require("markview.spec")
-      local filetypes = require("markview.filetypes")
-
-      -- Remove all filetype icons
-      for _, style in pairs(filetypes.styles) do
-        style.icon = ""
-        style.sign = ""
-      end
-
-      -- Directly modify the spec.default BEFORE any setup
-      if spec.default and spec.default.markdown and spec.default.markdown.list_items then
-        spec.default.markdown.list_items.marker_minus.text = "-"
-        spec.default.markdown.list_items.marker_plus.text = "+"
-        spec.default.markdown.list_items.marker_star.text = "*"
-      end
-
-      -- Create our configuration that will be merged
-      local config = require("plugins.markview")
-
-      -- Just run setup, no patches needed with FiraCode
-      config.setup()
+      require("plugins.markdown-render")
+    end,
+  },
+  -- Markdown editing — list continuation, checkbox toggle, TOC, inline styles
+  {
+    "tadmccorkle/markdown.nvim",
+    ft = "markdown",
+    config = function()
+      require("plugins.markdown-editing")
     end,
   },
   { "skywind3000/asyncrun.vim" },

@@ -181,13 +181,20 @@
 | `lli` | Italic (visual)    |
 | `ll$` | Math mode (visual) |
 
-### Markdown (`<leader>lm`)
+### Markdown (`<leader>lm` and motions)
 
-| Key   | Action                   |
-| ----- | ------------------------ |
-| `lmp` | Toggle preview           |
-| `lmf` | Toggle folding           |
-| `lme` | Toggle auto-expand folds |
+| Key   | Action              |
+| ----- | ------------------- |
+| `lmp` | Toggle rendering    |
+| `lmx` | Toggle checkbox     |
+| `lmt` | Insert TOC          |
+| `lmn` | New list item below |
+| `lmN` | New list item above |
+| `]]`  | Next heading        |
+| `[[`  | Previous heading    |
+| `gsb` | Toggle bold         |
+| `gsi` | Toggle italic       |
+| `gsc` | Toggle inline code  |
 
 ## Notes (`<leader>n`)
 
