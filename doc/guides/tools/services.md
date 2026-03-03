@@ -58,14 +58,8 @@ services status
 ### Viewing Logs
 
 ```bash
-# View logs for a service
+# View logs for a service (shows last 50 lines by default)
 services logs calibre-web
-
-# Follow logs in real-time
-services logs calibre-web --follow
-
-# View last 50 lines
-services logs calibre-web --lines 50
 ```
 
 ### Auto-Start Configuration
@@ -120,8 +114,6 @@ service_status() {
 | `SERVICE_NAME`    | Yes      | Unique identifier (lowercase, no spaces) |
 | `SERVICE_DESC`    | No       | Human-readable description               |
 | `SERVICE_PIDFILE` | No       | Custom PID file path                     |
-| `SERVICE_LOGFILE` | No       | Custom log file path                     |
-| `SERVICE_USER`    | No       | Run as specific user                     |
 
 ### Example: Web Server Service
 
@@ -177,6 +169,22 @@ services start calibre-web
 open http://localhost:8083
 ```
 
+### ollama
+
+Ollama local LLM server for on-demand inference. Not auto-started — use `cortex` or start manually:
+
+- **Port**: 11434 (default)
+- **URL**: http://localhost:11434
+- **Requirements**: `brew install ollama`
+
+```bash
+# Start ollama
+services start ollama
+
+# Or use cortex (auto-manages ollama)
+cortex start -m llama3.2
+```
+
 ## File Locations
 
 | Purpose             | Location                                            |
@@ -194,8 +202,7 @@ When you run `services install`, a LaunchAgent is created that:
 
 1. Runs at user login
 2. Starts all configured services
-3. Restarts services if they crash
-4. Logs output to service-specific log files
+3. Logs output to service-specific log files
 
 ### LaunchAgent Configuration
 
@@ -209,7 +216,7 @@ When you run `services install`, a LaunchAgent is created that:
   <string>io.starikov.services</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/starikov/.dotfiles/src/services/services</string>
+    <string>/Users/starikov/.dotfiles/src/scripts/services</string>
     <string>start</string>
   </array>
   <key>RunAtLoad</key>
@@ -224,10 +231,10 @@ When you run `services install`, a LaunchAgent is created that:
 
 ```bash
 # Load (enable)
-launchctl load ~/Library/LaunchAgents/io.starikov.services.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/io.starikov.services.plist
 
 # Unload (disable)
-launchctl unload ~/Library/LaunchAgents/io.starikov.services.plist
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/io.starikov.services.plist
 
 # Check status
 launchctl list | grep services

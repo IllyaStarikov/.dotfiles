@@ -74,6 +74,14 @@ Calibre-Web ebook server for managing and reading ebooks.
 - **URL**: http://localhost:8083
 - **Requirements**: Python venv at `~/calibre-web/venv/`
 
+### ollama
+
+Ollama local LLM server for on-demand inference. Not auto-started to avoid unnecessary CPU/GPU usage — start manually or via `cortex`.
+
+- **Port**: 11434 (default)
+- **URL**: http://localhost:11434
+- **Requirements**: `brew install ollama`
+
 ## File Locations
 
 - **Service definitions**: `~/.dotfiles/src/services/*.service`

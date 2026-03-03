@@ -106,11 +106,12 @@ test_services_functions() {
 }
 
 # Run all tests
-run_tests \
-  test_services_script_exists \
-  test_services_help \
-  test_services_list \
-  test_services_status \
-  test_services_validation \
-  test_services_configuration \
-  test_services_functions
+test_services_script_exists
+test_services_help
+test_services_list
+test_services_status
+test_services_validation
+test_services_configuration
+test_services_functions
+
+run_tests

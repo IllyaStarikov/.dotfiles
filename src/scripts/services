@@ -45,7 +45,7 @@ readonly LAUNCHAGENT_PLIST="$HOME/Library/LaunchAgents/io.starikov.services.plis
 # Load library (provides colors: $RED, $GREEN, $YELLOW, $BLUE, $BOLD, $NC)
 source "${DOTFILES_DIR}/src/lib/init.zsh"
 
-# Logging functions
+# Logging functions (intentionally override library's warn() for emoji-prefix output)
 info() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[⚠]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1" >&2; }
@@ -103,7 +103,7 @@ load_service() {
 
   # Reset service variables
   unset SERVICE_NAME SERVICE_DESC SERVICE_PIDFILE
-  unset -f service_start service_stop service_status 2>/dev/null || true
+  unset -f service_start service_stop service_status service_is_running service_get_pid 2>/dev/null || true
 
   # Source the service definition
   source "$service_file"
@@ -258,6 +258,12 @@ stop_service() {
 
   local pid
   pid=$(get_pid "$name")
+
+  if [[ -z "$pid" ]]; then
+    warn "$name has no PID (stale state) — cleaning up"
+    rm -f "$PID_DIR/${name}.pid"
+    return 0
+  fi
 
   info "Stopping $SERVICE_NAME (PID: $pid)..."
 
@@ -449,9 +455,7 @@ install_launchagent() {
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
-    <true/>
-    <key>ThrottleInterval</key>
-    <integer>10</integer>
+    <false/>
     <key>StandardOutPath</key>
     <string>$LOG_DIR/launchagent.log</string>
     <key>StandardErrorPath</key>
@@ -462,9 +466,9 @@ EOF
 
   info "Created LaunchAgent: $LAUNCHAGENT_PLIST"
 
-  # Load the agent
-  launchctl unload "$LAUNCHAGENT_PLIST" 2>/dev/null
-  if launchctl load "$LAUNCHAGENT_PLIST"; then
+  # Load the agent (bootout first to replace any existing version)
+  launchctl bootout "gui/$(id -u)" "$LAUNCHAGENT_PLIST" 2>/dev/null
+  if launchctl bootstrap "gui/$(id -u)" "$LAUNCHAGENT_PLIST"; then
     info "LaunchAgent loaded - services will start on login"
   else
     error "Failed to load LaunchAgent"
@@ -478,7 +482,7 @@ uninstall_launchagent() {
   echo
 
   if [[ -f "$LAUNCHAGENT_PLIST" ]]; then
-    launchctl unload "$LAUNCHAGENT_PLIST" 2>/dev/null
+    launchctl bootout "gui/$(id -u)" "$LAUNCHAGENT_PLIST" 2>/dev/null
     rm -f "$LAUNCHAGENT_PLIST"
     info "LaunchAgent removed"
   else
