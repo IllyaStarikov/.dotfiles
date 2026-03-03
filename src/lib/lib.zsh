@@ -11,22 +11,22 @@ typeset -gA LIB_LOADED=()
 typeset -gA LIB_DEPENDENCIES=(
   # Define library dependencies
   [array]=""
-  [callstack]="colors"
-  [cli]=""
+  [callstack]="colors utils"
+  [cli]="utils"
   [colors]=""
   [config]=""
-  [die]="colors callstack"
+  [die]="colors callstack logging"
   [hash]=""
-  [help]="colors textwrap"
-  [json]=""
+  [help]="colors textwrap utils"
+  [json]="utils"
   [logging]="colors"
   [math]=""
   [ssh]=""
-  [textwrap]=""
+  [textwrap]="utils"
   [types]=""
   [unit]="colors logging"
   [utils]=""
-  [yaml]=""
+  [yaml]="utils"
 )
 
 # Load a library module

@@ -33,8 +33,8 @@ Terminal colors and styling with support for 16-color, 256-color, and true color
 
 ```zsh
 lib_load colors
-echo "${COLORS[RED]}Error!${COLORS[RESET]}"
-print_color "Success!" "GREEN" "BOLD"
+echo "${COLORS[RED]}Error!${STYLES[RESET]}"
+colorize "Success!" "GREEN" "BOLD"
 ```
 
 #### utils.zsh

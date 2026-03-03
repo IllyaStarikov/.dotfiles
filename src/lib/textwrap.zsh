@@ -41,7 +41,7 @@ dedent() {
   # Find minimum indentation
   while IFS= read -r line; do
     if [[ -n "$line" ]] && [[ "$line" =~ ^[[:space:]]+ ]]; then
-      local indent="${BASH_REMATCH[0]}"
+      local indent="$MATCH"
       if [[ -z "$min_indent" ]] || [[ ${#indent} -lt ${#min_indent} ]]; then
         min_indent="$indent"
       fi
@@ -300,19 +300,6 @@ columns() {
   done
 }
 
-# Repeat string
-str_repeat() {
-  local string="$1"
-  local count="${2:-1}"
-  local result=""
-
-  for ((i = 0; i < count; i++)); do
-    result+="$string"
-  done
-
-  echo "$result"
-}
-
 # Title case
 title_case() {
   local text="$1"
@@ -439,7 +426,7 @@ format_table() {
 
   # Separator
   for ((i = 0; i < ${#headers[@]}; i++)); do
-    printf "%s" "$(repeat '-' "${widths[$i]}")"
+    printf "%s" "$(str_repeat '-' "${widths[$i]}")"
     [[ $i -lt $((${#headers[@]} - 1)) ]] && echo -n "-+-"
   done
   echo

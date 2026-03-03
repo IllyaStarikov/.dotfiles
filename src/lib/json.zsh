@@ -119,12 +119,12 @@ json_encode_array() {
     local first=1
     for item in "${arr_ref[@]}"; do
       [[ $first -eq 0 ]] && output+=",\n"
-      output+="$(repeat ' ' $inner_indent)"
+      output+="$(str_repeat ' ' $inner_indent)"
       output+="$(json_encode_auto "$item" $inner_indent)"
       first=0
     done
 
-    output+="\n$(repeat ' ' "$indent")]"
+    output+="\n$(str_repeat ' ' "$indent")]"
   else
     local first=1
     for item in "${arr_ref[@]}"; do
@@ -150,13 +150,13 @@ json_encode_object() {
     local first=1
     for key in ${(ok)hash_ref}; do
       [[ $first -eq 0 ]] && output+=",\n"
-      output+="$(repeat ' ' $inner_indent)"
+      output+="$(str_repeat ' ' $inner_indent)"
       output+="$(json_encode_string "$key"): "
       output+="$(json_encode_auto "${hash_ref[$key]}" $inner_indent)"
       first=0
     done
 
-    output+="\n$(repeat ' ' "$indent")}"
+    output+="\n$(str_repeat ' ' "$indent")}"
   else
     local first=1
     for key in ${(k)hash_ref}; do
@@ -196,7 +196,7 @@ json_decode_basic() {
   elif [[ "$json" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then
     echo "$json"
   elif [[ "$json" =~ ^\"(.*)\"$ ]]; then
-    json_decode_string "${BASH_REMATCH[1]}"
+    json_decode_string "${match[1]}"
   else
     echo "$json"
   fi
@@ -382,7 +382,7 @@ json_compact() {
 json_format() {
   local json="$1"
   local level="${2:-0}"
-  local indent_str="$(repeat ' ' $((level * JSON_INDENT)))"
+  local indent_str="$(str_repeat ' ' $((level * JSON_INDENT)))"
 
   # This is a simplified formatter
   echo "$json"
@@ -458,19 +458,6 @@ json_validate_schema() {
   else
     return 0
   fi
-}
-
-# Helper to repeat character
-str_repeat() {
-  local char="${1:- }"
-  local count="${2:-1}"
-  local result=""
-
-  for ((i=0; i<count; i++)); do
-    result+="$char"
-  done
-
-  echo "$result"
 }
 
 # JSON to shell variable conversion

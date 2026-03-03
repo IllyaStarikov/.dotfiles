@@ -375,14 +375,3 @@ cli_reset() {
   CLI_COMMANDS=()
   CLI_COMMAND_DESCRIPTIONS=()
 }
-
-# Helper to check if array contains element
-array_contains() {
-  local needle="$1"
-  shift
-  local item
-  for item in "$@"; do
-    [[ "$item" == "$needle" ]] && return 0
-  done
-  return 1
-}

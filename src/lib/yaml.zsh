@@ -62,7 +62,7 @@ yaml_quote_string() {
 yaml_encode_array() {
   local -n arr_ref=$1
   local indent="${2:-0}"
-  local indent_str="$(repeat ' ' "$indent")"
+  local indent_str="$(str_repeat ' ' "$indent")"
 
   if [[ $YAML_FLOW_STYLE -eq 1 ]]; then
     # Flow style [item1, item2, ...]
@@ -86,7 +86,7 @@ yaml_encode_array() {
 yaml_encode_hash() {
   local -n hash_ref=$1
   local indent="${2:-0}"
-  local indent_str="$(repeat ' ' "$indent")"
+  local indent_str="$(str_repeat ' ' "$indent")"
   local inner_indent=$((indent + YAML_INDENT))
 
   if [[ $YAML_FLOW_STYLE -eq 1 ]]; then
@@ -108,7 +108,7 @@ yaml_encode_hash() {
       # Check if value is complex (contains newlines or is very long)
       if [[ "$value" == *$'\n'* ]] || [[ ${#value} -gt 80 ]]; then
         echo "${indent_str}${key}:"
-        echo "$value" | sed "s/^/$(repeat ' ' $inner_indent)/"
+        echo "$value" | sed "s/^/$(str_repeat ' ' $inner_indent)/"
       else
         echo "${indent_str}${key}: $(yaml_encode_scalar "$value" 0)"
       fi
@@ -145,12 +145,12 @@ yaml_decode_basic() {
 
     # Check for array items
     if [[ "$line" =~ ^[[:space:]]*-[[:space:]](.+) ]]; then
-      local value="${BASH_REMATCH[1]}"
+      local value="${match[1]}"
       result_ref+=("$(yaml_decode_value "$value")")
     # Check for key-value pairs
     elif [[ "$line" =~ ^[[:space:]]*([^:]+):[[:space:]]*(.*) ]]; then
-      current_key="${BASH_REMATCH[1]// /}"
-      local value="${BASH_REMATCH[2]}"
+      current_key="${match[1]// /}"
+      local value="${match[2]}"
 
       if [[ -z "$value" ]]; then
         # Value on next line or multiline
@@ -162,7 +162,7 @@ yaml_decode_basic() {
     elif [[ $in_multiline -eq 1 ]]; then
       # Multiline value
       if [[ "$line" =~ ^[[:space:]]{2,}(.+) ]]; then
-        multiline_content+="${BASH_REMATCH[1]}\n"
+        multiline_content+="${match[1]}\n"
       else
         result_ref[$current_key]="${multiline_content%\\n}"
         in_multiline=0
@@ -185,7 +185,7 @@ yaml_decode_value() {
 
   # Remove quotes if present
   if [[ "$value" =~ ^\"(.*)\"$ ]] || [[ "$value" =~ ^\'(.*)\'$ ]]; then
-    value="${BASH_REMATCH[1]}"
+    value="${match[1]}"
   fi
 
   # Convert special values
@@ -223,7 +223,7 @@ yaml_validate_basic() {
     # Check indentation
     local current_indent=0
     if [[ "$line" =~ ^([[:space:]]*) ]]; then
-      current_indent=${#BASH_REMATCH[1]}
+      current_indent=${#match[1]}
     fi
 
     # Indentation must be consistent
@@ -375,8 +375,8 @@ yaml_resolve_anchors() {
   # First pass: collect anchors
   while IFS= read -r line; do
     if [[ "$line" =~ \&([^[:space:]]+)[[:space:]](.+) ]]; then
-      local anchor="${BASH_REMATCH[1]}"
-      local value="${BASH_REMATCH[2]}"
+      local anchor="${match[1]}"
+      local value="${match[2]}"
       anchors[$anchor]="$value"
     fi
   done <<< "$yaml"
@@ -412,19 +412,6 @@ yaml_validate_schema() {
   return 0
 }
 
-# Helper to repeat character
-str_repeat() {
-  local char="${1:- }"
-  local count="${2:-1}"
-  local result=""
-
-  for ((i=0; i<count; i++)); do
-    result+="$char"
-  done
-
-  echo "$result"
-}
-
 # YAML pretty printing
 yaml_pretty() {
   local yaml="$1"
@@ -451,7 +438,7 @@ yaml_format() {
       : # Keep current indent for list items
     fi
 
-    formatted+="$(repeat ' ' $current_indent)$line\n"
+    formatted+="$(str_repeat ' ' $current_indent)$line\n"
   done <<< "$yaml"
 
   echo -e "$formatted"

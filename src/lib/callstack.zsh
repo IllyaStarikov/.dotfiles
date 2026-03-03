@@ -31,9 +31,9 @@ callstack() {
 
     # Format frame
     if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[CYAN]}" ]]; then
-      stack_output+="${COLORS[CYAN]}#$frame${COLORS[RESET]} "
-      stack_output+="${COLORS[YELLOW]}$func${COLORS[RESET]} "
-      stack_output+="${COLORS[GRAY]}at $file:$line${COLORS[RESET]}\n"
+      stack_output+="${COLORS[CYAN]}#$frame${STYLES[RESET]} "
+      stack_output+="${COLORS[YELLOW]}$func${STYLES[RESET]} "
+      stack_output+="${COLORS[BRIGHT_BLACK]}at $file:$line${STYLES[RESET]}\n"
     else
       stack_output+="#$frame $func at $file:$line\n"
     fi
@@ -50,7 +50,7 @@ stack_trace() {
   local header="${2:-Stack trace:}"
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[RED]}" ]]; then
-    echo -e "${COLORS[RED]}${header}${COLORS[RESET]}" >&2
+    echo -e "${COLORS[RED]}${header}${STYLES[RESET]}" >&2
   else
     echo "$header" >&2
   fi
@@ -130,7 +130,7 @@ assert_with_trace() {
 
   if ! eval "$condition"; then
     if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[RED]}" ]]; then
-      echo -e "${COLORS[RED]}ASSERTION FAILED: $message${COLORS[RESET]}" >&2
+      echo -e "${COLORS[RED]}ASSERTION FAILED: $message${STYLES[RESET]}" >&2
     else
       echo "ASSERTION FAILED: $message" >&2
     fi
@@ -150,7 +150,7 @@ debug_print() {
     local line=$(caller_line 1)
 
     if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[BLUE]}" ]]; then
-      echo -e "${COLORS[GRAY]}[$file:$line]${COLORS[RESET]} ${COLORS[BLUE]}$func()${COLORS[RESET]}: $message"
+      echo -e "${COLORS[BRIGHT_BLACK]}[$file:$line]${STYLES[RESET]} ${COLORS[BLUE]}$func()${STYLES[RESET]}: $message"
     else
       echo "[$file:$line] $func(): $message"
     fi
@@ -168,10 +168,10 @@ trace_enter() {
   shift
   local args="$*"
 
-  local indent=$(repeat_string "  " $TRACE_CURRENT_INDENT)
+  local indent=$(str_repeat "  " $TRACE_CURRENT_INDENT)
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[GREEN]}" ]]; then
-    echo -e "${indent}${COLORS[GREEN]}→ $func_name${COLORS[RESET]}${args:+ ($args)}"
+    echo -e "${indent}${COLORS[GREEN]}→ $func_name${STYLES[RESET]}${args:+ ($args)}"
   else
     echo "${indent}→ $func_name${args:+ ($args)}"
   fi
@@ -185,10 +185,10 @@ trace_exit() {
   local return_value="${2:-}"
 
   ((TRACE_CURRENT_INDENT--))
-  local indent=$(repeat_string "  " $TRACE_CURRENT_INDENT)
+  local indent=$(str_repeat "  " $TRACE_CURRENT_INDENT)
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[YELLOW]}" ]]; then
-    echo -e "${indent}${COLORS[YELLOW]}← $func_name${COLORS[RESET]}${return_value:+ = $return_value}"
+    echo -e "${indent}${COLORS[YELLOW]}← $func_name${STYLES[RESET]}${return_value:+ = $return_value}"
   else
     echo "${indent}← $func_name${return_value:+ = $return_value}"
   fi
@@ -196,25 +196,12 @@ trace_exit() {
   unset "TRACE_INDENT_LEVELS[$func_name]"
 }
 
-# Helper to repeat a string
-repeat_string() {
-  local str="$1"
-  local count="$2"
-  local result=""
-
-  for ((i=0; i<count; i++)); do
-    result+="$str"
-  done
-
-  echo "$result"
-}
-
 # Breakpoint simulation
 breakpoint() {
   local message="${1:-Breakpoint reached}"
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[MAGENTA]}" ]]; then
-    echo -e "${COLORS[MAGENTA]}⏸ BREAKPOINT: $message${COLORS[RESET]}" >&2
+    echo -e "${COLORS[MAGENTA]}⏸ BREAKPOINT: $message${STYLES[RESET]}" >&2
   else
     echo "⏸ BREAKPOINT: $message" >&2
   fi
@@ -267,7 +254,7 @@ check_watches() {
       local callback="${WATCH_VARS[$var_name]}"
 
       if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[CYAN]}" ]]; then
-        echo -e "${COLORS[CYAN]}Watch: $var_name changed from '$old_value' to '$current_value'${COLORS[RESET]}" >&2
+        echo -e "${COLORS[CYAN]}Watch: $var_name changed from '$old_value' to '$current_value'${STYLES[RESET]}" >&2
       else
         echo "Watch: $var_name changed from '$old_value' to '$current_value'" >&2
       fi
@@ -385,7 +372,7 @@ trap_error() {
   local line_no=$1
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[RED]}" ]]; then
-    echo -e "${COLORS[RED]}ERROR: Command failed with exit code $exit_code at line $line_no${COLORS[RESET]}" >&2
+    echo -e "${COLORS[RED]}ERROR: Command failed with exit code $exit_code at line $line_no${STYLES[RESET]}" >&2
   else
     echo "ERROR: Command failed with exit code $exit_code at line $line_no" >&2
   fi
@@ -440,7 +427,7 @@ time_function() {
   local ms=$((elapsed / 1000000))
 
   if [[ $CALLSTACK_COLOR -eq 1 ]] && [[ -n "${COLORS[BLUE]}" ]]; then
-    echo -e "${COLORS[BLUE]}Timing: $func took ${ms}ms${COLORS[RESET]}" >&2
+    echo -e "${COLORS[BLUE]}Timing: $func took ${ms}ms${STYLES[RESET]}" >&2
   else
     echo "Timing: $func took ${ms}ms" >&2
   fi

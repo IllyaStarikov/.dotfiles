@@ -106,8 +106,8 @@ help_generate() {
 
   # Header
   if [[ -n "$HELP_PROGRAM_NAME" ]]; then
-    if [[ $HELP_COLOR -eq 1 ]] && [[ -n "${COLORS[BOLD]}" ]]; then
-      output+="${COLORS[BOLD]}${HELP_PROGRAM_NAME}${COLORS[RESET]}"
+    if [[ $HELP_COLOR -eq 1 ]] && [[ -n "${STYLES[BOLD]}" ]]; then
+      output+="${STYLES[BOLD]}${HELP_PROGRAM_NAME}${STYLES[RESET]}"
     else
       output+="$HELP_PROGRAM_NAME"
     fi
@@ -127,7 +127,7 @@ help_generate() {
   for section in "${HELP_SECTIONS[@]}"; do
     # Section header
     if [[ $HELP_COLOR -eq 1 ]] && [[ -n "${COLORS[YELLOW]}" ]]; then
-      output+="${COLORS[YELLOW]}${section}${COLORS[RESET]}\n"
+      output+="${COLORS[YELLOW]}${section}${STYLES[RESET]}\n"
     else
       output+="$section\n"
     fi
@@ -135,7 +135,7 @@ help_generate() {
     # Section content
     local content="${HELP_SECTION_CONTENT[$section]}"
     if command -v wrap >/dev/null 2>&1; then
-      content=$(wrap "$content" $((HELP_WIDTH - HELP_INDENT)) "$(repeat ' ' "$HELP_INDENT")")
+      content=$(wrap "$content" $((HELP_WIDTH - HELP_INDENT)) "$(str_repeat ' ' "$HELP_INDENT")")
     else
       # Simple indentation if textwrap not available
       content="  $content"
@@ -337,7 +337,7 @@ error_usage() {
   local message="$1"
 
   if [[ $HELP_COLOR -eq 1 ]] && [[ -n "${COLORS[RED]}" ]]; then
-    echo -e "${COLORS[RED]}Error: $message${COLORS[RESET]}" >&2
+    echo -e "${COLORS[RED]}Error: $message${STYLES[RESET]}" >&2
   else
     echo "Error: $message" >&2
   fi
@@ -488,7 +488,8 @@ generate_readme() {
             USAGE|OPTIONS|SYNOPSIS) continue ;;
             *)
                 echo
-                echo "## ${section:l:1}${section:l:1:}"
+                local lower="${(L)section}"
+                echo "## ${(C)lower}"
                 echo
                 echo "${HELP_SECTION_CONTENT[$section]}"
                 ;;
@@ -499,17 +500,4 @@ generate_readme() {
       [[ -n "$HELP_PROGRAM_LICENSE" ]] && echo -e "\n## License\n\n$HELP_PROGRAM_LICENSE"
       ;;
   esac
-}
-
-# Helper to repeat character
-str_repeat() {
-  local char="${1:- }"
-  local count="${2:-1}"
-  local result=""
-
-  for ((i=0; i<count; i++)); do
-    result+="$char"
-  done
-
-  echo "$result"
 }
