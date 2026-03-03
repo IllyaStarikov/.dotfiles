@@ -152,7 +152,7 @@ bindkey '^W' backward-kill-word
 [[ -f "$DOTFILES/src/zsh/completion-fix.zsh" ]] && source "$DOTFILES/src/zsh/completion-fix.zsh"
 
 # Completion options (compinit already initialized earlier with zinit)
-zstyle ':completion:*' menu select
+# Note: 'menu select' is set in completion-fix.zsh, not duplicated here
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' group-name ''
@@ -184,9 +184,6 @@ if command -v pyenv &>/dev/null; then
     export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
 fi
-
-# Rust
-[[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # Java (Homebrew openjdk is keg-only)
 [[ -d "/opt/homebrew/opt/openjdk/bin" ]] && export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
@@ -232,9 +229,6 @@ fi
 # FZF Integration
 
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
-
-# Theme integration
-[[ -f "$HOME/.config/theme/current-theme.sh" ]] && source "$HOME/.config/theme/current-theme.sh"
 
 # Theme wrapper function to ensure environment is updated in current shell
 theme() {

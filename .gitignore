@@ -23,6 +23,11 @@ debug-neovim-config.sh
 test/logs/
 test/reports/
 
+# Zsh completion cache
+.zcompdump
+.zcompdump-*
+src/zsh/.zcompdump
+
 # Backup and temporary files
 *.backup
 *.orig

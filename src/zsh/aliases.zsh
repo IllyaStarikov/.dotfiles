@@ -333,7 +333,6 @@ alias dotfiles-install='$DOTFILES/src/setup/install.sh --full'  # Full installat
 alias dotfiles-core='$DOTFILES/src/setup/install.sh --core'     # Core packages only
 alias dotfiles-test='$DOTFILES/test/runner.zsh'               # Run dotfiles test suite
 alias dotfiles-test-debug='$DOTFILES/test/runner.zsh --debug' # Run tests with debug output
-alias dotfiles-test-old='$DOTFILES/test/runner.py'            # Run Python test suite (deprecated)
 
 # Monitoring & Diagnostics
 
