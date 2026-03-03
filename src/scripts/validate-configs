@@ -5,17 +5,10 @@
 
 set -euo pipefail
 
-# Source library for config reading
+# Source library (provides colors, config, utils)
 SCRIPT_DIR="${0:A:h}"
 DOTFILES_DIR="${SCRIPT_DIR}/../.."
-source "${DOTFILES_DIR}/src/lib/config.zsh"
-
-# ANSI color codes for validation output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+source "${DOTFILES_DIR}/src/lib/init.zsh"
 
 # Counters for summary
 TOTAL_CHECKS=0

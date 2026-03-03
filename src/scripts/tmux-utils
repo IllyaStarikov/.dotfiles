@@ -209,7 +209,7 @@ get_battery_status() {
 # Function to generate bar visualization with colors
 generate_bars() {
     local percent=$1
-    local type=$2  # "cpu_mem" or "battery"
+    local type=$2  # "battery", "cpu_mem", or "memory"
 
     # Unicode box drawing characters
     local empty="□"

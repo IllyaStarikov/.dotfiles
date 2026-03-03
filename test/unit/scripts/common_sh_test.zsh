@@ -16,30 +16,6 @@ describe "common.sh library behavioral tests"
 setup_test
 COMMON_LIB="$DOTFILES_DIR/src/scripts/common.sh"
 
-it "should provide OS detection functions" && {
-  # Source the library in a subshell to avoid polluting test environment
-  # Tests that core OS detection functions are properly exported
-  if (source "$COMMON_LIB" && type detect_os >/dev/null 2>&1); then
-    pass
-  else
-    fail "Missing OS detection functions"
-  fi
-}
-
-it "should detect current OS correctly" && {
-  # Verify OS detection matches system uname output
-  # Ensures cross-platform compatibility functions work correctly
-  os_result=$(source "$COMMON_LIB" && detect_os)
-
-  if [[ "$(uname)" == "Darwin" ]] && [[ "$os_result" == "macos" ]]; then
-    pass
-  elif [[ "$(uname)" == "Linux" ]] && [[ "$os_result" == "linux" ]]; then
-    pass
-  else
-    fail "OS detection mismatch: expected $(uname), got $os_result"
-  fi
-}
-
 it "should provide color printing functions" && {
   # Test that color output utilities are available
   # These functions provide consistent user feedback across scripts
@@ -74,20 +50,6 @@ it "should provide platform-specific command execution" && {
     pass
   else
     fail "Missing platform_command function"
-  fi
-}
-
-it "should provide CPU count detection" && {
-  if (source "$COMMON_LIB" && type get_cpu_count >/dev/null 2>&1); then
-    # Test that it returns a number
-    cpu_count=$(source "$COMMON_LIB" && get_cpu_count)
-    if [[ "$cpu_count" =~ ^[0-9]+$ ]] && [[ "$cpu_count" -gt 0 ]]; then
-      pass
-    else
-      fail "Invalid CPU count: $cpu_count"
-    fi
-  else
-    fail "Missing get_cpu_count function"
   fi
 }
 

@@ -15,7 +15,7 @@
 #   scratchpad json     # Create temp JSON file (.json)
 #
 # EDITOR:
-#   Uses $EDITOR if set, otherwise vim (macOS) or nano (Linux)
+#   Uses $EDITOR if set, otherwise vim
 #
 # FILES:
 #   Created in: $TMPDIR or /tmp
@@ -51,11 +51,8 @@ TEMP_DIR="${TMPDIR:-${TMP:-/tmp}}"
 FILENAME="$(generate_filename)${EXT}"
 TEMP_FILE="${TEMP_DIR}/${FILENAME}"
 
-# Select editor in order of preference:
-# 1. User's $EDITOR environment variable (if set)
-# 2. vim on macOS (pre-installed on all macOS versions)
-# 3. nano on Linux (available on minimal installations)
-EDITOR="${EDITOR:-$(platform_command 'vim' 'nano')}"
+# Use $EDITOR if set, otherwise default to vim (available on macOS and Linux)
+EDITOR="${EDITOR:-vim}"
 
 # Create and open the file
 # The editor will create the file if it doesn't exist

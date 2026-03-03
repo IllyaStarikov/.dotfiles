@@ -1344,9 +1344,6 @@ run_tests() {
         log WARN "Some tests failed (see test_results.txt)"
     fi
     
-    # Also generate test report in different formats
-    "$test_runner" "$test_args" --output=json > "$REPORT_DIR/tests/results.json" 2>/dev/null || true
-    "$test_runner" "$test_args" --output=junit > "$REPORT_DIR/tests/results.xml" 2>/dev/null || true
 }
 
 #######################################

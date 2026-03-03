@@ -8,14 +8,19 @@ Custom productivity tools that automate daily development tasks.
 | -------------------- | ---------------------------------------- | --------------------- |
 | **fixy**             | Universal code formatter (20+ languages) | `fixy file.py`        |
 | **theme**            | System-wide theme switcher               | `theme dark`          |
-| **update**           | Update all packages and plugins          | `update`              |
 | **tmux-utils**       | System monitoring for tmux status        | `tmux-utils battery`  |
+| **tmux-auto**        | Auto-create/attach tmux sessions         | `tmux-auto`           |
 | **scratchpad**       | Quick temporary file editor              | `scratchpad`          |
 | **extract**          | Universal archive extractor              | `extract file.tar.gz` |
-| **fetch-quotes**     | Inspirational quotes                     | `fetch-quotes`        |
+| **fetch-quotes**     | Inspirational quotes from APIs           | `fetch-quotes`        |
 | **fallback**         | Command fallback handler                 | Internal use          |
 | **install-ruby-lsp** | Ruby LSP installer                       | `install-ruby-lsp`    |
-| **common.sh**        | Shared utility functions                 | Sourced by scripts    |
+| **bugreport**        | Comprehensive diagnostic report          | `bugreport`           |
+| **nvim-debug**       | Neovim diagnostic tool                   | `nvim-debug`          |
+| **services**         | Service manager with PID tracking        | `services start`      |
+| **validate-configs** | Config standards validation              | `validate-configs`    |
+| **cortex**           | Local AI assistant wrapper               | `cortex`              |
+| **common.sh**        | Compatibility wrapper around src/lib/    | Sourced by scripts    |
 
 ## Key Features
 
@@ -77,7 +82,6 @@ extract archive.tar.gz # Extract files
 
 ## Configuration
 
-- `.formatrc` - Format settings
 - `/config/fixy.json` - Formatter priorities
 
 ## Performance

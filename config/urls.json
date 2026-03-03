@@ -11,7 +11,6 @@
   "apis": {
     "lazygit_releases": "https://api.github.com/repos/jesseduffield/lazygit/releases/latest",
     "zenquotes": "https://zenquotes.io/api/random",
-    "quotable": "https://api.quotable.io/random",
     "advice_slip": "https://api.adviceslip.com/advice"
   },
   "repositories": {

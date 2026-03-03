@@ -58,13 +58,7 @@ DRY_RUN=false
 PARALLEL=false
 FORCE_TYPE=""  # Override file type detection
 # Default to number of CPU cores, fallback to 8
-if command -v nproc >/dev/null 2>&1; then
-  MAX_JOBS=$(nproc)
-elif command -v sysctl >/dev/null 2>&1; then
-  MAX_JOBS=$(sysctl -n hw.ncpu 2>/dev/null || echo 8)
-else
-  MAX_JOBS=8
-fi
+MAX_JOBS=$(cpu_cores 2>/dev/null || echo 8)
 FILES=()
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 CONFIG_FILE="$DOTFILES/config/fixy.json"
@@ -636,7 +630,7 @@ format_fallback() {
           print_color blue "[DRY RUN] Would run clang-format (fallback) on: $file"
         else
           echo -n "  → Running clang-format (fallback)... "
-          clang-format -i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 80}' "$file"
+          clang-format -i -style='{BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 100}' "$file"
           print_color green "✓"
         fi
         return 0
