@@ -77,11 +77,6 @@ zinit wait lucid atload"!_zsh_autosuggest_start" for \
 zinit ice wait"0" lucid
 zinit light agkozak/zsh-z
 
-# Git aliases (minimal, not the full oh-my-zsh plugin)
-zinit snippet OMZ::lib/git.zsh
-zinit wait lucid for \
-    OMZ::plugins/git/git.plugin.zsh
-
 # Environment Setup
 
 # Dotfiles directory
