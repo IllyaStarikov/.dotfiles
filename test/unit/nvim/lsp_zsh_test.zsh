@@ -2,8 +2,7 @@
 # Test: LSP configuration
 
 test_case "LSP configuration exists"
-if [[ -f "$DOTFILES_DIR/src/neovim/config/lsp/servers.lua" ]] \
-  || [[ -f "$DOTFILES_DIR/src/neovim/config/lsp/init.lua" ]]; then
+if [[ -f "$DOTFILES_DIR/src/neovim/lsp.lua" ]]; then
   pass
 else
   fail "No LSP configuration found"
@@ -17,7 +16,7 @@ expected_servers=(
   "rust_analyzer"
 )
 
-config_file="$DOTFILES_DIR/src/neovim/config/lsp/servers.lua"
+config_file="$DOTFILES_DIR/src/neovim/lsp.lua"
 if [[ -f "$config_file" ]]; then
   found=0
   for server in "${expected_servers[@]}"; do
@@ -36,8 +35,8 @@ else
 fi
 
 test_case "Mason LSP installer is configured"
-if grep -q "mason" "$DOTFILES_DIR/src/neovim/config/plugins.lua" 2>/dev/null \
-  || grep -q "mason-lspconfig" "$DOTFILES_DIR/src/neovim/config/lsp/"*.lua 2>/dev/null; then
+if grep -q "mason" "$DOTFILES_DIR/src/neovim/plugins.lua" 2>/dev/null \
+  || grep -q "mason-lspconfig" "$DOTFILES_DIR/src/neovim/lsp.lua" 2>/dev/null; then
   pass
 else
   fail "Mason LSP installer not configured"

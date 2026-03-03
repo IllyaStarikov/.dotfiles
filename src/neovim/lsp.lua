@@ -89,7 +89,7 @@ local function setup_lsp()
     end
   else
     if logging then
-      debug.debug("LSP", "No LSP override found, using standard configuration")
+      logging.debug("LSP", "No LSP override found, using standard configuration")
     end
   end
 

@@ -7,7 +7,7 @@
 #   - snippets.lua: LuaSnip configuration
 #   - snacks.lua: Snacks.nvim dashboard/utilities
 #   - vimtex.lua: LaTeX integration
-#   - markview.lua: Markdown preview
+#   - render-markdown.lua: Markdown rendering
 #
 # Style guide: https://google.github.io/styleguide/shellguide.html
 
@@ -222,125 +222,57 @@ else
 fi
 
 # =============================================================================
-# LAZY.NVIM CONFIGURATION
-# =============================================================================
-
-test_case "lazy.lua configuration exists"
-if [[ -f "$DOTFILES_DIR/src/neovim/lazy.lua" ]]; then
-  pass
-else
-  fail "Missing lazy.lua configuration"
-fi
-
-test_case "lazy.lua has valid syntax"
-if luac -p "$DOTFILES_DIR/src/neovim/lazy.lua" 2>/dev/null; then
-  pass
-else
-  fail "Syntax error in lazy.lua"
-fi
-
-test_case "lazy.lua references folke/lazy.nvim"
-if grep -q "lazy.nvim\|folke/lazy" "$DOTFILES_DIR/src/neovim/lazy.lua"; then
-  pass
-else
-  fail "lazy.lua should reference lazy.nvim"
-fi
-
-# =============================================================================
 # LSP CONFIGURATION
 # =============================================================================
 
 test_case "LSP configuration exists"
-lsp_dir="$DOTFILES_DIR/src/neovim/lsp"
-if [[ -d "$lsp_dir" ]] && [[ -f "$lsp_dir/init.lua" ]]; then
+if [[ -f "$DOTFILES_DIR/src/neovim/lsp.lua" ]]; then
   pass
 else
-  fail "Missing LSP configuration directory"
+  fail "Missing lsp.lua configuration"
 fi
 
-test_case "LSP servers.lua exists"
-if [[ -f "$DOTFILES_DIR/src/neovim/lsp/servers.lua" ]]; then
+test_case "LSP config has valid syntax"
+if luac -p "$DOTFILES_DIR/src/neovim/lsp.lua" 2>/dev/null; then
   pass
 else
-  fail "Missing lsp/servers.lua"
-fi
-
-test_case "LSP files have valid syntax"
-lsp_dir="$DOTFILES_DIR/src/neovim/lsp"
-if [[ -d "$lsp_dir" ]]; then
-  syntax_ok=true
-  for file in "$lsp_dir"/*.lua; do
-    if [[ -f "$file" ]]; then
-      if ! luac -p "$file" 2>/dev/null; then
-        fail "Syntax error in: $(basename $file)"
-        syntax_ok=false
-      fi
-    fi
-  done
-  if $syntax_ok; then
-    pass
-  fi
-else
-  skip "LSP directory not found"
+  fail "Syntax error in lsp.lua"
 fi
 
 # =============================================================================
 # UI CONFIGURATION
 # =============================================================================
 
-test_case "UI configuration files exist"
-ui_dir="$DOTFILES_DIR/src/neovim/ui"
-if [[ -d "$ui_dir" ]]; then
-  ui_files=("init.lua" "theme.lua" "appearance.lua")
-  all_exist=true
-  for file in "${ui_files[@]}"; do
-    if [[ ! -f "$ui_dir/$file" ]]; then
-      fail "Missing UI config: $file"
-      all_exist=false
-    fi
-  done
-  if $all_exist; then
-    pass
-  fi
+test_case "UI configuration exists"
+if [[ -f "$DOTFILES_DIR/src/neovim/ui.lua" ]]; then
+  pass
 else
-  fail "Missing UI configuration directory"
+  fail "Missing ui.lua configuration"
 fi
 
-test_case "UI files have valid syntax"
-ui_dir="$DOTFILES_DIR/src/neovim/ui"
-if [[ -d "$ui_dir" ]]; then
-  syntax_ok=true
-  for file in "$ui_dir"/*.lua; do
-    if [[ -f "$file" ]]; then
-      if ! luac -p "$file" 2>/dev/null; then
-        fail "Syntax error in: $(basename $file)"
-        syntax_ok=false
-      fi
-    fi
-  done
-  if $syntax_ok; then
-    pass
-  fi
+test_case "UI config has valid syntax"
+if luac -p "$DOTFILES_DIR/src/neovim/ui.lua" 2>/dev/null; then
+  pass
 else
-  skip "UI directory not found"
+  fail "Syntax error in ui.lua"
 fi
 
 # =============================================================================
-# CONFORM.NVIM (FORMATTER)
+# FIXY CONFIGURATION
 # =============================================================================
 
-test_case "Conform configuration exists"
-if [[ -f "$DOTFILES_DIR/src/neovim/conform.lua" ]]; then
+test_case "Fixy configuration exists"
+if [[ -f "$DOTFILES_DIR/src/neovim/fixy.lua" ]]; then
   pass
 else
-  fail "Missing conform.lua formatter configuration"
+  fail "Missing fixy.lua formatter integration"
 fi
 
-test_case "Conform config has valid syntax"
-if luac -p "$DOTFILES_DIR/src/neovim/conform.lua" 2>/dev/null; then
+test_case "Fixy config has valid syntax"
+if luac -p "$DOTFILES_DIR/src/neovim/fixy.lua" 2>/dev/null; then
   pass
 else
-  fail "Syntax error in conform.lua"
+  fail "Syntax error in fixy.lua"
 fi
 
 # =============================================================================

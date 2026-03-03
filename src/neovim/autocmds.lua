@@ -95,58 +95,6 @@ vim.treesitter.get_node = function(...)
   return result
 end
 
--- Additional protection for treesitter highlighter errors
-autocmd("FileType", {
-  pattern = { "markdown", "markdown.pandoc" },
-  group = augroup("TreesitterMarkdownFix", { clear = true }),
-  callback = function()
-    -- Defer to ensure treesitter is loaded
-    vim.defer_fn(function()
-      local bufnr = vim.api.nvim_get_current_buf()
-
-      -- Wrap the decoration provider to catch errors
-      local ns = vim.api.nvim_get_namespaces()["nvim.treesitter.highlighter"]
-      if ns then
-        -- Override the decoration provider
-        ---@diagnostic disable-next-line: unused-local
-        local orig_provider = vim.api.nvim_buf_get_extmarks
-
-        -- Create a safe wrapper for get_offset
-        local ts = vim.treesitter
-        if ts._range and ts._range.get_range then
-          local orig_get_range = ts._range.get_range
-          ts._range.get_range = function(...)
-            local ok, result = pcall(orig_get_range, ...)
-            if not ok then
-              return nil
-            end
-            return result
-          end
-        end
-      end
-
-      -- Also wrap the highlighter's on_line method
-      local highlighter = vim.treesitter.highlighter
-      if highlighter and highlighter.active and highlighter.active[bufnr] then
-        local hl = highlighter.active[bufnr]
-        if hl.on_line_impl then
-          local orig_on_line = hl.on_line_impl
-          ---@diagnostic disable-next-line: inject-field
-          hl.on_line_impl = function(self, ...)
-            local ok, result = pcall(orig_on_line, self, ...)
-            if not ok then
-              -- Silently ignore errors
-              return
-            end
-            return result
-          end
-        end
-      end
-    end, 100)
-  end,
-  desc = "Add error handling for treesitter in markdown files",
-})
-
 -- Ensure terminal cursor visibility
 local terminal_cursor_group = augroup("TerminalCursor", { clear = true })
 

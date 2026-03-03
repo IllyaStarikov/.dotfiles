@@ -107,17 +107,6 @@ return {
     -- Default sources for all filetypes
     default = { "lsp", "path", "snippets", "buffer" },
 
-    -- Per-filetype source configuration
-    -- Commented out to test if this is causing Python LSP issues
-    -- per_filetype = {
-    --   lua = { inherit_defaults = true, 'lsp', 'path', 'buffer' },
-    --   python = { inherit_defaults = true, 'lsp', 'path', 'snippets', 'buffer' },
-    --   cpp = { inherit_defaults = true, 'lsp', 'path', 'snippets' },
-    --   c = { inherit_defaults = true, 'lsp', 'path', 'snippets' },
-    --   markdown = { inherit_defaults = true, 'lsp', 'path', 'buffer', 'snippets' },
-    --   tex = { inherit_defaults = true, 'lsp', 'path', 'buffer' },
-    -- },
-
     -- Provider-specific settings
     providers = {
       lsp = {

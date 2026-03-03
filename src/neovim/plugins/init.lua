@@ -5,7 +5,7 @@
 -- completion.lua - Blink.cmp configuration
 -- snippets.lua - LuaSnip configuration
 -- ai.lua - CodeCompanion AI assistant
--- markview.lua - Markdown preview
+-- render-markdown.lua - Markdown rendering (render-markdown.nvim)
 -- snacks.lua - Quality of life utilities
 -- vimtex.lua - LaTeX support
 

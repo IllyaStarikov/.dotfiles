@@ -76,23 +76,6 @@ function M.try_require(module_names)
   return nil, false
 end
 
--- Create a protected keymap that checks if plugin exists
--- Usage: utils.safe_keymap("n", "<leader>ff", "telescope.builtin", "find_files", { desc = "Find Files" })
-function M.safe_keymap(mode, lhs, module_name, method_name, opts)
-  vim.keymap.set(mode, lhs, function()
-    local module, ok = M.silent_require(module_name)
-    if ok and module and module[method_name] then
-      module[method_name](opts and opts.args or {})
-    else
-      vim.notify(
-        string.format("Plugin not available: %s", module_name),
-        vim.log.levels.WARN,
-        { title = "Keymap Error" }
-      )
-    end
-  end, opts or {})
-end
-
 -- Load config module with fallback
 -- Usage: utils.load_config("plugins.telescope", fallback_function)
 function M.load_config(module_name, fallback)

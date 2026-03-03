@@ -4,7 +4,6 @@
 --
 
 local M = {}
-local compat = require("compat")
 
 -- Store original notify function (might already be wrapped by init.lua)
 local original_notify = vim.notify
@@ -72,10 +71,10 @@ function M.setup_error_handler()
   end
 
   -- Log startup errors
-  compat.create_autocmd("VimEnter", {
+  vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
       -- Check for any startup errors
-      local messages = compat.exec2("messages", { output = true })
+      local messages = vim.api.nvim_exec2("messages", { output = true })
       if messages.output:match("E%d+:") or messages.output:match("Error") then
         -- Save startup errors to a file for debugging
         local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
@@ -93,7 +92,7 @@ end
 
 -- Safe execution wrapper for user commands
 function M.safe_command(name, fn, opts)
-  compat.create_user_command(name, function(...)
+  vim.api.nvim_create_user_command(name, function(...)
     local ok, err = pcall(fn, ...)
     if not ok then
       vim.notify(
@@ -105,31 +104,13 @@ function M.safe_command(name, fn, opts)
   end, opts or {})
 end
 
--- Safe keymap wrapper
-function M.safe_keymap(mode, lhs, rhs, opts)
-  local wrapped_rhs = function()
-    local ok, err = pcall(type(rhs) == "function" and rhs or function()
-      vim.cmd(rhs)
-    end)
-    if not ok then
-      vim.notify(
-        string.format("Error in keymap %s:\n%s", lhs, err),
-        vim.log.levels.ERROR,
-        { title = "Keymap Error" }
-      )
-    end
-  end
-
-  vim.keymap.set(mode, lhs, wrapped_rhs, opts)
-end
-
 -- Initialize error handling
 function M.init()
   M.setup_notify()
   M.setup_error_handler()
 
   -- Add command to view error log
-  compat.create_user_command("ErrorLog", function()
+  vim.api.nvim_create_user_command("ErrorLog", function()
     local error_file = vim.fn.stdpath("state") .. "/startup_errors.log"
     if vim.fn.filereadable(error_file) == 1 then
       vim.cmd("split " .. error_file)
@@ -139,7 +120,7 @@ function M.init()
   end, { desc = "View startup error log" })
 
   -- Add command to clear error counts
-  compat.create_user_command("ClearErrorCounts", function()
+  vim.api.nvim_create_user_command("ClearErrorCounts", function()
     error_counts = {}
     vim.notify("Error counts cleared", vim.log.levels.INFO)
   end, { desc = "Clear error throttling counts" })

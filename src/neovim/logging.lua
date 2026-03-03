@@ -111,7 +111,11 @@ end
 
 -- Log work environment detection results
 function M.log_work_detection()
-  local work_init = require("work-init")
+  local ok, work_init = pcall(require, "work-init")
+  if not ok then
+    M.error("WORK-DETECTION", "work-init not available")
+    return
+  end
   local machine_type = work_init.detect_machine_type()
   local profile = work_init.get_profile()
 
