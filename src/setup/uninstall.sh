@@ -26,6 +26,7 @@
 #   Terminal:  ~/.config/alacritty/, ~/.config/wezterm/, ~/.config/kitty/
 #   Git:       ~/.gitconfig, ~/.gitignore, ~/.gitmessage
 #   Tools:     ~/.ripgreprc, ~/.editorconfig, ~/.config/starship.toml
+#   Language:  ~/.clang-format, ~/.config/clangd/, ~/.markdownlint.json, ~/.ruff.toml
 #   Scripts:   ~/.local/bin/* (only symlinks to dotfiles)
 #
 # SAFETY:
@@ -223,6 +224,9 @@ main() {
   remove_link "$HOME/.ripgreprc"
   remove_link "$HOME/.editorconfig"
   remove_link "$HOME/.latexmkrc"
+  remove_link "$HOME/.clang-format"
+  remove_link "$HOME/.config/clangd/config.yaml"
+  remove_link "$HOME/.markdownlint.json"
   remove_link "$HOME/.ruff.toml"
   remove_link "$HOME/pyproject.toml"
   echo ""

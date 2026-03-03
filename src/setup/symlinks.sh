@@ -51,6 +51,29 @@ source "${DOTFILES_DIR}/src/lib/init.zsh"
 # Load config library for reading JSON config files
 lib_load config 2>/dev/null || true
 
+# Flags
+DRY_RUN=false
+FORCE=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run) DRY_RUN=true ;;
+    --force) FORCE=true ;;
+    --verbose) set -x ;;
+    --help | -h)
+      head -40 "$0" | tail -38 | sed 's/^# //' | sed 's/^#//'
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      echo "Use --help for usage information" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
 # Counters
 declare -i created=0
 declare -i skipped=0
@@ -78,7 +101,6 @@ create_link() {
   echo "    To:   $target"
 
   # Validate source file exists before proceeding
-  # Prevents creation of broken symlinks
   if [[ ! -e "$source" ]]; then
     error "    ✗ Source not found: $source (skipping)"
     ((skipped++))
@@ -88,15 +110,19 @@ create_link() {
   # If target already exists
   if [[ -e "$target" || -L "$target" ]]; then
     # Skip if symlink already points to correct location
-    # Avoids unnecessary backup operations
     if [[ -L "$target" ]] && [[ "$(readlink "$target")" == "$source" ]]; then
       info "    ✓ Already linked correctly (skipping)"
       ((skipped++))
       return 0
     fi
 
+    if $DRY_RUN; then
+      warn "    [DRY RUN] Would backup and replace: $target"
+      ((created++))
+      return 0
+    fi
+
     # Create backup with timestamp to prevent conflicts
-    # Preserves existing data before replacement
     mkdir -p "$BACKUP_DIR"
     local backup_name="$(basename "$target")"
     mv "$target" "$BACKUP_DIR/$backup_name" 2>/dev/null || {
@@ -107,15 +133,19 @@ create_link() {
     ((backed_up++))
   fi
 
+  if $DRY_RUN; then
+    info "    [DRY RUN] Would link: $source -> $target"
+    ((created++))
+    return 0
+  fi
+
   # Ensure parent directory exists for target symlink
-  # Required for nested configuration paths like ~/.config/nvim/
   mkdir -p "$(dirname "$target")" 2>/dev/null || {
     error "    ✗ Failed to create parent directory: $(dirname "$target")"
     return 1
   }
 
   # Create symlink with force flag to overwrite existing links
-  # Uses absolute paths to ensure links work from any directory
   if ln -sf "$source" "$target" 2>/dev/null; then
     info "    ✓ Successfully linked"
     ((created++))
@@ -131,6 +161,9 @@ create_link() {
 main() {
   echo "════════════════════════════════════════════════════════════════════"
   echo "       🔗 Creating Dotfile Symlinks"
+  if $DRY_RUN; then
+    echo "       (DRY RUN - no changes will be made)"
+  fi
   echo "════════════════════════════════════════════════════════════════════"
   echo ""
 

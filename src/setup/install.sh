@@ -61,7 +61,6 @@ lib_load config 2>/dev/null || true
 INSTALL_MODE="full" # full, core, symlinks
 VERBOSE="${VERBOSE:-false}"
 SKIP_BREW_PACKAGES=""
-FORCE_BREW=""
 
 # Process arguments
 while [[ $# -gt 0 ]]; do
@@ -79,7 +78,6 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --force-brew)
-      FORCE_BREW="true"
       SKIP_BREW_PACKAGES=""
       shift
       ;;
@@ -179,16 +177,10 @@ detect_system() {
     # Detect package manager
     if command -v apt-get &>/dev/null; then
       PKG_MANAGER="apt"
-      PKG_INSTALL="sudo apt-get install -y"
-      PKG_UPDATE="sudo apt-get update"
     elif command -v dnf &>/dev/null; then
       PKG_MANAGER="dnf"
-      PKG_INSTALL="sudo dnf install -y"
-      PKG_UPDATE="sudo dnf upgrade -y"
     elif command -v pacman &>/dev/null; then
       PKG_MANAGER="pacman"
-      PKG_INSTALL="sudo pacman -S --noconfirm"
-      PKG_UPDATE="sudo pacman -Syu --noconfirm"
     else
       error "No supported package manager found. Please install one of: apt-get, dnf, or pacman"
       error "For manual installation, see: https://github.com/IllyaStarikov/.dotfiles#manual-setup"
@@ -401,7 +393,7 @@ install_macos_packages() {
     # Install packages one by one to continue on failures
     info "Installing core packages..."
     for pkg in "${core_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
         # Apply timeouts and fallbacks for corporate environments
@@ -446,7 +438,7 @@ install_macos_packages() {
 
     info "Installing development packages..."
     for pkg in "${dev_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
         output=$(brew install "$pkg" 2>&1)
@@ -464,7 +456,7 @@ install_macos_packages() {
 
     info "Installing language servers..."
     for pkg in "${lsp_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
         output=$(brew install "$pkg" 2>&1)
@@ -482,7 +474,7 @@ install_macos_packages() {
 
     info "Installing code formatters and linters..."
     for pkg in "${formatter_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
         output=$(brew install "$pkg" 2>&1)
@@ -544,7 +536,7 @@ install_macos_packages() {
     done
     info "Installing extra tools..."
     for pkg in "${extra_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       elif brew install "$pkg" 2>/dev/null; then
         success "✓ $pkg installed successfully"
@@ -555,7 +547,7 @@ install_macos_packages() {
   else
     info "Installing core packages only..."
     for pkg in "${core_packages[@]}"; do
-      if brew list --formula "$pkg" &>/dev/null || true; then
+      if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       elif brew install "$pkg" 2>/dev/null; then
         success "✓ $pkg installed successfully"
@@ -1235,7 +1227,7 @@ setup_node() {
 
   if [[ "$OS" == "macos" ]]; then
     info "Installing Node.js via Homebrew for macOS..."
-    if brew list node &>/dev/null || true; then
+    if brew list node &>/dev/null; then
       info "✓ Node.js already installed"
     elif brew install node; then
       success "✓ Node.js installed successfully"
@@ -1315,15 +1307,7 @@ create_symlinks() {
 setup_neovim() {
   progress "Setting up Neovim..."
 
-  # Install vim-plug
-  if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim" ]]; then
-    local vim_plug_url
-    vim_plug_url=$(get_config "urls.json" ".installers.vim_plug" "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim")
-    curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/autoload/plug.vim" --create-dirs "$vim_plug_url"
-  fi
-
-  # Install plugins
-  nvim --headless +PlugInstall +qall 2>/dev/null || true
+  # Sync lazy.nvim plugins (lazy.nvim bootstraps itself from init.lua)
   nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
 
   success "Neovim configured"
@@ -1424,7 +1408,7 @@ main() {
         setup_macos_xcode
         setup_homebrew
         for pkg in git neovim tmux starship ripgrep fd; do
-          if brew list --formula "$pkg" &>/dev/null || true; then
+          if brew list --formula "$pkg" &>/dev/null; then
             info "✓ $pkg already installed"
           elif brew install "$pkg" 2>/dev/null; then
             success "✓ $pkg installed successfully"

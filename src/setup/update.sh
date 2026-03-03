@@ -39,34 +39,30 @@ SKIP_TOOLS=false
 UPDATED_LIST=""
 FAILED_LIST=""
 
-# Source common library if available
+# Source dotfiles library (provides colors, is_macos, is_linux, command_exists)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-if [[ -f "${SCRIPT_DIR}/common.sh" ]]; then
-    source "${SCRIPT_DIR}/common.sh"
-else
-    # Define minimal functions if common.sh not available
-    print_color() {
-        local color="$1"
-        shift
-        case "$color" in
-            red) echo -e "\033[31m$*\033[0m" ;;
-            green) echo -e "\033[32m$*\033[0m" ;;
-            yellow) echo -e "\033[33m$*\033[0m" ;;
-            blue) echo -e "\033[34m$*\033[0m" ;;
-            *) echo "$*" ;;
-        esac
-    }
-    has_command() { command -v "$1" &> /dev/null; }
-    is_macos() { [[ "$(uname)" == "Darwin" ]]; }
-    is_linux() { [[ "$(uname)" == "Linux" ]]; }
-    detect_os() { if is_macos; then echo "macOS"; elif is_linux; then echo "Linux"; else echo "Unknown"; fi; }
-    detect_package_manager() {
-        if has_command apt-get; then echo "apt"
-        elif has_command dnf; then echo "dnf"
-        elif has_command pacman; then echo "pacman"
-        else echo "unknown"; fi
-    }
-fi
+DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+source "${DOTFILES_DIR}/src/lib/init.zsh"
+
+# Convenience wrappers matching the interface used throughout this script
+print_color() {
+    local color="$1"; shift
+    case "$color" in
+        red) echo -e "${RED}$*${NC}" ;;
+        green) echo -e "${GREEN}$*${NC}" ;;
+        yellow) echo -e "${YELLOW}$*${NC}" ;;
+        blue) echo -e "${BLUE}$*${NC}" ;;
+        *) echo "$*" ;;
+    esac
+}
+has_command() { command_exists "$1"; }
+detect_os() { if is_macos; then echo "macOS"; elif is_linux; then echo "Linux"; else echo "Unknown"; fi; }
+detect_package_manager() {
+    if has_command apt-get; then echo "apt"
+    elif has_command dnf; then echo "dnf"
+    elif has_command pacman; then echo "pacman"
+    else echo "unknown"; fi
+}
 
 # Function to handle errors gracefully
 update_with_fallback() {
@@ -90,77 +86,23 @@ update_with_fallback() {
 
 # Cleanup function (runs silently)
 cleanup() {
-    # Create backup directory with timestamp
-    local CLEANUP_BACKUP_DIR="$HOME/.dotfiles-cleanup-backups/$(date +%Y%m%d_%H%M%S)"
-    mkdir -p "$CLEANUP_BACKUP_DIR"
+    # Clean tmux cache files
+    rm -f /tmp/.tmux_*_cache 2>/dev/null || true
 
-    # Backup and clean tmux cache files
-    if ls /tmp/.tmux_*_cache &>/dev/null; then
-        mkdir -p "$CLEANUP_BACKUP_DIR/tmux-cache"
-        mv /tmp/.tmux_*_cache "$CLEANUP_BACKUP_DIR/tmux-cache/" 2>/dev/null || true
-    fi
+    # Clean old Neovim swap files
+    rm -f ~/.local/state/nvim/swap/* 2>/dev/null || true
 
-    # Backup and clean Neovim swap files and backups
-    if [[ -d ~/.local/state/nvim/swap ]]; then
-        local swap_files=(~/.local/state/nvim/swap/*(N))
-        if (( ${#swap_files[@]} > 0 )); then
-            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-swap"
-            mv ~/.local/state/nvim/swap/* "$CLEANUP_BACKUP_DIR/nvim-swap/" 2>/dev/null || true
-        fi
-    fi
-    if [[ -d ~/.local/state/nvim/backup ]]; then
-        local backup_files=(~/.local/state/nvim/backup/*(N))
-        if (( ${#backup_files[@]} > 0 )); then
-            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-backup"
-            mv ~/.local/state/nvim/backup/* "$CLEANUP_BACKUP_DIR/nvim-backup/" 2>/dev/null || true
-        fi
-    fi
-
-    # Archive old Neovim log files (keep last 5 active)
+    # Remove old Neovim log files (keep last 5)
     if [[ -d ~/.local/state/nvim ]]; then
-        local old_logs
-        old_logs=$(find ~/.local/state/nvim -name "*.log" -type f 2>/dev/null | sort -r | tail -n +6)
-        if [[ -n "$old_logs" ]]; then
-            mkdir -p "$CLEANUP_BACKUP_DIR/nvim-logs"
-            echo "$old_logs" | xargs -I {} mv {} "$CLEANUP_BACKUP_DIR/nvim-logs/" 2>/dev/null || true
-        fi
+        find ~/.local/state/nvim -name "*.log" -type f 2>/dev/null \
+          | sort -r | tail -n +6 | xargs rm -f 2>/dev/null || true
     fi
 
-    # Backup zsh completion dump for regeneration
-    local zcompdump_files=(~/.zcompdump*(N))
-    if (( ${#zcompdump_files[@]} > 0 )); then
-        mkdir -p "$CLEANUP_BACKUP_DIR/zsh"
-        mv ~/.zcompdump* "$CLEANUP_BACKUP_DIR/zsh/" 2>/dev/null || true
-    fi
+    # Regenerate zsh completion dump
+    rm -f ~/.zcompdump* 2>/dev/null || true
 
-    # Clean pip cache (silently)
-    if command -v pip3 &>/dev/null; then
-        pip3 cache purge &>/dev/null || true
-    fi
-
-    # Clean npm cache (silently)
-    if command -v npm &>/dev/null; then
-        npm cache clean --force &>/dev/null || true
-    fi
-
-    # Clean yarn cache (silently)
-    if command -v yarn &>/dev/null; then
-        yarn cache clean &>/dev/null || true
-    fi
-
-    # Clean pnpm store (silently)
-    if command -v pnpm &>/dev/null; then
-        pnpm store prune &>/dev/null || true
-    fi
-
-    # Clean macOS specific caches (silently)
     # Remove .DS_Store files from dotfiles directory
-    find "${DOTFILES:-$HOME/.dotfiles}" -name ".DS_Store" -depth -exec rm {} \; 2>/dev/null || true
-
-    # Backup shell history
-    if [[ -f ~/.zsh_history ]]; then
-        cp ~/.zsh_history ~/.zsh_history.bak 2>/dev/null || true
-    fi
+    find "${DOTFILES_DIR}" -name ".DS_Store" -delete 2>/dev/null || true
 }
 
 # Show usage
@@ -321,29 +263,23 @@ update_homebrew() {
   else
     update_with_fallback "Homebrew update" brew update
 
-# Check for deprecated packages and remove them
-echo "Checking for deprecated packages..."
-# Use while read instead of mapfile for compatibility
-deprecated_packages=()
-while IFS= read -r pkg; do
-    if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
+    # Check for deprecated packages and remove them
+    echo "Checking for deprecated packages..."
+    deprecated_packages=()
+    while IFS= read -r pkg; do
+      if [[ -n "$pkg" ]] && [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
         deprecated_packages+=("$pkg")
-    fi
-done < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}')
+      fi
+    done < <(brew outdated --formula 2>&1 | grep -F "has been disabled because it is deprecated" | awk '{print $2}')
 
-if [[ ${#deprecated_packages[@]} -gt 0 ]]; then
-    echo "Found deprecated packages: ${deprecated_packages[*]}"
-    echo "Removing deprecated packages..."
-    # Safely iterate through array with validated package names
-    for pkg in "${deprecated_packages[@]}"; do
-        # Double-check package name format before using
+    if [[ ${#deprecated_packages[@]} -gt 0 ]]; then
+      echo "Found deprecated packages: ${deprecated_packages[*]}"
+      for pkg in "${deprecated_packages[@]}"; do
         if [[ "$pkg" =~ ^[a-zA-Z0-9._@+-]+$ ]]; then
-            update_with_fallback "Removing $pkg" brew uninstall --ignore-dependencies -- "$pkg"
-        else
-            echo "Skipping invalid package name: $pkg" >&2
+          update_with_fallback "Removing $pkg" brew uninstall --ignore-dependencies -- "$pkg"
         fi
-    done
-fi
+      done
+    fi
 
     # Upgrade remaining packages
     update_with_fallback "Homebrew formula upgrade" brew upgrade
@@ -598,23 +534,16 @@ update_tools() {
 }
 
 # Disk space report
-echo ""
-echo "💾 Disk Space Report:"
-echo "===================="
-# Show disk usage for root filesystem (use 'command' to bypass aliases like duf)
-command df -h / | head -2
+disk_report() {
+  echo ""
+  echo "💾 Disk Space Report:"
+  echo "===================="
+  command df -h / | head -2
 
-echo ""
-echo "📦 Large directories in home:"
-du -sh ~/Library/Caches ~/.Trash ~/Downloads ~/.cache ~/.local/share/nvim ~/.npm ~/.yarn ~/.cargo ~/.rustup 2>/dev/null | sort -hr | head -10 || true
-
-echo ""
-echo "🧹 Cleanup suggestions:"
-echo "   - Clear DNS cache: sudo dscacheutil -flushcache"
-echo "   - Clear font cache: sudo atsutil databases -remove"
-echo "   - Archive trash items: mv ~/.Trash/* ~/Archive/Trash-$(date +%Y%m%d)/"
-echo "   - Archive old downloads: find ~/Downloads -type f -mtime +30 -exec mv {} ~/Archive/Downloads-$(date +%Y%m%d)/ \;"
-echo "   - Archive macOS caches: mv ~/Library/Caches/* ~/Archive/Caches-$(date +%Y%m%d)/"
+  echo ""
+  echo "📦 Large directories in home:"
+  du -sh ~/Library/Caches ~/.Trash ~/Downloads ~/.cache ~/.local/share/nvim ~/.npm ~/.yarn ~/.cargo ~/.rustup 2>/dev/null | sort -hr | head -10 || true
+}
 
 # Show summary
 show_summary() {
@@ -668,7 +597,8 @@ main() {
     update_tools
   fi
 
-  # Show summary first, then cleanup
+  # Show disk report, summary, then cleanup
+  disk_report
   show_summary
   cleanup
 

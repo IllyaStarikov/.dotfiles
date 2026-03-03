@@ -61,36 +61,25 @@ test_symlinks_script() {
   return 0
 }
 
-# Test platform-specific setup scripts
+# Test platform detection in install.sh (mac.sh/linux.sh were merged into install.sh)
 test_platform_setup_scripts() {
-  log "TRACE" "Testing platform-specific setup scripts"
-  [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking for mac.sh and linux.sh"
+  log "TRACE" "Testing platform detection in install.sh"
 
-  local platform_scripts=(
-    "$DOTFILES_DIR/src/setup/mac.sh"
-    "$DOTFILES_DIR/src/setup/linux.sh"
-  )
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
 
-  local found_count=0
-  for script in "${platform_scripts[@]}"; do
-    if [[ -f "$script" ]]; then
-      ((found_count++))
-      [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Found: $(basename "$script")"
-
-      # Check syntax
-      if ! bash -n "$script" 2>/dev/null; then
-        log "ERROR" "Syntax error in $(basename "$script")"
-        return 1
-      fi
-    fi
-  done
-
-  if [[ $found_count -eq 0 ]]; then
-    log "ERROR" "No platform-specific setup scripts found"
+  if [[ ! -f "$setup_script" ]]; then
+    log "ERROR" "install.sh not found"
     return 1
   fi
 
-  [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Platform scripts validated ($found_count found)"
+  # Verify install.sh handles both platforms
+  if grep -q "setup_macos\|darwin" "$setup_script" && grep -q "setup_linux\|linux-gnu" "$setup_script"; then
+    [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "install.sh handles both macOS and Linux"
+  else
+    log "ERROR" "install.sh missing platform detection"
+    return 1
+  fi
+
   return 0
 }
 
@@ -132,24 +121,19 @@ test_homebrew_detection() {
     return 77 # Skip
   fi
 
-  local mac_setup="$DOTFILES_DIR/src/setup/mac.sh"
-  if [[ ! -f "$mac_setup" ]]; then
-    log "WARNING" "Mac setup script not found"
-    return 0
-  fi
+  local setup_script="$DOTFILES_DIR/src/setup/install.sh"
 
-  # Check for Homebrew handling
-  if grep -q "brew" "$mac_setup" 2>/dev/null; then
-    [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Mac setup handles Homebrew"
+  # Check for Homebrew handling in install.sh
+  if grep -q "setup_homebrew\|brew install" "$setup_script" 2>/dev/null; then
+    [[ $VERBOSE -ge 1 ]] && log "DEBUG" "install.sh handles Homebrew"
 
-    # Check if it installs Homebrew if missing
-    if grep -q "install.*homebrew\|/bin/bash.*install.sh" "$mac_setup" 2>/dev/null; then
+    if grep -q "install.*Homebrew\|Homebrew/install" "$setup_script" 2>/dev/null; then
       [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Setup can install Homebrew"
     else
       log "WARNING" "Setup might not install Homebrew if missing"
     fi
   else
-    log "ERROR" "Mac setup doesn't handle Homebrew"
+    log "ERROR" "install.sh doesn't handle Homebrew"
     return 1
   fi
 
