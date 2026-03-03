@@ -44,23 +44,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 source "${DOTFILES_DIR}/src/lib/init.zsh"
 
-# Convenience wrappers matching the interface used throughout this script
-print_color() {
-    local color="$1"; shift
-    case "$color" in
-        red) echo -e "${RED}$*${NC}" ;;
-        green) echo -e "${GREEN}$*${NC}" ;;
-        yellow) echo -e "${YELLOW}$*${NC}" ;;
-        blue) echo -e "${BLUE}$*${NC}" ;;
-        *) echo "$*" ;;
-    esac
-}
-has_command() { command_exists "$1"; }
-detect_os() { if is_macos; then echo "macOS"; elif is_linux; then echo "Linux"; else echo "Unknown"; fi; }
 detect_package_manager() {
-    if has_command apt-get; then echo "apt"
-    elif has_command dnf; then echo "dnf"
-    elif has_command pacman; then echo "pacman"
+    if command_exists apt-get; then echo "apt"
+    elif command_exists dnf; then echo "dnf"
+    elif command_exists pacman; then echo "pacman"
     else echo "unknown"; fi
 }
 
@@ -169,7 +156,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     *)
-      print_color red "Unknown option: $1"
+      echo -e "${RED}Unknown option: $1${NC}"
       usage
       exit 1
       ;;
@@ -179,8 +166,8 @@ done
 # Set trap to cleanup on interrupt only (not normal exit)
 trap 'cleanup; exit 130' INT TERM
 
-print_color green "🚀 Universal System Update"
-echo "OS: $(detect_os)"
+echo -e "${GREEN}🚀 Universal System Update${NC}"
+echo "OS: $(is_macos && echo macOS || is_linux && echo Linux || echo Unknown)"
 if is_linux; then
     echo "Package Manager: $(detect_package_manager)"
 fi
@@ -188,7 +175,7 @@ echo
 
 # Update system packages function
 update_system() {
-  print_color blue "🔄 Updating system packages..."
+  echo -e "${BLUE}🔄 Updating system packages...${NC}"
   
   if is_macos; then
     # macOS System Updates
@@ -196,11 +183,11 @@ update_system() {
     if softwareupdate -l 2>&1 | grep -q "No new software available"; then
         echo "No macOS system updates available."
     else
-        print_color yellow "macOS updates available. Use 'sudo softwareupdate -ia' to install."
+        echo -e "${YELLOW}macOS updates available. Use 'sudo softwareupdate -ia' to install.${NC}"
     fi
     
     # Mac App Store updates
-    if has_command mas; then
+    if command_exists mas; then
         echo "Checking Mac App Store updates..."
         if [[ "${DRY_RUN}" == true ]]; then
             mas outdated
@@ -242,7 +229,7 @@ update_system() {
         fi
         ;;
       *)
-        print_color yellow "Unknown package manager: ${pm}"
+        echo -e "${YELLOW}Unknown package manager: ${pm}${NC}"
         ;;
     esac
   fi
@@ -250,11 +237,11 @@ update_system() {
 
 # Update Homebrew function
 update_homebrew() {
-  if ! has_command brew; then
+  if ! command_exists brew; then
     return
   fi
   
-  print_color blue "🍺 Updating Homebrew..."
+  echo -e "${BLUE}🍺 Updating Homebrew...${NC}"
   
   if [[ "${DRY_RUN}" == true ]]; then
     brew update
@@ -292,7 +279,7 @@ update_homebrew() {
     update_with_fallback "Homebrew autoremove" brew autoremove || true
 
     # Refresh font cache after Homebrew updates (fonts may have been installed/updated)
-    if has_command fc-cache; then
+    if command_exists fc-cache; then
       echo "Refreshing font cache..."
       update_with_fallback "Font cache refresh" fc-cache -fv
     fi
@@ -301,16 +288,16 @@ update_homebrew() {
 
 # Update language-specific package managers function
 update_languages() {
-  print_color blue "📦 Updating language package managers..."
+  echo -e "${BLUE}📦 Updating language package managers...${NC}"
   
   # Python/pip - Skip for Homebrew-managed Python (PEP 668)
   # Use pipx for CLI tools, or virtual environments for project dependencies
-  if has_command pip3; then
+  if command_exists pip3; then
     echo "Skipping pip upgrades (Homebrew-managed Python, use pipx for CLI tools)"
   fi
 
   # pipx - Python CLI tool manager
-  if has_command pipx; then
+  if command_exists pipx; then
     echo "Updating pipx packages..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "pipx upgrade-all" pipx upgrade-all
@@ -318,7 +305,7 @@ update_languages() {
   fi
   
   # Node.js/npm
-  if has_command npm; then
+  if command_exists npm; then
     echo "Updating npm packages..."
     if [[ "${DRY_RUN}" == true ]]; then
         npm outdated -g
@@ -332,7 +319,7 @@ update_languages() {
   fi
   
   # Ruby/gem - Skip system Ruby (macOS built-in is read-only and deprecated)
-  if has_command gem; then
+  if command_exists gem; then
     # Check if using system Ruby
     if [[ "$(which ruby)" == "/usr/bin/ruby" ]]; then
       echo "Skipping gem updates (system Ruby is read-only, use rbenv/asdf)"
@@ -346,34 +333,34 @@ update_languages() {
   fi
   
   # Rust/cargo
-  if has_command rustup; then
+  if command_exists rustup; then
     echo "Updating Rust toolchain..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "rustup update" rustup update
     fi
   fi
   
-  if has_command cargo; then
+  if command_exists cargo; then
     echo "Updating global Cargo packages..."
     # Install cargo-update if not present
-    if ! has_command cargo-install-update; then
+    if ! command_exists cargo-install-update; then
         echo "Installing cargo-update for better Cargo package management..."
         update_with_fallback "cargo-update installation" cargo install cargo-update
     fi
     
     # Use cargo-update if available
-    if has_command cargo-install-update; then
+    if command_exists cargo-install-update; then
         if [[ "${DRY_RUN}" == false ]]; then
             update_with_fallback "Cargo package update" cargo install-update -a
         fi
     else
         # Fallback to manual method
-        cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install --force 2>/dev/null || true
+        cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install 2>/dev/null || true
     fi
   fi
   
   # Go modules
-  if has_command go; then
+  if command_exists go; then
     echo "Updating Go tools..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "gopls update" go install golang.org/x/tools/gopls@latest
@@ -385,10 +372,10 @@ update_languages() {
 
 # Update development tools function
 update_tools() {
-  print_color blue "🛠️  Updating development tools..."
+  echo -e "${BLUE}🛠️  Updating development tools...${NC}"
 
   # Neovim plugins
-  if has_command nvim; then
+  if command_exists nvim; then
     echo "Updating Neovim plugins..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "Neovim plugin sync" nvim --headless +"Lazy! sync" +qa
@@ -408,14 +395,6 @@ update_tools() {
     fi
   fi
   
-  # Oh My Zsh
-  if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-    echo "Updating Oh My Zsh..."
-    if [[ "${DRY_RUN}" == false ]]; then
-        update_with_fallback "Oh My Zsh" sh -c "cd ${HOME}/.oh-my-zsh && git pull --rebase"
-    fi
-  fi
-
   # Zinit
   if [[ -d "${HOME}/.local/share/zinit" ]]; then
     echo "Updating Zinit..."
@@ -435,14 +414,14 @@ update_tools() {
   fi
 
   # Additional Node.js package managers
-  if has_command yarn; then
+  if command_exists yarn; then
     echo "Updating global Yarn packages..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "Yarn global upgrade" yarn global upgrade
     fi
   fi
   
-  if has_command pnpm; then
+  if command_exists pnpm; then
     echo "Updating global pnpm packages..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "pnpm global update" pnpm update -g
@@ -450,13 +429,13 @@ update_tools() {
   fi
   
   # TeX Live Manager Updates (tlmgr)
-  if has_command tlmgr; then
+  if command_exists tlmgr; then
     echo "Checking TeX Live packages (tlmgr)..."
     tlmgr update --list 2>/dev/null | grep -q "update available" && echo "TeX Live updates available. Run 'sudo tlmgr update --all' manually." || echo "No TeX Live updates available."
   fi
   
   # fnm (Fast Node Manager) Updates
-  if has_command fnm; then
+  if command_exists fnm; then
     echo "Updating Node.js via fnm to latest LTS..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "fnm Node.js update" fnm install --lts
@@ -465,11 +444,11 @@ update_tools() {
   fi
   
   # pyenv Python Updates
-  if has_command pyenv; then
+  if command_exists pyenv; then
     echo "Checking for new Python versions..."
     if [[ "${DRY_RUN}" == false ]]; then
         # Update pyenv itself first
-        if is_macos && has_command brew; then
+        if is_macos && command_exists brew; then
             update_with_fallback "pyenv update" brew upgrade pyenv
         fi
         # List available Python versions
@@ -498,7 +477,7 @@ update_tools() {
   fi
 
   # Ollama model updates (local AI models)
-  if has_command ollama; then
+  if command_exists ollama; then
     echo "Updating Ollama models..."
     if [[ "${DRY_RUN}" == false ]]; then
       if ollama list &>/dev/null 2>&1; then
@@ -518,7 +497,7 @@ update_tools() {
   fi
 
   # Docker cleanup (containers, images, volumes)
-  if has_command docker; then
+  if command_exists docker; then
     echo "Cleaning up Docker resources..."
     if [[ "${DRY_RUN}" == false ]]; then
       if docker info &>/dev/null 2>&1; then
@@ -549,32 +528,32 @@ disk_report() {
 show_summary() {
   echo
   echo
-  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
   if [[ "${DRY_RUN}" == true ]]; then
-    print_color yellow "🔍 DRY RUN COMPLETE"
+    echo -e "${YELLOW}🔍 DRY RUN COMPLETE${NC}"
     echo "Run without --dry-run to apply updates"
   else
     if [[ -z "${FAILED_LIST}" ]]; then
-      print_color green "✅ UPDATE COMPLETED SUCCESSFULLY"
+      echo -e "${GREEN}✅ UPDATE COMPLETED SUCCESSFULLY${NC}"
     else
-      print_color yellow "⚠️  UPDATE COMPLETED WITH WARNINGS"
+      echo -e "${YELLOW}⚠️  UPDATE COMPLETED WITH WARNINGS${NC}"
     fi
 
     if [[ -n "${UPDATED_LIST}" ]]; then
       echo
-      print_color green "Successfully updated:"
+      echo -e "${GREEN}Successfully updated:${NC}"
       echo -e "${UPDATED_LIST}" | grep -v '^$' | sed 's/^/  ✓ /' | sort -u
     fi
 
     if [[ -n "${FAILED_LIST}" ]]; then
       echo
-      print_color yellow "Skipped/Failed (non-critical):"
+      echo -e "${YELLOW}Skipped/Failed (non-critical):${NC}"
       echo -e "${FAILED_LIST}" | grep -v '^$' | sed 's/^/  ⚠ /' | sort -u
     fi
   fi
 
-  print_color blue "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo
 }
 
@@ -597,14 +576,14 @@ main() {
     update_tools
   fi
 
-  # Show disk report, summary, then cleanup
+  # Cleanup, disk report, then summary
+  cleanup
   disk_report
   show_summary
-  cleanup
 
   # Final success message
   echo ""
-  print_color green "✅ Update complete!"
+  echo -e "${GREEN}✅ Update complete!${NC}"
 }
 
 main "$@"

@@ -41,7 +41,6 @@
 #
 
 set -euo pipefail
-IFS=$'\n\t'
 
 # Configuration constants
 # Define paths early to avoid repeated calculations and ensure consistency
@@ -264,23 +263,26 @@ setup_homebrew() {
     success "Homebrew already installed"
   fi
 
-  info "Checking Homebrew directory permissions..."
-  local brew_dirs=("/usr/local/bin" "/usr/local/etc" "/usr/local/sbin" "/usr/local/share" "/usr/local/share/doc")
-  local non_writable_dirs=()
-  for dir in "${brew_dirs[@]}"; do
-    if [[ -d "$dir" ]] && [[ ! -w "$dir" ]]; then
-      non_writable_dirs+=("$dir")
-    fi
-  done
+  # Permission check only relevant for Intel Macs (/usr/local); Apple Silicon uses /opt/homebrew
+  if [[ "${BREW_PREFIX}" == "/usr/local" ]]; then
+    info "Checking Homebrew directory permissions..."
+    local brew_dirs=("/usr/local/bin" "/usr/local/etc" "/usr/local/sbin" "/usr/local/share" "/usr/local/share/doc")
+    local non_writable_dirs=()
+    for dir in "${brew_dirs[@]}"; do
+      if [[ -d "$dir" ]] && [[ ! -w "$dir" ]]; then
+        non_writable_dirs+=("$dir")
+      fi
+    done
 
-  if [[ ${#non_writable_dirs[@]} -gt 0 ]]; then
-    warning "Detected non-writable Homebrew directories."
-    info "Attempting to fix permissions with sudo. You may be prompted for your password."
-    sudo chown -R "$USER" "${non_writable_dirs[@]}"
-    chmod u+w "${non_writable_dirs[@]}"
-    success "Homebrew directory permissions fixed."
-  else
-    success "Homebrew directory permissions are correct."
+    if [[ ${#non_writable_dirs[@]} -gt 0 ]]; then
+      warning "Detected non-writable Homebrew directories."
+      info "Attempting to fix permissions with sudo. You may be prompted for your password."
+      sudo chown -R "$USER" "${non_writable_dirs[@]}"
+      chmod u+w "${non_writable_dirs[@]}"
+      success "Homebrew directory permissions fixed."
+    else
+      success "Homebrew directory permissions are correct."
+    fi
   fi
 
   # Apply corporate environment workarounds to prevent conflicts
@@ -506,7 +508,7 @@ install_macos_packages() {
     fi
     if [[ ${#extra_packages[@]} -eq 0 ]]; then
       extra_packages=(
-        "cmatrix" "cowsay" "figlet" "htop" "neofetch" "ranger"
+        "cmatrix" "cowsay" "figlet" "fastfetch"
         "ffmpeg" "imagemagick" "yt-dlp" "tesseract"
       )
     fi

@@ -41,6 +41,6 @@
     "python_preferred": "3.13",
     "python_fallback": "3.12",
     "pynvim_min": "0.6.0",
-    "nvm": "v0.39.0"
+    "nvm": "v0.40.4"
   }
 }
