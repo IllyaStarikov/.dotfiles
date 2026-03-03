@@ -12,7 +12,7 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 ## Key Features
 
 - **< 200ms startup** with Zinit turbo mode
-- **5 essential plugins** (syntax highlighting, autosuggestions, completions)
+- **4 essential plugins** (syntax highlighting, autosuggestions, completions, zsh-z)
 - **Vi mode** with visual feedback
 - **Smart completions** with caching
 - **Starship prompt** with git integration
@@ -20,11 +20,12 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 ## Plugin Management
 
 ```zsh
-# Zinit with turbo mode (loads after prompt)
-zinit wait lucid for \
-    zdharma-continuum/fast-syntax-highlighting \
-    zsh-users/zsh-autosuggestions \
-    zsh-users/zsh-completions
+# Zinit with turbo mode (deferred plugins load after prompt)
+zinit light zsh-users/zsh-completions          # Immediate (for first tab)
+zinit wait lucid for fast-syntax-highlighting   # Deferred
+zinit wait lucid for zsh-autosuggestions        # Deferred
+zinit light agkozak/zsh-z                      # Deferred
+# No OMZ plugins — curated aliases in aliases.zsh instead
 ```
 
 ## Common Aliases
@@ -68,6 +69,7 @@ fi
 
 - Adds 500ms+ to startup
 - Bloated with unused features
+- OMZ git plugin silently overrides curated aliases with wrong meanings
 - Zinit is 10x faster with turbo mode
 
 ### Failed Approaches
