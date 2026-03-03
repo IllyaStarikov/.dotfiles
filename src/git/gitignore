@@ -228,7 +228,6 @@ wheels/
 *.obj
 *.opendb
 *.opensdf
-*.out
 *.pch
 *.pdb
 *.rsuser
@@ -236,7 +235,6 @@ wheels/
 *.sln
 *.sln.docstates
 *.slo
-*.so
 *.so.*
 *.su
 *.suo
@@ -285,7 +283,6 @@ x86/
 # Rust build artifacts
 # keep-sorted start
 **/*.rs.bk
-*.pdb
 /target/
 # keep-sorted end
 
@@ -336,13 +333,10 @@ tmux-server-*.log
 # keep-sorted end
 
 # Lock files (except those explicitly needed)
-# keep-sorted start
-!Cargo.lock
-!package-lock.json
-!pnpm-lock.yaml
-!yarn.lock
+# NOTE: Order matters — *.lock must come first, negations override after
 *.lock
-# keep-sorted end
+!Cargo.lock
+!yarn.lock
 
 # History files
 # keep-sorted start

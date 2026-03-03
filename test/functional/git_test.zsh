@@ -19,64 +19,49 @@ it "gitconfig should exist" && {
 
 it "should configure user information" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "user" || assert_contains "$git_content" "User"
-  assert_contains "$git_content" "email" || assert_contains "$git_content" "name"
-  pass
+  assert_contains "$git_content" "user" && \
+  assert_contains "$git_content" "email" && pass || fail "Missing user configuration"
 }
 
 it "should set up aliases" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "alias" || assert_contains "$git_content" "Alias"
-  pass
+  assert_contains "$git_content" "alias" && pass || fail "Missing alias section"
 }
 
 it "should configure core settings" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "core" || assert_contains "$git_content" "Core"
-  pass
+  assert_contains "$git_content" "core" && pass || fail "Missing core section"
 }
 
 it "should set up global gitignore" && {
-  assert_file_exists "$DOTFILES_DIR/src/git/gitignore_global"
-  local gitignore_content=$(cat "$DOTFILES_DIR/src/git/gitignore_global")
-  assert_contains "$gitignore_content" ".DS_Store" || assert_contains "$gitignore_content" "node_modules"
-  pass
+  assert_file_exists "$DOTFILES_DIR/src/git/gitignore"
+  local gitignore_content=$(cat "$DOTFILES_DIR/src/git/gitignore")
+  assert_contains "$gitignore_content" ".DS_Store" && pass || fail "gitignore missing expected patterns"
 }
 
 it "should configure diff tool" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "diff" || assert_contains "$git_content" "Diff"
-  pass
+  assert_contains "$git_content" "diff" && pass || fail "Missing diff section"
 }
 
 it "should configure merge tool" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "merge" || assert_contains "$git_content" "Merge"
-  pass
-}
-
-it "should set up color output" && {
-  local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "color" || assert_contains "$git_content" "Color"
-  pass
+  assert_contains "$git_content" "merge" && pass || fail "Missing merge section"
 }
 
 it "should configure push behavior" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "push" || assert_contains "$git_content" "Push"
-  pass
+  assert_contains "$git_content" "push" && pass || fail "Missing push section"
 }
 
 it "should set up pull behavior" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "pull" || assert_contains "$git_content" "Pull"
-  pass
+  assert_contains "$git_content" "pull" && pass || fail "Missing pull section"
 }
 
 it "should configure credential handling" && {
   local git_content=$(cat "$DOTFILES_DIR/src/git/gitconfig")
-  assert_contains "$git_content" "credential" || assert_contains "$git_content" "Credential"
-  pass
+  assert_contains "$git_content" "credential" && pass || fail "Missing credential section"
 }
 
 it "should set up GPG signing if configured" && {

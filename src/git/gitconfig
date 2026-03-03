@@ -9,7 +9,7 @@
 [core]
     editor = nvim
     pager = delta
-	excludesfile = ~/.gitignore
+    excludesfile = ~/.gitignore
     # Performance: cache untracked files info, speeds up git status by 10-50%
     untrackedCache = true  # Default: false
 
@@ -86,7 +86,7 @@
 # GitHub CLI credential helper
 [credential "https://github.com"]
     helper =
-    helper = !/opt/homebrew/bin/gh auth git-credential
+    helper = !gh auth git-credential
 
 # Use SSH keys for commit signing (simpler than GPG)
 [gpg]
@@ -109,7 +109,7 @@
 
 # Git LFS (Large File Storage) configuration
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true

@@ -31,18 +31,18 @@ if [[ ${#SSH_KEYS[@]} -eq 0 ]]; then
 fi
 
 echo -e "${GREEN}Found SSH keys:${NC}"
-for i in "${!SSH_KEYS[@]}"; do
-    echo "  $((i+1)). ${SSH_KEYS[$i]}"
+for i in {1..${#SSH_KEYS[@]}}; do
+    echo "  ${i}. ${SSH_KEYS[$i]}"
 done
 
 # Select key
 if [[ ${#SSH_KEYS[@]} -eq 1 ]]; then
-    SELECTED_KEY="${SSH_KEYS[0]}"
+    SELECTED_KEY="${SSH_KEYS[1]}"
     echo -e "${YELLOW}Using the only available key: $SELECTED_KEY${NC}"
 else
     echo ""
-    read -p "Select key number (1-${#SSH_KEYS[@]}): " KEY_NUM
-    SELECTED_KEY="${SSH_KEYS[$((KEY_NUM-1))]}"
+    read "KEY_NUM?Select key number (1-${#SSH_KEYS[@]}): "
+    SELECTED_KEY="${SSH_KEYS[$KEY_NUM]}"
 fi
 
 # Configure git
@@ -61,7 +61,7 @@ mkdir -p "$(dirname "$ALLOWED_SIGNERS")"
 # Get email from git config
 EMAIL=$(git config --global user.email)
 if [[ -z "$EMAIL" ]]; then
-    read -p "Enter your email address: " EMAIL
+    read "EMAIL?Enter your email address: "
 fi
 
 # Add key to allowed signers

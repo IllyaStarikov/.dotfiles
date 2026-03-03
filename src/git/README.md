@@ -15,7 +15,7 @@ Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 
 ```bash
 ./src/git/install-git-hooks        # Install hooks
-./src/git/setup-git-signing --ssh  # Configure SSH signing
+./src/git/setup-git-signing        # Configure SSH signing
 ```
 
 ## Key Features
@@ -79,6 +79,6 @@ Beautiful side-by-side diffs with syntax highlighting:
 
 **Delta not working**: Install with `brew install git-delta`.
 
-**SSH signing fails**: Run `./setup-git-signing --ssh` to configure.
+**SSH signing fails**: Run `./setup-git-signing` to configure.
 
 See [GitHub SSH Signing Docs](https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key) for more details.

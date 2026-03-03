@@ -3,7 +3,7 @@
 # Works on both macOS and Linux
 
 # Source common library
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="${0:A:h}"
 DOTFILES_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 source "${DOTFILES_ROOT}/src/scripts/common.sh"
 
@@ -49,90 +49,13 @@ main() {
     
     if [[ ${installed} -eq 0 ]]; then
       print_color yellow "No hooks found in ${HOOKS_SRC_DIR}"
-      create_default_hooks
     else
       echo
       print_color green "✅ Installed ${installed} git hooks"
     fi
   else
     print_color yellow "Hooks directory not found: ${HOOKS_SRC_DIR}"
-    create_default_hooks
   fi
-}
-
-# Create default hooks if none exist
-create_default_hooks() {
-  print_color blue "Creating default hooks..."
-  
-  # Pre-commit hook
-  cat > "${GIT_HOOKS_DIR}/pre-commit" << 'EOF'
-#!/usr/bin/env bash
-# Pre-commit hook for dotfiles
-
-set -euo pipefail
-
-# Check for trailing whitespace
-if git diff --cached --check --diff-filter=ACMRTUXB; then
-  :
-else
-  echo "❌ Trailing whitespace detected. Please fix before committing."
-  echo "   Run: git diff --cached --name-only | xargs sed -i '' 's/[[:space:]]*$//'"
-  exit 1
-fi
-
-# Check shell scripts
-check_shell_scripts() {
-  local files
-  files=$(git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '\.(sh|bash)$|^[^.]+$' | xargs -I {} sh -c 'head -n1 {} | grep -q "^#!.*sh" && echo {}' 2>/dev/null || true)
-  
-  if [[ -n "${files}" ]]; then
-    echo "🔍 Checking shell scripts..."
-    
-    # Check with shellcheck if available
-    if command -v shellcheck >/dev/null 2>&1; then
-      echo "${files}" | xargs shellcheck || {
-        echo "❌ ShellCheck found issues. Please fix before committing."
-        exit 1
-      }
-    fi
-    
-    # Basic syntax check
-    echo "${files}" | while read -r file; do
-      bash -n "${file}" || {
-        echo "❌ Syntax error in ${file}"
-        exit 1
-      }
-    done
-  fi
-}
-
-check_shell_scripts
-
-echo "✅ Pre-commit checks passed"
-EOF
-  
-  chmod +x "${GIT_HOOKS_DIR}/pre-commit"
-  
-  # Post-merge hook
-  cat > "${GIT_HOOKS_DIR}/post-merge" << 'EOF'
-#!/usr/bin/env bash
-# Post-merge hook - Update symlinks after merge
-
-set -euo pipefail
-
-echo "🔄 Updating symlinks after merge..."
-
-# Run symlinks script if it exists
-if [[ -x "${HOME}/.dotfiles/src/setup/symlinks.sh" ]]; then
-  "${HOME}/.dotfiles/src/setup/symlinks.sh"
-else
-  echo "⚠️  Could not find symlinks.sh to update symlinks"
-fi
-EOF
-  
-  chmod +x "${GIT_HOOKS_DIR}/post-merge"
-  
-  print_color green "✅ Created default hooks"
 }
 
 # Show usage
