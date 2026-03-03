@@ -23,7 +23,6 @@ VERBOSE=0
 CI_MODE=0
 NO_COLOR=0
 PARALLEL=0
-COVERAGE=0
 BAIL_ON_FAIL=0
 
 # Test selection
@@ -221,13 +220,11 @@ ${BOLD}Output Options:${NC}
   -v, --verbose   Show detailed output
   -d, --debug     Enable debug logging
   --no-color      Disable colored output
-  --coverage      Generate coverage report
   --junit         Output JUnit XML report
 
 ${BOLD}Execution Options:${NC}
   --parallel      Run tests in parallel
   --bail          Stop on first failure
-  --timeout SEC   Set test timeout (default: 300s)
   --exclude PAT   Exclude tests matching pattern
 
 ${BOLD}Examples:${NC}
@@ -595,11 +592,6 @@ setup_test_environment() {
   export TEST_DIR
   export TEST_TMP_DIR
 
-  # Source test helpers if available
-  if [[ -f "$TEST_DIR/helpers/common.sh" ]]; then
-    source "$TEST_DIR/helpers/common.sh"
-  fi
-
   log DEBUG "Test environment ready"
 }
 
@@ -610,94 +602,6 @@ cleanup_test_environment() {
   fi
 
   log DEBUG "Test environment cleaned up"
-}
-
-# ============================================================================
-# ASSERTIONS
-# ============================================================================
-
-assert_equals() {
-  local expected="$1"
-  local actual="$2"
-  local message="${3:-Assertion failed}"
-
-  if [[ "$expected" != "$actual" ]]; then
-    echo "FAIL: $message"
-    echo "  Expected: $expected"
-    echo "  Actual:   $actual"
-    return 1
-  fi
-  return 0
-}
-
-assert_true() {
-  local condition="$1"
-  local message="${2:-Assertion failed}"
-
-  if ! eval "$condition"; then
-    echo "FAIL: $message"
-    echo "  Condition: $condition"
-    return 1
-  fi
-  return 0
-}
-
-assert_false() {
-  local condition="$1"
-  local message="${2:-Assertion failed}"
-
-  if eval "$condition"; then
-    echo "FAIL: $message"
-    echo "  Condition should be false: $condition"
-    return 1
-  fi
-  return 0
-}
-
-assert_file_exists() {
-  local file="$1"
-  local message="${2:-File should exist}"
-
-  if [[ ! -f "$file" ]]; then
-    echo "FAIL: $message"
-    echo "  File not found: $file"
-    return 1
-  fi
-  return 0
-}
-
-assert_dir_exists() {
-  local dir="$1"
-  local message="${2:-Directory should exist}"
-
-  if [[ ! -d "$dir" ]]; then
-    echo "FAIL: $message"
-    echo "  Directory not found: $dir"
-    return 1
-  fi
-  return 0
-}
-
-assert_command_succeeds() {
-  local command="$1"
-  local message="${2:-Command should succeed}"
-
-  if ! eval "$command" >/dev/null 2>&1; then
-    echo "FAIL: $message"
-    echo "  Command failed: $command"
-    return 1
-  fi
-  return 0
-}
-
-skip_if() {
-  local condition="$1"
-  local message="${2:-Test skipped}"
-
-  if eval "$condition"; then
-    echo "SKIP: $message"
-    exit 0
-  fi
 }
 
 # ============================================================================
@@ -890,10 +794,6 @@ main() {
         RUN_PERFORMANCE=1
         shift
         ;;
-      --smoke)
-        RUN_SMOKE=1
-        shift
-        ;;
       --sanity)
         RUN_SANITY=1
         shift
@@ -933,10 +833,6 @@ main() {
         NO_COLOR=1
         shift
         ;;
-      --coverage)
-        COVERAGE=1
-        shift
-        ;;
       --junit)
         JUNIT=1
         shift
@@ -950,10 +846,6 @@ main() {
       --bail)
         BAIL_ON_FAIL=1
         shift
-        ;;
-      --timeout)
-        TEST_TIMEOUT="$2"
-        shift 2
         ;;
       --exclude)
         EXCLUDE_PATTERN="$2"
@@ -1038,7 +930,7 @@ main() {
 
   # Generate reports
   generate_report
-  generate_junit_report "$TEST_DIR/test-results.xml"
+  [[ "${JUNIT:-0}" -eq 1 ]] && generate_junit_report "$TEST_DIR/test-results.xml"
   generate_github_summary
 
   # Cleanup

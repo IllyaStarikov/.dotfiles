@@ -2,7 +2,7 @@
 # Git scripts unit tests
 
 # Setup test environment
-export DOTFILES_DIR="${DOTFILES_DIR:-/Users/starikov/.dotfiles}"
+export DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")/../../.." && pwd)}"
 export TEST_TMP_DIR="${TEST_TMP_DIR:-/tmp/test-$$}"
 
 # Source test helpers

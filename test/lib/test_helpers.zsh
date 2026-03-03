@@ -120,13 +120,6 @@ run_parameterized_test() {
   done
 }
 
-# Test runner
-run_tests() {
-  # This function is called at the end of test files
-  # It's a placeholder for future enhancements
-  return 0
-}
-
 # Run individual test with description
 run_test() {
   local description="$1"
@@ -159,77 +152,12 @@ assert_file_executable() {
   fi
 }
 
-assert_directory_exists() {
-  if [[ -d "$1" ]]; then
-    return 0
-  else
-    fail "Directory does not exist: $1"
-    return 1
-  fi
-}
-
 assert_symlink_exists() {
   if [[ -L "$1" ]]; then
     return 0
   else
     fail "Symlink does not exist: $1"
     return 1
-  fi
-}
-
-assert_command_exists() {
-  if command -v "$1" &>/dev/null; then
-    return 0
-  else
-    fail "Command not found: $1"
-    return 1
-  fi
-}
-
-assert_contains() {
-  local haystack="$1"
-  local needle="$2"
-  if [[ "$haystack" == *"$needle"* ]]; then
-    return 0
-  else
-    fail "String does not contain expected text"
-    return 1
-  fi
-}
-
-assert_not_contains() {
-  local haystack="$1"
-  local needle="$2"
-  if [[ "$haystack" != *"$needle"* ]]; then
-    return 0
-  else
-    fail "String should not contain: $needle"
-    return 1
-  fi
-}
-
-assert_equals() {
-  local actual="$1"
-  local expected="$2"
-  local tolerance="${3:-0}"
-
-  if [[ "$tolerance" -eq 0 ]]; then
-    if [[ "$actual" == "$expected" ]]; then
-      return 0
-    else
-      fail "Expected: $expected, Got: $actual"
-      return 1
-    fi
-  else
-    # Numeric comparison with tolerance
-    local diff=$((actual - expected))
-    [[ $diff -lt 0 ]] && diff=$((-diff))
-    if [[ $diff -le $tolerance ]]; then
-      return 0
-    else
-      fail "Expected: $expected ±$tolerance, Got: $actual"
-      return 1
-    fi
   fi
 }
 
@@ -242,30 +170,11 @@ assert_not_equals() {
   fi
 }
 
-assert_greater_than() {
-  if [[ "$1" -gt "$2" ]]; then
-    return 0
-  else
-    fail "$1 is not greater than $2"
-    return 1
-  fi
-}
-
 assert_less_than() {
   if [[ "$1" -lt "$2" ]]; then
     return 0
   else
     fail "$1 is not less than $2"
-    return 1
-  fi
-}
-
-assert_success() {
-  local exit_code="${1:-$?}"
-  if [[ "$exit_code" -eq 0 ]]; then
-    return 0
-  else
-    fail "Command failed with exit code: $exit_code"
     return 1
   fi
 }
@@ -382,12 +291,7 @@ run_tests() {
   [[ $FAILED -eq 0 ]] && return 0 || return 1
 }
 
-# Neovim headless test helper
-nvim_headless() {
-  nvim --headless -u "$DOTFILES_DIR/src/neovim/init.lua" -c "$1" -c "qa!" 2>&1
-}
-
-# Headless Neovim helper with better error handling
+# Headless Neovim helper with timeout and error handling
 nvim_headless() {
   local timeout=${2:-5000}
   local output

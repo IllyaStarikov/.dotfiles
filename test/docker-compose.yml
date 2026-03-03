@@ -4,7 +4,7 @@ services:
   test-ubuntu:
     build:
       context: ..
-      dockerfile: tests/Dockerfile
+      dockerfile: test/Dockerfile
     volumes:
       - ..:/home/testuser/dotfiles:ro
       - test-cache:/home/testuser/.cache
@@ -13,24 +13,24 @@ services:
       - DOTFILES_DIR=/home/testuser/dotfiles
       - CI=true
     command: |
-      -c "cd /home/testuser/dotfiles/tests && ./test --full --ci -v"
+      -c "cd /home/testuser/dotfiles/test && ./runner.zsh --full --ci -v"
 
   test-unit:
     build:
       context: ..
-      dockerfile: tests/Dockerfile
+      dockerfile: test/Dockerfile
     volumes:
       - ..:/home/testuser/dotfiles:ro
     environment:
       - DOTFILES_DIR=/home/testuser/dotfiles
       - CI=true
     command: |
-      -c "cd /home/testuser/dotfiles/tests && ./test --unit --ci"
+      -c "cd /home/testuser/dotfiles/test && ./runner.zsh --unit --ci"
 
   test-functional:
     build:
       context: ..
-      dockerfile: tests/Dockerfile
+      dockerfile: test/Dockerfile
     volumes:
       - ..:/home/testuser/dotfiles:ro
       - test-cache:/home/testuser/.cache
@@ -39,12 +39,12 @@ services:
       - DOTFILES_DIR=/home/testuser/dotfiles
       - CI=true
     command: |
-      -c "cd /home/testuser/dotfiles/tests && ./test --functional --ci"
+      -c "cd /home/testuser/dotfiles/test && ./runner.zsh --functional --ci"
 
   test-integration:
     build:
       context: ..
-      dockerfile: tests/Dockerfile
+      dockerfile: test/Dockerfile
     volumes:
       - ..:/home/testuser/dotfiles:ro
       - test-cache:/home/testuser/.cache
@@ -53,12 +53,12 @@ services:
       - DOTFILES_DIR=/home/testuser/dotfiles
       - CI=true
     command: |
-      -c "cd /home/testuser/dotfiles/tests && ./test --integration --ci"
+      -c "cd /home/testuser/dotfiles/test && ./runner.zsh --integration --ci"
 
   shell:
     build:
       context: ..
-      dockerfile: tests/Dockerfile
+      dockerfile: test/Dockerfile
     volumes:
       - ..:/home/testuser/dotfiles:ro
       - test-cache:/home/testuser/.cache
