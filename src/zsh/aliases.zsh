@@ -168,7 +168,9 @@ command -v trash &>/dev/null && alias rn='trash' # Move files to trash instead o
 # System information
 alias df='df -H'
 alias du='du -ch'
-alias free='vm_stat'
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias free='vm_stat'
+fi
 # Only override top if htop is available
 command -v htop &>/dev/null && alias top='htop'
 # Only override ps if procs is available
@@ -180,7 +182,11 @@ if command -v curl &>/dev/null; then
 elif command -v wget &>/dev/null; then
   alias ip="wget -qO- icanhazip.com"
 fi
-alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1"
+else
+  alias localip="hostname -I | awk '{print \$1}'"
+fi
 alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, ""); print }'"
 # Install speedtest-cli safely: brew install speedtest-cli
 alias speedtest="speedtest-cli"
@@ -336,12 +342,21 @@ alias psg="ps aux | grep"
 alias cpu='top -o cpu'
 alias mem='top -o mem'
 
-# Disk usage
-alias disk='du -h --max-depth=1 | sort -hr'
-alias biggest='du -h --max-depth=1 | sort -hr | head -20'
+# Disk usage (GNU du uses --max-depth, macOS du uses -d)
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias disk='du -h -d 1 | sort -hr'
+  alias biggest='du -h -d 1 | sort -hr | head -20'
+else
+  alias disk='du -h --max-depth=1 | sort -hr'
+  alias biggest='du -h --max-depth=1 | sort -hr | head -20'
+fi
 
-# Port monitoring
-alias ports='netstat -tulanp'
+# Port monitoring (different flags per platform)
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias ports='netstat -an -ptcp'
+else
+  alias ports='netstat -tulanp'
+fi
 alias listening='lsof -i -P | grep LISTEN'
 
 # Productivity Shortcuts
@@ -391,16 +406,22 @@ alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_pl
 
 # Base64 encoding/decoding
 alias b64encode='base64'
-alias b64decode='base64 -D'
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias b64decode='base64 -D'
+else
+  alias b64decode='base64 -d'
+fi
 
 # JSON formatting
 alias json='python3 -m json.tool'
 alias jsonpp='python3 -m json.tool'
 
-# Hash utilities
-alias md5sum='md5'
-alias sha1sum='shasum -a 1'
-alias sha256sum='shasum -a 256'
+# Hash utilities (macOS uses md5/shasum, Linux has md5sum/sha*sum natively)
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias md5sum='md5'
+  alias sha1sum='shasum -a 1'
+  alias sha256sum='shasum -a 256'
+fi
 
 # Security & Permissions
 
