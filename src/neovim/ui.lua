@@ -218,7 +218,7 @@ function M.setup_theme()
   if vim.fn.filereadable(config_file) == 1 then
     local lines = vim.fn.readfile(config_file)
     for _, line in ipairs(lines) do
-      local k, v = line:match("^export%s+(%w+)=['\"]?(.-)['\"]?$")
+      local k, v = line:match("^export%s+([%w_]+)=['\"]?(.-)['\"]?$")
       if k == "MACOS_THEME" then
         theme = v
       elseif k == "MACOS_VARIANT" then
@@ -305,7 +305,7 @@ vim.api.nvim_create_autocmd("FocusGained", {
       local current_theme = nil
       local lines = vim.fn.readfile(config_file)
       for _, line in ipairs(lines) do
-        local k, v = line:match("^export%s+(%w+)=['\"]?(.-)['\"]?$")
+        local k, v = line:match("^export%s+([%w_]+)=['\"]?(.-)['\"]?$")
         if k == "MACOS_THEME" then
           current_theme = v
           break
@@ -325,6 +325,37 @@ vim.api.nvim_create_autocmd("BufWritePost", {
   callback = M.setup_theme,
   group = theme_reload_group,
 })
+
+-- Poll theme file for external changes (e.g., `theme day` in terminal)
+-- Uses timer+stat instead of fs_event because switch-theme.sh uses atomic mv
+local theme_file = vim.fn.expand("~/.config/theme/current-theme.sh")
+local last_mtime = vim.uv.fs_stat(theme_file) and vim.uv.fs_stat(theme_file).mtime.sec or 0
+local theme_timer = vim.uv.new_timer()
+if theme_timer then
+  theme_timer:start(
+    2000,
+    2000,
+    vim.schedule_wrap(function()
+      local stat = vim.uv.fs_stat(theme_file)
+      if not stat then
+        return
+      end
+      if stat.mtime.sec ~= last_mtime then
+        last_mtime = stat.mtime.sec
+        -- Re-read and apply if theme actually changed
+        local lines = vim.fn.readfile(theme_file)
+        for _, line in ipairs(lines) do
+          local k, v = line:match("^export%s+([%w_]+)=['\"]?(.-)['\"]?$")
+          if k == "MACOS_THEME" and v ~= "" and v ~= last_theme then
+            last_theme = v
+            M.setup_theme()
+            break
+          end
+        end
+      end
+    end)
+  )
+end
 
 -- Convenient commands for manual theme management
 vim.api.nvim_create_user_command("ReloadTheme", M.setup_theme, {
