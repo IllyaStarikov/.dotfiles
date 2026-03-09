@@ -47,7 +47,7 @@ jobs:
 
       - name: set up docker buildx (linux only)
         if: runner.os == 'Linux'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: cache docker layers (linux only)
         if: runner.os == 'Linux'
