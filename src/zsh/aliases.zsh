@@ -386,6 +386,10 @@ alias moon='curl wttr.in/Moon'
 alias crypto='curl rate.sx'
 alias chuck='curl -s https://api.chucknorris.io/jokes/random | jq -r .value'
 
+# Environment and debugging
+alias envs='censor-env'          # Print env vars with secrets censored
+alias envsc='censor-env --copy'  # Same but copy to clipboard
+
 # Power User Shortcuts
 
 # Quick server - using function in zshrc instead of aliases

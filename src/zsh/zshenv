@@ -29,7 +29,7 @@ export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 export KEYTIMEOUT=1  # Default: 40 (faster vim mode switching)
 
 # Private environment variables (API keys, secrets)
-[[ -f "$HOME/.dotfiles/.dotfiles.private/lib/shell/env.zsh" ]] && source "$HOME/.dotfiles/.dotfiles.private/lib/shell/env.zsh"
+[[ -f "$HOME/.env.zsh" ]] && source "$HOME/.env.zsh"
 
 # Rust configuration
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
