@@ -1261,6 +1261,21 @@ require("lazy").setup({
     end,
   },
 
+  -- AI Inline Completion (disabled on work machines)
+  {
+    "milanglacier/minuet-ai.nvim",
+    enabled = function()
+      return (vim.g.work_profile or "personal") == "personal"
+    end,
+    event = "InsertEnter",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("plugins.minuet").setup()
+    end,
+  },
+
   -- Writing and editing
   {
     "iamcco/markdown-preview.nvim",

@@ -11,6 +11,7 @@
 --   f = Find (Telescope)
 --   g = Git
 --   l = Language (filetype-specific)
+--   m = Minuet (AI completion)
 --   n = Notes (notifications)
 --   o = Open (explorer, terminal)
 --   q = Quickfix
@@ -474,6 +475,41 @@ vim.api.nvim_create_autocmd("FileType", {
     )
   end,
 })
+
+-- ============================================================================
+-- MINUET (<leader>m) - AI Inline Completion
+-- ============================================================================
+map("n", "<leader>mo", function()
+  local ok = pcall(vim.cmd, "Minuet change_preset ollama")
+  if ok then
+    vim.notify("Minuet: Ollama", vim.log.levels.INFO)
+  else
+    vim.notify("Minuet not available", vim.log.levels.WARN)
+  end
+end, { desc = "Minuet Ollama" })
+
+map("n", "<leader>mc", function()
+  local ok = pcall(vim.cmd, "Minuet change_preset claude")
+  if ok then
+    vim.notify("Minuet: Claude", vim.log.levels.INFO)
+  else
+    vim.notify("Minuet not available", vim.log.levels.WARN)
+  end
+end, { desc = "Minuet Claude" })
+
+map("n", "<leader>mt", function()
+  local ok = pcall(vim.cmd, "Minuet virtualtext toggle")
+  if not ok then
+    vim.notify("Minuet not available", vim.log.levels.WARN)
+  end
+end, { desc = "Minuet Toggle VText" })
+
+map("n", "<leader>mb", function()
+  local ok = pcall(vim.cmd, "Minuet blink toggle")
+  if not ok then
+    vim.notify("Minuet not available", vim.log.levels.WARN)
+  end
+end, { desc = "Minuet Toggle Blink" })
 
 -- ============================================================================
 -- NOTES (<leader>n) - Notifications

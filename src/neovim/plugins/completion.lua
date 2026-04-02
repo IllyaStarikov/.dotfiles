@@ -1,6 +1,8 @@
 -- Optimized blink.cmp configuration
 -- Based on best practices for performance and functionality
 
+local has_minuet = vim.fn.isdirectory(vim.fn.stdpath("data") .. "/lazy/minuet-ai.nvim") == 1
+
 return {
   -- Enable blink.cmp
   enabled = function()
@@ -42,7 +44,7 @@ return {
       show_on_insert_on_trigger_character = true,
       show_in_snippet = true,
       show_on_accept_on_trigger_character = true,
-      prefetch_on_insert = true,
+      prefetch_on_insert = false,
       show_on_blocked_trigger_characters = {}, -- Don't block any characters
       show_on_x_blocked_trigger_characters = {}, -- Don't block any characters
     },
@@ -105,7 +107,8 @@ return {
     min_keyword_length = 0,
 
     -- Default sources for all filetypes
-    default = { "lsp", "path", "snippets", "buffer" },
+    default = has_minuet and { "lsp", "path", "snippets", "buffer", "minuet" }
+      or { "lsp", "path", "snippets", "buffer" },
 
     -- Provider-specific settings
     providers = {
@@ -155,6 +158,13 @@ return {
           label_trailing_slash = true,
           show_hidden_files_by_default = false,
         },
+      },
+      minuet = {
+        name = "minuet",
+        module = "minuet.blink",
+        async = true,
+        timeout_ms = 5000,
+        score_offset = 50,
       },
     },
   },
