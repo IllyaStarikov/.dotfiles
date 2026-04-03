@@ -65,6 +65,19 @@ if (( ${+widgets[zle-keymap-select]} )); then
 fi
 ```
 
+### Vi Mode Backspace Fix
+
+Zsh vi mode binds backspace to `vi-backward-delete-char`, which can't cross line boundaries
+or backspace past the insert-mode entry point. Fixed by binding `backward-delete-char` in viins:
+
+```zsh
+# Fix at zshrc:134-135
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+```
+
+This is the zsh equivalent of vim's `set backspace=indent,eol,start`.
+
 ### Why Not Oh-My-Zsh
 
 - Adds 500ms+ to startup

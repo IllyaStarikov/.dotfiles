@@ -131,6 +131,11 @@ fi
 # Vi mode (KEYTIMEOUT exported in zshenv)
 bindkey -v
 
+# Fix vi mode backspace: allow deleting across lines and past insert point
+# (mirrors vim's 'set backspace=indent,eol,start' behavior)
+bindkey -M viins '^?' backward-delete-char  # Backspace key (most terminals)
+bindkey -M viins '^H' backward-delete-char  # Ctrl+H / alternate backspace
+
 # Better searching
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
