@@ -258,7 +258,7 @@ nvim ~/.dotfiles/src/zsh/aliases.zsh
 Validate configuration changes:
 
 ```bash
-# Quick sanity check
+# Quick smoke test
 ./test/runner.zsh --quick
 
 # Test specific component

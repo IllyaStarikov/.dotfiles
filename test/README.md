@@ -67,7 +67,7 @@ test/
 ├── integration/        # Integration tests (< 60s)
 ├── lib/                # Test framework and helpers
 ├── performance/        # Performance regression tests
-├── sanity/             # Quick validation tests (smoke + regression)
+├── smoke/              # Quick validation tests (smoke + regression)
 ├── stress/             # Edge case and extreme condition tests
 ├── unit/               # Unit tests (< 5s)
 │   ├── config/         # App configuration tests (kitty, wezterm, tmux, etc.)

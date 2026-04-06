@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Sanity Tests - Code Quality Validation
+# Smoke Tests - Code Quality Validation
 # Ensures all source files pass linting and formatting checks
 
 set -uo pipefail
@@ -8,7 +8,7 @@ source "$(dirname "$0")/../lib/test_helpers.zsh"
 
 readonly DEBUG="${DEBUG:-0}"
 
-echo -e "${BLUE}=== Sanity Tests - Code Quality Validation ===${NC}"
+echo -e "${BLUE}=== Smoke Tests - Code Quality Validation ===${NC}"
 
 # === Lua Syntax Validation ===
 test_case "Lua files have valid syntax (luac -p)"

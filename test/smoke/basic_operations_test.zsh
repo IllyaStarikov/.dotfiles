@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Sanity Tests - Basic Operations
+# Smoke Tests - Basic Operations
 # Verify basic operations work as expected
 
 set -euo pipefail
@@ -7,13 +7,13 @@ set -euo pipefail
 source "$(dirname "$0")/../lib/test_helpers.zsh"
 
 readonly DEBUG="${DEBUG:-0}"
-readonly TEST_WORKSPACE="${TEST_TMP_DIR}/sanity_workspace"
+readonly TEST_WORKSPACE="${TEST_TMP_DIR}/smoke_workspace"
 
 # Create test workspace
 mkdir -p "$TEST_WORKSPACE"
 cd "$TEST_WORKSPACE"
 
-echo -e "${BLUE}=== Sanity Tests - Basic Operations ===${NC}"
+echo -e "${BLUE}=== Smoke Tests - Basic Operations ===${NC}"
 
 test_case "Can create and edit files with Neovim"
 test_file="$TEST_WORKSPACE/test_edit.txt"
@@ -143,5 +143,5 @@ fi
 cd "$DOTFILES_DIR"
 rm -rf "$TEST_WORKSPACE"
 
-echo -e "\n${GREEN}=== Sanity Test Summary ===${NC}"
+echo -e "\n${GREEN}=== Smoke Test Summary ===${NC}"
 echo "Basic operations verified"

@@ -1,13 +1,13 @@
 #!/usr/bin/env zsh
-# Sanity Tests: Basic Functionality Verification
+# Smoke Tests: Basic Functionality Verification
 # TEST_SIZE: small
 # Quick checks to ensure basic dotfiles functionality works
 
 source "${TEST_DIR}/lib/framework.zsh"
 
-# Test that basic environment is sane
-test_environment_sanity() {
-  log "TRACE" "Testing basic environment sanity"
+# Test that basic environment is properly configured
+test_environment_smoke() {
+  log "TRACE" "Testing basic environment setup"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking essential environment variables"
 
   local issues=0
@@ -120,7 +120,7 @@ test_neovim_starts() {
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Attempting to start Neovim headless"
 
   local start_time=$(date +%s%N)
-  local output=$(timeout 5 nvim --headless -c "echo 'sanity_check_ok'" -c "qa!" 2>&1)
+  local output=$(timeout 5 nvim --headless -c "echo 'smoke_check_ok'" -c "qa!" 2>&1)
   local exit_code=$?
   local end_time=$(date +%s%N)
   local duration=$(((end_time - start_time) / 1000000))
@@ -138,7 +138,7 @@ test_neovim_starts() {
     return 1
   fi
 
-  if [[ "$output" == *"sanity_check_ok"* ]]; then
+  if [[ "$output" == *"smoke_check_ok"* ]]; then
     [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim starts and executes commands"
     return 0
   else

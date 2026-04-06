@@ -1,8 +1,8 @@
-# /test/sanity - Basic Sanity Checks
+# /test/smoke - Basic Smoke Tests
 
 ## What's in this directory
 
-Sanity tests verify that the basic assumptions about the environment and configuration are true. These are simple checks that should always pass unless something is fundamentally broken.
+Smoke tests verify that the basic assumptions about the environment and configuration are true. These are simple checks that should always pass unless something is fundamentally broken.
 
 ### Test Categories:
 
@@ -14,7 +14,7 @@ Sanity tests verify that the basic assumptions about the environment and configu
 
 ## Why this exists
 
-Sanity tests catch environmental issues that would cause all other tests to fail mysteriously. They provide clear error messages about what's wrong with the setup rather than cryptic failures deep in complex tests.
+Smoke tests catch environmental issues that would cause all other tests to fail mysteriously. They provide clear error messages about what's wrong with the setup rather than cryptic failures deep in complex tests.
 
 ## Lessons Learned
 

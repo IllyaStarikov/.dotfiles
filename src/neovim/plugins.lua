@@ -584,8 +584,8 @@ require("lazy").setup({
           "RainbowDelimiterViolet",
           "RainbowDelimiterCyan",
         },
-        -- Blacklist filetypes: markdown (conflicts with markview), blink-cmp (no treesitter parser)
-        blacklist = {
+        -- Exclude filetypes: markdown (conflicts with markview), blink-cmp (no treesitter parser)
+        blacklist = { -- plugin API name; means "exclude list"
           "markdown", "md", "mdx", "tex", "latex",
           "blink-cmp-menu", "blink-cmp-documentation", "blink-cmp-signature",
         },

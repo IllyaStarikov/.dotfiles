@@ -95,7 +95,7 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ```bash
 # Main test runner with comprehensive test suite
 ./test/runner.zsh            # Run standard test suite
-./test/runner.zsh --quick    # Quick sanity check (< 10s)
+./test/runner.zsh --quick    # Quick smoke test (< 10s)
 ./test/runner.zsh --unit     # Unit tests only (< 5s)
 ./test/runner.zsh --functional    # Functional tests (< 30s)
 ./test/runner.zsh --integration   # Integration tests (< 60s)
