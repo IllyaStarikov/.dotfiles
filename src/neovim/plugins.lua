@@ -561,6 +561,20 @@ require("lazy").setup({
       local rainbow_delimiters = require("rainbow-delimiters")
 
       require("rainbow-delimiters.setup").setup({
+        -- Only attach when a treesitter parser is actually installed (Neovim 0.12+
+        -- returns nil from get_parser instead of throwing, which crashes the plugin)
+        condition = function(bufnr)
+          local ft = vim.bo[bufnr].filetype
+          if not ft or ft == "" then
+            return false
+          end
+          local lang = vim.treesitter.language.get_lang(ft)
+          if not lang then
+            return false
+          end
+          local ok = pcall(vim.treesitter.language.inspect, lang)
+          return ok
+        end,
         strategy = {
           [""] = rainbow_delimiters.strategy["global"],
           vim = rainbow_delimiters.strategy["local"],
@@ -584,16 +598,13 @@ require("lazy").setup({
           "RainbowDelimiterViolet",
           "RainbowDelimiterCyan",
         },
-        -- Exclude filetypes: markdown (conflicts with markview), blink-cmp (no treesitter parser)
+        -- Exclude filetypes where parser exists but rainbow is unwanted
         blacklist = { -- plugin API name; means "exclude list"
           "markdown",
           "md",
           "mdx",
           "tex",
           "latex",
-          "blink-cmp-menu",
-          "blink-cmp-documentation",
-          "blink-cmp-signature",
         },
       })
     end,
