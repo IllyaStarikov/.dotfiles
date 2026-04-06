@@ -584,8 +584,11 @@ require("lazy").setup({
           "RainbowDelimiterViolet",
           "RainbowDelimiterCyan",
         },
-        -- Blacklist markdown filetypes to prevent conflicts
-        blacklist = { "markdown", "md", "mdx", "tex", "latex" },
+        -- Blacklist filetypes: markdown (conflicts with markview), blink-cmp (no treesitter parser)
+        blacklist = {
+          "markdown", "md", "mdx", "tex", "latex",
+          "blink-cmp-menu", "blink-cmp-documentation", "blink-cmp-signature",
+        },
       })
     end,
   },
