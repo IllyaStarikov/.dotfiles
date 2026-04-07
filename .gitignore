@@ -3,9 +3,14 @@
 # Spell directory (moved to private dotfiles)
 src/neovim/spell/
 
-# Neovim plugin lock files
-lazy-lock.json
+# Neovim plugin lock file at repo root (not used; lazy.nvim's actual
+# lock file lives at src/neovim/lazy-lock.json which IS tracked).
 src/lazy-lock.json
+
+# Re-include the actual lazy.nvim lock file. It is tracked so that
+# CI cache keys can hash it and so plugin versions are reproducible
+# across machines (per lazy.nvim's documentation).
+!src/neovim/lazy-lock.json
 
 # Runtime generated files
 .netrwhist
