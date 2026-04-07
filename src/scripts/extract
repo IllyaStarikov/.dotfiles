@@ -43,12 +43,16 @@ if [[ ! -f "$1" ]]; then
     exit 1
 fi
 
-# Set verbose flag for commands
+# Set verbose flag for commands.
+# TAR_VERBOSE is concatenated into the option string (e.g. tar xvjf vs xjf),
+# so an empty value collapses cleanly. UNZIP_VERBOSE is an array because
+# zsh splits an empty positional unquoted parameter into a literal empty
+# argument, which `unzip` then rejects as a malformed flag.
 TAR_VERBOSE=""
-UNZIP_VERBOSE="-q"
+UNZIP_VERBOSE=(-q)
 if [[ "$VERBOSE" == true ]]; then
     TAR_VERBOSE="v"
-    UNZIP_VERBOSE=""
+    UNZIP_VERBOSE=()
 fi
 
 # Helper to format tar verbose output (replace 'x ' with '→ ')
@@ -95,7 +99,7 @@ case "$1" in
     *.tgz)     tar x${TAR_VERBOSE}zf "$1" 2>&1 | format_tar_output ;;  # Alternative gzip tar extension
     *.zip)
         if command -v unzip &>/dev/null; then
-            unzip $UNZIP_VERBOSE "$1"
+            unzip "${UNZIP_VERBOSE[@]}" "$1"
         else
             echo "Error: unzip not installed. Install unzip package."
             exit 1

@@ -935,7 +935,8 @@ function M.get_project_specific_menu()
 
   if
     vim.fn.filereadable(cwd .. "/requirements.txt") == 1
-    or vim.fn.filereadable(cwd .. "/src/pyproject.toml") == 1
+    or vim.fn.filereadable(cwd .. "/pyproject.toml") == 1
+    or vim.fn.filereadable(cwd .. "/setup.py") == 1
   then
     table.insert(project_menu, {
       name = "🐍 pip install",
