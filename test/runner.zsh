@@ -289,7 +289,11 @@ discover_tests() {
       test_files=($(find "$TEST_DIR/stress" -name "$pattern" -type f 2>/dev/null | sort))
       ;;
     workflows)
-      test_files=($(find "$TEST_DIR/workflows" -name "$pattern" -type f 2>/dev/null | sort))
+      # Workflow validation tests live under test/unit/config/ as
+      # workflow*.zsh because they are unit tests over the
+      # .github/workflows/*.yml files. The dedicated `workflows`
+      # category re-runs them as a focused subset.
+      test_files=($(find "$TEST_DIR/unit/config" -name "workflow*.zsh" -type f 2>/dev/null | sort))
       ;;
     all)
       test_files=($(find "$TEST_DIR" -name "$pattern" -type f \

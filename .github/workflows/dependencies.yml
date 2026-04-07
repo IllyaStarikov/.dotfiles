@@ -45,10 +45,11 @@ jobs:
       - name: check for neovim plugin updates
         run: |
           echo "::group::Check plugin updates"
-          # Extract plugin URLs from Neovim config
-          if [[ -f "src/neovim/config/plugins.lua" ]]; then
+          # Extract plugin URLs from Neovim config (flat layout: no
+          # config/ subdirectory).
+          if [[ -f "src/neovim/plugins.lua" ]]; then
             echo "Checking for plugin updates..."
-            grep -oE '"[^"]+/[^"]+"' src/neovim/config/plugins.lua | \
+            grep -oE '"[^"]+/[^"]+"' src/neovim/plugins.lua | \
               sed 's/"//g' | \
               grep -E '^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$' | \
               sort -u > /tmp/plugins.txt

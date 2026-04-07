@@ -5,10 +5,12 @@
 
 set -euo pipefail
 
-# Source library (provides colors, config, utils)
+# Source library (provides colors, utils, logging, die by default;
+# we also need the `config` module for get_config).
 SCRIPT_DIR="${0:A:h}"
 DOTFILES_DIR="${SCRIPT_DIR}/../.."
 source "${DOTFILES_DIR}/src/lib/init.zsh"
+lib_load config
 
 # Counters for summary
 TOTAL_CHECKS=0
