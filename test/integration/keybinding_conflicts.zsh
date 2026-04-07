@@ -70,18 +70,24 @@ test_neovim_keybinding_conflicts() {
   )
 
   for key in "${problematic_keys[@]}"; do
-  [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Checking for conflicts with: $key"
+    [[ $VERBOSE -ge 2 ]] && log "DEBUG" "Checking for conflicts with: $key"
 
-  local key_count=$(echo "$keymap_output" | grep -c ":$key" 2>/dev/null || echo 0)
-  if [[ $key_count -gt 1 ]]; then
-    log "WARNING" "Multiple mappings for $key (count: $key_count)"
-  fi
+    # Use printf and a single integer to avoid the multi-line `wc -l` /
+    # `grep -c` value that broke arithmetic comparisons. Default to 0
+    # when grep finds nothing.
+    local key_count
+    key_count=$(printf '%s\n' "$keymap_output" | grep -c ":$key" 2>/dev/null) || key_count=0
+    if (( key_count > 1 )); then
+      log "WARNING" "Multiple mappings for $key (count: $key_count)"
+    fi
   done
 
-  # Check keymaps in config files directly
+  # Check keymaps in config files directly. The Neovim config has a
+  # flat layout (src/neovim/keymaps.lua, src/neovim/keymaps/*.lua); the
+  # legacy `config/` subdirectory does not exist.
   local keymap_files=(
-  "$DOTFILES_DIR/src/neovim/config/keymaps.lua"
-  "$DOTFILES_DIR/src/neovim/config/keymaps/"*.lua
+    "$DOTFILES_DIR/src/neovim/keymaps.lua"
+    "$DOTFILES_DIR/src/neovim/keymaps/"*.lua
   )
 
   local defined_keys=()

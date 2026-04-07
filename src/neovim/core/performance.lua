@@ -53,11 +53,17 @@ g.netrw_localrmdir = "rm -rf"
 
 -- No clipboard integration for better performance
 
--- Reduce LSP logging for performance
--- WARN level logs warnings and errors, but not info or debug messages
--- This significantly reduces disk I/O when multiple LSP servers are active
--- Default WARN level balances useful information with performance
-vim.lsp.set_log_level("WARN")
+-- Reduce LSP logging for performance.
+-- WARN level logs warnings and errors but not info/debug messages,
+-- significantly reducing disk I/O when multiple LSP servers are active.
+-- vim.lsp.set_log_level was deprecated in Neovim 0.11; use the new
+-- vim.lsp.log.set_level() API which has been stable since 0.10.
+if vim.lsp.log and vim.lsp.log.set_level then
+  vim.lsp.log.set_level(vim.log.levels.WARN)
+else
+  ---@diagnostic disable-next-line: deprecated
+  vim.lsp.set_log_level("WARN")
+end
 
 -- Suppress startup messages and prevent vimlog.txt creation during normal operation
 -- Only reset if not explicitly set via command line

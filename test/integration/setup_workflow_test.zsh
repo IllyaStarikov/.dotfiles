@@ -131,9 +131,11 @@ it "should set up theme switching system" && {
   export HOME="$TEST_HOME"
   mkdir -p "$TEST_HOME/.config/theme"
 
-  # Check theme components
+  # Check theme components. Themes live as per-name subdirectories
+  # directly under src/theme/ (e.g. src/theme/tokyonight/), not under
+  # a `themes/` umbrella directory.
   assert_file_exists "$DOTFILES_DIR/src/theme/switch-theme.sh"
-  assert_directory_exists "$DOTFILES_DIR/src/theme/themes"
+  assert_directory_exists "$DOTFILES_DIR/src/theme/tokyonight"
   pass
 }
 

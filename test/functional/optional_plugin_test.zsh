@@ -1,7 +1,11 @@
 #!/usr/bin/env zsh
-# Optional test for plugin installation
-# Run this manually or in CI when you want to test full plugin setup
-# Usage: ./test/optional/plugin_test.zsh
+# Optional test for plugin installation. Genuinely slow because it
+# downloads every Neovim plugin from GitHub. Skipped in CI mode by
+# test/runner.zsh; run locally with `./test/runner.zsh --full`.
+
+# Resolve dotfiles dir from $DOTFILES_DIR (set by the runner) or fall
+# back to a reasonable default. Avoid hardcoded /Users/<name>/ paths.
+: "${DOTFILES_DIR:=${HOME}/.dotfiles}"
 
 echo "Testing Neovim plugin installation..."
 
@@ -12,10 +16,11 @@ export XDG_CONFIG_HOME="$test_dir/config"
 export XDG_STATE_HOME="$test_dir/state"
 export XDG_CACHE_HOME="$test_dir/cache"
 
-# Link config
-mkdir -p "$XDG_CONFIG_HOME/nvim"
-ln -sf ~/.dotfiles/src/neovim/init.lua "$XDG_CONFIG_HOME/nvim/init.lua"
-ln -sf ~/.dotfiles/src/neovim/config "$XDG_CONFIG_HOME/nvim/config"
+# Symlink the entire src/neovim directory to ~/.config/nvim, matching
+# the local install (src/setup/symlinks.sh:229) so package paths and
+# subdirectories (core/, keymaps/, plugins/) all resolve.
+mkdir -p "$XDG_CONFIG_HOME"
+ln -sfn "${DOTFILES_DIR}/src/neovim" "$XDG_CONFIG_HOME/nvim"
 
 echo "Installing plugins..."
 

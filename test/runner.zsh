@@ -390,6 +390,12 @@ EOF
     test_timeout=60 # Much longer timeout for initialization tests
   fi
 
+  # optional_plugin_test downloads >50 plugins from GitHub and runs
+  # `make`/`cargo` builds for several of them; allow up to 10 minutes.
+  if [[ "$test_name" == "optional_plugin_test" ]]; then
+    test_timeout=600
+  fi
+
   # In CI mode, use a longer default timeout for tests that load Neovim
   # plugins (Mason/treesitter installs are slow on first run).
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then

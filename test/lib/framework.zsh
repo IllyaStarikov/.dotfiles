@@ -18,6 +18,17 @@
 # describe, test_case, test_suite, etc.).
 source "${0:A:h}/test_helpers.zsh"
 
+# Snapshot of functions already defined when framework.zsh is sourced.
+# run_test_functions() uses this to filter out helper functions like
+# test_case/test_command_exists when discovering "test_*" functions
+# in the calling file.
+typeset -gA __FRAMEWORK_PREEXISTING_FUNCS=()
+typeset __framework_func
+for __framework_func in ${(k)functions}; do
+  __FRAMEWORK_PREEXISTING_FUNCS[$__framework_func]=1
+done
+unset __framework_func
+
 # Default workspace and snapshot directories used by older tests.
 : "${TEST_WORKSPACE:=${TEST_TMP_DIR:-/tmp/dotfiles_test_$$}/workspace}"
 : "${TEST_SNAPSHOTS:=${TEST_TMP_DIR:-/tmp/dotfiles_test_$$}/snapshots}"
@@ -56,14 +67,18 @@ if ! (( $+functions[log] )); then
   }
 fi
 
-# Run every function in the current shell whose name starts with `test_`.
-# Older test files define test_* functions but rely on a runner to invoke them.
-# Call this at the bottom of each such file.
+# Run every test_* function defined AFTER framework.zsh was sourced.
+# Older test files define test_* functions but rely on a runner to invoke
+# them. Call this at the bottom of each such file. Functions defined by
+# test_helpers.zsh (test_case, test_command_exists, ...) are skipped via
+# __FRAMEWORK_PREEXISTING_FUNCS.
 run_test_functions() {
   local func
   local -a test_funcs
   for func in ${(k)functions}; do
-    [[ "$func" == test_* ]] && test_funcs+=("$func")
+    [[ "$func" == test_* ]] || continue
+    [[ -n "${__FRAMEWORK_PREEXISTING_FUNCS[$func]:-}" ]] && continue
+    test_funcs+=("$func")
   done
 
   # Sort for deterministic order.
