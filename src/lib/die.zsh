@@ -1,7 +1,18 @@
 #!/usr/bin/env zsh
 
 # die.zsh - Error handling and graceful exit library
-# Provides clean error reporting and exit mechanisms
+# Provides clean error reporting and exit mechanisms.
+#
+# SECURITY NOTE: Several functions in this library accept a "condition"
+# or "command" string and pass it to `eval` (assert, execute_or_die,
+# wait_for_or_die). These functions are intended for INTERNAL use with
+# trusted, hard-coded strings written by the script author. They MUST
+# NOT be called with user input, environment variables, or any other
+# attacker-influenceable data. Doing so creates a command-injection sink.
+#
+# For checks against user input, prefer the validate_or_die() helper
+# (which uses [[ =~ ]] and never eval's its arguments) or the explicit
+# require_*() helpers below.
 
 # Source dependencies if available
 [[ -f "${0:A:h}/colors.zsh" ]] && source "${0:A:h}/colors.zsh"
@@ -108,11 +119,15 @@ warn() {
   fi
 }
 
-# Assert condition or die
+# Assert condition or die.
+# WARNING: $condition is passed to `eval`. Only call with hard-coded
+# trusted shell test expressions, never with user input. See SECURITY
+# NOTE at the top of this file.
 assert() {
   local condition="$1"
   local message="${2:-Assertion failed: $condition}"
 
+  # shellcheck disable=SC2086 # caller passes a trusted shell expression
   if ! eval "$condition"; then
     die VALIDATION_ERROR "$message"
   fi
@@ -246,11 +261,15 @@ try_warn() {
   fi
 }
 
-# Execute command or die with custom error
+# Execute command or die with custom error.
+# WARNING: $cmd is passed to `eval`. Only call with hard-coded trusted
+# command literals, never with user input. See SECURITY NOTE at the top
+# of this file. For an array-based variant, prefer try() below.
 execute_or_die() {
   local cmd="$1"
   local error_msg="${2:-Failed to execute: $cmd}"
 
+  # shellcheck disable=SC2086 # caller passes a trusted command literal
   if ! eval "$cmd"; then
     die CANNOT_EXECUTE "$error_msg"
   fi
@@ -276,7 +295,10 @@ timeout_or_die() {
   fi
 }
 
-# Check condition periodically or die
+# Check condition periodically or die.
+# WARNING: $condition is passed to `eval`. Only call with hard-coded
+# trusted shell expressions, never with user input. See SECURITY NOTE
+# at the top of this file.
 wait_for_or_die() {
   local condition="$1"
   local timeout="${2:-30}"
@@ -285,6 +307,7 @@ wait_for_or_die() {
 
   local elapsed=0
   while [[ $elapsed -lt $timeout ]]; do
+    # shellcheck disable=SC2086 # caller passes a trusted shell expression
     if eval "$condition"; then
       return 0
     fi

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "runtime.path": [
+    "?.lua",
+    "?/init.lua",
+    "src/neovim/?.lua",
+    "src/neovim/?/init.lua"
+  ],
+  "workspace.library": [
+    "${3rd}/luv/library",
+    "$VIMRUNTIME/lua",
+    "$VIMRUNTIME/lua/vim/lsp"
+  ],
+  "workspace.checkThirdParty": false,
+  "workspace.ignoreDir": [
+    ".git",
+    "node_modules",
+    "test/logs",
+    "test/reports",
+    "test/fixtures",
+    "doc/assets",
+    "styleguide"
+  ],
+  "diagnostics.globals": [
+    "vim",
+    "Snacks",
+    "MiniDeps",
+    "MiniIcons"
+  ],
+  "diagnostics.disable": [
+    "missing-fields",
+    "incomplete-signature-doc"
+  ],
+  "completion.callSnippet": "Replace",
+  "format.enable": false,
+  "telemetry.enable": false
+}
