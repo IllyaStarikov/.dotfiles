@@ -270,7 +270,14 @@ discover_tests() {
       test_files=($(find "$TEST_DIR/smoke" -name "$pattern" -type f 2>/dev/null | sort))
       ;;
     e2e)
-      test_files=($(find "$TEST_DIR/e2e" -name "$pattern" -type f ! -name "runner.zsh" 2>/dev/null | sort))
+      # docker-e2e-test.zsh runs INSIDE a Docker container (it expects
+      # /home/testuser, CI=true, etc.), so the host runner skips it.
+      # The test/e2e/runner.zsh entrypoint launches Docker and copies
+      # the script in.
+      test_files=($(find "$TEST_DIR/e2e" -name "$pattern" -type f \
+        ! -name "runner.zsh" \
+        ! -name "docker-e2e-test.zsh" \
+        2>/dev/null | sort))
       ;;
     security)
       # Security test is at top level
@@ -394,6 +401,13 @@ EOF
   # `make`/`cargo` builds for several of them; allow up to 10 minutes.
   if [[ "$test_name" == "optional_plugin_test" ]]; then
     test_timeout=600
+  fi
+
+  # Stress tests intentionally exercise long-running scenarios
+  # (extreme file sizes, memory pressure, sustained load). Give them
+  # 5 minutes instead of the 30s default.
+  if [[ "$test_dir" == */stress ]]; then
+    test_timeout=300
   fi
 
   # In CI mode, use a longer default timeout for tests that load Neovim

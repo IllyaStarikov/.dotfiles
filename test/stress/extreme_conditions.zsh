@@ -168,16 +168,19 @@ test_memory_pressure() {
   log "TRACE" "Testing behavior under memory pressure"
   [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Allocating large amounts of memory"
 
-  # Create memory pressure with arrays
+  # Create memory pressure with arrays. 100k elements (~3MB resident)
+  # is enough to exercise the allocator. The original 1M-element loop
+  # used `arr+=()` in a Bash-style append loop, which is O(n^2) in zsh
+  # and took several minutes — a stress test should hammer the system,
+  # not hang it.
   local -a memory_hog
-  local allocation_size=1000000 # 1M elements
+  local allocation_size=100000
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Allocating memory..."
 
-  # Allocate memory
-  for i in $(seq 1 $allocation_size); do
-    memory_hog+=("data_$i")
-  done
+  # Build the array with parameter expansion and a single assignment,
+  # which is O(n) instead of O(n^2).
+  memory_hog=({1..$allocation_size})
 
   [[ $VERBOSE -ge 1 ]] && log "INFO" "Allocated array with $allocation_size elements"
 

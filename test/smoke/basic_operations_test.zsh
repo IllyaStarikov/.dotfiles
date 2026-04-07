@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
 # Smoke Tests - Basic Operations
-# Verify basic operations work as expected
-
-set -euo pipefail
+# Verify basic operations work as expected. Like the perf tests, this
+# file handles command failures explicitly via `|| true` and exit-status
+# checks; strict error mode would abort the suite when an expected
+# failure occurs (e.g. nvim returning non-zero after a synthetic edit).
+set -uo pipefail
 
 source "$(dirname "$0")/../lib/test_helpers.zsh"
 
@@ -88,7 +90,9 @@ essential_vars=(
 
 missing_vars=()
 for var in "${essential_vars[@]}"; do
-  [[ -z "${!var:-}" ]] && missing_vars+=("$var")
+  # Use zsh's (P) parameter expansion flag for indirect lookup;
+  # bash's `${!var}` is not supported in zsh.
+  [[ -z "${(P)var:-}" ]] && missing_vars+=("$var")
 done
 
 if [[ ${#missing_vars[@]} -eq 0 ]]; then

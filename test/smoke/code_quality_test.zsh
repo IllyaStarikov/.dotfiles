@@ -128,12 +128,20 @@ else
 fi
 
 # === TOML Validation ===
+# Limit to files we own. .dotfiles.private/, styleguide/ (third-party
+# Google style submodule), and test/logs/ are out of scope for the
+# audit and may contain TOML that we don't control.
 test_case "TOML files are valid (taplo)"
 if ! command -v taplo &>/dev/null; then
   skip "taplo not installed"
 else
   errors=0
-  toml_files=($(find "$DOTFILES_DIR" -name "*.toml" -type f -not -path "*/.git/*" 2>/dev/null))
+  toml_files=($(find "$DOTFILES_DIR" -name "*.toml" -type f \
+    -not -path "*/.git/*" \
+    -not -path "*/.dotfiles.private/*" \
+    -not -path "*/styleguide/*" \
+    -not -path "*/test/logs/*" \
+    2>/dev/null))
 
   for file in "${toml_files[@]}"; do
     if ! taplo format --check "$file" 2>/dev/null; then
