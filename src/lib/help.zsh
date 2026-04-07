@@ -229,8 +229,10 @@ generate_man_page() {
   local section="${2:-1}"
   local date="${3:-$(date '+%B %Y')}"
 
+  # `${(U)name}` is the zsh idiom for uppercase; bash's `${name^^}`
+  # is not supported in zsh.
   cat <<EOF
-.TH ${name^^} $section "$date" "$HELP_PROGRAM_VERSION" "$HELP_PROGRAM_NAME"
+.TH ${(U)name} $section "$date" "$HELP_PROGRAM_VERSION" "$HELP_PROGRAM_NAME"
 .SH NAME
 $name \\- $HELP_PROGRAM_DESCRIPTION
 EOF

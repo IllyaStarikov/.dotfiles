@@ -163,12 +163,14 @@ require_dir() {
   fi
 }
 
-# Assert variable is set or die
+# Assert variable is set or die.
+# Uses zsh's `${(P)+var}` parameter expansion flag for indirect lookup;
+# bash's `${!var+x}` is not supported in zsh.
 require_var() {
   local var_name="$1"
   local message="${2:-Required variable not set: $var_name}"
 
-  if [[ -z "${!var_name+x}" ]]; then
+  if (( ! ${(P)+var_name} )); then
     die CONFIG_ERROR "$message"
   fi
 }
@@ -225,17 +227,18 @@ setup_cleanup() {
   trap run_cleanup EXIT INT TERM
 }
 
-# Print stack trace
+# Print stack trace.
+# Uses zsh's funcfiletrace/funcstack arrays (available in any zsh
+# function). bash's `caller N` builtin is not available in zsh.
 print_stack_trace() {
   echo "Stack trace:" >&2
-  local frame=0
-  while true; do
-    if ! caller $frame >/dev/null 2>&1; then
-      break
-    fi
-    local line_info=$(caller $frame)
-    echo "  $line_info" >&2
-    ((frame++))
+  local i
+  for ((i = 1; i <= ${#funcstack[@]}; i++)); do
+    # funcstack[i] is the function name, funcfiletrace[i] is "file:line"
+    # for the call site of that frame.
+    local frame_name="${funcstack[$i]:-<top>}"
+    local frame_loc="${funcfiletrace[$i]:-<unknown>}"
+    echo "  ${frame_loc} in ${frame_name}" >&2
   done
 }
 
