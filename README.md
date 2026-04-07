@@ -11,7 +11,7 @@
 
 - **Battle-tested, production-ready dotfiles** refined over 10 years of daily use.
 - **One command, everything syncs** terminal, editor, tmux, prompt all switch themes together
-- **80+ automated tests** CI catches breakage before you do
+- **89+ automated tests** across unit, functional, integration, performance, smoke, e2e, security, and stress categories
 - **20 languages, zero config** LSP, linting, formatting just work
 - **5 minutes to install, 30 seconds to uninstall** no leftovers, no regrets
 
@@ -68,7 +68,7 @@ nvim +Telescope\ files  # Fuzzy find everything
 
 | Tool       | What You Get                                                         |
 | ---------- | -------------------------------------------------------------------- |
-| **Neovim** | 80+ plugins, 150ms startup, LSP for 20+ languages, AI built-in       |
+| **Neovim** | 50+ plugins, ~150ms startup, LSP for 20+ languages, AI built-in      |
 | **Zsh**    | Starship prompt, syntax highlighting, completions that actually work |
 | **tmux**   | Intuitive bindings, session persistence, theme-aware                 |
 | **Theme**  | 4 TokyoNight variants, one command syncs everything                  |
@@ -93,7 +93,7 @@ Full reference: [keymaps](src/neovim/keymaps/README.md)
 
 | Component       | Measured | Notes               |
 | --------------- | -------- | ------------------- |
-| Neovim startup  | 150ms    | M1 Mac, 80+ plugins |
+| Neovim startup  | ~150ms   | M1 Mac, 50+ plugins |
 | Zsh startup     | 50-150ms | Zinit turbo mode    |
 | tmux startup    | ~125ms   | New session         |
 | Theme switching | <500ms   | All apps synced     |
@@ -105,7 +105,7 @@ Full reference: [keymaps](src/neovim/keymaps/README.md)
 
 | Component                              | Description                      |
 | -------------------------------------- | -------------------------------- |
-| [Neovim](src/neovim/README.md)         | 80+ plugins, LSP, AI integration |
+| [Neovim](src/neovim/README.md)         | 50+ plugins, LSP, AI integration |
 | [Zsh](src/zsh/README.md)               | Zinit, completions, prompt       |
 | [Git](src/git/README.md)               | SSH signing, delta, hooks        |
 | [Scripts](src/scripts/README.md)       | fixy, theme, update, utilities   |

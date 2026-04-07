@@ -94,17 +94,18 @@ This is a comprehensive dotfiles repository serving dual purposes:
 
 ```bash
 # Main test runner with comprehensive test suite
-./test/runner.zsh            # Run standard test suite
-./test/runner.zsh --quick    # Quick smoke test (< 10s)
-./test/runner.zsh --unit     # Unit tests only (< 5s)
-./test/runner.zsh --functional    # Functional tests (< 30s)
-./test/runner.zsh --integration   # Integration tests (< 60s)
+./test/runner.zsh            # Run standard test suite (unit + functional)
+./test/runner.zsh --quick    # Unit tests only (~30s, 62 tests)
+./test/runner.zsh --unit     # Unit tests only
+./test/runner.zsh --functional    # Functional tests
+./test/runner.zsh --integration   # Integration tests
 ./test/runner.zsh --performance   # Performance regression tests
-./test/runner.zsh --workflows     # Real-world workflow tests
-./test/runner.zsh --full          # Complete test suite with all tests
+./test/runner.zsh --workflows     # GitHub Actions workflow validation
+./test/runner.zsh --full     # unit + functional + integration + perf + workflows
+./test/runner.zsh --all      # Full + smoke + e2e + security + stress (~3 minutes, 89 tests)
 
 # Run specific test files
-./test/runner.zsh unit/nvim/init_zsh_test.sh    # Single unit test
+./test/runner.zsh unit/nvim/init_zsh_test.zsh   # Single unit test
 ./test/runner.zsh functional/nvim           # All Neovim functional tests
 ./test/runner.zsh integration/setup         # Setup integration tests
 ```
@@ -165,15 +166,16 @@ cortex agent on/off    # Toggle AI agent mode
 
 ## Repository Statistics
 
-### Actual Metrics (December 2024)
+### Actual Metrics (April 2026, post production-readiness audit)
 
-- **80+ Neovim plugins** managed by lazy.nvim (500+ plugin references across config files)
-- **5 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions, etc.)
+- **~54 Neovim plugins** managed by lazy.nvim (per `src/neovim/lazy-lock.json`)
+- **3 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions)
 - **0 tmux plugins** (pure configuration, no TPM - simpler and faster)
-- **40+ test files** with comprehensive 4-level testing infrastructure
-- **14 utility scripts** in src/scripts/ (bugreport, cortex, extract, fixy, etc.)
-- **7 language configs** in src/language/ (ruff, stylua, clang-format, etc.)
-- **4 TokyoNight theme variants** (day, night, moon, storm)
+- **97 test files** under `test/` (excluding `test/logs/`) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories — 89 of which run in `--all` mode
+- **16 utility scripts** in `src/scripts/`
+- **6 language configs** in `src/language/` (ruff.toml, stylua.toml, .clang-format, clangd_config.yaml, latexmkrc, markdownlint.json, pyproject.toml)
+- **4 TokyoNight theme variants** (day, night, moon, storm) plus 17 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
+- **11 zsh library modules** in `src/lib/` (callstack, colors, config, die, help, logging, math, ssh, textwrap, unit, utils — array/cli/hash/json/types/yaml were removed in the audit as dead, broken-in-zsh code)
 - **20+ languages** with full LSP support
 
 ## High-Level Architecture
@@ -269,10 +271,9 @@ Test Categories:
 src/neovim/
 ├── core/           # Performance tuning, options, globals
 ├── keymaps/        # Categorized key bindings
-├── lsp/            # Language server configurations
-├── plugins/        # 80+ plugin specifications
-├── ui/             # Theme and interface settings
+├── plugins/        # ~54 plugin specifications (in plugins.lua)
 ├── snippets/       # Language-specific snippets
+├── colors/         # Per-colorscheme highlight overrides
 ├── init.lua        # Entry point
 ├── plugins.lua     # Plugin specifications
 └── *.lua           # Other config modules
@@ -312,27 +313,29 @@ src/neovim/
 
 **Testing Before Commits**: Run `./test/runner.zsh --quick` before committing. For major changes, use `./test/runner.zsh --full`.
 
-**Zsh Library (`src/lib/`)**: Before implementing shell utility functions, check the library first:
+**Zsh Library (`src/lib/`)**: Before implementing shell utility functions, check the library first. The four core modules (colors, utils, logging, die) are auto-loaded by `init.zsh`; the rest are opt-in via `lib_load <name>`:
 
 ```bash
-# Available modules (400+ functions):
+# Available modules:
 ls src/lib/*.zsh
+# Core (auto-loaded by init.zsh):
 # colors.zsh   - Terminal colors, $RED, $GREEN, colorize()
-# utils.zsh    - OS detection, command_exists(), file ops, is_macos(), is_linux()
+# utils.zsh    - OS detection, command_exists(), is_macos(), is_linux()
 # logging.zsh  - LOG, INFO, WARN, ERROR, DEBUG functions
 # die.zsh      - Error handling, assertions, require_command()
-# array.zsh    - Array manipulation (60+ functions)
-# hash.zsh     - Associative array operations
-# json.zsh     - JSON parsing/generation (uses jq)
-# yaml.zsh     - YAML parsing/generation
-# types.zsh    - Type checking, validation
+#                (See SECURITY NOTE in die.zsh re: eval-based helpers)
+#
+# Opt-in (lib_load <name>):
+# config.zsh   - JSON config reader (used by install scripts)
 # math.zsh     - Mathematical operations
 # textwrap.zsh - Text formatting, wrapping
-# cli.zsh      - Argument parsing
 # unit.zsh     - Unit testing assertions
 # ssh.zsh      - SSH key management
 # callstack.zsh - Stack traces, debugging
-# help.zsh     - Help text generation
+# help.zsh     - Help text and man-page generation
+#
+# REMOVED in the production-readiness audit (broken-in-zsh + unused):
+#   array.zsh, hash.zsh, cli.zsh, json.zsh, types.zsh, yaml.zsh
 ```
 
 **When writing new shell scripts:**
@@ -385,7 +388,7 @@ nvim -V9 /tmp/nvim.log                # Verbose logging
 
 ### Zsh vim mode recursion error
 
-Fixed by clearing `zle-keymap-select` widget before Starship initialization in `src/zsh/zshrc:181-183`.
+Fixed by deleting any existing `zle-keymap-select` widget before Starship initializes (some plugins create the same widget Starship wants to install). See `src/zsh/zshrc:199-206`.
 
 ### Theme switching issues
 
