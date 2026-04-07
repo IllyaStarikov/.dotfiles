@@ -318,3 +318,8 @@ test_filesystem_stress() {
   [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Filesystem handles stress well"
   return 0
 }
+
+# ============================================================================
+# Run all test_* functions defined above (provided by framework.zsh).
+# ============================================================================
+run_test_functions

@@ -403,3 +403,8 @@ test_keybinding_summary() {
   return 0 # Don't fail the test suite for conflicts
   fi
 }
+
+# ============================================================================
+# Run all test_* functions defined above (provided by framework.zsh).
+# ============================================================================
+run_test_functions

@@ -370,10 +370,11 @@ if ! type nvim_test >/dev/null 2>&1; then
   }
 fi
 
-# Set default values if not set
-: ${DOTFILES_DIR:=/Users/starikov/.dotfiles}
-: ${TEST_DIR:=$DOTFILES_DIR/test}
-: ${TEST_TMP_DIR:=/tmp/test-$$}
+# Required environment variables; the parent runner exports these.
+# Fail fast instead of falling back to a single user's hardcoded path.
+: "${DOTFILES_DIR:?DOTFILES_DIR must be set by the test runner}"
+: "${TEST_DIR:=$DOTFILES_DIR/test}"
+: "${TEST_TMP_DIR:=/tmp/test-$$}"
 
 # Run the actual test
 source "$1"
@@ -389,9 +390,15 @@ EOF
     test_timeout=60 # Much longer timeout for initialization tests
   fi
 
-  # In CI mode or non-interactive, use different timeout strategy
+  # In CI mode, use a longer default timeout for tests that load Neovim
+  # plugins (Mason/treesitter installs are slow on first run).
   if [[ "${CI_MODE:-0}" == "1" ]] || [[ "${NONINTERACTIVE:-0}" == "1" ]] || [[ "${E2E_TEST:-0}" == "1" ]] || [[ "${CI:-0}" == "true" ]]; then
-    # Skip optional_plugin_test in any CI/E2E mode - plugin downloads timeout
+    [[ "$test_name" != *"init"* ]] && test_timeout=60
+
+    # Permanent CI skip: optional_plugin_test downloads >50 plugins from
+    # GitHub on each run. The full plugin install (Mason + treesitter parsers)
+    # takes >5 minutes and frequently times out on hosted runners. Run locally
+    # via `./test/runner.zsh --full` if you need to validate plugin downloads.
     if [[ "$test_name" == "optional_plugin_test" ]]; then
       [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
       log WARN "$test_name - SKIPPED (plugin downloads timeout in CI)"
@@ -399,48 +406,6 @@ EOF
       TEST_RESULTS+=("$test_name|skip|0|plugin downloads timeout in CI")
       rm -rf "$test_tmp"
       return 0
-    fi
-
-    # In E2E test mode, run ALL tests with longer timeouts
-    if [[ "${E2E_TEST:-0}" == "1" ]]; then
-      # Keep the special init timeout if already set, otherwise use E2E default
-      [[ "$test_name" != *"init"* ]] && test_timeout=60 # Longer timeout for E2E tests
-      # Don't skip any tests in E2E mode - all tests are critical
-    else
-      # Regular CI mode - shorter timeout and skip problematic tests
-      # Keep the special init timeout if already set
-      [[ "$test_name" != *"init"* ]] && test_timeout=30 # Standard CI timeout
-
-      # Skip certain tests in CI that require special conditions:
-      # - keybinding_conflicts: Requires interactive Neovim session
-      # - comprehensive_*: Long-running tests better suited for local dev
-      # - *_interactive_*: Require user interaction
-      # - plugin_loading: Requires full Neovim plugin environment
-      # - lsp_completion: Requires LSP servers to be installed
-      # Run these locally with: ./runner.zsh --full
-      local base_name="${test_name%_zsh_test}"
-      base_name="${base_name%_test}"
-
-      if [[ "$test_name" == "keybindings_test" ]] \
-        || [[ "$test_name" == "keybinding_conflicts_test" ]] \
-        || [[ "$base_name" == "keybindings" ]] \
-        || [[ "$test_name" == "comprehensive_nvim_test" ]] \
-        || [[ "$test_name" == "comprehensive_scripts_test" ]] \
-        || [[ "$test_name" == "comprehensive_setup_test" ]] \
-        || [[ "$test_name" == "comprehensive_symlinks_test" ]] \
-        || [[ "$test_name" == "comprehensive_theme_test" ]] \
-        || [[ "$test_name" == "comprehensive_zsh_test" ]] \
-        || [[ "$test_name" == *"_interactive_"* ]] \
-        || [[ "$test_name" == "plugin_loading_test" ]] \
-        || [[ "$test_name" == "optional_plugin_test" ]] \
-        || [[ "$test_name" == "lsp_completion_test" ]]; then
-        [[ $VERBOSE -eq 0 ]] && [[ $NO_COLOR -eq 0 ]] && printf "\r%-80s\r" " "
-        log WARN "$test_name - SKIPPED (CI mode)"
-        ((SKIPPED++))
-        TEST_RESULTS+=("$test_name|skip|0|skipped in CI mode")
-        rm -rf "$test_tmp"
-        return 0
-      fi
     fi
   fi
 

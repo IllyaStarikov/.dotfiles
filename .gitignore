@@ -51,3 +51,13 @@ template/public/
 log.txt
 log_2.txt
 test/test-results.xml
+
+# Re-include lib/ directories — the user's global ~/.gitignore excludes
+# lib/ (Python venv directories), which would otherwise hide our shell
+# library, test framework, and lib unit tests.
+!src/lib/
+!src/lib/**
+!test/lib/
+!test/lib/**
+!test/unit/lib/
+!test/unit/lib/**
