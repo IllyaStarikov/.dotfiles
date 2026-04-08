@@ -370,8 +370,11 @@ test_crash_recovery() {
   # Create a fake swap file
   touch "$swap_file"
 
-  # Try to open file with existing swap
-  local nvim_recovery=$(echo "q" | nvim "$test_file" 2>&1 | head -20)
+  # Try to open file with an existing swap. Use headless mode with a
+  # hard timeout — interactive nvim shows a recovery prompt that
+  # ignores piped stdin and would otherwise hang the test.
+  local nvim_recovery=$(timeout 5 nvim --headless \
+    -c "set noswapfile" -c "qa!" "$test_file" 2>&1 | head -20)
 
   if [[ "$nvim_recovery" == *"swap"* ]] || [[ "$nvim_recovery" == *"recovery"* ]]; then
     [[ $VERBOSE -ge 1 ]] && log "INFO" "Neovim detects swap files"
@@ -399,3 +402,8 @@ test_crash_recovery() {
 
   return 0
 }
+
+# ============================================================================
+# Run all test_* functions defined above (provided by framework.zsh).
+# ============================================================================
+run_test_functions

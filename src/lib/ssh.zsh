@@ -294,16 +294,20 @@ ssh_config_remove_host() {
   echo "Host $host_alias removed from SSH config"
 }
 
-# List hosts in SSH config
+# List hosts in SSH config.
+# Usage: ssh_config_list_hosts [config_file]
+# If no config file is given, uses $SSH_CONFIG_FILE.
 ssh_config_list_hosts() {
-  if [[ ! -f "$SSH_CONFIG_FILE" ]]; then
-    echo "SSH config file not found" >&2
+  local config_file="${1:-$SSH_CONFIG_FILE}"
+
+  if [[ ! -f "$config_file" ]]; then
+    echo "SSH config file not found: $config_file" >&2
     return 1
   fi
 
   echo "Hosts in SSH config:"
   echo "==================="
-  grep "^Host " "$SSH_CONFIG_FILE" | awk '{print "  " $2}'
+  grep "^Host " "$config_file" | awk '{print "  " $2}'
 }
 
 # Get host details from SSH config

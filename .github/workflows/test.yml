@@ -44,7 +44,7 @@ jobs:
             ~/.cache/nvim
             ~/Library/Caches/Homebrew
             /usr/local/Homebrew
-          key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/config/plugins.lua') }}
+          key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/plugins.lua', 'src/neovim/lazy-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.os }}-test-
 
@@ -72,9 +72,11 @@ jobs:
 
       - name: setup neovim
         run: |
-          mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
-          ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
-          ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
+          # Symlink entire src/neovim directory to match local install
+          # (src/setup/symlinks.sh:229)
+          mkdir -p ~/.config ~/.local/share/nvim ~/.local/state/nvim
+          rm -rf ~/.config/nvim
+          ln -sfn "${{ github.workspace }}/src/neovim" ~/.config/nvim
 
           # Install lazy.nvim only if not cached
           if [[ ! -d ~/.local/share/nvim/lazy/lazy.nvim ]]; then
@@ -140,9 +142,11 @@ jobs:
 
       - name: setup neovim
         run: |
-          mkdir -p ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim
-          ln -sf "${{ github.workspace }}/src/neovim/init.lua" ~/.config/nvim/init.lua
-          ln -sf "${{ github.workspace }}/src/neovim/config" ~/.config/nvim/config
+          # Symlink entire src/neovim directory to match local install
+          # (src/setup/symlinks.sh:229)
+          mkdir -p ~/.config ~/.local/share/nvim ~/.local/state/nvim
+          rm -rf ~/.config/nvim
+          ln -sfn "${{ github.workspace }}/src/neovim" ~/.config/nvim
 
           git clone --filter=blob:none --single-branch \
             https://github.com/folke/lazy.nvim.git \

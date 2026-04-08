@@ -40,15 +40,18 @@ test_ssh_key_exists_missing() {
 test_ssh_key_exists_found() {
   test_case "ssh_key_exists returns true for existing key"
   if declare -f ssh_key_exists >/dev/null 2>&1; then
-    # Create a mock key file
-    local keyfile="$TEST_TMP_DIR/test_ssh_key"
-    echo "mock ssh key" >"$keyfile"
-    if ssh_key_exists "$keyfile"; then
+    # ssh_key_exists takes a key NAME (not a full path) and looks under
+    # $SSH_KEY_DIR; override SSH_KEY_DIR for the test to a temp directory.
+    local saved_dir="$SSH_KEY_DIR"
+    SSH_KEY_DIR="$TEST_TMP_DIR"
+    echo "mock ssh key" >"$SSH_KEY_DIR/test_ssh_key"
+    if ssh_key_exists "test_ssh_key"; then
       pass
     else
       fail "Should return true for existing key"
     fi
-    rm -f "$keyfile"
+    rm -f "$SSH_KEY_DIR/test_ssh_key"
+    SSH_KEY_DIR="$saved_dir"
   else
     skip "ssh_key_exists not available"
   fi
@@ -91,9 +94,9 @@ EOF
 test_ssh_agent_status() {
   test_case "ssh_agent_status returns status"
   if declare -f ssh_agent_status >/dev/null 2>&1; then
-    # Just check that it returns something without error
-    local status
-    status=$(ssh_agent_status 2>/dev/null) || true
+    # `status` is a special read-only parameter in zsh; use `result`.
+    local result
+    result=$(ssh_agent_status 2>/dev/null) || true
     # Any output or no error is acceptable
     pass
   else

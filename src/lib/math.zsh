@@ -271,7 +271,10 @@ dec_to_hex() {
 # Hexadecimal to decimal
 hex_to_dec() {
   local hex="$1"
-  echo "ibase=16; ${hex^^}" | bc
+  # bc requires uppercase hex digits. Use zsh's `${(U)hex}` (the U
+  # parameter expansion flag) instead of bash's `${hex^^}`, which
+  # is not supported in zsh.
+  echo "ibase=16; ${(U)hex}" | bc
 }
 
 # Decimal to octal

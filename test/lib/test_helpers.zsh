@@ -246,19 +246,14 @@ assert_not_contains() {
 assert_equals() {
   local actual="$1"
   local expected="$2"
-  local tolerance="${3:-0}"
+  local message="${3:-Expected '$expected' but got '$actual'}"
 
-  if [[ "$tolerance" -gt 0 ]]; then
-    # Numeric comparison with tolerance
-    local diff=$((actual - expected))
-    [[ ${diff#-} -le $tolerance ]] && return 0
-    fail "Values differ by more than $tolerance"
+  if [[ "$actual" == "$expected" ]]; then
+    return 0
   else
-    # String comparison
-    [[ "$actual" == "$expected" ]] && return 0
-    fail "Expected '$expected' but got '$actual'"
+    fail "$message"
+    return 1
   fi
-  return 1
 }
 
 assert_greater_than() {
@@ -275,6 +270,73 @@ assert_success() {
     return 0
   else
     fail "Command did not succeed (exit code: $1)"
+    return 1
+  fi
+}
+
+# Assert that a file's contents match a basic regex pattern (POSIX BRE).
+# Usage: assert_file_contains <path> <pattern> [message]
+# Note: uses BRE so `+` and `?` are literal; use `\+`, `\?`, `\|` for repetition
+# and alternation, matching the convention used throughout the test suite.
+assert_file_contains() {
+  local file="$1"
+  local pattern="$2"
+  local message="${3:-File '$file' should contain '$pattern'}"
+
+  if [[ ! -f "$file" ]]; then
+    fail "$message (file does not exist: $file)"
+    return 1
+  fi
+
+  if grep -q -- "$pattern" "$file"; then
+    return 0
+  else
+    fail "$message"
+    return 1
+  fi
+}
+
+# Assert that a file is executable.
+# Usage: assert_executable <path> [message]
+assert_executable() {
+  local file="$1"
+  local message="${2:-File '$file' should be executable}"
+
+  if [[ -x "$file" ]]; then
+    return 0
+  else
+    fail "$message"
+    return 1
+  fi
+}
+
+# Assert that a value matches a regex pattern.
+# Usage: assert_match <value> <pattern> [message]
+assert_match() {
+  local value="$1"
+  local pattern="$2"
+  local message="${3:-Value '$value' should match pattern '$pattern'}"
+
+  if [[ "$value" =~ $pattern ]]; then
+    return 0
+  else
+    fail "$message"
+    return 1
+  fi
+}
+
+# Assert that a condition (passed as a string of test arguments) is true.
+# Usage: assert_true <condition> [message]
+# Note: condition is passed to `[[ ... ]]`, so use shell test syntax.
+# Trusted-input only: do not pass user input.
+assert_true() {
+  local condition="$1"
+  local message="${2:-Condition should be true: $condition}"
+
+  if eval "[[ $condition ]]"; then
+    return 0
+  else
+    fail "$message"
     return 1
   fi
 }
@@ -390,9 +452,20 @@ test_command_exists() {
   fi
 }
 
-# Test suite declaration for compatibility
+# Test suite: print a header and run each test function passed as an argument.
+# Usage: test_suite "Suite Name" test_func1 test_func2 ...
 test_suite() {
-  describe "$1"
+  local suite_name="$1"
+  shift
+  describe "$suite_name"
+  local func
+  for func in "$@"; do
+    if (( $+functions[$func] )); then
+      "$func"
+    else
+      fail "Test function not defined: $func"
+    fi
+  done
 }
 
 # Neovim test helper with expected output

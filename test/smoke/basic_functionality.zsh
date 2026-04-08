@@ -362,3 +362,8 @@ test_basic_connectivity() {
 
   return 0
 }
+
+# ============================================================================
+# Run all test_* functions defined above (provided by framework.zsh).
+# ============================================================================
+run_test_functions

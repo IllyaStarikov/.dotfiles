@@ -56,12 +56,12 @@ update_with_fallback() {
     local description="$1"
     shift
     echo "$description"
-    
+
     if [[ "${DRY_RUN}" == true ]]; then
         echo "[DRY RUN] Would execute: $*"
         return 0
     fi
-    
+
     if ! "$@"; then
         echo "⚠️  $description failed, continuing..."
         FAILED_LIST="${FAILED_LIST}$description\n"
@@ -176,7 +176,7 @@ echo
 # Update system packages function
 update_system() {
   echo -e "${BLUE}🔄 Updating system packages...${NC}"
-  
+
   if is_macos; then
     # macOS System Updates
     echo "Checking for macOS system updates..."
@@ -185,7 +185,7 @@ update_system() {
     else
         echo -e "${YELLOW}macOS updates available. Use 'sudo softwareupdate -ia' to install.${NC}"
     fi
-    
+
     # Mac App Store updates
     if command_exists mas; then
         echo "Checking Mac App Store updates..."
@@ -198,7 +198,7 @@ update_system() {
   elif is_linux; then
     local pm
     pm="$(detect_package_manager)"
-    
+
     case "${pm}" in
       apt)
         echo "Updating APT packages..."
@@ -240,9 +240,9 @@ update_homebrew() {
   if ! command_exists brew; then
     return
   fi
-  
+
   echo -e "${BLUE}🍺 Updating Homebrew...${NC}"
-  
+
   if [[ "${DRY_RUN}" == true ]]; then
     brew update
     brew outdated
@@ -271,7 +271,7 @@ update_homebrew() {
     # Upgrade remaining packages
     update_with_fallback "Homebrew formula upgrade" brew upgrade
     update_with_fallback "Homebrew cask upgrade" brew upgrade --cask
-    
+
     # Comprehensive Homebrew cleanup
     echo "Performing Homebrew cleanup..."
     update_with_fallback "Homebrew cleanup" brew cleanup -s
@@ -289,7 +289,7 @@ update_homebrew() {
 # Update language-specific package managers function
 update_languages() {
   echo -e "${BLUE}📦 Updating language package managers...${NC}"
-  
+
   # Python/pip - Skip for Homebrew-managed Python (PEP 668)
   # Use pipx for CLI tools, or virtual environments for project dependencies
   if command_exists pip3; then
@@ -303,7 +303,7 @@ update_languages() {
         update_with_fallback "pipx upgrade-all" pipx upgrade-all
     fi
   fi
-  
+
   # Node.js/npm
   if command_exists npm; then
     echo "Updating npm packages..."
@@ -317,7 +317,7 @@ update_languages() {
         fi
     fi
   fi
-  
+
   # Ruby/gem - Skip system Ruby (macOS built-in is read-only and deprecated)
   if command_exists gem; then
     # Check if using system Ruby
@@ -331,7 +331,7 @@ update_languages() {
       fi
     fi
   fi
-  
+
   # Rust/cargo
   if command_exists rustup; then
     echo "Updating Rust toolchain..."
@@ -339,7 +339,7 @@ update_languages() {
         update_with_fallback "rustup update" rustup update
     fi
   fi
-  
+
   if command_exists cargo; then
     echo "Updating global Cargo packages..."
     # Install cargo-update if not present
@@ -347,7 +347,7 @@ update_languages() {
         echo "Installing cargo-update for better Cargo package management..."
         update_with_fallback "cargo-update installation" cargo install cargo-update
     fi
-    
+
     # Use cargo-update if available
     if command_exists cargo-install-update; then
         if [[ "${DRY_RUN}" == false ]]; then
@@ -358,7 +358,7 @@ update_languages() {
         cargo install --list | grep -E '^[a-zA-Z0-9_-]+ v[0-9\.]+' | awk '{print $1}' | xargs -n1 cargo install 2>/dev/null || true
     fi
   fi
-  
+
   # Go modules
   if command_exists go; then
     echo "Updating Go tools..."
@@ -394,7 +394,7 @@ update_tools() {
         fi
     fi
   fi
-  
+
   # Zinit
   if [[ -d "${HOME}/.local/share/zinit" ]]; then
     echo "Updating Zinit..."
@@ -403,7 +403,7 @@ update_tools() {
         update_with_fallback "Zinit plugins" zsh -ic "zinit update --all" 2>/dev/null
     fi
   fi
-  
+
   # dotfiles repository
   local dotfiles_dir="${DOTFILES:-$HOME/.dotfiles}"
   if [[ -d "${dotfiles_dir}/.git" ]]; then
@@ -420,20 +420,20 @@ update_tools() {
         update_with_fallback "Yarn global upgrade" yarn global upgrade
     fi
   fi
-  
+
   if command_exists pnpm; then
     echo "Updating global pnpm packages..."
     if [[ "${DRY_RUN}" == false ]]; then
         update_with_fallback "pnpm global update" pnpm update -g
     fi
   fi
-  
+
   # TeX Live Manager Updates (tlmgr)
   if command_exists tlmgr; then
     echo "Checking TeX Live packages (tlmgr)..."
     tlmgr update --list 2>/dev/null | grep -q "update available" && echo "TeX Live updates available. Run 'sudo tlmgr update --all' manually." || echo "No TeX Live updates available."
   fi
-  
+
   # fnm (Fast Node Manager) Updates
   if command_exists fnm; then
     echo "Updating Node.js via fnm to latest LTS..."
@@ -442,7 +442,7 @@ update_tools() {
         update_with_fallback "Setting default Node.js version" fnm default lts-latest
     fi
   fi
-  
+
   # pyenv Python Updates
   if command_exists pyenv; then
     echo "Checking for new Python versions..."
@@ -454,20 +454,20 @@ update_tools() {
         # List available Python versions
         echo "Latest stable Python versions available:"
         pyenv install --list | grep -E "^\s*3\.[0-9]+\.[0-9]+$" | tail -5
-        
+
         # List Python versions for manual cleanup
         echo "Installed Python versions:"
         pyenv versions
         echo ""
         echo "To remove unused versions, run: pyenv uninstall <version>"
-        
+
         # Clean pyenv shims
         update_with_fallback "Rehashing pyenv shims" pyenv rehash
     fi
   fi
-  
+
   # Starship Prompt - no update needed (config is part of dotfiles)
-  
+
   # FZF Updates (if installed via git)
   if [[ -d "$HOME/.fzf" ]]; then
     echo "Updating fzf..."

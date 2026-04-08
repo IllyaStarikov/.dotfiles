@@ -154,9 +154,12 @@ function M.check()
   end
 end
 
--- Create health check command
+-- Create health check command. Calls M.check() directly because
+-- :checkhealth's lookup convention is `lua/<plugin>/health.lua`, and
+-- this file lives at `lua/health.lua` (top-level), so a literal
+-- `:checkhealth health` would not find it on every Neovim version.
 vim.api.nvim_create_user_command("CheckHealth", function()
-  vim.cmd("checkhealth health")
-end, { desc = "Run configuration health check" })
+  M.check()
+end, { desc = "Run dotfiles configuration health check" })
 
 return M

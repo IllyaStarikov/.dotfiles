@@ -308,11 +308,17 @@ assert_exit_code() {
   fi
 }
 
-# Assert array equals
+# Assert array equals.
+# Usage: assert_array_equals expected_array_name actual_array_name [message]
+# Uses zsh's `${(P)var}` parameter expansion flag for indirect array
+# access; bash's `${!var[@]}` is not supported in zsh.
 assert_array_equals() {
-  local -a expected=("${!1}")
-  local -a actual=("${!2}")
+  local expected_name="$1"
+  local actual_name="$2"
   local message="${3:-Arrays are not equal}"
+
+  local -a expected=("${(P@)expected_name}")
+  local -a actual=("${(P@)actual_name}")
 
   if [[ ${#expected[@]} -ne ${#actual[@]} ]]; then
     _unit_fail "$message (different lengths: ${#expected[@]} vs ${#actual[@]})"

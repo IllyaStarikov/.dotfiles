@@ -102,8 +102,8 @@ main() {
   local mode
   mode=$(get_theme_mode "$family" "$variant")
 
-  # Neovim colors directory
-  local nvim_colors_dir="$SCRIPT_DIR/../neovim/colors"
+  # Neovim colors directory (generated, not committed — lives in cache)
+  local nvim_colors_dir="${XDG_CACHE_HOME:-$HOME/.cache}/nvim/colors"
   local colorscheme_name="${family}_${variant}"
 
   # Generate configs based on app parameter
@@ -146,7 +146,9 @@ main() {
       ;;
     neovim)
       mkdir -p "$nvim_colors_dir"
-      generate_from_template "$TEMPLATES_DIR/neovim.lua" "$colors_json" "$theme_name" "$colorscheme_name"
+      generate_from_template "$TEMPLATES_DIR/neovim.lua" "$colors_json" "$theme_name" "$colorscheme_name" \
+        > "$nvim_colors_dir/${colorscheme_name}.lua"
+      echo "Generated $nvim_colors_dir/${colorscheme_name}.lua"
       ;;
     *)
       echo "Unknown app: $app" >&2

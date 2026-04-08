@@ -2,10 +2,18 @@
 *.spl
 # Spell directory (moved to private dotfiles)
 src/neovim/spell/
+# Generated Neovim colorscheme files (live in $XDG_CACHE_HOME/nvim/colors/).
+# Safety net in case an old generator writes back here.
+src/neovim/colors/
 
-# Neovim plugin lock files
-lazy-lock.json
+# Neovim plugin lock file at repo root (not used; lazy.nvim's actual
+# lock file lives at src/neovim/lazy-lock.json which IS tracked).
 src/lazy-lock.json
+
+# Re-include the actual lazy.nvim lock file. It is tracked so that
+# CI cache keys can hash it and so plugin versions are reproducible
+# across machines (per lazy.nvim's documentation).
+!src/neovim/lazy-lock.json
 
 # Runtime generated files
 .netrwhist
@@ -51,3 +59,13 @@ template/public/
 log.txt
 log_2.txt
 test/test-results.xml
+
+# Re-include lib/ directories — the user's global ~/.gitignore excludes
+# lib/ (Python venv directories), which would otherwise hide our shell
+# library, test framework, and lib unit tests.
+!src/lib/
+!src/lib/**
+!test/lib/
+!test/lib/**
+!test/unit/lib/
+!test/unit/lib/**

@@ -230,8 +230,10 @@ array_unique() {
 array_reverse() {
   local -a result
   local i
+  # `${argv[$i]}` is the zsh idiom for indirect positional access;
+  # bash's `${!i}` does not work here.
   for ((i=$#; i>0; i--)); do
-    result+=("${!i}")
+    result+=("${argv[$i]}")
   done
   echo "${result[@]}"
 }
@@ -337,9 +339,12 @@ is_not_empty() {
   [[ -n "$1" ]]
 }
 
-# Check if variable is set
+# Check if a variable named in $1 is set.
+# Uses zsh's `${(P)var}` parameter expansion flag for indirect lookup;
+# bash's `${!var+x}` is not supported in zsh.
 is_set() {
-  [[ -n "${!1+x}" ]]
+  local var_name="$1"
+  (( ${(P)+var_name} ))
 }
 
 # Check if string is numeric

@@ -198,14 +198,55 @@ local function get_theme_info(theme_name)
   return nil
 end
 
+--- Cache directory holding generated colorscheme files (XDG_CACHE_HOME/nvim/colors).
+--- Files are produced by src/theme/generate-theme.sh from colors.json + the
+--- shared template at src/theme/templates/neovim.lua.
+local function colors_cache_dir()
+  local cache = vim.env.XDG_CACHE_HOME
+  if not cache or cache == "" then
+    cache = vim.env.HOME .. "/.cache"
+  end
+  return cache .. "/nvim/colors"
+end
+
+-- Make the cache dir discoverable by `:colorscheme <name>` (Neovim auto-loads
+-- `colors/<name>.lua` on any runtimepath entry). Idempotent.
+local function ensure_colors_rtp()
+  local dir = colors_cache_dir():gsub("/colors$", "")
+  vim.fn.mkdir(dir .. "/colors", "p")
+  local rtp = vim.o.runtimepath
+  if not rtp:find(dir, 1, true) then
+    vim.opt.runtimepath:append(dir)
+  end
+end
+ensure_colors_rtp()
+
 --- Check if a local colorscheme exists
 --- @param name string Colorscheme name (family_variant format)
 --- @return boolean
 local function local_colorscheme_exists(name)
-  -- Check if colorscheme file exists in our colors directory
-  local colors_dir = vim.fn.expand("~/.dotfiles/src/neovim/colors")
-  local colorscheme_file = colors_dir .. "/" .. name .. ".lua"
-  return vim.fn.filereadable(colorscheme_file) == 1
+  return vim.fn.filereadable(colors_cache_dir() .. "/" .. name .. ".lua") == 1
+end
+
+--- Ensure a colorscheme exists in the cache, generating it on demand if missing.
+--- Returns true if the file is available after this call.
+--- @param name string Colorscheme name (family_variant format)
+--- @return boolean
+local function ensure_colorscheme(name)
+  ensure_colors_rtp()
+  if local_colorscheme_exists(name) then
+    return true
+  end
+  local family, variant = name:match("^([^_]+)_(.+)$")
+  if not family then
+    return false
+  end
+  local script = vim.fn.expand("~/.dotfiles/src/theme/generate-theme.sh")
+  if vim.fn.executable(script) == 0 then
+    return false
+  end
+  vim.fn.system({ script, family, variant, "neovim" })
+  return local_colorscheme_exists(name)
 end
 
 --- Main theme setup function that reads macOS appearance and applies appropriate themes
@@ -242,10 +283,10 @@ function M.setup_theme()
   -- Set background
   vim.opt.background = (theme_info and theme_info.mode) or variant or "dark"
 
-  -- Apply theme using local colorscheme files
-  -- Local colorschemes are generated from colors.json and stored in src/neovim/colors/
+  -- Apply theme using generated colorscheme files (cached at $XDG_CACHE_HOME/nvim/colors).
+  -- Files are generated from colors.json + src/theme/templates/neovim.lua on demand.
   -- Format: family_variant (e.g., catppuccin_mocha, github_dark, tokyonight_storm)
-  if local_colorscheme_exists(theme) then
+  if ensure_colorscheme(theme) then
     local ok = pcall(vim.cmd, "colorscheme " .. theme)
     if not ok then
       -- Fallback to tokyonight_moon
@@ -380,7 +421,7 @@ vim.api.nvim_create_user_command("Theme", function(args)
   end
 
   -- Try local colorscheme first, then fall back to plugin colorscheme
-  if local_colorscheme_exists(theme_name) then
+  if ensure_colorscheme(theme_name) then
     local ok = pcall(vim.cmd, "colorscheme " .. theme_name)
     if ok then
       vim.notify("Theme: " .. theme_name, vim.log.levels.INFO)
@@ -426,7 +467,7 @@ vim.api.nvim_create_user_command("TokyoNight", function(args)
 
   -- Use local colorscheme (tokyonight_moon, tokyonight_storm, etc.)
   local theme_name = "tokyonight_" .. style
-  if local_colorscheme_exists(theme_name) then
+  if ensure_colorscheme(theme_name) then
     pcall(vim.cmd, "colorscheme " .. theme_name)
   else
     -- Fall back to plugin if local colorscheme not found

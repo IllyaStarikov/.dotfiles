@@ -136,11 +136,9 @@ for _, module in ipairs(modules) do
   end
 end
 
--- Load theme after plugins are available
--- In headless mode, load immediately instead of waiting for autocmd
-if is_headless or is_ci then
--- Don't load theme in headless/CI mode
-else
+-- Load the theme once lazy.nvim has finished loading plugins.
+-- Skip in headless/CI mode where there is no UI to theme.
+if not (is_headless or is_ci) then
   vim.api.nvim_create_autocmd("User", {
     pattern = "LazyVimStarted",
     callback = function()

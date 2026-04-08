@@ -195,36 +195,25 @@ test_lib_show_dependencies() {
 # Module Loading Tests
 # ============================================================================
 
-test_lib_load_array() {
-  test_case "lib_load loads array module"
+test_lib_load_callstack() {
+  test_case "lib_load loads callstack module"
   source "${DOTFILES_DIR}/src/lib/lib.zsh"
-  lib_load array
-  if declare -f array_new >/dev/null 2>&1; then
+  lib_load callstack
+  if declare -f stack_trace >/dev/null 2>&1; then
     pass
   else
-    fail "array module not loaded"
+    fail "callstack module not loaded (stack_trace not defined)"
   fi
 }
 
-test_lib_load_json() {
-  test_case "lib_load loads json module"
+test_lib_load_help() {
+  test_case "lib_load loads help module"
   source "${DOTFILES_DIR}/src/lib/lib.zsh"
-  lib_load json
-  if declare -f json_encode >/dev/null 2>&1; then
+  lib_load help
+  if declare -f help_program >/dev/null 2>&1; then
     pass
   else
-    fail "json module not loaded"
-  fi
-}
-
-test_lib_load_hash() {
-  test_case "lib_load loads hash module"
-  source "${DOTFILES_DIR}/src/lib/lib.zsh"
-  lib_load hash
-  if declare -f hash_new >/dev/null 2>&1; then
-    pass
-  else
-    fail "hash module not loaded"
+    fail "help module not loaded (help_program not defined)"
   fi
 }
 
@@ -245,6 +234,5 @@ test_suite "Init and Library Loader" \
   test_init_loads_die \
   test_init_sets_dotfiles \
   test_lib_show_dependencies \
-  test_lib_load_array \
-  test_lib_load_json \
-  test_lib_load_hash
+  test_lib_load_callstack \
+  test_lib_load_help

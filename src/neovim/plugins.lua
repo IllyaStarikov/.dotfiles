@@ -182,8 +182,9 @@ require("lazy").setup({
       end,
     },
   },
-  -- NOTE: Additional colorschemes are generated locally from colors.json
-  -- See src/theme/templates/neovim.lua and src/neovim/colors/
+  -- NOTE: Additional colorschemes are generated from colors.json into
+  -- $XDG_CACHE_HOME/nvim/colors/ on demand.
+  -- See src/theme/templates/neovim.lua and src/theme/generate-theme.sh
   -- No external plugin dependencies needed
   -- Undotree - Visual undo history
   {

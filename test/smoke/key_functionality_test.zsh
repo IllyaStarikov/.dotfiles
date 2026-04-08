@@ -307,3 +307,8 @@ test_lsp_server_availability() {
 
   return 0
 }
+
+# ============================================================================
+# Run all test_* functions defined above (provided by framework.zsh).
+# ============================================================================
+run_test_functions

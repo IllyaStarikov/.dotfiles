@@ -107,11 +107,15 @@ phase_system_info() {
 }
 
 phase_prepare_environment() {
-  # Set execute permissions on scripts
+  # Set execute permissions on scripts. The platform-specific
+  # `linux.sh` was removed in favor of the unified `install.sh`
+  # script which auto-detects the platform; only the existing
+  # scripts are listed here.
   local scripts=(
     "${DOTFILES_DIR}/src/setup/install.sh"
     "${DOTFILES_DIR}/src/setup/symlinks.sh"
-    "${DOTFILES_DIR}/src/setup/linux.sh"
+    "${DOTFILES_DIR}/src/setup/update.sh"
+    "${DOTFILES_DIR}/src/setup/uninstall.sh"
     "${DOTFILES_DIR}/test/runner.zsh"
   )
 

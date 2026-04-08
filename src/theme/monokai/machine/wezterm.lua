@@ -15,26 +15,26 @@ M.colors = {
 
   -- ANSI colors
   ansi = {
-    "#6b7678",   -- black
-    "#ff6d7e",     -- red
-    "#a2e57b",   -- green
-    "#ffed72",  -- yellow
-    "#7cd5f1",    -- blue
+    "#6b7678", -- black
+    "#ff6d7e", -- red
+    "#a2e57b", -- green
+    "#ffed72", -- yellow
+    "#7cd5f1", -- blue
     "#baa0f8", -- magenta
-    "#7cd5f1",    -- cyan
-    "#f2fffc",   -- white
+    "#7cd5f1", -- cyan
+    "#f2fffc", -- white
   },
 
   -- Bright ANSI colors
   brights = {
-    "#8a9496",   -- bright black
-    "#ff6d7e",     -- bright red
-    "#a2e57b",   -- bright green
-    "#ffed72",  -- bright yellow
-    "#7cd5f1",    -- bright blue
+    "#8a9496", -- bright black
+    "#ff6d7e", -- bright red
+    "#a2e57b", -- bright green
+    "#ffed72", -- bright yellow
+    "#7cd5f1", -- bright blue
     "#baa0f8", -- bright magenta
-    "#7cd5f1",    -- bright cyan
-    "#f2fffc",   -- bright white
+    "#7cd5f1", -- bright cyan
+    "#f2fffc", -- bright white
   },
 
   -- Tab bar

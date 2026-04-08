@@ -10,23 +10,17 @@ typeset -g LIB_STRICT=${LIB_STRICT:-0}
 typeset -gA LIB_LOADED=()
 typeset -gA LIB_DEPENDENCIES=(
   # Define library dependencies
-  [array]=""
   [callstack]="colors utils"
-  [cli]="utils"
   [colors]=""
   [config]=""
   [die]="colors callstack logging"
-  [hash]=""
   [help]="colors textwrap utils"
-  [json]="utils"
   [logging]="colors"
   [math]=""
   [ssh]=""
   [textwrap]="utils"
-  [types]=""
   [unit]="colors logging"
   [utils]=""
-  [yaml]="utils"
 )
 
 # Load a library module
@@ -94,23 +88,17 @@ lib_load_core() {
 # Load all available libraries
 lib_load_everything() {
   local -a all_libs=(
-    array
     callstack
-    cli
     colors
     config
     die
-    hash
     help
-    json
     logging
     math
     ssh
     textwrap
-    types
     unit
     utils
-    yaml
   )
 
   lib_load_all "${all_libs[@]}"
@@ -206,23 +194,17 @@ lib_version() {
 
   case "$module" in
     lib) echo "ZSH Library System v1.0.0" ;;
-    array) echo "Array Library v1.0.0" ;;
     callstack) echo "Callstack Library v1.0.0" ;;
-    cli) echo "CLI Library v1.0.0" ;;
     colors) echo "Colors Library v1.0.0" ;;
     config) echo "Config Library v1.0.0" ;;
     die) echo "Die Library v1.0.0" ;;
-    hash) echo "Hash Library v1.0.0" ;;
     help) echo "Help Library v1.0.0" ;;
-    json) echo "JSON Library v1.0.0" ;;
     logging) echo "Logging Library v1.0.0" ;;
     math) echo "Math Library v1.0.0" ;;
     ssh) echo "SSH Library v1.0.0" ;;
     textwrap) echo "Textwrap Library v1.0.0" ;;
-    types) echo "Types Library v1.0.0" ;;
     unit) echo "Unit Testing Library v1.0.0" ;;
     utils) echo "Utils Library v1.0.0" ;;
-    yaml) echo "YAML Library v1.0.0" ;;
     *) echo "Unknown module: $module" ;;
   esac
 }
@@ -254,23 +236,17 @@ Commands:
   lib_help                Show this help
 
 Available Modules:
-  array       - Array manipulation
   callstack   - Stack traces and debugging
-  cli         - Command-line argument parsing
   colors      - Terminal colors and styling
   config      - JSON config file reading from config/ directory
   die         - Error handling and exit functions
-  hash        - Hash/dictionary operations
   help        - Help text generation
-  json        - JSON parsing and generation
   logging     - Logging with levels and formatting
   math        - Mathematical functions
   ssh         - SSH operations and key management
   textwrap    - Text formatting and wrapping
-  types       - Type checking and validation
   unit        - Unit testing framework
   utils       - General utility functions
-  yaml        - YAML parsing and generation
 
 Environment Variables:
   LIB_DIR      - Library directory (auto-detected)

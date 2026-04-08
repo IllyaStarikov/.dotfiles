@@ -30,6 +30,35 @@ source "${SCRIPT_DIR}/common.sh"
 # No cleanup needed for this simple script
 # Trap removed as it adds no value
 
+# Print help message and exit.
+print_help() {
+  cat <<'EOF'
+scratchpad - Create temporary files for quick editing
+
+Usage:
+  scratchpad [extension]
+  scratchpad -h | --help
+
+Examples:
+  scratchpad         Create a scratch file with no extension
+  scratchpad py      Create a scratch Python file (.py)
+  scratchpad md      Create a scratch Markdown file (.md)
+  scratchpad json    Create a scratch JSON file (.json)
+
+Behavior:
+  Generates a unique filename in $TMPDIR (or /tmp), then opens it in
+  $EDITOR (vim if unset). Files persist until system cleanup.
+EOF
+}
+
+# Handle help flags before doing any side effects.
+case "${1:-}" in
+  -h | --help)
+    print_help
+    exit 0
+    ;;
+esac
+
 # Get file extension if provided
 EXT="${1:+.$1}"
 

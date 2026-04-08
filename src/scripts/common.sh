@@ -71,33 +71,32 @@ print_color() {
 # These functions are unique to common.sh (not in library)
 # ============================================================================
 
-# Execute platform-specific commands with automatic OS detection
+# Execute platform-specific commands with automatic OS detection.
 # Usage: platform_command "macos_command" "linux_command" [fallback_command]
+#
+# WARNING: Each argument is passed to `eval`, so caller-controlled input
+# would be a command-injection sink. Only call with literal command
+# strings hard-coded into your script. For new code, prefer the explicit
+# pattern:
+#     if is_macos; then macos_cmd; else linux_cmd; fi
+#
+# This function is retained for two existing callers (fixy, fetch-quotes)
+# that pass static literals. New scripts should not use it.
 platform_command() {
   local macos_cmd="${1:-}"
   local linux_cmd="${2:-}"
   local fallback_cmd="${3:-true}"
   local os
+  local cmd
 
   os="$(get_os)"
 
   case "${os}" in
-    macos)
-      if [[ -n "${macos_cmd}" ]]; then
-        eval "${macos_cmd}"
-      else
-        eval "${fallback_cmd}"
-      fi
-      ;;
-    linux)
-      if [[ -n "${linux_cmd}" ]]; then
-        eval "${linux_cmd}"
-      else
-        eval "${fallback_cmd}"
-      fi
-      ;;
-    *)
-      eval "${fallback_cmd}"
-      ;;
+    macos) cmd="${macos_cmd:-$fallback_cmd}" ;;
+    linux) cmd="${linux_cmd:-$fallback_cmd}" ;;
+    *) cmd="${fallback_cmd}" ;;
   esac
+
+  # shellcheck disable=SC2086 # intentional: caller passes a command literal
+  eval "${cmd}"
 }

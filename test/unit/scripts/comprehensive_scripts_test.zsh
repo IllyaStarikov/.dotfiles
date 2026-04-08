@@ -8,6 +8,18 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
 readonly SCRIPTS_DIR="${DOTFILES_DIR}/src/scripts"
 
+# Wall-clock cap for any single script invocation. Some scripts (theme,
+# tmux-utils, update-dotfiles) do real work when called without args
+# and would otherwise time out the whole test on a fresh CI box.
+# Use gtimeout on macOS if available, otherwise plain timeout.
+if command -v gtimeout >/dev/null 2>&1; then
+  readonly _SCRIPT_RUN=(gtimeout 5)
+elif command -v timeout >/dev/null 2>&1; then
+  readonly _SCRIPT_RUN=(timeout 5)
+else
+  readonly _SCRIPT_RUN=()
+fi
+
 describe "Comprehensive Scripts Behavioral Tests"
 
 #######################################
@@ -17,7 +29,7 @@ test_bugreport() {
   local script="${SCRIPTS_DIR}/bugreport"
 
   test_case "bugreport: Generates help information"
-  output=$("${script}" --help 2>&1 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || true)
   if [[ -n "${output}" ]]; then
     pass "Help displayed"
   else
@@ -25,7 +37,7 @@ test_bugreport() {
   fi
 
   test_case "bugreport: Handles invalid options properly"
-  output=$("${script}" --invalid-option 2>&1 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" --invalid-option 2>&1 || true)
   # Should show error or usage
   if [[ "${output}" == *"Unknown"* ]] || [[ "${output}" == *"Error"* ]] || [[ "${output}" == *"Usage"* ]]; then
     pass "Invalid option handled"
@@ -57,7 +69,7 @@ test_fixy() {
   temp_file="$TEST_TMP_DIR/format_test.py"
   echo "def hello( ): print('world' )" >"${temp_file}"
 
-  "${script}" "${temp_file}" >/dev/null 2>&1 || true
+  "${_SCRIPT_RUN[@]}" "${script}" "${temp_file}" >/dev/null 2>&1 || true
 
   # Check if formatting improved
   content=$(cat "${temp_file}")
@@ -92,7 +104,7 @@ test_theme() {
 
   test_case "theme: Can switch themes"
   # Try to get current theme or switch
-  output=$("${script}" 2>&1 | head -5 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" 2>&1 | head -5 || true)
 
   # Should either show current theme or switch
   if [[ "${output}" == *"theme"* ]] || [[ "${output}" == *"Theme"* ]] || [[ "${output}" == *"tokyonight"* ]]; then
@@ -109,7 +121,7 @@ test_tmux_utils() {
   local script="${SCRIPTS_DIR}/tmux-utils"
 
   test_case "tmux-utils: Provides tmux utilities"
-  output=$("${script}" 2>&1 | head -5 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" 2>&1 | head -5 || true)
 
   # Should show usage or perform an action
   if [[ "${output}" == *"tmux"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"battery"* ]]; then
@@ -127,7 +139,7 @@ test_update_dotfiles() {
 
   test_case "update-dotfiles: Can check for updates"
   # Run with --help or --dry-run to avoid actual updates
-  output=$("${script}" --help 2>&1 || "${script}" --dry-run 2>&1 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || "${_SCRIPT_RUN[@]}" "${script}" --dry-run 2>&1 || true)
 
   # Should mention updating or show help
   if [[ "${output}" == *"update"* ]] || [[ "${output}" == *"Update"* ]] || [[ "${output}" == *"Usage"* ]]; then
@@ -145,7 +157,7 @@ test_generic_script() {
   local script_name=$(basename "${script}")
 
   test_case "${script_name}: Responds to --help"
-  output=$("${script}" --help 2>&1 || true)
+  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || true)
 
   # Most scripts should provide help
   if [[ "${output}" == *"${script_name}"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"usage"* ]]; then
