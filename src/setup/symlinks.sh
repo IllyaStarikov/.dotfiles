@@ -281,6 +281,28 @@ main() {
 
   # Note: Private tmuxinator configs should be handled by private setup script
 
+  # Generate Neovim colorscheme cache from theme templates.
+  # Files are written to $XDG_CACHE_HOME/nvim/colors/ (not committed). Neovim
+  # will lazy-regenerate any missing entry on demand, so this step is just a
+  # one-shot warmup.
+  if [[ "$DRY_RUN" != "true" ]] \
+    && command -v jq >/dev/null \
+    && [[ -f "$DOTFILES_DIR/config/themes.json" ]] \
+    && [[ -x "$DOTFILES_DIR/src/theme/generate-theme.sh" ]]; then
+    echo ""
+    echo "Generating Neovim colorscheme cache..."
+    local generated=0
+    while read -r family variant; do
+      if "$DOTFILES_DIR/src/theme/generate-theme.sh" "$family" "$variant" neovim \
+        >/dev/null 2>&1; then
+        ((generated++))
+      fi
+    done < <(jq -r '.families | to_entries[] | .key as $f
+                    | .value.variants | keys[] | "\($f) \(.)"' \
+              "$DOTFILES_DIR/config/themes.json")
+    echo "   Generated $generated colorscheme files"
+  fi
+
   # Summary
   echo ""
   echo "════════════════════════════════════════════════════════════════════"

@@ -2,6 +2,9 @@
 *.spl
 # Spell directory (moved to private dotfiles)
 src/neovim/spell/
+# Generated Neovim colorscheme files (live in $XDG_CACHE_HOME/nvim/colors/).
+# Safety net in case an old generator writes back here.
+src/neovim/colors/
 
 # Neovim plugin lock file at repo root (not used; lazy.nvim's actual
 # lock file lives at src/neovim/lazy-lock.json which IS tracked).
