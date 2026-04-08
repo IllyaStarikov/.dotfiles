@@ -161,16 +161,24 @@ get_battery_status() {
 
     local battery_percent=0
     local battery_info=""
+    local on_ac=0
     if [ "$OS_TYPE" = "Linux" ]; then
         local battery_dir=$(find /sys/class/power_supply -name 'BAT*' | head -n 1)
         if [ -n "$battery_dir" ]; then
             battery_percent=$(cat "$battery_dir/capacity")
+        fi
+        local ac_dir=$(find /sys/class/power_supply -name 'A{C,DP}*' 2>/dev/null | head -n 1)
+        if [ -n "$ac_dir" ] && [ "$(cat "$ac_dir/online" 2>/dev/null)" = "1" ]; then
+            on_ac=1
         fi
     else
         # macOS implementation
         battery_info=$(pmset -g batt | grep -E "[0-9]+%")
         if [ -n "$battery_info" ]; then
             battery_percent=$(echo "$battery_info" | grep -o "[0-9]\+%" | tr -d '%')
+        fi
+        if pmset -g batt | grep -qE "AC Power|charged|charging"; then
+            on_ac=1
         fi
     fi
 
@@ -185,7 +193,9 @@ get_battery_status() {
     fi
 
     local icon
-    if [ "$battery_percent" -le 24 ]; then
+    if [ "$on_ac" -eq 1 ]; then
+        icon="🔌"
+    elif [ "$battery_percent" -le 24 ]; then
         icon="🪫"
     else
         icon="🔋"
