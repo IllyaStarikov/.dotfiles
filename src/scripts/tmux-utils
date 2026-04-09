@@ -177,7 +177,7 @@ get_battery_status() {
         if [ -n "$battery_info" ]; then
             battery_percent=$(echo "$battery_info" | grep -o "[0-9]\+%" | tr -d '%')
         fi
-        if pmset -g batt | grep -qE "AC Power|charged|charging"; then
+        if pmset -g batt | grep -q "'AC Power'"; then
             on_ac=1
         fi
     fi
@@ -194,7 +194,7 @@ get_battery_status() {
 
     local icon
     if [ "$on_ac" -eq 1 ]; then
-        icon="🔌"
+        icon="⚡️"
     elif [ "$battery_percent" -le 24 ]; then
         icon="🪫"
     else
