@@ -67,7 +67,7 @@ jobs:
             fi
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update -qq
-            sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git
+            sudo apt-get install -y bash coreutils findutils sed neovim shellcheck zsh tmux git lua5.4
           fi
 
       - name: setup neovim
@@ -137,7 +137,7 @@ jobs:
             fi
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
             sudo apt-get update -qq
-            sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git
+            sudo apt-get install -y bash coreutils findutils sed neovim zsh tmux git lua5.4
           fi
 
       - name: setup neovim
