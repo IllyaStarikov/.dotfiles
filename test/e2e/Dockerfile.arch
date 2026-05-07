@@ -42,6 +42,8 @@ RUN pacman -Syu --noconfirm && \
     tree \
     htop \
     unzip \
+    # Lua (provides luac for syntax validation in tests)
+    lua \
     # Locale
     glibc \
     && pacman -Scc --noconfirm

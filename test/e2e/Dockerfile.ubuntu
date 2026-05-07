@@ -54,6 +54,8 @@ RUN apt-get update && apt-get install -y \
     jq \
     tree \
     htop \
+    # Lua (provides luac for syntax validation in tests)
+    lua5.4 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Neovim 0.10+ from official PPA
