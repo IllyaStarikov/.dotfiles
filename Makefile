@@ -16,7 +16,7 @@ help:
 	@echo ""
 	@echo "  Code Quality:"
 	@echo "    make fmt         Format all code with fixy"
-	@echo "    make lint        Run shellcheck on scripts"
+	@echo "    make lint        Run code quality smoke checks"
 	@echo ""
 	@echo "  Setup:"
 	@echo "    make setup       Run full installation"
@@ -44,9 +44,9 @@ test-full:
 fmt:
 	./src/scripts/fixy src/
 
-# Run shellcheck on shell scripts
+# Run code quality smoke checks
 lint:
-	shellcheck src/**/*.sh src/**/*.zsh
+	DOTFILES_DIR="$(CURDIR)" TEST_TMP_DIR="$${TEST_TMP_DIR:-/tmp/dotfiles_lint_$$$$}" ./test/smoke/code_quality_test.zsh
 
 # Run full setup
 setup:

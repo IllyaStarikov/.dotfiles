@@ -30,6 +30,14 @@ setup_test
 
 describe "Neovim Core Options Tests"
 
+readonly NVIM_TIMEOUT=10
+
+nvim_option() {
+  local opt_name="$1"
+  timeout "$NVIM_TIMEOUT" nvim --headless -i NONE -c "lua print(vim.o.$opt_name)" -c "qa!" \
+    2>&1 | tail -1
+}
+
 # Helper to run Neovim and check option value
 # Args: $1 = option name, $2 = expected value pattern
 check_option() {
@@ -37,7 +45,7 @@ check_option() {
   local expected="$2"
   local result
 
-  result=$(timeout 10 nvim --headless -c "lua print(vim.o.$opt_name)" -c "qa!" 2>&1 | tail -1)
+  result=$(nvim_option "$opt_name")
   if [[ "$result" == *"$expected"* ]]; then
     return 0
   else
@@ -52,7 +60,7 @@ check_bool_option() {
   local expected="$2"
   local result
 
-  result=$(timeout 10 nvim --headless -c "lua print(vim.o.$opt_name)" -c "qa!" 2>&1 | tail -1)
+  result=$(nvim_option "$opt_name")
   if [[ "$result" == "$expected" ]]; then
     return 0
   else
@@ -125,25 +133,25 @@ else
 fi
 
 test_case "Updatetime is set to reasonable value"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.updatetime)" -c "qa!" 2>&1 | tail -1)
+result=$(nvim_option "updatetime")
 # WezTerm uses 4000ms to prevent hangs, regular terminals use ~300ms
 # Accept anything <= 4000ms as reasonable
-if [[ "$result" -le 4000 ]]; then
+if [[ "$result" == <-> && "$result" -le 4000 ]]; then
   pass
 else
   fail "updatetime should be <= 4000ms, got $result"
 fi
 
 test_case "Timeoutlen is set for which-key (< 1000ms)"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.timeoutlen)" -c "qa!" 2>&1 | tail -1)
-if [[ "$result" -le 1000 ]]; then
+result=$(nvim_option "timeoutlen")
+if [[ "$result" == <-> && "$result" -le 1000 ]]; then
   pass
 else
   fail "timeoutlen should be <= 1000ms for which-key, got $result"
 fi
 
 test_case "Clipboard is configured for system integration"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.clipboard)" -c "qa!" 2>&1 | tail -1)
+result=$(nvim_option "clipboard")
 if [[ "$result" == *"unnamedplus"* ]]; then
   pass
 else
@@ -215,8 +223,8 @@ else
 fi
 
 test_case "Backup: undolevels is high for more undo history"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.undolevels)" -c "qa!" 2>&1 | tail -1)
-if [[ "$result" -ge 10000 ]]; then
+result=$(nvim_option "undolevels")
+if [[ "$result" == <-> && "$result" -ge 10000 ]]; then
   pass
 else
   fail "undolevels should be >= 10000, got $result"
@@ -259,7 +267,7 @@ else
 fi
 
 test_case "UI: signcolumn is set to 'yes'"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.signcolumn)" -c "qa!" 2>&1 | tail -1)
+result=$(nvim_option "signcolumn")
 if [[ "$result" == "yes" ]]; then
   pass
 else
@@ -279,7 +287,7 @@ fi
 
 test_case "Performance: lazyredraw is configured"
 # lazyredraw might be false for better visual feedback
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.lazyredraw)" -c "qa!" 2>&1 | tail -1)
+result=$(nvim_option "lazyredraw")
 if [[ "$result" == "true" ]] || [[ "$result" == "false" ]]; then
   pass
 else
@@ -287,8 +295,8 @@ else
 fi
 
 test_case "Performance: synmaxcol is set"
-result=$(timeout 10 nvim --headless -c "lua print(vim.o.synmaxcol)" -c "qa!" 2>&1 | tail -1)
-if [[ "$result" -gt 0 ]]; then
+result=$(nvim_option "synmaxcol")
+if [[ "$result" == <-> && "$result" -gt 0 ]]; then
   pass
 else
   fail "synmaxcol should be positive, got $result"
@@ -297,4 +305,5 @@ fi
 # Cleanup
 cleanup_test
 
-exit 0
+run_tests
+exit $?

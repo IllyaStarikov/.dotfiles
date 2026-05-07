@@ -14,6 +14,10 @@ source "$TEST_DIR/lib/test_helpers.zsh"
 # Test suite for symlinks.sh
 describe "symlinks.sh symlink script"
 
+run_symlinks() {
+  DOTFILES_SKIP_THEME_CACHE=1 zsh "$DOTFILES_DIR/src/setup/symlinks.sh" "$@"
+}
+
 # Test: Script exists and is executable
 it "should exist and be executable" && {
   local script_path="$DOTFILES_DIR/src/setup/symlinks.sh"
@@ -24,8 +28,18 @@ it "should exist and be executable" && {
 
 # Test: Dry run mode
 it "should support dry run mode" && {
-  # Skip - dry run mode not implemented in symlinks.sh
-  skip "Dry run mode not implemented in current version"
+  local test_home="$TEST_TMP_DIR/test_dry_run"
+  mkdir -p "$test_home"
+
+  export HOME="$test_home"
+
+  output=$(run_symlinks --dry-run 2>&1 || true)
+
+  if [[ "$output" == *"DRY RUN"* && ! -L "$test_home/.zshrc" ]]; then
+    pass "Dry run previewed changes without creating symlinks"
+  else
+    fail "Dry run should not create symlinks"
+  fi
 }
 
 # Test: Symlink creation
@@ -36,7 +50,7 @@ it "should create symlinks to dotfiles" && {
   export HOME="$test_home"
 
   # Run symlink creation
-  zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+  run_symlinks 2>&1 || true
 
   # Check key symlinks
   local created=0
@@ -57,19 +71,19 @@ it "should backup existing files before symlinking" && {
   mkdir -p "$test_home"
 
   export HOME="$test_home"
-  export BACKUP_DIR="$test_home/.dotfiles-backup"
+  local backup_root="$test_home/.dotfiles.backups"
 
   # Create existing file
   echo "original content" >"$test_home/.zshrc"
   original_hash=$(shasum "$test_home/.zshrc" | cut -d' ' -f1)
 
   # Run symlink creation
-  zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+  run_symlinks 2>&1 || true
 
   # Check if backup was created
-  if [[ -d "$BACKUP_DIR" ]]; then
+  if [[ -d "$backup_root" ]]; then
     # Find backup file
-    backup_file=$(find "$BACKUP_DIR" -name "*zshrc*" -type f 2>/dev/null | head -1)
+    backup_file=$(find "$backup_root" -name ".zshrc" -type f 2>/dev/null | head -1)
     if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
       backup_hash=$(shasum "$backup_file" | cut -d' ' -f1)
       if [[ "$original_hash" == "$backup_hash" ]]; then
@@ -96,7 +110,7 @@ it "should replace broken symlinks" && {
   ln -s "/nonexistent/path" "$test_home/.zshrc"
 
   # Run symlink creation
-  zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+  run_symlinks 2>&1 || true
 
   # Check if symlink was replaced
   if [[ -L "$test_home/.zshrc" ]]; then
@@ -119,7 +133,7 @@ it "should create necessary directories" && {
   export HOME="$test_home"
 
   # Run symlink creation
-  zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+  run_symlinks 2>&1 || true
 
   # Check if config directories were created
   local dirs_created=0
@@ -142,7 +156,7 @@ it "should validate symlink targets exist" && {
   export HOME="$test_home"
 
   # Run symlink creation
-  zsh "$DOTFILES_DIR/src/setup/symlinks.sh" 2>&1 || true
+  run_symlinks 2>&1 || true
 
   # Check that symlinks point to existing files
   local valid_links=0
@@ -168,9 +182,13 @@ it "should validate symlink targets exist" && {
 
 # Test: Help message
 it "should display help message" && {
-  output=$(zsh "$DOTFILES_DIR/src/setup/symlinks.sh" --help 2>&1 || true)
+  output=$(run_symlinks --help 2>&1 || true)
 
-  assert_contains "$output" "Usage" || assert_contains "$output" "usage" || assert_contains "$output" "symlink"
+  if [[ "$output" == *"Usage"* || "$output" == *"usage"* || "$output" == *"symlink"* ]]; then
+    pass "Help output includes usage information"
+  else
+    fail "Help output should include usage information"
+  fi
 }
 
 # Test: Force mode
@@ -184,7 +202,7 @@ it "should support force mode to overwrite without backup" && {
   echo "will be overwritten" >"$test_home/.zshrc"
 
   # Run with force flag
-  output=$(zsh "$DOTFILES_DIR/src/setup/symlinks.sh" --force 2>&1 || true)
+  output=$(run_symlinks --force 2>&1 || true)
 
   # Check symlink was created
   if [[ -L "$test_home/.zshrc" ]]; then
@@ -196,5 +214,4 @@ it "should support force mode to overwrite without backup" && {
 
 # Run tests
 run_tests
-# Return success
-exit 0
+exit $?

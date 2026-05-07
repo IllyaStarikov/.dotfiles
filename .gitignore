@@ -30,6 +30,8 @@ debug-neovim-config.sh
 *.log
 test/logs/
 test/reports/
+bugreport_*/
+dotfiles_bugreport_*.tar.gz
 
 # Zsh completion cache
 .zcompdump

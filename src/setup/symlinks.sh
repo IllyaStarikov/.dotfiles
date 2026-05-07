@@ -268,10 +268,11 @@ main() {
   # Scripts
   mkdir -p "$HOME/.local/bin"
   for script in "$DOTFILES_DIR/src/scripts"/*; do
-    if [[ -f "$script" && -x "$script" ]]; then
-      name=$(basename "$script")
-      create_link "$script" "$HOME/.local/bin/$name" "Script: $name"
-    fi
+    [[ -f "$script" ]] || continue
+    name=$(basename "$script")
+    [[ "$name" == *.md ]] && continue
+    [[ -x "$script" ]] || continue
+    create_link "$script" "$HOME/.local/bin/$name" "Script: $name"
   done
 
   # Tmuxinator (if exists in src/)
@@ -286,6 +287,7 @@ main() {
   # will lazy-regenerate any missing entry on demand, so this step is just a
   # one-shot warmup.
   if [[ "$DRY_RUN" != "true" ]] \
+    && [[ "${DOTFILES_SKIP_THEME_CACHE:-0}" != "1" ]] \
     && command -v jq >/dev/null \
     && [[ -f "$DOTFILES_DIR/config/themes.json" ]] \
     && [[ -x "$DOTFILES_DIR/src/theme/generate-theme.sh" ]]; then
