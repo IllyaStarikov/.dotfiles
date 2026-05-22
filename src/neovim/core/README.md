@@ -137,7 +137,7 @@ opt.undodir = vim.fn.stdpath('data') .. '/undo'
 opt.foldenable = true
 opt.foldlevelstart = 99  -- Start unfolded
 opt.foldmethod = 'expr'  -- Use treesitter
-opt.foldexpr = 'nvim_treesitter#foldexpr()'
+opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 ```
 
 #### indentation.lua - Tab/Space Settings

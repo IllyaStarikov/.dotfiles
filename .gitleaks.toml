@@ -31,6 +31,11 @@ paths = [
   '''docs/.*''',
   '''README\.md''',
   '''CLAUDE\.md''',
+  # cortex code emits literal export-statement strings to teach users
+  # how to wire up the local MLX backend; the values are placeholders
+  # ("mlx-local-no-key-needed"), not real keys.
+  '''src/cortex/.*''',
+  '''config/cortex/.*''',
 ]
 
 # Allow common false positives in dotfiles
@@ -72,6 +77,12 @@ regexes = [
   '''export\s+[A-Z_]+=\"\$\{.*\}\"''',
   '''alias\s+.*=.*''',
   '''function\s+.*\(\)''',
+
+  # cortex MLX backend writes literal placeholder strings (no real key is
+  # validated server-side). Matches the env-var export AND its Python-code
+  # generator form so neither location triggers a false positive.
+  '''API_KEY=["']?mlx-local-no-key-needed''',
+  '''print\(['"]export\s+\w*API_KEY=''',
 ]
 
 # Commits to ignore - direct array of commit SHAs
@@ -96,6 +107,9 @@ stopwords = [
   "admin",
   "root",
   "user",
+  # cortex MLX backend uses an obvious placeholder string for the local
+  # OpenAI-compatible endpoint — no key is actually validated server-side.
+  "mlx-local-no-key-needed",
 ]
 
 # Files to completely skip

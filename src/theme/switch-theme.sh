@@ -179,6 +179,12 @@ EXAMPLES:
     $(basename "$0") --list github     # List GitHub variants
     $(basename "$0") --terminal storm  # Per-terminal theming
 
+ENVIRONMENT VARIABLES:
+    THEME_LIGHT         Default light theme used by 'theme light' and --auto
+    THEME_DARK          Default dark theme used by 'theme dark' and --auto
+    DEBUG=1             Print extra diagnostic output
+    VERBOSE=1           Print each file written during the switch
+
 EOF
 }
 
@@ -463,7 +469,10 @@ interactive_picker() {
 # Print shell export commands for local theming
 # Used with: source <(switch-theme.sh --shell THEME)
 print_shell_exports() {
-  local starship_config="$(get_theme_path "$THEME")/starship.toml"
+  # Note: STARSHIP_CONFIG is intentionally *not* exported. Pointing it at the
+  # dotfiles source path means Starship breaks if the repo moves; the rendered
+  # copy at ~/.config/starship.toml (written by update_app_themes) is what
+  # Starship picks up via its default lookup.
   local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
   local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
   local fzf_color=$(get_fzf_color "$VARIANT")
@@ -473,7 +482,6 @@ export MACOS_VARIANT="$VARIANT"
 export BAT_THEME="$bat_theme"
 export DELTA_SYNTAX_THEME="$delta_theme"
 export FZF_COLOR="$fzf_color"
-export STARSHIP_CONFIG="$starship_config"
 EOF
 }
 
@@ -564,11 +572,25 @@ case "${1:-}" in
     shift
     ;;
   --auto)
-    # Force auto-detect from system appearance
-    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
-      THEME="${THEME_DARK:-tokyonight_storm}"
+    # Auto-detect from the OS appearance setting. macOS uses
+    # AppleInterfaceStyle (literal "Dark" → dark mode); GNOME exposes
+    # `color-scheme` via gsettings ("prefer-dark" → dark mode).
+    if [[ "$(uname)" == Darwin ]]; then
+      if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        THEME="${THEME_DARK:-tokyonight_storm}"
+      else
+        THEME="${THEME_LIGHT:-tokyonight_day}"
+      fi
+    elif command -v gsettings >/dev/null 2>&1; then
+      if gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q "dark"; then
+        THEME="${THEME_DARK:-tokyonight_storm}"
+      else
+        THEME="${THEME_LIGHT:-tokyonight_day}"
+      fi
     else
-      THEME="${THEME_LIGHT:-tokyonight_day}"
+      # No OS appearance signal available; pick the dark default to match
+      # most terminal users' implicit preference.
+      THEME="${THEME_DARK:-tokyonight_storm}"
     fi
     echo "Auto-detected theme: $THEME"
     shift
@@ -608,8 +630,15 @@ if [[ -z "$THEME" ]]; then
   if [[ -t 0 ]] && [[ -t 1 ]] && command -v fzf &>/dev/null; then
     THEME=$(interactive_picker) || exit 0
   else
-    # Non-interactive: auto-detect from macOS appearance
-    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+    # Non-interactive: auto-detect from OS appearance (macOS + GNOME).
+    if [[ "$(uname)" == Darwin ]]; then
+      if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        THEME="$DARK_THEME"
+      else
+        THEME="$LIGHT_THEME"
+      fi
+    elif command -v gsettings >/dev/null 2>&1 \
+         && gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q "dark"; then
       THEME="$DARK_THEME"
     else
       THEME="$LIGHT_THEME"
@@ -662,29 +691,32 @@ log() {
   fi
 }
 
-# Acquire exclusive lock to prevent concurrent theme switches
-# Prevents race conditions that could corrupt theme configurations
+# Acquire exclusive lock to prevent concurrent theme switches. The lock
+# creation is atomic (`set -o noclobber` makes `>` fail if the file
+# exists), eliminating the test-then-write TOCTOU window that the
+# original `[[ -f ]] ... echo > LOCK` had.
 acquire_lock() {
   local timeout=100  # 10 seconds in 0.1 second increments
   local elapsed=0
 
-  while [[ -f "$LOCK_FILE" ]] && [[ $elapsed -lt $timeout ]]; do
-    local lock_pid=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
+  while [[ $elapsed -lt $timeout ]]; do
+    if ( set -o noclobber; echo $$ >"$LOCK_FILE" ) 2>/dev/null; then
+      LOCK_ACQUIRED=1
+      return 0
+    fi
+    # Lock exists — check if the holder is still alive; reap stale locks.
+    local lock_pid
+    lock_pid=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
     if [[ -n "$lock_pid" ]] && ! kill -0 "$lock_pid" 2>/dev/null; then
       rm -f "$LOCK_FILE"
-      break
+      continue
     fi
     sleep 0.1
     elapsed=$((elapsed + 1))
   done
 
-  if [[ -f "$LOCK_FILE" ]]; then
-    echo "Error: Another theme switch is in progress. If stuck, remove: $LOCK_FILE" >&2
-    exit 1
-  fi
-
-  echo $$ >"$LOCK_FILE"
-  LOCK_ACQUIRED=1
+  echo "Error: Another theme switch is in progress. If stuck, remove: $LOCK_FILE" >&2
+  exit 1
 }
 
 # Function to release lock
@@ -808,7 +840,7 @@ save_theme_state() {
   local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
   local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
   local fzf_color=$(get_fzf_color "$VARIANT")
-  local starship_config="$(get_theme_path "$THEME")/starship.toml"
+  # STARSHIP_CONFIG deliberately not written; see print_shell_exports().
   cat >"$theme_file_tmp" <<EOF
 # Current theme configuration
 export MACOS_THEME="$THEME"
@@ -816,7 +848,6 @@ export MACOS_VARIANT="$VARIANT"
 export BAT_THEME="$bat_theme"
 export DELTA_SYNTAX_THEME="$delta_theme"
 export FZF_COLOR="$fzf_color"
-export STARSHIP_CONFIG="$starship_config"
 EOF
   mv -f "$theme_file_tmp" "$CONFIG_DIR/current-theme.sh"
   chmod 644 "$CONFIG_DIR/current-theme.sh"
@@ -971,9 +1002,10 @@ atomic_update() {
     return 1
   }
 
-  # Clean up any leftover temp files (zsh-safe glob)
-  setopt localoptions nullglob
-  rm -f "${dest}".tmp.* 2>/dev/null || true
+  # Only clean up THIS process's own temp file. A broader glob like
+  # `${dest}.tmp.*` would race with a concurrent switcher's pending temp
+  # (we already lock, but the temp lives outside the lock window).
+  rm -f "${dest}.tmp.$$" 2>/dev/null || true
 
   return 0
 }
@@ -981,52 +1013,58 @@ atomic_update() {
 # Update other application themes
 update_app_themes() {
   local theme_dir="$(get_theme_path "$THEME")"
-  local failed=0
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
 
-  # Update Alacritty
-  if [[ -f "$theme_dir/alacritty.toml" ]]; then
-    update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || failed=1
-  fi
+  # Each app's atomic_update writes to a distinct destination file and uses
+  # tmp+rename, so they're parallel-safe. Backgrounding them turns ~5×30ms
+  # serial I/O into a single ~30ms wait on the slowest one.
+  local pids=()
+  local results_dir; results_dir="$(mktemp -d -t theme-update.XXXXXX)"
 
-  # Update WezTerm (generates complete ~/.wezterm.lua with colors inlined)
-  update_wezterm_theme || failed=1
-
-  # Update Kitty
-  if [[ -f "$theme_dir/kitty.conf" ]]; then
-    if atomic_update "$theme_dir/kitty.conf" "$KITTY_DIR/theme.conf"; then
-      log "Updated Kitty theme"
-      # Reload Kitty configuration if it's running
-      if pgrep -x "kitty" >/dev/null; then
-        kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
+  _update_one() {
+    local name="$1" src="$2" dest="$3"
+    if [[ -f "$src" ]]; then
+      if atomic_update "$src" "$dest"; then
+        log "Updated $name theme"
+        echo "ok" >|"$results_dir/$name"
+      else
+        log "Failed to update $name theme" "ERROR"
+        echo "fail" >|"$results_dir/$name"
       fi
     else
-      log "Failed to update Kitty theme" "ERROR"
-      failed=1
+      echo "skip" >|"$results_dir/$name"
     fi
+  }
+
+  if [[ -f "$theme_dir/alacritty.toml" ]]; then
+    ( update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" \
+        && echo ok >|"$results_dir/Alacritty" \
+        || echo fail >|"$results_dir/Alacritty" ) &
+    pids+=($!)
   fi
 
-  # Update tmux
-  if [[ -f "$theme_dir/tmux.conf" ]]; then
-    if atomic_update "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"; then
-      log "Updated tmux theme"
-    else
-      log "Failed to update tmux theme" "ERROR"
-      failed=1
-    fi
+  ( update_wezterm_theme \
+      && echo ok >|"$results_dir/WezTerm" \
+      || echo fail >|"$results_dir/WezTerm" ) &
+  pids+=($!)
+
+  _update_one Kitty    "$theme_dir/kitty.conf"    "$KITTY_DIR/theme.conf"    & pids+=($!)
+  _update_one tmux     "$theme_dir/tmux.conf"     "$TMUX_DIR/theme.conf"     & pids+=($!)
+  _update_one Starship "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml" & pids+=($!)
+
+  wait "${pids[@]}" 2>/dev/null
+
+  # Reload Kitty once, after the write committed.
+  if [[ -f "$results_dir/Kitty" && "$(<"$results_dir/Kitty")" == ok ]] && pgrep -x "kitty" >/dev/null; then
+    kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
   fi
 
-  # Update Starship
-  if [[ -f "$theme_dir/starship.toml" ]]; then
-    if atomic_update "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml"; then
-      log "Updated Starship theme"
-    else
-      log "Failed to update Starship theme" "ERROR"
-      failed=1
-    fi
-  fi
-
+  local failed=0
+  for f in "$results_dir"/*(N); do
+    [[ "$(<"$f")" == fail ]] && failed=1
+  done
+  rm -rf "$results_dir"
   return $failed
 }
 
@@ -1051,8 +1089,10 @@ reload_tmux() {
     log "Sourced theme.conf"
   fi
 
-  # Refresh all clients to apply the new theme visually
-  tmux refresh-client -S 2>/dev/null || true
+  # Refresh all clients. `-S` redraws only the status line; without it
+  # tmux repaints window/pane borders too, which is what theme changes
+  # actually need (border + pane background colors come from theme.conf).
+  tmux refresh-client 2>/dev/null || true
   log "Refreshed tmux clients"
 }
 

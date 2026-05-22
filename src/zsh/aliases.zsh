@@ -61,7 +61,22 @@ alias txs="tmuxinator start"
 alias txl="tmuxinator list"
 alias txe="tmuxinator edit"
 alias txn="tmuxinator new"
-alias ranger="source ranger"
+# `ranger-cd` exits ranger into the directory it was last in. The `source`
+# wrapping is required because cd must run in the parent shell.
+ranger-cd() {
+  local tempfile
+  tempfile=$(mktemp -t ranger-cd.XXXXXX) || return 1
+  command ranger --choosedir="$tempfile" "${@:-$PWD}"
+  local rc=$?
+  if [[ -s $tempfile ]]; then
+    local dest
+    dest=$(<"$tempfile")
+    [[ -d $dest && $dest != "$PWD" ]] && builtin cd -- "$dest"
+  fi
+  rm -f -- "$tempfile"
+  return "$rc"
+}
+alias rcd="ranger-cd"
 
 # Tmux shortcuts
 # keep-sorted start
@@ -104,7 +119,7 @@ alias gs="git status"
 alias gst="git stash"
 alias gstp="git stash pop"
 alias gundo="git reset --soft HEAD~1"
-alias gunwip="git log -n 1 | grep -q -c 'WIP' && git reset HEAD~1"
+alias gunwip="git log -n 1 | grep -q 'WIP' && git reset HEAD~1"
 alias gwip="git add -A && git commit -m 'WIP: work in progress'"
 # keep-sorted end
 
@@ -245,7 +260,8 @@ if command -v docker &>/dev/null; then
   alias dlog="docker logs"
   alias dps="docker ps"
   # Use single quotes to prevent command substitution at alias definition time
-  alias dstop='docker stop $(docker ps -q 2>/dev/null)'
+  # Guard against the empty-arg case (`docker stop` with no IDs is an error).
+  alias dstop='ids=$(docker ps -q 2>/dev/null); [[ -n $ids ]] && docker stop $ids'
   # keep-sorted end
 
   # Function to safely run docker commands only when daemon is running

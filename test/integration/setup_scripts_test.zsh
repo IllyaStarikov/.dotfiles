@@ -143,17 +143,18 @@ test_homebrew_detection() {
 # Test package installation lists
 test_package_lists() {
   log "TRACE" "Testing package installation lists"
-  [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking for Brewfile or package lists"
+  [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Checking for packages.json or inline package lists"
 
-  local brewfile="$DOTFILES_DIR/Brewfile"
+  local packages_json="$DOTFILES_DIR/config/packages.json"
   local found_packages=0
 
-  if [[ -f "$brewfile" ]]; then
-    [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Found Brewfile"
-
-    # Count packages
-    local brew_count=$(grep -c "^brew\|^cask\|^tap" "$brewfile" 2>/dev/null || echo 0)
-    [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Brewfile contains $brew_count packages"
+  if [[ -f "$packages_json" ]]; then
+    [[ $VERBOSE -ge 1 ]] && log "DEBUG" "Found config/packages.json"
+    if command -v jq >/dev/null 2>&1; then
+      local brew_count
+      brew_count=$(jq -r '.brew.core[]?, .brew.cask[]?' "$packages_json" 2>/dev/null | wc -l | tr -d ' ')
+      [[ $VERBOSE -ge 1 ]] && log "DEBUG" "packages.json declares $brew_count brew packages"
+    fi
     found_packages=1
   fi
 

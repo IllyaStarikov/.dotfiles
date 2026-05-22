@@ -34,7 +34,12 @@ readonly NVIM_TIMEOUT=10
 
 nvim_option() {
   local opt_name="$1"
-  timeout "$NVIM_TIMEOUT" nvim --headless -i NONE -c "lua print(vim.o.$opt_name)" -c "qa!" \
+  # Use the dotfiles init.lua explicitly so the test doesn't depend on
+  # whether the user has ~/.config/nvim symlinked (other tests temporarily
+  # tear down the symlink with a fake $HOME and don't always restore it).
+  timeout "$NVIM_TIMEOUT" nvim --headless -i NONE \
+    -u "$DOTFILES_DIR/src/neovim/init.lua" \
+    -c "lua print(vim.o.$opt_name)" -c "qa!" \
     2>&1 | tail -1
 }
 

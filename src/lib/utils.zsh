@@ -460,14 +460,17 @@ sleep_with_message() {
   sleep "$seconds"
 }
 
-# Retry command with delay
+# Retry a command with delay between attempts. Takes the command as
+# positional args (NOT an eval-able string) so caller-controlled input
+# can't be interpreted as shell syntax:
+#   retry 5 2 curl --fail "$url"
 retry() {
   local max_attempts="${1:-3}"
   local delay="${2:-1}"
-  local command="${@:3}"
+  shift 2
   local attempt=1
 
-  until eval "$command"; do
+  until "$@"; do
     if [[ $attempt -ge $max_attempts ]]; then
       echo "Command failed after $max_attempts attempts" >&2
       return 1

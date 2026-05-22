@@ -109,10 +109,12 @@ end
 -- Load utils for protected requires
 local utils_ok, utils = pcall(require, "utils")
 if not utils_ok then
-  -- Fallback if utils not available
+  -- Fallback if utils not available — must match the real signature:
+  -- `safe_require(name) -> (module, ok)` per utils.lua, not pcall's (ok, mod).
   utils = {
     safe_require = function(module)
-      return pcall(require, module)
+      local req_ok, mod = pcall(require, module)
+      return mod, req_ok
     end,
   }
 end
@@ -129,8 +131,8 @@ local modules = {
 }
 
 for _, module in ipairs(modules) do
-  local ok, err = pcall(require, module)
-  if not ok then
+  local mod_ok, err = pcall(require, module)
+  if not mod_ok then
     vim.notify("Failed to load " .. module .. ": " .. tostring(err), vim.log.levels.ERROR)
     -- Continue loading other modules
   end

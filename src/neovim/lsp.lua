@@ -25,7 +25,7 @@
 --
 -- USAGE:
 --   Called automatically from plugins configuration:
---   require("lsp.servers").setup()
+--   require("lsp").setup()
 --
 -- KEYBINDINGS (when LSP attached):
 --   gd         - Go to definition
@@ -218,15 +218,20 @@ local function setup_lsp()
       end
     end
 
-    -- Set up autocommand to update virtual text
+    -- Update virtual text on diagnostic change and on focus/buffer entry.
+    -- Both registrations live in a named augroup with `clear = true` so
+    -- they're idempotent (LSP setup may run more than once during plugin
+    -- reload) — otherwise we accrue duplicate callbacks and the diagnostic
+    -- virtual text flickers as each handler races to render.
+    local diag_group = vim.api.nvim_create_augroup("dotfiles_lsp_diag_redraw", { clear = true })
     vim.api.nvim_create_autocmd("DiagnosticChanged", {
+      group = diag_group,
       callback = function()
         show_diagnostic_virtual_text()
       end,
     })
-
-    -- Also update on buffer enter/win enter
     vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+      group = diag_group,
       callback = function()
         show_diagnostic_virtual_text()
       end,
@@ -256,7 +261,7 @@ local function setup_lsp()
     end
 
     -- Configure inlay hints if supported
-    if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
+    if vim.lsp.inlay_hint and client:supports_method("textDocument/inlayHint") then
       pcall(function()
         -- Disable inlay hints by default
         -- Parameters: enable(boolean, filter_table)
@@ -525,23 +530,21 @@ local function setup_lsp()
     },
     zls = {}, -- Zig/Assembly
     solargraph = {
-      -- Try to use system solargraph if available (via rbenv/rvm)
+      -- Prefer rbenv/rvm shims so the LSP picks up the project's Ruby
+      -- version (system solargraph is the last-resort fallback). All paths
+      -- return the same {bin, "stdio"} shape; we just walk the candidates.
       cmd = function()
-        -- Check for rbenv shim first
-        local rbenv_shim = vim.fn.expand("~/.rbenv/shims/solargraph")
-        if vim.fn.executable(rbenv_shim) == 1 then
-          return { rbenv_shim, "stdio" }
+        local candidates = {
+          vim.fn.expand("~/.rbenv/shims/solargraph"),
+          vim.fn.expand("~/.rvm/shims/solargraph"),
+          "solargraph",
+        }
+        for _, bin in ipairs(candidates) do
+          if vim.fn.executable(bin) == 1 then
+            return { bin, "stdio" }
+          end
         end
-        -- Check for rvm shim
-        local rvm_shim = vim.fn.expand("~/.rvm/shims/solargraph")
-        if vim.fn.executable(rvm_shim) == 1 then
-          return { rvm_shim, "stdio" }
-        end
-        -- Check for system solargraph
-        if vim.fn.executable("solargraph") == 1 then
-          return { "solargraph", "stdio" }
-        end
-        -- Fall back to Mason's installation if available
+        -- Fall back to Mason's installation if available.
         return { "solargraph", "stdio" }
       end,
       settings = {

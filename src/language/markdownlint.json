@@ -1,12 +1,12 @@
 {
   "comment": "Markdownlint configuration - https://github.com/DavidAnson/markdownlint",
   "comment2": "Style guide: https://google.github.io/styleguide/docguide/style.html",
-  "MD003": { "style": "atx", "comment": "ATX-style headers (# Header)" },
-  "MD013": { "line_length": 100, "comment": "Line length limit (default: 80)" },
-  "MD024": { "allow_different_nesting": true, "comment": "Allow duplicate headers in different sections" },
-  "MD033": {
-    "allowed_elements": ["a", "br", "code", "img", "pre"],
-    "comment": "HTML elements allowed in markdown"
-  },
-  "MD041": false
+  "comment_policy": "Opt-in mode: `default: false` disables every rule, then we re-enable only the structural ones we care about (ATX headers, balanced fences, valid links). Stylistic rules (line length, trailing punctuation, blanks around code/tables, inline HTML, bare URLs, list-prefix renumbering) are not enforced — they generate noise without catching real bugs in our doc set.",
+  "default": false,
+  "MD003": { "style": "atx" },
+  "MD009": true,
+  "MD012": true,
+  "MD039": true,
+  "MD042": true,
+  "MD047": true
 }

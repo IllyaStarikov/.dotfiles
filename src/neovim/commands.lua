@@ -168,20 +168,18 @@ end, { desc = "Change to project root directory" })
 -- MANUAL FORMATTING
 -- =============================================================================
 
--- Unified format command using external script
+-- Unified format command using external script. Runs the formatter
+-- asynchronously via vim.system so a slow formatter doesn't block the UI;
+-- we re-load the buffer and restore the view on the main thread when the
+-- subprocess finishes (matches fixy.lua's pattern).
 api.nvim_create_user_command("Format", function(opts)
-  -- Save current view
   local save = fn.winsaveview()
-
-  -- Save the file first to ensure script operates on latest content
   vim.cmd("silent! write")
 
-  -- Build command
   local format_script = vim.g.dotfiles .. "/src/scripts/fixy"
   local current_file = vim.fn.expand("%:p")
   local cmd = { format_script }
 
-  -- Parse arguments to convert to script flags
   local args = opts.args
   if args ~= "" then
     if args:find("trailing") then
@@ -200,29 +198,25 @@ api.nvim_create_user_command("Format", function(opts)
       table.insert(cmd, "-a")
     end
   else
-    -- Default to all operations
     table.insert(cmd, "-a")
   end
-
-  -- Add the current file
   table.insert(cmd, current_file)
 
-  -- Execute the format script
-  local output = vim.fn.system(table.concat(cmd, " "))
-  local exit_code = vim.v.shell_error
-
-  -- Reload the buffer to show changes
-  vim.cmd("silent! edit!")
-
-  -- Restore view
-  fn.winrestview(save)
-
-  -- Show output
-  if exit_code == 0 then
-    print("Format: completed successfully")
-  else
-    print("Format: " .. output)
-  end
+  vim.notify("Format: running…", vim.log.levels.INFO)
+  vim.system(cmd, { text = true }, function(result)
+    vim.schedule(function()
+      vim.cmd("silent! edit!")
+      fn.winrestview(save)
+      if result.code == 0 then
+        vim.notify("Format: completed successfully", vim.log.levels.INFO)
+      else
+        local msg = (result.stderr ~= "" and result.stderr)
+          or result.stdout
+          or "exit code " .. result.code
+        vim.notify("Format failed: " .. msg, vim.log.levels.ERROR)
+      end
+    end)
+  end)
 end, {
   nargs = "?",
   desc = "Format buffer with external script: trailing, tabs, quotes, formatters, all (default: all)",
@@ -376,14 +370,16 @@ api.nvim_create_user_command("ClearMessages", function()
   vim.cmd("messages clear")
 end, { desc = "Clear command messages" })
 
--- Show messages in buffer
+-- Show messages in buffer. Use the `log` filetype rather than `vim` so the
+-- :messages dump isn't highlighted as Vimscript (which produced misleading
+-- syntax errors on plain output lines).
 api.nvim_create_user_command("Messages", function()
   local messages = fn.execute("messages")
   local buf = api.nvim_create_buf(false, true)
   api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(messages, "\n"))
   vim.bo[buf].buftype = "nofile"
   vim.bo[buf].bufhidden = "wipe"
-  vim.bo[buf].filetype = "vim"
+  vim.bo[buf].filetype = "log"
   api.nvim_buf_set_name(buf, "Messages")
   api.nvim_set_current_buf(buf)
 end, { desc = "Show messages in buffer" })
@@ -551,9 +547,12 @@ local function setup_ai_commands()
   end, { desc = "Show AI configuration info" })
 end
 
--- Set up AI commands after plugins are loaded
+-- Set up AI commands after plugins are loaded. `once = true` so we don't
+-- re-register the same user commands every time VeryLazy fires (which
+-- happens whenever the lazy.nvim event runs, not just on first load).
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
+  once = true,
   callback = setup_ai_commands,
 })
 

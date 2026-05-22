@@ -223,7 +223,7 @@ ${BOLD}Output Options:${NC}
   --junit         Output JUnit XML report
 
 ${BOLD}Execution Options:${NC}
-  --parallel      Run tests in parallel
+  --parallel      Currently a no-op (broken counters/races) — pending rewrite
   --bail          Stop on first failure
   --exclude PAT   Exclude tests matching pattern
 
@@ -539,31 +539,34 @@ run_test_category() {
 
   log INFO "Found $total $category test(s)"
 
+  # --parallel was a known-broken option: PASSED/FAILED counters are not
+  # atomic across subshells, parallel tests race with the cleanup
+  # `rm -rf $TEST_TMP_DIR`, and per-test results were getting lost.
+  # Until someone rewrites it as `xargs -P` with per-test result files,
+  # honour --parallel as a hint only and run sequentially.
+  if [[ $PARALLEL -eq 1 ]]; then
+    log WARN "--parallel is currently a no-op (broken counters/races); running sequentially"
+  fi
+
   local count=0
   for test_file in "${test_files[@]}"; do
     ((count++))
 
-    if [[ $PARALLEL -eq 1 ]]; then
-      run_test "$test_file" &
-    else
-      # Show progress bar before running test
-      [[ $VERBOSE -eq 0 ]] && show_progress "$count" "$total"
+    # Show progress bar before running test
+    [[ $VERBOSE -eq 0 ]] && show_progress "$count" "$total"
 
-      run_test "$test_file"
+    run_test "$test_file"
+    local rc=$?
 
-      # After the last test, ensure we have a clean line
-      if [[ $count -eq $total ]] && [[ $VERBOSE -eq 0 ]]; then
-        echo # Add newline after the completed progress bar
-      fi
+    # After the last test, ensure we have a clean line
+    if [[ $count -eq $total ]] && [[ $VERBOSE -eq 0 ]]; then
+      echo # Add newline after the completed progress bar
+    fi
 
-      if [[ $? -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
-        return 1
-      fi
+    if [[ $rc -ne 0 ]] && [[ $BAIL_ON_FAIL -eq 1 ]]; then
+      return 1
     fi
   done
-
-  # Wait for parallel tests
-  [[ $PARALLEL -eq 1 ]] && wait
 
   [[ $VERBOSE -eq 0 ]] && echo # New line after progress bar
 }
@@ -902,16 +905,32 @@ main() {
   echo "$sep"
   echo
 
-  # Run tests
-  [[ $RUN_UNIT -eq 1 ]] && run_test_category "unit"
-  [[ $RUN_FUNCTIONAL -eq 1 ]] && run_test_category "functional"
-  [[ $RUN_INTEGRATION -eq 1 ]] && run_test_category "integration"
-  [[ $RUN_PERFORMANCE -eq 1 ]] && run_test_category "performance"
-  [[ $RUN_SMOKE -eq 1 ]] && run_test_category "smoke"
-  [[ $RUN_E2E -eq 1 ]] && run_test_category "e2e"
-  [[ $RUN_SECURITY -eq 1 ]] && run_test_category "security"
-  [[ $RUN_STRESS -eq 1 ]] && run_test_category "stress"
-  [[ $RUN_WORKFLOWS -eq 1 ]] && run_test_category "workflows"
+  # Run tests. Iterate so --bail can short-circuit instead of falling through
+  # `[[ $RUN_X -eq 1 ]] && run_test_category` chains where each && only
+  # short-circuits the next category, not the rest.
+  local _enabled_categories=(
+    "unit:$RUN_UNIT"
+    "functional:$RUN_FUNCTIONAL"
+    "integration:$RUN_INTEGRATION"
+    "performance:$RUN_PERFORMANCE"
+    "smoke:$RUN_SMOKE"
+    "e2e:$RUN_E2E"
+    "security:$RUN_SECURITY"
+    "stress:$RUN_STRESS"
+    "workflows:$RUN_WORKFLOWS"
+  )
+  local _entry _cat _on
+  for _entry in "${_enabled_categories[@]}"; do
+    _cat="${_entry%:*}"
+    _on="${_entry#*:}"
+    [[ $_on -eq 1 ]] || continue
+    if ! run_test_category "$_cat"; then
+      if [[ $BAIL_ON_FAIL -eq 1 ]]; then
+        log WARN "Bailing on first failure (--bail set)"
+        break
+      fi
+    fi
+  done
 
   # Calculate total time
   local end_time=$(date +%s)

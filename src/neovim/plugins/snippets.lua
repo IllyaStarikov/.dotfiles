@@ -58,8 +58,8 @@ function M.setup()
     },
   })
 
-  -- Load custom snippets
-  local snippet_path = vim.fn.stdpath("config") .. "/lua/snippets"
+  -- Load custom snippets (config dir is a symlink into src/neovim/)
+  local snippet_path = vim.fn.stdpath("config") .. "/snippets"
 
   -- Load Lua snippets (these take priority over VSCode snippets)
   require("luasnip.loaders.from_lua").lazy_load({

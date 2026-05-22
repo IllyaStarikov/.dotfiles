@@ -9,7 +9,6 @@ This directory contains the actual dotfiles, scripts, and configurations that ma
 ```
 src/
 ├── alacritty.toml         # Alacritty terminal configuration
-├── Brewfile               # macOS package definitions
 ├── editorconfig           # Universal editor configuration
 ├── gitleaks.toml          # Secret detection configuration
 ├── i3_config              # i3 window manager (Linux)
@@ -90,7 +89,7 @@ src/
 
 ### Package Management
 
-**Brewfile** - Homebrew packages
+**`config/packages.json`** drives installs from `src/setup/install.sh`:
 
 - Core tools: git, tmux, neovim
 - Modern CLI: eza, bat, fd, ripgrep

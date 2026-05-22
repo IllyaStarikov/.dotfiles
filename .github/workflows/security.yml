@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.4
         with:
           submodules: true
 
@@ -38,19 +38,19 @@ jobs:
             echo "Using custom gitleaks configuration"
             gitleaks detect --source . --config .gitleaks.toml --verbose --exit-code 1 || {
               echo "⚠️ Potential secrets detected. Please review."
-              exit 0  # Don't fail the build, just warn
+              exit 1
             }
           else
             echo "Using default gitleaks configuration"
             gitleaks detect --source . --verbose --exit-code 1 || {
               echo "⚠️ Potential secrets detected. Please review."
-              exit 0
+              exit 1
             }
           fi
           echo "::endgroup::"
 
       - name: dependency scan
-        uses: anchore/scan-action@v5.3.0
+        uses: anchore/scan-action@869c549e657a088dc0441b08ce4fc0ecdac2bb65 # v5.3.0
         continue-on-error: true
         with:
           path: '.'

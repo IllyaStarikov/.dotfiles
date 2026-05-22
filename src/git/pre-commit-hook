@@ -21,12 +21,15 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
-# Check if gitleaks is installed
+# Check if gitleaks is installed. Fail closed: a missing scanner means
+# secrets ship undetected, which defeats the purpose of the hook. To
+# bypass intentionally (e.g., committing on a fresh machine before brew
+# install runs), use `git commit --no-verify`.
 if ! command -v gitleaks &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Warning: gitleaks is not installed${NC}"
+    echo -e "${RED}✗ gitleaks is not installed${NC}"
     echo "Install with: brew install gitleaks"
-    echo "Skipping secret scanning..."
-    exit 0
+    echo "Then re-run the commit, or bypass once with: git commit --no-verify"
+    exit 1
 fi
 
 # Find gitleaks config (check local repo only)

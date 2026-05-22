@@ -396,6 +396,18 @@ if theme_timer then
       end
     end)
   )
+
+  -- Stop and release the libuv timer on exit. Without this Neovim warns
+  -- about an active handle at shutdown and the timer keeps polling during
+  -- the exit teardown.
+  vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+      if theme_timer and not theme_timer:is_closing() then
+        theme_timer:stop()
+        theme_timer:close()
+      end
+    end,
+  })
 end
 
 -- Convenient commands for manual theme management

@@ -26,3 +26,31 @@ updates:
       - 'submodules'
     commit-message:
       prefix: 'deps'
+
+  # Python deps (cortex uses pyproject.toml under src/language)
+  - package-ecosystem: 'pip'
+    directory: '/src/language'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    labels:
+      - 'dependencies'
+      - 'python'
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+
+  # Docker images used by the e2e workflow
+  - package-ecosystem: 'docker'
+    directory: '/test/e2e'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    labels:
+      - 'dependencies'
+      - 'docker'
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'

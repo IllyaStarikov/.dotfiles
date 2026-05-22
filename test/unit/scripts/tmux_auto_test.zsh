@@ -1,92 +1,116 @@
 #!/usr/bin/env zsh
-# Test suite for tmux-auto script
-# Tests behavior, not implementation
+# Behavioral tests for tmux-auto.
+#
+# The previous incarnation of this file was almost entirely
+# `grep -c '<pattern>' "$SCRIPT_PATH"` — refactor-fragile and prove-nothing
+# checks that pass any time the literal text is present, regardless of
+# whether the script actually behaves correctly. This rewrite invokes
+# the script in controlled fixtures with a mocked `tmux` binary and
+# asserts on observable behavior (exit code, captured tmux args).
 
-# Test framework
 source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
-# Script under test
 SCRIPT_PATH="$DOTFILES_DIR/src/scripts/tmux-auto"
 
-# Test that script exists and is executable
+# Shared mock: replaces `tmux` on PATH with a script that records its
+# argv into $MOCK_LOG and returns 0 for has-session (so the script
+# always takes the "attach" branch and we capture the attach target).
+setup_tmux_mock() {
+  MOCK_DIR=$(mktemp -d -t tmux-auto-mock.XXXXXX)
+  MOCK_LOG="$MOCK_DIR/calls.log"
+  cat >"$MOCK_DIR/tmux" <<'MOCK'
+#!/usr/bin/env bash
+echo "tmux $*" >> "${MOCK_LOG:?}"
+case "${1:-}" in
+  has-session) exit 0 ;;
+  *)           exit 0 ;;
+esac
+MOCK
+  chmod +x "$MOCK_DIR/tmux"
+  ORIGINAL_PATH="$PATH"
+  export PATH="$MOCK_DIR:$PATH"
+}
+
+teardown_tmux_mock() {
+  export PATH="$ORIGINAL_PATH"
+  rm -rf "$MOCK_DIR"
+}
+
+# ---- Structural sanity (cheap, fast) --------------------------------------
+
 test_script_exists() {
   assert_file_exists "$SCRIPT_PATH" "tmux-auto script should exist"
   assert_executable "$SCRIPT_PATH" "tmux-auto script should be executable"
 }
 
-# Test that script has shebang
 test_has_shebang() {
   local first_line
   first_line=$(head -1 "$SCRIPT_PATH")
   assert_equals "#!/usr/bin/env zsh" "$first_line" "Should have zsh shebang"
 }
 
-# Test git repo name detection logic
-test_git_repo_detection() {
-  local has_git_check
-  has_git_check=$(grep -c "git rev-parse --is-inside-work-tree" "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_git_check -gt 0 ]" "Should check if inside git repo"
+# ---- Behavioral tests -----------------------------------------------------
 
-  local has_toplevel
-  has_toplevel=$(grep -c "git rev-parse --show-toplevel" "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_toplevel -gt 0 ]" "Should get git repo toplevel"
+# Too many positional args → usage error, exit 2.
+test_rejects_extra_args() {
+  setup_tmux_mock
+  local output rc
+  output=$("$SCRIPT_PATH" one two 2>&1)
+  rc=$?
+  teardown_tmux_mock
+  assert_equals 2 "$rc" "Should exit 2 on too many args, got $rc"
+  assert_contains "$output" "too many arguments" "Should print usage error"
 }
 
-# Test fallback to current directory name
-test_directory_fallback() {
-  local has_pwd_fallback
-  has_pwd_fallback=$(grep -c 'basename "$PWD"' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_pwd_fallback -gt 0 ]" "Should fallback to current directory name"
+# Session name derives from current dir's basename when not in a git repo.
+test_session_name_from_dir() {
+  setup_tmux_mock
+  local work
+  work=$(mktemp -d -t tmux-auto-work.XXXXXX)/myproject
+  mkdir -p "$work"
+  (cd "$work" && "$SCRIPT_PATH" >/dev/null 2>&1)
+  teardown_tmux_mock
+  # tmux mock recorded calls; first call should be `tmux has-session -t myproject`.
+  if grep -q "has-session -t myproject" "$MOCK_LOG"; then
+    pass "Derived session name 'myproject' from cwd basename"
+  else
+    fail "Expected has-session for 'myproject'; mock log: $(cat "$MOCK_LOG")"
+  fi
+  rm -rf "${work%/myproject}"
 }
 
-# Test name sanitization (colons are special in tmux)
-test_name_sanitization() {
-  local has_sanitize
-  has_sanitize=$(grep -c 'name=${name//:/-}' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_sanitize -gt 0 ]" "Should sanitize colons in session name"
+# Session name sanitizes dots and colons.
+test_session_name_sanitization() {
+  setup_tmux_mock
+  local work
+  work=$(mktemp -d -t tmux-auto-work.XXXXXX)
+  local dotted="$work/.foo.bar"
+  mkdir -p "$dotted"
+  (cd "$dotted" && "$SCRIPT_PATH" >/dev/null 2>&1)
+  teardown_tmux_mock
+  # `.foo.bar` → strip leading dot → `foo.bar` → replace dots with `_` → `foo_bar`.
+  if grep -q "has-session -t foo_bar" "$MOCK_LOG"; then
+    pass "Sanitized .foo.bar → foo_bar"
+  else
+    fail "Expected has-session for 'foo_bar'; mock log: $(cat "$MOCK_LOG")"
+  fi
+  rm -rf "$work"
 }
 
-# Test dot sanitization (leading dots stripped, internal dots to underscores)
-test_dot_sanitization() {
-  local has_leading_dot_strip
-  has_leading_dot_strip=$(grep -c 'name=${name#.}' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_leading_dot_strip -gt 0 ]" "Should strip leading dot from session name"
-
-  local has_dot_replace
-  has_dot_replace=$(grep -c 'name=${name//./_}' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_dot_replace -gt 0 ]" "Should replace dots with underscores in session name"
-}
-
-# Test tmux session existence check
-test_session_check() {
-  local has_session_check
-  has_session_check=$(grep -c "tmux has-session" "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_session_check -gt 0 ]" "Should check if tmux session exists"
-}
-
-# Test tmux attach for existing session
-test_tmux_attach() {
-  local has_attach
-  has_attach=$(grep -c "tmux attach" "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_attach -gt 0 ]" "Should attach to existing session"
-}
-
-# Test tmux new-session for new session
-test_tmux_new_session() {
-  local has_new_session
-  has_new_session=$(grep -c "tmux new-session" "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_new_session -gt 0 ]" "Should create new session if none exists"
-}
-
-# Test that session name is passed correctly
-test_session_name_usage() {
-  local has_s_flag
-  has_s_flag=$(grep -c '\-s "$name"' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_s_flag -gt 0 ]" "Should use -s flag for session name"
-
-  local has_t_flag
-  has_t_flag=$(grep -c '\-t "$name"' "$SCRIPT_PATH" || echo 0)
-  assert_true "[ $has_t_flag -gt 0 ]" "Should use -t flag for target session"
+# Single path arg → cd into it before deriving the session name.
+test_accepts_path_argument() {
+  setup_tmux_mock
+  local work
+  work=$(mktemp -d -t tmux-auto-work.XXXXXX)/widget
+  mkdir -p "$work"
+  "$SCRIPT_PATH" "$work" >/dev/null 2>&1
+  teardown_tmux_mock
+  if grep -q "has-session -t widget" "$MOCK_LOG"; then
+    pass "cd'd into path argument before deriving session name"
+  else
+    fail "Expected has-session for 'widget'; mock log: $(cat "$MOCK_LOG")"
+  fi
+  rm -rf "${work%/widget}"
 }
 
 # Run all tests

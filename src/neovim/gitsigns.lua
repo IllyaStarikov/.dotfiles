@@ -63,7 +63,8 @@ function M.setup()
       map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
       map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
       map("n", "<leader>hS", gs.stage_buffer)
-      map("n", "<leader>hu", gs.undo_stage_hunk)
+      -- gitsigns v1+: `stage_hunk` now toggles, replacing `undo_stage_hunk`.
+      map("n", "<leader>hu", gs.stage_hunk)
       map("n", "<leader>hR", gs.reset_buffer)
       map("n", "<leader>hp", gs.preview_hunk)
       map("n", "<leader>hb", function()
@@ -74,7 +75,9 @@ function M.setup()
       map("n", "<leader>hD", function()
         gs.diffthis("~")
       end)
-      map("n", "<leader>td", gs.toggle_deleted)
+      -- gitsigns v1+: `toggle_deleted` is gone; use the equivalent
+      -- preview_hunk_inline (shows the deleted lines inline).
+      map("n", "<leader>td", gs.preview_hunk_inline)
 
       -- Text object
       map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")

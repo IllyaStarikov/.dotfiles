@@ -29,10 +29,11 @@ map("n", "<S-Left>", ":vertical resize -2<CR>", opts)
 map("n", "<S-Right>", ":vertical resize +2<CR>", opts)
 
 -- ============================================================================
--- BUFFER NAVIGATION (Tab, Shift+HL, brackets)
+-- BUFFER NAVIGATION (Shift+HL, brackets)
 -- ============================================================================
-map("n", "<Tab>", ":bnext<cr>", opts)
-map("n", "<S-Tab>", ":bprevious<cr>", opts)
+-- <Tab>/<S-Tab> intentionally NOT bound here — bufferline.nvim owns them
+-- (see plugins.lua) and binding them in two places caused which-key to
+-- show the wrong description and surprised users in insert/snippet modes.
 map("n", "<S-h>", ":bprevious<cr>", { desc = "Previous buffer" })
 map("n", "<S-l>", ":bnext<cr>", { desc = "Next buffer" })
 map("n", "[b", ":bprevious<cr>", { desc = "Previous buffer" })
