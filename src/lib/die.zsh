@@ -18,29 +18,32 @@
 [[ -f "${0:A:h}/colors.zsh" ]] && source "${0:A:h}/colors.zsh"
 [[ -f "${0:A:h}/logging.zsh" ]] && source "${0:A:h}/logging.zsh"
 
-# Exit codes
-readonly -A EXIT_CODES=(
-  [SUCCESS]=0
-  [GENERAL_ERROR]=1
-  [MISUSE]=2
-  [CANNOT_EXECUTE]=126
-  [NOT_FOUND]=127
-  [INVALID_ARGUMENT]=128
-  [SIGINT]=130
-  [SIGTERM]=143
+# Exit codes — guard so re-sourcing (`lib_reload`, repeated `source ~/.zshrc`)
+# doesn't abort with "read-only variable".
+if (( ! ${+EXIT_CODES} )); then
+  typeset -grA EXIT_CODES=(
+    [SUCCESS]=0
+    [GENERAL_ERROR]=1
+    [MISUSE]=2
+    [CANNOT_EXECUTE]=126
+    [NOT_FOUND]=127
+    [INVALID_ARGUMENT]=128
+    [SIGINT]=130
+    [SIGTERM]=143
 
-  # Custom exit codes (64-113 are available for user-defined codes)
-  [CONFIG_ERROR]=64
-  [NETWORK_ERROR]=65
-  [PERMISSION_ERROR]=66
-  [DEPENDENCY_ERROR]=67
-  [VALIDATION_ERROR]=68
-  [TIMEOUT_ERROR]=69
-  [RESOURCE_ERROR]=70
-  [STATE_ERROR]=71
-  [IO_ERROR]=72
-  [FORMAT_ERROR]=73
-)
+    # Custom exit codes (64-113 are available for user-defined codes)
+    [CONFIG_ERROR]=64
+    [NETWORK_ERROR]=65
+    [PERMISSION_ERROR]=66
+    [DEPENDENCY_ERROR]=67
+    [VALIDATION_ERROR]=68
+    [TIMEOUT_ERROR]=69
+    [RESOURCE_ERROR]=70
+    [STATE_ERROR]=71
+    [IO_ERROR]=72
+    [FORMAT_ERROR]=73
+  )
+fi
 
 # Global error handler state
 typeset -g DIE_CLEANUP_FUNCTIONS=()

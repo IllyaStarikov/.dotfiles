@@ -401,10 +401,12 @@ install_macos_packages() {
         # Apply timeouts and fallbacks for corporate environments
         # Work machines often have proxy/firewall issues that cause hangs
         if [[ "${IS_WORK_MACHINE:-false}" == true ]]; then
-          # Try building from source first, then fall back to bottles with timeout
+          # Prefer pre-built bottles (fast, less likely to fail on corporate
+          # networks); fall back to building from source only if the bottle
+          # fetch fails.
           local brew_install_timeout
           brew_install_timeout=$(get_config "timeouts.json" ".brew.install" "60")
-          output=$(timeout "$brew_install_timeout" brew install --build-from-source "$pkg" 2>&1 || timeout "$brew_install_timeout" brew install "$pkg" 2>&1)
+          output=$(timeout "$brew_install_timeout" brew install "$pkg" 2>&1 || timeout "$brew_install_timeout" brew install --build-from-source "$pkg" 2>&1)
           exit_code=$?
         else
           output=$(brew install "$pkg" 2>&1)
@@ -719,9 +721,18 @@ install_linux_packages() {
         if [[ -z "$LAZYGIT_VERSION" || "$LAZYGIT_VERSION" == "null" ]]; then
           warning "Could not fetch lazygit version (GitHub API rate limit?), skipping"
         else
+          # Match the lazygit release asset for the current architecture so
+          # ARM Linux doesn't silently get an x86_64 binary.
+          local lazygit_arch
+          case "$(uname -m)" in
+            aarch64 | arm64) lazygit_arch="arm64" ;;
+            armv7l | armv6l) lazygit_arch="armv6" ;;
+            i386 | i686) lazygit_arch="32-bit" ;;
+            *) lazygit_arch="x86_64" ;;
+          esac
           # Wrap in if/else to handle download/extraction failures gracefully
           # This prevents flaky CI failures due to network issues
-          if curl -fLo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
+          if curl -fLo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_${lazygit_arch}.tar.gz" && \
              tar xf lazygit.tar.gz lazygit 2>/dev/null && \
              sudo install lazygit /usr/local/bin; then
             rm -f lazygit lazygit.tar.gz
@@ -1099,7 +1110,7 @@ setup_python() {
             pacman) sudo pacman -S --noconfirm python-pynvim 2>/dev/null || true ;;
             *) true ;;
           esac
-        elif [[ "$OS" == "darwin" ]]; then
+        elif [[ "$OS" == "macos" ]]; then
           # On macOS, pynvim should be installed via pip to the homebrew Python
           warning "pynvim installation failed. Run manually: pip3 install --break-system-packages pynvim"
         fi
@@ -1394,7 +1405,9 @@ main() {
       setup_tmux
 
       # Configure Git
-      git config --global core.excludesfile '~/.gitignore' || true
+      # Tilde does not expand inside single quotes — use $HOME so git records
+      # an absolute path it can actually read.
+      git config --global core.excludesfile "$HOME/.gitignore" || true
 
       # Install git hooks
       if [[ -f "$DOTFILES_DIR/src/git/install-git-hooks" ]]; then

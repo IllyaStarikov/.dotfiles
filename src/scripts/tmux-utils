@@ -167,7 +167,8 @@ get_battery_status() {
         if [ -n "$battery_dir" ]; then
             battery_percent=$(cat "$battery_dir/capacity")
         fi
-        local ac_dir=$(find /sys/class/power_supply -name 'A{C,DP}*' 2>/dev/null | head -n 1)
+        # `find` uses fnmatch, not brace expansion — list each pattern explicitly
+        local ac_dir=$(find /sys/class/power_supply \( -name 'AC*' -o -name 'ADP*' \) 2>/dev/null | head -n 1)
         if [ -n "$ac_dir" ] && [ "$(cat "$ac_dir/online" 2>/dev/null)" = "1" ]; then
             on_ac=1
         fi

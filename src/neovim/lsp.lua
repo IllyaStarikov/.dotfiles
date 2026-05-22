@@ -25,7 +25,7 @@
 --
 -- USAGE:
 --   Called automatically from plugins configuration:
---   require("lsp.servers").setup()
+--   require("lsp").setup()
 --
 -- KEYBINDINGS (when LSP attached):
 --   gd         - Go to definition

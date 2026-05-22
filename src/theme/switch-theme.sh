@@ -463,7 +463,10 @@ interactive_picker() {
 # Print shell export commands for local theming
 # Used with: source <(switch-theme.sh --shell THEME)
 print_shell_exports() {
-  local starship_config="$(get_theme_path "$THEME")/starship.toml"
+  # Note: STARSHIP_CONFIG is intentionally *not* exported. Pointing it at the
+  # dotfiles source path means Starship breaks if the repo moves; the rendered
+  # copy at ~/.config/starship.toml (written by update_app_themes) is what
+  # Starship picks up via its default lookup.
   local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
   local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
   local fzf_color=$(get_fzf_color "$VARIANT")
@@ -473,7 +476,6 @@ export MACOS_VARIANT="$VARIANT"
 export BAT_THEME="$bat_theme"
 export DELTA_SYNTAX_THEME="$delta_theme"
 export FZF_COLOR="$fzf_color"
-export STARSHIP_CONFIG="$starship_config"
 EOF
 }
 
@@ -808,7 +810,7 @@ save_theme_state() {
   local bat_theme=$(get_bat_theme "$THEME" "$VARIANT")
   local delta_theme=$(get_delta_theme "$THEME" "$VARIANT")
   local fzf_color=$(get_fzf_color "$VARIANT")
-  local starship_config="$(get_theme_path "$THEME")/starship.toml"
+  # STARSHIP_CONFIG deliberately not written; see print_shell_exports().
   cat >"$theme_file_tmp" <<EOF
 # Current theme configuration
 export MACOS_THEME="$THEME"
@@ -816,7 +818,6 @@ export MACOS_VARIANT="$VARIANT"
 export BAT_THEME="$bat_theme"
 export DELTA_SYNTAX_THEME="$delta_theme"
 export FZF_COLOR="$fzf_color"
-export STARSHIP_CONFIG="$starship_config"
 EOF
   mv -f "$theme_file_tmp" "$CONFIG_DIR/current-theme.sh"
   chmod 644 "$CONFIG_DIR/current-theme.sh"

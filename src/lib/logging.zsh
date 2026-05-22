@@ -8,36 +8,41 @@
 # Default log level if not set
 : ${LOG_LEVEL:=INFO}
 
-# Color codes
-readonly LOG_COLOR_RESET="\033[0m"
-readonly LOG_COLOR_BOLD="\033[1m"
-readonly LOG_COLOR_RED="\033[31m"
-readonly LOG_COLOR_GREEN="\033[32m"
-readonly LOG_COLOR_YELLOW="\033[33m"
-readonly LOG_COLOR_BLUE="\033[34m"
-readonly LOG_COLOR_MAGENTA="\033[35m"
-readonly LOG_COLOR_CYAN="\033[36m"
-readonly LOG_COLOR_GRAY="\033[90m"
+# Color codes and tables — guarded so re-sourcing doesn't abort with
+# "read-only variable" (matches colors.zsh's idiom).
+if (( ! ${+LOG_COLOR_RESET} )); then
+  typeset -gr LOG_COLOR_RESET="\033[0m"
+  typeset -gr LOG_COLOR_BOLD="\033[1m"
+  typeset -gr LOG_COLOR_RED="\033[31m"
+  typeset -gr LOG_COLOR_GREEN="\033[32m"
+  typeset -gr LOG_COLOR_YELLOW="\033[33m"
+  typeset -gr LOG_COLOR_BLUE="\033[34m"
+  typeset -gr LOG_COLOR_MAGENTA="\033[35m"
+  typeset -gr LOG_COLOR_CYAN="\033[36m"
+  typeset -gr LOG_COLOR_GRAY="\033[90m"
+fi
 
-# Log level hierarchy
-readonly -A LOG_LEVELS=(
-  [TRACE]=0
-  [DEBUG]=1
-  [INFO]=2
-  [WARN]=3
-  [ERROR]=4
-  [FATAL]=5
-)
+if (( ! ${+LOG_LEVELS} )); then
+  typeset -grA LOG_LEVELS=(
+    [TRACE]=0
+    [DEBUG]=1
+    [INFO]=2
+    [WARN]=3
+    [ERROR]=4
+    [FATAL]=5
+  )
+fi
 
-# Log level colors
-readonly -A LOG_COLORS=(
-  [TRACE]="${LOG_COLOR_GRAY}"
-  [DEBUG]="${LOG_COLOR_GRAY}"
-  [INFO]="${LOG_COLOR_CYAN}"
-  [WARN]="${LOG_COLOR_YELLOW}"
-  [ERROR]="${LOG_COLOR_RED}"
-  [FATAL]="${LOG_COLOR_BOLD}${LOG_COLOR_RED}"
-)
+if (( ! ${+LOG_COLORS} )); then
+  typeset -grA LOG_COLORS=(
+    [TRACE]="${LOG_COLOR_GRAY}"
+    [DEBUG]="${LOG_COLOR_GRAY}"
+    [INFO]="${LOG_COLOR_CYAN}"
+    [WARN]="${LOG_COLOR_YELLOW}"
+    [ERROR]="${LOG_COLOR_RED}"
+    [FATAL]="${LOG_COLOR_BOLD}${LOG_COLOR_RED}"
+  )
+fi
 
 # Get numeric value for log level
 _get_log_level_value() {
