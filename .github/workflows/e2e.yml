@@ -30,6 +30,14 @@ env:
 jobs:
   e2e-tests:
     name: e2e test - ${{ matrix.name }}
+    # L3 fork-PR gate: don't run PR-controlled Dockerfiles with the repo's
+    # GITHUB_TOKEN available. A malicious PR could otherwise add
+    # exfiltrating instructions to test/e2e/Dockerfile.* and harvest the
+    # token at build time. Same-repo PRs and `push`/`schedule`/`workflow_dispatch`
+    # events all keep running unchanged.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
@@ -200,6 +208,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [e2e-tests]
     if: always()
+    # Scope writes narrowly to what the PR-comment step needs. Default
+    # permissions for this workflow are read-only (top-level).
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
 
     steps:
       - name: check results
