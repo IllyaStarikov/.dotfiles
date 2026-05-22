@@ -102,7 +102,7 @@ This is a comprehensive dotfiles repository serving dual purposes:
 ./test/runner.zsh --performance   # Performance regression tests
 ./test/runner.zsh --workflows     # GitHub Actions workflow validation
 ./test/runner.zsh --full     # unit + functional + integration + perf + workflows
-./test/runner.zsh --all      # Full + smoke + e2e + security + stress (~3 minutes, 89 tests)
+./test/runner.zsh --all      # Full + smoke + e2e + security + stress (~3 minutes)
 
 # Run specific test files
 ./test/runner.zsh unit/nvim/init_zsh_test.zsh   # Single unit test
@@ -171,7 +171,7 @@ cortex agent on/off    # Toggle AI agent mode
 - **~54 Neovim plugins** managed by lazy.nvim (per `src/neovim/lazy-lock.json`)
 - **3 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions)
 - **0 tmux plugins** (pure configuration, no TPM - simpler and faster)
-- **97 test files** under `test/` (excluding `test/logs/`) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories — 89 of which run in `--all` mode
+- **81 `*_test.{zsh,lua,sh}` test files** under `test/` (run `find test -name '*_test.zsh' -o -name '*_test.lua' -o -name '*_test.sh' | wc -l` to verify) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories. The exact subset run by `./test/runner.zsh --all` depends on category discovery; consult the runner output.
 - **16 utility scripts** in `src/scripts/`
 - **6 language configs** in `src/language/` (ruff.toml, stylua.toml, .clang-format, clangd_config.yaml, latexmkrc, markdownlint.json, pyproject.toml)
 - **4 TokyoNight theme variants** (day, night, moon, storm) plus 17 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
@@ -392,7 +392,7 @@ Fixed by deleting any existing `zle-keymap-select` widget before Starship initia
 
 ### Theme switching issues
 
-- Check lockfile: `/tmp/theme-switch.lock`
+- Check lockfile: `${XDG_CACHE_HOME:-$HOME/.cache}/theme/theme-switch.lock`
 - Verify apps are running
 - Use force mode: `theme --force dark`
 

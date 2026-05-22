@@ -47,7 +47,7 @@ theme light        # Force light mode
 
 Synchronizes: Neovim, Alacritty, WezTerm, Kitty, tmux, Starship, bat, delta
 
-### update-dotfiles - System Updater
+### update - System Updater (alias for `src/setup/update.sh`)
 
 ```bash
 update             # Update everything
@@ -55,7 +55,9 @@ update --brew      # Only Homebrew packages
 update --nvim      # Only Neovim plugins
 ```
 
-Updates: Homebrew, Neovim plugins, Zsh plugins, tmux plugins, pip packages, LSPs
+Updates: Homebrew, Neovim plugins, Zsh plugins, tmux plugins, pip packages, LSPs.
+The `update` shell alias resolves to `src/setup/update.sh` — there is no
+script under `src/scripts/` by that name.
 
 ### tmux-utils - Status Bar Utilities
 
@@ -95,7 +97,7 @@ extract archive.tar.gz # Extract files
 
 **fixy not formatting**: Check formatter installed with `which <formatter>`
 
-**theme not switching**: Check lockfile `/tmp/theme-switch.lock`
+**theme not switching**: Check lockfile `${XDG_CACHE_HOME:-$HOME/.cache}/theme/theme-switch.lock`
 
 **update failing**: Verify network and credentials
 

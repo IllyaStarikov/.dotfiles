@@ -5,8 +5,8 @@ CI/CD pipelines for testing, linting, security, and deployment.
 ## Workflow Files
 
 - `dependencies.yml` - Weekly dependency updates
+- `e2e.yml` - End-to-end Docker matrix tests
 - `lint.yml` - Code quality checks
-- `pages.yml` - Documentation site deployment
 - `release.yml` - Automated releases
 - `security.yml` - Secret scanning
 - `test.yml` - Test suite execution
@@ -43,9 +43,10 @@ Daily scans + every push:
 - Dependency vulnerabilities
 - SAST analysis
 
-### Pages (`pages.yml`)
+### E2E (`e2e.yml`)
 
-Deploys documentation to `dotfiles.starikov.io` on main branch pushes.
+Runs the dotfiles install + smoke tests inside pinned Docker images
+(Ubuntu, Arch) so we catch regressions that only surface on a clean machine.
 
 ## Performance Optimizations
 
@@ -95,14 +96,6 @@ with:
 **Homebrew slow**: Set `HOMEBREW_NO_AUTO_UPDATE=1`.
 
 **Wrong directory**: Use `DOTFILES_DIR: ${{ github.workspace }}`.
-
-**Pages deploy fails**: Need write permissions:
-
-```yaml
-permissions:
-  pages: write
-  id-token: write
-```
 
 ## Monitoring
 

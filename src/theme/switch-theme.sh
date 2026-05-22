@@ -179,6 +179,12 @@ EXAMPLES:
     $(basename "$0") --list github     # List GitHub variants
     $(basename "$0") --terminal storm  # Per-terminal theming
 
+ENVIRONMENT VARIABLES:
+    THEME_LIGHT         Default light theme used by 'theme light' and --auto
+    THEME_DARK          Default dark theme used by 'theme dark' and --auto
+    DEBUG=1             Print extra diagnostic output
+    VERBOSE=1           Print each file written during the switch
+
 EOF
 }
 

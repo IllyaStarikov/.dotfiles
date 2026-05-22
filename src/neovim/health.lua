@@ -30,6 +30,7 @@ function M.check()
     "autocmds",
     "plugins",
     "commands",
+    "fixy",
   }
 
   local all_core_ok = true

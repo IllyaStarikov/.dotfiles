@@ -43,6 +43,10 @@ tokyonight/storm/       # Each theme directory has:
   alacritty.toml, wezterm.lua, kitty.conf, tmux.conf, starship.toml, colors.sh
 ```
 
+Note: Neovim colorscheme files are not stored in the variant directory.
+`generate-theme.sh` writes them directly into `~/.cache/nvim/colors/<family>_<variant>.lua`,
+which is added to Neovim's runtimepath at startup (see `src/neovim/ui.lua`).
+
 ## Generated Configs
 
 Theme switching copies configs atomically (not symlinks) to:
