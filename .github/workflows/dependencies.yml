@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.4
         with:
           submodules: true
 
@@ -39,7 +39,7 @@ jobs:
           echo "::endgroup::"
 
       - name: update github actions
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         continue-on-error: true
         with:
           warn-only: true
@@ -84,7 +84,7 @@ jobs:
 
       - name: create pull request
         if: env.SUBMODULES_UPDATED == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'chore: update dependencies and submodules'
