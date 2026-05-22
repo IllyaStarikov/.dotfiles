@@ -175,7 +175,7 @@ cortex agent on/off    # Toggle AI agent mode
 - **16 utility scripts** in `src/scripts/`
 - **6 language configs** in `src/language/` (ruff.toml, stylua.toml, .clang-format, clangd_config.yaml, latexmkrc, markdownlint.json, pyproject.toml)
 - **4 TokyoNight theme variants** (day, night, moon, storm) plus 17 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
-- **11 zsh library modules** in `src/lib/` (callstack, colors, config, die, help, logging, math, ssh, textwrap, unit, utils — array/cli/hash/json/types/yaml were removed in the audit as dead, broken-in-zsh code)
+- **5 zsh library modules** in `src/lib/` (colors, config, die, logging, utils — array/cli/hash/json/types/yaml were removed in the April audit; callstack/help/math/ssh/textwrap/unit were removed in the May follow-up audit, all as unused-in-zsh code)
 - **20+ languages** with full LSP support
 
 ## High-Level Architecture
@@ -327,15 +327,10 @@ ls src/lib/*.zsh
 #
 # Opt-in (lib_load <name>):
 # config.zsh   - JSON config reader (used by install scripts)
-# math.zsh     - Mathematical operations
-# textwrap.zsh - Text formatting, wrapping
-# unit.zsh     - Unit testing assertions
-# ssh.zsh      - SSH key management
-# callstack.zsh - Stack traces, debugging
-# help.zsh     - Help text and man-page generation
 #
 # REMOVED in the production-readiness audit (broken-in-zsh + unused):
-#   array.zsh, hash.zsh, cli.zsh, json.zsh, types.zsh, yaml.zsh
+#   April: array.zsh, hash.zsh, cli.zsh, json.zsh, types.zsh, yaml.zsh
+#   May:   callstack.zsh, help.zsh, math.zsh, ssh.zsh, textwrap.zsh, unit.zsh
 ```
 
 **When writing new shell scripts:**
