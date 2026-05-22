@@ -21,22 +21,6 @@
 
 local map = vim.keymap.set
 
--- Safe plugin wrapper
-local function safe_require(module, fn)
-  return function(...)
-    local ok, m = pcall(require, module)
-    if ok and m and (fn and m[fn] or m) then
-      if fn then
-        return m[fn](...)
-      else
-        return m(...)
-      end
-    else
-      vim.notify(module .. " not available", vim.log.levels.WARN)
-    end
-  end
-end
-
 -- Snacks helper
 local function get_snacks()
   local ok, snacks = pcall(require, "snacks")
@@ -561,7 +545,8 @@ map("n", "<leader>of", function()
   end
 end, { desc = "Open Explorer Float" })
 
-map("n", "<leader>oo", safe_require("oil", "open"), { desc = "Open Oil" })
+-- <leader>oo (Open Oil) removed: oil.nvim isn't installed in plugins.lua.
+-- We rely on snacks.nvim explorer (above) and the `-` shortcut below.
 
 -- Symbol outline (Aerial)
 map("n", "<leader>oa", "<cmd>AerialToggle<CR>", { desc = "Open Aerial" })

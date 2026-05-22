@@ -548,11 +548,9 @@ require("lazy").setup({
     end,
   },
 
-  -- vim-kwbd - Keep window on buffer delete
-  {
-    "rgarver/Kwbd.vim",
-    cmd = "Kwbd",
-  },
+  -- Kwbd.vim removed: snacks.bufdelete (already configured below) provides
+  -- the same "keep window on buffer delete" behavior with a faster, native
+  -- implementation. Use `:lua Snacks.bufdelete()` or `<leader>bd`.
 
   -- Rainbow delimiters for better bracket visualization
   {
@@ -1112,7 +1110,7 @@ require("lazy").setup({
   },
 
   -- Language specific
-  { "justinmk/vim-syntax-extra" },
+  { "justinmk/vim-syntax-extra", ft = { "c", "cpp", "java", "javascript" } },
   { "keith/swift.vim", ft = "swift" },
 
   -- LaTeX support with vimtex
@@ -1300,6 +1298,8 @@ require("lazy").setup({
   -- Writing and editing
   {
     "iamcco/markdown-preview.nvim",
+    ft = "markdown",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
     build = function()
       vim.fn["mkdp#util#install"]()
     end,
@@ -1402,8 +1402,9 @@ require("lazy").setup({
       require("plugins.markdown-editing")
     end,
   },
-  { "skywind3000/asyncrun.vim" },
-  { "tommcdo/vim-lion" },
+  { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },
+  -- vim-lion's main entry points are the `gl`/`gL` operators (align by char).
+  { "tommcdo/vim-lion", keys = { { "gl", mode = { "n", "x" } }, { "gL", mode = { "n", "x" } } } },
 
   -- File path navigation with line:column support (like foo.c:42:10)
   -- Makes files clickable in terminal output, error messages, stack traces, etc.
@@ -1547,9 +1548,11 @@ require("lazy").setup({
     task = true, -- show task start/end
     colors = true, -- use ANSI colors
   },
-  -- Install missing plugins on startup
+  -- Install missing plugins on startup. Gate on CI: fresh developer machines
+  -- need plugins fetched on first run, but CI Docker containers time out on
+  -- the network fetch (10s e2e budget). Off when CI=true, on otherwise.
   install = {
-    missing = false, -- Disabled: times out in CI Docker containers
+    missing = vim.env.CI ~= "true",
     colorscheme = { "tokyonight", "habamax" },
   },
   ui = {

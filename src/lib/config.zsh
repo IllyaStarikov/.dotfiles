@@ -3,8 +3,11 @@
 # config.zsh - Configuration file reading library
 # Provides helper functions for reading JSON config files from config/ directory
 
-# Get the dotfiles directory
-typeset -g CONFIG_DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+# Get the dotfiles directory. Honour $DOTFILES (used throughout the repo)
+# first, then $DOTFILES_DIR (used by setup scripts), then fall back to
+# ~/.dotfiles. This keeps `get_config` working from a fresh shell where only
+# one of the two variables is exported.
+typeset -g CONFIG_DOTFILES_DIR="${DOTFILES:-${DOTFILES_DIR:-$HOME/.dotfiles}}"
 typeset -g CONFIG_DIR="${CONFIG_DOTFILES_DIR}/config"
 
 # Read a value from a config JSON file

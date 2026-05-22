@@ -22,7 +22,7 @@
 
 # Add the cortex module to Python path
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
-export PYTHONPATH="$DOTFILES/src/cortex:$PYTHONPATH"
+export PYTHONPATH="$DOTFILES/src/cortex${PYTHONPATH:+:$PYTHONPATH}"
 
 # Initialize pyenv if available (needed for non-interactive shells)
 if [[ -d "$HOME/.pyenv" ]]; then
