@@ -572,11 +572,25 @@ case "${1:-}" in
     shift
     ;;
   --auto)
-    # Force auto-detect from system appearance
-    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
-      THEME="${THEME_DARK:-tokyonight_storm}"
+    # Auto-detect from the OS appearance setting. macOS uses
+    # AppleInterfaceStyle (literal "Dark" → dark mode); GNOME exposes
+    # `color-scheme` via gsettings ("prefer-dark" → dark mode).
+    if [[ "$(uname)" == Darwin ]]; then
+      if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        THEME="${THEME_DARK:-tokyonight_storm}"
+      else
+        THEME="${THEME_LIGHT:-tokyonight_day}"
+      fi
+    elif command -v gsettings >/dev/null 2>&1; then
+      if gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q "dark"; then
+        THEME="${THEME_DARK:-tokyonight_storm}"
+      else
+        THEME="${THEME_LIGHT:-tokyonight_day}"
+      fi
     else
-      THEME="${THEME_LIGHT:-tokyonight_day}"
+      # No OS appearance signal available; pick the dark default to match
+      # most terminal users' implicit preference.
+      THEME="${THEME_DARK:-tokyonight_storm}"
     fi
     echo "Auto-detected theme: $THEME"
     shift
@@ -616,8 +630,15 @@ if [[ -z "$THEME" ]]; then
   if [[ -t 0 ]] && [[ -t 1 ]] && command -v fzf &>/dev/null; then
     THEME=$(interactive_picker) || exit 0
   else
-    # Non-interactive: auto-detect from macOS appearance
-    if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+    # Non-interactive: auto-detect from OS appearance (macOS + GNOME).
+    if [[ "$(uname)" == Darwin ]]; then
+      if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -q "Dark"; then
+        THEME="$DARK_THEME"
+      else
+        THEME="$LIGHT_THEME"
+      fi
+    elif command -v gsettings >/dev/null 2>&1 \
+         && gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null | grep -q "dark"; then
       THEME="$DARK_THEME"
     else
       THEME="$LIGHT_THEME"
@@ -670,29 +691,32 @@ log() {
   fi
 }
 
-# Acquire exclusive lock to prevent concurrent theme switches
-# Prevents race conditions that could corrupt theme configurations
+# Acquire exclusive lock to prevent concurrent theme switches. The lock
+# creation is atomic (`set -o noclobber` makes `>` fail if the file
+# exists), eliminating the test-then-write TOCTOU window that the
+# original `[[ -f ]] ... echo > LOCK` had.
 acquire_lock() {
   local timeout=100  # 10 seconds in 0.1 second increments
   local elapsed=0
 
-  while [[ -f "$LOCK_FILE" ]] && [[ $elapsed -lt $timeout ]]; do
-    local lock_pid=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
+  while [[ $elapsed -lt $timeout ]]; do
+    if ( set -o noclobber; echo $$ >"$LOCK_FILE" ) 2>/dev/null; then
+      LOCK_ACQUIRED=1
+      return 0
+    fi
+    # Lock exists — check if the holder is still alive; reap stale locks.
+    local lock_pid
+    lock_pid=$(cat "$LOCK_FILE" 2>/dev/null || echo "")
     if [[ -n "$lock_pid" ]] && ! kill -0 "$lock_pid" 2>/dev/null; then
       rm -f "$LOCK_FILE"
-      break
+      continue
     fi
     sleep 0.1
     elapsed=$((elapsed + 1))
   done
 
-  if [[ -f "$LOCK_FILE" ]]; then
-    echo "Error: Another theme switch is in progress. If stuck, remove: $LOCK_FILE" >&2
-    exit 1
-  fi
-
-  echo $$ >"$LOCK_FILE"
-  LOCK_ACQUIRED=1
+  echo "Error: Another theme switch is in progress. If stuck, remove: $LOCK_FILE" >&2
+  exit 1
 }
 
 # Function to release lock
@@ -978,9 +1002,10 @@ atomic_update() {
     return 1
   }
 
-  # Clean up any leftover temp files (zsh-safe glob)
-  setopt localoptions nullglob
-  rm -f "${dest}".tmp.* 2>/dev/null || true
+  # Only clean up THIS process's own temp file. A broader glob like
+  # `${dest}.tmp.*` would race with a concurrent switcher's pending temp
+  # (we already lock, but the temp lives outside the lock window).
+  rm -f "${dest}.tmp.$$" 2>/dev/null || true
 
   return 0
 }
@@ -1064,8 +1089,10 @@ reload_tmux() {
     log "Sourced theme.conf"
   fi
 
-  # Refresh all clients to apply the new theme visually
-  tmux refresh-client -S 2>/dev/null || true
+  # Refresh all clients. `-S` redraws only the status line; without it
+  # tmux repaints window/pane borders too, which is what theme changes
+  # actually need (border + pane background colors come from theme.conf).
+  tmux refresh-client 2>/dev/null || true
   log "Refreshed tmux clients"
 }
 

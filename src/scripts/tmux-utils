@@ -19,13 +19,15 @@
 # OS detection
 OS_TYPE=$(uname -s)
 
-# Cache configuration
-CACHE_DIR="/tmp"
-CPU_CACHE_FILE="$CACHE_DIR/.tmux_cpu_cache"
-CPU_PREV_TOTAL_FILE="$CACHE_DIR/.tmux_cpu_prev_total_cache"
-CPU_PREV_IDLE_FILE="$CACHE_DIR/.tmux_cpu_prev_idle_cache"
-MEM_CACHE_FILE="$CACHE_DIR/.tmux_mem_cache"
-BATTERY_CACHE_FILE="$CACHE_DIR/.tmux_battery_cache"
+# Cache configuration. Use a per-user directory so we don't write to
+# predictable /tmp paths (symlink-clobber risk on multi-user Linux).
+CACHE_DIR="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/tmux-utils-$(id -u)"
+mkdir -p -m 0700 "$CACHE_DIR" 2>/dev/null
+CPU_CACHE_FILE="$CACHE_DIR/cpu"
+CPU_PREV_TOTAL_FILE="$CACHE_DIR/cpu_prev_total"
+CPU_PREV_IDLE_FILE="$CACHE_DIR/cpu_prev_idle"
+MEM_CACHE_FILE="$CACHE_DIR/mem"
+BATTERY_CACHE_FILE="$CACHE_DIR/battery"
 
 # Function to get CPU usage percentage
 get_cpu_usage() {
