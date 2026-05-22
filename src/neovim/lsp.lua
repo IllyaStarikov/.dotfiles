@@ -256,7 +256,7 @@ local function setup_lsp()
     end
 
     -- Configure inlay hints if supported
-    if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
+    if vim.lsp.inlay_hint and client:supports_method("textDocument/inlayHint") then
       pcall(function()
         -- Disable inlay hints by default
         -- Parameters: enable(boolean, filter_table)

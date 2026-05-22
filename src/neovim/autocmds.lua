@@ -110,6 +110,21 @@ vim.treesitter.get_node = function(...)
   return result
 end
 
+-- Workaround for treesitter get_range crash when node is nil
+-- This happens when fold/highlight code passes a nil node after tree invalidation
+local original_ts_get_range = vim.treesitter.get_range
+---@diagnostic disable-next-line: duplicate-set-field
+vim.treesitter.get_range = function(node, source, metadata)
+  if node == nil then
+    return { 0, 0, 0, 0, 0, 0 }
+  end
+  local ok, result = pcall(original_ts_get_range, node, source, metadata)
+  if not ok then
+    return { 0, 0, 0, 0, 0, 0 }
+  end
+  return result
+end
+
 -- Ensure terminal cursor visibility
 local terminal_cursor_group = augroup("TerminalCursor", { clear = true })
 local ui = require("ui")
