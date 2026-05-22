@@ -22,14 +22,15 @@ describe "Performance regression tests"
 setup_test
 
 # Performance thresholds (in milliseconds).
-# These are upper bounds intended to catch regressions, not the
-# steady-state numbers reported in README.md (which use Zinit's turbo
-# mode and warm caches). The thresholds here are realistic for cold
-# starts in a non-interactive shell on hosted CI runners.
-NVIM_STARTUP_THRESHOLD=300
-PLUGIN_LOAD_THRESHOLD=1000
+# Regression thresholds — set to ~1.5× the claimed steady-state targets in
+# CLAUDE.md (nvim startup ~150ms, plugin load <500ms, theme switch <500ms)
+# so we catch a 2× regression while still tolerating CI variance. Zsh
+# startup retains a higher bound because Zinit + completion init in a
+# non-interactive shell is heavier than the interactive turbo-mode path.
+NVIM_STARTUP_THRESHOLD=225
+PLUGIN_LOAD_THRESHOLD=750
 ZSH_STARTUP_THRESHOLD=1000
-THEME_SWITCH_THRESHOLD=1500
+THEME_SWITCH_THRESHOLD=750
 
 # Test: Neovim startup performance
 it "Neovim should start within ${NVIM_STARTUP_THRESHOLD}ms" && {

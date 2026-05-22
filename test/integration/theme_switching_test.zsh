@@ -65,12 +65,24 @@ it "should track current theme" && {
 }
 
 it "should be idempotent" && {
-  # Running global switch twice should be safe
+  # Running the same global switch twice must produce byte-identical config.
   XDG_CONFIG_HOME="$TEST_HOME/.config" "$DOTFILES_DIR/src/theme/switch-theme.sh" tokyonight_storm 2>&1 || true
-  XDG_CONFIG_HOME="$TEST_HOME/.config" "$DOTFILES_DIR/src/theme/switch-theme.sh" tokyonight_storm 2>&1 || true
+  local hash1=""
+  if [[ -d "$TEST_HOME/.config" ]]; then
+    hash1=$(find "$TEST_HOME/.config" -type f -exec shasum {} \; 2>/dev/null | sort | shasum)
+  fi
 
-  assert_success 0
-  pass
+  XDG_CONFIG_HOME="$TEST_HOME/.config" "$DOTFILES_DIR/src/theme/switch-theme.sh" tokyonight_storm 2>&1 || true
+  local hash2=""
+  if [[ -d "$TEST_HOME/.config" ]]; then
+    hash2=$(find "$TEST_HOME/.config" -type f -exec shasum {} \; 2>/dev/null | sort | shasum)
+  fi
+
+  if [[ -n "$hash1" && "$hash1" == "$hash2" ]]; then
+    pass "Config files identical across two runs"
+  else
+    fail "Switch is not idempotent: hash1='$hash1', hash2='$hash2'"
+  fi
 }
 
 cleanup_test
