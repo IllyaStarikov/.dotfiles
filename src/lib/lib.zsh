@@ -9,17 +9,11 @@ typeset -g LIB_VERBOSE=${LIB_VERBOSE:-0}
 typeset -g LIB_STRICT=${LIB_STRICT:-0}
 typeset -gA LIB_LOADED=()
 typeset -gA LIB_DEPENDENCIES=(
-  # Define library dependencies
-  [callstack]="colors utils"
+  # Define library dependencies (post-prune set)
   [colors]=""
   [config]=""
-  [die]="colors callstack logging"
-  [help]="colors textwrap utils"
+  [die]="colors logging"
   [logging]="colors"
-  [math]=""
-  [ssh]=""
-  [textwrap]="utils"
-  [unit]="colors logging"
   [utils]=""
 )
 
@@ -85,19 +79,14 @@ lib_load_core() {
   lib_load_all colors utils logging die
 }
 
-# Load all available libraries
+# Load all available libraries (post-prune set: the audit removed
+# callstack, help, math, ssh, textwrap, unit as unused-in-zsh code).
 lib_load_everything() {
   local -a all_libs=(
-    callstack
     colors
     config
     die
-    help
     logging
-    math
-    ssh
-    textwrap
-    unit
     utils
   )
 
@@ -128,9 +117,10 @@ lib_list_available() {
   for lib_file in "${LIB_DIR}"/*.zsh; do
     [[ "$lib_file" == */lib.zsh ]] && continue
     local module="${lib_file:t:r}"
-    local status=""
-    lib_is_loaded "$module" && status=" (loaded)"
-    echo "  - $module$status"
+    # `status` is a reserved special parameter in zsh — use `state`.
+    local state=""
+    lib_is_loaded "$module" && state=" (loaded)"
+    echo "  - $module$state"
   done
 }
 

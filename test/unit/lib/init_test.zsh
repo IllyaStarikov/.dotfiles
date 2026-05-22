@@ -195,25 +195,14 @@ test_lib_show_dependencies() {
 # Module Loading Tests
 # ============================================================================
 
-test_lib_load_callstack() {
-  test_case "lib_load loads callstack module"
+test_lib_load_config() {
+  test_case "lib_load loads config module"
   source "${DOTFILES_DIR}/src/lib/lib.zsh"
-  lib_load callstack
-  if declare -f stack_trace >/dev/null 2>&1; then
+  lib_load config
+  if declare -f get_config >/dev/null 2>&1; then
     pass
   else
-    fail "callstack module not loaded (stack_trace not defined)"
-  fi
-}
-
-test_lib_load_help() {
-  test_case "lib_load loads help module"
-  source "${DOTFILES_DIR}/src/lib/lib.zsh"
-  lib_load help
-  if declare -f help_program >/dev/null 2>&1; then
-    pass
-  else
-    fail "help module not loaded (help_program not defined)"
+    fail "config module not loaded (get_config not defined)"
   fi
 }
 
@@ -234,5 +223,4 @@ test_suite "Init and Library Loader" \
   test_init_loads_die \
   test_init_sets_dotfiles \
   test_lib_show_dependencies \
-  test_lib_load_callstack \
-  test_lib_load_help
+  test_lib_load_config

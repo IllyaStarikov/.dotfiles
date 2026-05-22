@@ -5,8 +5,11 @@ scripts and CLI utilities under `src/scripts/`.
 
 ## Overview
 
-This directory contains 11 modules. Four are loaded automatically by
-`init.zsh` (the "core") and the rest are opt-in via `lib_load <name>`.
+This directory contains 5 modules. Four are loaded automatically by
+`init.zsh` (the "core") and the remaining `config` module is opt-in via
+`lib_load <name>`. The April 2026 production-readiness audit removed
+`callstack`, `help`, `math`, `ssh`, `textwrap`, and `unit` — they were
+unused-in-zsh code that drifted out of sync with the rest of the repo.
 
 ## Quick Start
 
@@ -18,12 +21,9 @@ source "$DOTFILES/src/lib/init.zsh"
 LOG INFO "Hello, world"
 require_command git
 
-# Opt-in modules:
+# Opt-in module:
 lib_load config
 config_get themes.json default_theme
-
-lib_load ssh
-ssh_key_exists "id_ed25519"
 ```
 
 ## Available Libraries
@@ -77,18 +77,12 @@ require_file /etc/hosts
 
 | Module | Purpose |
 |--------|---------|
-| `callstack` | Stack traces, debug helpers, simple profiler |
 | `config`    | JSON config reader (used by install scripts) |
-| `help`      | Help text generation |
-| `math`      | Arithmetic helpers |
-| `ssh`       | SSH key and config helpers |
-| `textwrap`  | Text wrapping/centering |
-| `unit`      | Lightweight unit-test assertions |
 
 ## Dependency Management
 
 `lib.zsh` resolves dependencies automatically. For example,
-`lib_load die` pulls in `colors`, `callstack`, and `logging`.
+`lib_load die` pulls in `colors` and `logging`.
 
 ```zsh
 lib_show_dependencies     # all
