@@ -38,13 +38,13 @@ jobs:
             echo "Using custom gitleaks configuration"
             gitleaks detect --source . --config .gitleaks.toml --verbose --exit-code 1 || {
               echo "⚠️ Potential secrets detected. Please review."
-              exit 0  # Don't fail the build, just warn
+              exit 1
             }
           else
             echo "Using default gitleaks configuration"
             gitleaks detect --source . --verbose --exit-code 1 || {
               echo "⚠️ Potential secrets detected. Please review."
-              exit 0
+              exit 1
             }
           fi
           echo "::endgroup::"

@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Default permissions: read-only. Scope writes to jobs that need them.
+permissions:
+  contents: read
+
 concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
@@ -27,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         # keep-sorted start
-        os: [macos-14, macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
         # keep-sorted end
 
     steps:
@@ -110,7 +114,7 @@ jobs:
       fail-fast: false
       matrix:
         # keep-sorted start
-        os: [macos-14, macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
         # keep-sorted end
 
     steps:

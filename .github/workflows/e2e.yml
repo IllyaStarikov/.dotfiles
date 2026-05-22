@@ -16,6 +16,13 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   TERM: xterm-256color
   CI: true
@@ -54,7 +61,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ hashFiles('test/e2e/Dockerfile.*') }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 

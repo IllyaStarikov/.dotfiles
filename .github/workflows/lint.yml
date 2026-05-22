@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: lint-${{ github.ref }}
   cancel-in-progress: true
@@ -190,7 +193,7 @@ jobs:
             if ! taplo format --check "$file" 2>/dev/null; then
               errors=$((errors + 1))
             fi
-          done < <(find . -name "*.toml" -type f -not -path "./.git/*" -not -path "./styleguide/*")
+          done < <(find . -name "*.toml" -type f -not -path "./.git/*" -not -path "./styleguide/*" -not -path "./.dotfiles.private/*")
           echo "::endgroup::"
 
           if [[ $errors -gt 0 ]]; then
@@ -217,7 +220,7 @@ jobs:
           npm install -g markdownlint-cli --silent
 
           echo "::group::Checking markdown files"
-          markdownlint '**/*.md' --ignore node_modules --ignore .github --ignore styleguide || true
+          markdownlint '**/*.md' --ignore node_modules --ignore .github --ignore styleguide --ignore .dotfiles.private
           echo "::endgroup::"
 
   yaml:
@@ -243,7 +246,7 @@ jobs:
               echo "  ❌ Invalid YAML: $file"
               errors=$((errors + 1))
             fi
-          done < <(find . \( -name "*.yml" -o -name "*.yaml" \) -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./styleguide/*")
+          done < <(find . \( -name "*.yml" -o -name "*.yaml" \) -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./styleguide/*" -not -path "./.dotfiles.private/*")
 
           echo "::endgroup::"
 
@@ -275,7 +278,7 @@ jobs:
               echo "❌ Invalid JSON: $file"
               errors=$((errors + 1))
             fi
-          done < <(find . -name "*.json" -type f -not -path "./.git/*" -not -path "./styleguide/*")
+          done < <(find . -name "*.json" -type f -not -path "./.git/*" -not -path "./styleguide/*" -not -path "./.dotfiles.private/*")
 
           echo "::endgroup::"
 
