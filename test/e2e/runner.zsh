@@ -130,78 +130,18 @@ check_docker() {
   log SUCCESS "Docker is running"
 }
 
-create_dockerfile() {
-  local dockerfile="${LOG_DIR}/Dockerfile"
-
-  cat >"$dockerfile" <<'EOF'
-FROM archlinux:latest
-
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
-ENV TZ=UTC
-ENV CI=true
-ENV E2E_TEST=true
-
-# Update system and install packages
-RUN pacman -Syu --noconfirm && \
-  pacman -S --noconfirm \
-  base-devel \
-  git \
-  curl \
-  wget \
-  sudo \
-  which \
-  inetutils \
-  python \
-  python-pip \
-  nodejs \
-  npm \
-  zsh \
-  tmux \
-  neovim \
-  ripgrep \
-  fd \
-  fzf \
-  bat \
-  jq \
-  tree \
-  unzip \
-  glibc \
-  && pacman -Scc --noconfirm
-
-# Generate locale
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-  locale-gen
-
-# Install Python packages for Neovim
-RUN pip install --break-system-packages \
-  pynvim \
-  neovim
-
-# Create test user with sudo privileges
-RUN useradd -m -s /bin/zsh testuser && \
-  echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-USER testuser
-WORKDIR /home/testuser
-
-COPY --chown=testuser:testuser . /home/testuser/.dotfiles
-
-ENV HOME=/home/testuser
-ENV DOTFILES_DIR=/home/testuser/.dotfiles
-ENV PATH="/home/testuser/.local/bin:$PATH"
-ENV SHELL=/bin/zsh
-
-ENTRYPOINT ["/bin/bash"]
-EOF
-
-  echo "$dockerfile"
-}
-
 run_docker_test() {
   local container_name="dotfiles-e2e-${TIMESTAMP}"
-  local dockerfile=$(create_dockerfile)
+  # Use the pinned Dockerfile.ubuntu maintained alongside the CI workflow.
+  # The previous inline `create_dockerfile()` generated an `archlinux:latest`
+  # spec with `pacman -Syu` — non-reproducible and known to break the e2e
+  # job randomly. Ubuntu 24.04 is pinned in test/e2e/Dockerfile.ubuntu and
+  # the CI workflow builds the same file, so dev-local runs match CI.
+  local dockerfile="${PROJECT_ROOT}/test/e2e/Dockerfile.ubuntu"
+  if [[ ! -f "$dockerfile" ]]; then
+    log ERROR "Missing $dockerfile — was it deleted?"
+    return 1
+  fi
   local log_file="${LOG_DIR}/test.log"
 
   log INFO "Building Docker image..."
