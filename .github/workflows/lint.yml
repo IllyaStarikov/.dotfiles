@@ -220,7 +220,7 @@ jobs:
           npm install -g markdownlint-cli --silent
 
           echo "::group::Checking markdown files"
-          markdownlint '**/*.md' --ignore node_modules --ignore .github --ignore styleguide --ignore .dotfiles.private
+          markdownlint --config src/language/markdownlint.json '**/*.md' --ignore node_modules --ignore .github --ignore styleguide --ignore .dotfiles.private
           echo "::endgroup::"
 
   yaml:

@@ -2,7 +2,12 @@
   "comment": "Markdownlint configuration - https://github.com/DavidAnson/markdownlint",
   "comment2": "Style guide: https://google.github.io/styleguide/docguide/style.html",
   "MD003": { "style": "atx", "comment": "ATX-style headers (# Header)" },
-  "MD013": { "line_length": 100, "comment": "Line length limit (default: 80)" },
+  "MD013": false,
+  "comment_MD013": "Line-length lint disabled — tables, command snippets, and long URLs exceed 100 routinely.",
+  "MD036": false,
+  "comment_MD036": "Allow emphasis-as-heading — used intentionally in numbered architecture sections.",
+  "MD040": false,
+  "comment_MD040": "Don't require a language tag on every fenced code block.",
   "MD024": { "allow_different_nesting": true, "comment": "Allow duplicate headers in different sections" },
   "MD033": {
     "allowed_elements": ["a", "br", "code", "img", "pre"],
