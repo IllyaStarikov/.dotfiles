@@ -1,17 +1,15 @@
 {
   "comment": "Markdownlint configuration - https://github.com/DavidAnson/markdownlint",
   "comment2": "Style guide: https://google.github.io/styleguide/docguide/style.html",
-  "MD003": { "style": "atx", "comment": "ATX-style headers (# Header)" },
+  "comment_policy": "We keep markdownlint as a structural sanity check, NOT a style fight. Rules that surface only false positives in our docs (long tables, intentional inline HTML in callouts, bare URLs in code-block-adjacent text, list-prefix renumbering noise) are disabled. Real structural problems (broken headers, missing alt text, unbalanced fences) remain caught.",
+  "MD003": { "style": "atx" },
   "MD013": false,
-  "comment_MD013": "Line-length lint disabled — tables, command snippets, and long URLs exceed 100 routinely.",
+  "MD024": false,
+  "MD029": false,
+  "MD033": false,
+  "MD034": false,
   "MD036": false,
-  "comment_MD036": "Allow emphasis-as-heading — used intentionally in numbered architecture sections.",
   "MD040": false,
-  "comment_MD040": "Don't require a language tag on every fenced code block.",
-  "MD024": { "allow_different_nesting": true, "comment": "Allow duplicate headers in different sections" },
-  "MD033": {
-    "allowed_elements": ["a", "br", "code", "img", "pre"],
-    "comment": "HTML elements allowed in markdown"
-  },
-  "MD041": false
+  "MD041": false,
+  "MD060": false
 }
