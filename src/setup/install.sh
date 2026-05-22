@@ -247,9 +247,8 @@ setup_homebrew() {
 
   if ! command -v brew &>/dev/null; then
     info "Installing Homebrew..."
-    local homebrew_url
-    homebrew_url=$(get_config "urls.json" ".installers.homebrew" "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh")
-    /bin/bash -c "$(curl -fsSL "$homebrew_url")"
+    lib_load installer
+    installer_run homebrew /bin/bash || die 1 "Homebrew installer failed (sha256 mismatch or network error)"
 
     # Add Homebrew to PATH
     if [[ "$ARCH" == "arm64" ]]; then
@@ -428,9 +427,8 @@ install_macos_packages() {
           # Special handling for critical packages with alternative installation methods
           if [[ "$pkg" == "starship" ]]; then
             info "Homebrew failed for Starship, trying official installer..."
-            local starship_url
-            starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
-            if curl -sS "$starship_url" | sh -s -- -y; then
+            lib_load installer
+            if installer_run starship sh -- -y; then
               success "✓ Starship installed via official installer"
             else
               error "✗ Starship installation failed completely"
@@ -569,9 +567,8 @@ install_macos_packages() {
     info "Skipping Starship installation (SKIP_STARSHIP is set)"
   elif ! command -v starship &>/dev/null; then
     info "Installing Starship via official installer..."
-    local starship_url
-    starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
-    curl -sS "$starship_url" | sh -s -- -y || {
+    lib_load installer
+    installer_run starship sh -- -y || {
       warning "Starship installation failed, trying alternative method..."
       # Try cargo if available
       if command -v cargo &>/dev/null; then
@@ -704,9 +701,8 @@ install_linux_packages() {
 
   # Install Starship
   if [[ -z "${SKIP_STARSHIP:-}" ]] && ! command -v starship &>/dev/null; then
-    local starship_url
-    starship_url=$(get_config "urls.json" ".installers.starship" "https://starship.rs/install.sh")
-    curl -sS "$starship_url" | sh -s -- -y
+    lib_load installer
+    installer_run starship sh -- -y
   fi
 
   # Install lazygit
@@ -843,9 +839,8 @@ install_linux_packages() {
 
   # Install Rust
   if ! command -v rustup &>/dev/null && [[ "$INSTALL_MODE" == "full" ]]; then
-    local rust_url
-    rust_url=$(get_config "urls.json" ".installers.rust" "https://sh.rustup.rs")
-    curl --proto '=https' --tlsv1.2 -sSf "$rust_url" | sh -s -- -y
+    lib_load installer
+    installer_run rust sh -- -y
     source "$HOME/.cargo/env"
   fi
 
@@ -913,9 +908,8 @@ setup_shell() {
   # Install Zinit
   if [[ ! -d "$HOME/.local/share/zinit/zinit.git" ]]; then
     info "Installing Zinit..."
-    local zinit_url
-    zinit_url=$(get_config "urls.json" ".installers.zinit" "https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh")
-    bash -c "$(curl --fail --show-error --silent --location "$zinit_url")"
+    lib_load installer
+    installer_run zinit bash || warning "Zinit installer failed"
   else
     success "Zinit already installed"
   fi
@@ -1252,9 +1246,8 @@ setup_node() {
     if [[ ! -d "$HOME/.nvm" ]]; then
       info "Installing nvm for Linux..."
       set +u
-      local nvm_url
-      nvm_url=$(get_config "urls.json" ".installers.nvm" "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh")
-      curl -o- "$nvm_url" | bash || {
+      lib_load installer
+      installer_run nvm bash || {
         warning "NVM installation had warnings, continuing..."
       }
       set -u

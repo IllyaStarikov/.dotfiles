@@ -13,6 +13,7 @@ typeset -gA LIB_DEPENDENCIES=(
   [colors]=""
   [config]=""
   [die]="colors logging"
+  [installer]="config logging"
   [logging]="colors"
   [utils]=""
 )
@@ -86,6 +87,7 @@ lib_load_everything() {
     colors
     config
     die
+    installer
     logging
     utils
   )

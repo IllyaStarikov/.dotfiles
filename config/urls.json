@@ -1,11 +1,17 @@
 {
   "$schema": "./schemas/urls.schema.json",
+  "_comment": "Installer URLs. The flat string form (.installers.<name>) is the canonical URL — pinned to a specific commit/tag where possible. The matching .installers.<name>_sha256 sibling holds the sha256 of the script at that URL, OR is null for rolling-CDN endpoints (Rust, Starship) whose content is dynamically rendered upstream and cannot be hash-pinned reliably. The L7 helper at src/lib/installer.zsh reads both and either verifies before exec or falls back to TLS-min only.",
   "installers": {
-    "homebrew": "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh",
+    "homebrew": "https://raw.githubusercontent.com/Homebrew/install/5753984d1eb214c40e86489416be2d38972f836a/install.sh",
+    "homebrew_sha256": "f3e91784ffeda32bc397de7acc1154724cc47522a459c9ac656cca176eeba457",
     "starship": "https://starship.rs/install.sh",
+    "starship_sha256": null,
     "rust": "https://sh.rustup.rs",
+    "rust_sha256": null,
     "nvm": "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh",
-    "zinit": "https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh"
+    "nvm_sha256": "4b7412c49960c7d31e8df72da90c1fb5b8cccb419ac99537b737028d497aba4f",
+    "zinit": "https://raw.githubusercontent.com/zdharma-continuum/zinit/6c9ac1c4bc9bcaede64cb473759ac2c5b9187f98/scripts/install.sh",
+    "zinit_sha256": "f08d2bf2b41106924db1c0b4ef561becf5b1228598b777b3ad9d5029fae94757"
   },
   "apis": {
     "lazygit_releases": "https://api.github.com/repos/jesseduffield/lazygit/releases/latest",

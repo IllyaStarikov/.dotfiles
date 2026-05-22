@@ -179,15 +179,25 @@ echo "Markdownlint (src/language/markdownlint.json):"
 MDLINT="${DOTFILES_DIR}/src/language/markdownlint.json"
 TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 if [[ -f "$MDLINT" ]] && command -v jq &>/dev/null; then
-  MDLINT_LINE_LEN=$(jq -r '.MD013.line_length // empty' "$MDLINT" 2>/dev/null)
-  if [[ "$MDLINT_LINE_LEN" == "$LINE_LENGTH" ]]; then
-    echo -e "  ${GREEN}✓${NC}  Line length = $LINE_LENGTH"
+  # MD013 is either an object with `.line_length`, or `false` to disable
+  # the line-length check entirely. We accept both as passing — the
+  # project chose to disable line-length lint on markdown because tables
+  # and long URLs legitimately exceed the C/Lua/Python 100-char rule.
+  MDLINT_MD013=$(jq -r '.MD013' "$MDLINT" 2>/dev/null)
+  if [[ "$MDLINT_MD013" == "false" ]]; then
+    echo -e "  ${GREEN}✓${NC}  Line length: lint disabled (MD013=false)"
     PASSED=$((PASSED + 1))
   else
-    echo -e "  ${RED}✗${NC}  Line length"
-    echo -e "      Expected: $LINE_LENGTH"
-    echo -e "      Found:    $MDLINT_LINE_LEN"
-    FAILED=$((FAILED + 1))
+    MDLINT_LINE_LEN=$(jq -r '.MD013.line_length // empty' "$MDLINT" 2>/dev/null || echo "")
+    if [[ "$MDLINT_LINE_LEN" == "$LINE_LENGTH" ]]; then
+      echo -e "  ${GREEN}✓${NC}  Line length = $LINE_LENGTH"
+      PASSED=$((PASSED + 1))
+    else
+      echo -e "  ${RED}✗${NC}  Line length"
+      echo -e "      Expected: $LINE_LENGTH"
+      echo -e "      Found:    $MDLINT_LINE_LEN"
+      FAILED=$((FAILED + 1))
+    fi
   fi
 else
   echo -e "  ${YELLOW}⚠${NC}  Line length: file not found or jq unavailable"
