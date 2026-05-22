@@ -194,7 +194,7 @@ get_battery_status() {
 
     local icon
     if [ "$on_ac" -eq 1 ]; then
-        icon="⚡️"
+        icon="🔌"
     elif [ "$battery_percent" -le 24 ]; then
         icon="🪫"
     else

@@ -9,7 +9,7 @@ Custom productivity tools that automate daily development tasks.
 | **fixy**             | Universal code formatter (20+ languages) | `fixy file.py`        |
 | **theme**            | System-wide theme switcher               | `theme dark`          |
 | **tmux-utils**       | System monitoring for tmux status        | `tmux-utils battery`  |
-| **tmux-auto**        | Auto-create/attach tmux sessions         | `tmux-auto`           |
+| **tmux-auto**        | Auto-create/attach tmux sessions         | `tmux-auto [path]`    |
 | **scratchpad**       | Quick temporary file editor              | `scratchpad`          |
 | **extract**          | Universal archive extractor              | `extract file.tar.gz` |
 | **fetch-quotes**     | Inspirational quotes from APIs           | `fetch-quotes`        |
