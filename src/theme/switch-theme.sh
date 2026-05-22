@@ -988,52 +988,58 @@ atomic_update() {
 # Update other application themes
 update_app_themes() {
   local theme_dir="$(get_theme_path "$THEME")"
-  local failed=0
 
   [[ $DEBUG -eq 1 ]] && echo "DEBUG: Looking for theme files in: $theme_dir" >&2
 
-  # Update Alacritty
-  if [[ -f "$theme_dir/alacritty.toml" ]]; then
-    update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" || failed=1
-  fi
+  # Each app's atomic_update writes to a distinct destination file and uses
+  # tmp+rename, so they're parallel-safe. Backgrounding them turns ~5×30ms
+  # serial I/O into a single ~30ms wait on the slowest one.
+  local pids=()
+  local results_dir; results_dir="$(mktemp -d -t theme-update.XXXXXX)"
 
-  # Update WezTerm (generates complete ~/.wezterm.lua with colors inlined)
-  update_wezterm_theme || failed=1
-
-  # Update Kitty
-  if [[ -f "$theme_dir/kitty.conf" ]]; then
-    if atomic_update "$theme_dir/kitty.conf" "$KITTY_DIR/theme.conf"; then
-      log "Updated Kitty theme"
-      # Reload Kitty configuration if it's running
-      if pgrep -x "kitty" >/dev/null; then
-        kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
+  _update_one() {
+    local name="$1" src="$2" dest="$3"
+    if [[ -f "$src" ]]; then
+      if atomic_update "$src" "$dest"; then
+        log "Updated $name theme"
+        echo "ok" >|"$results_dir/$name"
+      else
+        log "Failed to update $name theme" "ERROR"
+        echo "fail" >|"$results_dir/$name"
       fi
     else
-      log "Failed to update Kitty theme" "ERROR"
-      failed=1
+      echo "skip" >|"$results_dir/$name"
     fi
+  }
+
+  if [[ -f "$theme_dir/alacritty.toml" ]]; then
+    ( update_alacritty_theme "$theme_dir/alacritty.toml" "$ALACRITTY_DIR/theme.toml" \
+        && echo ok >|"$results_dir/Alacritty" \
+        || echo fail >|"$results_dir/Alacritty" ) &
+    pids+=($!)
   fi
 
-  # Update tmux
-  if [[ -f "$theme_dir/tmux.conf" ]]; then
-    if atomic_update "$theme_dir/tmux.conf" "$TMUX_DIR/theme.conf"; then
-      log "Updated tmux theme"
-    else
-      log "Failed to update tmux theme" "ERROR"
-      failed=1
-    fi
+  ( update_wezterm_theme \
+      && echo ok >|"$results_dir/WezTerm" \
+      || echo fail >|"$results_dir/WezTerm" ) &
+  pids+=($!)
+
+  _update_one Kitty    "$theme_dir/kitty.conf"    "$KITTY_DIR/theme.conf"    & pids+=($!)
+  _update_one tmux     "$theme_dir/tmux.conf"     "$TMUX_DIR/theme.conf"     & pids+=($!)
+  _update_one Starship "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml" & pids+=($!)
+
+  wait "${pids[@]}" 2>/dev/null
+
+  # Reload Kitty once, after the write committed.
+  if [[ -f "$results_dir/Kitty" && "$(<"$results_dir/Kitty")" == ok ]] && pgrep -x "kitty" >/dev/null; then
+    kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
   fi
 
-  # Update Starship
-  if [[ -f "$theme_dir/starship.toml" ]]; then
-    if atomic_update "$theme_dir/starship.toml" "$STARSHIP_DIR/starship.toml"; then
-      log "Updated Starship theme"
-    else
-      log "Failed to update Starship theme" "ERROR"
-      failed=1
-    fi
-  fi
-
+  local failed=0
+  for f in "$results_dir"/*(N); do
+    [[ "$(<"$f")" == fail ]] && failed=1
+  done
+  rm -rf "$results_dir"
   return $failed
 }
 

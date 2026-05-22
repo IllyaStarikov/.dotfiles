@@ -53,14 +53,19 @@ fpath=(
 zinit ice blockf
 zinit light zsh-users/zsh-completions
 
-# Initialize completion system once (after fpath and plugins are set up)
-# Using zinit's compinit wrapper for proper integration
+# Initialize completion system once (after fpath and plugins are set up).
+# `compinit -C` skips the security check + glob walk when the dump file is
+# fresh; we full-init at most once per day. Saves ~50–150 ms per shell.
 autoload -Uz compinit bashcompinit
-if [[ -n "$ZDOTDIR" ]]; then
-    compinit -i -d "$ZDOTDIR/.zcompdump"
+_zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+# `(#qN.mh+24)` = file exists (N), regular file (.), modified more than 24
+# hours ago (mh+24). Empty match → file is fresh → use the fast path.
+if [[ -n "$_zcompdump"(#qN.mh-24) ]]; then
+    compinit -C -d "$_zcompdump"
 else
-    compinit -i -d "$HOME/.zcompdump"
+    compinit -i -d "$_zcompdump"
 fi
+unset _zcompdump
 bashcompinit  # For compatibility with bash completions
 zicompinit
 zicdreplay
@@ -178,16 +183,36 @@ serve() {
 
 # Development Tools
 
+# Helper: cache the output of a slow `<tool> init`-style command for 7
+# days. Running the init each shell costs 50–150 ms per tool; sourcing the
+# cached file is essentially free. The cache key incorporates the tool's
+# binary path, so a homebrew upgrade (formula relink) invalidates the
+# cache automatically.
+_zsh_cache_source() {
+    local name="$1"; shift
+    local tool="$1"; shift
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+    local tool_path; tool_path="$(command -v "$tool")" || return 1
+    local key="${tool_path//\//_}"
+    local cache_file="$cache_dir/${name}_${key#_}.zsh"
+    [[ -d "$cache_dir" ]] || mkdir -p "$cache_dir"
+    # Regenerate when missing, older than 7 days, or older than the binary.
+    if [[ ! -s "$cache_file" || -n "$cache_file"(#qN.mh+168) || "$tool_path" -nt "$cache_file" ]]; then
+        "$@" >| "$cache_file" 2>/dev/null || { rm -f "$cache_file"; return 1; }
+    fi
+    source "$cache_file"
+}
+
 # fnm - Fast Node Manager (replacing nvm)
 if command -v fnm &>/dev/null; then
-    eval "$(fnm env --use-on-cd)"
+    _zsh_cache_source fnm fnm fnm env --use-on-cd
 fi
 
 # pyenv
 if command -v pyenv &>/dev/null; then
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
+    _zsh_cache_source pyenv pyenv pyenv init -
 fi
 
 # Java (Homebrew openjdk is keg-only)
@@ -210,7 +235,7 @@ fi
 export ZLE_RPROMPT_INDENT=0
 
 if command -v starship &>/dev/null; then
-    eval "$(starship init zsh)"
+    _zsh_cache_source starship starship starship init zsh
 fi
 
 # Aliases
