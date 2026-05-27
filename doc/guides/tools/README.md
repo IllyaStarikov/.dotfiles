@@ -6,7 +6,7 @@
 
 ### Background Services
 
-- **[Services Manager](services.md)** - Background service manager for persistent applications with LaunchAgent integration
+The services manager and its service definitions live in a separate private repo at `~/services/` (github.com/IllyaStarikov/services). See `~/services/doc/services.md` for the manager reference and `~/services/README.md` for the repo overview.
 
 ### Development Tools
 
