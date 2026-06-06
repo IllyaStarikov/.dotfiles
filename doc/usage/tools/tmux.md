@@ -322,9 +322,44 @@ tmux source ~/.tmux.conf
 
 ### Default Info
 
-- Left: Session name
-- Center: Window list
-- Right: Date and time
+- Left: Session name (with prefix indicator)
+- Center: Window list (tabs)
+- Right: CPU, memory, battery, clock
+
+### Width-responsive right side
+
+The window tabs have priority. As the terminal narrows, the right-side system
+metrics drop in order so the tabs are never squeezed out, and the clock is
+always shown (static):
+
+- CPU hidden below `client_width` 135
+- Memory hidden below 110
+- Battery hidden below 90
+- Clock: always shown
+
+These are calibrated so a full-screen window shows everything and a half-width
+(~75 col) window collapses to just the clock; re-tune them to your own screen
+(`tmux display -p '#{client_width}'`) as needed.
+
+This is implemented with `#{?#{e|>=:#{client_width},N},...,}` conditionals in
+`status-right` (see `src/tmux.conf` and `src/theme/templates/tmux.conf`).
+
+Three gotchas the implementation works around:
+
+- Comparisons must use the **`e|` numeric** form (`#{e|>=:...}`). Plain
+  `#{>=:...}` compares as **strings**, so `"75" >= "180"` is true (`'7' > '1'`)
+  and narrow widths would never drop anything.
+- Inside a `#{?...}` conditional, style attributes must be **space-separated**
+  (`#[fg=cyan bold]`), not comma-separated — a comma is the conditional's field
+  separator.
+- The dotfiles path is referenced as the tmux option `#{@dotfiles}`, not a
+  literal `${DOTFILES:-~/.dotfiles}`: the shell `}` would prematurely close the
+  conditional's braces. `@dotfiles` is set in `src/tmux.conf` (honoring a
+  `$DOTFILES` override) and defaulted in each theme's `tmux.conf`.
+
+To re-tune the thresholds, edit the numbers in `src/theme/templates/tmux.conf`
+(and `src/tmux.conf`), then run `src/theme/regenerate-all.sh` and re-apply the
+theme. Use `tmux display -p '#{client_width}'` to read your current width.
 
 ### Customization
 

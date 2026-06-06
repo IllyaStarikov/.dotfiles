@@ -38,6 +38,10 @@ templates/              # Template files for each app
   starship.toml         #   Uses {{directory_style}} for light/dark
   colors.sh             #   Exports FOREGROUND, BACKGROUND, CURSOR, COLOR_0-15
   tmux.conf, alacritty.toml, kitty.conf, wezterm.lua, neovim.lua
+                        #   tmux.conf: width-responsive status-right (drops
+                        #   cpu/memory/battery on narrow widths, clock always
+                        #   shown). After editing thresholds here, run
+                        #   regenerate-all.sh. See doc/usage/tools/tmux.md.
 tokyonight/storm/       # Each theme directory has:
   colors.json           #   Source of truth for all colors
   alacritty.toml, wezterm.lua, kitty.conf, tmux.conf, starship.toml, colors.sh
