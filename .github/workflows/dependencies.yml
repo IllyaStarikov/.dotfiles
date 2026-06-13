@@ -26,7 +26,13 @@ jobs:
         run: |
           echo "::group::Update submodules"
           git submodule update --init --recursive
-          git submodule update --remote --merge
+          # actions/checkout fetches submodules shallow (--depth=1), so the
+          # local commit and the fetched remote tip share no history and
+          # `--merge` dies with "refusing to merge unrelated histories" (exit
+          # 128). We only want to bump the gitlink to the latest remote SHA,
+          # which is the default checkout behavior of --remote (no merge).
+          # git status --porcelain below then sees the bump.
+          git submodule update --remote
 
           # Check if there are changes
           if [[ -n $(git status --porcelain) ]]; then
