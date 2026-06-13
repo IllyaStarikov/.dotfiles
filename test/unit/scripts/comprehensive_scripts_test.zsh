@@ -9,13 +9,21 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 readonly SCRIPTS_DIR="${DOTFILES_DIR}/src/scripts"
 
 # Wall-clock cap for any single script invocation. Some scripts (theme,
-# tmux-utils, update-dotfiles) do real work when called without args
-# and would otherwise time out the whole test on a fresh CI box.
-# Use gtimeout on macOS if available, otherwise plain timeout.
+# tmux-utils, cortex, fetch-quotes) do real work or network/system I/O when
+# called without a fast --help path, and would otherwise time out the whole
+# test on a slow CI box. This test gets a 60s budget from the runner and
+# loops over ~15 scripts, so each invocation must be hard-bounded:
+#   - 2s SIGTERM keeps the cumulative worst case (~15 * 2s) well under 60s.
+#   - --kill-after=1 force-kills (SIGKILL) any script that ignores SIGTERM
+#     or spawns a child that does (e.g. a server or a tmux reload); without
+#     it `timeout` is not a hard cap and a single hung script can blow the
+#     whole-file budget. Killing early degrades an assertion to "skip", never
+#     a false failure, so a tight cap is safe.
+# Use gtimeout on macOS if available, otherwise plain (GNU) timeout.
 if command -v gtimeout >/dev/null 2>&1; then
-  readonly _SCRIPT_RUN=(gtimeout 5)
+  readonly _SCRIPT_RUN=(gtimeout --kill-after=1 2)
 elif command -v timeout >/dev/null 2>&1; then
-  readonly _SCRIPT_RUN=(timeout 5)
+  readonly _SCRIPT_RUN=(timeout --kill-after=1 2)
 else
   readonly _SCRIPT_RUN=()
 fi
