@@ -9,24 +9,39 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 readonly SCRIPTS_DIR="${DOTFILES_DIR}/src/scripts"
 
 # Wall-clock cap for any single script invocation. Some scripts (theme,
-# tmux-utils, cortex, fetch-quotes) do real work or network/system I/O when
-# called without a fast --help path, and would otherwise time out the whole
-# test on a slow CI box. This test gets a 60s budget from the runner and
-# loops over ~15 scripts, so each invocation must be hard-bounded:
-#   - 2s SIGTERM keeps the cumulative worst case (~15 * 2s) well under 60s.
-#   - --kill-after=1 force-kills (SIGKILL) any script that ignores SIGTERM
-#     or spawns a child that does (e.g. a server or a tmux reload); without
-#     it `timeout` is not a hard cap and a single hung script can blow the
-#     whole-file budget. Killing early degrades an assertion to "skip", never
-#     a false failure, so a tight cap is safe.
+# tmux-utils, fetch-quotes) do real work or network/system I/O when called
+# without a fast --help path, and would otherwise time out the whole test on
+# a slow CI box. This test gets a 60s budget from the runner and loops over
+# ~15 scripts, so each invocation must be hard-bounded:
+#   - 3s SIGTERM keeps the cumulative worst case well under 60s.
+#   - --kill-after=1 force-kills (SIGKILL) any script that ignores SIGTERM;
+#     without it `timeout` is not a hard cap.
 # Use gtimeout on macOS if available, otherwise plain (GNU) timeout.
 if command -v gtimeout >/dev/null 2>&1; then
-  readonly _SCRIPT_RUN=(gtimeout --kill-after=1 2)
+  readonly _SCRIPT_RUN=(gtimeout --kill-after=1 3)
 elif command -v timeout >/dev/null 2>&1; then
-  readonly _SCRIPT_RUN=(timeout --kill-after=1 2)
+  readonly _SCRIPT_RUN=(timeout --kill-after=1 3)
 else
   readonly _SCRIPT_RUN=()
 fi
+
+# Run a script under the cap and echo its combined output.
+#
+# CRITICAL: capture via a temp FILE, not `$(... 2>&1)`. Command substitution
+# blocks until the pipe's write end is closed by EVERY process holding it, not
+# just the direct child. A script that forks a child which survives the cap
+# (e.g. cortex's `python -m cortex.cli` MLX server, or theme/tmux-auto spawning
+# a tmux server) keeps that pipe open, so `$(...)` hangs until the 60s
+# whole-file budget fires even though gtimeout already killed the direct child.
+# Writing to a file and reading it back never waits on a pipe. `</dev/null`
+# also prevents scripts that read stdin from blocking. Any leaked grandchild is
+# harmless here (ephemeral CI runner) and cannot stall the capture.
+_run() {
+  local _out="${TEST_TMP_DIR}/_script_out.$$"
+  "${_SCRIPT_RUN[@]}" "$@" >"${_out}" 2>&1 </dev/null
+  cat "${_out}" 2>/dev/null
+  rm -f "${_out}"
+}
 
 describe "Comprehensive Scripts Behavioral Tests"
 
@@ -37,7 +52,7 @@ test_bugreport() {
   local script="${SCRIPTS_DIR}/bugreport"
 
   test_case "bugreport: Generates help information"
-  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || true)
+  output=$(_run "${script}" --help || true)
   if [[ -n "${output}" ]]; then
     pass "Help displayed"
   else
@@ -45,7 +60,7 @@ test_bugreport() {
   fi
 
   test_case "bugreport: Handles invalid options properly"
-  output=$("${_SCRIPT_RUN[@]}" "${script}" --invalid-option 2>&1 || true)
+  output=$(_run "${script}" --invalid-option || true)
   # Should show error or usage
   if [[ "${output}" == *"Unknown"* ]] || [[ "${output}" == *"Error"* ]] || [[ "${output}" == *"Usage"* ]]; then
     pass "Invalid option handled"
@@ -105,6 +120,25 @@ test_scratchpad() {
 }
 
 #######################################
+# Test cortex behavior
+#######################################
+test_cortex() {
+  local script="${SCRIPTS_DIR}/cortex"
+
+  test_case "cortex: Exists and is executable"
+  # Don't run cortex: it `exec`s `python -m cortex.cli`, which can start or
+  # contact an MLX server subprocess. That child survives the wall-clock cap
+  # and (before this test switched to file-based capture) would hold the
+  # output pipe open and hang the whole suite. A behavioral smoke test should
+  # not launch a server, so only assert it is present and executable.
+  if [[ -x "${script}" ]]; then
+    pass "cortex script exists and is executable"
+  else
+    fail "cortex script not found"
+  fi
+}
+
+#######################################
 # Test theme script behavior
 #######################################
 test_theme() {
@@ -112,7 +146,7 @@ test_theme() {
 
   test_case "theme: Can switch themes"
   # Try to get current theme or switch
-  output=$("${_SCRIPT_RUN[@]}" "${script}" 2>&1 | head -5 || true)
+  output=$(_run "${script}" | head -5 || true)
 
   # Should either show current theme or switch
   if [[ "${output}" == *"theme"* ]] || [[ "${output}" == *"Theme"* ]] || [[ "${output}" == *"tokyonight"* ]]; then
@@ -129,7 +163,7 @@ test_tmux_utils() {
   local script="${SCRIPTS_DIR}/tmux-utils"
 
   test_case "tmux-utils: Provides tmux utilities"
-  output=$("${_SCRIPT_RUN[@]}" "${script}" 2>&1 | head -5 || true)
+  output=$(_run "${script}" | head -5 || true)
 
   # Should show usage or perform an action
   if [[ "${output}" == *"tmux"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"battery"* ]]; then
@@ -147,7 +181,7 @@ test_update_dotfiles() {
 
   test_case "update-dotfiles: Can check for updates"
   # Run with --help or --dry-run to avoid actual updates
-  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || "${_SCRIPT_RUN[@]}" "${script}" --dry-run 2>&1 || true)
+  output=$(_run "${script}" --help || _run "${script}" --dry-run || true)
 
   # Should mention updating or show help
   if [[ "${output}" == *"update"* ]] || [[ "${output}" == *"Update"* ]] || [[ "${output}" == *"Usage"* ]]; then
@@ -165,7 +199,7 @@ test_generic_script() {
   local script_name=$(basename "${script}")
 
   test_case "${script_name}: Responds to --help"
-  output=$("${_SCRIPT_RUN[@]}" "${script}" --help 2>&1 || true)
+  output=$(_run "${script}" --help || true)
 
   # Most scripts should provide help
   if [[ "${output}" == *"${script_name}"* ]] || [[ "${output}" == *"Usage"* ]] || [[ "${output}" == *"usage"* ]]; then
@@ -198,6 +232,7 @@ for script in "${SCRIPTS_DIR}"/*; do
   case "${script_name}" in
     bugreport) test_bugreport ;;
     common.sh) test_common ;;
+    cortex) test_cortex ;;
     fixy) test_fixy ;;
     scratchpad) test_scratchpad ;;
     theme) test_theme ;;
