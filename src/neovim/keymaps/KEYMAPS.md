@@ -183,18 +183,24 @@
 
 ### Markdown (`<leader>lm` and motions)
 
-| Key   | Action              |
-| ----- | ------------------- |
-| `lmp` | Toggle rendering    |
-| `lmx` | Toggle checkbox     |
-| `lmt` | Insert TOC          |
-| `lmn` | New list item below |
-| `lmN` | New list item above |
-| `]]`  | Next heading        |
-| `[[`  | Previous heading    |
-| `gsb` | Toggle bold         |
-| `gsi` | Toggle italic       |
-| `gsc` | Toggle inline code  |
+| Key         | Action                        |
+| ----------- | ----------------------------- |
+| `lmp`       | Toggle rendering              |
+| `lmP`       | Toggle browser preview        |
+| `lmx`       | Toggle checkbox               |
+| `lmt`       | Insert TOC                    |
+| `lml`       | Add link                      |
+| `lmn`       | New list item below           |
+| `lmN`       | New list item above           |
+| `]]`        | Next heading                  |
+| `[[`        | Previous heading              |
+| `gsb`       | Toggle bold                   |
+| `gsi`       | Toggle italic                 |
+| `gsc`       | Toggle inline code            |
+| `gsd`       | Delete emphasis (then b/i/c/s) |
+| `gsr`       | Change emphasis (then b/i/c/s) |
+| `<C-s>` (i) | Fix last typo, stay in insert |
+| `<leader>z` | Fix last typo                 |
 
 ## Notes (`<leader>n`)
 

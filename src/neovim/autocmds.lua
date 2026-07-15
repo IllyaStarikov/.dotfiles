@@ -15,45 +15,11 @@
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 
--- Known issue: Treesitter has errors with markdown code fences
--- When editing markdown with incomplete code blocks, treesitter may throw
--- "Invalid 'index': Expected Lua number" or "get_offset" errors
--- This is a known upstream bug in treesitter's markdown parser
--- Users will see these errors but they are harmless and can be ignored
-
--- Safer markdown editing with code fences
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = { "markdown", "markdown.pandoc" },
-  callback = function()
-    local bufnr = vim.api.nvim_get_current_buf()
-
-    -- Create error-resistant wrapper for this buffer
-    vim.api.nvim_buf_attach(bufnr, false, {
-      ---@diagnostic disable-next-line: unused-local
-      on_lines = function(_, _, _, first_line, last_line, new_last_line)
-        -- Use vim.schedule to defer the check
-        vim.schedule(function()
-          -- Temporarily suppress errors during parsing
-          local ok, err = pcall(function()
-            local parser = vim.treesitter.get_parser(bufnr)
-            if parser then
-              parser:parse()
-            end
-          end)
-
-          if not ok and err:match("Invalid 'index'") then
-            -- Restart treesitter to recover from error state
-            vim.treesitter.stop(bufnr)
-            vim.defer_fn(function()
-              pcall(vim.treesitter.start, bufnr)
-            end, 50)
-          end
-        end)
-      end,
-    })
-  end,
-  desc = "Setup error-resistant markdown treesitter handling",
-})
+-- Historical note: two workarounds for treesitter markdown parser crashes
+-- ("Invalid 'index'" during code-fence edits) used to live here. The upstream
+-- bugs were fixed before Neovim 0.12; the per-keystroke full re-parse they
+-- performed doubled parsing work in exactly the buffers where typing latency
+-- matters. :TSReset below remains as a manual escape hatch.
 
 -- Add command to manually reset treesitter if needed
 vim.api.nvim_create_user_command("TSReset", function()
@@ -65,23 +31,7 @@ vim.api.nvim_create_user_command("TSReset", function()
   end, 100)
 end, { desc = "Reset treesitter for current buffer" })
 
--- Workaround for treesitter highlighter out of range errors in markdown buffers
--- Scoped to markdown FileType to avoid overhead on every extmark operation globally
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "markdown", "markdown_inline" },
-  callback = function(args)
-    local bufnr = args.buf
-    -- Override extmark setting for this buffer's namespace operations
-    vim.api.nvim_buf_attach(bufnr, false, {
-      on_lines = function()
-        -- Presence of this callback ensures the buffer attachment stays active
-      end,
-    })
-  end,
-  desc = "Attach treesitter error handler for markdown buffers",
-})
 
 -- Wrap extmark to handle out-of-range errors from treesitter highlighter
 -- Still global but lightweight: only catches specific errors, passes through otherwise
@@ -422,7 +372,9 @@ autocmd("FileType", {
   end,
 })
 
--- Markdown (Common convention: 2 spaces, wider text)
+-- Markdown (Common convention: 2 spaces)
+-- Display settings (wrap/linebreak/textwidth) live in the MARKDOWN WRITING
+-- ENVIRONMENT block below — one owner, not two.
 autocmd("FileType", {
   group = google_style_group,
   pattern = { "markdown", "pandoc", "rst" },
@@ -431,9 +383,6 @@ autocmd("FileType", {
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
     vim.opt_local.expandtab = true
-    vim.opt_local.textwidth = 100
-    vim.opt_local.wrap = true
-    vim.opt_local.linebreak = true
   end,
 })
 
@@ -456,7 +405,8 @@ autocmd({ "BufNewFile", "BufRead" }, {
   command = "set syntax=tex",
 })
 
--- Removed duplicate markdown settings - handled by markdown_settings above
+-- Markdown display settings are owned by the MARKDOWN WRITING ENVIRONMENT
+-- block below; indentation by the google_style block above.
 
 -- =============================================================================
 -- BIG FILE OPTIMIZATIONS
@@ -531,10 +481,17 @@ local markdown_settings = {
   "setlocal wrap", -- Enable word wrap
   "setlocal linebreak", -- Break lines at word boundaries
   "setlocal nolist", -- Hide special characters for cleaner view
-  "setlocal textwidth=0", -- No hard line breaks
+  -- textwidth only affects explicit gq reflow (repo standard 100, matching
+  -- ~/.editorconfig); auto-wrap while typing stays off via formatoptions-=t.
+  "setlocal textwidth=100",
   "setlocal wrapmargin=0", -- No wrap margin
   "setlocal formatoptions-=t", -- Don't auto-wrap text
   "setlocal formatoptions+=l", -- Don't break long lines in insert mode
+  "setlocal formatoptions+=r", -- <CR> continues lists/blockquotes ('comments')
+  "setlocal formatoptions+=o", -- o/O continue lists/blockquotes too
+  -- The runtime ftplugin uses fb: flags (indent-only continuation); b: makes
+  -- <CR>/o actually repeat the bullet marker like any markdown editor.
+  "setlocal comments=b:*,b:-,b:+,n:>",
   "setlocal display+=lastline", -- Show partial wrapped lines
   "setlocal breakindent", -- Indent wrapped lines
   "setlocal breakindentopt=shift:2,min:40",
@@ -549,6 +506,11 @@ autocmd("FileType", {
   group = markdown_writing_group,
   pattern = { "markdown", "pandoc" },
   callback = function()
+    -- NOTE: FileType markdown fires twice per buffer (lazy.nvim re-fires it
+    -- after loading ft-triggered plugins) and the runtime ftplugin re-adds
+    -- formatoptions 't' / removes 'r','o' on each fire. This callback must
+    -- re-run every time so the settings below win the last word; everything
+    -- here is idempotent.
     for _, setting in ipairs(markdown_settings) do
       vim.cmd(setting)
     end
@@ -558,16 +520,31 @@ autocmd("FileType", {
       vim.cmd("setlocal guifont=JetBrainsMono\\ Nerd\\ Font:h14")
     end
 
-    -- Improved navigation for wrapped lines
+    -- Improved navigation for wrapped lines. j/k stay count-aware so that
+    -- 5j under relativenumber still moves 5 file lines, not display lines.
     local buf_opts = { buffer = true, noremap = true, silent = true }
-    vim.keymap.set("n", "j", "gj", buf_opts)
-    vim.keymap.set("n", "k", "gk", buf_opts)
-    vim.keymap.set("n", "0", "g0", buf_opts)
-    vim.keymap.set("n", "$", "g$", buf_opts)
-    vim.keymap.set("v", "j", "gj", buf_opts)
-    vim.keymap.set("v", "k", "gk", buf_opts)
-    vim.keymap.set("v", "0", "g0", buf_opts)
-    vim.keymap.set("v", "$", "g$", buf_opts)
+    local expr_opts = { buffer = true, noremap = true, silent = true, expr = true }
+    vim.keymap.set({ "n", "v" }, "j", "v:count == 0 ? 'gj' : 'j'", expr_opts)
+    vim.keymap.set({ "n", "v" }, "k", "v:count == 0 ? 'gk' : 'k'", expr_opts)
+    vim.keymap.set({ "n", "v" }, "0", "g0", buf_opts)
+    vim.keymap.set({ "n", "v" }, "$", "g$", buf_opts)
+
+    -- Undo breakpoints at sentence punctuation, so u after a long paragraph
+    -- doesn't nuke the whole thing.
+    for _, ch in ipairs({ ".", ",", "!", "?", ";" }) do
+      vim.keymap.set("i", ch, ch .. "<C-g>u", { buffer = true })
+    end
+
+    -- Quick spell fixes: accept the top suggestion for the last misspelling.
+    -- Insert-mode <C-s> shadows LSP signature help, which is useless in prose.
+    vim.keymap.set("i", "<C-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", {
+      buffer = true,
+      desc = "Fix last spelling error",
+    })
+    vim.keymap.set("n", "<leader>z", "[s1z=``", {
+      buffer = true,
+      desc = "Fix last spelling error",
+    })
   end,
 })
 
@@ -773,6 +750,12 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt_local.spell = true
     vim.opt_local.spelllang = "en_us"
+    -- The default spelloptions=noplainbuffer only spell-checks regions that
+    -- syntax or treesitter marks as prose. ft=text has neither, so without
+    -- this the spell highlighting never renders in .txt files.
+    if vim.bo.filetype == "text" then
+      vim.opt_local.spelloptions = ""
+    end
   end,
   desc = "Enable spell checking for documentation files",
 })
@@ -988,8 +971,12 @@ local function get_skeleton_content(filetype, context)
     else
       -- Use the template from reference/markdown_reference.md
       local today = os.date("%d.%m.%Y")
-      local git_repo =
-        vim.fn.system("git rev-parse --show-toplevel 2>/dev/null | xargs basename"):gsub("\n", "")
+      -- Resolve the repo from the FILE's directory, not nvim's cwd — a note
+      -- created outside the current project should not inherit its name.
+      local file_dir = vim.fn.expand("%:p:h")
+      local toplevel =
+        vim.fn.system({ "git", "-C", file_dir, "rev-parse", "--show-toplevel" }):gsub("\n", "")
+      local git_repo = vim.v.shell_error == 0 and vim.fn.fnamemodify(toplevel, ":t") or ""
       if git_repo == "" then
         git_repo = vim.fn.expand("%:p:h:t")
       end
@@ -1329,6 +1316,24 @@ autocmd("BufNewFile", {
   group = skeleton_group,
   pattern = { "*.md", "*.markdown" },
   callback = function()
+    -- Skip throwaway and vault locations: scratchpad/temp notes don't want a
+    -- copyright header, and Obsidian expects YAML frontmatter, not HTML
+    -- comments.
+    -- resolve() both sides: macOS temp dirs are symlinks (/tmp, /var/folders
+    -- point into /private), so raw and resolved prefixes must both match.
+    local path = vim.fn.resolve(vim.fn.expand("<afile>:p"))
+    local skip_prefixes = {
+      vim.fn.resolve(vim.env.TMPDIR or "/tmp"),
+      "/tmp/",
+      "/private/tmp/",
+      vim.fn.expand("~/Documents/obsidian"),
+    }
+    for _, prefix in ipairs(skip_prefixes) do
+      if prefix ~= "" and path:find(prefix, 1, true) == 1 then
+        return
+      end
+    end
+
     -- Only insert skeleton for truly new files, not existing ones
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     if #lines == 1 and lines[1] == "" then

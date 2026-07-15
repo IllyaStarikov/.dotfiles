@@ -515,10 +515,12 @@ require("lazy").setup({
             neigh_pattern = "[^%a\\].",
             register = { cr = false },
           },
+          -- [^\\`]: don't open a new pair right after a backtick, so typing
+          -- ``` for a fenced code block yields three backticks, not four.
           ["`"] = {
             action = "closeopen",
             pair = "``",
-            neigh_pattern = "[^\\].",
+            neigh_pattern = "[^\\`].",
             register = { cr = false },
           },
         },
@@ -810,8 +812,15 @@ require("lazy").setup({
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      local utils = require("utils")
-      utils.load_config("gitsigns")
+      -- require("gitsigns") resolves to the PLUGIN module (rtp wins over the
+      -- package.path entries init.lua adds), so load_config("gitsigns") used
+      -- to call the plugin's own setup() with no arguments and our config
+      -- file never ran. Load the local file by explicit path instead.
+      local cfg = vim.fn.stdpath("config") .. "/gitsigns.lua"
+      if vim.fn.filereadable(cfg) == 0 then
+        cfg = vim.g.dotfiles .. "/src/neovim/gitsigns.lua"
+      end
+      dofile(cfg).setup()
     end,
   },
   {
@@ -1296,16 +1305,13 @@ require("lazy").setup({
   },
 
   -- Writing and editing
-  {
-    "iamcco/markdown-preview.nvim",
-    ft = "markdown",
-    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-  },
+  -- (markdown-preview.nvim spec lives in the markdown block below — cmd-lazy,
+  -- configured via plugins/markdown-preview.lua)
   {
     "nvim-treesitter/nvim-treesitter",
+    -- Pin to main: the repo's default branch is the legacy master, so an
+    -- unpinned :Lazy update silently rolls the plugin back to the old API.
+    branch = "main",
     priority = 1000, -- High priority to load first
     build = ":TSUpdate",
     config = function()
@@ -1400,6 +1406,22 @@ require("lazy").setup({
     ft = "markdown",
     config = function()
       require("plugins.markdown-editing")
+    end,
+  },
+  -- Markdown browser preview — full-fidelity HTML (perfect tables, KaTeX math,
+  -- mermaid, images) with live scroll sync. Complements the in-buffer
+  -- render-markdown toggle (<leader>lmp) with an on-demand browser view
+  -- (<leader>lmP). Loaded on demand via its commands; the build step downloads
+  -- a prebuilt binary so no node toolchain is required.
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
+    build = function()
+      require("lazy").load({ plugins = { "markdown-preview.nvim" } })
+      vim.fn["mkdp#util#install"]()
+    end,
+    init = function()
+      require("plugins.markdown-preview")
     end,
   },
   { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },

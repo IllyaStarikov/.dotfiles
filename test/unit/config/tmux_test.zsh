@@ -36,5 +36,13 @@ if [[ -f "$HOME/.config/tmux/theme.conf" ]] \
 else
   skip "Theme configuration not found"
 fi
+
+test_case "Undercurl passthrough is configured (spell/diagnostic squiggles)"
+if grep -q "Smulx" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
+  && grep -q "Setulc" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null; then
+  pass
+else
+  fail "tmux.conf must pass through Smulx/Setulc or Neovim undercurls vanish"
+fi
 # Return success
 exit 0

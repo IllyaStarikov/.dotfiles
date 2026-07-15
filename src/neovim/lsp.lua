@@ -122,6 +122,7 @@ local function setup_lsp()
         "dockerls", -- Docker
         "emmet_ls", -- Emmet for HTML/CSS
         "gopls", -- Go
+        "harper_ls", -- Grammar/style for prose (markdown, git commits)
         "html", -- HTML
         "jsonls", -- JSON
         "lemminx", -- XML
@@ -179,6 +180,11 @@ local function setup_lsp()
     -- Create a namespace for our custom virtual text
     local ns = vim.api.nvim_create_namespace("custom_diagnostic_vtext")
 
+    -- Prose filetypes keep INFO/HINT diagnostics (grammar nits from
+    -- harper-ls) on the subtle channels only — underline and signs — so
+    -- writing never grows trailing gray text mid-sentence.
+    local prose_filetypes = { markdown = true, gitcommit = true, text = true }
+
     -- Custom handler that shows only one diagnostic per line (scoped to current buffer)
     local function show_diagnostic_virtual_text()
       local bufnr = vim.api.nvim_get_current_buf()
@@ -186,12 +192,17 @@ local function setup_lsp()
       -- Clear previous virtual text for current buffer only
       vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       local diagnostics = vim.diagnostic.get(bufnr)
+      local prose = prose_filetypes[vim.bo[bufnr].filetype]
 
       -- Group diagnostics by line
       local line_diagnostics = {}
       for _, diagnostic in ipairs(diagnostics) do
+        local skip = prose and diagnostic.severity > vim.diagnostic.severity.WARN
         local line = diagnostic.lnum
-        if not line_diagnostics[line] or diagnostic.severity < line_diagnostics[line].severity then
+        if
+          not skip
+          and (not line_diagnostics[line] or diagnostic.severity < line_diagnostics[line].severity)
+        then
           line_diagnostics[line] = diagnostic
         end
       end
@@ -374,6 +385,23 @@ local function setup_lsp()
         ".git",
       },
       single_file_support = true,
+    },
+    -- Grammar/style checker for prose. Spell checking is left to Neovim's
+    -- native spell (undercurls); sentence capitalization is too noisy for
+    -- notes. Diagnostics arrive as hints -> underline only in prose buffers
+    -- (see show_diagnostic_virtual_text), never end-of-line text.
+    harper_ls = {
+      filetypes = { "markdown", "gitcommit" },
+      settings = {
+        ["harper-ls"] = {
+          userDictPath = vim.g.dotfiles .. "/.dotfiles.private/config/spell/harper-dict.txt",
+          diagnosticSeverity = "hint",
+          linters = {
+            SpellCheck = false,
+            SentenceCapitalization = false,
+          },
+        },
+      },
     },
     marksman = {},
     texlab = {},

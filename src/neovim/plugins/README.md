@@ -1,13 +1,17 @@
 # Neovim Plugin Configuration
 
-Manages 80+ plugins with lazy loading for < 300ms startup.
+Manages ~54 plugins with lazy loading for < 300ms startup.
 
 ## Files
 
 - `plugins/` - Complex plugin configs
   - `ai.lua` - CodeCompanion setup
   - `completion.lua` - Blink.cmp config
-  - `markview.lua` - Markdown preview
+  - `markdown-editing.lua` - Markdown editing helpers (markdown.nvim)
+  - `markdown-render.lua` - In-buffer markdown rendering (render-markdown.nvim)
+  - `markdown-preview.lua` - Markdown browser preview (markdown-preview.nvim)
+  - `minuet.lua` - Minuet AI inline completion
+  - `snacks.lua` - Quality-of-life utilities
   - `snippets.lua` - LuaSnip config
   - `vimtex.lua` - LaTeX support
 

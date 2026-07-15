@@ -2,29 +2,16 @@
 -- render-markdown.nvim configuration
 -- Clean markdown rendering with anti-conceal (raw markdown on cursor line)
 --
-
--- TokyoNight Moon palette blended at 35% over #222436
-local heading_bg = {
-  "#6f404f", -- H1: red/pink
-  "#594d7c", -- H2: purple
-  "#45667b", -- H3: cyan
-  "#5a6854", -- H4: green
-  "#6f5d4d", -- H5: yellow
-  "#6f4c49", -- H6: orange
-}
-
-local heading_fg = {
-  "#ffc9ce", -- H1: bright pink
-  "#dcc5ff", -- H2: bright purple
-  "#b4eeff", -- H3: bright cyan
-  "#d9f0a5", -- H4: bright green
-  "#ffe2a6", -- H5: bright amber
-  "#ffbfa5", -- H6: bright orange
-}
+-- Heading colors (RenderMarkdownH1-6 / RenderMarkdownH1-6Bg) are owned by the
+-- generated colorschemes (src/theme/templates/neovim.lua), which blend each
+-- palette's accents over its background — correct in light and dark themes.
+--
 
 require("render-markdown").setup({
   file_types = { "markdown", "quarto", "rmd" },
-  render_modes = { "n", "c", "v", "V" },
+  -- "i" keeps the buffer rendered while typing; anti_conceal below reveals
+  -- raw markdown on the cursor line only.
+  render_modes = { "n", "c", "i", "v", "V" },
   max_file_size = 10.0,
 
   -- Show raw markdown only on the cursor line (eliminates insert-mode toggle dance)
@@ -117,6 +104,10 @@ require("render-markdown").setup({
   quote = { repeat_linebreak = true },
   dash = { width = "full" },
 
+  -- No latex2text/utftex on this machine; browser preview (<leader>lmP)
+  -- renders math via KaTeX instead. Disabling silences checkhealth.
+  latex = { enabled = false },
+
   link = {
     enabled = true,
     hyperlink = "◉ ",
@@ -127,26 +118,6 @@ require("render-markdown").setup({
   completions = {
     lsp = { enabled = true },
   },
-})
-
--- Override default RenderMarkdownH* groups with vivid heading colors.
--- Generated colorscheme files set RenderMarkdownH*Bg = { bg = c.surface } (barely visible).
--- vim.schedule() defers to the next event loop tick, guaranteeing we run AFTER all
--- synchronous colorscheme handlers and render-markdown's own ColorScheme autocmd.
-local function apply_heading_colors()
-  for i = 1, 6 do
-    vim.api.nvim_set_hl(0, "RenderMarkdownH" .. i, { fg = heading_fg[i], bold = true })
-    vim.api.nvim_set_hl(0, "RenderMarkdownH" .. i .. "Bg", { bg = heading_bg[i] })
-  end
-end
-
-vim.schedule(apply_heading_colors)
-
-vim.api.nvim_create_autocmd({ "ColorScheme", "FocusGained" }, {
-  group = vim.api.nvim_create_augroup("MdHeadingColors", { clear = true }),
-  callback = function()
-    vim.schedule(apply_heading_colors)
-  end,
 })
 
 -- Toggle keybinding

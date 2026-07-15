@@ -7,7 +7,9 @@
 #   - snippets.lua: LuaSnip configuration
 #   - snacks.lua: Snacks.nvim dashboard/utilities
 #   - vimtex.lua: LaTeX integration
-#   - render-markdown.lua: Markdown rendering
+#   - markdown-editing.lua: Markdown editing helpers (markdown.nvim)
+#   - markdown-render.lua: Markdown rendering (render-markdown.nvim)
+#   - markdown-preview.lua: Markdown browser preview (markdown-preview.nvim)
 #
 # Style guide: https://google.github.io/styleguide/shellguide.html
 
@@ -48,6 +50,9 @@ plugin_files=(
   "init.lua"
   "ai.lua"
   "completion.lua"
+  "markdown-editing.lua"
+  "markdown-preview.lua"
+  "markdown-render.lua"
   "snippets.lua"
   "snacks.lua"
 )
@@ -273,6 +278,41 @@ if luac -p "$DOTFILES_DIR/src/neovim/fixy.lua" 2>/dev/null; then
   pass
 else
   fail "Syntax error in fixy.lua"
+fi
+
+# =============================================================================
+# MARKDOWN PLUGIN CONFIGURATION
+# =============================================================================
+
+test_case "Markdown editing config uses markdown.nvim"
+md_edit_file="$PLUGINS_DIR/markdown-editing.lua"
+if [[ -f "$md_edit_file" ]] && grep -q 'require("markdown")' "$md_edit_file"; then
+  pass
+else
+  fail "markdown-editing.lua should configure markdown.nvim"
+fi
+
+test_case "Markdown render config uses render-markdown.nvim"
+md_render_file="$PLUGINS_DIR/markdown-render.lua"
+if [[ -f "$md_render_file" ]] && grep -q 'require("render-markdown")' "$md_render_file"; then
+  pass
+else
+  fail "markdown-render.lua should configure render-markdown.nvim"
+fi
+
+test_case "Markdown render keeps rendering active in insert mode"
+if grep -q 'render_modes' "$md_render_file" && grep -q '"i"' "$md_render_file"; then
+  pass
+else
+  fail "render_modes should include insert mode (\"i\")"
+fi
+
+test_case "Markdown preview config sets mkdp globals"
+md_preview_file="$PLUGINS_DIR/markdown-preview.lua"
+if [[ -f "$md_preview_file" ]] && grep -q 'mkdp_filetypes' "$md_preview_file"; then
+  pass
+else
+  fail "markdown-preview.lua should set mkdp_* globals"
 fi
 
 # =============================================================================

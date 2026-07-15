@@ -12,9 +12,12 @@ opt.foldlevelstart = 99 -- Default: -1 - start with all folds open (99 = effecti
 opt.foldminlines = 1 -- Default: 1 - minimum lines needed to create a fold
 opt.foldnestmax = 10 -- Default: 20 - maximum nesting depth for folds (10 is plenty)
 
--- UFO plugin settings
+-- Show a one-column fold gutter (deliberate choice; no fold plugin in use)
 opt.foldcolumn = "1"
--- Note: fillchars for folding are set by UFO plugin
 
 -- Global folding options
+-- markdown_folding=1 makes the runtime markdown ftplugin install its own
+-- per-heading foldexpr (MarkdownFold), overriding the global treesitter
+-- foldexpr above in markdown buffers. Intentional: heading folds beat
+-- treesitter's node folds for prose.
 g.markdown_folding = 1

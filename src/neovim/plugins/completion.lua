@@ -103,12 +103,22 @@ return {
 
   -- Source configuration with performance optimizations
   sources = {
-    -- Minimum keyword length to trigger completion
-    min_keyword_length = 0,
+    -- Minimum keyword length to trigger completion. Prose (markdown) waits
+    -- for 3 chars so the menu doesn't pop on every word while writing.
+    min_keyword_length = function(ctx)
+      return vim.bo[ctx.bufnr].filetype == "markdown" and 3 or 0
+    end,
 
     -- Default sources for all filetypes
     default = has_minuet and { "lsp", "path", "snippets", "buffer", "minuet" }
       or { "lsp", "path", "snippets", "buffer" },
+
+    -- Markdown drops the minuet AI source: prose completion interruptions
+    -- outweigh its value there. LSP keeps marksman links + render-markdown
+    -- checkbox/callout completions.
+    per_filetype = {
+      markdown = { "lsp", "path", "snippets", "buffer" },
+    },
 
     -- Provider-specific settings
     providers = {

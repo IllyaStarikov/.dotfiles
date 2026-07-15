@@ -122,10 +122,12 @@ src/neovim/
 │   ├── lsp.lua        # LSP key bindings
 │   ├── debug.lua      # Debugging keybindings
 │   └── plugins.lua    # Plugin-specific keys
-├── plugins/           # Plugin specifications (7 files)
+├── plugins/           # Plugin specifications
 │   ├── ai.lua         # AI assistants (CodeCompanion)
 │   ├── completion.lua # Blink.cmp config
-│   ├── markview.lua   # Markdown preview
+│   ├── markdown-editing.lua # Markdown editing helpers (markdown.nvim)
+│   ├── markdown-render.lua  # In-buffer rendering (render-markdown.nvim)
+│   ├── markdown-preview.lua # Browser preview (markdown-preview.nvim)
 │   ├── snippets.lua   # LuaSnip config
 │   └── vimtex.lua     # LaTeX support
 ├── snippets/          # Language-specific snippets (11 files)
@@ -243,7 +245,9 @@ Plugin configuration files:
 
 - **ai.lua** - CodeCompanion AI assistant setup
 - **completion.lua** - Blink.cmp completion config
-- **markview.lua** - Markdown preview settings
+- **markdown-editing.lua** - Markdown editing helpers (markdown.nvim)
+- **markdown-render.lua** - In-buffer markdown rendering (render-markdown.nvim)
+- **markdown-preview.lua** - Markdown browser preview (markdown-preview.nvim)
 - **snippets.lua** - LuaSnip configuration
 - **vimtex.lua** - LaTeX support
 
@@ -273,11 +277,14 @@ Key modules at the root level:
 ### Conditional Loading
 
 ```lua
--- Load only on specific file types
+-- Load only when a command is first used (see plugins.lua markdown block)
 {
-  "markdown-preview.nvim",
-  ft = { "markdown" },
-  build = "cd app && npm install",
+  "iamcco/markdown-preview.nvim",
+  cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
+  build = function()
+    require("lazy").load({ plugins = { "markdown-preview.nvim" } })
+    vim.fn["mkdp#util#install"]() -- prebuilt binary, no node toolchain
+  end,
 }
 ```
 

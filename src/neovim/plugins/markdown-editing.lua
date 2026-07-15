@@ -13,18 +13,24 @@ require("markdown").setup({
     code = { key = "c", txt = "`" },
   },
 
-  -- Heading navigation: ]] / [[ are set by default
+  -- Keymap choices (all buffer-local, so global plugins keep working):
+  --  * delete/change emphasis live under the gs prefix (gsd/gsr) — the plugin
+  --    defaults ds/cs would shadow mini.surround exactly where prose editing
+  --    happens most (ds"/cs"' silently broke in markdown buffers).
+  --  * link_add moved off gl, which the LSP owns (diagnostics float).
+  --  * heading motions disabled: the runtime ftplugin already provides ]]/[[
+  --    section motions, and ]c/]p belong to gitsigns hunk-nav/builtin paste.
   mappings = {
     inline_surround_toggle = "gs",
     inline_surround_toggle_line = "gss",
-    inline_surround_delete = "ds",
-    inline_surround_change = "cs",
-    link_add = "gl",
+    inline_surround_delete = "gsd",
+    inline_surround_change = "gsr",
+    link_add = "<leader>lml",
     link_follow = "gx",
-    go_curr_heading = "]c",
-    go_parent_heading = "]p",
-    go_next_heading = "]]",
-    go_prev_heading = "[[",
+    go_curr_heading = false,
+    go_parent_heading = false,
+    go_next_heading = false,
+    go_prev_heading = false,
   },
 
   -- Auto-convert pasted URLs to markdown links

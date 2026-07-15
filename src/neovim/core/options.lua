@@ -33,6 +33,17 @@ opt.wildmode = { "longest:list", "full" }
 opt.spelllang = { "en_us" }
 opt.spellfile = vim.g.dotfiles .. "/.dotfiles.private/config/spell/en.utf-8.add"
 
+-- Recompile the personal dictionary when it is newer than its compiled .spl
+-- (e.g. after a git pull in the private repo). Neovim only ever reads the
+-- .spl, so a stale one silently flags dictionary words as typos.
+local spell_add = vim.o.spellfile
+if
+  vim.fn.filereadable(spell_add) == 1
+  and vim.fn.getftime(spell_add) > vim.fn.getftime(spell_add .. ".spl")
+then
+  vim.cmd("silent! mkspell! " .. vim.fn.fnameescape(spell_add))
+end
+
 -- Completion behavior
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.shortmess:append("c")

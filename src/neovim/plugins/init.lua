@@ -6,7 +6,9 @@
 -- snippets.lua - LuaSnip configuration
 -- ai.lua - CodeCompanion AI assistant
 -- minuet.lua - Minuet AI inline completion (Ollama + Claude)
--- render-markdown.lua - Markdown rendering (render-markdown.nvim)
+-- markdown-editing.lua - Markdown editing helpers (markdown.nvim)
+-- markdown-render.lua - Markdown rendering (render-markdown.nvim)
+-- markdown-preview.lua - Markdown browser preview (markdown-preview.nvim)
 -- snacks.lua - Quality of life utilities
 -- vimtex.lua - LaTeX support
 

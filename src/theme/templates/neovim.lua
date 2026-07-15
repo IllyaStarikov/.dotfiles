@@ -33,6 +33,21 @@ M.colors = {
   bright_white = "{{bright_white}}",
 }
 
+-- Blend fg over bg at the given alpha (0..1); both colors are "#rrggbb".
+-- Used to derive markdown heading bands from the palette so they stay
+-- readable in both light and dark variants.
+local function blend(fg, bg, alpha)
+  local f = tonumber(fg:sub(2), 16)
+  local b = tonumber(bg:sub(2), 16)
+  local out = {}
+  for i, shift in ipairs({ 16, 8, 0 }) do
+    local cf = math.floor(f / 2 ^ shift) % 256
+    local cb = math.floor(b / 2 ^ shift) % 256
+    out[i] = math.floor(cf * alpha + cb * (1 - alpha) + 0.5)
+  end
+  return string.format("#%02x%02x%02x", out[1], out[2], out[3])
+end
+
 function M.setup()
   local c = M.colors
 
@@ -1118,18 +1133,21 @@ function M.setup()
     RenderMarkdownTableHead = { fg = c.red },
     RenderMarkdownTableRow = { fg = c.yellow },
     RenderMarkdownCodeInline = { link = "@markup.raw.markdown_inline" },
-    RenderMarkdownH1Bg = { bg = c.surface },
-    RenderMarkdownH1Fg = { fg = c.magenta, bold = true },
-    RenderMarkdownH2Bg = { bg = c.surface },
-    RenderMarkdownH2Fg = { fg = c.blue, bold = true },
-    RenderMarkdownH3Bg = { bg = c.surface },
-    RenderMarkdownH3Fg = { fg = c.green, bold = true },
-    RenderMarkdownH4Bg = { bg = c.surface },
-    RenderMarkdownH4Fg = { fg = c.yellow, bold = true },
-    RenderMarkdownH5Bg = { bg = c.surface },
-    RenderMarkdownH5Fg = { fg = c.cyan, bold = true },
-    RenderMarkdownH6Bg = { bg = c.surface },
-    RenderMarkdownH6Fg = { fg = c.red, bold = true },
+    -- Heading foregrounds are RenderMarkdownH1..H6 (no "Fg" suffix — that is
+    -- the group name render-markdown.nvim actually reads); backgrounds blend
+    -- each accent over the theme background so the bands track the palette.
+    RenderMarkdownH1 = { fg = c.red, bold = true },
+    RenderMarkdownH1Bg = { bg = blend(c.red, c.bg, 0.30) },
+    RenderMarkdownH2 = { fg = c.magenta, bold = true },
+    RenderMarkdownH2Bg = { bg = blend(c.magenta, c.bg, 0.30) },
+    RenderMarkdownH3 = { fg = c.cyan, bold = true },
+    RenderMarkdownH3Bg = { bg = blend(c.cyan, c.bg, 0.30) },
+    RenderMarkdownH4 = { fg = c.green, bold = true },
+    RenderMarkdownH4Bg = { bg = blend(c.green, c.bg, 0.30) },
+    RenderMarkdownH5 = { fg = c.yellow, bold = true },
+    RenderMarkdownH5Bg = { bg = blend(c.yellow, c.bg, 0.30) },
+    RenderMarkdownH6 = { fg = c.blue, bold = true },
+    RenderMarkdownH6Bg = { bg = blend(c.blue, c.bg, 0.30) },
 
     -- headlines.nvim
     CodeBlock = { bg = c.surface },
