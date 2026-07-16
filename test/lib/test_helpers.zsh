@@ -46,6 +46,16 @@ skip() {
   return 0
 }
 
+# True when lazy.nvim (and therefore the plugin stack) is synced on this
+# machine. CI never installs plugins by design (see CLAUDE.md: plugin
+# auto-install times out in the Docker harness), so runtime checks that need
+# a working plugin stack must skip when this returns non-zero - a plugin-less
+# nvim boots with "Plugin X is not installed" errors that pollute stderr and
+# abort autocmd chains nondeterministically.
+nvim_plugins_synced() {
+  [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim" ]]
+}
+
 # Timing helper
 measure_time_ms() {
   local start=$(date +%s%N)

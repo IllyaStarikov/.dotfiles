@@ -52,11 +52,17 @@ else
 fi
 
 test_case "autocmds.lua loads without errors"
-result=$(timeout 10 nvim --headless -c "luafile $AUTOCMDS_FILE" -c "qa!" 2>&1)
-if [[ -z "$result" ]] || [[ "$result" != *"Error"* ]]; then
-  pass
+if ! nvim_plugins_synced; then
+  # A plugin-less nvim boots with lazy.nvim "Plugin X is not installed"
+  # errors that pollute the output - not an autocmds.lua defect.
+  skip "nvim plugins not synced (fresh/CI environment)"
 else
-  fail "autocmds.lua has runtime errors: $result"
+  result=$(timeout 10 nvim --headless -c "luafile $AUTOCMDS_FILE" -c "qa!" 2>&1)
+  if [[ -z "$result" ]] || [[ "$result" != *"Error"* ]]; then
+    pass
+  else
+    fail "autocmds.lua has runtime errors: $result"
+  fi
 fi
 
 # =============================================================================

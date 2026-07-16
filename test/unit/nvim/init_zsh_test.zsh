@@ -10,7 +10,10 @@
 
 test_case "init.lua exists and is syntactically valid"
 if [[ -f "$DOTFILES_DIR/src/neovim/init.lua" ]]; then
-  if luac -p "$DOTFILES_DIR/src/neovim/init.lua" 2>/dev/null; then
+  if ! command -v luac >/dev/null 2>&1; then
+    # macOS CI runners ship no lua; lint.yml's luac gate covers syntax.
+    skip "luac not available"
+  elif luac -p "$DOTFILES_DIR/src/neovim/init.lua" 2>/dev/null; then
     pass
   else
     fail "init.lua failed luac -p syntax check"
@@ -20,8 +23,12 @@ else
 fi
 
 test_case "Neovim starts without errors"
+if ! nvim_plugins_synced; then
+  # A plugin-less nvim (fresh machine, CI) boots with lazy.nvim
+  # "Plugin X is not installed" errors - not a config defect.
+  skip "nvim plugins not synced (fresh/CI environment)"
 # IMPORTANT: Use timeout to prevent CI hangs (GitHub Actions macOS issue)
-if command -v timeout >/dev/null 2>&1; then
+elif command -v timeout >/dev/null 2>&1; then
   output=$(timeout 5 nvim --headless -c "qa" 2>&1)
 else
   # macOS doesn't have timeout by default, use alternative
@@ -31,7 +38,9 @@ else
     kill $! 2>/dev/null
   )
 fi
-if [[ -z "$output" ]] || [[ "$output" != *"Error"* ]]; then
+if ! nvim_plugins_synced; then
+  : # skipped above
+elif [[ -z "$output" ]] || [[ "$output" != *"Error"* ]]; then
   pass
 else
   fail "Neovim startup errors: $output"

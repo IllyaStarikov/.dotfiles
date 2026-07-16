@@ -5,6 +5,16 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
 test_suite "Neovim Plugin System Behavioral Tests"
 
+# Every case below drives a fully-booted nvim with the plugin stack. On a
+# machine without synced plugins (fresh checkout, CI - plugins are never
+# installed there by design) lazy.nvim boots with "Plugin X is not installed"
+# errors and there is nothing meaningful to assert.
+if ! nvim_plugins_synced; then
+  test_case "Plugin stack present"
+  skip "nvim plugins not synced (fresh/CI environment) - skipping behavioral suite"
+  exit 0
+fi
+
 # Test: Neovim starts without errors
 test_case "Neovim starts successfully with plugins"
 output=$(nvim --headless -c "qa!" 2>&1)

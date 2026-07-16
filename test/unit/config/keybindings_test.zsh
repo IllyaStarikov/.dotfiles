@@ -7,6 +7,12 @@ source "$(dirname "$0")/../../lib/test_helpers.zsh"
 
 describe "Key Binding Behavioral Tests"
 
+# nvim-based cases need the synced plugin stack: a plugin-less boot (fresh
+# machine, CI - plugins are never installed there by design) emits lazy.nvim
+# errors and aborts autocmd/command chains nondeterministically.
+NVIM_RUNTIME_OK=0
+nvim_plugins_synced && NVIM_RUNTIME_OK=1
+
 # Test: Essential vim motions work
 test_case "Essential vim navigation keys work in Neovim"
 # Create a test file with known content
@@ -32,11 +38,15 @@ rm -f "$temp_file"
 
 # Test: Leader key is set
 test_case "Leader key is configured in Neovim"
-output=$(nvim --headless -c "lua print(vim.g.mapleader or 'not-set')" -c "qa!" 2>&1 | grep -v "^$" | head -1)
-if [[ "$output" != "not-set" ]] && [[ -n "$output" ]]; then
-  pass "Leader key: $output"
+if [[ $NVIM_RUNTIME_OK -eq 0 ]]; then
+  skip "nvim plugins not synced (fresh/CI environment)"
 else
-  fail "No leader key configured"
+  output=$(nvim --headless -c "lua print(vim.g.mapleader or 'not-set')" -c "qa!" 2>&1 | grep -v "^$" | head -1)
+  if [[ "$output" != "not-set" ]] && [[ -n "$output" ]]; then
+    pass "Leader key: $output"
+  else
+    fail "No leader key configured"
+  fi
 fi
 
 # Test: Common operations have keybindings
@@ -65,35 +75,38 @@ fi
 
 # Test: tmux prefix key is set
 test_case "tmux has a prefix key configured"
-if command -v tmux &>/dev/null; then
-  prefix=$(tmux show-options -g prefix 2>/dev/null | cut -d' ' -f2)
-  if [[ -n "$prefix" ]]; then
-    pass "tmux prefix: $prefix"
-  else
-    fail "No tmux prefix configured"
-  fi
+# Static check against the REPO config: `tmux show-options` interrogates a
+# live server (started with tmux's defaults, not this repo's tmux.conf) and
+# fails on CI runners with no server/tty.
+prefix_line=$(grep -E "^set(-option)? -g prefix" "$DOTFILES_DIR/src/tmux.conf" | head -1)
+if [[ -n "$prefix_line" ]]; then
+  pass "tmux prefix: ${prefix_line##* }"
 else
-  skip "tmux not installed"
+  fail "No tmux prefix configured in src/tmux.conf"
 fi
 
 # Test: No keybinding prevents basic editing
 test_case "Basic text editing remains functional"
-temp_file="$TEST_TMP_DIR/edit_test.txt"
-echo "test" >"$temp_file"
-
-# Try to insert text
-output=$(nvim --headless "$temp_file" \
-  -c "normal! oNew Line" \
-  -c "write" \
-  -c "qa!" 2>&1)
-
-content=$(cat "$temp_file")
-rm -f "$temp_file"
-
-if [[ "$content" == *"New Line"* ]]; then
-  pass "Text insertion works"
+if [[ $NVIM_RUNTIME_OK -eq 0 ]]; then
+  skip "nvim plugins not synced (fresh/CI environment)"
 else
-  fail "Text insertion blocked"
+  temp_file="$TEST_TMP_DIR/edit_test.txt"
+  echo "test" >"$temp_file"
+
+  # Try to insert text
+  output=$(nvim --headless "$temp_file" \
+    -c "normal! oNew Line" \
+    -c "write" \
+    -c "qa!" 2>&1)
+
+  content=$(cat "$temp_file")
+  rm -f "$temp_file"
+
+  if [[ "$content" == *"New Line"* ]]; then
+    pass "Text insertion works"
+  else
+    fail "Text insertion blocked"
+  fi
 fi
 
 # Test: Escape key works
@@ -112,30 +125,38 @@ fi
 
 # Test: Help is accessible
 test_case "Help system is accessible"
-output=$(nvim --headless -c "help | qa!" 2>&1)
-if [[ "$output" != *"Error"* ]] && [[ "$output" != *"E149"* ]]; then
-  pass "Help system accessible"
+if [[ $NVIM_RUNTIME_OK -eq 0 ]]; then
+  skip "nvim plugins not synced (fresh/CI environment)"
 else
-  fail "Help system not accessible"
+  output=$(nvim --headless -c "help | qa!" 2>&1)
+  if [[ "$output" != *"Error"* ]] && [[ "$output" != *"E149"* ]]; then
+    pass "Help system accessible"
+  else
+    fail "Help system not accessible"
+  fi
 fi
 
 # Test: Save and quit commands work
 test_case "Save and quit commands remain functional"
-temp_file="$TEST_TMP_DIR/save_test.txt"
-echo "test content" >"$temp_file"
-
-nvim --headless "$temp_file" \
-  -c "normal! A modified" \
-  -c "write" \
-  -c "quit" 2>&1
-
-content=$(cat "$temp_file")
-rm -f "$temp_file"
-
-if [[ "$content" == *"modified"* ]]; then
-  pass "Save command works"
+if [[ $NVIM_RUNTIME_OK -eq 0 ]]; then
+  skip "nvim plugins not synced (fresh/CI environment)"
 else
-  fail "Save command failed"
+  temp_file="$TEST_TMP_DIR/save_test.txt"
+  echo "test content" >"$temp_file"
+
+  nvim --headless "$temp_file" \
+    -c "normal! A modified" \
+    -c "write" \
+    -c "quit" 2>&1
+
+  content=$(cat "$temp_file")
+  rm -f "$temp_file"
+
+  if [[ "$content" == *"modified"* ]]; then
+    pass "Save command works"
+  else
+    fail "Save command failed"
+  fi
 fi
 
 # Return success

@@ -100,6 +100,15 @@ fi
 # CORE.LUA KEYBINDINGS
 # =============================================================================
 
+# Everything below interrogates a fully-booted nvim (maparg lookups). On a
+# machine without synced plugins (fresh checkout, CI) lazy.nvim boot errors
+# pollute the probed output; the static file/syntax checks above suffice.
+if ! nvim_plugins_synced; then
+  test_case "Runtime keymap checks"
+  skip "nvim plugins not synced (fresh/CI environment) - skipping runtime checks"
+  exit 0
+fi
+
 test_case "Core: Ctrl+S saves file in normal mode"
 if check_keymap "n" "<C-s>"; then
   pass
