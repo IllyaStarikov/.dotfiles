@@ -53,7 +53,12 @@ skip() {
 # nvim boots with "Plugin X is not installed" errors that pollute stderr and
 # abort autocmd chains nondeterministically.
 nvim_plugins_synced() {
-  [[ -d "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim" ]]
+  local lazy_root="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy"
+  # lazy.nvim alone does NOT count: CI clones the manager itself (test.yml
+  # setup step) and the config self-bootstraps it on first boot, while the
+  # actual plugin stack stays uninstalled. Require a real plugin too -
+  # tokyonight is priority-loaded and always present after a :Lazy sync.
+  [[ -d "$lazy_root/lazy.nvim" && -d "$lazy_root/tokyonight.nvim" ]]
 }
 
 # Timing helper
