@@ -205,8 +205,15 @@ main() {
       }
     fi
 
-    # Backup existing symlinks for clean installation
-    if [[ -L "$HOME/.config/nvim" ]]; then
+    # Backup existing symlinks for clean installation.
+    # Guarded by DRY_RUN: this block DELETES the live ~/.config/nvim, and in
+    # dry-run mode create_link below would not recreate it — an unguarded
+    # --dry-run used to destroy the live symlink (tests hit this).
+    if $DRY_RUN; then
+      if [[ -e "$HOME/.config/nvim" || -L "$HOME/.config/nvim" ]]; then
+        warn "    [DRY RUN] Would backup and replace: $HOME/.config/nvim"
+      fi
+    elif [[ -L "$HOME/.config/nvim" ]]; then
       mkdir -p "$BACKUP_DIR"
       # Save symlink target for reference
       readlink "$HOME/.config/nvim" >"$BACKUP_DIR/nvim-symlink-target-$(date +%Y%m%d_%H%M%S).txt"

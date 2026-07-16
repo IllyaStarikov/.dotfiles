@@ -16,6 +16,11 @@ describe "symlinks.sh comprehensive tests"
 # Setup before tests
 setup_test
 
+# Sandbox HOME: several tests below invoke symlinks.sh (even --dry-run) and
+# must never operate on the real $HOME (~/.config/nvim lives there).
+export HOME="$TEST_TMP_DIR/home"
+mkdir -p "$HOME/.config"
+
 # Test: Script exists and is executable
 it "should exist and be executable" && {
   local script_path="$DOTFILES_DIR/src/setup/symlinks.sh"
@@ -29,7 +34,9 @@ it "should exist and be executable" && {
 it "should display help message" && {
   output=$("$DOTFILES_DIR/src/setup/symlinks.sh" --help 2>&1 || true)
 
-  assert_contains "$output" "Usage" || assert_contains "$output" "usage"
+  # Help prints "USAGE:" (uppercase); keep the matching alternative first —
+  # assert_contains counts a failure even when a later || alternative matches.
+  assert_contains "$output" "USAGE" || assert_contains "$output" "Usage"
   assert_contains "$output" "symlink" || assert_contains "$output" "Symlink"
   pass
 }
@@ -133,7 +140,8 @@ it "should handle errors gracefully" && {
 it "should verify symlinks after creation" && {
   local script_content=$(cat "$DOTFILES_DIR/src/setup/symlinks.sh")
 
-  assert_contains "$script_content" "test" || assert_contains "$script_content" "verify" || assert_contains "$script_content" "check"
+  # "check" is the alternative that actually appears; keep it first (see above).
+  assert_contains "$script_content" "check" || assert_contains "$script_content" "verify" || assert_contains "$script_content" "test"
   pass
 }
 
@@ -209,8 +217,9 @@ it "should handle interactive mode" && {
 it "should have cleanup capability" && {
   local script_content=$(cat "$DOTFILES_DIR/src/setup/symlinks.sh")
 
-  # Should be able to remove broken symlinks
-  assert_contains "$script_content" "broken" || assert_contains "$script_content" "clean" || assert_contains "$script_content" "remove"
+  # Should be able to remove broken symlinks. "clean" is the alternative that
+  # actually appears; keep it first (assert_contains counts each miss).
+  assert_contains "$script_content" "clean" || assert_contains "$script_content" "broken" || assert_contains "$script_content" "remove"
   pass
 }
 

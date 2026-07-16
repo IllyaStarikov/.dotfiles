@@ -10,6 +10,11 @@ export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 # Source test framework
 source "$TEST_DIR/lib/test_helpers.zsh"
 
+# Sandbox HOME: tests below execute install.sh --help / symlinks.sh --dry-run,
+# which must never see the real $HOME (~/.config/nvim lives there).
+export HOME="${TEST_TMP_DIR:-$(mktemp -d)}/home"
+mkdir -p "$HOME/.config"
+
 describe "Zsh script compatibility tests"
 
 # Test: Setup script runs with zsh

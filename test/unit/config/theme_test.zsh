@@ -16,6 +16,14 @@ describe "Theme switching system comprehensive tests"
 # Setup before tests
 setup_test
 
+# Sandbox HOME/XDG dirs: the --local switch-theme runs below write real theme
+# state (~/.config/theme/current-theme.sh, app theme files, cache lockfile).
+# Point all of it at the test tmp dir so the user's live theme is untouched.
+export HOME="$TEST_TMP_DIR/home"
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+mkdir -p "$XDG_CONFIG_HOME" "$XDG_CACHE_HOME"
+
 # Test: switch-theme.sh exists and is executable
 it "switch-theme.sh should exist and be executable" && {
   local script_path="$DOTFILES_DIR/src/theme/switch-theme.sh"

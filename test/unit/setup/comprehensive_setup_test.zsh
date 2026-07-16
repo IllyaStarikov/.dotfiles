@@ -10,6 +10,11 @@ export DOTFILES_DIR="${DOTFILES_DIR:-$(dirname "$TEST_DIR")}"
 # Source test framework
 source "$TEST_DIR/lib/test_helpers.zsh"
 
+# Sandbox HOME: install.sh writes logs/dirs under $HOME and, if it ever ran for
+# real, symlinks.sh would replace ~/.config/nvim. Never point tests at real HOME.
+export HOME="${TEST_TMP_DIR:-$(mktemp -d)}/home"
+mkdir -p "$HOME"
+
 describe "setup.sh behavioral tests"
 
 # Test: Script exists and is executable
@@ -72,8 +77,9 @@ it "should support symlinks mode" && {
 
 # Test: Detects operating system
 it "should detect the operating system" && {
-  # Run setup and check if it mentions the OS
-  output=$("$DOTFILES_DIR/src/setup/install.sh" --help 2>&1 || zsh "$DOTFILES_DIR/src/setup/install.sh" 2>&1 | head -20 || true)
+  # Run setup --help and check if it mentions the OS. NEVER fall back to a
+  # bare install.sh here: a no-arg run executes a full install against $HOME.
+  output=$("$DOTFILES_DIR/src/setup/install.sh" --help 2>&1 || true)
 
   if [[ "$output" == *"macOS"* ]] || [[ "$output" == *"Linux"* ]] || [[ "$output" == *"Darwin"* ]] || [[ "$output" == *"System:"* ]]; then
     pass "OS detection works"

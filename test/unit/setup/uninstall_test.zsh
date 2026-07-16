@@ -22,6 +22,11 @@ export TEST_TMP_DIR="${TEST_TMP_DIR:-/tmp/dotfiles-test-$$}"
 # Source test framework
 source "$TEST_DIR/lib/test_helpers.zsh"
 
+# Sandbox HOME: uninstall.sh is destructive by design; even though its rm
+# sites are DRY_RUN-guarded, never point a test run at the real $HOME.
+export HOME="$TEST_TMP_DIR/home"
+mkdir -p "$HOME/.config"
+
 # Setup test
 setup_test
 
