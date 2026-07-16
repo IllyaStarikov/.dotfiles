@@ -1,5 +1,4 @@
 {
-  "$schema": "./schemas/timeouts.schema.json",
   "brew": {
     "update": 30,
     "install": 60,
@@ -27,11 +26,6 @@
     "npm_doctor": 10,
     "pip_check": 5,
     "cortex_status": 5
-  },
-  "services": {
-    "start_check_delay": 1,
-    "stop_grace_period": 5,
-    "launchagent_throttle": 10
   },
   "fetch_quotes": {
     "api_timeout": 3,

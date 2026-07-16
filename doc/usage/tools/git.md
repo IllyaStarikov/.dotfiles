@@ -25,145 +25,145 @@ git config --global core.pager delta
 
 ### Repository Management
 
-| Command         | Alias | Description           |
-| --------------- | ----- | --------------------- |
-| `git init`      |       | Initialize repository |
-| `git clone url` | `gcl` | Clone repository      |
-| `git status`    | `gs`  | Show status           |
-| `git log`       | `gl`  | View history          |
-| `git remote -v` |       | List remotes          |
+| Command           | Alias | Description           |
+| ----------------- | ----- | --------------------- |
+| `git init`        |       | Initialize repository |
+| `git clone url`   |       | Clone repository      |
+| `git status`      | `gs`  | Show status           |
+| `git log --graph` | `gl`  | View history (graph)  |
+| `git remote -v`   |       | List remotes          |
 
 ### Basic Workflow
 
-| Command               | Alias   | Description         |
-| --------------------- | ------- | ------------------- |
-| `git add .`           | `gaa`   | Stage all changes   |
-| `git add file`        | `ga`    | Stage specific file |
-| `git commit -m "msg"` | `gcmsg` | Commit with message |
-| `git push`            | `gp`    | Push to remote      |
-| `git pull`            | `gl`    | Pull from remote    |
+| Command               | Alias | Description         |
+| --------------------- | ----- | ------------------- |
+| `git add .`           | `gaa` | Stage all changes   |
+| `git add file`        | `ga`  | Stage specific file |
+| `git commit -m "msg"` | `gcm` | Commit with message |
+| `git push`            | `gp`  | Push to remote      |
+| `git pull`            | `gpl` | Pull from remote    |
 
 ## Advanced Aliases
 
 ### Staging and Committing
 
-| Alias   | Command                 | Description            |
-| ------- | ----------------------- | ---------------------- |
-| `gaa`   | `git add --all`         | Add all files          |
-| `gap`   | `git add -p`            | Add interactively      |
-| `gapa`  | `git add --patch`       | Add by hunks           |
-| `gau`   | `git add --update`      | Add modified files     |
-| `gav`   | `git add --verbose`     | Verbose add            |
-| `gcmsg` | `git commit -m`         | Commit with message    |
-| `gc!`   | `git commit --amend`    | Amend last commit      |
-| `gca!`  | `git commit -a --amend` | Amend with all changes |
+| Alias    | Command                                | Description         |
+| -------- | -------------------------------------- | ------------------- |
+| `ga`     | `git add`                              | Stage files         |
+| `gaa`    | `git add --all`                        | Add all files       |
+| `gcm`    | `git commit -m`                        | Commit with message |
+| `gca`    | `git commit --amend`                   | Amend last commit   |
+| `gwip`   | `git add -A && git commit -m 'WIP...'` | Quick WIP commit    |
+| `gunwip` | Reset last commit if it is a WIP       | Drop WIP commit     |
+
+For interactive staging use the full command `git add -p` (no alias). The git-native
+`git amend` (`commit --amend --no-edit`) amends without opening the editor.
 
 ### Branching
 
-| Alias   | Command             | Description         |
-| ------- | ------------------- | ------------------- |
-| `gb`    | `git branch`        | List branches       |
-| `gba`   | `git branch -a`     | List all branches   |
-| `gbd`   | `git branch -d`     | Delete branch       |
-| `gbD`   | `git branch -D`     | Force delete branch |
-| `gco`   | `git checkout`      | Switch branch       |
-| `gcb`   | `git checkout -b`   | Create and switch   |
-| `gco -` | `git checkout -`    | Previous branch     |
-| `gcm`   | `git checkout main` | Switch to main      |
+| Alias      | Command                                    | Description          |
+| ---------- | ------------------------------------------ | -------------------- |
+| `gb`       | `git branch`                               | List branches        |
+| `gba`      | `git branch -a`                            | List all branches    |
+| `gb -d`    | `git branch -d`                            | Delete branch        |
+| `gb -D`    | `git branch -D`                            | Force delete branch  |
+| `gco`      | `git checkout`                             | Switch branch        |
+| `gcb`      | `git checkout -b`                          | Create and switch    |
+| `gco -`    | `git checkout -`                           | Previous branch      |
+| `gco main` | `git checkout main`                        | Switch to main       |
+| `gfresh`   | Checkout main, pull, prune merged branches | Fresh start on main  |
 
 ### Semantic Branch Creation
 
+Use `gcb` (`git checkout -b`) with a conventional prefix:
+
 ```bash
-git feat feature-name     # feature/feature-name
-git fix bug-description   # fix/bug-description
-git chore task-name      # chore/task-name
-git docs update-name     # docs/update-name
-git refactor scope       # refactor/scope
-git test test-name       # test/test-name
-git style change-name    # style/change-name
-git perf optimization    # perf/optimization
+gcb feature/feature-name   # feature branch
+gcb fix/bug-description    # bugfix branch
+gcb chore/task-name        # chore branch
+gcb docs/update-name       # documentation branch
+gcb refactor/scope         # refactor branch
+gcb test/test-name         # test branch
+gcb style/change-name      # style branch
+gcb perf/optimization      # performance branch
 ```
 
 ### Remote Operations
 
-| Alias   | Command                                            | Description       |
-| ------- | -------------------------------------------------- | ----------------- |
-| `gf`    | `git fetch`                                        | Fetch from remote |
-| `gfo`   | `git fetch origin`                                 | Fetch from origin |
-| `gp`    | `git push`                                         | Push to remote    |
-| `gpf`   | `git push --force`                                 | Force push        |
-| `gpf!`  | `git push --force`                                 | Force push (alt)  |
-| `gpsup` | `git push --set-upstream origin $(current_branch)` | Push and track    |
-| `gpu`   | `git push upstream`                                | Push to upstream  |
+| Alias               | Command                   | Description       |
+| ------------------- | ------------------------- | ----------------- |
+| `gf`                | `git fetch`               | Fetch from remote |
+| `gf origin`         | `git fetch origin`        | Fetch from origin |
+| `gp`                | `git push`                | Push to remote    |
+| `gp -u origin HEAD` | `git push -u origin HEAD` | Push and track    |
+
+There is no force-push alias; use the full command `git push --force-with-lease`, which
+refuses to clobber work someone else pushed.
 
 ### Pulling and Rebasing
 
-| Alias  | Command                         | Description             |
-| ------ | ------------------------------- | ----------------------- |
-| `gl`   | `git pull`                      | Pull from remote        |
-| `glr`  | `git pull --rebase`             | Pull with rebase        |
-| `glra` | `git pull --rebase --autostash` | Pull, rebase, autostash |
-| `grb`  | `git rebase`                    | Rebase branch           |
-| `grbi` | `git rebase -i`                 | Interactive rebase      |
-| `grbc` | `git rebase --continue`         | Continue rebase         |
-| `grba` | `git rebase --abort`            | Abort rebase            |
+| Alias          | Command             | Description        |
+| -------------- | ------------------- | ------------------ |
+| `gpl`          | `git pull`          | Pull from remote   |
+| `gpl --rebase` | `git pull --rebase` | Pull with rebase   |
+| `gr`           | `git rebase`        | Rebase branch      |
+| `gri`          | `git rebase -i`     | Interactive rebase |
+
+`git rebase --continue` and `git rebase --abort` have no aliases; use the full commands.
 
 ### Stashing
 
-| Alias   | Command           | Description       |
-| ------- | ----------------- | ----------------- |
-| `gsta`  | `git stash push`  | Stash changes     |
-| `gstaa` | `git stash apply` | Apply stash       |
-| `gstc`  | `git stash clear` | Clear all stashes |
-| `gstd`  | `git stash drop`  | Drop stash        |
-| `gstl`  | `git stash list`  | List stashes      |
-| `gstp`  | `git stash pop`   | Pop stash         |
-| `gsts`  | `git stash show`  | Show stash diff   |
+| Alias  | Command         | Description   |
+| ------ | --------------- | ------------- |
+| `gst`  | `git stash`     | Stash changes |
+| `gstp` | `git stash pop` | Pop stash     |
+
+Other stash operations have no alias; use the full commands: `git stash list`,
+`git stash apply`, `git stash show`, `git stash drop`, and `git stash clear`.
 
 ### Diff and Status
 
-| Alias  | Command                                       | Description         |
-| ------ | --------------------------------------------- | ------------------- |
-| `gd`   | `git diff`                                    | Show changes        |
-| `gdca` | `git diff --cached`                           | Show staged changes |
-| `gdcw` | `git diff --cached --word-diff`               | Staged word diff    |
-| `gds`  | `git diff --staged`                           | Staged changes      |
-| `gdw`  | `git diff --word-diff`                        | Word diff           |
-| `gdt`  | `git diff-tree --no-commit-id --name-only -r` | List changed files  |
+| Alias   | Command             | Description         |
+| ------- | ------------------- | ------------------- |
+| `gd`    | `git diff`          | Show changes        |
+| `gdc`   | `git diff --cached` | Show staged changes |
+| `gs`    | `git status`        | Show status         |
+| `git s` | `git status -sb`    | Short status        |
+
+For word-level diffs use the full command `git diff --word-diff` (no alias).
 
 ### History and Logs
 
-| Alias   | Command                 | Description      |
-| ------- | ----------------------- | ---------------- |
-| `glg`   | `git log --stat`        | Log with stats   |
-| `glgp`  | `git log --stat -p`     | Log with patches |
-| `glgg`  | `git log --graph`       | Log with graph   |
-| `glgga` | `git log --graph --all` | Full graph       |
-| `glo`   | `git log --oneline`     | One line logs    |
-| `glol`  | Pretty one-line log     | Decorated log    |
-| `glola` | Pretty log all branches | Full decorated   |
+| Alias   | Command                                      | Description             |
+| ------- | -------------------------------------------- | ----------------------- |
+| `gl`    | `git log --graph` (pretty format)            | Graph log               |
+| `gll`   | `git log --graph --all` (pretty format)      | Graph log, all branches |
+| `glo`   | `git log --oneline --graph --decorate --all` | One-line graph          |
+| `git l` | `git log --oneline --graph --decorate -20`   | Last 20 commits         |
+
+For stats or patches use the full commands `git log --stat` and `git log --stat -p`.
 
 ### Reset and Clean
 
-| Alias       | Command                                     | Description       |
-| ----------- | ------------------------------------------- | ----------------- |
-| `grh`       | `git reset`                                 | Reset HEAD        |
-| `grhh`      | `git reset --hard`                          | Hard reset        |
-| `groh`      | `git reset origin/$(current_branch) --hard` | Reset to origin   |
-| `gclean`    | `git clean -id`                             | Interactive clean |
-| `gpristine` | Reset and clean                             | Full clean        |
-| `git undo`  | `git reset HEAD~`                           | Undo last commit  |
+| Alias      | Command                   | Description            |
+| ---------- | ------------------------- | ---------------------- |
+| `greset`   | `git reset --hard HEAD`   | Hard reset to HEAD     |
+| `gundo`    | `git reset --soft HEAD~1` | Undo last commit       |
+| `git undo` | `git reset --soft HEAD~1` | Undo last commit (git) |
+| `gclean`   | `git clean -fd`           | Remove untracked files |
+
+A plain `git reset` (unstage) has no alias. To reset to the remote branch, run
+`git reset --hard origin/$(git branch --show-current)`. For a fully pristine tree:
+`greset && git clean -fdx`.
 
 ### Merge and Cherry-pick
 
-| Alias  | Command                      | Description          |
-| ------ | ---------------------------- | -------------------- |
-| `gm`   | `git merge`                  | Merge branch         |
-| `gma`  | `git merge --abort`          | Abort merge          |
-| `gms`  | `git merge --squash`         | Squash merge         |
-| `gcp`  | `git cherry-pick`            | Cherry pick          |
-| `gcpa` | `git cherry-pick --abort`    | Abort cherry pick    |
-| `gcpc` | `git cherry-pick --continue` | Continue cherry pick |
+| Alias | Command     | Description  |
+| ----- | ----------- | ------------ |
+| `gm`  | `git merge` | Merge branch |
+
+No aliases exist for `git merge --abort`, `git merge --squash`, `git cherry-pick`, or the
+cherry-pick `--abort`/`--continue` forms; use the full commands.
 
 ## Git Workflows
 
@@ -172,17 +172,17 @@ git perf optimization    # perf/optimization
 ```bash
 # 1. Start from main
 gco main
-gl
+gpl
 
 # 2. Create feature branch
 gcb feature/new-widget
 
 # 3. Work and commit
 ga .
-gcmsg "feat: add new widget component"
+gcm "feat: add new widget component"
 
 # 4. Push to remote
-gpsup
+gp -u origin HEAD
 
 # 5. Create pull request
 gh pr create
@@ -197,10 +197,10 @@ gcb hotfix/critical-bug
 
 # 2. Fix and commit
 ga patches/fix.patch
-gcmsg "fix: resolve critical memory leak"
+gcm "fix: resolve critical memory leak"
 
 # 3. Push and create PR
-gpsup
+gp -u origin HEAD
 gh pr create --label hotfix
 ```
 
@@ -209,29 +209,29 @@ gh pr create --label hotfix
 ```bash
 # 1. Update feature branch
 gco feature/branch
-grb main
+gr main
 
 # 2. Resolve conflicts
 git status
 # Edit conflicts
 ga .
-grbc
+git rebase --continue
 
 # 3. Force push
-gpf
+git push --force-with-lease
 ```
 
 ### Squash Commits
 
 ```bash
 # Interactive rebase last 3 commits
-grbi HEAD~3
+gri HEAD~3
 
 # In editor, change 'pick' to 'squash'
 # for commits to combine
 
 # Force push
-gpf
+git push --force-with-lease
 ```
 
 ## Advanced Features
@@ -365,12 +365,12 @@ chmod +x .git/hooks/pre-commit
 
 ### Common Issues
 
-| Issue              | Solution                 |
-| ------------------ | ------------------------ |
-| Merge conflicts    | Edit files, `ga`, `grbc` |
-| Wrong branch       | `git reflog`, recover    |
-| Need to undo       | `git undo` or `grh`      |
-| Dirty working tree | `gsta` to stash          |
+| Issue              | Solution                                  |
+| ------------------ | ----------------------------------------- |
+| Merge conflicts    | Edit files, `ga`, `git rebase --continue` |
+| Wrong branch       | `git reflog`, recover                     |
+| Need to undo       | `gundo` or `git reset`                    |
+| Dirty working tree | `gst` to stash                            |
 
 ### Emergency Commands
 
@@ -381,10 +381,10 @@ git rebase --abort
 git cherry-pick --abort
 
 # Reset to remote
-groh
+git reset --hard origin/$(git branch --show-current)
 
-# Complete reset
-gpristine
+# Complete reset (hard reset + remove all untracked files)
+greset && git clean -fdx
 ```
 
 ## Quick Reference Card
@@ -393,22 +393,22 @@ gpristine
 # Daily workflow
 gs          # Status
 gaa         # Add all
-gcmsg ""    # Commit
+gcm ""      # Commit
 gp          # Push
-gl          # Pull
+gpl         # Pull
 
 # Branches
-gco main    # Switch to main
-gcb feature # New branch
-gbd feature # Delete branch
+gco main      # Switch to main
+gcb feature   # New branch
+gb -d feature # Delete branch
 
 # History
-gl          # Log
+gl          # Log (graph)
 gd          # Diff
-git undo    # Undo last
+gundo       # Undo last
 
 # Stash
-gsta        # Stash
+gst         # Stash
 gstp        # Pop stash
 
 # GitHub

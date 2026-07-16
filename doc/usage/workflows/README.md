@@ -50,7 +50,7 @@ Systematic troubleshooting:
 
 ```bash
 # 1. Update and branch
-gco main && gl
+gco main && gpl
 gcb feature/new-widget
 
 # 2. Open editor
@@ -72,7 +72,7 @@ v src/problem.js
 npm test
 
 # 3. Commit and push
-gaa && gcmsg "fix: resolve critical issue" && gpsup
+gaa && gcm "fix: resolve critical issue" && gp -u origin HEAD
 ```
 
 ### Code Review

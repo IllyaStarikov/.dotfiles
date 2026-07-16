@@ -41,16 +41,14 @@ cat requirements.txt | grep -i auth
 ```bash
 # Ensure main is current
 gco main
-gl
+gpl
 
 # Create feature branch
 # Format: feature/issue-number-description
 gcb feature/123-user-auth
-# or semantic
-git feat user-authentication
 
 # Set upstream
-gpsup
+gp -u origin HEAD
 ```
 
 ### 4. Development Environment
@@ -149,7 +147,7 @@ tsc --noEmit
 ```bash
 # Review your changes
 gd            # git diff
-gds           # staged diff
+gdc           # staged diff (--cached)
 
 # Check specific file
 gd auth.py
@@ -269,7 +267,7 @@ ga src/auth/
 git add -p  # Interactive
 
 # Commit with conventional message
-gcmsg "feat(auth): implement OAuth2 authentication
+gcm "feat(auth): implement OAuth2 authentication
 
 - Add GitHub and other OAuth providers
 - Implement JWT token generation
@@ -284,7 +282,7 @@ Closes #123"
 # Push branch
 gp
 # or first time
-gpsup
+gp -u origin HEAD
 
 # Create pull request
 gh pr create \
@@ -315,7 +313,7 @@ v src/auth/oauth.py
 
 # Commit fixes
 gaa
-gcmsg "fix: address review comments"
+gcm "fix: address review comments"
 gp
 ```
 
@@ -324,15 +322,15 @@ gp
 ```bash
 # Rebase on main
 gco main
-gl
+gpl
 gco -
-grb main
+gr main
 
 # Or merge main
 gm main
 
 # Force push if needed
-gpf
+git push --force-with-lease
 ```
 
 ## Deployment Phase
@@ -392,7 +390,7 @@ gb -d feature/123-user-auth
 git remote prune origin
 
 # Update local
-gl
+gpl
 ```
 
 ### 22. Document Release
@@ -456,7 +454,7 @@ gh release create v1.2.0 \
 
 ```bash
 # Start feature
-gco main && gl && gcb feature/name
+gco main && gpl && gcb feature/name
 
 # During development
 <leader>ff    # Find files
@@ -464,13 +462,13 @@ gd            # Check changes
 npm test      # Run tests
 
 # Commit and push
-gaa && gcmsg "feat: description" && gp
+gaa && gcm "feat: description" && gp
 
 # Create PR
 gh pr create --web
 
 # After merge
-gco main && gl && gb -d feature/name
+gco main && gpl && gb -d feature/name
 ```
 
 ---

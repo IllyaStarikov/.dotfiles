@@ -113,7 +113,6 @@ Example:
   "command": "ruff",
   "check_command": "ruff --version",
   "format_args": "format --line-length 100 {file}",
-  "fix_args": "check --fix --line-length 100 {file}",
   "description": "Fast Python linter and formatter (Rust-based)"
 }
 ```

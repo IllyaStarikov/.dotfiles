@@ -32,8 +32,8 @@ gco pr-123
 
 # View changes
 gd main...HEAD  # All changes
-gds             # If any staged
-gl --oneline main..HEAD  # Commits
+gdc             # If any staged
+gl main..HEAD   # Commits (graph log)
 ```
 
 ### 3. Running Local Tests
@@ -285,7 +285,7 @@ v src/auth.py
 
 # Commit with clear message
 gaa
-gcmsg "fix: address review feedback
+gcm "fix: address review feedback
 
 - Add error handling for API calls
 - Improve query performance

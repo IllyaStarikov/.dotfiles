@@ -20,16 +20,20 @@ Modern Git setup with SSH signing, delta diffs, and security-first defaults.
 
 ## Key Features
 
-### Minimal Aliases (15 only)
+### Minimal Aliases (14 git-native)
+
+Defined in `gitconfig` under `[alias]` (used as `git <alias>`):
 
 ```bash
-gs   # status -sb
-gl   # log --oneline --graph
-ga   # add
-gc   # commit
-gp   # push
-gco  # checkout
+git s     # status -sb
+git l     # log --oneline --graph --decorate -20
+git undo  # reset --soft HEAD~1
+git amend # commit --amend --no-edit
+git wip   # add -A && commit -m 'WIP'
 ```
+
+Shell shortcuts (`gs`, `ga`, `gc`, `gp`, `gl`, `gpl`, ...) are separate zsh
+aliases in `src/zsh/aliases.zsh`.
 
 ### SSH Signing (Recommended)
 

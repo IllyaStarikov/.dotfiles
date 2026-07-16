@@ -10,34 +10,32 @@ For the complete Git alias reference, see **[Git Reference](../tools/git.md)**.
 
 ```bash
 gco main              # Start from main
-gl                    # Update main
+gpl                   # Update main (git pull)
 gcb feature/my-feat   # Create feature branch
 # ... make changes ...
 gaa                   # Stage all
-gcmsg "feat: add feature" # Commit
-gpsup                 # Push with upstream
+gcm "feat: add feature" # Commit
+gp -u origin HEAD     # Push with upstream
 ```
 
 ### Quick Fix
 
 ```bash
-gaa && gcmsg "fix: bug" && gp
-# or
-git fix "bug description"
+gaa && gcm "fix: bug" && gp
 ```
 
 ### Interactive Rebase
 
 ```bash
-grbi HEAD~3           # Rebase last 3 commits
+gri HEAD~3            # Rebase last 3 commits
 # mark commits to squash/edit
-grbc                  # Continue after changes
+git rebase --continue # Continue after changes
 ```
 
 ### Stash Workflow
 
 ```bash
-gsta -m "WIP: feature" # Stash with message
+gst push -m "WIP: feature" # Stash with message
 gco main              # Switch branches
 # ... do other work ...
 gco -                 # Back to previous branch
@@ -46,23 +44,27 @@ gstp                  # Pop stash
 
 ## Semantic Commits
 
-| Command        | Example                         | Result                     |
-| -------------- | ------------------------------- | -------------------------- |
-| `git feat`     | `git feat "add user auth"`      | `feat: add user auth`      |
-| `git fix`      | `git fix "null pointer"`        | `fix: null pointer`        |
-| `git docs`     | `git docs "update readme"`      | `docs: update readme`      |
-| `git refactor` | `git refactor "extract method"` | `refactor: extract method` |
-| `git test`     | `git test "add unit tests"`     | `test: add unit tests`     |
-| `git chore`    | `git chore "update deps"`       | `chore: update deps`       |
+Use `gcm` (or `git cm`) with a conventional-commit prefix:
+
+| Prefix      | Example                          | Use for                  |
+| ----------- | -------------------------------- | ------------------------ |
+| `feat:`     | `gcm "feat: add user auth"`      | New features             |
+| `fix:`      | `gcm "fix: null pointer"`        | Bug fixes                |
+| `docs:`     | `gcm "docs: update readme"`      | Documentation changes    |
+| `refactor:` | `gcm "refactor: extract method"` | Behavior-preserving work |
+| `test:`     | `gcm "test: add unit tests"`     | Test additions/changes   |
+| `chore:`    | `gcm "chore: update deps"`       | Maintenance tasks        |
 
 ## Utility Commands
 
-| Command        | Description                     |
-| -------------- | ------------------------------- |
-| `git undo`     | Undo last commit (keep changes) |
-| `git cleanup`  | Delete merged branches          |
-| `git standup`  | Show commits since yesterday    |
-| `git who`      | Show author statistics          |
+| Command             | Description                              |
+| ------------------- | ---------------------------------------- |
+| `git undo` / `gundo` | Undo last commit (keep changes)         |
+| `git amend`         | Amend last commit, keep message          |
+| `gfresh`            | Update main and delete merged branches   |
+| `gwip` / `gunwip`   | Save / restore work-in-progress commit   |
+| `gl` / `glo`        | Log: pretty commit graph                 |
+| `git shortlog -sn`  | Show author statistics                   |
 
 ## GitHub CLI
 

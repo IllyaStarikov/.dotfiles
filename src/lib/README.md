@@ -5,10 +5,11 @@ scripts and CLI utilities under `src/scripts/`.
 
 ## Overview
 
-This directory contains 5 modules. Four are loaded automatically by
-`init.zsh` (the "core") and the remaining `config` module is opt-in via
-`lib_load <name>`. The April 2026 production-readiness audit removed
-`callstack`, `help`, `math`, `ssh`, `textwrap`, and `unit` — they were
+This directory contains 6 modules. Four are loaded automatically by
+`init.zsh` (the "core"); `config` and `installer` are opt-in via
+`lib_load <name>`. The 2026 production-readiness audits removed
+`array`, `hash`, `cli`, `json`, `types`, and `yaml` (April) and
+`callstack`, `help`, `math`, `ssh`, `textwrap`, and `unit` (May) — all
 unused-in-zsh code that drifted out of sync with the rest of the repo.
 
 ## Quick Start
@@ -78,6 +79,7 @@ require_file /etc/hosts
 | Module | Purpose |
 |--------|---------|
 | `config`    | JSON config reader (used by install scripts) |
+| `installer` | Download/install helpers driven by `config/urls.json` (used heavily by `src/setup/install.sh` for homebrew, starship, rust, zinit, nvm) |
 
 ## Dependency Management
 

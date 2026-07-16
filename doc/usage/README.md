@@ -22,7 +22,7 @@ For configuration details and customization, see [Guides](../guides/README.md).
 # NAVIGATION           # FILE OPERATIONS      # GIT WORKFLOW
 z project             ll                     gs
 cd -                  la                     gaa
-zi                    lt                     gcmsg "message"
+zi                    lt                     gcm "message"
 ..                    ff                     gp
 
 # SEARCH               # SYSTEM               # DEVELOPMENT
@@ -98,7 +98,7 @@ rg -t py "class"      # Search Python files
 ### Git Operations
 
 ```bash
-gaa && gcmsg "fix: bug" && gp  # Quick commit
+gaa && gcm "fix: bug" && gp  # Quick commit
 lazygit               # Visual Git UI
 <leader>gg            # In Neovim
 ```
@@ -129,7 +129,7 @@ Use `<C-r>` for command history search
 
 ### Efficient Editing
 
-`gaa && gcmsg "message" && gp` for quick commits
+`gaa && gcm "message" && gp` for quick commits
 `<leader>f` to format code instantly
 `<leader>ca` for AI-powered suggestions
 Use snippets for boilerplate code

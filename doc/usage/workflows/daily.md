@@ -58,12 +58,12 @@ lazygit
 
 ```bash
 # 1. Ensure main is up to date
-gco main && gl
+gco main && gpl
 
 # 2. Create feature branch
 gcb feature/new-widget
-# or semantic
-git feat new-widget
+# or the full command
+git checkout -b feature/new-widget
 
 # 3. Open editor
 v .
@@ -112,10 +112,10 @@ gaa             # Add all
 ga file.js      # Add specific
 
 # Commit with message
-gcmsg "feat: add new widget"
+gcm "feat: add new widget"
 
-# Or semantic commit
-git feat "add new widget"
+# Or the full command
+git commit -m "feat: add new widget"
 ```
 
 ## Collaboration
@@ -123,8 +123,8 @@ git feat "add new widget"
 ### Pull Request Workflow
 
 ```bash
-# Push to remote
-gpsup
+# Push to remote (set upstream)
+gp -u origin HEAD
 
 # Create PR
 gh pr create
@@ -153,7 +153,7 @@ v .
 
 ```bash
 # Stash current work
-gsta -m "WIP: feature"
+gst push -m "WIP: feature"
 
 # Switch project
 z other-project
@@ -184,7 +184,9 @@ fco            # Fuzzy branch selection
 :SessionSave   # Save session
 
 # Commit WIP if needed
-gaa && gcmsg "WIP: end of day"
+gaa && gcm "WIP: end of day"
+# or the one-shot alias
+gwip
 ```
 
 ### Clean Up
@@ -271,7 +273,7 @@ rg "pattern" | fzf
 git undo
 
 # Reset to remote
-groh
+gf && git reset --hard @{upstream}
 
 # Recover lost work
 git reflog

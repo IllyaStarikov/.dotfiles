@@ -20,9 +20,10 @@ ff              # Find files interactively
 ```bash
 gs              # Status
 gaa             # Add all
-gcmsg "fix: bug" # Commit
+gcm "fix: bug"  # Commit
 gp              # Push
-gl              # Pull
+gpl             # Pull
+gl              # Log (graph view)
 gco -           # Previous branch
 lazygit         # Visual UI
 ```
@@ -129,7 +130,7 @@ v $(rg -l TODO | fzf)
 update-dotfiles && cleanup
 
 # Git sync
-gco main && gl && gco -
+gco main && gpl && gco -
 
 # New feature branch
 gcb feature/name

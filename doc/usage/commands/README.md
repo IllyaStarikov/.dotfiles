@@ -57,7 +57,7 @@ ff              # Find files
 # Git
 gs              # Status
 gaa             # Add all
-gcmsg "fix: bug" # Commit
+gcm "fix: bug"  # Commit
 gp              # Push
 
 # Search
@@ -112,9 +112,9 @@ Our aliases follow consistent patterns:
 ### Git Aliases
 
 - `g*` - Git commands (gs, gaa, gco)
-- `gc*` - Commit related (gcmsg, gca)
-- `gb*` - Branch operations (gbd, gba)
-- `gp*` - Push operations (gp, gpf)
+- `gc*` - Commit related (gcm, gca)
+- `gb*` - Branch operations (gb, gba)
+- `gp*` - Push and pull operations (gp, gpl)
 
 ### File Operations
 
@@ -168,7 +168,7 @@ cd $(fd -t d | fzf)
 Save keystrokes with common operations:
 
 - `gaa` vs `git add --all`
-- `gcmsg` vs `git commit -m`
+- `gcm` vs `git commit -m`
 - `z proj` vs `cd ~/1-projects/my-project`
 
 ---

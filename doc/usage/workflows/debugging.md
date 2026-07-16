@@ -9,7 +9,7 @@
 ```bash
 # Get latest code
 gco main
-gl
+gpl
 
 # Check issue details
 gh issue view 456
@@ -417,7 +417,7 @@ export PATH=~/.npm-global/bin:$PATH
 ```bash
 # Create fix commit
 gaa
-gcmsg "fix: resolve authentication issue
+gcm "fix: resolve authentication issue
 
 The problem was caused by expired JWT tokens not being
 refreshed properly. Added token refresh logic in the
