@@ -69,10 +69,18 @@ test_all_create_link_sources_exist() {
     return
   fi
 
+  # Sources symlinks.sh itself guards with a directory-existence check
+  # (and that config/symlinks.json marks "optional": true). Their absence
+  # is expected when the private repo is not checked out.
+  local -a optional_sources=("src/tmuxinator")
+
   local missing=()
   local src
   for src in "${sources[@]}"; do
     if [[ ! -e "$DOTFILES_DIR/$src" ]]; then
+      if (( ${optional_sources[(Ie)$src]} )); then
+        continue
+      fi
       missing+=("$src")
     fi
   done

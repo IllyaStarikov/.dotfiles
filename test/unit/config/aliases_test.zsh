@@ -11,11 +11,13 @@ fi
 
 test_case "Common aliases are defined"
 if [[ -f "$alias_file" ]]; then
+  # Aliases that genuinely exist in aliases.zsh (ll/la/vim were never
+  # defined there; l/ls come from the eza block, g/gs from the git block).
   common_aliases=(
-    "ll"
-    "la"
+    "l"
+    "ls"
     "g"
-    "vim"
+    "gs"
   )
 
   found=0

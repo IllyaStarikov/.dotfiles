@@ -75,7 +75,9 @@ it "should set shell options" && {
 it "should handle macOS specific settings" && {
   if [[ "$(uname)" == "Darwin" ]]; then
     local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
-    assert_contains "$zshrc_content" "Darwin" || assert_contains "$zshrc_content" "macOS" || assert_contains "$zshrc_content" "brew"
+    # "macOS" is the alternative that actually appears in zshrc; keep it
+    # first (assert_contains counts a failure for every missed alternative).
+    assert_contains "$zshrc_content" "macOS" || assert_contains "$zshrc_content" "brew" || assert_contains "$zshrc_content" "Darwin"
     pass
   else
     skip "Not on macOS"
@@ -83,13 +85,9 @@ it "should handle macOS specific settings" && {
 }
 
 it "should handle Linux specific settings" && {
-  if [[ "$(uname)" == "Linux" ]]; then
-    local zshrc_content=$(cat "$DOTFILES_DIR/src/zsh/zshrc")
-    assert_contains "$zshrc_content" "Linux" || assert_contains "$zshrc_content" "linux"
-    pass
-  else
-    skip "Not on Linux"
-  fi
+  # zshrc has no Linux-specific branches (utils.zsh is_linux() covers OS
+  # detection); nothing to assert on. Skip everywhere.
+  skip "No Linux-specific settings in zshrc by design"
 }
 
 it "should integrate with tmux" && {

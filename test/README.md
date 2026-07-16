@@ -91,6 +91,23 @@ test/
 - `0` - All tests passed
 - `1` - One or more tests failed
 
+Failure propagation: the runner executes each test file through a wrapper
+that installs an EXIT trap escalating to exit 1 whenever `$FAILED` > 0. Test
+files therefore do NOT need to manage their own exit codes (an unconditional
+`exit 0` at the end of a file no longer masks failed assertions). Inside
+`run_test_functions`, a `test_*` function returning non-zero is counted as a
+failure even if it never calls `fail()`.
+
+Gotcha: `assert_x || assert_y` chains count a failure for every missed
+alternative (each assert calls `fail()` internally before `||` moves on).
+Put the alternative that actually matches first, or use a plain `if grep`
+with an explicit `pass`/`fail`/`skip`.
+
+Safety: test files that execute `install.sh`, `symlinks.sh`, `uninstall.sh`,
+or `switch-theme.sh` MUST sandbox `HOME` (and `XDG_CONFIG_HOME` where read)
+into `$TEST_TMP_DIR` first - never point them at the real home directory.
+`symlinks.sh` deletes and recreates `~/.config/nvim` on real runs.
+
 ## Adding New Tests
 
 Create a new test file in the appropriate category:

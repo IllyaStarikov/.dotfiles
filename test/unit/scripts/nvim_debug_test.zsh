@@ -38,13 +38,13 @@ it "should support multiple debug options" && {
   fi
 }
 
-it "should detect terminal color support" && {
-  # Check for proper terminal color detection
-  if grep -q "if \[\[ -t 1 \]\]" "$NVIM_DEBUG" \
-    && grep -q "readonly RED=\$'\\\\033\[0;31m'" "$NVIM_DEBUG"; then
+it "should source the shared library for colors" && {
+  # Terminal/color detection is owned by src/lib/colors.zsh, loaded via
+  # init.zsh; nvim-debug no longer probes the terminal itself.
+  if grep -q 'src/lib/init.zsh' "$NVIM_DEBUG"; then
     pass
   else
-    fail "Missing terminal color detection"
+    fail "Should source src/lib/init.zsh for colors/logging"
   fi
 }
 
@@ -66,13 +66,14 @@ it "should determine script directory correctly" && {
   fi
 }
 
-it "should handle no-color output for non-terminals" && {
-  # Verify it sets empty strings when not in a terminal
-  if grep -q 'readonly RED=""' "$NVIM_DEBUG" \
-    && grep -q 'readonly NC=""' "$NVIM_DEBUG"; then
+it "should get colors from the shared library" && {
+  # No inline `readonly RED=...` fallbacks anymore: color definitions (and
+  # any no-color policy) are owned by src/lib/colors.zsh.
+  if grep -q '\$RED\|\${RED}' "$NVIM_DEBUG" \
+    && ! grep -q 'readonly RED=' "$NVIM_DEBUG"; then
     pass
   else
-    fail "Missing no-color handling for non-terminals"
+    fail "Colors should come from src/lib/colors.zsh, not inline definitions"
   fi
 }
 

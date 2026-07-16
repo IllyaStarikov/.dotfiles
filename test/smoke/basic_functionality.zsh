@@ -292,13 +292,16 @@ test_no_obvious_syntax_errors() {
     fi
   fi
 
-  # Check shell scripts
+  # Check shell scripts with the interpreter their shebang names: several
+  # .sh files here are zsh scripts (${0:A:h} etc.) that bash -n rejects.
   local shell_errors=0
   for script in "$DOTFILES_DIR"/src/{scripts,setup,theme}/*.sh; do
     [[ -f "$script" ]] || continue
 
-    if ! bash -n "$script" 2>/dev/null; then
-      ((shell_errors++))
+    if head -1 "$script" | grep -q "zsh"; then
+      zsh -n "$script" 2>/dev/null || ((shell_errors++))
+    else
+      bash -n "$script" 2>/dev/null || ((shell_errors++))
     fi
   done
 

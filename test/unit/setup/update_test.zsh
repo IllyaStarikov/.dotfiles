@@ -31,16 +31,22 @@ it "should check for uncommitted changes" && {
   pass
 }
 
-it "should handle merge conflicts" && {
+it "should handle divergent history when pulling" && {
+  # update.sh pulls the dotfiles repo with `git pull --rebase`; that is its
+  # divergent-history strategy (there is no merge/stash handling).
   local script_content=$(cat "$DOTFILES_DIR/src/setup/update.sh")
-  assert_contains "$script_content" "merge" || assert_contains "$script_content" "conflict" || assert_contains "$script_content" "stash"
+  assert_contains "$script_content" "rebase"
   pass
 }
 
 it "should update submodules if present" && {
+  # Plain grep here: assert_contains counts a failure before || skip runs.
   local script_content=$(cat "$DOTFILES_DIR/src/setup/update.sh")
-  assert_contains "$script_content" "submodule" || skip "No submodule handling"
-  pass
+  if [[ "$script_content" == *"submodule"* ]]; then
+    pass
+  else
+    skip "No submodule handling in update.sh"
+  fi
 }
 
 it "should provide help message" && {

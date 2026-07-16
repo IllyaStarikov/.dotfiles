@@ -59,9 +59,12 @@ it "should integrate with system clipboard" && {
   pass
 }
 
-it "should use TPM plugin manager" && {
+it "should document its plugin strategy" && {
+  # The tmux config is deliberately TPM-free (pure configuration); it still
+  # mentions "plugin" where it documents that choice. Keep the matching
+  # alternative first: assert_contains counts every missed alternative.
   local tmux_content=$(cat "$DOTFILES_DIR/src/tmux.conf")
-  assert_contains "$tmux_content" "tpm" || assert_contains "$tmux_content" "TPM" || assert_contains "$tmux_content" "plugin"
+  assert_contains "$tmux_content" "plugin" || assert_contains "$tmux_content" "tpm" || assert_contains "$tmux_content" "TPM"
   pass
 }
 

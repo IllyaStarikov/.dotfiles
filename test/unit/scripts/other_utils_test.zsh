@@ -22,15 +22,19 @@ it "should exist and be executable" && {
 }
 
 it "should create temporary files" && {
+  # scratchpad builds its own unique name under $TMPDIR via
+  # generate_filename() - it does not use mktemp.
   local script_content=$(cat "$DOTFILES_DIR/src/scripts/scratchpad")
-  assert_contains "$script_content" "tmp" || assert_contains "$script_content" "temp"
-  assert_contains "$script_content" "mktemp" || assert_contains "$script_content" "tempfile"
+  assert_contains "$script_content" "TMPDIR"
+  assert_contains "$script_content" "generate_filename"
   pass
 }
 
 it "should open editor" && {
+  # "vim"/"EDITOR" are what actually appear; keep matching alternatives
+  # first (assert_contains counts every missed alternative as a failure).
   local script_content=$(cat "$DOTFILES_DIR/src/scripts/scratchpad")
-  assert_contains "$script_content" "nvim" || assert_contains "$script_content" "vim" || assert_contains "$script_content" "EDITOR"
+  assert_contains "$script_content" "EDITOR" || assert_contains "$script_content" "vim" || assert_contains "$script_content" "nvim"
   pass
 }
 
@@ -73,8 +77,10 @@ it "should fetch from API or source" && {
 }
 
 it "should handle errors gracefully" && {
+  # "Error" (capitalized) is what actually appears; keep it first
+  # (assert_contains counts every missed alternative as a failure).
   local script_content=$(cat "$DOTFILES_DIR/src/scripts/fetch-quotes")
-  assert_contains "$script_content" "error" || assert_contains "$script_content" "Error" || assert_contains "$script_content" "||"
+  assert_contains "$script_content" "Error" || assert_contains "$script_content" "error" || assert_contains "$script_content" "||"
   pass
 }
 

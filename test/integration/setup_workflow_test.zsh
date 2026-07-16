@@ -171,8 +171,10 @@ it "should handle platform-specific setup" && {
   # Unified setup.sh handles both platforms
   assert_file_exists "$DOTFILES_DIR/src/setup/install.sh"
   local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
-  # Should detect platform
-  assert_contains "$setup_content" "Darwin" || assert_contains "$setup_content" "Linux" || assert_contains "$setup_content" "uname"
+  # Should detect platform. Keep matching alternatives first: assert_contains
+  # counts a failure for every missed alternative ("Darwin" is absent -
+  # install.sh detects the platform via uname/Linux checks).
+  assert_contains "$setup_content" "uname" || assert_contains "$setup_content" "Linux" || assert_contains "$setup_content" "Darwin"
   pass
 }
 
@@ -247,7 +249,9 @@ it "should verify installation success" && {
   # Check setup script has verification
   local setup_content=$(cat "$DOTFILES_DIR/src/setup/install.sh")
 
-  assert_contains "$setup_content" "verify" || assert_contains "$setup_content" "check" || assert_contains "$setup_content" "test"
+  # "check" is the alternative that actually appears ("verify" is absent);
+  # keep it first - assert_contains counts every missed alternative.
+  assert_contains "$setup_content" "check" || assert_contains "$setup_content" "test" || assert_contains "$setup_content" "verify"
   pass
 }
 

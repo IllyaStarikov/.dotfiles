@@ -88,6 +88,10 @@ run_test_functions() {
     test_case "$func"
     if "$func"; then
       pass
+    else
+      # Count the failure: many test functions signal via `return 1` without
+      # calling fail(), which used to be silently recorded as neither.
+      fail "$func returned non-zero"
     fi
   done
 }

@@ -191,10 +191,12 @@ fi
 # =============================================================================
 
 test_case "aliases.zsh defines essential aliases"
-essential_aliases=("ls" "ll" "la")
+# The eza block defines `ls` and `l` (there is no ll/la in aliases.zsh);
+# they are INDENTED inside the eza/fallback if-else, so allow leading space.
+essential_aliases=("ls" "l" "la")
 found=0
 for alias_name in "${essential_aliases[@]}"; do
-  if grep -qE "^alias $alias_name=" "$ZSH_DIR/aliases.zsh"; then
+  if grep -qE "^\s*alias $alias_name=" "$ZSH_DIR/aliases.zsh"; then
     ((found++))
   fi
 done
@@ -249,9 +251,11 @@ else
 fi
 
 test_case "fpath is set before compinit"
-# Check that fpath modification comes before compinit
+# Check that fpath modification comes before the compinit INVOCATION.
+# Match only non-comment lines: a comment mentions compinit near the top
+# of zshrc ("Skip the global compinit ..."), well before fpath is set.
 fpath_line=$(grep -n "fpath=" "$ZSH_DIR/zshrc" 2>/dev/null | head -1 | cut -d: -f1)
-compinit_line=$(grep -n "compinit" "$ZSH_DIR/zshrc" 2>/dev/null | head -1 | cut -d: -f1)
+compinit_line=$(grep -nE "^[^#]*\bcompinit" "$ZSH_DIR/zshrc" 2>/dev/null | head -1 | cut -d: -f1)
 
 if [[ -n "$fpath_line" ]] && [[ -n "$compinit_line" ]]; then
   if [[ "$fpath_line" -lt "$compinit_line" ]]; then

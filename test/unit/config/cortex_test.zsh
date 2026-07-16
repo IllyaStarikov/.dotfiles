@@ -24,7 +24,8 @@ test_cortex_package_files() {
   assert_file_exists "$package_dir/__init__.py" "Package __init__.py should exist"
   assert_file_exists "$package_dir/cli.py" "CLI module should exist"
   assert_file_exists "$package_dir/config.py" "Config module should exist"
-  assert_file_exists "$package_dir/providers.py" "Providers module should exist"
+  # providers became a subpackage (providers/anthropic.py, google.py, ...).
+  assert_file_exists "$package_dir/providers/__init__.py" "Providers package should exist"
 }
 
 # Test Cortex wrapper script
@@ -34,8 +35,9 @@ test_cortex_wrapper_script() {
   assert_file_exists "$wrapper" "Cortex wrapper script should exist"
   assert_file_executable "$wrapper" "Cortex wrapper should be executable"
 
-  # Check wrapper references the Python module
-  assert_file_contains "$wrapper" "python.*cortex" "Wrapper should invoke Python module"
+  # Check wrapper references the Python module. The interpreter is chosen at
+  # runtime ($PYTHON_CMD), so match the actual `-m cortex.cli` invocation.
+  assert_file_contains "$wrapper" "cortex.cli" "Wrapper should invoke the cortex.cli Python module"
 }
 
 # Test Cortex Python syntax

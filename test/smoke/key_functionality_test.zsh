@@ -55,9 +55,11 @@ test_neovim_plugin_loading() {
 test_zsh_alias_count() {
   log "TRACE" "Testing shell alias regression"
 
+  # Source aliases.zsh directly: the full zshrc aborts early in
+  # non-interactive shells (zle/zinit turbo), yielding a bogus low count.
   local alias_count=$(
     zsh -c "
-      source $DOTFILES_DIR/src/zsh/zshrc 2>/dev/null || true
+      source $DOTFILES_DIR/src/zsh/aliases.zsh 2>/dev/null || true
       alias | wc -l
     " 2>/dev/null
   )

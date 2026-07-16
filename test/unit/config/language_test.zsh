@@ -78,8 +78,10 @@ test_markdown_config() {
     fail "markdownlint.json is not valid JSON"
   fi
 
-  # Verify line length is 100 (style guide)
-  assert_file_contains "$md_conf" "\"line_length\": 100" "Line length should be 100"
+  # The config is opt-in: default:false disables all rules, then structural
+  # ones are re-enabled. Line length is deliberately NOT enforced (see the
+  # comment_policy key in the config itself).
+  assert_file_contains "$md_conf" "\"default\": false" "Config should be opt-in (default: false)"
 }
 
 # Test Python project configuration (pyproject.toml)

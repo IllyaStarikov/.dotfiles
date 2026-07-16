@@ -387,6 +387,15 @@ fi
 : "${TEST_DIR:=$DOTFILES_DIR/test}"
 : "${TEST_TMP_DIR:=/tmp/test-$$}"
 
+# Tests that source src/zsh/zshrc must never trigger zinit's network
+# bootstrap (sandboxed HOMEs have no zinit checkout).
+export DOTFILES_SKIP_ZINIT_INSTALL=1
+
+# Many test files end with an unconditional `exit 0` or fall off the end, so
+# the file's exit status does not reflect fail() calls. Escalate to exit 1
+# whenever any assertion failed; otherwise preserve the original status.
+trap 'if [[ ${FAILED:-0} -gt 0 ]]; then exit 1; fi' EXIT
+
 # Run the actual test
 source "$1"
 EOF

@@ -24,6 +24,8 @@ CONFIG_DIR="$CONFIG_TEST_DIR"
 # ============================================================================
 
 setup_fixtures() {
+  # teardown_fixtures removes the whole dir; recreate it for each test.
+  mkdir -p "$CONFIG_TEST_DIR"
   cat >"$CONFIG_TEST_DIR/sample.json" <<'JSON'
 {
   "string_value": "hello",

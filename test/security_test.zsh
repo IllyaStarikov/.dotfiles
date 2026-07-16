@@ -21,13 +21,31 @@ test_no_hardcoded_secrets() {
   local violations=0
 
   for pattern in "${secret_patterns[@]}"; do
-    local matches=$(grep -riE "$pattern" "$DOTFILES_DIR/src" \
+    # -I skips binary files: compiled __pycache__/*.pyc used to surface as
+    # un-filterable "Binary file ... matches" lines.
+    local matches=$(grep -rIiE "$pattern" "$DOTFILES_DIR/src" \
       --exclude-dir=.git \
       --exclude-dir=.dotfiles.private \
+      --exclude-dir=__pycache__ \
       --exclude="*.md" \
       --exclude="*.txt" \
       --exclude="*.example" \
       2>/dev/null)
+
+    # Drop known-safe shapes before judging:
+    #  - values that are ENV VAR NAMES, not secrets (minuet.nvim's api_key
+    #    field takes the NAME of the variable, e.g. "ANTHROPIC_API_KEY")
+    #  - all-uppercase/underscore sentinels ("TERM") and the "mlx-local"
+    #    placeholder for the local MLX server
+    # Real secret scanning is owned by Gitleaks (pre-commit hook + CI).
+    if [[ -n "$matches" ]]; then
+      # [[:space:]] not \s: BSD grep's ERE has no \s class. The third filter
+      # drops env-var DEREFERENCES like export CORTEX_API_KEY="${ANTHROPIC_API_KEY}".
+      matches=$(echo "$matches" \
+        | grep -vE "=[[:space:]]*['\"][A-Z][A-Z0-9_]*['\"]" \
+        | grep -vE "=[[:space:]]*['\"]?\\\$" \
+        | grep -v "mlx-local")
+    fi
 
     if [[ -n "$matches" ]]; then
       log "ERROR" "Potential secret found with pattern: $pattern"
@@ -221,8 +239,9 @@ test_git_hooks_security() {
       if [[ -x "$hook" ]]; then
         log "INFO" "Active git hook found: $(basename "$hook")"
 
-        # Check for dangerous patterns in hooks
-        if grep -qE "(rm -rf|dd if=|format|mkfs)" "$hook" 2>/dev/null; then
+        # Check for dangerous patterns in hooks. Word-bound the short
+        # tokens: a bare "format" used to match "inFORMATion" in an echo.
+        if grep -qE "(rm -rf|dd if=|\bmkfs\b|\bshred\b)" "$hook" 2>/dev/null; then
           log "ERROR" "Dangerous command in git hook: $(basename "$hook")"
           return 1
         fi

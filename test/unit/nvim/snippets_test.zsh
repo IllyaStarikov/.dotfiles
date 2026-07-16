@@ -82,6 +82,15 @@ test_all_snippets_load_headlessly() {
     return
   fi
 
+  # Snippet files require("luasnip"), which --noplugin cannot resolve on its
+  # own; put the lazy-installed LuaSnip on the runtimepath explicitly. If it
+  # is not installed (fresh machine, CI without plugin sync), skip.
+  local luasnip_dir="${HOME}/.local/share/nvim/lazy/LuaSnip"
+  if [[ ! -d "$luasnip_dir" ]]; then
+    skip "LuaSnip not installed under ~/.local/share/nvim/lazy"
+    return
+  fi
+
   local failed=()
   local file basename_no_ext
   for file in "$SNIPPETS_DIR"/*.lua; do
@@ -90,6 +99,7 @@ test_all_snippets_load_headlessly() {
     # Use a 5-second timeout per file. We don't care about return
     # value, only that nvim exits cleanly.
     if ! timeout 5 nvim --headless --noplugin \
+      --cmd "set rtp+=$luasnip_dir" \
       -c "lua local ok, err = pcall(dofile, [[$file]]); if not ok then io.stderr:write(err) os.exit(1) end" \
       -c "qa!" >/dev/null 2>&1; then
       failed+=("$basename_no_ext")

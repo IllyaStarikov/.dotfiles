@@ -19,31 +19,25 @@ else
   skip "luac not available"
 fi
 
-test_case "wezterm-minimal.lua exists"
-if [[ -f "$DOTFILES_DIR/src/wezterm/wezterm-minimal.lua" ]]; then
+# (wezterm-minimal.lua was removed in the production-readiness sweep 248407c;
+# only wezterm.lua and theme.lua remain.)
+
+test_case "theme.lua exists"
+if [[ -f "$DOTFILES_DIR/src/wezterm/theme.lua" ]]; then
   pass
 else
-  fail "wezterm-minimal.lua not found"
+  fail "theme.lua not found"
 fi
 
-test_case "wezterm-minimal.lua has valid Lua syntax"
+test_case "theme.lua has valid Lua syntax"
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$DOTFILES_DIR/src/wezterm/wezterm-minimal.lua" 2>/dev/null; then
+  if luac -p "$DOTFILES_DIR/src/wezterm/theme.lua" 2>/dev/null; then
     pass
   else
-    fail "wezterm-minimal.lua has Lua syntax errors"
+    fail "theme.lua has Lua syntax errors"
   fi
 else
   skip "luac not available"
-fi
-
-test_case "Minimal config is smaller than main config"
-local main_lines=$(wc -l < "$DOTFILES_DIR/src/wezterm/wezterm.lua")
-local minimal_lines=$(wc -l < "$DOTFILES_DIR/src/wezterm/wezterm-minimal.lua")
-if [[ $minimal_lines -lt $main_lines ]]; then
-  pass
-else
-  fail "Minimal config ($minimal_lines lines) should be smaller than main ($main_lines lines)"
 fi
 
 test_case "JetBrainsMono font is configured"

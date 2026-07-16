@@ -126,21 +126,33 @@ test_dotfiles_symlinks() {
 test_environment_variables() {
   log "TRACE" "Testing environment variables"
 
-  # Source the environment and check key variables
-  (
-    source "$DOTFILES_DIR/src/zsh/zshrc" 2>/dev/null || true
+  # Probe in a FRESH zsh process: sourcing zshrc inside this framework
+  # shell lets zinit's compinit/turbo machinery clobber the test runner's
+  # own environment (PATH vanished mid-run before this was isolated).
+  # tr strips stray carriage returns zshrc writes to stdout (vim-mode/zinit
+  # cursor control) which would otherwise glue onto the probe line.
+  local probe
+  probe=$(zsh -c "
+    source '$DOTFILES_DIR/src/zsh/zshrc' 2>/dev/null || true
+    print -r -- \"PATHLEN:\${#PATH} EDITOR:\${EDITOR:-unset}\"
+  " 2>/dev/null | tr -d '\r' | tail -1)
 
-    if [[ -z "$EDITOR" ]]; then
-      log "WARNING" "EDITOR not set"
-    fi
+  if [[ "$probe" != PATHLEN:* ]]; then
+    log "ERROR" "Could not probe environment (got: $probe)"
+    return 1
+  fi
 
-    if [[ -z "$PATH" ]]; then
-      log "ERROR" "PATH not set"
-      return 1
-    fi
-  )
+  local pathlen="${${probe#PATHLEN:}%% *}"
+  if [[ "$pathlen" -eq 0 ]]; then
+    log "ERROR" "PATH not set after sourcing zshrc"
+    return 1
+  fi
 
-  return $?
+  if [[ "$probe" == *"EDITOR:unset"* ]]; then
+    log "WARNING" "EDITOR not set"
+  fi
+
+  return 0
 }
 
 # ============================================================================

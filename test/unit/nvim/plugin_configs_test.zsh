@@ -218,12 +218,14 @@ else
   fail "Syntax error in plugins.lua"
 fi
 
-test_case "Main plugins.lua returns a table"
+test_case "Main plugins.lua registers specs with lazy.nvim"
 plugins_file="$DOTFILES_DIR/src/neovim/plugins.lua"
-if grep -q "^return" "$plugins_file"; then
+# plugins.lua is a script that calls lazy.setup({...}), not a module
+# returning a table.
+if grep -q 'require("lazy").setup' "$plugins_file"; then
   pass
 else
-  fail "plugins.lua should return a table"
+  fail "plugins.lua should call require(\"lazy\").setup"
 fi
 
 # =============================================================================
@@ -355,18 +357,20 @@ fi
 # DAP (DEBUG ADAPTER) CONFIGURATION
 # =============================================================================
 
+# DAP lives in the nvim-dap plugin spec (plugins.lua) plus keymaps/debug.lua;
+# there is no standalone dap.lua module.
 test_case "DAP configuration exists"
-if [[ -f "$DOTFILES_DIR/src/neovim/dap.lua" ]]; then
+if grep -q "mfussenegger/nvim-dap" "$DOTFILES_DIR/src/neovim/plugins.lua"; then
   pass
 else
-  fail "Missing dap.lua debug configuration"
+  fail "Missing nvim-dap plugin spec in plugins.lua"
 fi
 
-test_case "DAP config has valid syntax"
-if luac -p "$DOTFILES_DIR/src/neovim/dap.lua" 2>/dev/null; then
+test_case "DAP keymaps have valid syntax"
+if luac -p "$DOTFILES_DIR/src/neovim/keymaps/debug.lua" 2>/dev/null; then
   pass
 else
-  fail "Syntax error in dap.lua"
+  fail "Syntax error in keymaps/debug.lua"
 fi
 
 # Cleanup

@@ -5,6 +5,14 @@ source "$(dirname "$0")/../lib/test_helpers.zsh"
 
 test_suite "LSP and Completion Tests"
 
+# These tests need a real Python LSP attached inside headless nvim; on runners
+# without pyright the server never attaches and every assertion fails
+# spuriously. Skip the whole file when the binary is missing.
+if ! command -v pyright-langserver >/dev/null 2>&1 && ! command -v pyright >/dev/null 2>&1; then
+  skip "pyright not installed - skipping LSP/completion functional tests"
+  exit 0
+fi
+
 # Python LSP tests
 test_case "Python LSP server starts and provides diagnostics"
 cp "$DOTFILES_DIR/test/fixtures/sample.py" "$TEST_TMP_DIR/test_lsp.py"
