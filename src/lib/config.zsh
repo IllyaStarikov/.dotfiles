@@ -47,7 +47,7 @@ get_config_array() {
   local query="$2"
 
   if [[ -f "$config_file" ]] && command -v jq &>/dev/null; then
-    jq -r "$query[]?" "$config_file" 2>/dev/null
+    jq -r "${query}[]?" "$config_file" 2>/dev/null
   fi
 }
 
@@ -82,7 +82,7 @@ load_config_array() {
     local -a items
     while IFS= read -r item; do
       [[ -n "$item" ]] && items+=("$item")
-    done < <(jq -r "$query[]?" "$config_file" 2>/dev/null)
+    done < <(jq -r "${query}[]?" "$config_file" 2>/dev/null)
 
     # Set the variable using nameref-like pattern
     eval "${var_name}=(\"\${items[@]}\")"

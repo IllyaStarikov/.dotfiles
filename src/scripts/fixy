@@ -40,6 +40,9 @@
 
 # Source common library for cross-platform support
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO), so usage() would print "Usage: usage" otherwise.
+readonly SCRIPT_NAME="$(basename "$0")"
 source "${SCRIPT_DIR}/common.sh"
 
 # Strict mode
@@ -827,7 +830,7 @@ process_file() {
 # Show usage
 usage() {
   cat << EOF
-Usage: $(basename "$0") [OPTIONS] [FILES...]
+Usage: $SCRIPT_NAME [OPTIONS] [FILES...]
 
 Universal code formatter with configuration-based formatter selection.
 Reads formatter configuration from: ${CONFIG_FILE}

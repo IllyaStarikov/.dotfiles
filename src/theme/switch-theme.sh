@@ -5,8 +5,10 @@
 #
 # DESCRIPTION:
 #   Synchronizes terminal application themes with macOS appearance settings.
-#   Changes Alacritty, tmux, Starship, and Neovim themes atomically to prevent
-#   visual inconsistencies during switching.
+#   Changes Alacritty, WezTerm, Kitty, tmux, and Starship themes atomically to
+#   prevent visual inconsistencies during switching. (Neovim is NOT written
+#   here: it picks the theme up via the MACOS_THEME export in
+#   current-theme.sh.)
 #   Based on Google Shell Style Guide: https://google.github.io/styleguide/shellguide.html
 #
 # USAGE:
@@ -47,6 +49,10 @@
 # ════════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
+
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO), so show_usage() would print "Usage: show_usage" otherwise.
+readonly SCRIPT_NAME="$(basename "$0")"
 
 # Get the absolute directory of the script
 # This needs to work in multiple contexts: direct execution, sourced, symlinked, etc.
@@ -139,7 +145,7 @@ show_usage() {
   fi
 
   cat <<EOF
-Usage: $(basename "$0") [FAMILY VARIANT|THEME|OPTION]
+Usage: $SCRIPT_NAME [FAMILY VARIANT|THEME|OPTION]
 
 Theme Switcher - Synchronize terminal themes with macOS appearance
 
@@ -162,9 +168,9 @@ QUICK DEFAULTS:
     dark               Use default dark theme ($default_dark)
 
 SYNTAX:
-    Two-word:          $(basename "$0") github dark
-    Full name:         $(basename "$0") github_dark
-    Shortcut:          $(basename "$0") storm
+    Two-word:          $SCRIPT_NAME github dark
+    Full name:         $SCRIPT_NAME github_dark
+    Shortcut:          $SCRIPT_NAME storm
 
 THEME FAMILIES:
 $(generate_family_list)
@@ -173,11 +179,11 @@ SHORTCUTS:
 $(generate_alias_list)
 
 EXAMPLES:
-    $(basename "$0") dark              # Use default dark theme
-    $(basename "$0") catppuccin mocha  # Two-word syntax
-    $(basename "$0") github_dark       # Full name syntax
-    $(basename "$0") --list github     # List GitHub variants
-    $(basename "$0") --terminal storm  # Per-terminal theming
+    $SCRIPT_NAME dark              # Use default dark theme
+    $SCRIPT_NAME catppuccin mocha  # Two-word syntax
+    $SCRIPT_NAME github_dark       # Full name syntax
+    $SCRIPT_NAME --list github     # List GitHub variants
+    $SCRIPT_NAME --terminal storm  # Per-terminal theming
 
 ENVIRONMENT VARIABLES:
     THEME_LIGHT         Default light theme used by 'theme light' and --auto
@@ -229,7 +235,7 @@ list_themes() {
       family_exists=$(jq -r ".families.\"$filter\" // empty" "$THEMES_JSON")
       if [[ -z "$family_exists" ]]; then
         echo "Error: Unknown family '$filter'" >&2
-        echo "Use '$(basename "$0") --list' to see all families" >&2
+        echo "Use '$SCRIPT_NAME --list' to see all families" >&2
         return 1
       fi
 
@@ -272,7 +278,7 @@ list_themes() {
     done
   fi
   echo ""
-  echo "Usage: $(basename "$0") FAMILY VARIANT  or  $(basename "$0") THEME_NAME"
+  echo "Usage: $SCRIPT_NAME FAMILY VARIANT  or  $SCRIPT_NAME THEME_NAME"
 }
 
 # Interactive theme picker with live color preview
@@ -1205,7 +1211,7 @@ validate_theme() {
   if [[ ! -d "$theme_dir" ]]; then
     echo "Error: Theme '$THEME' not found" >&2
     suggest_themes "$THEME"
-    echo "Use '$(basename "$0") --list' to see available themes" >&2
+    echo "Use '$SCRIPT_NAME --list' to see available themes" >&2
     exit 1
   fi
 }
@@ -1251,7 +1257,7 @@ if [[ "${1:-}" == "-s" || "${1:-}" == "--shell" ]]; then
   THEME="${1:-}"
   if [[ -z "$THEME" ]]; then
     echo "Error: --shell requires a theme name" >&2
-    echo "Usage: source <($(basename "$0") --shell THEME)" >&2
+    echo "Usage: source <($SCRIPT_NAME --shell THEME)" >&2
     exit 1
   fi
   determine_theme
@@ -1280,7 +1286,7 @@ if [[ "${1:-}" == "--local" ]]; then
   fi
   if [[ -z "$THEME" ]]; then
     echo "Error: --local requires a theme name" >&2
-    echo "Usage: $(basename "$0") --local [--tmux|--terminal|--shell] THEME" >&2
+    echo "Usage: $SCRIPT_NAME --local [--tmux|--terminal|--shell] THEME" >&2
     exit 1
   fi
   determine_theme
@@ -1335,7 +1341,7 @@ if [[ "${1:-}" == "--tmux" ]]; then
   THEME="${1:-}"
   if [[ -z "$THEME" ]]; then
     echo "Error: --tmux requires a theme name" >&2
-    echo "Usage: $(basename "$0") --tmux THEME" >&2
+    echo "Usage: $SCRIPT_NAME --tmux THEME" >&2
     exit 1
   fi
   determine_theme
@@ -1361,7 +1367,7 @@ if [[ "${1:-}" == "-t" || "${1:-}" == "--terminal" ]]; then
   THEME="${1:-}"
   if [[ -z "$THEME" ]]; then
     echo "Error: --terminal requires a theme name" >&2
-    echo "Usage: $(basename "$0") --terminal THEME" >&2
+    echo "Usage: $SCRIPT_NAME --terminal THEME" >&2
     exit 1
   fi
   determine_theme

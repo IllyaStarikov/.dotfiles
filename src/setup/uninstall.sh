@@ -38,6 +38,10 @@ set -uo pipefail
 
 # Configuration
 readonly SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO); show_help's `head "$0"` used to fail with
+# "head: show_help: No such file or directory".
+readonly SCRIPT_PATH="${0:A}"
 readonly DOTFILES_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 readonly BACKUP_DIR="$HOME/.dotfiles.backups"
 
@@ -62,7 +66,7 @@ dry() { echo -e "${BLUE}[DRY]${NC} $1"; }
 
 # Show help message
 show_help() {
-  head -35 "$0" | tail -33 | sed 's/^# //' | sed 's/^#//'
+  head -35 "$SCRIPT_PATH" | tail -33 | sed 's/^# //' | sed 's/^#//'
   exit 0
 }
 

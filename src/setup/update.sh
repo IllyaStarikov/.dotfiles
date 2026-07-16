@@ -27,6 +27,10 @@
 # Exit on error, but continue on individual command failures
 set -euo pipefail
 
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO), so usage() would print "Usage: usage" otherwise.
+readonly SCRIPT_NAME="$(basename "$0")"
+
 # Configuration
 VERBOSE=false
 DRY_RUN=false
@@ -95,7 +99,7 @@ cleanup() {
 # Show usage
 usage() {
   cat << EOF
-Usage: $(basename "$0") [OPTIONS]
+Usage: $SCRIPT_NAME [OPTIONS]
 
 Universal system update script. Works on macOS and Linux.
 Updates system packages, language package managers, and development tools.

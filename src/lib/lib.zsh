@@ -186,16 +186,11 @@ lib_version() {
 
   case "$module" in
     lib) echo "ZSH Library System v1.0.0" ;;
-    callstack) echo "Callstack Library v1.0.0" ;;
     colors) echo "Colors Library v1.0.0" ;;
     config) echo "Config Library v1.0.0" ;;
     die) echo "Die Library v1.0.0" ;;
-    help) echo "Help Library v1.0.0" ;;
+    installer) echo "Installer Library v1.0.0" ;;
     logging) echo "Logging Library v1.0.0" ;;
-    math) echo "Math Library v1.0.0" ;;
-    ssh) echo "SSH Library v1.0.0" ;;
-    textwrap) echo "Textwrap Library v1.0.0" ;;
-    unit) echo "Unit Testing Library v1.0.0" ;;
     utils) echo "Utils Library v1.0.0" ;;
     *) echo "Unknown module: $module" ;;
   esac
@@ -228,16 +223,11 @@ Commands:
   lib_help                Show this help
 
 Available Modules:
-  callstack   - Stack traces and debugging
   colors      - Terminal colors and styling
   config      - JSON config file reading from config/ directory
   die         - Error handling and exit functions
-  help        - Help text generation
+  installer   - Download/install helpers for setup scripts
   logging     - Logging with levels and formatting
-  math        - Mathematical functions
-  ssh         - SSH operations and key management
-  textwrap    - Text formatting and wrapping
-  unit        - Unit testing framework
   utils       - General utility functions
 
 Environment Variables:

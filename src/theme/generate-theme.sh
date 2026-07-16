@@ -13,6 +13,9 @@ set -euo pipefail
 
 SCRIPT_DIR="${0:A:h}"
 TEMPLATES_DIR="$SCRIPT_DIR/templates"
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO), so main()'s usage line would print "Usage: main" otherwise.
+readonly SCRIPT_NAME="$(basename "$0")"
 
 # Get theme mode from themes.json
 get_theme_mode() {
@@ -83,8 +86,8 @@ main() {
   local app="${3:-all}"  # Optional: specific app to generate
 
   if [[ -z "$family" || -z "$variant" ]]; then
-    echo "Usage: $(basename "$0") <family> <variant> [app]" >&2
-    echo "Example: $(basename "$0") tokyonight storm" >&2
+    echo "Usage: $SCRIPT_NAME <family> <variant> [app]" >&2
+    echo "Example: $SCRIPT_NAME tokyonight storm" >&2
     exit 1
   fi
 

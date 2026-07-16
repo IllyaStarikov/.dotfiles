@@ -354,7 +354,10 @@ is_numeric() {
 
 # Check if string is decimal
 is_decimal() {
-  [[ "$1" =~ ^[0-9]+\.[0-9]+$ ]]
+  # Pattern lives in a variable: in an unquoted zsh regex the shell eats the
+  # backslash, turning \. into "any char" (is_decimal "1234" was true).
+  local pat='^[0-9]+\.[0-9]+$'
+  [[ "$1" =~ $pat ]]
 }
 
 # Check if string is boolean
@@ -393,7 +396,10 @@ url_encode() {
 # URL decode string
 url_decode() {
   local url="$1"
-  printf '%b' "${url//%/\\x}"
+  # The % must be escaped: an unescaped % at the start of a zsh
+  # ${//pattern/} anchors to end-of-string (appending \x) instead of
+  # matching the literal percent signs.
+  printf '%b' "${url//\%/\\x}"
 }
 
 # Extract domain from URL
@@ -430,7 +436,8 @@ cleanup_on_exit() {
 # Generate UUID
 generate_uuid() {
   if command_exists uuidgen; then
-    uuidgen | to_lower
+    # to_lower takes an argument, not stdin - piping into it returns "".
+    to_lower "$(uuidgen)"
   else
     # Fallback to random generation
     printf '%04x%04x-%04x-%04x-%04x-%04x%04x%04x\n' \

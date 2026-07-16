@@ -4,6 +4,9 @@
 
 # Source common library
 SCRIPT_DIR="${0:A:h}"
+# Captured at file scope: inside a zsh function $0 is the FUNCTION name
+# (FUNCTION_ARGZERO), so usage() would print "Usage: usage" otherwise.
+readonly SCRIPT_NAME="$(basename "$0")"
 DOTFILES_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 source "${DOTFILES_ROOT}/src/scripts/common.sh"
 
@@ -61,7 +64,7 @@ main() {
 # Show usage
 usage() {
   cat << EOF
-Usage: $(basename "$0") [OPTIONS]
+Usage: $SCRIPT_NAME [OPTIONS]
 
 Install git hooks for the dotfiles repository.
 Works on both macOS and Linux.
@@ -71,8 +74,7 @@ OPTIONS:
   -d, --dir     Git directory (default: ~/.dotfiles)
 
 HOOKS INSTALLED:
-  - pre-commit: Check for trailing whitespace and shell syntax
-  - post-merge: Update symlinks after git pull
+  - pre-commit: Gitleaks secret scan (blocks commits containing secrets)
 
 EOF
 }

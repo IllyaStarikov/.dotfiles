@@ -422,7 +422,8 @@ confirm_or_die() {
   fi
 }
 
-# Export main functions
-typeset -gx die warn assert require_command require_file require_dir
-typeset -gx require_var require_root require_not_root try execute_or_die
-typeset -gx panic confirm_or_die
+# NOTE: no function "exports" here. `typeset -gx name` does NOT export a zsh
+# function - it declares an exported (empty) scalar PARAMETER of that name,
+# polluting child environments with vars like `try=` and `die=`. Zsh functions
+# defined in a sourced file are already available to the sourcing shell; see
+# the same convention note in lib.zsh and logging.zsh.

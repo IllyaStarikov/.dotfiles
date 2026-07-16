@@ -31,13 +31,21 @@ skip_global_compinit=1
 
 # Zinit - Modern Plugin Manager
 
-# Install zinit if not present (ZINIT_HOME exported in zshenv)
-if [[ ! -d "$ZINIT_HOME" ]]; then
+# Install zinit if not present (ZINIT_HOME exported in zshenv).
+# DOTFILES_SKIP_ZINIT_INSTALL=1 skips the network bootstrap (tests/CI source
+# this file under a sandboxed HOME and must not clone plugins mid-test).
+if [[ ! -d "$ZINIT_HOME" && -z "${DOTFILES_SKIP_ZINIT_INSTALL:-}" ]]; then
     print -P "%F{33}▓▒░ Installing zinit...%f"
     command mkdir -p "$(dirname "$ZINIT_HOME")"
     command git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
-source "${ZINIT_HOME}/zinit.zsh"
+if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
+    source "${ZINIT_HOME}/zinit.zsh"
+else
+    # No zinit (skipped bootstrap or failed clone): stub it so the rest of
+    # this file - env exports, aliases, keybindings - still loads cleanly.
+    zinit() { : }
+fi
 
 # Essential Plugins Only
 
