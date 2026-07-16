@@ -4,6 +4,7 @@
 
 local ls = require("luasnip")
 local s = ls.snippet
+local sn = ls.snippet_node
 local t = ls.text_node
 local i = ls.insert_node
 local f = ls.function_node
@@ -88,8 +89,10 @@ return {
   -- For loop
   s("for", {
     t("for ("),
+    -- Each multi-node choice must be a snippet node (sn); a bare Lua table
+    -- here crashes LuaSnip's snippet constructor at load time.
     c(1, {
-      {
+      sn(nil, {
         t("int "),
         i(1, "i"),
         t(" = 0; "),
@@ -103,13 +106,15 @@ return {
           return args[1][1]
         end, { 1 }),
         t("++"),
-      },
-      { i(1, "Type"), t(" "), i(2, "item"), t(" : "), i(3, "collection") },
+      }),
+      sn(nil, { i(1, "Type"), t(" "), i(2, "item"), t(" : "), i(3, "collection") }),
     }),
     t(") {"),
     t({ "", "" }),
     t({ "    " }),
-    i(4),
+    -- Top-level jump indices must be consecutive (the choice above is 1);
+    -- a gap (this used to be i(4)) crashes LuaSnip's insert-node wiring.
+    i(2),
     t({ "", "" }),
     t({ "}" }),
     i(0),
