@@ -34,13 +34,25 @@ end, { desc = "Reset treesitter for current buffer" })
 local original_nvim_buf_set_extmark = vim.api.nvim_buf_set_extmark
 
 -- Wrap extmark to handle out-of-range errors from treesitter highlighter
--- Still global but lightweight: only catches specific errors, passes through otherwise
+-- Still global but lightweight: only catches specific errors, passes through otherwise.
+-- Swallowed errors are logged at DEBUG (NVIM_LOG_LEVEL=DEBUG) so misbehaving plugins
+-- (extmarks are set constantly by render-markdown, gitsigns, ...) stay observable.
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.api.nvim_buf_set_extmark = function(buffer, ns_id, line, col, opts)
   local ok, result = pcall(original_nvim_buf_set_extmark, buffer, ns_id, line, col, opts)
   if not ok then
     local err = tostring(result)
     if err:match("Invalid 'end_col': out of range") or err:match("Invalid 'col': out of range") then
+      require("logging").debug(
+        "extmark",
+        string.format(
+          "swallowed out-of-range set_extmark buf=%d ns=%d line=%d col=%d",
+          buffer,
+          ns_id,
+          line,
+          col
+        )
+      )
       return 0
     else
       error(result)

@@ -14,12 +14,12 @@ opt.undoreload = 50000 -- Default: 10000 (reload more lines)
 opt.undodir = fn.stdpath("data") .. "/undo"
 
 -- Ensure required directories exist
+-- (No spell dir here: the personal dictionary lives in the private repo and is
+-- configured via 'spellfile' in core/options.lua; base dictionaries ship with nvim.)
 local data_dir = fn.stdpath("data")
-local config_dir = fn.stdpath("config")
 local required_dirs = {
   data_dir .. "/undo", -- For persistent undo (enabled above)
   data_dir .. "/sessions", -- For session management
-  config_dir .. "/spell", -- For spell checking
 }
 
 for _, dir in ipairs(required_dirs) do

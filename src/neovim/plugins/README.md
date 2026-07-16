@@ -34,7 +34,7 @@ Manages ~54 plugins with lazy loading for < 300ms startup.
 ### UI & Navigation
 
 - **telescope.nvim** - Fuzzy finder (`<leader>ff`)
-- **neo-tree.nvim** - File explorer (`<leader>e`)
+- **snacks.nvim** - Explorer, lazygit, zen mode, scratch buffers (`<leader>oe`)
 - **lualine.nvim** - Status line
 - **bufferline.nvim** - Tab line
 
@@ -53,9 +53,8 @@ Manages ~54 plugins with lazy loading for < 300ms startup.
 
 ### AI Assistants
 
-- **avante.nvim** - AI coding assistant
-- **codecompanion.nvim** - Local Ollama integration
-- **copilot.vim** - GitHub Copilot
+- **codecompanion.nvim** - AI chat and inline assist (local MLX/Ollama backends)
+- **minuet-ai.nvim** - AI inline completion
 
 ## Performance Tips
 
@@ -89,8 +88,8 @@ keys = { "<leader>ff" }
 | ------------ | ------------- | ------------- |
 | `<leader>ff` | Telescope     | Find files    |
 | `<leader>fg` | Telescope     | Live grep     |
-| `<leader>e`  | Neo-tree      | File explorer |
-| `<leader>gg` | LazyGit       | Git UI        |
-| `<leader>cc` | CodeCompanion | AI chat       |
+| `<leader>oe` | Snacks        | File explorer |
+| `<leader>gg` | Snacks        | Lazygit UI    |
+| `<leader>ac` | CodeCompanion | AI chat       |
 
 See `plugins.lua` at `src/neovim/plugins.lua` for full specifications.

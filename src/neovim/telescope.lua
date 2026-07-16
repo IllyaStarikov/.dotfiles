@@ -28,35 +28,36 @@ function M.setup()
       entry_prefix = "  ",
       initial_mode = "insert",
       selection_strategy = "reset",
-      sorting_strategy = "descending",
+      -- "ascending" pairs with prompt_position = "top" below: best matches
+      -- sort toward the prompt and selection starts there.
+      sorting_strategy = "ascending",
       layout_strategy = "horizontal",
 
-      -- Performance optimizations
-      file_sorter = require("telescope.sorters").get_fuzzy_file,
+      -- Lua patterns (not globs) matched against the whole path with find().
       file_ignore_patterns = {
         "node_modules/",
-        ".git/",
-        ".DS_Store",
-        "*.o",
-        "*.exe",
-        "*.dll",
-        "*.so",
-        "*.dylib",
+        "%.git/",
+        "%.DS_Store$",
+        "%.o$",
+        "%.exe$",
+        "%.dll$",
+        "%.so$",
+        "%.dylib$",
         "__pycache__/",
-        "*.pyc",
-        ".venv/",
+        "%.pyc$",
+        "%.venv/",
         "venv/",
-        ".env",
+        "%.env$",
         "build/",
         "dist/",
         "target/",
-        "*.jpg",
-        "*.jpeg",
-        "*.png",
-        "*.gif",
-        "*.pdf",
-        "*.zip",
-        "*.tar.gz",
+        "%.jpg$",
+        "%.jpeg$",
+        "%.png$",
+        "%.gif$",
+        "%.pdf$",
+        "%.zip$",
+        "%.tar%.gz$",
       },
 
       -- Layout configuration
@@ -190,18 +191,17 @@ function M.setup()
         },
       },
 
-      -- Generic sorter configuration
-      generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
+      -- Sorters: defaults are fine here; the fzf-native extension below
+      -- overrides both the file and generic sorters anyway.
 
       -- Path display configuration
       path_display = { "truncate" },
 
       -- Window options
       winblend = 0,
-      border = {},
+      border = true,
       borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
       color_devicons = true,
-      use_less = true,
       set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
     },
 
@@ -331,19 +331,19 @@ function M.setup()
   -- Create custom telescope functions for enhanced workflows
 
   -- Find files with preview
+  -- (`theme = "..."` is only honored in the setup pickers table; at call time
+  -- the themes module must be applied explicitly.)
   M.find_files_with_preview = function()
-    require("telescope.builtin").find_files({
+    require("telescope.builtin").find_files(require("telescope.themes").get_ivy({
       previewer = require("telescope.previewers").vim_buffer_cat.new({}),
-      theme = "ivy",
-    })
+    }))
   end
 
   -- Search in current buffer
   M.current_buffer_fuzzy_find = function()
-    require("telescope.builtin").current_buffer_fuzzy_find({
-      theme = "dropdown",
-      previewer = false,
-    })
+    require("telescope.builtin").current_buffer_fuzzy_find(
+      require("telescope.themes").get_dropdown({ previewer = false })
+    )
   end
 
   -- Live grep with args

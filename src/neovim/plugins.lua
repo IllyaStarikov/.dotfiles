@@ -50,8 +50,15 @@ require("lazy").setup({
       },
     },
     config = function()
-      local utils = require("utils")
-      utils.load_config("telescope")
+      -- require("telescope") resolves to the PLUGIN module (rtp wins over the
+      -- package.path entries init.lua adds), so load_config("telescope") used
+      -- to call the plugin's own setup() with no arguments and our config
+      -- file never ran. Load the local file by explicit path instead.
+      local cfg = vim.fn.stdpath("config") .. "/telescope.lua"
+      if vim.fn.filereadable(cfg) == 0 then
+        cfg = vim.g.dotfiles .. "/src/neovim/telescope.lua"
+      end
+      dofile(cfg).setup()
     end,
     keys = {
       {
@@ -1312,19 +1319,24 @@ require("lazy").setup({
     -- Pin to main: the repo's default branch is the legacy master, so an
     -- unpinned :Lazy update silently rolls the plugin back to the old API.
     branch = "main",
+    lazy = false, -- main branch does not support lazy-loading (per upstream README)
     priority = 1000, -- High priority to load first
     build = ":TSUpdate",
     config = function()
-      -- Use new API (nvim-treesitter main branch dropped configs module)
+      -- Main-branch API: setup() only takes install_dir; there are no
+      -- highlight/indent modules. Neovim owns highlighting per buffer
+      -- (:h treesitter-highlight), enabled via the FileType autocmd below.
       local ts_ok, ts = pcall(require, "nvim-treesitter")
       if not ts_ok then
         vim.notify("nvim-treesitter not loaded", vim.log.levels.WARN)
         return
       end
 
-      -- New setup API
-      ts.setup({
-        ensure_installed = {
+      -- Parsers to keep installed. install() is async and a no-op for parsers
+      -- already on disk. Skipped in CI: the Docker harness must not hit the
+      -- network (plugin steps have tight timeouts there).
+      if not vim.env.CI then
+        ts.install({
           "markdown",
           "markdown_inline",
           "python",
@@ -1354,37 +1366,34 @@ require("lazy").setup({
           "gitignore",
           "query",
           "starlark",
-        },
-        auto_install = true,
-        sync_install = false, -- Don't download parsers synchronously
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false, -- Disable to let Treesitter handle everything
-          -- Disable for large files
-          disable = function(lang, buf)
-            local max_filesize = 10 * 1024 * 1024 -- 10 MB
-            ---@diagnostic disable-next-line: undefined-field
-            local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(buf))
-            if ok and stats and stats.size > max_filesize then
-              return true
-            end
-            -- Allow markdown highlighting to work properly
-            if lang == "markdown" and vim.b[buf].ts_disable_markdown then
-              return true
-            end
-          end,
-        },
-        indent = {
-          enable = true,
-          disable = function(_, buf)
-            local max_filesize = 10 * 1024 * 1024 -- 10 MB
-            ---@diagnostic disable-next-line: undefined-field
-            local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(buf))
-            if ok and stats and stats.size > max_filesize then
-              return true
-            end
-          end,
-        },
+        })
+      end
+
+      -- Enable treesitter highlighting whenever a parser exists for the
+      -- buffer's filetype. Treesitter indent stays off deliberately: it is
+      -- experimental upstream, and indentation here is owned by the Google
+      -- style rules in autocmds.lua. Markdown folds likewise stay with the
+      -- runtime ftplugin (g.markdown_folding in core/folding.lua).
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("TreesitterHighlight", { clear = true }),
+        desc = "Start treesitter highlighting when a parser is available",
+        callback = function(args)
+          local buf = args.buf
+          -- Skip huge files: a full parse is slower than regex highlighting.
+          local max_filesize = 10 * 1024 * 1024 -- 10 MB
+          ---@diagnostic disable-next-line: undefined-field
+          local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(buf))
+          if ok and stats and stats.size > max_filesize then
+            return
+          end
+          -- Escape hatch for pathological markdown buffers (see :TSReset).
+          if args.match == "markdown" and vim.b[buf].ts_disable_markdown then
+            return
+          end
+          local lang = vim.treesitter.language.get_lang(args.match) or args.match
+          -- No parser for this filetype → keep regex highlighting.
+          pcall(vim.treesitter.start, buf, lang)
+        end,
       })
     end,
   },
