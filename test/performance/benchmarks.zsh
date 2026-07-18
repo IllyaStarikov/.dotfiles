@@ -199,9 +199,11 @@ test_concurrent_operations() {
   local pids=()
   local start_time=$(date +%s%N)
 
-  # Start multiple Neovim instances
+  # Start multiple Neovim instances. -i NONE: five parallel nvims sharing
+  # the default shada collide on main.shada.tmp.X slots, leaking one tmp
+  # file per run until E138 breaks shada writes for REAL sessions.
   for i in {1..5}; do
-    nvim --headless -c "qa!" &
+    nvim --headless -i NONE -c "qa!" &
     pids+=($!)
   done
 

@@ -36,7 +36,11 @@ test_complete_dev_workflow() {
 
   # 3. Test Neovim can edit files
   log "TRACE" "Step 3: Edit files with Neovim"
-  echo "Added via Neovim" | nvim -es +'normal Go' +'r /dev/stdin' +'wq' README.md 2>/dev/null
+  # NOTE: don't pipe text into `nvim -es` and then `:r /dev/stdin` - in -es
+  # mode nvim reads its ex-commands FROM stdin, so the read races the
+  # script and appends nothing (broke outright on nvim 0.12.4). Append via
+  # a normal-mode command instead; no stdin involved.
+  nvim --headless +'normal GoAdded via Neovim' +'wq' README.md 2>/dev/null
 
   if grep -q "Added via Neovim" README.md; then
     [[ $VERBOSE -ge 1 ]] && log "SUCCESS" "Neovim can edit files"

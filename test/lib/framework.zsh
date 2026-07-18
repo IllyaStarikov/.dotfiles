@@ -88,6 +88,11 @@ run_test_functions() {
     test_case "$func"
     if "$func"; then
       pass
+    elif [[ $? -eq 77 ]]; then
+      # automake convention: 77 means "skip" (missing tool, daemon down).
+      # Without this carve-out a legitimate environment skip counts as a
+      # failure (e.g. test_docker_workflow with Docker Desktop stopped).
+      skip "$func skipped (returned 77)"
     else
       # Count the failure: many test functions signal via `return 1` without
       # calling fail(), which used to be silently recorded as neither.
