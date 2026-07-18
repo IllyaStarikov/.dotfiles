@@ -9,7 +9,10 @@ line-length = 100
 
 # Code formatting configuration
 [format]
-quote-style = "single"
+# Double quotes: Black-compatible, matching pyproject.toml's Black config and
+# isort's black profile so output is identical regardless of which formatter
+# in the fixy priority queue (yapf -> ruff -> black) actually runs.
+quote-style = "double"
 
 # Linting configuration
 [lint]

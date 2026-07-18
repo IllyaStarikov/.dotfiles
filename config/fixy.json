@@ -27,7 +27,7 @@
     "isort": {
       "command": "isort",
       "check_command": "isort --version",
-      "format_args": "--profile google --line-length 100 {file}",
+      "format_args": "--profile black --line-length 100 {file}",
       "description": "Python import sorter"
     },
     "clang-format": {
