@@ -11,6 +11,24 @@ opt.sidescrolloff = 8
 
 -- Large file performance settings (redrawtime and maxmempattern are set in performance.lua)
 opt.clipboard:append("unnamedplus")
+
+-- Clipboard over SSH: OSC 52, so yanks land on the LOCAL machine's clipboard
+-- (tmux passes the sequence through; see set-clipboard in src/tmux.conf).
+-- COPY-ONLY on purpose: most terminals block OSC 52 reads, and a blocked read
+-- hangs paste - so paste falls back to the unnamed register (terminal paste
+-- via Cmd+V covers cross-machine paste). vim.ui.clipboard.osc52 is nvim
+-- 0.10+; CI ubuntu runners ship 0.9, hence the version guard.
+if vim.env.SSH_TTY and vim.fn.has("nvim-0.10") == 1 then
+  local osc52 = require("vim.ui.clipboard.osc52")
+  local function paste_fallback()
+    return vim.split(vim.fn.getreg('"'), "\n")
+  end
+  vim.g.clipboard = {
+    name = "OSC 52 (copy-only)",
+    copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+    paste = { ["+"] = paste_fallback, ["*"] = paste_fallback },
+  }
+end
 opt.virtualedit = "block"
 opt.updatetime = 300 -- ms, for CursorHold and diagnostics
 opt.timeoutlen = 500 -- ms, for which-key

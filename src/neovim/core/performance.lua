@@ -51,7 +51,8 @@ g.netrw_localrmdir = "rm -rf"
 -- Matchit is handled by Neovim's built-in runtime/plugin/matchit.vim
 -- No need to manually load it
 
--- No clipboard integration for better performance
+-- Clipboard integration lives in core/options.lua (unnamedplus everywhere;
+-- OSC 52 copy-only provider over SSH on nvim 0.10+)
 
 -- Reduce LSP logging for performance.
 -- WARN level logs warnings and errors but not info/debug messages,

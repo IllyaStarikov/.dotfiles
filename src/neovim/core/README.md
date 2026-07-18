@@ -325,10 +325,11 @@ end
    - Actually made scrolling jumpy
    - Some plugins incompatible
 
-2. **clipboard = unnamedplus** - Slowed everything
-   - 50ms+ delay on every yank/paste
-   - System clipboard integration overhead
-   - Now only set when needed
+2. **clipboard = unnamedplus via X11 xclip** - Slowed everything on Linux
+   - 50ms+ delay on every yank/paste from xclip round-trips
+   - macOS pbcopy/pbpaste is fast, so `unnamedplus` IS enabled today
+     (options.lua), with an OSC 52 copy-only provider over SSH (nvim 0.10+)
+   - The lesson applies to X11 clipboard tools, not the option itself
 
 3. **foldmethod = syntax** - Too slow
    - Took 100ms+ on large files
