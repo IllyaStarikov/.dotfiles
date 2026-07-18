@@ -175,6 +175,10 @@ bindkey -M vicmd '^X^E' edit-command-line
 bindkey -M viins '^Q' push-line-or-edit
 bindkey -M vicmd '^Q' push-line-or-edit
 
+# ESC-. inserts the last argument of the previous command (emacs classic;
+# bindkey -v wipes it, so restore it for insert mode)
+bindkey -M viins '\e.' insert-last-word
+
 # Common shortcuts
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line

@@ -111,11 +111,9 @@ Our shell uses vi-mode for powerful text editing right in the command line.
 
 ### Directory Navigation
 
-| Key   | Action            | Description                   |
-| ----- | ----------------- | ----------------------------- |
-| `M-.` | Last argument     | Insert last arg from previous |
-| `M-h` | CD to parent      | Go up one directory           |
-| `M-l` | Accept suggestion | Complete autosuggest          |
+| Key   | Action        | Description                   |
+| ----- | ------------- | ----------------------------- |
+| `M-.` | Last argument | Insert last arg from previous |
 
 ## Custom Keybindings
 
@@ -142,12 +140,10 @@ instead of leaving earlier lines frozen.
 
 ### zsh-autosuggestions
 
-| Key   | Action            | Description             |
-| ----- | ----------------- | ----------------------- |
-| `→`   | Accept suggestion | Complete the suggestion |
-| `M-f` | Accept word       | Take one word           |
-| `M-l` | Accept line       | Take whole suggestion   |
-| `C-g` | Clear suggestion  | Dismiss suggestion      |
+| Key   | Action            | Description                       |
+| ----- | ----------------- | --------------------------------- |
+| `→`   | Accept suggestion | Complete the suggestion           |
+| `C-e` | Accept suggestion | End-of-line also accepts the hint |
 
 ### zsh-syntax-highlighting
 
