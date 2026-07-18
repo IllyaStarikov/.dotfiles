@@ -76,6 +76,11 @@ while [[ $# -gt 0 ]]; do
       SKIP_BREW_PACKAGES="true"
       shift
       ;;
+    --verbose)
+      VERBOSE=true
+      set -x
+      shift
+      ;;
     --force-brew)
       SKIP_BREW_PACKAGES=""
       shift
@@ -88,6 +93,7 @@ while [[ $# -gt 0 ]]; do
       echo "  symlinks, --symlinks  Create symlinks only"
       echo "  --skip-brew        Skip Homebrew package installation (for work machines)"
       echo "  --force-brew       Force Homebrew packages even on work machines"
+      echo "  --verbose          Show detailed output (set -x)"
       echo "  --help, -h         Show this help message"
       echo ""
       echo "Examples:"
@@ -405,11 +411,12 @@ install_macos_packages() {
           # fetch fails.
           local brew_install_timeout
           brew_install_timeout=$(get_config "timeouts.json" ".brew.install" "60")
-          output=$(timeout "$brew_install_timeout" brew install "$pkg" 2>&1 || timeout "$brew_install_timeout" brew install --build-from-source "$pkg" 2>&1)
-          exit_code=$?
+          # `&& exit_code=0 || exit_code=$?` keeps set -e from aborting the
+          # whole install when one formula fails (the elaborate handling
+          # below was dead code otherwise).
+          output=$(timeout "$brew_install_timeout" brew install "$pkg" 2>&1 || timeout "$brew_install_timeout" brew install --build-from-source "$pkg" 2>&1) && exit_code=0 || exit_code=$?
         else
-          output=$(brew install "$pkg" 2>&1)
-          exit_code=$?
+          output=$(brew install "$pkg" 2>&1) && exit_code=0 || exit_code=$?
         fi
 
         # Provide detailed feedback based on installation results
@@ -443,8 +450,8 @@ install_macos_packages() {
       if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
-        output=$(brew install "$pkg" 2>&1)
-        if [[ $? -eq 0 ]]; then
+        output=$(brew install "$pkg" 2>&1) && exit_code=0 || exit_code=$?
+        if [[ $exit_code -eq 0 ]]; then
           success "✓ $pkg installed successfully"
         elif echo "$output" | grep -q "already installed"; then
           info "✓ $pkg already installed"
@@ -461,8 +468,8 @@ install_macos_packages() {
       if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
-        output=$(brew install "$pkg" 2>&1)
-        if [[ $? -eq 0 ]]; then
+        output=$(brew install "$pkg" 2>&1) && exit_code=0 || exit_code=$?
+        if [[ $exit_code -eq 0 ]]; then
           success "✓ $pkg installed successfully"
         elif echo "$output" | grep -q "already installed"; then
           info "✓ $pkg already installed"
@@ -479,8 +486,8 @@ install_macos_packages() {
       if brew list --formula "$pkg" &>/dev/null; then
         info "✓ $pkg already installed"
       else
-        output=$(brew install "$pkg" 2>&1)
-        if [[ $? -eq 0 ]]; then
+        output=$(brew install "$pkg" 2>&1) && exit_code=0 || exit_code=$?
+        if [[ $exit_code -eq 0 ]]; then
           success "✓ $pkg installed successfully"
         elif echo "$output" | grep -q "already installed"; then
           info "✓ $pkg already installed"
@@ -958,7 +965,7 @@ setup_python() {
   if [[ "$OS" == "macos" ]]; then
     if command -v pyenv &>/dev/null; then
       # Check if we already have a good Python version installed
-      EXISTING_PYTHON=$(pyenv versions 2>/dev/null | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+      EXISTING_PYTHON=$(pyenv versions 2>/dev/null | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}' || true)
       if [[ -n "$EXISTING_PYTHON" ]]; then
         info "Found existing Python $EXISTING_PYTHON, using it"
         pyenv global "$EXISTING_PYTHON"
@@ -987,13 +994,13 @@ setup_python() {
       brew update && brew upgrade pyenv 2>/dev/null || true
 
       # Try to find an available Python 3.13.x version
-      AVAILABLE_PYTHON=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs)
+      AVAILABLE_PYTHON=$(pyenv install --list | grep -E "^\s*3\.13\.[0-9]+$" | tail -1 | xargs || true)
       if [[ -n "$AVAILABLE_PYTHON" ]]; then
         PYTHON_VERSION="$AVAILABLE_PYTHON"
         info "Found Python $PYTHON_VERSION available"
       else
         # Fall back to latest Python 3.12.x if 3.13 not available
-        PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.12\.[0-9]+$" | tail -1 | xargs)
+        PYTHON_VERSION=$(pyenv install --list | grep -E "^\s*3\.12\.[0-9]+$" | tail -1 | xargs || true)
         info "Using Python $PYTHON_VERSION (3.13 not available)"
       fi
 
@@ -1015,7 +1022,7 @@ setup_python() {
             info "Checking for existing Python installations..."
 
             # Try to use any existing Python 3.10+ version
-            EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+            EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}' || true)
             if [[ -n "$EXISTING_PYTHON" ]]; then
               info "Using existing Python $EXISTING_PYTHON"
               pyenv global "$EXISTING_PYTHON"
@@ -1032,7 +1039,7 @@ setup_python() {
             info "Checking for existing Python installations..."
 
             # Try to use any existing Python 3.10+ version
-            EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}')
+            EXISTING_PYTHON=$(pyenv versions | grep -E "^[\*[:space:]]*3\.(1[0-9]|[2-9][0-9])" | head -1 | sed 's/^[* ]*//' | awk '{print $1}' || true)
             if [[ -n "$EXISTING_PYTHON" ]]; then
               info "Using existing Python $EXISTING_PYTHON"
               pyenv global "$EXISTING_PYTHON"
@@ -1411,19 +1418,24 @@ main() {
     core)
       info "Running core installation..."
 
-      # Minimal OS setup
+      # Minimal OS setup. Honor --skip-brew here too: CI/e2e and work
+      # machines invoke `--core --skip-brew` expecting no brew activity.
       if [[ "$OS" == "macos" ]]; then
-        setup_macos_xcode
-        setup_homebrew
-        for pkg in git neovim tmux starship ripgrep fd; do
-          if brew list --formula "$pkg" &>/dev/null; then
-            info "✓ $pkg already installed"
-          elif brew install "$pkg" 2>/dev/null; then
-            success "✓ $pkg installed successfully"
-          else
-            warning "✗ $pkg installation failed"
-          fi
-        done
+        if [[ "$SKIP_BREW_PACKAGES" != "true" ]]; then
+          setup_macos_xcode
+          setup_homebrew
+          for pkg in git neovim tmux starship ripgrep fd; do
+            if brew list --formula "$pkg" &>/dev/null; then
+              info "✓ $pkg already installed"
+            elif brew install "$pkg" 2>/dev/null; then
+              success "✓ $pkg installed successfully"
+            else
+              warning "✗ $pkg installation failed"
+            fi
+          done
+        else
+          info "Skipping Homebrew setup and packages (--skip-brew)"
+        fi
       else
         install_linux_packages
       fi

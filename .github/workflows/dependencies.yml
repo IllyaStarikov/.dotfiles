@@ -44,11 +44,10 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: update github actions
-        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
-        continue-on-error: true
-        with:
-          warn-only: true
+      # (dependency-review-action removed: it only works on pull_request
+      # events, so on this schedule/dispatch workflow it errored on every run
+      # behind continue-on-error. Dependabot's github-actions ecosystem
+      # already handles action updates weekly.)
 
       - name: check for neovim plugin updates
         run: |
@@ -88,8 +87,18 @@ jobs:
           fi
           echo "::endgroup::"
 
+      - name: check for any changes
+        run: |
+          # Recompute dirtiness AFTER all mutating steps: the submodule flag
+          # alone silently discarded weeks where only the doc edits changed.
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "CHANGES_PRESENT=true" >> $GITHUB_ENV
+          else
+            echo "CHANGES_PRESENT=false" >> $GITHUB_ENV
+          fi
+
       - name: create pull request
-        if: env.SUBMODULES_UPDATED == 'true'
+        if: env.CHANGES_PRESENT == 'true'
         uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

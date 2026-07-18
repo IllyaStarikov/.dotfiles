@@ -64,9 +64,12 @@ jobs:
 
           # Check for unsafe bash practices
           echo "Checking for unsafe bash practices..."
+          # NOTE: literal-pipe patterns need ERE with an escaped `|` — in BRE,
+          # `\|` is alternation, which made the old pattern match every line
+          # containing the word "bash" (including shebangs).
           ! grep -r 'eval.*\$' src/ --include="*.sh" || echo "⚠️ Unsafe eval usage found"
-          ! grep -r 'curl.*\|.*bash' src/ --include="*.sh" || echo "⚠️ Curl pipe to bash found"
-          ! grep -r 'wget.*\|.*sh' src/ --include="*.sh" || echo "⚠️ Wget pipe to shell found"
+          ! grep -rE 'curl[^|]*\|\s*(ba)?sh' src/ --include="*.sh" || echo "⚠️ Curl pipe to bash found"
+          ! grep -rE 'wget[^|]*\|\s*(ba|z)?sh' src/ --include="*.sh" || echo "⚠️ Wget pipe to shell found"
 
           # Check for hardcoded credentials patterns
           echo "Checking for hardcoded credentials..."

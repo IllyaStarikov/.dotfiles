@@ -47,10 +47,9 @@ jobs:
             ~/.local/share/nvim
             ~/.cache/nvim
             ~/Library/Caches/Homebrew
-            /usr/local/Homebrew
-          key: ${{ runner.os }}-${{ matrix.os }}-test-${{ hashFiles('src/neovim/plugins.lua', 'src/neovim/lazy-lock.json') }}
+          key: ${{ matrix.os }}-test-${{ hashFiles('src/neovim/plugins.lua', 'src/neovim/lazy-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.os }}-test-
+            ${{ matrix.os }}-test-
 
       - name: setup environment
         run: |
@@ -208,10 +207,12 @@ jobs:
           # Test symlink creation (script requires zsh)
           zsh src/setup/symlinks.sh
 
-          # Verify critical symlinks
-          test -L "$HOME/.zshrc" && echo ".zshrc symlink created" || echo "ERROR: .zshrc symlink missing"
-          test -L "$HOME/.gitconfig" && echo ".gitconfig symlink created" || echo "ERROR: .gitconfig symlink missing"
-          test -L "$HOME/.tmux.conf" && echo ".tmux.conf symlink created" || echo "ERROR: .tmux.conf symlink missing"
+          # Verify critical symlinks — these MUST fail the job when missing
+          # (the old `|| echo ERROR` pattern made every assertion pass).
+          test -L "$HOME/.zshrc" || { echo "ERROR: .zshrc symlink missing"; exit 1; }
+          test -L "$HOME/.gitconfig" || { echo "ERROR: .gitconfig symlink missing"; exit 1; }
+          test -L "$HOME/.tmux.conf" || { echo "ERROR: .tmux.conf symlink missing"; exit 1; }
+          echo "All critical symlinks created"
 
       - name: test theme switcher
         run: |
@@ -221,11 +222,11 @@ jobs:
 
       - name: validate configurations
         run: |
-          # Validate shell configs
-          zsh -n src/zsh/zshrc || echo "WARNING: Zsh config validation failed"
+          # Validate shell configs (blocking: a zshrc syntax error is a real break)
+          zsh -n src/zsh/zshrc || { echo "ERROR: Zsh config validation failed"; exit 1; }
 
-          # Validate git config
-          git config --file=src/git/gitconfig --list > /dev/null || echo "WARNING: Git config validation failed"
+          # Validate git config (blocking)
+          git config --file=src/git/gitconfig --list > /dev/null || { echo "ERROR: Git config validation failed"; exit 1; }
 
           # Check for hardcoded paths
           ! grep -r "/Users/[^/]*/\|/home/[^/]*/" src/ || echo "WARNING: Hardcoded paths found"

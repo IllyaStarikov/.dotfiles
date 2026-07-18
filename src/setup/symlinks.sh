@@ -23,7 +23,7 @@
 #   Editor:    ~/.config/nvim/
 #   Terminal:  ~/.config/alacritty/, ~/.config/wezterm/, ~/.config/kitty/, ~/.tmux.conf
 #   Git:       ~/.gitconfig, ~/.gitignore, ~/.gitmessage
-#   Tools:     ~/.ripgreprc, ~/.editorconfig, ~/.config/starship.toml
+#   Tools:     ~/.ripgreprc, ~/.editorconfig (starship.toml is owned by the theme switcher)
 #
 # BACKUP:
 #   Existing files backed up to: ~/.dotfiles.backups/YYYYMMDD_HHMMSS/
@@ -209,7 +209,13 @@ main() {
     # Guarded by DRY_RUN: this block DELETES the live ~/.config/nvim, and in
     # dry-run mode create_link below would not recreate it — an unguarded
     # --dry-run used to destroy the live symlink (tests hit this).
-    if $DRY_RUN; then
+    if [[ -L "$HOME/.config/nvim" ]] \
+      && [[ "$(readlink "$HOME/.config/nvim")" == "$DOTFILES_DIR/src/neovim" ]]; then
+      # Already linked correctly — NEVER delete it. Removing a correct link
+      # just to recreate it opens a window (interrupt/kill between rm and ln)
+      # where the machine has no nvim config at all.
+      info "    Neovim already linked correctly"
+    elif $DRY_RUN; then
       if [[ -e "$HOME/.config/nvim" || -L "$HOME/.config/nvim" ]]; then
         warn "    [DRY RUN] Would backup and replace: $HOME/.config/nvim"
       fi
@@ -244,7 +250,11 @@ main() {
   # Spell files are now handled via the neovim directory symlink above
 
   # Starship
-  create_link "$DOTFILES_DIR/src/zsh/starship.toml" "$HOME/.config/starship.toml" "Starship prompt"
+  # NO starship symlink: the theme switcher owns ~/.config/starship.toml
+  # (switch-theme.sh atomically REPLACES that path with the per-theme file on
+  # every switch, which used to silently destroy this symlink and re-fight it
+  # on every symlinks.sh rerun). src/zsh/starship.toml is the legacy rich
+  # prompt config, kept for reference until merged into the theme templates.
 
   # WezTerm (if exists)
   if [[ -d "$DOTFILES_DIR/src/wezterm" ]]; then

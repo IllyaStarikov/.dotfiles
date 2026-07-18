@@ -69,7 +69,10 @@ update_with_fallback() {
     if ! "$@"; then
         echo "⚠️  $description failed, continuing..."
         FAILED_LIST="${FAILED_LIST}$description\n"
-        return 1
+        # Return 0: under `set -e` a bare `update_with_fallback ...` call
+        # returning 1 would abort the whole run — the opposite of this
+        # function's purpose. Failures are reported via FAILED_LIST.
+        return 0
     fi
     UPDATED_LIST="${UPDATED_LIST}$description\n"
     return 0

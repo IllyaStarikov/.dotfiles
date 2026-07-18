@@ -75,9 +75,11 @@ jobs:
 
       - name: create release assets
         run: |
-          # Create release directory
-          mkdir -p release/dotfiles-${VERSION}
+          # VERSION must be assigned BEFORE any use — with it unset, mkdir
+          # created "release/dotfiles-" and cp then flattened src/ into the
+          # archive root, shipping a tarball whose installer can't run.
           VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p release/dotfiles-${VERSION}
 
           # Copy essential files
           cp -r src release/dotfiles-${VERSION}/
@@ -139,6 +141,10 @@ jobs:
           echo "  3. Run 'theme' to set your theme"
           EOF
           chmod +x release/dotfiles-${VERSION}/install.sh
+
+          # Smoke-check the archive layout before packaging: the bundled
+          # installer depends on src/scripts existing inside the versioned dir.
+          test -d "release/dotfiles-${VERSION}/src/scripts"
 
           # Create archives
           cd release

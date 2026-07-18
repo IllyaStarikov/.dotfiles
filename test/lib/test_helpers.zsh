@@ -56,9 +56,12 @@ nvim_plugins_synced() {
   local lazy_root="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy"
   # lazy.nvim alone does NOT count: CI clones the manager itself (test.yml
   # setup step) and the config self-bootstraps it on first boot, while the
-  # actual plugin stack stays uninstalled. Require a real plugin too -
-  # tokyonight is priority-loaded and always present after a :Lazy sync.
-  [[ -d "$lazy_root/lazy.nvim" && -d "$lazy_root/tokyonight.nvim" ]]
+  # actual plugin stack stays uninstalled. Require real plugins too —
+  # tokyonight (priority-loaded) AND blink.cmp (completion stack): the e2e
+  # Docker images carry tokyonight but not the full stack, and the
+  # LSP/completion tests hard-fail with "Plugin blink.cmp is not installed"
+  # when this gate lets a partial install through.
+  [[ -d "$lazy_root/lazy.nvim" && -d "$lazy_root/tokyonight.nvim" && -d "$lazy_root/blink.cmp" ]]
 }
 
 # Timing helper
@@ -489,7 +492,15 @@ nvim_test() {
   local lua_code=$2
   local expected=${3:-}
 
-  local output=$(nvim --headless -c "lua $lua_code" -c "qa!" 2>&1)
+  # Async tests schedule work via vim.defer_fn and call vim.cmd('qa!')
+  # themselves when done; appending -c "qa!" here used to kill nvim before
+  # any callback ran, so their output was ALWAYS empty. Only append the
+  # quit for synchronous snippets that never quit on their own, and cap
+  # runtime so a buggy async test cannot hang the suite.
+  local -a quit_cmd=(-c "qa!")
+  [[ "$lua_code" == *"qa!"* ]] && quit_cmd=()
+
+  local output=$(timeout 30 nvim --headless -c "lua $lua_code" "${quit_cmd[@]}" 2>&1)
 
   if [[ -n "$expected" ]]; then
     if [[ "$output" == *"$expected"* ]]; then
