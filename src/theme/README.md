@@ -35,7 +35,9 @@ validate-themes.sh      # Theme validator
 generate-theme.sh       # Generate configs from templates + colors.json
 regenerate-all.sh       # Regenerate all 57 themes
 templates/              # Template files for each app
-  starship.toml         #   Uses {{directory_style}} for light/dark
+  starship.toml         #   Uses {{directory_style}} for light/dark.
+                        #   vicmd_symbol is bold yellow (vs green ❯) so
+                        #   vi normal mode is visible at a glance.
   colors.sh             #   Exports FOREGROUND, BACKGROUND, CURSOR, COLOR_0-15
   tmux.conf, alacritty.toml, kitty.conf, wezterm.lua, neovim.lua
                         #   tmux.conf: width-responsive status-right (drops
