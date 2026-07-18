@@ -11,7 +11,7 @@
 
 - **Battle-tested, production-ready dotfiles** refined over 10 years of daily use.
 - **One command, everything syncs** terminal, editor, tmux, prompt all switch themes together
-- **89+ automated tests** across unit, functional, integration, performance, smoke, e2e, security, and stress categories
+- **77 automated test files** across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories
 - **20 languages, zero config** LSP, linting, formatting just work
 - **5 minutes to install, 30 seconds to uninstall** no leftovers, no regrets
 
