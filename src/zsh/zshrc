@@ -310,7 +310,19 @@ fi
 
 # FZF Integration
 
-[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+# Fuzzy pickers for the line editor: ^R fuzzy history search, ^T fuzzy
+# file insert at the cursor, ESC-c fuzzy cd. Sourced AFTER Key Bindings
+# so fzf's ^R deliberately wins over the plain incremental search bound
+# there (which stays as the no-fzf fallback). Cached like starship.
+if command -v fzf &>/dev/null; then
+    _zsh_cache_source fzf fzf fzf --zsh
+    # Use fd for listings: faster, honors .gitignore, skips .git noise
+    if command -v fd &>/dev/null; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
+    fi
+fi
 
 # Theme wrapper function to ensure environment is updated in current shell
 theme() {

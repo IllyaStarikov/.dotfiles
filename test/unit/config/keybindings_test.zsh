@@ -93,6 +93,16 @@ else
   fail "zle-keymap-select cursor-shape widget missing from zshrc"
 fi
 
+# Test: fzf shell integration is wired (the old ~/.fzf.zsh hook pointed at
+# a file that never existed, leaving fzf installed but unused).
+test_case "Zsh fzf integration is configured"
+if grep -qF "fzf --zsh" "$zshrc_file" \
+  && grep -qF "FZF_CTRL_T_COMMAND" "$zshrc_file"; then
+  pass "fzf --zsh sourced with fd-backed pickers"
+else
+  fail "fzf shell integration missing from zshrc"
+fi
+
 # Test: tmux prefix key is set
 test_case "tmux has a prefix key configured"
 # Static check against the REPO config: `tmux show-options` interrogates a

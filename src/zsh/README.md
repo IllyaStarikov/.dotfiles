@@ -21,6 +21,8 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
   one editable buffer. Flow control is disabled (`NO_FLOW_CONTROL`) so
   `Ctrl-S`/`Ctrl-Q` reach the line editor.
 - **Smart completions** with caching
+- **fzf pickers**: `Ctrl-R` fuzzy history, `Ctrl-T` fuzzy file insert,
+  `ESC c` fuzzy cd — all backed by `fd` (honors .gitignore)
 - **Starship prompt** with git integration
 
 ## Plugin Management
