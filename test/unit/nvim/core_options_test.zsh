@@ -195,11 +195,14 @@ else
   fail "incsearch should be true"
 fi
 
-test_case "Search: gdefault is enabled for global substitution"
-if check_bool_option "gdefault" "true"; then
+test_case "Search: gdefault stays OFF (it inverts explicit /g flags)"
+# gdefault was deliberately removed from core/search.lua: with it on,
+# every explicit :s/../../g silently became first-match-only, breaking
+# user substitutions and plugin :s commands alike.
+if check_bool_option "gdefault" "false"; then
   pass
 else
-  fail "gdefault should be true for easier substitution"
+  fail "gdefault should be false (its removal was intentional)"
 fi
 
 # =============================================================================

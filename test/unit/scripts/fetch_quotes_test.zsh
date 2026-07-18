@@ -45,9 +45,11 @@ it "should accept count parameter" && {
 }
 
 it "should have timeout configuration" && {
-  # Verify timeout handling is configured
+  # Verify timeout handling is configured. The wrapper is now a
+  # `local -a timeout_cmd` ARRAY (a "timeout 3" string wrapper was looked
+  # up as a single command name in zsh and hung the script forever).
   if grep -q "TIMEOUT_DURATION" "$FETCH_QUOTES" \
-    && grep -q "get_timeout_cmd" "$FETCH_QUOTES"; then
+    && grep -q "timeout_cmd" "$FETCH_QUOTES"; then
     pass
   else
     fail "Missing timeout configuration"
