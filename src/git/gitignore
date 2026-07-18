@@ -343,3 +343,4 @@ tmux-server-*.log
 .history/
 .localhistory/
 # keep-sorted end
+**/.claude/settings.local.json
