@@ -157,6 +157,16 @@ jobs:
           echo "::endgroup::"
           echo "✅ Python type checking complete"
 
+      - name: run cortex tests
+        run: |
+          echo "::group::Running cortex pytest suite"
+          # Fully offline suite (providers mocked); rewritten 2026-07 against
+          # the current API after rotting unrun for months (was 84/126 red).
+          pip install -e "src/cortex[dev]"
+          python -m pytest src/cortex/tests -q
+          echo "::endgroup::"
+          echo "✅ Cortex test suite green"
+
   toml:
     name: toml files
     runs-on: ubuntu-latest

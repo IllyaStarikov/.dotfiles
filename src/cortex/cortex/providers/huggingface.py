@@ -31,4 +31,4 @@ class HuggingFaceProvider(BaseProvider):
         return True
 
     async def get_server_status(self) -> Dict[str, Any]:
-        return {'running': False, 'type': 'hybrid'}
+        return {"running": False, "type": "hybrid"}

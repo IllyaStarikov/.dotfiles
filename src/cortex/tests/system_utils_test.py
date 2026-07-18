@@ -18,35 +18,35 @@ from cortex.system_utils import (
 class TestSystemDetector(unittest.TestCase):
     """Test SystemDetector class."""
 
-    @patch('platform.system')
-    @patch('platform.machine')
+    @patch("platform.system")
+    @patch("platform.machine")
     def test_detect_macos_apple_silicon(self, mock_machine, mock_system):
         """Test detection of macOS Apple Silicon."""
-        mock_system.return_value = 'Darwin'
-        mock_machine.return_value = 'arm64'
+        mock_system.return_value = "Darwin"
+        mock_machine.return_value = "arm64"
 
         os_type = SystemDetector._detect_os_type()
         self.assertEqual(os_type, SystemType.MACOS_APPLE_SILICON)
 
-    @patch('platform.system')
-    @patch('platform.machine')
+    @patch("platform.system")
+    @patch("platform.machine")
     def test_detect_macos_intel(self, mock_machine, mock_system):
         """Test detection of macOS Intel."""
-        mock_system.return_value = 'Darwin'
-        mock_machine.return_value = 'x86_64'
+        mock_system.return_value = "Darwin"
+        mock_machine.return_value = "x86_64"
 
         os_type = SystemDetector._detect_os_type()
         self.assertEqual(os_type, SystemType.MACOS_INTEL)
 
-    @patch('platform.system')
+    @patch("platform.system")
     def test_detect_linux(self, mock_system):
         """Test detection of Linux."""
-        mock_system.return_value = 'Linux'
+        mock_system.return_value = "Linux"
 
         os_type = SystemDetector._detect_os_type()
         self.assertEqual(os_type, SystemType.LINUX)
 
-    @patch('psutil.virtual_memory')
+    @patch("psutil.virtual_memory")
     def test_get_memory_info(self, mock_memory):
         """Test memory information retrieval."""
         mock_mem = MagicMock()
@@ -56,20 +56,20 @@ class TestSystemDetector(unittest.TestCase):
 
         mem_info = SystemDetector._get_memory_info()
 
-        self.assertEqual(mem_info['ram_gb'], 64.0)
-        self.assertEqual(mem_info['available_gb'], 32.0)
+        self.assertEqual(mem_info["ram_gb"], 64.0)
+        self.assertEqual(mem_info["available_gb"], 32.0)
 
-    @patch('psutil.cpu_count')
-    @patch('platform.processor')
+    @patch("psutil.cpu_count")
+    @patch("platform.processor")
     def test_get_cpu_info(self, mock_processor, mock_cpu_count):
         """Test CPU information retrieval."""
-        mock_processor.return_value = 'Apple M1 Max'
+        mock_processor.return_value = "Apple M1 Max"
         mock_cpu_count.return_value = 10
 
         cpu_info = SystemDetector._get_cpu_info()
 
-        self.assertEqual(cpu_info['model'], 'Apple M1 Max')
-        self.assertEqual(cpu_info['cores'], 10)
+        self.assertEqual(cpu_info["model"], "Apple M1 Max")
+        self.assertEqual(cpu_info["cores"], 10)
 
     def test_calculate_performance_tier_ultra(self):
         """Test performance tier calculation for ultra systems."""
@@ -104,11 +104,11 @@ class TestModelRecommender(unittest.TestCase):
         # Create mock system info for M1 Max with 64GB RAM
         self.system_info = SystemInfo(
             os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model='Apple M1 Max',
+            cpu_model="Apple M1 Max",
             cpu_cores=10,
             ram_gb=64.0,
             ram_available_gb=30.0,
-            gpu_info='Apple M1 Max',
+            gpu_info="Apple M1 Max",
             gpu_memory_gb=48.0,
             performance_tier=PerformanceTier.ULTRA,
             has_neural_engine=True,
@@ -120,9 +120,9 @@ class TestModelRecommender(unittest.TestCase):
         # Create test models
         self.models = [
             ModelInfo(
-                id='mlx-community/large-model',
-                name='Large Model',
-                provider='mlx',
+                id="mlx-community/large-model",
+                name="Large Model",
+                provider="mlx",
                 size_gb=30.0,
                 ram_gb=35.0,  # Too large for available RAM
                 context_window=32000,
@@ -135,9 +135,9 @@ class TestModelRecommender(unittest.TestCase):
                 likes=200,
             ),
             ModelInfo(
-                id='mlx-community/medium-model',
-                name='Medium Model',
-                provider='mlx',
+                id="mlx-community/medium-model",
+                name="Medium Model",
+                provider="mlx",
                 size_gb=7.0,
                 ram_gb=8.0,
                 context_window=16000,
@@ -150,9 +150,9 @@ class TestModelRecommender(unittest.TestCase):
                 likes=50,
             ),
             ModelInfo(
-                id='gpt-4',
-                name='GPT-4',
-                provider='openai',
+                id="gpt-4",
+                name="GPT-4",
+                provider="openai",
                 size_gb=0,
                 ram_gb=0,
                 context_window=8192,
@@ -163,9 +163,9 @@ class TestModelRecommender(unittest.TestCase):
                 score=85.0,
             ),
             ModelInfo(
-                id='ollama/tiny-model',
-                name='Tiny Model',
-                provider='ollama',
+                id="ollama/tiny-model",
+                name="Tiny Model",
+                provider="ollama",
                 size_gb=1.5,
                 ram_gb=2.0,
                 context_window=4096,
@@ -187,10 +187,10 @@ class TestModelRecommender(unittest.TestCase):
 
         # Should not include the model that requires too much RAM
         model_ids = [m.id for m in recommendations]
-        self.assertNotIn('mlx-community/large-model', model_ids)
+        self.assertNotIn("mlx-community/large-model", model_ids)
 
         # Should include models that fit in available RAM
-        self.assertIn('mlx-community/medium-model', model_ids)
+        self.assertIn("mlx-community/medium-model", model_ids)
 
     def test_recommend_models_prefer_local(self):
         """Test recommendation with local preference."""
@@ -205,15 +205,15 @@ class TestModelRecommender(unittest.TestCase):
             online_models = [m for m in recommendations if m.online]
 
             if local_models and online_models:
-                max_local_score = max(m.metadata.get('fitness_score', 0) for m in local_models)
-                max_online_score = max(m.metadata.get('fitness_score', 0) for m in online_models)
+                max_local_score = max(m.metadata.get("fitness_score", 0) for m in local_models)
+                max_online_score = max(m.metadata.get("fitness_score", 0) for m in online_models)
                 # Local models should generally score higher when preferred
                 self.assertGreaterEqual(max_local_score, max_online_score - 20)
 
     def test_recommend_models_capability_filter(self):
         """Test recommendation with capability filter."""
         recommendations = ModelRecommender.recommend_models(
-            self.system_info, self.models, max_recommendations=5, capability_filter='code'
+            self.system_info, self.models, max_recommendations=5, capability_filter="code"
         )
 
         # All recommendations should have code capability
@@ -251,9 +251,9 @@ class TestModelRecommender(unittest.TestCase):
         # Create models from same provider
         same_provider_models = [
             ModelInfo(
-                id=f'mlx-community/model-{i}',
-                name=f'Model {i}',
-                provider='mlx',
+                id=f"mlx-community/model-{i}",
+                name=f"Model {i}",
+                provider="mlx",
                 size_gb=float(i),
                 ram_gb=float(i + 1),
                 context_window=8192,
@@ -273,11 +273,11 @@ class TestModelRecommender(unittest.TestCase):
 
     def test_categorize_size(self):
         """Test model size categorization."""
-        self.assertEqual(ModelRecommender._categorize_size(0.5), 'tiny')
-        self.assertEqual(ModelRecommender._categorize_size(3.0), 'small')
-        self.assertEqual(ModelRecommender._categorize_size(10.0), 'medium')
-        self.assertEqual(ModelRecommender._categorize_size(25.0), 'large')
-        self.assertEqual(ModelRecommender._categorize_size(50.0), 'xlarge')
+        self.assertEqual(ModelRecommender._categorize_size(0.5), "tiny")
+        self.assertEqual(ModelRecommender._categorize_size(3.0), "small")
+        self.assertEqual(ModelRecommender._categorize_size(10.0), "medium")
+        self.assertEqual(ModelRecommender._categorize_size(25.0), "large")
+        self.assertEqual(ModelRecommender._categorize_size(50.0), "xlarge")
 
     def test_empty_models_list(self):
         """Test recommendation with empty models list."""
@@ -291,9 +291,9 @@ class TestModelRecommender(unittest.TestCase):
         """Test when all models are too large for system."""
         large_models = [
             ModelInfo(
-                id='huge-model',
-                name='Huge Model',
-                provider='mlx',
+                id="huge-model",
+                name="Huge Model",
+                provider="mlx",
                 size_gb=100.0,
                 ram_gb=120.0,  # Way too large
                 context_window=32000,
@@ -313,5 +313,5 @@ class TestModelRecommender(unittest.TestCase):
         self.assertEqual(recommendations, [])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

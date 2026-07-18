@@ -17,21 +17,21 @@ logger = logging.getLogger(__name__)
 class SystemType(Enum):
     """System type classification."""
 
-    MACOS_APPLE_SILICON = 'macos_apple_silicon'
-    MACOS_INTEL = 'macos_intel'
-    LINUX = 'linux'
-    WINDOWS = 'windows'
-    UNKNOWN = 'unknown'
+    MACOS_APPLE_SILICON = "macos_apple_silicon"
+    MACOS_INTEL = "macos_intel"
+    LINUX = "linux"
+    WINDOWS = "windows"
+    UNKNOWN = "unknown"
 
 
 class PerformanceTier(Enum):
     """Performance tier based on system capabilities."""
 
-    ULTRA = 'ultra'  # 64GB+ RAM, high-end GPU
-    HIGH = 'high'  # 32GB+ RAM, good GPU
-    MEDIUM = 'medium'  # 16GB+ RAM, decent GPU
-    LOW = 'low'  # 8GB+ RAM, basic GPU
-    MINIMAL = 'minimal'  # < 8GB RAM
+    ULTRA = "ultra"  # 64GB+ RAM, high-end GPU
+    HIGH = "high"  # 32GB+ RAM, good GPU
+    MEDIUM = "medium"  # 16GB+ RAM, decent GPU
+    LOW = "low"  # 8GB+ RAM, basic GPU
+    MINIMAL = "minimal"  # < 8GB RAM
 
 
 @dataclass
@@ -65,26 +65,26 @@ class SystemDetector:
 
         # Determine performance tier
         performance_tier = SystemDetector._calculate_performance_tier(
-            memory_info['ram_gb'], gpu_info.get('memory_gb'), os_type
+            memory_info["ram_gb"], gpu_info.get("memory_gb"), os_type
         )
 
         return SystemInfo(
             os_type=os_type,
-            cpu_model=cpu_info['model'],
-            cpu_cores=cpu_info['cores'],
-            ram_gb=memory_info['ram_gb'],
-            ram_available_gb=memory_info['available_gb'],
-            gpu_info=gpu_info.get('name', 'Unknown'),
-            gpu_memory_gb=gpu_info.get('memory_gb'),
+            cpu_model=cpu_info["model"],
+            cpu_cores=cpu_info["cores"],
+            ram_gb=memory_info["ram_gb"],
+            ram_available_gb=memory_info["available_gb"],
+            gpu_info=gpu_info.get("name", "Unknown"),
+            gpu_memory_gb=gpu_info.get("memory_gb"),
             performance_tier=performance_tier,
-            has_neural_engine=gpu_info.get('has_neural_engine', False),
-            has_cuda=gpu_info.get('has_cuda', False),
-            has_metal=gpu_info.get('has_metal', False),
+            has_neural_engine=gpu_info.get("has_neural_engine", False),
+            has_cuda=gpu_info.get("has_cuda", False),
+            has_metal=gpu_info.get("has_metal", False),
             platform_details={
-                'platform': platform.platform(),
-                'processor': platform.processor(),
-                'machine': platform.machine(),
-                'python_version': platform.python_version(),
+                "platform": platform.platform(),
+                "processor": platform.processor(),
+                "machine": platform.machine(),
+                "python_version": platform.python_version(),
             },
         )
 
@@ -93,16 +93,16 @@ class SystemDetector:
         """Detect the operating system type."""
         system = platform.system().lower()
 
-        if system == 'darwin':
+        if system == "darwin":
             # Check if Apple Silicon
             machine = platform.machine().lower()
-            if 'arm' in machine:
+            if "arm" in machine:
                 return SystemType.MACOS_APPLE_SILICON
             else:
                 return SystemType.MACOS_INTEL
-        elif system == 'linux':
+        elif system == "linux":
             return SystemType.LINUX
-        elif system == 'windows':
+        elif system == "windows":
             return SystemType.WINDOWS
         else:
             return SystemType.UNKNOWN
@@ -114,12 +114,12 @@ class SystemDetector:
             cpu_count = psutil.cpu_count(logical=False) or psutil.cpu_count()
 
             # Try to get CPU model
-            cpu_model = 'Unknown'
-            if platform.system() == 'Darwin':
+            cpu_model = "Unknown"
+            if platform.system() == "Darwin":
                 # macOS
                 try:
                     result = subprocess.run(
-                        ['sysctl', '-n', 'machdep.cpu.brand_string'],
+                        ["sysctl", "-n", "machdep.cpu.brand_string"],
                         capture_output=True,
                         text=True,
                         check=True,
@@ -127,25 +127,25 @@ class SystemDetector:
                     cpu_model = result.stdout.strip()
                 except (subprocess.CalledProcessError, OSError):
                     pass
-            elif platform.system() == 'Linux':
+            elif platform.system() == "Linux":
                 # Linux
                 try:
-                    with open('/proc/cpuinfo', 'r') as f:
+                    with open("/proc/cpuinfo", "r") as f:
                         for line in f:
-                            if 'model name' in line:
-                                cpu_model = line.split(':')[1].strip()
+                            if "model name" in line:
+                                cpu_model = line.split(":")[1].strip()
                                 break
                 except (OSError, IOError):
                     pass
 
             return {
-                'model': cpu_model,
-                'cores': cpu_count,
-                'frequency': psutil.cpu_freq().current if psutil.cpu_freq() else 0,
+                "model": cpu_model,
+                "cores": cpu_count,
+                "frequency": psutil.cpu_freq().current if psutil.cpu_freq() else 0,
             }
         except Exception as e:
-            logger.warning(f'Failed to get CPU info: {e}')
-            return {'model': 'Unknown', 'cores': 4, 'frequency': 0}
+            logger.warning(f"Failed to get CPU info: {e}")
+            return {"model": "Unknown", "cores": 4, "frequency": 0}
 
     @staticmethod
     def _get_memory_info() -> Dict[str, Any]:
@@ -153,14 +153,14 @@ class SystemDetector:
         try:
             mem = psutil.virtual_memory()
             return {
-                'ram_gb': round(mem.total / (1024**3), 1),
-                'available_gb': round(mem.available / (1024**3), 1),
-                'used_gb': round(mem.used / (1024**3), 1),
-                'percent': mem.percent,
+                "ram_gb": round(mem.total / (1024**3), 1),
+                "available_gb": round(mem.available / (1024**3), 1),
+                "used_gb": round(mem.used / (1024**3), 1),
+                "percent": mem.percent,
             }
         except Exception as e:
-            logger.warning(f'Failed to get memory info: {e}')
-            return {'ram_gb': 8.0, 'available_gb': 4.0, 'used_gb': 4.0, 'percent': 50}
+            logger.warning(f"Failed to get memory info: {e}")
+            return {"ram_gb": 8.0, "available_gb": 4.0, "used_gb": 4.0, "percent": 50}
 
     @staticmethod
     def _get_gpu_info(os_type: SystemType) -> Dict[str, Any]:
@@ -170,43 +170,43 @@ class SystemDetector:
         try:
             if os_type == SystemType.MACOS_APPLE_SILICON:
                 # Apple Silicon specific detection
-                gpu_info['name'] = 'Apple Silicon GPU'
-                gpu_info['has_metal'] = True
-                gpu_info['has_neural_engine'] = True
+                gpu_info["name"] = "Apple Silicon GPU"
+                gpu_info["has_metal"] = True
+                gpu_info["has_neural_engine"] = True
 
                 # Try to detect specific chip
                 try:
                     result = subprocess.run(
-                        ['system_profiler', 'SPHardwareDataType'],
+                        ["system_profiler", "SPHardwareDataType"],
                         capture_output=True,
                         text=True,
                         check=True,
                     )
                     output = result.stdout.lower()
 
-                    if 'm3 max' in output:
-                        gpu_info['name'] = 'Apple M3 Max'
-                    elif 'm3 pro' in output:
-                        gpu_info['name'] = 'Apple M3 Pro'
-                    elif 'm3' in output:
-                        gpu_info['name'] = 'Apple M3'
-                    elif 'm2 max' in output:
-                        gpu_info['name'] = 'Apple M2 Max'
-                    elif 'm2 pro' in output:
-                        gpu_info['name'] = 'Apple M2 Pro'
-                    elif 'm2' in output:
-                        gpu_info['name'] = 'Apple M2'
-                    elif 'm1 max' in output:
-                        gpu_info['name'] = 'Apple M1 Max'
-                    elif 'm1 pro' in output:
-                        gpu_info['name'] = 'Apple M1 Pro'
-                    elif 'm1' in output:
-                        gpu_info['name'] = 'Apple M1'
+                    if "m3 max" in output:
+                        gpu_info["name"] = "Apple M3 Max"
+                    elif "m3 pro" in output:
+                        gpu_info["name"] = "Apple M3 Pro"
+                    elif "m3" in output:
+                        gpu_info["name"] = "Apple M3"
+                    elif "m2 max" in output:
+                        gpu_info["name"] = "Apple M2 Max"
+                    elif "m2 pro" in output:
+                        gpu_info["name"] = "Apple M2 Pro"
+                    elif "m2" in output:
+                        gpu_info["name"] = "Apple M2"
+                    elif "m1 max" in output:
+                        gpu_info["name"] = "Apple M1 Max"
+                    elif "m1 pro" in output:
+                        gpu_info["name"] = "Apple M1 Pro"
+                    elif "m1" in output:
+                        gpu_info["name"] = "Apple M1"
 
                     # For unified memory, GPU memory is shared with system RAM
                     # Estimate available GPU memory as ~75% of total RAM
                     mem_info = SystemDetector._get_memory_info()
-                    gpu_info['memory_gb'] = round(mem_info['ram_gb'] * 0.75, 1)
+                    gpu_info["memory_gb"] = round(mem_info["ram_gb"] * 0.75, 1)
 
                 except (AttributeError, KeyError):
                     pass
@@ -215,33 +215,33 @@ class SystemDetector:
                 # Try to detect NVIDIA GPU
                 try:
                     result = subprocess.run(
-                        ['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader'],
+                        ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
                         capture_output=True,
                         text=True,
                         check=True,
                     )
-                    lines = result.stdout.strip().split('\n')
+                    lines = result.stdout.strip().split("\n")
                     if lines:
-                        parts = lines[0].split(',')
-                        gpu_info['name'] = parts[0].strip()
+                        parts = lines[0].split(",")
+                        gpu_info["name"] = parts[0].strip()
                         mem_str = parts[1].strip()
                         # Parse memory (e.g., "24576 MiB")
                         mem_mb = float(mem_str.split()[0])
-                        gpu_info['memory_gb'] = round(mem_mb / 1024, 1)
-                        gpu_info['has_cuda'] = True
+                        gpu_info["memory_gb"] = round(mem_mb / 1024, 1)
+                        gpu_info["has_cuda"] = True
                 except (ImportError, OSError, RuntimeError, subprocess.CalledProcessError):
-                    gpu_info['name'] = 'CPU only'
-                    gpu_info['has_cuda'] = False
+                    gpu_info["name"] = "CPU only"
+                    gpu_info["has_cuda"] = False
 
             elif os_type == SystemType.MACOS_INTEL:
                 # Intel Mac GPU detection
-                gpu_info['name'] = 'Intel/AMD GPU'
-                gpu_info['has_metal'] = True
-                gpu_info['has_neural_engine'] = False
+                gpu_info["name"] = "Intel/AMD GPU"
+                gpu_info["has_metal"] = True
+                gpu_info["has_neural_engine"] = False
 
         except Exception as e:
-            logger.warning(f'Failed to get GPU info: {e}')
-            gpu_info['name'] = 'Unknown'
+            logger.warning(f"Failed to get GPU info: {e}")
+            gpu_info["name"] = "Unknown"
 
         return gpu_info
 
@@ -307,7 +307,7 @@ class ModelRecommender:
         # Apply capability filter if specified
         filtered_models = models
         if capability_filter:
-            from . import ModelCapability
+            from .providers import ModelCapability
 
             cap_enum = ModelCapability(capability_filter)
             filtered_models = [m for m in models if cap_enum in m.capabilities]
@@ -321,7 +321,7 @@ class ModelRecommender:
                     fitness_score = ModelRecommender._calculate_fitness_score(
                         model, system_info, prefer_local
                     )
-                    model.metadata['fitness_score'] = fitness_score
+                    model.metadata["fitness_score"] = fitness_score
                     viable_models.append(model)
             else:
                 # Check if model can fit in available RAM (with safety margin)
@@ -331,11 +331,11 @@ class ModelRecommender:
                     fitness_score = ModelRecommender._calculate_fitness_score(
                         model, system_info, prefer_local
                     )
-                    model.metadata['fitness_score'] = fitness_score
+                    model.metadata["fitness_score"] = fitness_score
                     viable_models.append(model)
 
         # Sort by fitness score
-        viable_models.sort(key=lambda m: m.metadata.get('fitness_score', 0), reverse=True)
+        viable_models.sort(key=lambda m: m.metadata.get("fitness_score", 0), reverse=True)
 
         # Ensure diversity in recommendations
         recommendations = ModelRecommender._ensure_diversity(viable_models, max_recommendations)
@@ -363,9 +363,9 @@ class ModelRecommender:
 
         # Platform-specific bonuses
         if system_info.os_type == SystemType.MACOS_APPLE_SILICON:
-            if model.provider == 'mlx':
+            if model.provider == "mlx":
                 score += 30  # MLX is optimized for Apple Silicon
-            elif model.provider == 'ollama':
+            elif model.provider == "ollama":
                 score += 10  # Ollama works well too
 
         # Performance tier adjustments
@@ -379,7 +379,7 @@ class ModelRecommender:
                 score += 20
 
         # Context window bonus for coding
-        if 'code' in [cap.value for cap in model.capabilities]:
+        if "code" in [cap.value for cap in model.capabilities]:
             if model.context_window >= 32000:
                 score += 15
 
@@ -434,12 +434,12 @@ class ModelRecommender:
     def _categorize_size(size_gb: float) -> str:
         """Categorize model size."""
         if size_gb < 2:
-            return 'tiny'
+            return "tiny"
         elif size_gb < 5:
-            return 'small'
+            return "small"
         elif size_gb < 15:
-            return 'medium'
+            return "medium"
         elif size_gb < 40:
-            return 'large'
+            return "large"
         else:
-            return 'xlarge'
+            return "xlarge"

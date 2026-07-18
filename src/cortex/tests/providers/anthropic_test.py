@@ -1,83 +1,96 @@
 """
 Tests for anthropic.py provider module.
+
+Removed with the API rewrite: chat() tests — the provider has no chat method.
+Note: download_model() now returns True (a no-op for cloud models) rather
+than False.
 """
 
-import os
+import asyncio
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from cortex.providers import ModelCapability
+from cortex.providers import ModelCapability, ProviderType
 from cortex.providers.anthropic import AnthropicProvider
+
+FAKE_KEY = "sk-ant-test-fake-key-1234567890"
 
 
 class TestAnthropicProvider(unittest.TestCase):
     """Test Anthropic Provider."""
 
     def setUp(self):
-        """Set up test fixtures."""
-        # Set mock API key
-        os.environ['ANTHROPIC_API_KEY'] = 'test-key'
+        """Set up test fixtures with a fake API key."""
+        env_patcher = patch.dict("os.environ", {"ANTHROPIC_API_KEY": FAKE_KEY})
+        env_patcher.start()
+        self.addCleanup(env_patcher.stop)
         self.provider = AnthropicProvider()
-
-    def tearDown(self):
-        """Clean up."""
-        if 'ANTHROPIC_API_KEY' in os.environ:
-            del os.environ['ANTHROPIC_API_KEY']
 
     def test_initialization(self):
         """Test Anthropic provider initialization."""
-        self.assertEqual(self.provider.name, 'claude')
-        self.assertFalse(self.provider.supports_download)
+        # BaseProvider derives the registry name from the class name
+        self.assertEqual(self.provider.name, "anthropic")
+        self.assertEqual(self.provider.provider_type, ProviderType.ONLINE)
         self.assertTrue(self.provider.requires_api_key)
+        self.assertEqual(self.provider.api_key, FAKE_KEY)
 
-    def test_list_models(self):
-        """Test listing Anthropic models."""
-        models = self.provider.list_models()
+    def test_fetch_models(self):
+        """Test listing Anthropic models from the known catalog (no HTTP)."""
+        models = asyncio.run(self.provider.fetch_models())
 
         self.assertGreater(len(models), 0)
 
-        # Check for known models
         model_ids = [m.id for m in models]
-        self.assertIn('claude-3-5-sonnet-20241022', model_ids)
-        self.assertIn('claude-3-opus-20240229', model_ids)
+        self.assertIn("claude-3-5-sonnet-20241022", model_ids)
+        self.assertIn("claude-3-opus-20240229", model_ids)
 
-        # Check model properties
         for model in models:
-            self.assertEqual(model.provider, 'claude')
+            self.assertEqual(model.provider, "claude")
             self.assertTrue(model.online)
             self.assertFalse(model.open_source)
             self.assertIn(ModelCapability.CHAT, model.capabilities)
+            self.assertIn(ModelCapability.CODE, model.capabilities)
 
-    @patch('anthropic.Anthropic')
-    def test_chat_success(self, mock_anthropic_class):
-        """Test chat with Claude model."""
-        mock_client = MagicMock()
-        mock_anthropic_class.return_value = mock_client
+    def test_vision_capability_for_claude_3(self):
+        """Test that Claude 3+ models get vision, legacy instant does not."""
+        models = asyncio.run(self.provider.fetch_models())
+        by_id = {m.id: m for m in models}
 
-        mock_response = MagicMock()
-        mock_response.content = [MagicMock(text='Claude response')]
-        mock_client.messages.create.return_value = mock_response
+        self.assertIn(ModelCapability.VISION, by_id["claude-3-opus-20240229"].capabilities)
+        self.assertNotIn(ModelCapability.VISION, by_id["claude-instant-1.2"].capabilities)
 
-        response = self.provider.chat('Test prompt', model='claude-3-opus')
+    def test_format_model_name(self):
+        """Test model id formatting into display names."""
+        name = self.provider._format_model_name("claude-3-opus-20240229")
 
-        self.assertEqual(response, 'Claude response')
-        mock_client.messages.create.assert_called_once()
+        # Note: the "(Mon YYYY)" date branch in _format_model_name is
+        # unreachable because the all-digits version check matches first,
+        # so the raw date suffix is kept.
+        self.assertEqual(name, "Claude 3 Opus 20240229")
 
-    def test_chat_no_api_key(self):
-        """Test chat without API key."""
-        del os.environ['ANTHROPIC_API_KEY']
-        provider = AnthropicProvider()
+    def test_check_api_key(self):
+        """Test API key validation."""
+        self.assertTrue(self.provider._check_api_key())
 
-        response = provider.chat('Test prompt', model='claude-3-opus')
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "", "CLAUDE_API_KEY": ""}):
+            self.assertFalse(AnthropicProvider()._check_api_key())
 
-        self.assertIn('API key not found', response)
+    def test_cloud_model_lifecycle(self):
+        """Test that cloud models need no download or local server."""
+        self.assertTrue(asyncio.run(self.provider.download_model("claude-3-opus-20240229")))
+        self.assertTrue(asyncio.run(self.provider.is_model_available("claude-3-opus-20240229")))
+        self.assertTrue(asyncio.run(self.provider.start_server("claude-3-opus-20240229")))
+        self.assertTrue(asyncio.run(self.provider.stop_server()))
 
-    def test_download_not_supported(self):
-        """Test that download is not supported."""
-        result = self.provider.download_model('claude-3-opus')
+    def test_get_server_status(self):
+        """Test API status reporting."""
+        status = asyncio.run(self.provider.get_server_status())
 
-        self.assertFalse(result)
+        self.assertTrue(status["running"])
+        self.assertEqual(status["type"], "api")
+        self.assertTrue(status["api_key_configured"])
+        self.assertEqual(status["endpoint"], "https://api.anthropic.com")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

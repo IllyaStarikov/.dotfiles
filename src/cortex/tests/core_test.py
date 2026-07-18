@@ -2,466 +2,203 @@
 Tests for core.py module.
 """
 
-import tempfile
+import asyncio
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from cortex.core import Cortex
-from cortex.providers import ModelCapability, ModelInfo
-from cortex.system_utils import PerformanceTier, SystemInfo, SystemType
+from cortex.providers import ModelCapability, ProviderRegistry
+from cortex.system_utils import SystemType
+
+from tests.fakes import FakeProvider, make_model, make_system_info
 
 
 class TestCortex(unittest.TestCase):
     """Test Cortex class."""
 
     def setUp(self):
-        """Set up test fixtures."""
-        self.temp_dir = tempfile.mkdtemp()
-        self.config_dir = Path(self.temp_dir) / 'config'
-        self.config_dir.mkdir(parents=True)
+        """Set up a Cortex instance with mocked config and a fake registry."""
+        self.mock_config = MagicMock()
+        self.mock_config.data = {"providers": {}, "current_model": {}}
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_initialization(self, mock_detector, mock_config_class):
-        """Test Cortex initialization."""
-        mock_config = MagicMock()
-        mock_config_class.return_value = mock_config
+        config_patcher = patch("cortex.core.Config", return_value=self.mock_config)
+        detector_patcher = patch("cortex.core.SystemDetector")
 
-        mock_system_info = SystemInfo(
-            os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model='Apple M1 Max',
-            cpu_cores=10,
-            ram_gb=64.0,
-            ram_available_gb=30.0,
-            gpu_info='Apple M1 Max',
-            gpu_memory_gb=48.0,
-            performance_tier=PerformanceTier.ULTRA,
-            has_neural_engine=True,
-            has_cuda=False,
-            has_metal=True,
-            platform_details={},
-        )
-        mock_detector.detect.return_value = mock_system_info
+        self.addCleanup(config_patcher.stop)
+        self.addCleanup(detector_patcher.stop)
 
-        cortex = Cortex()
+        config_patcher.start()
+        mock_detector = detector_patcher.start()
+        mock_detector.detect_system.return_value = make_system_info()
 
-        self.assertIsNotNone(cortex.config)
-        self.assertIsNotNone(cortex.system_info)
-        self.assertEqual(cortex.system_info.os_type, SystemType.MACOS_APPLE_SILICON)
-        self.assertIsNotNone(cortex.providers)
-        self.assertIsNotNone(cortex.statistics)
+        self.cortex = Cortex()
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_list_models_all_providers(self, mock_detector, mock_config_class):
-        """Test listing models from all providers."""
-        mock_config = MagicMock()
-        mock_config.data = {
-            'providers': {
-                'mlx': {'enabled': True},
-                'ollama': {'enabled': True},
-                'claude': {'enabled': True},
-                'openai': {'enabled': True},
-                'gemini': {'enabled': True},
-            }
-        }
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock provider responses
-        for provider in cortex.providers.values():
-            provider.list_models = MagicMock(
-                return_value=[
-                    ModelInfo(
-                        id=f'{provider.name}-model',
-                        name=f'{provider.name.upper()} Model',
-                        provider=provider.name,
-                        size_gb=1.0,
-                        ram_gb=2.0,
-                        context_window=4096,
-                        capabilities=[ModelCapability.CHAT],
-                        online=False,
-                        open_source=True,
-                    )
-                ]
-            )
-
-        models = cortex.list_models()
-
-        # Should have models from all enabled providers
-        self.assertGreater(len(models), 0)
-        provider_names = {m['provider'] for m in models}
-        self.assertIn('mlx', provider_names)
-
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_list_models_with_provider_filter(self, mock_detector, mock_config_class):
-        """Test listing models with provider filter."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'mlx': {'enabled': True}, 'ollama': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock provider responses
-        cortex.providers['mlx'].list_models = MagicMock(
-            return_value=[
-                ModelInfo(
-                    id='mlx-model',
-                    name='MLX Model',
-                    provider='mlx',
-                    size_gb=1.0,
-                    ram_gb=2.0,
-                    context_window=4096,
-                    capabilities=[ModelCapability.CHAT],
-                    online=False,
-                    open_source=True,
-                )
-            ]
-        )
-
-        cortex.providers['ollama'].list_models = MagicMock(
-            return_value=[
-                ModelInfo(
-                    id='ollama-model',
-                    name='Ollama Model',
-                    provider='ollama',
-                    size_gb=2.0,
-                    ram_gb=3.0,
-                    context_window=4096,
-                    capabilities=[ModelCapability.CHAT],
-                    online=False,
-                    open_source=True,
-                )
-            ]
-        )
-
-        # Filter for MLX only
-        models = cortex.list_models(provider='mlx')
-
-        self.assertEqual(len(models), 1)
-        self.assertEqual(models[0]['provider'], 'mlx')
-
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_list_models_with_capability_filter(self, mock_detector, mock_config_class):
-        """Test listing models with capability filter."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'mlx': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock models with different capabilities
-        cortex.providers['mlx'].list_models = MagicMock(
-            return_value=[
-                ModelInfo(
-                    id='chat-model',
-                    name='Chat Model',
-                    provider='mlx',
-                    size_gb=1.0,
-                    ram_gb=2.0,
-                    context_window=4096,
-                    capabilities=[ModelCapability.CHAT],
-                    online=False,
-                    open_source=True,
-                ),
-                ModelInfo(
-                    id='code-model',
-                    name='Code Model',
-                    provider='mlx',
-                    size_gb=2.0,
-                    ram_gb=3.0,
-                    context_window=8192,
+        # Replace the global registry with an isolated one holding fake providers
+        self.mlx_provider = FakeProvider(
+            "mlx",
+            [
+                make_model("mlx-community/chat-model", "mlx"),
+                make_model(
+                    "mlx-community/code-model",
+                    "mlx",
                     capabilities=[ModelCapability.CHAT, ModelCapability.CODE],
-                    online=False,
-                    open_source=True,
+                    ram_gb=8.0,
                 ),
-            ]
+            ],
         )
+        self.ollama_provider = FakeProvider(
+            "ollama", [make_model("llama3.2:latest", "ollama", ram_gb=3.0)]
+        )
+        registry = ProviderRegistry()
+        registry.register(self.mlx_provider)
+        registry.register(self.ollama_provider)
+        self.cortex.registry = registry
 
-        # Filter for code capability
-        models = cortex.list_models(capability='code')
+    def test_initialization(self):
+        """Test Cortex initialization."""
+        self.assertIsNotNone(self.cortex.config)
+        self.assertIsNotNone(self.cortex.system_info)
+        self.assertEqual(self.cortex.system_info.os_type, SystemType.MACOS_APPLE_SILICON)
+        self.assertIsNotNone(self.cortex.registry)
 
-        self.assertEqual(len(models), 1)
-        self.assertEqual(models[0]['id'], 'code-model')
+    def test_list_models_all_providers(self):
+        """Test listing models from all providers."""
+        result = asyncio.run(self.cortex.list_models())
 
-    @patch('cortex.core.ModelRecommender')
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_list_models_recommended(self, mock_detector, mock_config_class, mock_recommender):
+        self.assertIn("models", result)
+        self.assertIn("system_info", result)
+        self.assertEqual(result["total_count"], 3)
+
+        provider_names = {m.provider for m in result["models"]}
+        self.assertIn("mlx", provider_names)
+        self.assertIn("ollama", provider_names)
+
+    def test_list_models_with_provider_filter(self):
+        """Test listing models with provider filter."""
+        result = asyncio.run(self.cortex.list_models(provider="ollama"))
+
+        self.assertEqual(result["total_count"], 1)
+        self.assertEqual(result["models"][0].provider, "ollama")
+
+    def test_list_models_with_capability_filter(self):
+        """Test listing models with capability filter."""
+        result = asyncio.run(self.cortex.list_models(capability="code"))
+
+        self.assertEqual(result["total_count"], 1)
+        self.assertEqual(result["models"][0].id, "mlx-community/code-model")
+
+    def test_list_models_with_max_ram_filter(self):
+        """Test listing models with a maximum RAM budget."""
+        result = asyncio.run(self.cortex.list_models(max_ram=4.0))
+
+        self.assertEqual(result["total_count"], 2)
+        for model in result["models"]:
+            self.assertLessEqual(model.ram_gb, 4.0)
+
+    @patch("cortex.core.ModelRecommender")
+    def test_list_models_recommended(self, mock_recommender):
         """Test listing recommended models."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'mlx': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
+        recommended = [make_model("mlx-community/chat-model", "mlx")]
+        mock_recommender.recommend_models.return_value = recommended
 
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        test_models = [
-            ModelInfo(
-                id='recommended-model',
-                name='Recommended Model',
-                provider='mlx',
-                size_gb=1.0,
-                ram_gb=2.0,
-                context_window=4096,
-                capabilities=[ModelCapability.CHAT],
-                online=False,
-                open_source=True,
-            )
-        ]
-
-        cortex.providers['mlx'].list_models = MagicMock(return_value=test_models)
-        mock_recommender.recommend_models.return_value = test_models
-
-        models = cortex.list_models(recommended=True)
+        result = asyncio.run(self.cortex.list_models(recommended=True))
 
         mock_recommender.recommend_models.assert_called_once()
-        self.assertEqual(len(models), 1)
-        self.assertEqual(models[0]['id'], 'recommended-model')
+        self.assertEqual(result["total_count"], 1)
+        self.assertEqual(result["models"][0].id, "mlx-community/chat-model")
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_switch_model_success(self, mock_detector, mock_config_class):
-        """Test successful model switching."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'openai': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock finding the model
-        test_model = ModelInfo(
-            id='gpt-4',
-            name='GPT-4',
-            provider='openai',
-            size_gb=0,
-            ram_gb=0,
-            context_window=8192,
-            capabilities=[ModelCapability.CHAT],
-            online=True,
-            open_source=False,
-        )
-
-        cortex.providers['openai'].list_models = MagicMock(return_value=[test_model])
-
-        result = cortex.switch_model('gpt-4')
+    def test_set_model_success(self):
+        """Test successful model selection."""
+        result = asyncio.run(self.cortex.set_model("mlx-community/code-model"))
 
         self.assertTrue(result)
-        mock_config.update_current_model.assert_called_once()
+        self.mock_config.update_current_model.assert_called_once()
+        model_info = self.mock_config.update_current_model.call_args[0][0]
+        self.assertEqual(model_info["id"], "mlx-community/code-model")
+        self.assertEqual(model_info["provider"], "mlx")
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_switch_model_not_found(self, mock_detector, mock_config_class):
-        """Test model switching when model not found."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'openai': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        cortex.providers['openai'].list_models = MagicMock(return_value=[])
-
-        result = cortex.switch_model('non-existent-model')
+    def test_set_model_not_found(self):
+        """Test model selection when model not found."""
+        result = asyncio.run(self.cortex.set_model("non-existent-model"))
 
         self.assertFalse(result)
-        mock_config.update_current_model.assert_not_called()
+        self.mock_config.update_current_model.assert_not_called()
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_get_current_model(self, mock_detector, mock_config_class):
-        """Test getting current model."""
-        mock_config = MagicMock()
-        mock_config.data = {
-            'current_model': {'id': 'current-model', 'name': 'Current Model', 'provider': 'mlx'},
-            'providers': {},
-        }
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        current = cortex.get_current_model()
-
-        self.assertIsNotNone(current)
-        self.assertEqual(current['id'], 'current-model')
-
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_download_model_mlx(self, mock_detector, mock_config_class):
-        """Test downloading MLX model."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'mlx': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock MLX provider download
-        cortex.providers['mlx'].download_model = MagicMock(return_value=True)
-
-        result = cortex.download_model('mlx-community/test-model')
+    def test_download_model_with_provider(self):
+        """Test downloading a model through an explicit provider."""
+        result = asyncio.run(self.cortex.download_model("mlx-community/chat-model", provider="mlx"))
 
         self.assertTrue(result)
-        cortex.providers['mlx'].download_model.assert_called_once_with(
-            'mlx-community/test-model', force=False
-        )
+        self.assertEqual(self.mlx_provider.download_calls, ["mlx-community/chat-model"])
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_download_model_ollama(self, mock_detector, mock_config_class):
-        """Test downloading Ollama model."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'ollama': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock Ollama provider download
-        cortex.providers['ollama'].download_model = MagicMock(return_value=True)
-
-        result = cortex.download_model('llama2')
+    def test_download_model_finds_provider(self):
+        """Test downloading resolves the provider by model availability."""
+        result = asyncio.run(self.cortex.download_model("llama3.2:latest"))
 
         self.assertTrue(result)
-        cortex.providers['ollama'].download_model.assert_called_once()
+        self.assertEqual(self.ollama_provider.download_calls, ["llama3.2:latest"])
+        self.assertEqual(self.mlx_provider.download_calls, [])
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_chat_with_current_model(self, mock_detector, mock_config_class):
-        """Test chat with current model."""
-        mock_config = MagicMock()
-        mock_config.data = {
-            'current_model': {'id': 'gpt-4', 'provider': 'openai'},
-            'providers': {'openai': {'enabled': True}},
+    def test_download_model_not_found(self):
+        """Test downloading fails when no provider has the model."""
+        result = asyncio.run(self.cortex.download_model("unknown-model"))
+
+        self.assertFalse(result)
+        self.assertEqual(self.mlx_provider.download_calls, [])
+        self.assertEqual(self.ollama_provider.download_calls, [])
+
+    def test_start_server_with_explicit_model(self):
+        """Test starting a server for an explicit model id."""
+        result = asyncio.run(self.cortex.start_server("mlx-community/chat-model"))
+
+        self.assertTrue(result)
+        self.assertEqual(self.mlx_provider.started_models, ["mlx-community/chat-model"])
+
+    def test_start_server_uses_current_model(self):
+        """Test starting a server falls back to the configured model."""
+        self.mock_config.data["current_model"] = {
+            "id": "llama3.2:latest",
+            "provider": "ollama",
         }
-        mock_config_class.return_value = mock_config
 
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
+        result = asyncio.run(self.cortex.start_server())
 
-        cortex = Cortex()
+        self.assertTrue(result)
+        self.assertEqual(self.ollama_provider.started_models, ["llama3.2:latest"])
 
-        # Mock provider chat
-        cortex.providers['openai'].chat = MagicMock(return_value='Test response')
+    def test_start_server_no_model(self):
+        """Test starting a server with no model configured fails."""
+        result = asyncio.run(self.cortex.start_server())
 
-        response = cortex.chat('Test prompt')
+        self.assertFalse(result)
 
-        self.assertEqual(response, 'Test response')
-        cortex.providers['openai'].chat.assert_called_once_with('Test prompt', model='gpt-4')
+    def test_stop_server(self):
+        """Test stopping a server for a specific provider."""
+        result = asyncio.run(self.cortex.stop_server(provider="mlx"))
 
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_chat_with_specified_model(self, mock_detector, mock_config_class):
-        """Test chat with specified model."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {'claude': {'enabled': True}}}
-        mock_config_class.return_value = mock_config
+        self.assertTrue(result)
+        self.assertEqual(self.mlx_provider.stop_calls, 1)
 
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
+    def test_stop_server_no_provider(self):
+        """Test stopping a server with no provider configured fails."""
+        result = asyncio.run(self.cortex.stop_server())
 
-        cortex = Cortex()
+        self.assertFalse(result)
 
-        # Mock finding and using the model
-        cortex.providers['claude'].chat = MagicMock(return_value='Claude response')
+    def test_get_status(self):
+        """Test getting system status."""
+        self.mock_config.data["current_model"] = {"id": "test-model", "provider": "mlx"}
 
-        response = cortex.chat('Test prompt', model='claude-3-opus')
+        status = asyncio.run(self.cortex.get_status())
 
-        self.assertEqual(response, 'Claude response')
-
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_get_logs(self, mock_detector, mock_config_class):
-        """Test getting logs."""
-        mock_config = MagicMock()
-        mock_config.data = {'providers': {}}
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = MagicMock()
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock statistics logs
-        cortex.statistics.get_recent_sessions = MagicMock(
-            return_value=[
-                {'session_id': 'test-session', 'model': 'gpt-4', 'timestamp': '2024-01-01T12:00:00'}
-            ]
-        )
-
-        logs = cortex.get_logs(lines=5)
-
-        self.assertIsInstance(logs, list)
-        cortex.statistics.get_recent_sessions.assert_called_once_with(5)
-
-    @patch('cortex.core.Config')
-    @patch('cortex.core.SystemDetector')
-    def test_get_status(self, mock_detector, mock_config_class):
-        """Test getting status."""
-        mock_config = MagicMock()
-        mock_config.data = {
-            'current_model': {'id': 'test-model', 'provider': 'mlx'},
-            'providers': {},
-        }
-        mock_config_class.return_value = mock_config
-
-        mock_system_info = SystemInfo(
-            os_type=SystemType.MACOS_APPLE_SILICON,
-            cpu_model='Apple M1 Max',
-            cpu_cores=10,
-            ram_gb=64.0,
-            ram_available_gb=30.0,
-            gpu_info='Apple M1 Max',
-            gpu_memory_gb=48.0,
-            performance_tier=PerformanceTier.ULTRA,
-            has_neural_engine=True,
-            has_cuda=False,
-            has_metal=True,
-            platform_details={},
-        )
-        mock_detector.detect.return_value = mock_system_info
-
-        cortex = Cortex()
-
-        # Mock server status checks
-        with patch('subprocess.run') as mock_run:
-            mock_run.return_value = MagicMock(returncode=0)
-
-            status = cortex.get_status()
-
-            self.assertIn('system', status)
-            self.assertIn('current_model', status)
-            self.assertIn('servers', status)
-            self.assertEqual(status['system']['cpu_model'], 'Apple M1 Max')
-            self.assertEqual(status['system']['ram_gb'], 64.0)
+        self.assertIn("system", status)
+        self.assertIn("current_model", status)
+        self.assertIn("providers", status)
+        self.assertEqual(status["current_model"]["id"], "test-model")
+        self.assertEqual(status["system"].cpu_model, "Apple M1 Max")
+        self.assertIn("mlx", status["providers"])
+        self.assertIn("ollama", status["providers"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
