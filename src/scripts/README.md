@@ -17,9 +17,9 @@ Custom productivity tools that automate daily development tasks.
 | **install-ruby-lsp** | Ruby LSP installer                       | `install-ruby-lsp`    |
 | **bugreport**        | Comprehensive diagnostic report          | `bugreport`           |
 | **nvim-debug**       | Neovim diagnostic tool                   | `nvim-debug`          |
-| **services**         | Service manager with PID tracking        | `services start`      |
 | **validate-configs** | Config standards validation              | `validate-configs`    |
 | **cortex**           | Local AI assistant wrapper               | `cortex`              |
+| **displaysleep**     | Keep the display asleep (macOS)          | `displaysleep`        |
 | **common.sh**        | Compatibility wrapper around src/lib/    | Sourced by scripts    |
 
 ## Key Features
@@ -69,6 +69,22 @@ tmux-utils memory      # Memory usage
 
 Smart icons, real-time monitoring, optimized for tmux status bar.
 
+### displaysleep - Keep the Display Asleep (macOS)
+
+```bash
+displaysleep                 # Keep the screen off (10s quit window)
+displaysleep -t 5            # Shorter quit window
+displaysleep -k              # Also keep the Mac awake (only the screen sleeps)
+displaysleep --idle-resleep  # Don't slam the screen off during active use
+```
+
+Loops `pmset displaysleepnow` and watches `HIDIdleTime` so the display stays
+dark while the Mac keeps working. When you wake the screen, a countdown gives
+you a window to quit (Ctrl-C) before it sleeps again. A heartbeat re-sleep
+(every 30s) plus a startup warning handle apps (Theine, video players) that
+otherwise keep the display on. By default the Mac follows its normal power
+settings; `--keep-awake` blocks system idle sleep so only the display sleeps.
+
 ## Quick Start
 
 ```bash
@@ -105,5 +121,6 @@ extract archive.tar.gz # Extract files
 
 ```bash
 ./test/runner.zsh unit/scripts/fixy
+./test/runner.zsh unit/scripts/displaysleep_test.zsh
 ./test/runner.zsh functional/scripts
 ```

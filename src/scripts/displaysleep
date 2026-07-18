@@ -1,0 +1,287 @@
+#!/usr/bin/env zsh
+# displaysleep - Keep the macOS display asleep while the Mac keeps running
+#
+# DESCRIPTION:
+#   Repeatedly puts the display to sleep (the same effect as
+#   `pmset displaysleepnow`) so the screen stays dark while the system keeps
+#   working. When you wake the display, you get a short "quit window" with a
+#   live countdown: press Ctrl-C to stop, otherwise the screen goes back to
+#   sleep and the loop continues.
+#
+#   By default the Mac follows its normal power settings (it may still
+#   idle-sleep). Pass --keep-awake to also prevent system idle sleep
+#   (caffeinate -i) so ONLY the display sleeps.
+#
+# USAGE:
+#   displaysleep [options]
+#
+#   displaysleep                 # Keep the display asleep (10s quit window)
+#   displaysleep -t 5            # Shorter 5-second quit window
+#   displaysleep -k              # Also keep the Mac awake (no system sleep)
+#   displaysleep --idle-resleep  # Re-sleep only after the screen sits idle
+#   displaysleep -h              # Show help
+#
+# NOTES:
+#   macOS only. Uses HIDIdleTime (ioreg) to detect when you wake the display,
+#   and a periodic heartbeat re-sleep so apps that prevent display sleep
+#   (Theine, video players, ...) don't keep the screen on indefinitely.
+#
+# Style Guide: https://google.github.io/styleguide/shellguide.html
+
+# Source common library (provides is_macos, command_exists, print_color,
+# colorize, color vars, INFO/WARN/ERROR, die + EXIT_CODES).
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/common.sh"
+
+# $EPOCHSECONDS for cheap, fork-free wall-clock timing in the main loop.
+zmodload zsh/datetime 2>/dev/null
+
+# ============================================================================
+# Defaults (override via flags)
+# ============================================================================
+GRACE=10            # quit window (seconds) after the display is woken
+POLL=2              # idle poll interval (seconds)
+RESLEEP_INTERVAL=30 # heartbeat: re-issue display sleep at least this often
+AWAKE_THRESHOLD=3   # idle seconds below this == genuine recent input
+IDLE_RESLEEP=0      # 1 = re-sleep only after GRACE seconds of inactivity
+KEEP_AWAKE=0        # 1 = also run caffeinate -i to block system idle sleep
+QUIET=0             # 1 = suppress per-cycle status lines
+CAFFEINATE_PID=""   # PID of our caffeinate child, if started
+
+# ============================================================================
+# Help
+# ============================================================================
+print_help() {
+  cat <<'EOF'
+displaysleep - Keep the macOS display asleep while the Mac keeps running
+
+Usage:
+  displaysleep [options]
+
+Options:
+  -t, --timeout <secs>           Quit window after a wake before re-sleeping
+                                 (default: 10).
+  -p, --poll <secs>              Idle poll interval (default: 2, minimum 1).
+  -r, --resleep-interval <secs>  Heartbeat: re-issue display sleep at least
+                                 this often, to counter apps that keep the
+                                 screen on (default: 30).
+  -k, --keep-awake               Also prevent system idle sleep (caffeinate -i)
+                                 so ONLY the display sleeps. Off by default.
+      --idle-resleep             Re-sleep only after the screen has sat idle
+                                 for <timeout> seconds, instead of a fixed
+                                 quit window (gentler during active use).
+  -q, --quiet                    Suppress per-cycle status lines.
+  -h, --help                     Show this help and exit.
+
+Behavior:
+  Puts the display to sleep, then watches for input that wakes it. On wake you
+  get a countdown ("re-sleeping in Ns (Ctrl-C to quit)"); press Ctrl-C to stop
+  with the display left awake, or wait it out and the screen sleeps again.
+
+Examples:
+  displaysleep                   Keep the display asleep (10s quit window).
+  displaysleep -t 5              Snappier 5-second quit window.
+  displaysleep -k                Keep the Mac fully awake; only the screen off.
+  displaysleep --idle-resleep    Don't slam the screen off during active use.
+EOF
+}
+
+# ============================================================================
+# Helpers
+# ============================================================================
+
+# Validate that a flag value is a non-negative integer; die otherwise.
+# Usage: require_num <value> <flag-name>
+require_num() {
+  is_numeric "$1" || die MISUSE "Invalid value for $2: '$1' (need whole seconds)"
+}
+
+# Echo integer seconds since the last keyboard/mouse input, from HIDIdleTime
+# (nanoseconds). On any parse failure echo a large sentinel so callers treat
+# "unknown" as deeply idle and never misfire a wake.
+hid_idle_seconds() {
+  local line ns
+  line="$(ioreg -c IOHIDSystem 2>/dev/null | grep -m1 '"HIDIdleTime"')"
+  ns="${line##*= }"   # drop everything up to and including "= "
+  ns="${ns//[^0-9]/}" # keep digits only
+  [[ -z "$ns" ]] && {
+    echo 99999
+    return
+  }
+  echo $((ns / 1000000000)) # nanoseconds -> seconds (64-bit integer math)
+}
+
+# Print the names (one per line) of OTHER processes currently preventing
+# display sleep, excluding our own caffeinate child. Uses sed, not awk:
+# macOS BWK awk lacks the 3-argument match() extension.
+conflicting_display_assertions() {
+  pmset -g assertions 2>/dev/null \
+    | grep 'PreventUserIdleDisplaySleep named:' \
+    | sed -E 's/^[[:space:]]*pid ([0-9]+)\(([^)]+)\).*/\1 \2/' \
+    | while read -r pid name; do
+      [[ "$pid" == "$CAFFEINATE_PID" ]] && continue
+      echo "$name"
+    done \
+    | sort -u
+}
+
+# Optionally keep the SYSTEM awake (but still allow display sleep). -i asserts
+# PreventUserIdleSystemSleep only; never -d, which would block display sleep.
+# -w $$ ties caffeinate's lifetime to this script as a safety net even if the
+# trap is bypassed.
+start_caffeinate() {
+  ((KEEP_AWAKE)) || return 0
+  if ! command_exists caffeinate; then
+    WARN "caffeinate not found; system may idle-sleep"
+    return 0
+  fi
+  caffeinate -i -w $$ &
+  CAFFEINATE_PID=$!
+}
+
+# Interruptible fixed-window countdown on a single repainted line. \033[K
+# clears any leftover characters from a longer previous line; sleep 1 keeps
+# Ctrl-C latency <= 1s (sleep runs in the foreground, so SIGINT fires on_exit).
+countdown_resleep() {
+  local secs="$1" r
+  for ((r = secs; r > 0; r--)); do
+    print -n "\r${YELLOW}Display woke - re-sleeping in ${r}s (Ctrl-C to quit)${NC}\033[K"
+    sleep 1
+  done
+  print -n "\r\033[K"
+}
+
+# Interruptible idle-gated re-sleep (--idle-resleep): wait until there have
+# been GRACE continuous seconds of no input, so the screen never slams off
+# mid-use. Continued activity keeps resetting the wait.
+grace_idle() {
+  local idle
+  while :; do
+    idle=$(hid_idle_seconds)
+    if ((idle >= GRACE)); then
+      print -n "\r\033[K"
+      return
+    fi
+    print -n "\r${YELLOW}Display woke - re-sleeping after ${GRACE}s idle"
+    print -n " (idle=${idle}s, Ctrl-C to quit)${NC}\033[K"
+    sleep "$POLL"
+  done
+}
+
+# Clean shutdown: clear any countdown line, release caffeinate, exit. zsh does
+# not auto-exit from a trap, so exit explicitly.
+on_exit() {
+  print -n "\r\033[K"
+  [[ -n "$CAFFEINATE_PID" ]] && kill "$CAFFEINATE_PID" 2>/dev/null
+  ((QUIET)) || print_color green "Stopped. Display will behave normally."
+  exit 0
+}
+
+# ============================================================================
+# Argument parsing (no side effects here, so --help stays instant)
+# ============================================================================
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h | --help)
+      print_help
+      exit 0
+      ;;
+    -t | --timeout)
+      require_num "${2:-}" "$1"
+      GRACE="$2"
+      shift 2
+      ;;
+    -p | --poll)
+      require_num "${2:-}" "$1"
+      POLL="$2"
+      shift 2
+      ;;
+    -r | --resleep-interval)
+      require_num "${2:-}" "$1"
+      RESLEEP_INTERVAL="$2"
+      shift 2
+      ;;
+    -k | --keep-awake)
+      KEEP_AWAKE=1
+      shift
+      ;;
+    --idle-resleep)
+      IDLE_RESLEEP=1
+      shift
+      ;;
+    -q | --quiet)
+      QUIET=1
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      die MISUSE "Unknown option: $1"
+      ;;
+    *)
+      die MISUSE "Unexpected argument: $1"
+      ;;
+  esac
+done
+
+((POLL >= 1)) || die MISUSE "--poll must be at least 1 second"
+
+# ============================================================================
+# Startup checks
+# ============================================================================
+is_macos || die GENERAL_ERROR "displaysleep is macOS-only"
+command_exists pmset || die DEPENDENCY_ERROR "pmset not found"
+command_exists ioreg || die DEPENDENCY_ERROR "ioreg not found"
+
+start_caffeinate
+
+conflicts="$(conflicting_display_assertions)"
+if [[ -n "$conflicts" ]]; then
+  WARN "Apps preventing display sleep (may fight this tool): ${conflicts//$'\n'/, }"
+  WARN "Heartbeat re-sleep every ${RESLEEP_INTERVAL}s will counteract them."
+fi
+
+trap on_exit INT TERM
+
+if ((!QUIET)); then
+  print_color cyan "displaysleep running - Ctrl-C to quit."
+  ((KEEP_AWAKE)) && print_color cyan "Keeping the Mac awake (system idle sleep blocked)."
+fi
+
+# ============================================================================
+# Main loop
+# ============================================================================
+while :; do
+  pmset displaysleepnow
+  ((QUIET)) || print_color cyan "Display asleep."
+  last_sleep=$EPOCHSECONDS
+  woke=0
+
+  # Watch: stay here until a genuine, input-driven wake is detected.
+  while ((!woke)); do
+    sleep "$POLL"
+    idle=$(hid_idle_seconds)
+    now=$EPOCHSECONDS
+
+    # Heartbeat re-sleep: counters wakes that produce no HID input (e.g. apps
+    # asserting PreventUserIdleDisplaySleep). Skipped right after a sleep.
+    if ((now - last_sleep >= RESLEEP_INTERVAL)); then
+      pmset displaysleepnow
+      last_sleep=$now
+    fi
+
+    # Genuine wake: recent input (idle low) AND past the brief settle window
+    # since the last sleep, so the launch keypress is never counted.
+    if ((idle < AWAKE_THRESHOLD && now - last_sleep > AWAKE_THRESHOLD)); then
+      woke=1
+    fi
+  done
+
+  if ((IDLE_RESLEEP)); then
+    grace_idle
+  else
+    countdown_resleep "$GRACE"
+  fi
+done
