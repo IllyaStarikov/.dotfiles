@@ -143,7 +143,7 @@ Make it executable and run via `runner.zsh`.
 
 The suite includes:
 
-- **80+ test files** across all categories
+- **77 test files** across all categories
 - **Unit tests** for each script and configuration
 - **Functional tests** for plugin functionality
 - **Integration tests** for multi-component workflows

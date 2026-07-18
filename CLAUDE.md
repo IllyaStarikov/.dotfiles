@@ -166,16 +166,16 @@ cortex agent on/off    # Toggle AI agent mode
 
 ## Repository Statistics
 
-### Actual Metrics (April 2026, post production-readiness audit)
+### Actual Metrics (July 2026, post production-readiness audit)
 
-- **~54 Neovim plugins** managed by lazy.nvim (per `src/neovim/lazy-lock.json`)
+- **52 Neovim plugins** managed by lazy.nvim (per `src/neovim/lazy-lock.json`)
 - **3 Zsh plugins** via Zinit (fast-syntax-highlighting, autosuggestions, completions)
 - **0 tmux plugins** (pure configuration, no TPM - simpler and faster)
-- **76 `*_test.{zsh,lua,sh}` test files** under `test/` (run `find test -name '*_test.zsh' -o -name '*_test.lua' -o -name '*_test.sh' | wc -l` to verify) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories. The exact subset run by `./test/runner.zsh --all` depends on category discovery; consult the runner output.
+- **77 `*_test.{zsh,lua,sh}` test files** under `test/` (run `find test -name '*_test.zsh' -o -name '*_test.lua' -o -name '*_test.sh' | wc -l` to verify) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories. The exact subset run by `./test/runner.zsh --all` depends on category discovery; consult the runner output.
 - **15 utility scripts** in `src/scripts/` (excluding common.sh, the shared shim)
 - **7 language configs** in `src/language/` (ruff.toml, stylua.toml, .clang-format, clangd_config.yaml, latexmkrc, markdownlint.json, pyproject.toml)
 - **4 TokyoNight theme variants** (day, night, moon, storm) plus 16 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
-- **6 zsh library modules** in `src/lib/` (colors, config, die, installer, logging, utils — array/cli/hash/json/types/yaml were removed in the April audit; callstack/help/math/ssh/textwrap/unit were removed in the May follow-up audit, all as unused-in-zsh code)
+- **6 zsh library modules** in `src/lib/` (colors, config, die, installer, logging, utils) plus the two loaders `init.zsh`/`lib.zsh` — 8 `.zsh` files total (array/cli/hash/json/types/yaml were removed in the April audit; callstack/help/math/ssh/textwrap/unit were removed in the May follow-up audit, all as unused-in-zsh code)
 - **20+ languages** with full LSP support
 
 ## High-Level Architecture
@@ -271,7 +271,7 @@ Test Categories:
 src/neovim/
 ├── core/           # Performance tuning, options, globals
 ├── keymaps/        # Categorized key bindings
-├── plugins/        # ~54 plugin specifications (in plugins.lua)
+├── plugins/        # 52 plugin specifications (in plugins.lua)
 ├── snippets/       # Language-specific snippets
 ├── colors/         # Per-colorscheme highlight overrides
 ├── init.lua        # Entry point
@@ -385,7 +385,7 @@ nvim -V9 /tmp/nvim.log                # Verbose logging
 
 ### Zsh vim mode recursion error
 
-Fixed by deleting any existing `zle-keymap-select` widget before Starship initializes (some plugins create the same widget Starship wants to install). See `src/zsh/zshrc:199-206`.
+Fixed by deleting any existing `zle-keymap-select` widget before Starship initializes (some plugins create the same widget Starship wants to install) — see the block just above `starship init` in `src/zsh/zshrc`. After Starship initializes, the widget is REPLACED (never wrapped — wrapping is what recursed) with a leaf function that also sets the vi-mode cursor shape (beam insert / block normal) and calls `zle reset-prompt`, matching Starship's original widget body.
 
 ### Theme switching issues
 

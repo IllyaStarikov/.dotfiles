@@ -46,19 +46,15 @@
 
 | Command   | Description                   | Example            |
 | --------- | ----------------------------- | ------------------ |
-| `mkd`     | Make directory and enter      | `mkd new-project`  |
-| `take`    | Create and enter directory    | `take new-folder`  |
 | `trash`   | Move to trash (safer than rm) | `trash file.txt`   |
 | `cleanup` | Remove all .DS_Store files    | `cleanup`          |
 | `extract` | Extract any archive           | `extract file.zip` |
 
 ### Finding Files
 
-| Command | Description             | Example      |
-| ------- | ----------------------- | ------------ |
-| `ff`    | Interactive file finder | `ff`         |
-| `fd`    | Find files/directories  | `fd pattern` |
-| `fif`   | Find in files           | `fif "TODO"` |
+| Command | Description            | Example      |
+| ------- | ---------------------- | ------------ |
+| `fd`    | Find files/directories | `fd pattern` |
 
 ## System Commands
 
@@ -190,21 +186,11 @@
 
 ## Custom Functions
 
-### Productivity
-
-| Function | Description           | Usage         |
-| -------- | --------------------- | ------------- |
-| `mcd`    | mkdir and cd          | `mcd new-dir` |
-| `fh`     | Fuzzy history search  | `fh`          |
-| `fco`    | Fuzzy checkout branch | `fco`         |
-| `fcoc`   | Fuzzy checkout commit | `fcoc`        |
-
 ### Development
 
 | Function | Description         | Usage               |
 | -------- | ------------------- | ------------------- |
-| `gi`     | Generate .gitignore | `gi python node`    |
-| `server` | Start HTTP server   | `server 8080`       |
+| `serve`  | Start HTTP server   | `serve 8080`        |
 | `json`   | Pretty print JSON   | `echo '{}' \| json` |
 
 ## Environment Variables
