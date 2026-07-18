@@ -8,7 +8,7 @@ import asyncio
 import unittest
 from unittest.mock import MagicMock, patch
 
-from cortex.providers import ModelCapability, ProviderType
+from cortex.providers import ModelCapability, ProviderRegistry, ProviderType
 from cortex.providers.google import GoogleProvider
 
 from tests.fakes import make_cm, make_response, make_session_class
@@ -30,11 +30,19 @@ class TestGoogleProvider(unittest.TestCase):
 
     def test_initialization(self):
         """Test Google provider initialization."""
-        # BaseProvider derives the registry name from the class name
-        self.assertEqual(self.provider.name, "google")
+        # Canonical name matches the config key and ModelInfo.provider stamps
+        # ("gemini") — the class-derived "google" broke registry lookups.
+        self.assertEqual(self.provider.name, "gemini")
         self.assertEqual(self.provider.provider_type, ProviderType.ONLINE)
         self.assertTrue(self.provider.requires_api_key)
         self.assertEqual(self.provider.api_key, FAKE_KEY)
+
+    def test_registry_resolves_canonical_name_and_alias(self):
+        """get_provider must resolve both 'gemini' and the legacy 'google'."""
+        registry = ProviderRegistry()
+        registry.register(self.provider)
+        self.assertIs(registry.get_provider("gemini"), self.provider)
+        self.assertIs(registry.get_provider("google"), self.provider)
 
     def test_fetch_models_known_list_without_key(self):
         """Test that the known model list is served without an API key (no HTTP)."""

@@ -335,5 +335,6 @@ class StatisticsTracker:
         return rankings[:20]  # Top 20 models
 
 
-# Global statistics tracker
-stats_tracker = StatisticsTracker()
+# (No module-level tracker: instantiating StatisticsTracker at import time
+# created config/cortex/stats directories as an import side effect, and
+# nothing ever imported the global. Construct one where it's needed.)

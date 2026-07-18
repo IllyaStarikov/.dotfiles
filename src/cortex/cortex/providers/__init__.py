@@ -57,10 +57,16 @@ class ModelInfo:
 class BaseProvider(ABC):
     """Abstract base class for all model providers."""
 
+    # Registry/config name. Defaults to the class-name stem; providers whose
+    # user-facing name differs from their class name (claude, gemini) override
+    # this so registry lookups match config keys and ModelInfo.provider.
+    name: str = ""
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize provider with configuration."""
         self.config = config or {}
-        self.name = self.__class__.__name__.replace("Provider", "").lower()
+        if not self.name:
+            self.name = self.__class__.__name__.replace("Provider", "").lower()
         self.models_cache: List[ModelInfo] = []
         self.last_fetch = None
 
@@ -176,9 +182,15 @@ class ProviderRegistry:
             del self._providers[name]
             logger.info(f"Unregistered provider: {name}")
 
+    # Legacy/user-typed spellings mapped to canonical registry names
+    _ALIASES = {"anthropic": "claude", "google": "gemini"}
+
     def get_provider(self, name: str) -> Optional[BaseProvider]:
-        """Get a specific provider by name."""
-        return self._providers.get(name)
+        """Get a specific provider by name (aliases accepted)."""
+        provider = self._providers.get(name)
+        if provider is None:
+            provider = self._providers.get(self._ALIASES.get(name, ""))
+        return provider
 
     def list_providers(self) -> List[str]:
         """List all registered provider names."""

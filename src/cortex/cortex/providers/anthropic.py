@@ -19,6 +19,11 @@ logger = logging.getLogger(__name__)
 class AnthropicProvider(BaseProvider):
     """Provider for Anthropic Claude models."""
 
+    # Canonical name: matches the config key, ModelInfo.provider stamps, and
+    # user-facing docs ("claude") — NOT the class-name-derived "anthropic",
+    # which made every registry lookup for this provider return None.
+    name = "claude"
+
     ANTHROPIC_API = "https://api.anthropic.com/v1"
 
     @property
@@ -293,10 +298,10 @@ class AnthropicProvider(BaseProvider):
         formatted_parts = []
 
         for part in parts:
-            if part.replace(".", "").isdigit():
-                # Version numbers
-                formatted_parts.append(part)
-            elif len(part) == 8 and part.isdigit():
+            # Date check MUST precede the version check: an 8-digit date is
+            # also all-digits, so the old order made this branch unreachable
+            # and IDs rendered as "Claude 3 Opus 20240229".
+            if len(part) == 8 and part.isdigit():
                 # Date in YYYYMMDD format
                 try:
                     year = part[:4]
@@ -320,6 +325,9 @@ class AnthropicProvider(BaseProvider):
                 except (ValueError, IndexError, KeyError):
                     # Date parsing failed, skip this part
                     pass
+            elif part.replace(".", "").isdigit():
+                # Version numbers (3, 3.5, ...) stay as-is
+                formatted_parts.append(part)
             else:
                 formatted_parts.append(part.title())
 

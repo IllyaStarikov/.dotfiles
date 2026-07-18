@@ -10,7 +10,7 @@ import asyncio
 import unittest
 from unittest.mock import patch
 
-from cortex.providers import ModelCapability, ProviderType
+from cortex.providers import ModelCapability, ProviderRegistry, ProviderType
 from cortex.providers.anthropic import AnthropicProvider
 
 FAKE_KEY = "sk-ant-test-fake-key-1234567890"
@@ -28,11 +28,26 @@ class TestAnthropicProvider(unittest.TestCase):
 
     def test_initialization(self):
         """Test Anthropic provider initialization."""
-        # BaseProvider derives the registry name from the class name
-        self.assertEqual(self.provider.name, "anthropic")
+        # Canonical name matches the config key and ModelInfo.provider stamps
+        # ("claude") — the class-derived "anthropic" broke registry lookups.
+        self.assertEqual(self.provider.name, "claude")
         self.assertEqual(self.provider.provider_type, ProviderType.ONLINE)
         self.assertTrue(self.provider.requires_api_key)
         self.assertEqual(self.provider.api_key, FAKE_KEY)
+
+    def test_registry_resolves_canonical_name_and_alias(self):
+        """get_provider must resolve both 'claude' and the legacy 'anthropic'."""
+        registry = ProviderRegistry()
+        registry.register(self.provider)
+        self.assertIs(registry.get_provider("claude"), self.provider)
+        self.assertIs(registry.get_provider("anthropic"), self.provider)
+
+    def test_format_model_name_renders_dates(self):
+        """8-digit date suffixes render as (Mon YYYY), not raw digits."""
+        self.assertEqual(
+            self.provider._format_model_name("claude-3-opus-20240229"),
+            "Claude 3 Opus (Feb 2024)",
+        )
 
     def test_fetch_models(self):
         """Test listing Anthropic models from the known catalog (no HTTP)."""
@@ -60,13 +75,11 @@ class TestAnthropicProvider(unittest.TestCase):
         self.assertNotIn(ModelCapability.VISION, by_id["claude-instant-1.2"].capabilities)
 
     def test_format_model_name(self):
-        """Test model id formatting into display names."""
-        name = self.provider._format_model_name("claude-3-opus-20240229")
-
-        # Note: the "(Mon YYYY)" date branch in _format_model_name is
-        # unreachable because the all-digits version check matches first,
-        # so the raw date suffix is kept.
-        self.assertEqual(name, "Claude 3 Opus 20240229")
+        """Test model id formatting into display names (versions kept as-is)."""
+        self.assertEqual(
+            self.provider._format_model_name("claude-3.5-sonnet"),
+            "Claude 3.5 Sonnet",
+        )
 
     def test_check_api_key(self):
         """Test API key validation."""

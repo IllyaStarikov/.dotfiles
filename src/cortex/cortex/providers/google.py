@@ -18,6 +18,10 @@ logger = logging.getLogger(__name__)
 class GoogleProvider(BaseProvider):
     """Provider for Google Gemini models."""
 
+    # Canonical name: matches the config key and ModelInfo.provider ("gemini"),
+    # not the class-name-derived "google" (see BaseProvider.name).
+    name = "gemini"
+
     GOOGLE_AI_API = "https://generativelanguage.googleapis.com/v1beta"
 
     # Minimal fallback for when API is unavailable
