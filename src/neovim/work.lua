@@ -8,9 +8,12 @@ local M = {}
 -- Work config path - uses the private repo
 local WORK_CONFIG_PATH = vim.g.dotfiles .. "/.dotfiles.private"
 
--- Load HOSTS configuration from private repo
+-- Load hosts configuration from the private repo.
+-- (The mapping lives at config/hosts.json — glob pattern -> company name —
+-- the same file work-init.lua reads. The old code looked for a top-level
+-- HOSTS file that never existed, so no profile ever loaded.)
 local function load_hosts_config()
-  local hosts_file = WORK_CONFIG_PATH .. "/HOSTS"
+  local hosts_file = WORK_CONFIG_PATH .. "/config/hosts.json"
   if vim.fn.filereadable(hosts_file) == 0 then
     return nil
   end
@@ -32,7 +35,6 @@ end
 
 -- Get work profile based on hostname
 local function get_work_profile()
-  -- Check HOSTS file for profile mapping
   local hosts = load_hosts_config()
   if not hosts then
     return nil
@@ -45,10 +47,10 @@ local function get_work_profile()
     return hosts[hostname]
   end
 
-  -- Try pattern matching for wildcards
+  -- Glob pattern matching: escape literal dots BEFORE expanding wildcards so
+  -- "*.corp.google.com" can't match "Xcorp-google-com" style hostnames.
   for pattern, profile in pairs(hosts) do
-    -- Convert simple wildcards to Lua patterns
-    local lua_pattern = pattern:gsub("*", ".*")
+    local lua_pattern = pattern:gsub("%.", "%%."):gsub("%*", ".*"):gsub("%?", ".")
     if hostname:match("^" .. lua_pattern .. "$") then
       return profile
     end
@@ -78,9 +80,9 @@ local function load_work_vimrc(profile)
   end
 
   if type(profile) == "string" then
-    -- Simple string profile - load from profile directory
+    -- Simple string profile - company profiles live under companies/<name>/
     -- Try work_nvim.lua first (preferred naming)
-    local work_nvim_path = WORK_CONFIG_PATH .. "/" .. profile .. "/work_nvim.lua"
+    local work_nvim_path = WORK_CONFIG_PATH .. "/companies/" .. profile .. "/work_nvim.lua"
     if vim.fn.filereadable(work_nvim_path) == 1 then
       local ok, work_config = pcall(dofile, work_nvim_path)
       if ok and work_config and work_config.setup then
@@ -90,7 +92,7 @@ local function load_work_vimrc(profile)
     end
 
     -- Fall back to vimrc.lua (legacy naming)
-    local vimrc_path = WORK_CONFIG_PATH .. "/" .. profile .. "/vimrc.lua"
+    local vimrc_path = WORK_CONFIG_PATH .. "/companies/" .. profile .. "/vimrc.lua"
     safe_dofile(vimrc_path)
   elseif type(profile) == "table" then
     -- Complex profile with specific settings
@@ -139,7 +141,7 @@ function M.apply_overrides()
   -- Source shell aliases if they exist
   local aliases_path
   if type(profile) == "string" then
-    aliases_path = WORK_CONFIG_PATH .. "/" .. profile .. "/aliases.sh"
+    aliases_path = WORK_CONFIG_PATH .. "/companies/" .. profile .. "/aliases.sh"
   elseif type(profile) == "table" and profile.aliases then
     aliases_path = WORK_CONFIG_PATH .. "/" .. profile.aliases
   end

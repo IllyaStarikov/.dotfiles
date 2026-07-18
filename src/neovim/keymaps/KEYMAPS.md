@@ -12,9 +12,11 @@
 | `f`    | Find (Telescope)             |
 | `g`    | Git                          |
 | `l`    | Language (filetype-specific) |
+| `m`    | Minuet (AI completion)       |
 | `n`    | Notes (notifications)        |
 | `o`    | Open (explorer, terminal)    |
 | `q`    | Quickfix                     |
+| `t`    | Trouble (diagnostics lists)  |
 | `w`    | Window                       |
 | `x`    | Scratch                      |
 
@@ -56,26 +58,28 @@
 
 ## Code (`<leader>c`)
 
-| Key  | Action                   |
-| ---- | ------------------------ |
-| `cr` | Run file                 |
-| `cm` | Make (pick target)       |
-| `cM` | Make (default)           |
-| `cs` | Symbol outline           |
-| `cS` | Symbol navigator         |
-| `cn` | Next symbol              |
-| `cp` | Previous symbol          |
-| `cN` | Next symbol (parent)     |
-| `cP` | Previous symbol (parent) |
-| `cg` | Go to symbol             |
-| `cf` | Find symbols             |
-| `ca` | Code action              |
-| `cR` | Rename                   |
-| `ch` | Hover                    |
-| `cd` | Go to definition         |
-| `cD` | Go to declaration        |
-| `ci` | Go to implementation     |
-| `ct` | Go to type definition    |
+| Key  | Action                           |
+| ---- | -------------------------------- |
+| `cl` | Run line (SnipRun)               |
+| `cr` | Run selection (visual, SnipRun)  |
+| `cR` | Reset runner                     |
+| `cc` | Clear runner output              |
+| `cm` | Make (pick target)               |
+| `cM` | Make (default)                   |
+| `cn` | Next symbol                      |
+| `cp` | Previous symbol                  |
+| `cN` | Next symbol (parent)             |
+| `cP` | Previous symbol (parent)         |
+| `cg` | Go to symbol                     |
+| `cF` | Find symbols (Telescope)         |
+| `ca` | Code action                      |
+| `ch` | Hover                            |
+| `cd` | Go to definition                 |
+| `cD` | Go to declaration                |
+| `ci` | Go to implementation             |
+| `ct` | Go to type definition            |
+
+Symbol outline lives under Open (`<leader>oa`/`oA`); rename is `<leader>rn`.
 
 ## Debug (`<leader>d`)
 
@@ -217,7 +221,8 @@
 | `oe`  | Explorer            |
 | `oE`  | Explorer (file dir) |
 | `of`  | Explorer float      |
-| `oo`  | Oil                 |
+| `oa`  | Aerial outline      |
+| `oA`  | Aerial navigator    |
 | `ot`  | Terminal            |
 | `oT`  | Terminal float      |
 | `os`  | Terminal split      |
@@ -237,14 +242,37 @@
 | `qL` | Close location list |
 | `qf` | Find in quickfix    |
 
+## Trouble (`<leader>t`)
+
+| Key  | Action                 |
+| ---- | ---------------------- |
+| `tt` | Diagnostics            |
+| `tb` | Buffer diagnostics     |
+| `tq` | Quickfix list          |
+| `tl` | Location list          |
+| `tr` | LSP references         |
+| `ts` | Symbols                |
+| `tT` | Todo comments          |
+
+`gR` also opens LSP references in Trouble.
+
+## Minuet (`<leader>m`)
+
+| Key  | Action                     |
+| ---- | -------------------------- |
+| `mo` | Use Ollama backend         |
+| `mc` | Use Claude backend         |
+| `mt` | Toggle virtual text        |
+| `mb` | Toggle blink completion    |
+
 ## Scratch (`<leader>x`)
 
 | Key  | Action                                  |
 | ---- | --------------------------------------- |
-| `xx` | Toggle scratch (current ft or markdown) |
+| `xS` | Toggle scratch (current ft or markdown) |
 | `xn` | New scratch (pick filetype)             |
 | `xs` | Select scratch                          |
-| `xl` | List scratches                          |
+| `xL` | List scratches                          |
 
 Scratch buffers persist in `~/.local/share/nvim/scratch/` and auto-save.
 The filetype picker sorts by most-used filetypes.
@@ -270,19 +298,19 @@ The filetype picker sorts by most-used filetypes.
 
 ### Navigation
 
-| Key               | Action               |
-| ----------------- | -------------------- |
-| `Ctrl+h/j/k/l`    | Window navigation    |
-| `Ctrl+Up/Down`    | Resize height        |
-| `Ctrl+Left/Right` | Resize width         |
-| `Tab` / `S-Tab`   | Next/prev buffer     |
-| `S-h` / `S-l`     | Next/prev buffer     |
-| `[b` / `]b`       | Next/prev buffer     |
-| `[t` / `]t`       | Next/prev tab        |
-| `[q` / `]q`       | Next/prev quickfix   |
-| `[l` / `]l`       | Next/prev location   |
-| `[w` / `]w`       | Next/prev diagnostic |
-| `[W` / `]W`       | Next/prev error      |
+| Key                | Action                |
+| ------------------ | --------------------- |
+| `Ctrl+h/j/k/l`     | Window navigation     |
+| `Shift+Up/Down`    | Resize height         |
+| `Shift+Left/Right` | Resize width          |
+| `Tab` / `S-Tab`    | Next/prev buffer      |
+| `S-h` / `S-l`      | Next/prev buffer      |
+| `[b` / `]b`        | Next/prev buffer      |
+| `[t` / `]t`        | Next/prev TODO comment |
+| `[q` / `]q`        | Next/prev quickfix    |
+| `[l` / `]l`        | Next/prev location    |
+| `[w` / `]w`        | Next/prev diagnostic  |
+| `[W` / `]W`        | Next/prev error       |
 
 ### File Navigation
 
@@ -301,7 +329,7 @@ The filetype picker sorts by most-used filetypes.
 | -------- | ---------------- |
 | `Ctrl+]` | Go to definition |
 | `Ctrl+\` | Find references  |
-| `Ctrl+[` | Hover            |
+| `K`      | Hover            |
 
 ### Editing
 
@@ -322,8 +350,6 @@ The filetype picker sorts by most-used filetypes.
 | `<leader>Y` | Yank line to clipboard   |
 | `<leader>p` | Paste without yanking    |
 | `<leader>d` | Delete without yanking   |
-| `Cmd+c`     | Copy (macOS)             |
-| `Cmd+v`     | Paste (macOS)            |
 
 ### Scroll Centering
 
@@ -342,7 +368,9 @@ The filetype picker sorts by most-used filetypes.
 | `Esc`              | Clear search highlight         |
 | `<leader><leader>` | Select to end of line          |
 | `<leader>sw`       | Replace word under cursor      |
-| `<leader>cp`       | Copy full path                 |
+| `<leader>sl`       | Browse snippets                |
+| `<leader>u`        | Toggle Undotree                |
+| `<leader>rn`       | Rename symbol (LSP)            |
 | `,cs`              | Copy relative path             |
 | `,cl`              | Copy absolute path             |
 | `F5`               | Run Python file / DAP continue |

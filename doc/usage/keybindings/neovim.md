@@ -66,16 +66,14 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | `<leader>cr` | Run file                 |
 | `<leader>cm` | Make (pick target)       |
 | `<leader>cM` | Make (default)           |
-| `<leader>cs` | Symbol outline           |
-| `<leader>cS` | Symbol navigator         |
 | `<leader>cn` | Next symbol              |
 | `<leader>cp` | Previous symbol          |
 | `<leader>cN` | Next symbol (parent)     |
 | `<leader>cP` | Previous symbol (parent) |
 | `<leader>cg` | Go to symbol             |
-| `<leader>cf` | Find symbols             |
+| `<leader>cF` | Find symbols (Telescope) |
 | `<leader>ca` | Code action              |
-| `<leader>cR` | Rename                   |
+| `<leader>rn` | Rename symbol            |
 | `<leader>ch` | Hover                    |
 | `<leader>cd` | Go to definition         |
 | `<leader>cD` | Go to declaration        |
@@ -211,7 +209,8 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | `<leader>oe`  | Explorer            |
 | `<leader>oE`  | Explorer (file dir) |
 | `<leader>of`  | Explorer float      |
-| `<leader>oo`  | Oil                 |
+| `<leader>oa`  | Aerial outline      |
+| `<leader>oA`  | Aerial navigator    |
 | `<leader>ot`  | Terminal            |
 | `<leader>oT`  | Terminal float      |
 | `<leader>os`  | Terminal split      |
@@ -255,12 +254,12 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | Keys              | Action               |
 | ----------------- | -------------------- |
 | `Ctrl+h/j/k/l`    | Window navigation    |
-| `Ctrl+Up/Down`    | Resize height        |
-| `Ctrl+Left/Right` | Resize width         |
+| `Shift+Up/Down`    | Resize height       |
+| `Shift+Left/Right` | Resize width        |
 | `Tab` / `S-Tab`   | Next/prev buffer     |
 | `S-h` / `S-l`     | Next/prev buffer     |
 | `[b` / `]b`       | Next/prev buffer     |
-| `[t` / `]t`       | Next/prev tab        |
+| `[t` / `]t`       | Next/prev TODO comment |
 | `[q` / `]q`       | Next/prev quickfix   |
 | `[l` / `]l`       | Next/prev location   |
 | `[w` / `]w`       | Next/prev diagnostic |
@@ -288,7 +287,7 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | `K`      | Hover documentation  |
 | `Ctrl+]` | Go to definition     |
 | `Ctrl+\` | Find references      |
-| `Ctrl+[` | Hover                |
+| `K`      | Hover                |
 
 ### Editing
 
@@ -309,8 +308,6 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | `<leader>Y` | Yank line to clipboard   |
 | `<leader>p` | Paste without yanking    |
 | `<leader>d` | Delete without yanking   |
-| `Cmd+c`     | Copy (macOS)             |
-| `Cmd+v`     | Paste (macOS)            |
 
 ### Scroll Centering
 
@@ -343,7 +340,6 @@ All custom commands use the Space key as leader. Keybindings are organized by pr
 | `Esc`              | Clear search highlight         |
 | `<leader><leader>` | Select to end of line          |
 | `<leader>sw`       | Replace word under cursor      |
-| `<leader>cp`       | Copy full path                 |
 | `,cs`              | Copy relative path             |
 | `,cl`              | Copy absolute path             |
 | `F5`               | Run Python file / DAP continue |

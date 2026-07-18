@@ -96,9 +96,11 @@ function M.setup()
     end
   end, { silent = true })
 
-  -- Snippet list
+  -- Snippet list (LuaSnip's built-in browser; the telescope-luasnip
+  -- extension this used to call was never installed, so the old mapping
+  -- errored on every press)
   vim.keymap.set("n", "<leader>sl", function()
-    require("telescope").extensions.luasnip.luasnip()
+    require("luasnip.extras.snippet_list").open()
   end, { desc = "Show available snippets" })
 end
 

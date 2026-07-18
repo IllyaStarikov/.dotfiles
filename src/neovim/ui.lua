@@ -228,13 +228,37 @@ local function local_colorscheme_exists(name)
   return vim.fn.filereadable(colors_cache_dir() .. "/" .. name .. ".lua") == 1
 end
 
---- Ensure a colorscheme exists in the cache, generating it on demand if missing.
---- Returns true if the file is available after this call.
+--- A cached colorscheme is stale when the template or the variant's
+--- colors.json is newer than the generated file — without this check a
+--- template overhaul silently keeps rendering the old highlights forever.
+--- @param name string Colorscheme name (family_variant format)
+--- @return boolean
+local function local_colorscheme_stale(name)
+  local cache_time = vim.fn.getftime(colors_cache_dir() .. "/" .. name .. ".lua")
+  if cache_time == -1 then
+    return true
+  end
+  local theme_root = vim.fn.expand("~/.dotfiles/src/theme")
+  local sources = { theme_root .. "/templates/neovim.lua" }
+  local family, variant = name:match("^([^_]+)_(.+)$")
+  if family then
+    table.insert(sources, theme_root .. "/" .. family .. "/" .. variant .. "/colors.json")
+  end
+  for _, src in ipairs(sources) do
+    if vim.fn.getftime(src) > cache_time then
+      return true
+    end
+  end
+  return false
+end
+
+--- Ensure a colorscheme exists in the cache, generating it on demand if
+--- missing or stale. Returns true if the file is available after this call.
 --- @param name string Colorscheme name (family_variant format)
 --- @return boolean
 local function ensure_colorscheme(name)
   ensure_colors_rtp()
-  if local_colorscheme_exists(name) then
+  if local_colorscheme_exists(name) and not local_colorscheme_stale(name) then
     return true
   end
   local family, variant = name:match("^([^_]+)_(.+)$")

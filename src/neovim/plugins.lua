@@ -178,16 +178,9 @@ require("lazy").setup({
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
-    opts = {
-      integrations = {
-        bufferline = true,
-      },
-      on_highlights = function(hl, c)
-        -- Make Visual selection more visible (especially over comments)
-        hl.Visual = { bg = "#3b4261", bold = true }
-        hl.VisualNOS = { bg = "#3b4261", bold = true }
-      end,
-    },
+    -- No opts: the old `integrations` key doesn't exist in tokyonight (it's a
+    -- catppuccin option), and the Visual on_highlights override was dead — the
+    -- VisualHighlight ColorScheme autocmd in autocmds.lua always wins.
   },
   -- NOTE: Additional colorschemes are generated from colors.json into
   -- $XDG_CACHE_HOME/nvim/colors/ on demand.
@@ -203,21 +196,20 @@ require("lazy").setup({
   },
   {
     "tpope/vim-fugitive",
+    -- Only commands fugitive still ships: the legacy Gstatus/Gblame/Gdiff/...
+    -- family is gated behind g:fugitive_legacy_commands and no longer exists.
     cmd = {
       "Git",
       "G",
-      "Gstatus",
-      "Gblame",
-      "Gpush",
-      "Gpull",
-      "Gcommit",
-      "Glog",
-      "Gdiff",
+      "Gdiffsplit",
+      "Gvdiffsplit",
+      "Gwrite",
+      "Gread",
     },
     keys = {
       { "<leader>gs", "<cmd>Git<cr>", desc = "Git status" },
       { "<leader>gb", "<cmd>Git blame<cr>", desc = "Git blame" },
-      { "<leader>gd", "<cmd>Gdiff<cr>", desc = "Git diff" },
+      { "<leader>gd", "<cmd>Gdiffsplit<cr>", desc = "Git diff" },
     },
   },
   -- Lualine - Production-ready statusline with dynamic mode colors
@@ -869,18 +861,20 @@ require("lazy").setup({
     cmd = { "Trouble" },
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {},
+    -- <leader>t* prefix: the old <leader>x* keys collided with the Scratch
+    -- mappings in keymaps/plugins.lua (lazy's stubs registered later and won).
     keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+      { "<leader>tt", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       {
-        "<leader>xd",
+        "<leader>tb",
         "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
         desc = "Buffer Diagnostics (Trouble)",
       },
-      { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
-      { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
-      { "<leader>xr", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
-      { "<leader>xs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
-      { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo Comments (Trouble)" },
+      { "<leader>tq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+      { "<leader>tl", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+      { "<leader>tr", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
+      { "<leader>ts", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
+      { "<leader>tT", "<cmd>Trouble todo toggle<cr>", desc = "Todo Comments (Trouble)" },
       { "gR", "<cmd>Trouble lsp_references toggle<cr>", desc = "LSP References (Trouble)" },
       {
         "[q",
@@ -1030,19 +1024,29 @@ require("lazy").setup({
     "nvzone/menu",
     lazy = true,
     dependencies = { "nvzone/volt" },
-    config = function()
-      require("menu").setup()
-    end,
+    -- No config: nvzone/menu has no setup(); its API is require("menu").open().
+    -- The old desc-only key stubs (<leader>m/M/mf/mg/...) mapped nothing, named
+    -- menus that don't exist, and shadowed the Minuet <leader>m* mappings.
     keys = {
-      { "<C-t>", desc = "Open Smart Menu" },
-      { "<leader>m", desc = "Open Menu" },
-      { "<leader>M", desc = "Open Context Menu" },
-      { "<leader>mf", desc = "File Menu" },
-      { "<leader>mg", desc = "Git Menu" },
-      { "<leader>mc", desc = "Code Menu" },
-      { "<leader>ma", desc = "AI Assistant Menu" },
-      { "<leader>mF", desc = "File Management Menu" },
-      { "<RightMouse>", mode = { "n", "v" }, desc = "Context Menu" },
+      {
+        "<C-t>",
+        function()
+          require("menu").open("default")
+        end,
+        desc = "Open Menu",
+      },
+      {
+        "<RightMouse>",
+        function()
+          require("menu.utils").delete_old_menus()
+          vim.cmd.exec('"normal! \\<RightMouse>"')
+          local buf = vim.api.nvim_win_get_buf(vim.fn.getmousepos().winid)
+          local options = vim.bo[buf].ft == "NvimTree" and "nvimtree" or "default"
+          require("menu").open(options, { mouse = true })
+        end,
+        mode = { "n", "v" },
+        desc = "Context Menu",
+      },
     },
   },
   {
@@ -1214,7 +1218,10 @@ require("lazy").setup({
       },
     },
     config = function(_, opts)
-      require("mason").setup(opts)
+      -- mason.setup() is owned by lsp.lua (rounded-border UI config).
+      -- Calling it again here would re-apply defaults over those settings,
+      -- and `ensure_installed` was never a mason.setup key anyway — it is
+      -- only consumed by the registry loop below.
       local mr = require("mason-registry")
       local function ensure_installed()
         for _, tool in ipairs(opts.ensure_installed) do

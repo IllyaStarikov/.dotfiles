@@ -643,15 +643,20 @@ autocmd("FileChangedShellPost", {
   desc = "Notify when file is reloaded",
 })
 
--- Auto reload for specific file types (immediate reload without prompt)
+-- Auto reload for specific file types (immediate reload without prompt).
+-- :edit! is disallowed inside FileChangedShell (the current buffer may not
+-- even be the changed one); v:fcs_choice is the documented mechanism. The
+-- FileChangedShellPost autocmd above handles the notification.
 autocmd({ "FileChangedShell" }, {
   group = autoreload_group,
   pattern = "*",
   callback = function()
-    -- Auto reload if file wasn't modified in vim
     if not vim.bo.modified then
-      vim.cmd("edit!")
-      vim.notify("File auto-reloaded (external change detected)", vim.log.levels.INFO)
+      vim.v.fcs_choice = "reload"
+    else
+      -- Keep the conflict prompt for locally-modified buffers (defining this
+      -- autocmd suppresses the default warning unless fcs_choice is set).
+      vim.v.fcs_choice = "ask"
     end
   end,
   desc = "Auto reload unmodified files",
@@ -1492,24 +1497,9 @@ autocmd({ "BufReadPost", "FileReadPost" }, {
 -- Additional debug commands can be added here
 
 -- =============================================================================
--- TREESITTER SAFETY - Ensure parsers are installed
--- =============================================================================
-
--- Auto-install markdown parser if it fails
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  pattern = { "*.md", "*.markdown" },
-  callback = function()
-    -- Check if markdown parser is available via treesitter API
-    local has_parser = pcall(vim.treesitter.get_parser, 0, "markdown")
-    if not has_parser then
-      -- Try to install it silently
-      vim.defer_fn(function()
-        vim.cmd("silent! TSInstall markdown markdown_inline")
-      end, 100)
-    end
-  end,
-  desc = "Auto-install markdown treesitter parser if missing",
-})
+-- (Removed: markdown parser auto-install safety net. Its pcall(get_parser)
+-- check could never detect a missing parser on Neovim 0.12 (returns ok=true,
+-- nil), and the treesitter config's ts.install() already ensures parsers.)
 
 -- =============================================================================
 -- TABLINE - Now handled by bufferline.nvim plugin

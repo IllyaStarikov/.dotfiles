@@ -141,10 +141,11 @@ local function setup_lsp()
         "zls", -- Zig (can be used for assembly)
         -- keep-sorted end
       },
-      automatic_installation = true,
-      -- Disable automatic server setup to prevent duplicates
+      -- Disable automatic server setup to prevent duplicates.
+      -- (v2 of mason-lspconfig only knows ensure_installed and
+      -- automatic_enable; the old automatic_installation/handlers keys
+      -- were removed.)
       automatic_enable = false,
-      handlers = nil,
     })
   end
 
@@ -435,7 +436,8 @@ local function setup_lsp()
     rust_analyzer = {
       settings = {
         ["rust-analyzer"] = {
-          checkOnSave = {
+          -- checkOnSave became a plain boolean; the command moved to check.*
+          check = {
             command = "clippy",
           },
         },
@@ -557,31 +559,32 @@ local function setup_lsp()
       filetypes = { "sh", "bash", "zsh" },
     },
     zls = {}, -- Zig/Assembly
-    solargraph = {
+    solargraph = (function()
       -- Prefer rbenv/rvm shims so the LSP picks up the project's Ruby
-      -- version (system solargraph is the last-resort fallback). All paths
-      -- return the same {bin, "stdio"} shape; we just walk the candidates.
-      cmd = function()
-        local candidates = {
-          vim.fn.expand("~/.rbenv/shims/solargraph"),
-          vim.fn.expand("~/.rvm/shims/solargraph"),
-          "solargraph",
-        }
-        for _, bin in ipairs(candidates) do
-          if vim.fn.executable(bin) == 1 then
-            return { bin, "stdio" }
-          end
+      -- version (system solargraph is the last-resort fallback). The binary
+      -- must be resolved EAGERLY: with vim.lsp.config, a `cmd` function must
+      -- return an RPC client object (not argv), so returning {bin, "stdio"}
+      -- from a function crashes LSP startup for every Ruby file.
+      local bin = "solargraph"
+      for _, candidate in ipairs({
+        vim.fn.expand("~/.rbenv/shims/solargraph"),
+        vim.fn.expand("~/.rvm/shims/solargraph"),
+      }) do
+        if vim.fn.executable(candidate) == 1 then
+          bin = candidate
+          break
         end
-        -- Fall back to Mason's installation if available.
-        return { "solargraph", "stdio" }
-      end,
-      settings = {
-        solargraph = {
-          diagnostics = true,
-          formatting = true,
+      end
+      return {
+        cmd = { bin, "stdio" },
+        settings = {
+          solargraph = {
+            diagnostics = true,
+            formatting = true,
+          },
         },
-      },
-    },
+      }
+    end)(),
     taplo = {}, -- TOML
     perlnavigator = {
       settings = {
