@@ -59,7 +59,7 @@ Theme switching copies configs atomically (not symlinks) to:
 - `~/.config/wezterm/theme.lua`
 - `~/.config/kitty/theme.conf`
 - `~/.config/tmux/theme.conf`
-- `~/.config/starship/theme.toml`
+- `~/.config/starship.toml` (whole file — the theme switcher owns it)
 - `~/.config/theme/current-theme.sh`
 
 ## Integration
@@ -87,8 +87,9 @@ source-file ~/.config/tmux/theme.conf
 ```
 
 ```lua
--- Neovim: reads MACOS_THEME environment
-vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
+-- Neovim: ui.lua parses ~/.config/theme/current-theme.sh directly and
+-- re-checks it on FocusGained plus a 2s mtime poll (no env var needed —
+-- long-running nvim sessions pick up switches live)
 ```
 
 ## Flags
@@ -124,6 +125,6 @@ vim.g.tokyonight_style = os.getenv("MACOS_THEME") or "storm"
 
 **Wrong colors**: Verify terminal supports truecolor with `echo $COLORTERM`
 
-**Stuck switching**: Remove lock file `rm /tmp/.theme-switch-*`
+**Stuck switching**: Remove lock file `rm ~/.cache/theme/theme-switch.lock`
 
-**Debug mode**: `THEME_DEBUG=1 theme storm`
+**Debug mode**: `DEBUG=1 theme storm`

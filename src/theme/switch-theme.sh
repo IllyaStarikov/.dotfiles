@@ -109,7 +109,7 @@ get_bat_theme() {
   local family="${theme_name%%_*}"
 
   case "$family" in
-    catppuccin) echo "Catppuccin ${variant^}" ;; # Capitalize variant
+    catppuccin) echo "Catppuccin ${(C)variant}" ;; # Capitalize variant (zsh syntax; ${variant^} is a bashism that dies here)
     dracula) echo "Dracula" ;;
     github) [[ "$variant" == "light" ]] && echo "GitHub" || echo "Visual Studio Dark+" ;;
     gruvbox) [[ "$variant" == "light" ]] && echo "gruvbox-light" || echo "gruvbox-dark" ;;
@@ -380,16 +380,18 @@ interactive_picker() {
         echo "rgb:${hex:0:2}/${hex:2:2}/${hex:4:2}"
       }
 
-      # Set foreground, background, cursor
-      printf "\033]10;$(hex_to_rgb "$FOREGROUND")\007"
-      printf "\033]11;$(hex_to_rgb "$BACKGROUND")\007"
-      printf "\033]12;$(hex_to_rgb "$FOREGROUND")\007"
+      # Set foreground, background, cursor.
+      # Must write to /dev/tty: fzf runs execute-silent children with a piped
+      # stdout, so bare printf OSC sequences never reach the terminal.
+      printf "\033]10;$(hex_to_rgb "$FOREGROUND")\007" > /dev/tty
+      printf "\033]11;$(hex_to_rgb "$BACKGROUND")\007" > /dev/tty
+      printf "\033]12;$(hex_to_rgb "$FOREGROUND")\007" > /dev/tty
 
       # Set palette colors
       for i in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
         eval "c=\${COLOR_$i:-}"
         if [[ -n "$c" ]]; then
-          printf "\033]4;$i;$(hex_to_rgb "$c")\007"
+          printf "\033]4;$i;$(hex_to_rgb "$c")\007" > /dev/tty
         fi
       done
     fi
@@ -404,7 +406,9 @@ interactive_picker() {
   # Store current theme for restore on cancel
   local current_theme=""
   if [[ -f "$config_dir/current-theme.sh" ]]; then
-    current_theme=$(grep "^MACOS_THEME=" "$config_dir/current-theme.sh" 2>/dev/null | cut -d= -f2 | tr -d '"'"'")
+    # The saved file writes `export MACOS_THEME="..."`, so the grep must
+    # accept the export prefix or cancel-restore silently never fires.
+    current_theme=$(grep -E "^(export )?MACOS_THEME=" "$config_dir/current-theme.sh" 2>/dev/null | cut -d= -f2 | tr -d '"'"'")
   fi
 
   # Run fzf with preview and live color application
@@ -966,15 +970,9 @@ update_wezterm_theme() {
     log "Applied OSC colors to current pane"
   fi
 
-  # STEP 3: Send user-var to trigger reload_configuration() (loads NEW config for new windows)
-  if [[ -n "$tty_target" ]]; then
-    local encoded_theme
-    encoded_theme=$(printf '%s' "$THEME" | base64)
-    local uservar_seq
-    uservar_seq=$(printf '\033]1337;SetUserVar=%s=%s\007' "theme" "$encoded_theme")
-    _send_seq "$uservar_seq" "$tty_target"
-    log "Sent user-var to trigger config reload"
-  fi
+  # (No user-var step: wezterm.lua has no user-var-changed handler; config
+  # reload already happens because STEP 1 touches wezterm.lua and theme.lua
+  # is on wezterm's config-reload watch list.)
 
   return 0
 }
@@ -1061,9 +1059,14 @@ update_app_themes() {
 
   wait "${pids[@]}" 2>/dev/null
 
-  # Reload Kitty once, after the write committed.
+  # Reload Kitty once, after the write committed. kitty appends "-<pid>" to
+  # the listen_on socket path, so the real socket is /tmp/kitty-<pid> — glob
+  # over all of them (plain /tmp/kitty never exists and never connected).
   if [[ -f "$results_dir/Kitty" && "$(<"$results_dir/Kitty")" == ok ]] && pgrep -x "kitty" >/dev/null; then
-    kitty @ --to unix:/tmp/kitty load-config 2>/dev/null || true
+    local kitty_sock
+    for kitty_sock in /tmp/kitty-*(N=); do
+      kitty @ --to "unix:$kitty_sock" load-config 2>/dev/null || true
+    done
   fi
 
   local failed=0
