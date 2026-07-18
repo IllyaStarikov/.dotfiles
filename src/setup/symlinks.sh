@@ -266,6 +266,13 @@ main() {
     create_link "$DOTFILES_DIR/src/kitty" "$HOME/.config/kitty" "Kitty terminal config"
   fi
 
+  # i3 window manager (Linux only — the config was previously tracked but
+  # deployed by nothing, so fresh Linux installs silently got no i3 setup)
+  if [[ "$(uname -s)" == "Linux" ]] && [[ -f "$DOTFILES_DIR/src/i3_config" ]]; then
+    mkdir -p "$HOME/.config/i3"
+    create_link "$DOTFILES_DIR/src/i3_config" "$HOME/.config/i3/config" "i3 window manager config"
+  fi
+
   # Ripgrep
   create_link "$DOTFILES_DIR/src/ripgreprc" "$HOME/.ripgreprc" "Ripgrep config"
 
