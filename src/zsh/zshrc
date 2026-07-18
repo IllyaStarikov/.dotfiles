@@ -66,8 +66,8 @@ zinit light zsh-users/zsh-completions
 # fresh; we full-init at most once per day. Saves ~50–150 ms per shell.
 autoload -Uz compinit bashcompinit
 _zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-# `(#qN.mh+24)` = file exists (N), regular file (.), modified more than 24
-# hours ago (mh+24). Empty match → file is fresh → use the fast path.
+# `(#qN.mh-24)` = null_glob (N), regular file (.), modified within the last
+# 24 hours (mh-24). Non-empty match → dump is fresh → fast path (compinit -C).
 if [[ -n "$_zcompdump"(#qN.mh-24) ]]; then
     compinit -C -d "$_zcompdump"
 else

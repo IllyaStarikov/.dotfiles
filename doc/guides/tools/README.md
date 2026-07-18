@@ -144,7 +144,6 @@ Located in `~/.dotfiles/src/scripts/`:
 | `update-dotfiles` | Update all packages and plugins |
 | `extract`         | Universal archive extractor     |
 | `cortex`          | AI model management             |
-| `services`        | Background service manager      |
 | `scratchpad`      | Quick temporary file editing    |
 
 ## Adding New Tools

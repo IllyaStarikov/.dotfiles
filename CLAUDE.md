@@ -71,7 +71,7 @@ When making changes to any directory, **update its README.md** to reflect those 
 This is a comprehensive dotfiles repository serving dual purposes:
 
 1. **Personal configuration management** - Complete development environment with enterprise-level testing
-2. **Web publishing** - GitHub Pages site at `dotfiles.starikov.io` showcasing configurations
+2. **Web publishing** - GitHub Pages site at `https://illyastarikov.github.io/.dotfiles/` (the `dotfiles.starikov.io` custom domain is currently unconfigured — no CNAME on the repo, cert error for visitors)
 
 ## Key Commands
 
@@ -174,7 +174,7 @@ cortex agent on/off    # Toggle AI agent mode
 - **76 `*_test.{zsh,lua,sh}` test files** under `test/` (run `find test -name '*_test.zsh' -o -name '*_test.lua' -o -name '*_test.sh' | wc -l` to verify) across unit, functional, integration, performance, smoke, e2e, security, stress, and workflows categories. The exact subset run by `./test/runner.zsh --all` depends on category discovery; consult the runner output.
 - **15 utility scripts** in `src/scripts/` (excluding common.sh, the shared shim)
 - **7 language configs** in `src/language/` (ruff.toml, stylua.toml, .clang-format, clangd_config.yaml, latexmkrc, markdownlint.json, pyproject.toml)
-- **4 TokyoNight theme variants** (day, night, moon, storm) plus 17 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
+- **4 TokyoNight theme variants** (day, night, moon, storm) plus 16 other theme families (atomone, aurora, ayu, catppuccin, dracula, embark, github, iceberg, material, monokai, monokaiclassic, nightowl, nord, onedarkpro, shadesofpurple, synthwave84)
 - **6 zsh library modules** in `src/lib/` (colors, config, die, installer, logging, utils — array/cli/hash/json/types/yaml were removed in the April audit; callstack/help/math/ssh/textwrap/unit were removed in the May follow-up audit, all as unused-in-zsh code)
 - **20+ languages** with full LSP support
 
@@ -204,7 +204,7 @@ cortex agent on/off    # Toggle AI agent mode
 │   └── git/               # Git configuration and hooks
 ├── test/                  # 4-level test infrastructure
 ├── config/                # Tool configurations (fixy.json)
-├── .dotfiles.private/     # Private submodule (work configs)
+├── .dotfiles.private/     # Private gitignored clone (work configs; not a submodule)
 └── .github/workflows/     # CI/CD pipeline (6 workflows)
 ```
 
@@ -218,7 +218,7 @@ cortex agent on/off    # Toggle AI agent mode
 
 **2. Private Repository Integration**
 
-- `.dotfiles.private/` submodule for work-specific configurations
+- `.dotfiles.private/` is a **gitignored nested clone** (NOT a git submodule — `styleguide` is the only submodule; never run submodule operations on the private dir)
 - Contains: Google/Garmin detection, tmuxinator templates, sensitive settings
 - Work overrides loaded conditionally in Neovim and shell configs
 - Spell files stored in private repo: `~/.dotfiles/.dotfiles.private/config/spell/`
@@ -391,7 +391,7 @@ Fixed by deleting any existing `zle-keymap-select` widget before Starship initia
 
 - Check lockfile: `${XDG_CACHE_HOME:-$HOME/.cache}/theme/theme-switch.lock`
 - Verify apps are running
-- Use force mode: `theme --force dark`
+- Re-run `theme <name>` — it reapplies even when the theme is already current (there is no `--force` flag)
 
 ### Formatter not working
 
@@ -403,9 +403,7 @@ Fixed by deleting any existing `zle-keymap-select` widget before Starship initia
 
 Many scripts have shorter aliases defined in `src/zsh/aliases.zsh`:
 
-- `update` → `update-dotfiles`
-- `ff` → fuzzy file finder
-- `fg` → fuzzy grep
+- `update` → `src/setup/update.sh`
 - `gs` → git status
 - `ga` → git add
 - `gc` → git commit

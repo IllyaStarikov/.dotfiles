@@ -45,7 +45,7 @@
 ### Quick Start
 
 ```bash
-git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/install.sh
+git clone https://github.com/IllyaStarikov/.dotfiles.git ~/.dotfiles && ~/.dotfiles/src/setup/install.sh
 ```
 
 | Mode     | Command                           | Time      | Description          |
@@ -61,7 +61,7 @@ git clone https://github.com/IllyaStarikov/dotfiles.git ~/.dotfiles && ~/.dotfil
 ```bash
 theme moon              # Dark mode, everywhere, instantly
 fixy messy_code.py      # Auto-format any file
-nvim +Telescope\ files  # Fuzzy find everything
+nvim "+Telescope find_files"  # Fuzzy find everything
 ```
 
 ## Features

@@ -59,7 +59,7 @@ alias py="python3"
 Both Starship and vi-mode define `zle-keymap-select` causing infinite recursion.
 
 ```zsh
-# Fix at zshrc:181-183
+# Fix in zshrc (see the "zle-keymap-select" comment block near Starship init)
 if (( ${+widgets[zle-keymap-select]} )); then
     zle -D zle-keymap-select 2>/dev/null
 fi
@@ -71,7 +71,7 @@ Zsh vi mode binds backspace to `vi-backward-delete-char`, which can't cross line
 or backspace past the insert-mode entry point. Fixed by binding `backward-delete-char` in viins:
 
 ```zsh
-# Fix at zshrc:134-135
+# Fix in zshrc (see the "vi mode backspace" comment block)
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 ```
