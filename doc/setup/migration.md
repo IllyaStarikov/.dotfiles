@@ -145,7 +145,7 @@ v .             # Open Neovim
 ### File Search
 
 **Old way** Cmd+P or Ctrl+P
-**New way** `<leader>ff` or `ff` in shell
+**New way** `<leader>ff` in Neovim or `fd` in shell
 
 ### Multi-file Editing
 

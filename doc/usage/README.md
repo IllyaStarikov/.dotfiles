@@ -123,8 +123,7 @@ Select text + <leader>co  # Optimize code
 ### Fast Navigation
 
 Use `z` instead of `cd` - learns your habits
-Use `zi` for interactive directory jumping
-Use `ff` for fuzzy file finding
+Use `fd` for fast file finding
 Use `<C-r>` for command history search
 
 ### Efficient Editing
