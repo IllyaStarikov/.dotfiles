@@ -100,7 +100,7 @@ has_config() {
 }
 
 # Get all keys from a JSON object
-# Usage: get_config_keys "symlinks.json" "."
+# Usage: get_config_keys "packages.json" "."
 # Args:
 #   $1 - config file name (relative to config/ directory)
 #   $2 - jq query string (should point to an object)
@@ -138,7 +138,7 @@ get_config_path() {
 }
 
 # Validate that required config files exist
-# Usage: validate_configs "packages.json" "symlinks.json"
+# Usage: validate_configs "packages.json" "timeouts.json"
 # Args: list of config file names
 # Returns: 0 if all exist, 1 if any missing
 validate_configs() {
