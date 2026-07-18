@@ -60,10 +60,15 @@ class TestSystemDetector(unittest.TestCase):
         self.assertEqual(mem_info["available_gb"], 32.0)
 
     @patch("psutil.cpu_count")
-    @patch("platform.processor")
-    def test_get_cpu_info(self, mock_processor, mock_cpu_count):
-        """Test CPU information retrieval."""
-        mock_processor.return_value = "Apple M1 Max"
+    @patch("subprocess.run")
+    @patch("platform.system")
+    def test_get_cpu_info(self, mock_system, mock_run, mock_cpu_count):
+        """Test CPU information retrieval (hermetic: the implementation shells
+        out to sysctl on Darwin / reads /proc/cpuinfo on Linux, so the real
+        host must never leak in — the old version only passed on Apple
+        hardware)."""
+        mock_system.return_value = "Darwin"
+        mock_run.return_value = MagicMock(stdout="Apple M1 Max\n")
         mock_cpu_count.return_value = 10
 
         cpu_info = SystemDetector._get_cpu_info()

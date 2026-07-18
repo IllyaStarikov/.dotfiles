@@ -32,7 +32,13 @@ INSTALLER_URLS_JSON="$FIXTURES/urls.json"
 MARKER="$FIXTURES/executed.marker"
 GOOD_SCRIPT="$FIXTURES/good.sh"
 print -r -- "touch '$MARKER'" > "$GOOD_SCRIPT"
-GOOD_SHA="$(shasum -a 256 "$GOOD_SCRIPT" | awk '{print $1}')"
+# Portable sha256 (macOS ships shasum, minimal Linux images only sha256sum —
+# the Arch e2e container has no perl/shasum)
+if command -v shasum >/dev/null 2>&1; then
+  GOOD_SHA="$(shasum -a 256 "$GOOD_SCRIPT" | awk '{print $1}')"
+else
+  GOOD_SHA="$(sha256sum "$GOOD_SCRIPT" | awk '{print $1}')"
+fi
 
 # A tampered variant (different content, therefore different sha)
 EVIL_SCRIPT="$FIXTURES/evil.sh"
