@@ -18,6 +18,8 @@ test_kitty_config_exists() {
   assert_file_contains "$kitty_conf" "font_family" "Font family should be configured"
   assert_file_contains "$kitty_conf" "font_size" "Font size should be configured"
   assert_file_contains "$kitty_conf" "window_padding_width" "Window padding should be configured"
+  assert_file_contains "$kitty_conf" "copy_on_select" \
+    "Mouse selection should copy to the system clipboard (parity with Alacritty/WezTerm)"
 }
 
 # Test Kitty theme integration

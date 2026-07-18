@@ -43,6 +43,13 @@ Synced with system via `~/.config/kitty/theme.conf`
 | `Cmd+[/]`        | Previous/Next tab |
 | `Cmd+Plus/Minus` | Font size         |
 
+## Clipboard
+
+- `Cmd+C` / `Cmd+V` copy and paste
+- Mouse selections copy straight to the system clipboard
+  (`copy_on_select clipboard` — parity with Alacritty's `save_to_clipboard`
+  and WezTerm's default selection behavior)
+
 ## Integration
 
 - Works with theme switcher

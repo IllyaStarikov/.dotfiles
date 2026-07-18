@@ -44,5 +44,13 @@ if grep -q "Smulx" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
 else
   fail "tmux.conf must pass through Smulx/Setulc or Neovim undercurls vanish"
 fi
+
+test_case "OSC 52 clipboard is fully enabled (set-clipboard + Ms capability)"
+if grep -q "set-clipboard on" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
+  && grep -qF "terminal-features ',*:clipboard'" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null; then
+  pass
+else
+  fail "tmux.conf needs set-clipboard on AND the ',*:clipboard' terminal-feature, or OSC 52 copies silently drop"
+fi
 # Return success
 exit 0
