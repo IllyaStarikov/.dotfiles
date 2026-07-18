@@ -40,6 +40,18 @@ SANITIZE_OUTPUT=1
 # Load library (provides colors: $RED, $GREEN, $YELLOW, $BLUE, $CYAN, $BOLD, $NC)
 source "${SCRIPT_DIR}/../lib/init.zsh"
 
+# Stock macOS ships no `timeout`; fall back to coreutils' gtimeout so the
+# bare `timeout` calls throughout degrade gracefully instead of erroring.
+if ! command -v timeout >/dev/null 2>&1 && command -v gtimeout >/dev/null 2>&1; then
+    timeout() { gtimeout "$@" }
+fi
+
+# Remove a partial report dir if the run is interrupted or dies early.
+# create_archive sets ARCHIVE_DONE=1 right after a successful tar (the
+# happy path also removes the dir itself).
+ARCHIVE_DONE=0
+trap 'if [[ $ARCHIVE_DONE -eq 0 ]]; then rm -rf "$REPORT_DIR"; fi' EXIT INT TERM
+
 #######################################
 # Display usage information
 #######################################
@@ -66,6 +78,8 @@ ${BOLD}DESCRIPTION:${NC}
     - Shell configuration
     - Editor configuration (Neovim, Vim)
     - Terminal configuration
+    - Theme system state (active theme, per-app files, switch log)
+    - Zsh plugin (zinit) state
     - Package manager information
     - Network configuration (sanitized)
     - Process information
@@ -172,9 +186,9 @@ setup_report_dir() {
 {
     "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
     "version": "1.0.0",
-    "dotfiles_dir": "$DOTFILES_DIR",
-    "hostname": "$(hostname -s)",
-    "user": "$(whoami)",
+    "dotfiles_dir": "$(sanitize "$DOTFILES_DIR")",
+    "hostname": "$([[ $SANITIZE_OUTPUT -eq 1 ]] && echo "<HOSTNAME>" || hostname -s)",
+    "user": "$([[ $SANITIZE_OUTPUT -eq 1 ]] && echo "<USER>" || whoami)",
     "report_id": "${TIMESTAMP}",
     "options": {
         "debug": $DEBUG_MODE,
@@ -193,14 +207,27 @@ EOF
 # Sanitize sensitive information
 #######################################
 sanitize() {
-    local input="$1"
-    
+    # Accepts the text as $1 or on stdin (pipe-friendly)
+    local input="${1:-}"
+    if [[ -z "$input" && ! -t 0 ]]; then
+        input="$(cat)"
+    fi
+
     if [[ $SANITIZE_OUTPUT -eq 0 ]]; then
         echo "$input"
         return
     fi
-    
+
+    # Vendor-specific key formats first (hyphen/underscore-delimited keys
+    # escape the generic 40-char rule below), then credentials embedded in
+    # URLs (git remotes with PATs), then the generic patterns.
     echo "$input" | sed -E \
+        -e 's/sk-ant-[A-Za-z0-9_-]+/<REDACTED_TOKEN>/g' \
+        -e 's/gh[pousr]_[A-Za-z0-9]{20,}/<REDACTED_TOKEN>/g' \
+        -e 's/AKIA[0-9A-Z]{16}/<REDACTED_TOKEN>/g' \
+        -e 's/xox[baprs]-[A-Za-z0-9-]+/<REDACTED_TOKEN>/g' \
+        -e 's/sk_(live|test)_[A-Za-z0-9]+/<REDACTED_TOKEN>/g' \
+        -e 's/(https?:\/\/)[^\/@[:space:]]+@/\1<REDACTED>@/g' \
         -e 's/[A-Za-z0-9+\/]{40,}/<REDACTED_TOKEN>/g' \
         -e 's/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/<IP_ADDRESS>/g' \
         -e 's/([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})/<EMAIL>/g' \
@@ -220,10 +247,15 @@ collect_system_info() {
     {
         echo "=== System Information ==="
         echo "Date: $(date)"
-        echo "Hostname: $(hostname)"
-        echo "User: $(whoami)"
-        echo "Home: $HOME"
-        echo "Shell: $SHELL"
+        if [[ $SANITIZE_OUTPUT -eq 1 ]]; then
+            echo "Hostname: <HOSTNAME>"
+            echo "User: <USER>"
+        else
+            echo "Hostname: $(hostname)"
+            echo "User: $(whoami)"
+        fi
+        echo "$(sanitize "Home: $HOME")"
+        echo "$(sanitize "Shell: $SHELL")"
         echo "ZSH Version: $ZSH_VERSION"
         echo
         
@@ -534,7 +566,7 @@ collect_software_versions() {
         docker-compose --version 2>/dev/null || echo "not found"
 
         echo -n "kubectl: "
-        kubectl version --client --short 2>/dev/null || echo "not found"
+        kubectl version --client 2>/dev/null | head -1 || echo "not found"
 
         echo -n "terraform: "
         terraform version 2>/dev/null | head -1 || echo "not found"
@@ -712,7 +744,8 @@ collect_dotfiles_config() {
     {
         echo "=== Git Repository Info ==="
         cd "$DOTFILES_DIR"
-        echo "Remote: $(git remote -v 2>/dev/null | head -1)"
+        # Sanitized: an HTTPS remote can embed a PAT (https://token@host/...)
+        echo "$(sanitize "Remote: $(git remote -v 2>/dev/null | head -1)")"
         echo "Branch: $(git branch --show-current 2>/dev/null)"
         echo "Last commit: $(git log -1 --oneline 2>/dev/null)"
         echo "Status:"
@@ -850,6 +883,9 @@ collect_nvim_diagnostics() {
         echo
         echo "== Startup Errors =="
         if [[ -f ~/.local/state/nvim/startup_errors.log ]]; then
+            # The log accumulates across boots - date it so historical
+            # errors are not mistaken for the current state
+            echo "Log last modified: $(date -r ~/.local/state/nvim/startup_errors.log 2>/dev/null || echo unknown)"
             # Filter out old vim plugin errors (Glug, maktaba, csimporter)
             # These are from /usr/share/vim/google and don't affect Neovim
             local error_count=$(tail -50 ~/.local/state/nvim/startup_errors.log 2>/dev/null | \
@@ -857,7 +893,7 @@ collect_nvim_diagnostics() {
                 grep -c "ERROR\|Error" || echo 0)
 
             if [[ "$error_count" -gt 0 ]]; then
-                echo "Found $error_count Neovim startup errors (excluding old vim plugin errors):"
+                echo "Found $error_count Neovim startup errors (check log mtime above - these may be historical; old vim plugin errors excluded):"
                 tail -50 ~/.local/state/nvim/startup_errors.log 2>/dev/null | \
                     grep -v "csimporter\|Glug settings\|maktaba" || echo "No relevant errors"
             else
@@ -929,8 +965,10 @@ collect_shell_diagnostics() {
         echo "=== Shell Startup Time ==="
         echo "Testing zsh startup..."
 
-        # Check if we can use high-resolution timer
-        if date +%s%N >/dev/null 2>&1; then
+        # Check if we can use high-resolution timer. Test the OUTPUT, not
+        # the exit code: BSD date prints a literal "<sec>N" and still exits
+        # 0, which would poison the arithmetic below.
+        if [[ "$(date +%s%N 2>/dev/null)" == <-> ]]; then
             # High-resolution timing available (Linux)
             local start=$(date +%s%N)
             timeout 5 zsh -i -c exit 2>/dev/null
@@ -995,6 +1033,20 @@ collect_shell_diagnostics() {
         echo "Aliases: $(alias | wc -l)"
         echo "Functions: $(functions | wc -l)"
         echo "Completion functions: $(print -l "$fpath" | wc -l)"
+        echo
+        echo "=== Zinit Plugins ==="
+        local zinit_plugins="${ZINIT_HOME:-$HOME/.local/share/zinit}/plugins"
+        if [[ -d "$zinit_plugins" ]]; then
+            local plugin_dir
+            for plugin_dir in "$zinit_plugins"/*(N/); do
+                local head_info=""
+                [[ -d "$plugin_dir/.git" ]] \
+                    && head_info=" @ $(git -C "$plugin_dir" log -1 --format='%h %cs' 2>/dev/null)"
+                echo "  $(basename "$plugin_dir")${head_info}"
+            done
+        else
+            echo "zinit not installed"
+        fi
     } > "$REPORT_DIR/config/shell_env.txt"
     
     log SUCCESS "Shell diagnostics collected"
@@ -1035,11 +1087,17 @@ collect_terminal_info() {
             echo "=== tmux Server Info ==="
             tmux info 2>/dev/null | head -50 || echo "Unable to get tmux info"
             echo
+            echo "=== tmux Options (global) ==="
+            timeout 3 tmux show-options -g 2>/dev/null | head -60 || echo "No tmux server running"
+            echo
+            echo "=== tmux Options (server: clipboard/terminal-features) ==="
+            timeout 3 tmux show-options -s 2>/dev/null | grep -E "clipboard|copy-command|terminal-features|escape-time" || echo "No tmux server running"
+            echo
             echo "=== tmux Plugins (if TPM installed) ==="
             if [[ -d ~/.tmux/plugins/tpm ]]; then
                 ls -la ~/.tmux/plugins/ 2>/dev/null | head -20
             else
-                echo "TPM not installed"
+                echo "TPM not installed (this repo intentionally uses zero tmux plugins)"
             fi
         } > "$REPORT_DIR/config/tmux_info.txt"
     fi
@@ -1052,8 +1110,12 @@ collect_terminal_info() {
             echo "=== Starship Information ==="
             starship --version
             echo
-            echo "=== Starship Config Location ==="
-            echo "Config: ~/.config/starship.toml"
+            echo "=== Starship Config (~/.config/starship.toml, theme-owned) ==="
+            if [[ -f ~/.config/starship.toml ]]; then
+                head -60 ~/.config/starship.toml
+            else
+                echo "MISSING: ~/.config/starship.toml (run: theme)"
+            fi
             echo
             echo "=== Starship Module Status ==="
             timeout 2 starship module --list 2>/dev/null || echo "Unable to list modules"
@@ -1072,13 +1134,28 @@ collect_terminal_info() {
         } > "$REPORT_DIR/config/wezterm_info.txt"
     fi
 
+    # kitty health check
+    if command -v kitty >/dev/null 2>&1; then
+        {
+            echo "=== kitty Information ==="
+            kitty --version
+            echo
+            echo "=== kitty Config (first 50 lines) ==="
+            head -50 ~/.config/kitty/kitty.conf 2>/dev/null || echo "Config not found"
+            echo
+            echo "theme.conf present: $([[ -f ~/.config/kitty/theme.conf ]] && echo yes || echo no)"
+        } > "$REPORT_DIR/config/kitty_info.txt"
+    fi
+
     log DEBUG "Checking for Homebrew"
     # Homebrew doctor (health check)
     if command -v brew >/dev/null 2>&1; then
         log DEBUG "Running Homebrew doctor (limited)"
         {
-            echo "=== Homebrew Doctor (Critical Issues Only) ==="
-            timeout 10 brew doctor 2>&1 | { grep -E "Warning|Error|Critical" | head -50 || echo "No critical issues found"; }
+            echo "=== Homebrew Doctor ==="
+            # Full output: warning DETAIL lines (the affected formulae) don't
+            # contain the word "Warning", so a grep filter loses the substance
+            timeout 15 brew doctor 2>&1 | head -80 || echo "brew doctor timed out"
             echo
             echo "=== Homebrew Config ==="
             brew config 2>&1 | head -30 || echo "Unable to get config"
@@ -1088,7 +1165,10 @@ collect_terminal_info() {
     # Git health check
     {
         echo "=== Git Configuration Health ==="
-        git config --list --show-origin 2>/dev/null | grep -E "user\.|core\.|push\." | head -30 || echo "Unable to list git config"
+        # Sanitized: user.email/user.name are PII
+        git config --list --show-origin 2>/dev/null | grep -E "user\.|core\.|push\." | head -30 | while IFS= read -r line; do
+            echo "$(sanitize "$line")"
+        done || echo "Unable to list git config"
         echo
         echo "=== Git Hooks ==="
         if [[ -d "$DOTFILES_DIR/.git/hooks" ]]; then
@@ -1235,6 +1315,50 @@ collect_terminal_info() {
 }
 
 #######################################
+# Collect theme system state
+#######################################
+collect_theme_info() {
+    log PROGRESS "Collecting theme system state"
+
+    local theme_file="$REPORT_DIR/config/theme_info.txt"
+    local theme_cache="${XDG_CACHE_HOME:-$HOME/.cache}/theme"
+    {
+        echo "=== Active Theme (~/.config/theme/current-theme.sh) ==="
+        cat "$HOME/.config/theme/current-theme.sh" 2>/dev/null || echo "MISSING (run: theme)"
+        echo
+        echo "=== Per-App Theme Files ==="
+        local f
+        for f in "$HOME/.config/alacritty/theme.toml" "$HOME/.config/wezterm/theme.lua" \
+            "$HOME/.config/kitty/theme.conf" "$HOME/.config/tmux/theme.conf" \
+            "$HOME/.config/starship.toml"; do
+            if [[ -f "$f" ]]; then
+                echo "OK: $f ($(date -r "$f" 2>/dev/null || stat -f %Sm "$f" 2>/dev/null))"
+            else
+                echo "MISSING: $f"
+            fi
+        done
+        echo
+        echo "=== macOS Appearance ==="
+        defaults read -g AppleInterfaceStyle 2>/dev/null || echo "Light"
+        echo
+        echo "=== Switch Lock ==="
+        ls -la "$theme_cache/theme-switch.lock" 2>/dev/null || echo "no lock held (good)"
+        echo
+        echo "=== theme-switch.log (last 100 lines) ==="
+        tail -100 "$theme_cache/theme-switch.log" 2>/dev/null || echo "no switch log"
+    } > "$theme_file"
+
+    # The switch log embeds home paths - run the whole file through the sanitizer
+    if [[ $SANITIZE_OUTPUT -eq 1 ]]; then
+        local sanitized
+        sanitized="$(sanitize "$(cat "$theme_file")")"
+        echo "$sanitized" > "$theme_file"
+    fi
+
+    log SUCCESS "Theme system state collected"
+}
+
+#######################################
 # Collect system logs
 #######################################
 collect_logs() {
@@ -1279,6 +1403,12 @@ collect_logs() {
     if [[ -f ~/.local/share/nvim/tree-sitter.log ]]; then
         log DEBUG "Found Tree-sitter log"
         cp ~/.local/share/nvim/tree-sitter.log "$REPORT_DIR/logs/tree-sitter.log" 2>/dev/null
+    fi
+
+    # nvim-debug script log (written by src/scripts/nvim-debug)
+    if [[ -f /tmp/nvim-debug.log ]]; then
+        log DEBUG "Found nvim-debug log"
+        cp /tmp/nvim-debug.log "$REPORT_DIR/logs/nvim-debug.log" 2>/dev/null
     fi
     
     # System logs (last 100 lines, sanitized)
@@ -1329,16 +1459,20 @@ run_tests() {
         return
     fi
     
-    # Run tests with appropriate size
+    # Map report sizes to the runner's real flags (it has no --small etc.)
     local test_output="$REPORT_DIR/tests/test_results.txt"
-    local test_args="--${TEST_SIZE}"
-    
-    [[ $DEBUG_MODE -eq 1 ]] && test_args="$test_args --debug"
-    
-    log INFO "Executing: $test_runner $test_args"
-    
+    local -a test_args
+    case "$TEST_SIZE" in
+        small)  test_args=(--quick) ;;
+        medium) test_args=(--full) ;;
+        *)      test_args=(--all) ;;
+    esac
+    [[ $DEBUG_MODE -eq 1 ]] && test_args+=(--debug)
+
+    log INFO "Executing: $test_runner ${test_args[*]}"
+
     # Run tests and capture output
-    if "$test_runner" "$test_args" > "$test_output" 2>&1; then
+    if "$test_runner" "${test_args[@]}" > "$test_output" 2>&1; then
         log SUCCESS "Tests completed successfully"
     else
         log WARN "Some tests failed (see test_results.txt)"
@@ -1361,7 +1495,7 @@ validate_configuration() {
             if [[ -L "$link" ]]; then
                 if [[ ! -e "$link" ]]; then
                     echo "BROKEN: $link -> $(readlink "$link")"
-                    ((broken_links++))
+                    broken_links=$((broken_links + 1))
                 else
                     echo "OK: $link"
                 fi
@@ -1522,20 +1656,43 @@ The logs/ directory contains extensive debugging information generated with
 maximum verbosity (nvim -V9) to help diagnose Neovim configuration issues.
 EOF
     
+    # Final sanitize sweep: collectors write many files raw (ls -la user
+    # columns, tool output embedding $HOME paths...). One choke point here
+    # catches them all - including collectors added in the future.
+    if [[ $SANITIZE_OUTPUT -eq 1 ]]; then
+        log DEBUG "Running final sanitize sweep over report files"
+        local report_file
+        local current_user
+        current_user="$(whoami)"
+        for report_file in "$REPORT_DIR"/**/*.(txt|json|log)(N.); do
+            sanitize < "$report_file" > "${report_file}.sanitized" \
+                && mv "${report_file}.sanitized" "$report_file"
+            # Whole-word username scrub (ls -la owner columns aren't paths,
+            # so the /Users/<x> rule alone doesn't catch them)
+            if [[ -n "$current_user" ]]; then
+                sed -E "s/(^|[^A-Za-z0-9_])${current_user}([^A-Za-z0-9_]|$)/\1<USER>\2/g" \
+                    "$report_file" > "${report_file}.scrubbed" \
+                    && mv "${report_file}.scrubbed" "$report_file"
+            fi
+        done
+    fi
+
     # Create archive
     cd "$(dirname "$REPORT_DIR")"
     tar -czf "$ARCHIVE_NAME" "$(basename "$REPORT_DIR")"
+    ARCHIVE_DONE=1
     
     # Calculate size and file count before cleanup
     local size=$(du -h "$ARCHIVE_NAME" | cut -f1)
-    local file_count=$(find "$REPORT_DIR" -type f ! -path "*/test_logs/*" 2>/dev/null | wc -l)
+    local file_count=$(find "$REPORT_DIR" -type f ! -path "*/test_logs/*" 2>/dev/null | wc -l | tr -d ' ')
     # Use the pre-calculated error count from main() - avoids slow duplicate grep
     local error_count="$FINAL_ERROR_COUNT"
 
-    # Store these values globally for the summary (use readonly to prevent issues)
-    readonly _BUGREPORT_FILE_COUNT="$file_count"
-    readonly _BUGREPORT_ERROR_COUNT="$error_count"
-    export _BUGREPORT_FILE_COUNT _BUGREPORT_ERROR_COUNT
+    # Store these values for main()'s summary. Plain assignment on purpose:
+    # readonly/export are typeset variants, and typeset inside a zsh
+    # function creates a LOCAL - the summary would always read 0.
+    _BUGREPORT_FILE_COUNT="$file_count"
+    _BUGREPORT_ERROR_COUNT="$error_count"
 
     # Clean up directory
     rm -rf "$REPORT_DIR"
@@ -1564,6 +1721,7 @@ main() {
     collect_nvim_diagnostics || log WARN "Neovim diagnostics collection had errors"
     collect_shell_diagnostics || log WARN "Shell diagnostics collection had errors"
     collect_terminal_info || log WARN "Terminal info collection had errors"
+    collect_theme_info || log WARN "Theme info collection had errors"
     validate_configuration || log WARN "Configuration validation had errors"
     collect_logs || log WARN "Log collection had errors"
     collect_debug_info || log WARN "Debug info collection had errors"
