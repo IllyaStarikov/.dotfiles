@@ -13,6 +13,16 @@ describe "Neovim configuration behavioral tests"
 
 setup_test
 
+# Every case below drives a fully-booted nvim. On a machine without synced
+# plugins (fresh checkout, CI - plugins are never installed there by design)
+# lazy.nvim boot noise ("Plugin X is not installed", "Error detected while
+# processing init.lua") pollutes the probed output and trips the assertions.
+if ! nvim_plugins_synced; then
+  test_case "Plugin stack present"
+  skip "nvim plugins not synced (fresh/CI environment) - skipping behavioral suite"
+  exit 0
+fi
+
 # Test: Neovim starts without errors
 it "neovim starts cleanly" && {
   # Just run nvim and check it exits without error
