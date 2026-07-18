@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 # Start a tmux session named after the git repo or current directory
 # Usage: tmux-auto [path]
+#
+# Intentionally lib-free (CLAUDE.md exemption): this launcher uses no library
+# helpers at all, and it sits on the interactive tmux-attach path where the
+# lib source cost buys nothing.
 
 if (( $# > 1 )); then
   print -u2 "tmux-auto: too many arguments"

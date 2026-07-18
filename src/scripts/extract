@@ -16,6 +16,9 @@
 #
 # Style Guide: https://google.github.io/styleguide/shellguide.html
 
+# Shared shell library (command_exists, colors, logging)
+source "${0:A:h}/../lib/init.zsh"
+
 VERBOSE=false
 
 # Parse options
@@ -71,14 +74,14 @@ case "$1" in
     *.tar.gz)  tar x${TAR_VERBOSE}zf "$1" 2>&1 | format_tar_output ;;  # Gzip compressed tar
     *.tar.xz)  tar x${TAR_VERBOSE}Jf "$1" 2>&1 | format_tar_output ;;  # XZ compressed tar
     *.bz2)
-        if command -v bunzip2 &>/dev/null; then
+        if command_exists bunzip2; then
             bunzip2 "$1"
         else
             echo "Error: bunzip2 not installed. Install bzip2 package."
             exit 1
         fi ;;                        # Bzip2 single file
     *.rar)
-        if command -v unrar &>/dev/null; then
+        if command_exists unrar; then
             unrar x "$1"
         else
             echo "Error: unrar not installed"
@@ -88,7 +91,7 @@ case "$1" in
             exit 1
         fi ;;
     *.gz)
-        if command -v gunzip &>/dev/null; then
+        if command_exists gunzip; then
             gunzip "$1"
         else
             echo "Error: gunzip not installed. Install gzip package."
@@ -98,21 +101,21 @@ case "$1" in
     *.tbz2)    tar x${TAR_VERBOSE}jf "$1" 2>&1 | format_tar_output ;;  # Alternative bzip2 tar extension
     *.tgz)     tar x${TAR_VERBOSE}zf "$1" 2>&1 | format_tar_output ;;  # Alternative gzip tar extension
     *.zip)
-        if command -v unzip &>/dev/null; then
+        if command_exists unzip; then
             unzip "${UNZIP_VERBOSE[@]}" "$1"
         else
             echo "Error: unzip not installed. Install unzip package."
             exit 1
         fi ;;                        # ZIP archive
     *.Z)
-        if command -v uncompress &>/dev/null; then
+        if command_exists uncompress; then
             uncompress "$1"
         else
             echo "Error: uncompress not installed. Install ncompress package."
             exit 1
         fi ;;                        # Unix compress format
     *.7z)
-        if command -v 7z &>/dev/null; then
+        if command_exists 7z; then
             7z x "$1"
         else
             echo "Error: 7z not installed"
@@ -122,7 +125,7 @@ case "$1" in
             exit 1
         fi ;;
     *.xz)
-        if command -v xz &>/dev/null; then
+        if command_exists xz; then
             xz -d "$1"
         else
             echo "Error: xz not installed. Install xz-utils package."
