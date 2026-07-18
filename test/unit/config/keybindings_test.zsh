@@ -73,6 +73,26 @@ else
   skip "Vi mode not enabled in zshrc"
 fi
 
+# Test: multiline-editing bindings (static grep, same rationale as above:
+# don't execute zshrc on CI). grep -F because the patterns contain ^ and '.
+test_case "Zsh multiline editing bindings are configured"
+if grep -qF "bindkey -M viins '^X^E' edit-command-line" "$zshrc_file" \
+  && grep -qF "push-line-or-edit" "$zshrc_file" \
+  && grep -qF "NO_FLOW_CONTROL" "$zshrc_file"; then
+  pass "^X^E edit-command-line, ^Q push-line-or-edit, flow control freed"
+else
+  fail "zshrc missing multiline bindings (^X^E / push-line-or-edit / NO_FLOW_CONTROL)"
+fi
+
+# Test: vi-mode cursor shape is a LEAF widget replacement (wrapping an
+# existing zle-keymap-select caused the historical recursion crash).
+test_case "Zsh vi-mode cursor-shape widget is configured"
+if grep -qF "zle -N zle-keymap-select _dotfiles-zle-keymap-select" "$zshrc_file"; then
+  pass "Leaf zle-keymap-select replacement present"
+else
+  fail "zle-keymap-select cursor-shape widget missing from zshrc"
+fi
+
 # Test: tmux prefix key is set
 test_case "tmux has a prefix key configured"
 # Static check against the REPO config: `tmux show-options` interrogates a

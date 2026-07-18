@@ -13,7 +13,13 @@ Fast, modern shell setup with < 200ms startup time using Zinit and Starship.
 
 - **< 200ms startup** with Zinit turbo mode
 - **4 essential plugins** (syntax highlighting, autosuggestions, completions, zsh-z)
-- **Vi mode** with visual feedback
+- **Vi mode** with cursor-shape feedback (beam = insert, block = normal) and a
+  yellow `❮` prompt symbol in normal mode
+- **Multiline editing**: `Ctrl-X Ctrl-E` opens the buffer in `$EDITOR` from
+  either mode (`ESC v` also works); `Ctrl-Q` (push-line-or-edit) stashes the
+  line — or, at a PS2 continuation prompt, pulls the whole construct back into
+  one editable buffer. Flow control is disabled (`NO_FLOW_CONTROL`) so
+  `Ctrl-S`/`Ctrl-Q` reach the line editor.
 - **Smart completions** with caching
 - **Starship prompt** with git integration
 
@@ -64,6 +70,13 @@ if (( ${+widgets[zle-keymap-select]} )); then
     zle -D zle-keymap-select 2>/dev/null
 fi
 ```
+
+After Starship initializes, zshrc REPLACES its widget with a leaf function
+(`_dotfiles-zle-keymap-select`) that sets the vi-mode cursor shape and calls
+`zle reset-prompt` — the exact body of Starship's own widget, so the `❯`/`❮`
+symbol swap keeps working. The rule that keeps this safe: **replace widgets,
+never wrap them** — wrapper chains are what recursed ("maximum nested function
+level reached").
 
 ### Vi Mode Backspace Fix
 

@@ -82,7 +82,10 @@ zicdreplay
 zinit wait lucid for \
     zdharma-continuum/fast-syntax-highlighting
 
-# Autosuggestions (still deferred)
+# Autosuggestions (still deferred). Skip its per-precmd widget rebind scan:
+# all our widgets are registered before this deferred load, so the rescan
+# is pure prompt latency (and it re-runs on every paste).
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zinit wait lucid atload"!_zsh_autosuggest_start" for \
     zsh-users/zsh-autosuggestions
 
@@ -149,14 +152,28 @@ bindkey -v
 bindkey -M viins '^?' backward-delete-char  # Backspace key (most terminals)
 bindkey -M viins '^H' backward-delete-char  # Ctrl+H / alternate backspace
 
+# ^S (bound below) and ^Q (push-line) must reach ZLE: disable terminal
+# start/stop flow control, which otherwise swallows both keys.
+setopt NO_FLOW_CONTROL
+
 # Better searching
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
 
-# Edit command line
+# Edit command line in $EDITOR: 'v' in normal mode (vim habit), Ctrl-X
+# Ctrl-E from either mode (readline habit) - no ESC needed mid-thought
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
+bindkey -M viins '^X^E' edit-command-line
+bindkey -M vicmd '^X^E' edit-command-line
+
+# Multiline editing: at a PS2 continuation prompt, ^Q converts the whole
+# half-typed construct into ONE editable buffer (push-line-or-edit); on a
+# normal prompt it stashes the line, lets you run something else, then
+# restores it. (Default viins ^Q was vi-quoted-insert, rarely used.)
+bindkey -M viins '^Q' push-line-or-edit
+bindkey -M vicmd '^Q' push-line-or-edit
 
 # Common shortcuts
 bindkey '^A' beginning-of-line
@@ -245,6 +262,33 @@ export ZLE_RPROMPT_INDENT=0
 if command -v starship &>/dev/null; then
     _zsh_cache_source starship starship starship init zsh
 fi
+
+# Vi-mode cursor shape: beam in insert mode, block in normal mode (DECSCUSR).
+#
+# SAFETY (see "Zsh vim mode recursion error" in CLAUDE.md): this REPLACES the
+# zle-keymap-select widget Starship just installed with a plain leaf function.
+# Never wrap an existing widget here - widget-wrapping chains caused the
+# historical "maximum nested function level reached" crash. Starship's own
+# widget body is exactly `zle reset-prompt` (the prompt re-reads $KEYMAP at
+# draw time), so keeping that single call preserves the ❯/❮ mode symbol swap.
+_dotfiles-zle-keymap-select() {
+    case ${KEYMAP:-main} in
+        vicmd) print -n '\e[2 q' ;;  # steady block
+        *)     print -n '\e[6 q' ;;  # steady beam
+    esac
+    zle reset-prompt
+}
+zle -N zle-keymap-select _dotfiles-zle-keymap-select
+
+# Each new prompt starts in insert mode -> beam. Done from precmd (plain
+# terminal output, no ZLE needed) so completion-fix.zsh keeps sole ownership
+# of zle-line-init. preexec restores the terminal's default cursor so
+# full-screen apps aren't stuck with a beam (nvim sets its own regardless).
+_dotfiles-cursor-precmd() { print -n '\e[6 q' }
+_dotfiles-cursor-preexec() { print -n '\e[0 q' }
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _dotfiles-cursor-precmd
+add-zsh-hook preexec _dotfiles-cursor-preexec
 
 # Aliases
 

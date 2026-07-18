@@ -8,8 +8,8 @@ Our shell uses vi-mode for powerful text editing right in the command line.
 
 ### Mode Indicators
 
-- **Insert Mode**: Regular prompt
-- **Normal Mode**: Cursor changes, vi commands available
+- **Insert Mode**: Beam cursor, `❯` prompt symbol
+- **Normal Mode**: Block cursor, yellow `❮` prompt symbol, vi commands available
 
 ### Switching Modes
 
@@ -121,17 +121,20 @@ Our shell uses vi-mode for powerful text editing right in the command line.
 
 ### Quick Commands
 
-| Key       | Action       | Description     |
-| --------- | ------------ | --------------- |
-| `C-g`     | Git status   | Show git status |
-| `C-x C-e` | Edit command | Open in editor  |
-| `C-x C-r` | Reload shell | Source ~/.zshrc |
+| Key       | Action       | Description                                    |
+| --------- | ------------ | ---------------------------------------------- |
+| `C-x C-e` | Edit command | Open current line in `$EDITOR` (works in either mode) |
+| `ESC` `v` | Edit command | Same, from Normal mode (vim habit)             |
+| `C-q`     | Push line    | Stash line, run something else, get it back    |
+
+`C-q` is also the multiline rescue: at a `∙` continuation prompt it pulls the
+whole half-typed construct (for/while/if...) back into ONE editable buffer
+instead of leaving earlier lines frozen.
 
 ### Productivity
 
 | Key   | Action            | Description           |
 | ----- | ----------------- | --------------------- |
-| `C-o` | Open file         | Open with default app |
 | `C-z` | Toggle background | fg/bg last job        |
 | `C-l` | Clear screen      | Clear terminal        |
 
@@ -168,14 +171,17 @@ Visual feedback only - no keybindings:
 
 ### Job Control
 
-| Key   | Action        | Description            |
-| ----- | ------------- | ---------------------- |
-| `C-c` | Interrupt     | Kill current process   |
-| `C-\` | Quit          | Force quit (SIGQUIT)   |
-| `C-s` | Stop output   | Pause terminal output  |
-| `C-q` | Resume output | Continue output        |
-| `C-z` | Suspend       | Background process     |
-| `C-d` | EOF/Exit      | Exit shell or send EOF |
+| Key   | Action         | Description                                     |
+| ----- | -------------- | ----------------------------------------------- |
+| `C-c` | Interrupt      | Kill current process                            |
+| `C-\` | Quit           | Force quit (SIGQUIT)                            |
+| `C-s` | History search | Forward incremental search (flow control is off) |
+| `C-z` | Suspend        | Background process                              |
+| `C-d` | EOF/Exit       | Exit shell or send EOF                          |
+
+> Terminal flow control (`C-s` pause / `C-q` resume) is disabled via
+> `setopt NO_FLOW_CONTROL` so both keys reach the line editor: `C-s`
+> searches history forward, `C-q` is push-line (see Quick Commands).
 
 ### Screen Control
 
