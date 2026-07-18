@@ -135,6 +135,10 @@ Changed from default `C-b` for ergonomics.
 | `Escape` | Clear selection |
 | `q`      | Exit copy mode  |
 
+Mouse shortcuts (work outside copy mode too): drag to select and copy,
+**double-click** copies the word under the cursor, **triple-click** copies
+the whole line. Everything lands on the system clipboard.
+
 ## Configuration
 
 ### Location
@@ -295,12 +299,12 @@ lazygit            # Run lazygit
 
 ### Common Issues
 
-| Issue                | Solution                             |
-| -------------------- | ------------------------------------ |
-| Colors wrong         | `export TERM=screen-256color`        |
-| Can't create session | `tmux kill-server`                   |
-| Slow in vim          | `set -sg escape-time 0`              |
-| Copy not working     | Install `reattach-to-user-namespace` |
+| Issue                | Solution                                                  |
+| -------------------- | --------------------------------------------------------- |
+| Colors wrong         | `export TERM=screen-256color`                             |
+| Can't create session | `tmux kill-server`                                        |
+| Slow in vim          | `set -sg escape-time 0`                                   |
+| Copy not working     | `tmux kill-server` so `set-clipboard`/`copy-command` load |
 
 ### Debug Commands
 

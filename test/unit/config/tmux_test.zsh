@@ -52,5 +52,14 @@ if grep -q "set-clipboard on" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
 else
   fail "tmux.conf needs set-clipboard on AND the ',*:clipboard' terminal-feature, or OSC 52 copies silently drop"
 fi
+
+test_case "Double/triple-click copy bindings exist (word/line to clipboard)"
+if grep -q "DoubleClick1Pane" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
+  && grep -q "TripleClick1Pane" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null \
+  && grep -q "copy-command" "$DOTFILES_DIR/src/tmux.conf" 2>/dev/null; then
+  pass
+else
+  fail "tmux.conf missing DoubleClick/TripleClick copy bindings or copy-command"
+fi
 # Return success
 exit 0
