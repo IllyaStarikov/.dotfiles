@@ -40,11 +40,13 @@ main() {
         local dest="${GIT_HOOKS_DIR}/${hook_name}"
         
         echo -n "Installing ${hook_name}... "
-        
-        # Copy hook and make executable
-        cp "${hook}" "${dest}"
-        chmod +x "${dest}"
-        
+
+        # Symlink (not copy) so edits to the source hook take effect
+        # immediately — a cp-installed hook once went stale for months and
+        # kept running a fail-open version of the secret scan.
+        ln -sf "${hook}" "${dest}"
+        chmod +x "${hook}"
+
         print_color green "✓"
         ((installed++))
       fi

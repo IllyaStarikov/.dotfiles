@@ -62,11 +62,11 @@ test_no_exposed_ssh_keys() {
   log "TRACE" "Checking for exposed SSH keys"
 
   local key_patterns=(
-    "-----BEGIN RSA PRIVATE KEY-----"
-    "-----BEGIN DSA PRIVATE KEY-----"
-    "-----BEGIN EC PRIVATE KEY-----"
-    "-----BEGIN OPENSSH PRIVATE KEY-----"
-    "-----BEGIN PGP PRIVATE KEY-----"
+    "-----BEGIN RSA PRIVATE KEY-----"  # gitleaks:allow — fake test fixture, not a real secret
+    "-----BEGIN DSA PRIVATE KEY-----"  # gitleaks:allow — fake test fixture, not a real secret
+    "-----BEGIN EC PRIVATE KEY-----"  # gitleaks:allow — fake test fixture, not a real secret
+    "-----BEGIN OPENSSH PRIVATE KEY-----"  # gitleaks:allow — fake test fixture, not a real secret
+    "-----BEGIN PGP PRIVATE KEY-----"  # gitleaks:allow — fake test fixture, not a real secret
   )
 
   for pattern in "${key_patterns[@]}"; do

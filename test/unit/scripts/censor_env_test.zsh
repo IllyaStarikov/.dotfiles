@@ -102,7 +102,7 @@ test_censors_secret() {
 test_censors_long_token_pattern() {
   test_case "censor-env redacts long alphanumeric tokens"
   # 50-character token-like string
-  local long_token="abcdefghij1234567890ABCDEFGHIJabcdefghij1234567890"
+  local long_token="abcdefghij1234567890ABCDEFGHIJabcdefghij1234567890"  # gitleaks:allow — fake test fixture, not a real secret
   local out
   out=$(env -i HOME=/tmp PATH=/usr/bin:/bin:/usr/local/bin RANDOM_VAR="$long_token" "$CENSOR_ENV" 2>&1) || true
   if [[ "$out" != *"$long_token"* ]]; then

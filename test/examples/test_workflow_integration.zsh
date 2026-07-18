@@ -36,7 +36,7 @@ fi
 # Create a file that might trigger gitleaks
 cat >bad.py <<'EOF'
 # This contains a potential secret
-API_KEY = "sk-1234567890abcdef"
+API_KEY = "sk-1234567890abcdef"  # gitleaks:allow — fake test fixture, not a real secret
 PASSWORD = "supersecret123"
 EOF
 

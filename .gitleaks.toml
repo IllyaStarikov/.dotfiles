@@ -24,13 +24,13 @@ tags = ["token", "auth"]
 [allowlist]
 description = "Allowlisted files and patterns"
 
-# Allow example/template configurations
+# Allow example/template configurations.
+# Deliberately NARROW: whole-tree entries (test/, README.md, CLAUDE.md used
+# to be here) meant a real key pasted into a test fixture or doc sailed
+# through both the pre-commit hook and CI on a public repo. Prefer inline
+# `gitleaks:allow` comments for individual false positives.
 paths = [
   '''template/.*''',
-  '''test/.*''',
-  '''docs/.*''',
-  '''README\.md''',
-  '''CLAUDE\.md''',
   # cortex code emits literal export-statement strings to teach users
   # how to wire up the local MLX backend; the values are placeholders
   # ("mlx-local-no-key-needed"), not real keys.
@@ -40,10 +40,11 @@ paths = [
 
 # Allow common false positives in dotfiles
 regexes = [
-  # Vim/Neovim plugin configurations (often have example API keys)
+  # Vim/Neovim plugin configurations (often have example API keys).
+  # (No bare '(?i)placeholder' entry: it skipped ANY line containing the
+  # word; "placeholder" remains in stopwords, which only match the secret.)
   '''(?i)example[_\-]?api[_\-]?key''',
   '''(?i)your[_\-]?api[_\-]?key''',
-  '''(?i)placeholder''',
   '''(?i)sample[_\-]?token''',
   '''(?i)demo[_\-]?key''',
 
@@ -74,8 +75,8 @@ regexes = [
   '''PS1.*''',
 
   # Common dotfile patterns that are not secrets
+  # (no blanket alias-line allowlist: an alias can embed a real credential)
   '''export\s+[A-Z_]+=\"\$\{.*\}\"''',
-  '''alias\s+.*=.*''',
   '''function\s+.*\(\)''',
 
   # cortex MLX backend writes literal placeholder strings (no real key is

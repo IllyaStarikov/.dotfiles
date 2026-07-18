@@ -31,7 +31,7 @@ test_sanitize_function() {
   local result
   result=$(
     source "$SCRIPT_PATH" 2>/dev/null || true
-    echo "token=abc123xyz456" | sanitize
+    echo "token=abc123xyz456" | sanitize  # gitleaks:allow — fake test fixture, not a real secret
   )
   assert_not_contains "$result" "abc123xyz456" "Should sanitize tokens"
 }
