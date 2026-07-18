@@ -1441,8 +1441,8 @@ require("lazy").setup({
     end,
   },
   { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },
-  -- vim-lion's main entry points are the `gl`/`gL` operators (align by char).
-  { "tommcdo/vim-lion", keys = { { "gl", mode = { "n", "x" } }, { "gL", mode = { "n", "x" } } } },
+  -- (vim-lion removed: its gl operator was shadowed by the LSP diagnostics
+  -- float in every LSP buffer, and mini.align covers alignment via ga/gA.)
 
   -- File path navigation with line:column support (like foo.c:42:10)
   -- Makes files clickable in terminal output, error messages, stack traces, etc.
