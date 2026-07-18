@@ -369,15 +369,19 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 -- Poll theme file for external changes (e.g., `theme day` in terminal)
 -- Uses timer+stat instead of fs_event because switch-theme.sh uses atomic mv
+-- (vim.uv or vim.loop): vim.uv only exists on nvim 0.10+; unguarded use
+-- crashed the whole ui module on 0.9 runners (CI's apt neovim).
+---@diagnostic disable-next-line: undefined-field
+local uv = vim.uv or vim.loop
 local theme_file = vim.fn.expand("~/.config/theme/current-theme.sh")
-local last_mtime = vim.uv.fs_stat(theme_file) and vim.uv.fs_stat(theme_file).mtime.sec or 0
-local theme_timer = vim.uv.new_timer()
+local last_mtime = uv.fs_stat(theme_file) and uv.fs_stat(theme_file).mtime.sec or 0
+local theme_timer = uv.new_timer()
 if theme_timer then
   theme_timer:start(
     2000,
     2000,
     vim.schedule_wrap(function()
-      local stat = vim.uv.fs_stat(theme_file)
+      local stat = uv.fs_stat(theme_file)
       if not stat then
         return
       end
