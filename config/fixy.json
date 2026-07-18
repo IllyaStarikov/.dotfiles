@@ -184,12 +184,6 @@
       "check_command": "asmfmt -h",
       "format_args": "-w {file}",
       "description": "Assembly formatter"
-    },
-    "nasm": {
-      "command": "nasm",
-      "check_command": "nasm --version",
-      "format_args": "-f elf64 {file}",
-      "description": "NASM assembler"
     }
   },
   "extensions": {
@@ -454,15 +448,13 @@
     "xml": {
       "language": "XML",
       "formatters": [
-        "prettierd",
-        "prettier"
+        "xmllint"
       ]
     },
     "svg": {
       "language": "SVG",
       "formatters": [
-        "prettierd",
-        "prettier"
+        "xmllint"
       ]
     },
     "graphql": {
@@ -580,22 +572,19 @@
     "asm": {
       "language": "Assembly",
       "formatters": [
-        "asmfmt",
-        "nasm"
+        "asmfmt"
       ]
     },
     "s": {
       "language": "Assembly",
       "formatters": [
-        "asmfmt",
-        "nasm"
+        "asmfmt"
       ]
     },
     "S": {
       "language": "Assembly",
       "formatters": [
-        "asmfmt",
-        "nasm"
+        "asmfmt"
       ]
     },
     "mk": {
@@ -616,16 +605,5 @@
         "text-formatter"
       ]
     }
-  },
-  "settings": {
-    "show_formatter_fallback": true,
-    "run_additional_formatters": true,
-    "verbose": false,
-    "default_operations": [
-      "trailing_whitespace",
-      "tabs_to_spaces",
-      "smart_quotes",
-      "formatters"
-    ]
   }
 }

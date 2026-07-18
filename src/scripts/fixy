@@ -85,7 +85,9 @@ is_binary_file() {
   else
     # Fallback: check for null bytes (common in binary files)
     # Use perl for portable null byte detection (grep -P is not portable)
-    head -c 8000 "$file" 2>/dev/null | perl -ne 'exit 0 if /\x00/' || head -c 8000 "$file" | LC_ALL=C grep -q '[^[:print:][:space:]]'
+    # perl must exit NONZERO for clean text (the old `exit 0 if /\x00/` fell
+    # through to implicit success at EOF, classifying every file as binary)
+    head -c 8000 "$file" 2>/dev/null | perl -0777 -ne 'exit(/\x00/ ? 0 : 1)' || head -c 8000 "$file" | LC_ALL=C grep -q '[^[:print:][:space:]]'
   fi
 }
 
@@ -112,6 +114,14 @@ remove_trailing_whitespace() {
 convert_tabs_to_spaces() {
   local file="${1:?Error: file required}"
   local tab_width=2
+
+  # NEVER expand tabs in tab-required formats: make recipes break outright
+  # ("missing separator") and Go is tab-indented by definition.
+  local base="${file:t}"
+  if [[ "$base" == (Makefile|makefile|GNUmakefile) ]] || [[ "$file" =~ \.(mk|make|go)$ ]]; then
+    [[ "${PARALLEL}" != true ]] && print_color yellow "  → Skipping tab conversion (tab-indented format)"
+    return 0
+  fi
 
   # Python uses 4 spaces per Google style guide
   if [[ -n "${FORCE_TYPE}" ]]; then
@@ -259,6 +269,10 @@ except:
 get_formatter_command() {
   local formatter="${1}"
   local file="${2}"
+  # Shell-quote the path before it is substituted into the command string:
+  # the result is eval'd, so an unquoted path with spaces silently splits
+  # into multiple args (formatter no-ops, fixy still prints ✓).
+  local qfile="${(q)file}"
   if [[ -f "${CONFIG_FILE}" ]] && has_command python3; then
     python3 -c "
 import json
@@ -271,7 +285,7 @@ try:
             cmd = fmt.get('command', '')
             args = fmt.get('format_args', '')
             if cmd and args:
-                args = args.replace('{file}', '${file}')
+                args = args.replace('{file}', '${qfile}')
                 if cmd == 'internal':
                     print(args)
                 else:
@@ -537,7 +551,13 @@ except:
             # Special handling for ruff (run check first)
             ruff check --fix --line-length 100 "$file" 2>/dev/null || true
           fi
-          eval "$format_cmd" 2>/dev/null || true
+          # No `|| true` here: a failing formatter (e.g. a broken pyenv shim
+          # that passes has_command but exits 127) must NOT be reported as ✓ —
+          # fall through to the next formatter in the priority queue instead.
+          if ! eval "$format_cmd" 2>/dev/null; then
+            print_color yellow "✗ ($formatter failed, trying next)"
+            continue
+          fi
           print_color green "✓"
         fi
         formatted=true
@@ -886,15 +906,15 @@ while [[ $# -gt 0 ]]; do
       DO_ALL=true
       shift
       ;;
-    -t|--trailing)
+    -t|--trailing|--trailing-whitespace)
       DO_TRAILING=true
       shift
       ;;
-    -T|--tabs)
+    -T|--tabs|--tabs-to-spaces)
       DO_TABS=true
       shift
       ;;
-    -q|--quotes)
+    -q|--quotes|--smart-quotes)
       DO_QUOTES=true
       shift
       ;;
@@ -986,9 +1006,12 @@ process_file_parallel() {
   # Create a unique result file for this job
   local result_file="${tmpdir}/result_${index}"
   
-  # Process the file and capture the result
-  process_file "$file"
-  echo "$?" > "$result_file"
+  # Process the file and capture the result. The `|| rc=$?` guard matters:
+  # under set -e a skip return (2) would kill this subshell before the
+  # result file is written, and missing results are counted as FAILED.
+  local rc=0
+  process_file "$file" || rc=$?
+  echo "$rc" > "$result_file"
 }
 
 # Process files in parallel

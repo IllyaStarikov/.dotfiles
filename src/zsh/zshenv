@@ -28,6 +28,10 @@ export ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 export KEYTIMEOUT=1  # Default: 40 (faster vim mode switching)
 
+# ripgrep only reads a config file when this is set (no default location).
+# Lives in zshenv so non-interactive rg calls (Neovim, Telescope) get it too.
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
 # Private environment variables (API keys, secrets)
 [[ -f "$HOME/.env.zsh" ]] && source "$HOME/.env.zsh"
 

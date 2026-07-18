@@ -61,23 +61,22 @@ check_requirements() {
   fi
 }
 
-# Get timeout command wrapper for API calls
-# Returns timeout command if available, empty string otherwise
-# This allows graceful fallback on systems without timeout (like macOS)
-get_timeout_cmd() {
-  if has_command timeout; then
-    echo "timeout ${TIMEOUT_DURATION}"
-  else
-    # No timeout available - commands will run without timeout
-    echo ""
-  fi
-}
-
 # Fetch quotes from APIs
 fetch_quotes() {
   local count=$1
   local fetched=0
-  local timeout_cmd=$(get_timeout_cmd)
+  local attempts=0
+  local max_attempts=$((count * 5))
+  # Declared ONCE here: in zsh, re-running `local quote` on an existing local
+  # prints "quote=''" to stdout (typeset semantics), polluting the output.
+  local quote
+  # Timeout wrapper as an ARRAY: zsh does not word-split an unquoted scalar,
+  # so a "timeout 3" string would be looked up as one command named
+  # "timeout 3" and every curl would silently never run (infinite loop).
+  local -a timeout_cmd
+  if has_command timeout; then
+    timeout_cmd=(timeout "${TIMEOUT_DURATION}")
+  fi
 
   # Load API URLs from config if available
   local zenquotes_url advice_slip_url retry_delay
@@ -95,13 +94,13 @@ fetch_quotes() {
     retry_delay=0.5
   fi
 
-  # Try each API multiple times to ensure we get enough quotes
-  while [ "$fetched" -lt "$count" ]; do
+  # Try each API multiple times to ensure we get enough quotes, but cap the
+  # attempts so unreachable APIs can't spin this loop forever.
+  while [ "$fetched" -lt "$count" ] && [ "$attempts" -lt "$max_attempts" ]; do
+    ((attempts++))
     # ZenQuotes API
     if [ "$fetched" -lt "$count" ]; then
-      local quote
-      # Use timeout wrapper if available, otherwise run directly
-      quote=$($timeout_cmd curl -s "$zenquotes_url" 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
+      quote=$("${timeout_cmd[@]}" curl -s "$zenquotes_url" 2>/dev/null | jq -r '.[0] | "💭 \"\(.q)\"\n   — \(.a)"' 2>/dev/null)
 
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
@@ -111,8 +110,7 @@ fetch_quotes() {
 
     # Advice Slip API
     if [ "$fetched" -lt "$count" ]; then
-      local quote
-      quote=$($timeout_cmd curl -s "$advice_slip_url" 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
+      quote=$("${timeout_cmd[@]}" curl -s "$advice_slip_url" 2>/dev/null | jq -r '"💡 \(.slip.advice)"' 2>/dev/null)
 
       if [[ -n "$quote" ]] && [[ "$quote" != "null" ]]; then
         echo -e "$quote\n"
