@@ -13,6 +13,14 @@ if ! command -v pyright-langserver >/dev/null 2>&1 && ! command -v pyright >/dev
   exit 0
 fi
 
+# They equally need the synced plugin stack (blink.cmp + LSP configs are
+# plugin-provided); some CI images ship pyright but never install plugins,
+# and a plugin-less boot fails these with lazy.nvim noise.
+if ! nvim_plugins_synced; then
+  skip "nvim plugins not synced (fresh/CI environment) - skipping LSP/completion tests"
+  exit 0
+fi
+
 # Python LSP tests
 test_case "Python LSP server starts and provides diagnostics"
 cp "$DOTFILES_DIR/test/fixtures/sample.py" "$TEST_TMP_DIR/test_lsp.py"
@@ -204,8 +212,11 @@ nvim_test "Python code action for missing import" \
    end, 500)" \
   "code-actions-checked"
 
-# Formatting test
-test_case "LSP formatting works"
+# Formatting test. Python formatting in this config is owned by
+# conform.nvim (ruff) - pyright exposes NO formatting capability, so
+# vim.lsp.buf.format legitimately leaves the buffer untouched. Assert the
+# conform path formats instead.
+test_case "Formatting works (conform/ruff)"
 cat >"$TEST_TMP_DIR/format_test.py" <<'EOF'
 def poorly_formatted(  x,y ,z  ):
   return x+y+z
@@ -214,11 +225,15 @@ EOF
 nvim_test "Python formatting" \
   "vim.cmd('edit format_test.py')
    vim.defer_fn(function()
-     vim.wait(3000, function() return #vim.lsp.get_clients() > 0 end)
-
      local before = vim.api.nvim_buf_get_lines(0, 0, -1, false)
 
-     vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
+     local ok, conform = pcall(require, 'conform')
+     if not ok then
+       print('conform-not-available')
+       vim.cmd('qa!')
+       return
+     end
+     conform.format({ bufnr = 0, timeout_ms = 10000, lsp_format = 'fallback' })
 
      vim.defer_fn(function()
        local after = vim.api.nvim_buf_get_lines(0, 0, -1, false)
