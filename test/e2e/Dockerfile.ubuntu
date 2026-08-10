@@ -3,7 +3,7 @@
 # ════════════════════════════════════════════════════════════════════════════════
 # Ubuntu 24.04 includes Neovim 0.9.5 in official repos
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # Environment setup
 ENV DEBIAN_FRONTEND=noninteractive \
